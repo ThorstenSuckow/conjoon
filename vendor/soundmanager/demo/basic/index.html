@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2: Basic API Examples</title>
+<meta name="author" content="Scott Schiller" />
+<meta name="language" content="en-us" />
+<meta name="keywords" content="javascript sound library api" />
+<meta name="description" content="Demo page for SoundManager 2, javascript sound API" />
+<style type="text/css">
+
+/* demo CSS (inline - bad form.) */
+
+body {
+ font:normal 75% verdana,tahoma,arial;
+}
+
+h2 {
+ padding:0.5em;
+ background:#eee;
+ border:1px solid #ccc;
+}
+
+h1 {
+ font-size:1.25em;
+}
+
+h2 {
+ font-size:1.1em;
+}
+
+pre {
+ color:#000099;
+ font-size:1.2em;
+ *font-size:1em;
+}
+
+#soundmanager-debug {
+ position:fixed;
+ _position:absolute; /* IE <7 */
+ top:0px;
+ right:0px;
+ width:40em;
+ height:30em;
+ overflow:auto;
+ border:1px solid #ccc;
+ padding:1em;
+ margin:1em;
+ font-family:monaco,"lucida console",verdana,tahoma,"sans serif";
+ font-size:x-small;
+ background:#f6f6f6;
+ opacity:0.9;
+}
+
+#soundmanager-debug code {
+ font-size:1.1em;
+ *font-size:1em;
+}
+
+#soundmanager-debug div {
+ margin-top:0.5em;
+}
+
+</style>
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript">
+
+soundManager.url = '../../soundmanager2.swf'; // override default SWF url
+soundManager.debugMode = true;
+soundManager.consoleOnly = false;
+
+soundManager.onload = function() {
+  // soundManager is initialised, ready to use. Create a sound for this demo page.
+  soundManager.createSound('aDrumSound','../mpc/audio/AMB_SN13.mp3');
+  soundManager.createSound({
+    id: 'aCymbalSound',
+	url: '../mpc/audio/SPLASH_1.mp3',
+	autoLoad: true
+  });
+  soundManager.createSound({
+    id: 'chinaCymbal',
+	url: '../mpc/audio/CHINA_1.mp3',
+	autoLoad: true
+  });
+}
+
+</script>
+</head>
+
+<body>
+
+<div style="margin-right:38em">
+
+ <h1>SoundManager 2 Basic Examples</h1>
+
+ <p>Wondering where to start? The following are some simple examples showing how to get started with SoundManager 2.</p>
+
+ <p>eg.</p>
+<pre>soundManager.onload = function() {
+  // soundManager is ready to use.
+  // createSound() / play() etc. can now be called
+}
+
+soundmanager.onerror = function() {
+  // Oh no! No sound support.
+  // Maybe configure your app to ignore sound calls.
+  // (SM2 calls will silently return false after this point.)
+}
+</pre>
+
+ <h2>A note about initialization</h2>
+ 
+ <p class="compact">Keep in mind SoundManager's core methods (createSound, etc.) will not be available until soundManager.onload() fires. The initialization time for SM2 can vary across browsers/platforms, and should effectively be assumed to be "asynchronous." Because of this, it is recommended you write your code to handle soundManager.onload() being called either before or after window.onload().</p>
+ <p class="compact">If you wish to have SM2 always wait for window.onload() before calling soundManager.onload()/onerror(), you can apply the following:</p>
+<pre>soundManager.waitForWindowLoad = true;</pre>
+
+ <h2>Demo 1a: Create + play (shortcut method)</h2>
+<pre>soundManager.play('mySound0','../mpc/audio/AMB_SN_5.mp3');</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 1a</b>');soundManager.play('mySound0','../mpc/audio/AMB_SN_5.mp3')">Do this</button>
+ <p>Creates and plays a sound with ID "mySound0", at the specified URL. The sound can then be referenced by that ID later, eg. soundManager.play('mySound0');</p>
+ <p>Note that this method is only provided for convenience, and allows only ID and URL as parameters. If you want to specify other options (volume, loop, event handlers), you must use the object literal syntax as given below.</p>
+
+ <h2>Demo 1b: Create + play (recommended method)</h2>
+
+<pre>soundManager.createSound({
+ id:'mySound1',
+ url:'../mpc/audio/CHINA_1.mp3'
+});
+soundManager.play('mySound1');</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 1b</b>');soundManager.createSound({id:'mySound1',url:'../mpc/audio/CHINA_1.mp3'});soundManager.play('mySound1')">Do this</button>
+ <p>Creates, then plays a sound. This object literal method allows for other parameters to be used (see demo 2)</p>
+
+ <h3>Variant: Use object returned from createSound()</h3>
+
+<pre>var aSoundObject = soundManager.createSonud({
+ id:'mySound2',
+ url:'../mpc/audio/CHINA_1.mp3'
+});
+aSoundObject.play();</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 1b variant</b>');var aSoundObject = soundManager.createSound({id:'mySound2',url:'../mpc/audio/CHINA_1.mp3'});aSoundObject.play()">Do this</button>
+ <p>Creates, then plays a sound. This object literal method allows for other parameters to be used (see demo 2)</p>
+
+ <h2>Demo 2: Create with onfinish event handler + play with volume argument</h2>
+<pre>soundManager.createSound({
+ id:'mySound3',
+ url:'../mpc/audio/CHINA_1.mp3',
+ onfinish:function() {
+   alert(this.sID+' finished playing');
+ }
+});
+soundManager.play('mySound3',{volume:50});
+</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 2</b>');soundManager.createSound({id:'mySound4',url:'../mpc/audio/CHINA_1.mp3',onfinish:function(){alert(this.sID+' finished playing');}});soundManager.play('mySound4',{volume:50})">Do this</button>
+ <p>(creates, then plays a new sound - a function is called when the sound finishes playing)</p>
+
+ <h2>Demo 3: Play a pre-existing sound</h2>
+<pre>soundManager.play('aDrumSound');</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 3</b>');soundManager.play('aDrumSound')">Do this</button>
+ <p>This plays an existing sound which was created by soundManager.onload() (for reference, view source of this page.)</p>
+
+ <h2>Demo 4a: Play a sequence of sounds via "onfinish"</h2>
+<pre>soundManager.play('aDrumSound',{onfinish:function(){soundManager.play('aCymbalSound');}})</pre>
+<p>Differently formatted:</p>
+<pre>soundManager.play(
+ 'aDrumSound',
+ {
+  onfinish:function() {
+    soundManager.play('aCymbalSound');
+  }
+ }
+);
+</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 4a</b>');soundManager.play('aDrumSound',{onfinish:function(){soundManager.play('aCymbalSound');}})">Do this</button>
+ <p>This will play an existing sound (created in-page), and uses the "onfinish" handler to make a call to play a second, pre-existing sound.</p>
+ <p><em>Bug note:</em> Running this demo will change the way "aDrumSound" plays in Demo 3 as an onfinish handler is set here (ie., running demo 3 will also include the "aSymbalSound" sound after running this one.) When set via .play(), this behaviour should only apply to this .play() instance, but does not currently.</p>
+
+ <h2>Demo 4b: Create and play a sequence of new sounds via "onfinish"</h2>
+<pre>
+soundManager.createSound({
+ id:'aRimSound',
+ url:'../mpc/audio/AMB_RIM1.mp3',
+ onfinish:function() {
+   soundManager.play('aBassDrum','AMB_BD_1.mp3');
+ }
+});
+soundManager.play('aRimSound');
+</pre>
+ <button onclick="soundManager._writeDebug('<b>Demo 4b</b>');soundManager.createSound({id:'aBassDrum',url:'../mpc/audio/AMB_BD_1.mp3',onfinish:function(){soundManager.play('aRimSound','../mpc/audio/AMB_RIM1.mp3');}});soundManager.play('aBassDrum')">Do this</button>
+ <p>This will crate and play a new sound, using the "onfinish" handler to create and play a second, new sound.</p>
+ <p>It is recommended to create sound objects first, to simplify troubleshooting.</p>
+ 
+
+<h2>Demo 5: Set sound parameters, then play</h2>
+<pre>
+var sound = soundManager.getSoundById('chinaCymbal'); // predefined/preloaded sound
+sound.setPosition(500); // 500 msec into sound
+sound.setPan(-75);      // 75% left pan
+sound.play();
+</pre>
+<button onclick="soundManager._writeDebug('<b>Demo 5</b>');var sound=soundManager.getSoundById('chinaCymbal');sound.setPosition(500);sound.setPan(-75);sound.play()">Do this</button> | <button onclick="soundManager._writeDebug('<b>Demo 5: sound from position:0</b>');var sound=soundManager.getSoundById('chinaCymbal');sound.setPosition(0);sound.setPan(-75);sound.play()">Play from position:0</button>
+<p>This will set the position of an existing, pre-loaded sound, then play it.</p>
+
+<h3>Variant: play()</h3>
+<pre>
+var sound = soundManager.getSoundById('chinaCymbal');
+sound.play({position:500,pan:-75});
+</pre>
+<button onclick="soundManager._writeDebug('<b>Demo 5 variant</b>');var sound=soundManager.getSoundById('chinaCymbal');sound.play({position:500,pan:-75})">Do this</button> | <button onclick="soundManager._writeDebug('<b>Demo 5: variant: sound from position:0</b>');var sound = soundManager.getSoundById('chinaCymbal');sound.play({position:0,pan:-75})">Play from position:0</button>
+
+
+ <!-- end demos -->
+
+ <p><a href="../">SoundManager 2 Demos</a></p>
+
+</div>
+
+</body>

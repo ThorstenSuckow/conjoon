@@ -1,0 +1,558 @@
+/* SoundManager 2 demo page layout - not needed to use API */
+
+body {
+ background:#bbb url(image/body-bg-squidfingers.com-light.gif);
+ margin:0px;
+ font:normal 75% helvetica,verdana,arial,tahoma,"sans serif";
+ color:#111;
+}
+
+* {
+ _zoom:1; /* god damn IE 6. */
+}
+
+#main {
+ line-height:2em;
+ font-size:1.2em;
+}
+
+ul, li {
+ line-height:1.5em;
+}
+
+dd {
+ font-family:"helvetica",verdana,arial,tahoma,"times new roman","sans serif";
+}
+
+em {
+ font-weight:bold;
+ color:#444;
+}
+
+pre, code, dt {
+ font-family:"lucida console",monaco,courier,terminal,system;
+ font-size:0.9em;
+}
+
+.clear {
+ float:none;
+ clear:both;
+ font-size:1px;
+ line-height:1px;
+ height:1px;
+}
+
+.fl {
+ float:left;
+ display:inline;
+}
+
+h1, h2, h3, h4 {
+ font-family:"Century Gothic","Helvetica Neue Light","Helvetica Neue","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
+ font-weight:lighter;
+ font-size:2.5em;
+ letter-spacing:-1px;
+ margin:0px;
+}
+
+h1 {
+ color:#fff;
+}
+
+h2 {
+ font-size:1.5em;
+ color:#66ccff;
+}
+
+h3 {
+ font-size:1.4em;
+ color:#000;
+ border-left:0.67em solid #6699cc;
+ margin-left:-1.75em;
+ margin-top:1.5em;
+ margin-right:-1.48em;
+ border-bottom:1px solid #ccc;
+ border-right:0.45em solid #999;
+ border-top:1px solid #eee;
+ _border-right:none;
+ background:transparent url(image/bg-main-light.jpg) repeat-x 0px -1px;
+ padding:0.2em 0px 0.3em 0.2em;
+ text-indent:0.1em;
+ opacity:0.75;
+ filter:alpha(opacity=75);
+ -moz-border-radius:8px;
+ -moz-border-radius-topleft:32px;
+ letter-spacing:0px;
+}
+
+h4 {
+ letter-spacing:0px;
+ font-size:1em;
+ font-weight:bold;
+ margin:1.75em 0px 0px 0px;
+ color:#333;
+ border-left:0.5em solid #6699cc;
+ text-indent:0.5em;
+}
+
+h4.compact {
+ margin-top:0.5em !important;
+}
+
+ul li h4 {
+ margin-left:0px;
+ text-indent:0px;
+ border-left:none;
+}
+
+a {
+ color:#336699;
+}
+
+a:hover {
+ color:#ff66cc;
+}
+
+a:visited {
+}
+
+p {
+ margin:0px;
+ padding:1em 0px 0px 0px;
+ line-height:1.75em;
+}
+
+.compact {
+ margin-top:0px !important;
+ padding-top:0px !important;
+}
+
+ul {
+ margin:1em 0px 0px 0px;
+ padding:0px;
+ margin-left:0px;
+ padding-left:1em;
+ _padding-left:0px;
+ _margin-left:1.5em;
+}
+
+ul li {
+ margin-bottom:0.75em;
+}
+
+ul.compact li {
+ margin-top:0.75em;
+}
+
+ul.compact li h4 {
+ margin-top:0px;
+}
+
+ul.compact li:first-child {
+ margin-top:2em;
+}
+
+ul.tight,
+ul.tight li {
+ margin:0px !important;
+ padding:0px !important;
+}
+
+ul.tight {
+ margin-bottom:1em !important;
+}
+
+ul.tight li {
+ line-height:1.5em;
+}
+
+ul.nested {
+ margin-left:1em !important;
+}
+
+ul.compact ul.nested {
+ margin-top:0px;
+ margin-bottom:2em;
+}
+
+ul.compact ul.nested li:first-child {
+ margin-top:1em;
+}
+
+#site {
+ position:relative;
+ background:#fff;
+ margin:0px auto;
+ *width:85%;
+ min-width:30em;
+ max-width:75em;
+ border:1px solid #999;
+ border-top-color:#6699cc;
+}
+
+#header {
+ background:#0099ee url(image/bg-header.jpg) repeat-x 0px bottom;
+ padding:1em;
+ zoom:1;
+}
+
+#header h2,
+#version {
+ display:inline;
+}
+
+#header .speaker {
+ width:68px;
+ height:68px;
+ background:transparent url(image/speaker.png) no-repeat 0px 0px;
+ _background:none;
+ _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,sizingMethod=scale src='demo/image/speaker.png');
+ margin-right:1em;
+}
+
+#main {
+ background:transparent url(image/bg-main-light.jpg) repeat-x 0px -1px;
+ padding:1.5em;
+ zoom:1;
+}
+
+code, pre {
+ line-height:1.5em;
+}
+
+code {
+ display:block;
+ margin-bottom:0px;
+}
+
+code.in,
+.in code {
+ display:inline;
+}
+
+pre {
+ margin:0.5em 0px 0px 0px;
+ width:auto;
+ *width:100%;
+ overflow:auto;
+}
+
+code,
+pre,
+dt {
+ color:#339933;
+}
+
+dl dt span {
+ color:#996600;
+}
+
+dl {
+ margin:0.5em 0px 1em 0px;
+ font-family:"lucida console",system,terminal;
+}
+
+dt,
+dl dd {
+ line-height:1.5em;
+}
+
+dl dd code,
+.code code,
+pre {
+ display:inline;
+ color:#006600;
+}
+
+dl dt {
+ margin:2em 0px 1em 0px;
+ padding-top:0.2em;
+ color:#000;
+ background:#f6f6f6;
+ border:1px solid #ddd;
+ border-left:0.5em solid #ccc;
+ text-indent:0.5em;
+}
+
+dl dt:first-child {
+ margin-top:1.5em;
+}
+
+dl dt + dd {
+ font-style:italic;
+}
+
+dl .boolean,
+dl .string,
+dl .integer,
+dl .function {
+ text-indent:20px;
+ background-position:0px 0.7em;
+ background-repeat:no-repeat;
+}
+
+pre span,
+code span {
+ color:#000099;
+}
+
+pre span span {
+ color:#666;
+}
+
+dl dd {
+ display:block;
+ margin-left:1em;
+ margin:0.2em 1em 1em 0px;
+}
+
+dl .boolean {
+ background-image:url(image/param-boolean.gif);
+}
+
+dl .string {
+ background-image:url(image/param-string.gif);
+}
+
+dl .integer {
+ background-image:url(image/param-integer.gif);
+}
+
+dl .function {
+ background-image:url(image/param-function.gif);
+}
+
+.alternate {
+ padding:0.5em;
+ background:#f6f6f6;
+ border:1px solid #999;
+ margin-top:1em;
+ font-size:small;
+}
+
+.archive {
+ font-size:x-small;
+}
+
+#sm2-support {
+ display:none;
+}
+
+#demo-list p {
+ margin:0px;
+ padding:0px;
+}
+
+#demo-list.debug-only .no-debug {
+ /* if SM2 fails to load/init, only show demos with debug output. */
+ display:none;
+}
+
+#lang-tabs {
+ padding-top:1em;
+}
+
+#lang-tabs li {
+ position:relative;
+ display:inline;
+ padding:0.33em 0.5em 0.2em 0.5em;
+ *margin-right:0.5em;
+ *margin-bottom:-1px;
+ *z-index:2;
+ border:1px solid #ccc;
+ /* ZOMG WEB 3.0 !!!ONEONEONE (native rounded corners.) */
+ -moz-border-radius:8px 8px 1px 1px;
+ -webkit-border-top-left-radius:8px;
+ -webkit-border-top-right-radius:8px;
+ border-bottom:none;
+ background:#fff;
+}
+
+#lang-tabs li a {
+ text-decoration:none;
+}
+
+#lang-tabs li a:focus,
+#lang-tabs li a:active {
+ outline:none;
+}
+
+#lang-tabs.whatis-plain-english .whatis-plain-english,
+#lang-tabs.whatis-web-20-speak .whatis-web-20-speak,
+#lang-tabs.whatis-web-30-speak .whatis-web-30-speak {
+ padding-bottom:0.3em;
+}
+
+#whatis.whatis-plain-english .whatis-plain-english,
+#lang-tabs.whatis-plain-english .whatis-plain-english {
+ background:#f6f6f6;
+}
+
+#lang-tabs.whatis-web-20-speak .whatis-web-20-speak {
+ border-color:#336699;
+}
+
+#lang-tabs.whatis-web-20-speak .whatis-web-20-speak {
+ background:#009AED;
+}
+
+#lang-tabs.whatis-web-20-speak .whatis-web-20-speak a {
+ color:#fff !important;
+}
+
+#lang-tabs.whatis-web-30-speak .whatis-web-30-speak {
+ border-color:#006666;
+ background:#009999;
+}
+
+#lang-tabs.whatis-web-30-speak .whatis-web-30-speak a {
+ color:#fff !important;
+}
+
+#lang-tabs.whatis-plain-english .whatis-plain-english a {
+ color:#000 !important;
+}
+
+#whatis .whatis-web-20-speak,
+#whatis .whatis-web-30-speak,
+#whatis .whatis-plain-english {
+ display:none;
+}
+
+#whatis.whatis-web-20-speak .whatis-web-20-speak,
+#whatis.whatis-web-30-speak .whatis-web-30-speak,
+#whatis.whatis-plain-english .whatis-plain-english {
+ display:block;
+}
+
+#whatis .whatis-plain-english {
+ border:1px solid #ccc;
+ -moz-border-radius:8px 8px 1px 1px;
+ -webkit-border-top-left-radius:8px;
+ -webkit-border-top-right-radius:8px;
+}
+
+#whatis .whatis-plain-english p {
+ padding-left:1em;
+ padding-right:1em;
+ padding-bottom:0px;
+}
+
+#whatis .whatis-plain-english p:last-child {
+ padding-top:0px;
+ padding-bottom:1em;
+}
+
+#whatis .whatis-plain-english p:first-child {
+ padding-top:0.75em;
+}
+
+#whatis .whatis-web-20-speak,
+#whatis .whatis-web-30-speak {
+ /* Bring on the bullshit. ;) */
+ background:#005daa url(image/bg-header.jpg) repeat-x 0px 0px; /* let's get us a gradient background, blue .. */
+ padding:0.25em 1em 1em 1em;
+ margin-top:0px;
+ border:1px solid #336699;
+ -moz-border-radius:8px;
+ -webkit-border-radius:8px;
+ font-size:1.4em; /* up the font size a bit, of course! */
+ font-family:georgia,helvetica,verdana,tahoma,arial;
+ color:#fff;
+}
+
+#whatis .whatis-web-30-speak {
+ font-family:helvetica,verdana,tahoma,arial;
+ font-size:1em;
+}
+
+#whatis .whatis-web-30-speak {
+ border:1px solid #006666;
+ background:#009999;
+}
+
+#whatis .whatis-web-30-speak em {
+ color:#ccffcc;
+ font-size:1.5em;
+}
+
+#whatis .whatis-web-30-speak p.nevermind {
+ text-decoration:line-through;
+}
+
+#whatis .whatis-web-30-speak p.disclaimer {
+ margin-top:1em;
+}
+
+#whatis p {
+ padding-top:0.5em;
+ padding-bottom:0.5em;
+}
+
+#whatis .whatis-web-20-speak a {
+ color:#ff6633;
+}
+
+#whatis .whatis-web-20-speak a:hover {
+ color:#ff99cc;
+}
+
+#whatis .whatis-web-20-speak strong {
+ color:#fff;
+ font-weight:normal;
+ font-size:1.4em;
+ letter-spacing:-1px; /* Wouldn't be web 2 without this.. */
+ font-family:verdana,tahoma,arial,"sans serif";
+}
+
+#whatis .whatis-web-20-speak strong span,
+#whatis .whatis-web-20-speak sup {
+ color:#ff88cc;
+}
+
+#whatis .whatis-web-20-speak .disclaimer {
+ display:none;
+}
+
+.error {
+ background:#f0f0f0;
+ padding:0.5em;
+ margin:0.5em;
+ border:1px solid #ff3333;
+}
+
+#soundmanager-debug {
+ font-family:"VT-100","lucida console","Courier New",courier,terminal,system;
+ font-size:small;
+ line-height:1.5em;
+ margin-top:1em;
+}
+
+#prerelease-note {
+ color:#999;
+}
+
+.theme {
+ position:absolute;
+ right:6px;
+ top:5px;
+ display:block;
+ width:24px;
+ height:30px;
+ background:transparent url(image/switch-1.gif) no-repeat 0px 0px;
+ text-indent:-999em;
+ overflow:hidden;
+ cursor:pointer;
+ cursor:hand;
+}
+
+.theme:focus {
+ outline:none;
+}
+
+#version {
+ padding:0px;
+ font-size:small;
+ color:#eee;
+ font-family:arial,verdana,tahoma,"sans serif";
+}

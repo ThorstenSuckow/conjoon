@@ -1,0 +1,32 @@
+﻿
+Version 0.1
+16-June-2008
+
+- enhancements:
+ - BufferedGridStore - added overrride of getAt() method to translate
+the passed argument to the appropriate index in the model; updated sources to take
+overriden method into account
+ - added cfg option "scrollDelay" in BufferedGridView for buffering calls to onLiveScroll 
+when scroll-event gets fired (thanks to Rich Waters)
+ - BufferedStore: removed custom applySort() implementation due to changes in findInsertIndex
+ - BufferedStore: changed findInsertIndex to use parent implementation first, then check 
+return value and adjust the index if needed
+ - BufferedStore/BufferedGridView: moved bufferRange-member to BufferedStore
+ - BufferedStore: optimized insert() method in BufferedStore
+ - allowed to add records at position "0" in grid (existing records get shifted down)
+ 
+- fixes:
+ - wrong calculation in BufferedGridView.onLiveScroll (based on lastScrollPosition and actual 
+scrollPosition) caused the view sometimes to not re-render some rows
+ - provided bug fix for "ensureVisible: returned x-coordinate does not take the x-position
+of the gridpanel into account" (see http://extjs.com/forum/showthread.php?p=175331#post175331)
+ - wrong calculation of last displayable row after removing a row caused selection-model
+to get out of synch with the store's data
+ - when adding a record to the store on the fly, the ensureVisible-method
+would not work always corect afterwards
+ - when adding records, a previously made selection would block selecting the
+newly added record
+ - skipped request for updateLiveRows in Ext.ux.grid.BufferedGridView.adjustVisibleRows
+when number of total records in store is less than the number of visible rows
+ - request for buffering data in Ext.ux.grid.BufferedGridView.updateLiveRows() did
+not apply the property "lastOptions.params" to the params sent with the buffer-request

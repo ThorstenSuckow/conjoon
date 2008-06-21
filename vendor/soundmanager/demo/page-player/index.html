@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Demo: Play MP3 links on a page, "page as playlist" style</title>
+<style type="text/css">
+
+/* 
+
+ -------------------------------------------------------------
+
+ In-page demo CSS - see external CSS for actual relevant stuff.
+
+ --------------------------------------------------------------
+
+ */
+
+#soundmanager-debug {
+ /* SM2 debug container (optional, makes debug more useable) */
+ position:absolute;position:fixed;*position:absolute;bottom:10px;right:10px;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);z-index:99;
+}
+
+body {
+ font:75% normal verdana,arial,tahoma,"sans serif";
+}
+
+h1, h2, h3 {
+ font:3em normal "Century Gothic","Helvetica Neue Light","Helvetica Neue",georgia,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
+ font-weight:normal;
+ margin-bottom:0px;
+}
+
+h1, h2 {
+ letter-spacing:-1px; /* zomg web x.0! ;) */ 
+}
+
+h2 {
+ font-size:2em;
+}
+
+h3 {
+ font-size:1.5em;
+}
+
+h1 a,
+h1 a:hover {
+ color:#000;
+ text-decoration:none;
+}
+
+h1 a:hover {
+ text-decoration:underline;
+}
+
+ul.notes {
+ margin-left:0px;
+ padding-left:1.5em;
+}
+
+.note {
+ margin-top:0px;
+ font-style:italic;
+ color:#999;
+}
+
+pre {
+ font-size:1.2em;
+ _font-size:1em;
+}
+
+</style>
+<link rel="stylesheet" type="text/css" href="css/page-player.css" />
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript" src="script/page-player.js"></script>
+<script type="text/javascript">
+// demo only..
+var is_shiny = false;
+function setTheme(sTheme) {
+  var o = pagePlayer.getElementsByClassName('playlist','ul');
+  for (var i=o.length; i--;) {
+    o[i].className = 'playlist'+(sTheme?' '+sTheme:'')+(is_shiny?' shiny':'');
+  }
+  return false;
+}
+function setShiny(bShiny) {
+  is_shiny = bShiny;
+  var o = pagePlayer.getElementsByClassName('playlist','ul');
+  var sClass = 'shiny';
+  for (var i=o.length; i--;) {
+    if (!bShiny) {
+	  pagePlayer.removeClass(o[i],sClass);
+	} else {
+	  pagePlayer.addClass(o[i],sClass);
+	}
+  }
+}
+</script>
+</head>
+
+<body>
+
+<div id="left">
+
+ <h1>Demo: "<a href="http://schillmania.com/projects/soundmanager2/" title="Play a page of mp3s with javascript via SoundManager 2">Page as a playlist</a>"</h1>
+
+ <h2>Muxtape.com-style UI, MP3 Player Example: Fancy* CSS 3 version</h2>
+ <p class="note">*CSS 3 border-radius supported only by Firefox 2.x+, Safari (2.x?) as of April 2008 - perhaps IE 8 RTM..</p>
+ 
+ <ul class="playlist">
+
+  <li><a href="../jsAMP-preview/audio/rain.mp3">Rain</a></li>
+  <li><a href="../jsAMP-preview/audio/going_outside.mp3">Going Outside</a></li>
+  <li><a href="../jsAMP-preview/audio/office_lobby.mp3">Office Lobby</a></li>
+  <!-- files from the web (note that ID3 information will *not* load from remote domains without permission, Flash restriction) -->
+  <li><a href="http://www.freshly-ground.com/misc/music/carl-3-barlp.mp3">Barrlping with Carl (featureblend.com)</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3">Angry cow sound?</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/Things that open, close and roll.mp3">Things that open, close and roll</a></li>
+
+ </ul>
+
+ <div id="control-template">
+  <!-- control markup inserted dynamically after each link -->
+  <div class="controls">
+   <div class="statusbar">
+    <div class="loading"></div>
+     <div class="position"></div>
+   </div>
+  </div>
+  <div class="timing">
+   <div id="sm2_timing" class="timing-data">
+    <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span></div>
+  </div>
+ </div>
+
+ <p>Clicking a title will start loading + playing, or pause, a sound.</p>
+ <p>Once loading, click (or click and drag) on the loading/position bar to seek within the sound.</p>
+ <p>The document title reflects the currently-playing sound, and by default the list will play sequentially if left alone. (This is configurable.)</p>
+ 
+ <h3>Themes</h3>
+ <p>Just for fun, a few color schemes (visible when playing/paused):</p>
+ <ul class="themes">
+  <li><a href="#" onclick="return setTheme('dark')">&lt;ul class="playlist dark"&gt;</a> - #333 and #666, mostly</li>
+  <li><a href="#" onclick="return setTheme('gold')">&lt;ul class="playlist gold"&gt;</a> - Frontin' the bling</li>
+  <li><a href="#" onclick="return setTheme('bubblegum')">&lt;ul class="playlist bubblegum"&gt;</a> - ZOMG PONIES!!!ONEONEONE</li>
+  <li><a href="#" onclick="return setTheme('')">&lt;ul class="playlist"&gt;</a> (default)</li>
+ </ul>
+ 
+ <form style="margin:0px;padding:0px" action="#" onsubmit="return false">
+  <div>
+   <input id="makeShiny" name="makeShiny" type="checkbox" onchange="setShiny(this.checked)" value="Shiny" /> <label for="makeShiny">Also add "shiny", eg. &lt;ul class="shiny playlist"&gt;...</label>
+  </div>
+ </form>
+ <script type="text/javascript">document.getElementById('makeShiny').checked=false;</script>
+
+ <h2 id="metadata">Experimental (Alpha) Variant: MP3 "Metadata": Annotations / notes / sub-tracks</h2>
+ <p>A potential approach to noting interesting moments in sounds, scene changes, new tracks in seamless DJ mixes etc. Keep in mind this is a single MP3 being loaded, but annotations are placed along the timeline as shown.</p>
+ <p>A "metadata" element contains a nested list of data (UL/LI combination) - in this case, a summary of each scene - and the time at which this item occurs/begins. In order to help with positioning, the total length of the sound is also specified up-front. View the source code of this page for the details.</p>
+
+ <ul class="playlist">
+
+  <li>
+   <a href="http://freshly-ground.com/data/audio/binaural/A%20Virtual%20Haircut%20in%20San%20Francisco%20%283%20Scenes%29.mp3">A Virtual Haircut (3 scenes)</a>
+   <div class="metadata">
+    <div class="duration">4:43</div> <!-- total track time (for positioning while loading, until determined -->
+    <ul>
+     <li><p>Electric razor</p><span>0:00</span></li> <!-- first scene -->
+     <li><p>Water, scissors</p><span>2:41</span></li> <!-- start time of second scene -->
+     <li><p>More razor work</p><span>4:00</span></li>
+    </ul>
+   </div>
+  </li>
+
+  <li>
+   <a href="http://freshly-ground.com/data/audio/binaural/Rubber%20Chicken%20Launch%20%28office%29.mp3">Rubber Chicken Launch (Office)</a>
+   <div class="metadata">
+    <div class="duration">0:47</div>
+    <ul>
+     <li><p>First attempt</p><span>0:00</span></li>
+     <li><p>Fire!</p><span>0:02</span></li>
+     <li><p>"Too much angle"</p><span>0:05</span></li>
+     <li><p>Random chicken noise</p><span>0:18</span></li>
+     <li><p>"Wait a second"</p><span>0:31</span></li>
+     <li><p>Derrr..</p><span>0:34</span></li>
+     <li><p>Launch attempt #2</p><span>0:36</span></li>
+     <li><p>"Wrong angle"</p><span>0:39</span></li>
+     <li><p>"Fail"</p><span>0:42</span></li>
+    </ul>
+   </div>
+  </li>
+
+ </ul>
+
+ <h2>How It Works</h2>
+
+ <p>This example uses <a href="http://schillmania.com/projects/soundmanager2/" title="SoundManager 2 Javascript Sound API">SoundManager 2</a> to finds links to MP3 files, and makes them playable "in-place" on a page. The script assigns CSS classes to links' parent LI nodes to indicate their state (playing/paused, etc.)</p>
+ <p>A fragment of HTML is also appended dynamically which includes a status bar, loading control and timing info etc. This can be styled with CSS as well, of course.</p>
+ <p>Links pointing to MP3s are assigned an onclick handler which intercepts the click (preventing the browser from following the link and unloading the page. SM2 will then create sound objects as needed to play the MP3s.</p>
+
+ <h3>Basic CSS</h3>
+
+<pre>
+ If you want to make your own UI from scratch, here is the base:
+
+ ul.playlist {}
+
+ Default + hover state, "click to play":
+
+ li.sm2_link {}
+ li.sm2_link:hover {}
+
+ Playing + hover state, "click to pause":
+
+ li.sm2_playing {}
+ li.sm2_playing:hover {}
+
+ Paused + hover state, "click to resume":
+
+ li.sm2_paused {}
+ li.sm2_paused:hover {}
+</pre>
+
+<p>The positioning (load status / control bar) template is also applied as follows, after each MP3 link:</p>
+
+<pre> &lt;div&gt;
+  &lt;div class="controls"&gt; 
+   &lt;div class="statusbar"&gt;
+    &lt;div class="loading"&gt;&lt;/div&gt;
+    &lt;div class="position"&gt;&lt;/div&gt;
+   &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="timing"&gt;
+   &lt;!-- %s1 of %s2 is "minimal" required format --&gt;
+   &lt;div id="sm2_timing" class="timing-data"&gt;
+    &lt;span class="sm2_position"&gt;%s1&lt;/span&gt; / &lt;span class="sm2_total"&gt;%s2&lt;/span&gt;
+   &lt;/div&gt;
+  &lt;/div&gt;
+ &lt;/div&gt;</pre>
+
+<p>"loading" and "position" have background colors applied, and have their width adjusted dynamically by SM2 as the sound(s) load/play. "timing" is replaced with the current time / duration, eg. 1:23 / 4:20</p>
+<p>The class names applied can be edited within the source JS also, for convenience.</p>
+<p>The controls are shown and hidden via the same dynamic CSS updates. See the source CSS for the timing / status bar layout.</p>
+
+<h2>I'd like to use this.</h2>
+<p>See this <a href="basic.html" title="Page as playlist demo">basic demo</a> for reference.</p>
+
+ <p>A reminder that if loading from the local filesystem, Flash will deny access to remote (network/internet) URLs by default unless whitelisted via the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash Player Global Security Settings Page</a>. Some URLs in this example are remote to demonstrate this.</p>
+
+<p><a href="http://schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
+
+</div>
+
+</body>
+</html>

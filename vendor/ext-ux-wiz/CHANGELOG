@@ -1,0 +1,13 @@
+﻿28.05.2008
+==========
+ - fixed: IE6 did not render the step-indicator images as expected, added style-rule in ext-ux-wiz.css (thanks to donssmith)
+ - fixed: IE6 complained about multiple OR conditions in Ext.ux.Wiz.initComponent
+
+26.05.2008
+==========
+ - fixed: IE complained about semicolon in examples/SimpleWizard.html
+ - fixed: removed "!important"-style-override in examples/SimpleWizard.html since IE doesn't like it
+ - fixed: quoted "default" in Ext.ux.Wiz.loadMaskConfig since it's a keyword in IE
+ - fixed: finish-event did not pass the expected arguments to its listeners
+ - enhancement: data returned by Ext.ux.Wiz.getWizardData now indexed by the 
+ id's of the specific cards they represent

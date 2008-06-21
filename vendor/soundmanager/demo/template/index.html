@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>SoundManager 2 Template</title>
+<style type="text/css">
+
+#soundmanager-debug {
+ /* SM2 debug container (optional, makes debug more useable) */
+ position:absolute;right:0px;top:0px;width:50em;height:18em;overflow:auto;background:#fff;margin:1em;padding:1em;border:1px solid #999;font-family:monaco,"lucida console",verdana,tahoma,"sans serif";font-size:x-small;line-height:1.5em;opacity:0.9;filter:alpha(opacity=90);
+}
+
+/* some formatting stuff for this page */
+h1, h2, h3 {
+ font:2em normal "Century Gothic","Helvetica Neue Light","Helvetica Neue",georgia,"times new roman","Arial Rounded MT Bold",helvetica,verdana,tahoma,arial,"sans serif";
+ font-weight:lighter;
+ margin-bottom:0px;
+}
+
+h1, h2 {
+ letter-spacing:-1px; /* zomg web x.0! ;) */ 
+}
+
+h2 {
+ font-size:1.5em;
+}
+
+p {
+ font:small verdana,tahoma,arial,"sans serif";
+ font-weight:normal;
+}
+
+</style>
+<script type="text/javascript" src="../../script/soundmanager2.js"></script>
+<script type="text/javascript">
+
+// soundManager.debugMode = false; // disable debug output
+
+soundManager.url = '../../soundmanager2.swf'; // path to movie
+
+soundManager.onload = function() {
+  // soundManager.createSound() etc. may now be called
+  soundManager._writeDebug('soundManager.onload() - your code executes here');
+}
+
+</script>
+</head>
+
+<body>
+<div style="margin-right:33em">
+ <h1>SoundManager 2 Template Example</h1>
+ <p>This is a basic template for adding SoundManager to your page.</p>
+ <h2>How it works</h2>
+ <p>This page includes the SM2 script, which starts up on its own as appropriate. By default it will try to start as soon as possible.</p>
+ <h2>Making SM2 wait for window.onload()</h2>
+ <p>If you prefer to have the library wait for window.onload() before calling soundManager.onload()/onerror() methods, you can modify SM2's "waitForWindowLoad" property:</p>
+<code>soundManager.waitForWindowLoad = true</code>
+ <h2>Disabling debug output</h2>
+ <p>To disable the debug output, refer to the source of this page which sets soundManager.debugMode to false.</p>
+ <h2>No-debug, compressed version of soundmanager2.js</h2>
+ <p>Once development is finished, you can also use the "minified" (50% smaller) version of SM2, which has debug output and comments removed for you: <a href="../../script/soundmanager2-nodebug-jsmin.js">soundmanager2-nodebug-jsmin.js</a>. If you can, serve this with gzip compression for even greater bandwidth savings!</p>
+ 
+</div>
+
+</body>
+</html>

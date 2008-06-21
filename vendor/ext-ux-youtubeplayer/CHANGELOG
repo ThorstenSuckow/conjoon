@@ -1,0 +1,11 @@
+Version 0.2
+18-June-2008
+
+Note: API changed in Version 0.2 and does not work with Ext.ux.Media < 1.0RC1
+
+- enhancements:
+ - Ext.ux.YoutubePlayer: updated source to work with RC1 of Ext.ux.Media
+ - Ext.ux.YoutubePlayer.Control: minor code cleanups 
+
+Version 0.1
+16-June-2008
