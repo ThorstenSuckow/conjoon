@@ -1,0 +1,54 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-forwardButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-replyButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailreply.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-replyAllButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailreplyall.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-deleteButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-delete.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-spamButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-noSpamButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-editDraftButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-newButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailnew.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-fetchButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-fetch.png)!important;    
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-previewButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-preview.png)!important;    
+}
+

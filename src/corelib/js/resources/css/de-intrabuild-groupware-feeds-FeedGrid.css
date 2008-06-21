@@ -1,0 +1,29 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.de-intrabuild-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-configure.png);
+}
+
+.de-intrabuild-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-display.png)!important ;
+}
+
+.de-intrabuild-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-add.png)!important ;
+}
+
+.de-intrabuild-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-refresh.png)!important ;
+}

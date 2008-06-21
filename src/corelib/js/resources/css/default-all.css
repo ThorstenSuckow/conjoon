@@ -1,0 +1,849 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+html, body {
+    overflow:hidden;
+    cursor:default !important;
+}
+
+
+/**
+ * Toolbar style for groupware
+ */
+.de-intrabuild-groupware-Toolbar {
+    padding:2px 2px;
+    /*height:20px;*/
+    background:none;
+    border:none;
+}
+
+.x-layout-split {
+    background-color:#C5D7EE !important;
+}
+        
+/**
+ * Menubar style for groupware
+ */
+.de-intrabuild-groupware-Menubar {
+    padding:0px 2px;
+    height:20px;
+    background:#ECE9D8;
+    border-bottom:1px solid #ACA899;
+}
+
+.de-intrabuild-groupware-Menubar .x-btn-with-menu .x-btn-center em {
+    padding-right:0px;
+    background:none;
+}
+
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-center,
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-left,
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-right,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-center,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-left,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-right,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-text,
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-text {
+   background:#316AC5;
+   color:white;
+}        
+
+
+/**
+ * Header
+ */
+.de-intrabuild-groupware-Header {
+    background-color:#1E3B75;
+    background-image:url(../images/groupware-header.png);
+    background-position:bottom;
+    background-repeat:repeat-x;
+    height:34px;
+}
+
+/**
+ * special main tab style
+ */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top {
+    background:none !important;
+}
+
+.de-intrabuild-groupware-TabHeader-body {
+    padding-top:33px;
+    padding-left:4px;
+    background-color:#C5D7EE !important;
+}
+
+/**
+ * Main toolbar
+ */
+.de-intrabuild-groupware-Toolpanel {
+    height:30px;
+    background-image:url(../images/groupware-toolbar.png);
+    position:absolute;
+    top:55px;
+    width:100%;
+}
+
+/**
+ * Dummy class for adjusting the northern box
+ */
+.de-intrabuild-groupware-Head-utilcls .x-panel-body {
+    height:10px !important;
+    border:none;
+    background:none;
+}
+
+/**
+* Section for special tab appearance of content panel
+*
+*/        
+/* BG images for inactive Tab */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-left {
+background:transparent url(../images/tabs-sprite.png)  no-repeat scroll right -351px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-inner {
+background:transparent url(../images/tabs-sprite.png)  repeat-x scroll 0pt -201px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-right {
+background:transparent url(../images/tabs-sprite.png) no-repeat scroll 0pt -51px;
+}
+
+/* BG images for active Tab */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-right {
+background: transparent url(../images/tabs-sprite.png) no-repeat 0 -0px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-left {
+background: transparent url(../images/tabs-sprite.png) no-repeat right -301px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner {
+background: transparent url(../images/tabs-sprite.png) repeat-x 0 -151px;
+}      
+
+/** closable image, inactive */
+.de-intrabuild-groupware-TabHeader a.x-tab-strip-close {
+background-image:url(../images/tab-close.png) !important;
+} 
+
+/** closable image, active */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-active a.x-tab-strip-close {
+background-image:url(../images/tab-close-active.png) !important;
+}    
+
+/** font settings, inactive*/ 
+.de-intrabuild-groupware-TabHeader span.x-tab-strip-text { 
+color:#D2D8E4;
+font-weight:normal;
+}
+
+
+/** font settings, active*/  
+.de-intrabuild-groupware-TabHeader .x-tab-strip-active span.x-tab-strip-text { 
+color:#15428b;
+font-weight:bold;
+}
+
+
+/**
+ * Bookmarks Toolbar
+ */
+.de-intrabuild-groupware-Bookmarks-container {
+    width:36px;
+    left:10px;
+    top:30px;
+    position:absolute;
+}
+
+.de-intrabuild-groupware-Bookmarks {
+    background:none;
+    border:none;
+}
+
+.de-intrabuild-groupware-Bookmarks .x-btn-with-menu .x-btn-center em {
+    padding-right:0px;
+    background:none;
+}
+    
+/**
+ * Layout for upper panelhead of the quickpanel and the headers of the therin laying accordions
+ */
+.de-intrabuild-groupware-PanelHead .x-panel-header {
+    background:transparent url(../images/light-hd.gif) repeat-x scroll 0pt -9px;
+    border-top:none;
+    color:#15428B;
+    font-weight:bold;
+    padding-bottom:3px;
+    padding-top:4px;
+}
+
+.de-intrabuild-groupware-PanelHead .x-panel-body {
+    background-color:#CAD9EC;
+}
+
+.de-intrabuild-groupware-PanelHead ul.x-tab-strip-bottom {
+    background-image:url(../images/tab-strip-btm-bg.png) !important;
+    height:29px;
+}        
+
+.de-intrabuild-groupware-PanelHead .x-tool-collapse-north {
+    background-position:0 -240px;
+}
+
+.de-intrabuild-groupware-PanelHead .x-tool-collapse-north-over {
+    background-position:-15px -240px;
+}
+
+.de-intrabuild-groupware-AccordionHead .x-panel-header {
+    color:#15428B;
+    font-weight:bold;
+}        
+
+/**
+ * Icons for quickpanel
+ */
+.de-intrabuild-groupware-quickpanel-NewIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-newdata.png') !important;
+}
+
+.de-intrabuild-groupware-quickpanel-ContactsIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-contacts.png') !important;
+}
+
+.de-intrabuild-groupware-quickpanel-CalendarIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-calendar.png') !important;
+}        
+
+.de-intrabuild-groupware-quickpanel-EmailIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-email.png') !important;
+}        
+
+.de-intrabuild-groupware-quickpanel-TodoIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-todo.png') !important;
+}        
+
+/**
+ * Buttons for the quickpanel
+ */
+.x-panel-btn-td .x-btn-left{
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 -147px;
+}
+.x-panel-btn-td .x-btn-center{
+	background: url(../images/qp-btn-sprite.gif) repeat-x 0 -126px;
+	padding:0 0;
+}    
+.x-panel-btn-td .x-btn-right{
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 -168px;
+}
+
+.x-panel-btn-td .x-btn-focus .x-btn-left{
+    background: url(../images/qp-btn-sprite.gif) no-repeat 0 -147px;
+}
+.x-panel-btn-td .x-btn-focus .x-btn-center{
+	background: url(../images/qp-btn-sprite.gif) repeat-x 0 -126px;
+	padding:0 0;
+}    
+.x-panel-btn-td .x-btn-focus .x-btn-right{
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 -168px;
+}
+    
+    
+.x-panel-btn-td .x-btn-over .x-btn-left{
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 0;
+}
+.x-panel-btn-td .x-btn-over .x-btn-center{
+	background: url(../images/qp-btn-sprite.gif) repeat-x 0 -42px;
+}
+.x-panel-btn-td .x-btn-over .x-btn-right{
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 -21px;
+}
+
+.x-panel-btn-td .x-btn-click .x-btn-left, .x-panel-btn-td  .x-btn-pressed .x-btn-left {
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 -63px;
+}
+.x-panel-btn-td .x-btn-click .x-btn-right, .x-panel-btn-td  .x-btn-pressed .x-btn-right {
+	background: url(../images/qp-btn-sprite.gif) no-repeat 0 -84px;
+}
+
+.x-panel-btn-td .x-btn-click .x-btn-center, .x-panel-btn-td  .x-btn-pressed .x-btn-center {
+	background: url(../images/qp-btn-sprite.gif) repeat-x 0 -105px;
+}
+
+/**
+ * Small Editor Font for the quickpanel
+ */
+.de-intrabuild-groupware-quickpanel-SmallEditorFont {
+    font-size:11px;
+}
+
+/**
+ * Form intro
+ */
+.de-intrabuild-formintro-container {
+   padding-left:58px;
+}
+
+.de-intrabuild-formintro-description {
+   padding:5px 0 5px 0;
+}
+
+.de-intrabuild-formintro-label {
+   margin-left:-58px;
+   float:left;
+   padding-right:5px;
+   color:#15428b;
+   font-weight:bold;
+}
+
+.de-intrabuild-formintro-outersep{
+   position:relative;
+}       
+
+.de-intrabuild-formintro-sepx{
+   overflow:hidden;
+   background-image:url(../images/x-ux-formintro-sepx.png);
+   background-position:center;
+   background-repeat:repeat-x;
+}    
+
+.de-intrabuild-formintro-icon {
+   position:relative;
+   margin-left:-58px;
+   background-repeat:no-repeat;
+   height:42px;
+   width:42px;
+   background-position:10px 10px;
+}   
+
+.de-intrabuild-formintro-text {
+   margin-left:-58px;
+   margin-top:-32px;
+   padding-left:58px;
+   margin-bottom:8px;
+}           
+
+
+/**
+ * forms
+ */
+.de-intrabuild-smalleditor .x-combo-list-item {
+    font-size:11px !important;
+}
+
+.de-intrabuild-smalleditor .x-form-cb-label /*label*/ {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-go-trigger {
+    background-image: url(../images/trigger-go.png) !important;
+    cursor:pointer;
+}
+
+.de-intrabuild-margin-t-5 {
+    margin-top:5px;
+}
+
+.de-intrabuild-margin-b-5 {
+    margin-bottom:5px;
+}
+
+.de-intrabuild-margin-l-15 {
+    margin-left:15px;
+}        
+        
+.de-intrabuild-margin-b-10 {
+    margin-bottom:10px;
+}
+
+.de-intrabuild-margin-b-15 {
+    margin-bottom:15px;
+}        
+
+.de-intrabuild-margin-b-20 {
+    margin-bottom:20px;
+}        
+
+.de-intrabuild-float-left {
+   float:left;
+}        
+
+.de-intrabuild-clear {
+   clear:both;
+}        
+
+
+/**
+ * Error dialog "critical"
+ */
+.de-intrabuild-msgbox-critical .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-critical .ext-mb-error {
+    background-image:url(../images/32x32/actions/messagebox-critical.png);
+}
+
+.de-intrabuild-msgbox-critical .ext-mb-content {
+    height:110px;
+    background:white;
+    padding:4px;
+    overflow:auto;
+    border:1px solid #99BBE8;
+}
+
+.de-intrabuild-msgbox-critical .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-critical .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * Error dialog "error"
+ */
+.de-intrabuild-msgbox-error .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-error .ext-mb-error {
+    background-image:url(../images/32x32/actions/messagebox-error.png);
+}
+
+.de-intrabuild-msgbox-error .ext-mb-content {
+    height:60px;
+    /*background:white;*/
+    padding:4px;
+    overflow:auto;
+    /*border:1px solid #99BBE8;*/
+}
+
+.de-intrabuild-msgbox-error .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-error .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}        
+
+/**
+ * Info dialog ""
+ */
+.de-intrabuild-msgbox-info .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-info .ext-mb-info {
+    background-image:url(../images/32x32/actions/messagebox-info.png);
+}
+
+.de-intrabuild-msgbox-info .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.de-intrabuild-msgbox-info .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-info .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}   
+
+/**
+ * Warning dialog ""
+ */
+.de-intrabuild-msgbox-warning .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-warning .ext-mb-warning {
+    background-image:url(../images/32x32/actions/messagebox-warning.png);
+}
+
+.de-intrabuild-msgbox-warning .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.de-intrabuild-msgbox-warning .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-warning .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}            
+
+/**
+ * Prompt dialog ""
+ */
+.de-intrabuild-msgbox-prompt .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-prompt .ext-mb-warning {
+    background-image:url(../images/32x32/actions/messagebox-warning.png);
+}
+
+.de-intrabuild-msgbox-prompt .ext-mb-content {
+    background:#F6F6F6;
+    padding:4px;
+}
+
+.de-intrabuild-msgbox-prompt .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-prompt .ext-mb-input {
+    margin-left:40px !important;
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-prompt .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}           
+
+/**
+ * question dialog 
+ */
+.de-intrabuild-msgbox-question .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-question .ext-mb-question {
+    background-image:url(../images/32x32/actions/messagebox-question.png);
+}
+
+.de-intrabuild-msgbox-question .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.de-intrabuild-msgbox-question .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-question .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}     
+
+ 
+/**
+ * Common grid behaviour
+ */
+.de-intrabuild-groupware-grid-itemRead div{
+    font-weight:normal;
+}
+
+.de-intrabuild-groupware-grid-itemUnread div {
+    font-weight:bold;
+}
+
+/**
+ * EmailGrid
+ */
+.de-intrabuild-groupware-email-EmailGrid .x-grid3-row {
+    border-style:none;
+}
+
+
+
+
+/**
+ * EmailTree
+ */
+/*.de-intrabuild-groupware-email-EmailTree .x-tree-root-ct {
+    margin:2px !important;
+} */
+.de-intrabuild-groupware-email-EmailTree .x-panel-body {
+    background-color:white;
+    position:relative;
+    padding:3px;
+} 
+        
+.de-intrabuild-groupware-email-EmailTree a span {
+    margin-left:5px !important;
+}        
+
+.de-intrabuild-groupware-email-EmailTree .de-intrabuild-groupware-email-EmailTree-itemPending {
+    margin-left:0px !important;
+    background:none !important;
+    border:none !important;
+}        
+
+.de-intrabuild-groupware-email-EmailTree  .x-tree-node {
+    padding-top:1px;
+    padding-bottom:1px;
+}
+
+.de-intrabuild-groupware-email-EmailTree  .x-tree-selected {
+    background:#DFE8F6;
+}
+
+.de-intrabuild-groupware-email-EmailTree   .x-tree-node .x-tree-selected a span{
+	background:#DFE8F6;
+	color:#1E4176;
+	border:1px solid #DFE8F6;
+	border-left:none;
+    border-right:none;
+    /*font-weight:bold;*/
+}        
+
+.de-intrabuild-groupware-email-EmailTree-rootIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-root.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-inboxIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-inbox.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-spamIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-spam.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-outboxIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-outbox.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-draftIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-draft.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-sentIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-sent.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-trashIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-trash.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailTree-folderIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-folder.png) !important;
+}
+
+/**
+ * email preview menu
+ */
+.de-intrabuild-groupware-email-previewMenu .x-menu-item-checked {
+    border:1px dotted #a3bae9 !important;
+    background:#DFE8F6;
+    padding:0;
+}
+
+.de-intrabuild-groupware-email-preview-bottom {
+    background-image: url(../images/16x16/actions/groupware-email-previewbottom.png) !important;
+}
+
+.de-intrabuild-groupware-email-preview-right {
+    background-image: url(../images/16x16/actions/groupware-email-previewright.png) !important;        
+}
+
+.de-intrabuild-groupware-email-preview-hide {
+    background-image: url(../images/16x16/actions/groupware-email-previewhide.png) !important;        
+}
+
+/**
+ * email preview
+ */ 
+.de-intrabuild-groupware-email-EmailPreview-Icon {
+    background-image:url(../images/16x16/apps/groupware-email-preview.png) !important;
+}        
+
+.de-intrabuild-groupware-email-EmailPreview-inset {
+    background-image:none !important;
+    padding-left:0px !important;
+}
+
+/**
+ * email view attachment items
+ */
+a.de-intrabuild-groupware-email-attachmentItem {
+    background-repeat:no-repeat;
+    float:left;
+    font-family:Tahoma,Helvetica,Arial;
+    font-size:11px;
+    color:black;
+    text-decoration:none;
+    border:1px solid white;
+    margin-right:2px;
+    padding:2px 2px 2px 20px;
+}
+
+a.de-intrabuild-grupware-email-attachmentItem:active {
+    background-color:#DFE8F6;
+    border:1px dotted #99BBE8;
+}        
+
+/**
+ * email view
+ */
+.de-intrabuild-groupware-EmailView-dataInset {
+    padding-left:62px;background-image:url(../images/email-preview-header-icon.png);background-repeat:no-repeat;background-position:top left;
+}
+
+.de-intrabuild-groupware-EmailView-date {
+    position:relative;float:right;font-size:11px;font-weight:bold;color:#15428B;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-EmailView-subject {
+	position:relative;
+	margin-bottom:4px;
+    font-size:11px;
+    color:#15428B;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:bold;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-EmailView-from {
+    margin-bottom:2px;font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-EmailView-to {
+    margin-bottom:2px;font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-EmailView-cc {
+    font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-EmailView-bcc {
+    font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-EmailView-Icon {
+    background-image:url(../images/16x16/apps/groupware-email-emailview.png) !important;
+}    
+
+/**
+ * Email editor
+ */
+.de-intrabuild-groupware-email-EmailForm-gridrow .x-grid3-row-table .x-grid3-cell-selected {
+    background:none !important;
+}
+.de-intrabuild-groupware-email-EmailForm-gridrow .x-grid3-row-table td {
+    border-right:1px solid #EDEDED !important;
+}
+
+.de-intrabuild-groupware-email-EmailForm-gridrow .x-grid3-row-table .x-grid3-cell-last div {
+    background-image:url(../images/16x16/apps/groupware-email-emailform-recepientrow.png) !important;
+    background-repeat:no-repeat;
+    padding-left:22px;
+    background-position:2px 0;
+}
+
+.de-intrabuild-groupware-email-emailform-icon {
+    background-image:url(../images/16x16/apps/groupware-email-emailform.png) !important;        
+}
+
+.de-intrabuild-groupware-email-icon {
+    background-image:url(../images/16x16/apps/groupware-email.png) !important;        
+}
+
+/**
+ * Welcome panel
+ */
+.de-intrabuild-groupware-home-icon {
+    background-image:url(../images/16x16/apps/groupware-home.png) !important;        
+}
+
+/**
+ * Email Account Dialog
+ */
+.de-intrabuild-groupware-email-EmailAccountDialog-accountGrid {
+    margin-bottom:5px;
+}
+     
+.de-intrabuild-groupware-email-EmailAccountDialog-accountGrid thead,
+.de-intrabuild-groupware-email-EmailAccountDialog-accountGrid .x-grid3-header {
+    display:none;
+}
+
+.de-intrabuild-groupware-email-EmailAccountDialog-accountGrid .x-grid3-row {
+    border:none;
+}         
+
+.de-intrabuild-groupware-email-EmailAccountDialog-TabHeader .x-tab-strip-spacer {
+	background:none;
+	border-bottom:none;
+}
+
+.de-intrabuild-groupware-email-EmailAccountDialog-grid-standardAccountRow div {
+	font-weight:bold !important;	
+	padding-left: 18px;
+	background-image:url(../images/16x16/apps/groupware-emailaccountdialog-standardaccount.png);
+	background-repeat:no-repeat;
+}
+
+/* BG images for active Tab */
+.de-intrabuild-groupware-email-EmailAccountDialog-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-right {
+	background: transparent url(../images/form-tabs-sprite.png) no-repeat 0 -0px;
+}
+
+.de-intrabuild-groupware-email-EmailAccountDialog-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-left {
+	background: transparent url(../images/form-tabs-sprite.png) no-repeat right -301px;
+}
+
+.de-intrabuild-groupware-email-EmailAccountDialog-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner {
+	background: transparent url(../images/form-tabs-sprite.png) repeat-x 0 -151px;
+}             
+
+
+/**
+ * attr helper
+ */
+.de-intrabuild-attr-fontWeight-bold {
+    font-weight:bold !important;
+}
+
+.de-intrabuild-attr-fontWeight-normal {
+    font-weight:normal !important;
+}
+    
+ /**
+ * Background image for menu items which can only be activated if pending selections
+ * have been loaded
+ */
+.de-intrabuild-groupware-selectionsLoading {
+    background-image:url(../images/loading.gif) !important;
+}
+
+ /**
+  * Common icon cls for loading/saving state
+  */
+.de-intrabuild-groupware-pending-icon {
+    background-image:url(../images/loading.gif) !important;
+}        

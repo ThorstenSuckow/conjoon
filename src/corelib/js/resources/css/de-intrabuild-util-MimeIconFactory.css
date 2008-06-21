@@ -1,0 +1,17 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.de-intrabuild-util-MimeIconFactory-mimeType-unknown {
+    background-image:url(../images/16x16/mimetypes/unknown.png)!important;        
+}

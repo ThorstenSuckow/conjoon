@@ -1,0 +1,44 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.de-intrabuild-groupware-email-EmailForm-toolbar-buttonSend-icon {
+    background-image:url(../images/16x16/actions/groupware-email-send.png) !important;    
+}
+
+.de-intrabuild-groupware-email-EmailForm-toolbar-buttonOutbox-icon {
+    background-image:url(../images/16x16/actions/groupware-email-addtooutbox.png) !important;    
+}
+
+.de-intrabuild-groupware-email-EmailForm-toolbar-buttonDraft-icon {
+    background-image:url(../images/16x16/actions/groupware-email-savedraft.png) !important;    
+}
+
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body {
+	border:0;
+	margin:0;
+	padding:5px;
+	height:98%;
+	cursor:text;
+} 
+
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote {
+    border-left-color:#15428B;
+	border-left-style:solid;
+	border-left-width:2px;
+	margin-bottom:0px;
+	margin-left:4px;
+	margin-right:0px;
+	margin-top:0px;
+	padding-left:4px;	
+} 

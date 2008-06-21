@@ -1,0 +1,19 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.de-intrabuild-groupware-HomePanel-body .x-panel-body {
+    background-image:url(../images/welcome.png);
+    background-position:bottom left;
+    background-repeat:no-repeat;
+}

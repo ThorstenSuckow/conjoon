@@ -1,0 +1,58 @@
+;
+; intrabuild
+; (c) 2002-2008 siteartwork.de/MindPatterns
+; license@siteartwork.de
+;
+; $Author: T. Suckow $
+; $Id: index.php 22 2008-04-25 22:36:07Z T. Suckow $
+; $Date: 2008-04-26 00:36:07 +0200 (Sa, 26 Apr 2008) $ 
+; $Revision: 22 $
+; $LastChangedDate: 2008-04-26 00:36:07 +0200 (Sa, 26 Apr 2008) $
+; $LastChangedBy: T. Suckow $
+; $URL: file:///E:/svn_repository/intrabuild/trunk/www/htdocs/index.php $ 
+;
+
+; common configuration settings that gets processed before any of the 
+; subsequent sections get processed
+[common]
+; tells the application wether to use mobile, sandbox or production
+; configuration settings. If "use_section" is specified, this section will
+; be used. Leave values empty to ignore a configuration section. 
+; The settings get processed in the order they appear in this 
+; section, if "use_section" was empty or did not point to a valid section. 
+; If for example production.* and mobile.* have the same (none-empty) settings, 
+; but production.* is processed first, the production section will be used 
+; instead of the mobile section.
+use_section = sandbox
+production.when.domain.host =
+production.when.domain.port =
+mobile.when.domain.host     =
+mobile.when.domain.port     =
+sandbox.when.domain.host    =
+sandbox.when.domain.port    =
+
+; Configuration settings for production (live environment).
+[production]
+
+; Configuration settings for running the app from USB-sticks or CD-ROMs.
+[mobile]
+domain.host              = 127.0.0.1
+domain.port              = 4001
+database.adapter         = pdo_mysql
+database.params.host     = 127.0.0.1
+database.params.port     = 
+database.params.username = root
+database.params.password = 
+database.params.dbname   = intrabuild
+
+; Configuration settings for development
+[sandbox]
+domain.host              = 127.0.0.1
+domain.port              = 80
+webhost                  = intrabuild
+database.adapter         = pdo_mysql
+database.params.host     = localhost
+database.params.port     = 3306
+database.params.username = root
+database.params.password = 
+database.params.dbname   = intrabuild

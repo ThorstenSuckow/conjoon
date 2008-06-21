@@ -1,0 +1,391 @@
+<?php
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+?>
+
+<!DOCTYPE htmlPUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>intraBuild 2.0</title>
+
+    <?php echo $this->render('index/_stylesheets.phtml'); ?>
+
+</head>
+
+<body style="background:#cad9ec">
+
+<div id="DOM:de.intrabuild.groupware.Startup" class="de-intrabuild-groupware-SplashScreen-wrap" style="display:none">
+	
+	
+	<div class="x-shadow" style="margin-top:-150px;margin-left:-248px;z-index: 9002; left: 50%; top: 50%; height:330px;width:502px; display: block;">
+		<div class="xst">
+		<div class="xstl"></div>
+		<div class="xstc" style="width: 490px;"></div>
+		<div class="xstr"></div>
+		</div>
+		<div class="xsc" style="height: 322px;">
+		<div class="xsml"></div>
+		<div class="xsmc" style="width: 490px;"></div>
+		<div class="xsmr"></div>
+		</div>
+		<div class="xsb">
+		<div class="xsbl"></div>
+		<div class="xsbc" style="width: 490px;"></div>
+		<div class="xsbr"></div>
+		</div>
+	</div>
+	
+				<div class="x-window" style="z-index: 9003;position:absolute;left:50%;top:50%;margin-top:-157px;margin-left:-248px;height:315px;width:494px;">
+                <div class="x-window-tl x-panel-noheader"><div class="x-window-tr"><div class="x-window-tc" style="height:8px;"></div></div></div>
+                <div class="x-window-bwrap">
+                	<div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">
+                	<div class="de-intrabuild-groupware-SplashScreen-body">
+                	<div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">intraBuild 2.0</div>
+                	<div style="position:absolute;top:135px;left:145px;width:220px;height:50px;color:#2D5094">
+                		<div style="padding-left:10px;padding-bottom:10px;">Bitte warten...</div>
+                		<div class="de-intrabuild-groupware-SplashScreen-progressBar">&nbsp;</div>
+                	</div>
+                		
+                	</div>	
+                	</div></div></div>
+                </div>
+                <div class="x-window-bl x-panel-nofooter"><div class="x-window-br"><div class="x-window-bc"></div></div></div>
+                </div>	
+	
+</div>
+
+<div class="de-intrabuild-groupware-Bookmarks-container" id="DOM:de.intrabuild.groupware.Bookmarks.container"></div>
+
+<div style="height:32px;"  id="DOM:de.intrabuild.groupware.Head.container">
+<div id="DOM:de.intrabuild.groupware.Menubar.container"></div>
+<div class="de-intrabuild-groupware-Header" id="DOM:de.intrabuild.groupware.Header.container"></div>
+</div>
+
+<div class="de-intrabuild-groupware-Toolpanel" id="DOM:de.intrabuild.groupware.Toolpanel.container">
+<table border="0" style="width:100%;" cellspacing="0" cellpadding="0">
+<tr>
+<td style="padding-top:1px;" id="DOM:de.intrabuild.groupware.Toolbar.controls"></td><td id="DOM:de.intrabuild.groupware.Toolbar.permanent" style="padding-top:1px;width:250px;"></td>
+</tr>
+</table>
+</div>
+
+<div id="DOM:de.intrabuild.groupware.Home.container" style="height:100%;width:100%;"></div>
+
+<div id="DOM:de.intrabuild.groupware.Email.container" style="height:100%;width:100%;"></div>
+
+
+
+
+
+
+<?php echo $this->render('index/_scripts.phtml'); ?>
+
+
+
+
+
+<script type="text/javascript">
+    
+    
+
+    
+
+
+Ext.onReady(function(){
+    
+        
+        Ext.QuickTips.init();   
+         
+        var CP = Ext.ContentPanel; 
+         
+        // {{{ Bookmark Menubar
+        var bookmarks = new Ext.Toolbar({cls:'de-intrabuild-groupware-Bookmarks'});
+            bookmarks.render('DOM:de.intrabuild.groupware.Bookmarks.container');
+        var emailPanel = new de.intrabuild.groupware.email.EmailPanel();
+        
+        var bookmarkButton = new Ext.Toolbar.Button({
+                cls     : 'x-btn-icon',
+                iconCls : 'de-intrabuild-groupware-Bookmark-toolbar-bookmarkButton-icon',
+                menu    : [
+                        {text:'Home', 
+                        	handler : function(){
+                            var reg = de.intrabuild.util.Registry;
+                            var homePanel = reg.get('de.intrabuild.groupware.HomePanel');
+                            contentPanel.setActiveTab(homePanel);}
+                        }, '-', {
+                        	text:'Kontakte'
+                        },{
+                        	text:'Emails', 
+                        	handler : function(){
+                            var reg = de.intrabuild.util.Registry;
+                            var emailPanel = reg.get('de.intrabuild.groupware.email.EmailPanel');
+                            if (!emailPanel) {
+                                emailPanel = new de.intrabuild.groupware.email.EmailPanel();
+                                contentPanel.add(emailPanel);
+                            }
+                            contentPanel.setActiveTab(emailPanel);}
+                        }, {
+                        	text:'Kalender'
+                        }, {
+                        	text:'Aufgaben'
+                        }, '-'
+                        
+                     ]         
+        });
+        
+        bookmarks.add(bookmarkButton);
+        // }}}
+        
+        // {{{ Main Menubar
+        var mainMenubar = new Ext.Toolbar({cls:'de-intrabuild-groupware-Menubar'});
+            mainMenubar.render('DOM:de.intrabuild.groupware.Menubar.container');
+        
+        mainMenubar.add({    
+		    text:'Datei',
+		    menu: [{
+				text:'Neu',
+				menu : [{
+					text : 'Nachricht...',
+					handler : function(){de.intrabuild.groupware.email.EmailEditorManager.createEditor();}
+				}]
+			}] 
+		},
+            {    
+                text:'Extras',
+                menu: [{
+                      text:'Konten...',
+                      handler : function() {
+						var dialog = new de.intrabuild.groupware.email.EmailAccountDialog();
+						dialog.show();	
+                      }
+                     }] 
+            },
+            {    
+                text:'?',
+                menu: [{
+                      text:'Info'
+                     }]   
+            }
+        );
+        // ^^ EO Main Menubar }}}
+        
+        // {{{ Main Toolbar
+        var mainToolbar = new Ext.Toolbar({cls:'de-intrabuild-groupware-Toolbar'});
+            mainToolbar.render('DOM:de.intrabuild.groupware.Toolbar.permanent');
+       
+        mainToolbar.add(
+            "->",
+            "-",
+            "Suchen",
+            {
+                cls     : 'x-btn-icon',
+                iconCls : 'de-intrabuild-groupware-Toolbar-searchMenu-email-icon',
+                menu:[
+                        {text:'Kontakte'},
+                        {text:'Emails'},
+                        {text:'Kalender'},
+                        {text:'Aufgaben'}
+                     ] 
+            },
+            new Ext.form.TextField({emptyText:'<in Emails suchen>'}),
+            {
+                
+                cls     : 'x-btn-icon',
+                iconCls : 'de-intrabuild-groupware-Toolbar-startSearchButton-icon'
+            }
+        );
+        
+        // ^^ EO MainToolbar }}}   
+        
+        
+        var homePanel = new Ext.Panel({
+            title      : 'Willkommen',
+            cls        : 'de-intrabuild-groupware-HomePanel-body',
+            closable   : false,
+            iconCls    : 'de-intrabuild-groupware-home-icon',
+            autoScroll : true
+        });
+        
+        de.intrabuild.util.Registry.register('de.intrabuild.groupware.HomePanel', homePanel, true);
+        
+        var contentPanel = new Ext.TabPanel({
+                    id : 'DOM:de.intrabuild.groupware.ContentPanel',
+                    region:'center',
+                    activeTab:0,
+                    //Seems to be buggy in alpha, uncomment later and try behavior
+                    // with lots of tabs
+                    resizeTabs:true, // turn on tab resizing
+                    minTabWidth: 115,
+                    tabWidth:115,
+                    enableTabScroll:true,   
+                    hideMode : 'offsets',                 
+                    //resizeTabs:true,
+                    //minTabWidth:80,
+                    //tabWidth:80,
+                    //maxTabWidth:150,
+                    deferredRender:true,
+                    //enableTabScroll:true,
+                    margins:'0 0 0 0',
+                    border:false,
+                    baseCls:'de-intrabuild-groupware-TabHeader',
+                    items:[
+                       homePanel,
+                       emailPanel
+                      
+                       ]
+                });
+                
+        de.intrabuild.util.Registry.register('de.intrabuild.groupware.ContentPanel', contentPanel);
+                
+    contentPanel.onResize = function(){
+        var td = document.getElementById('DOM:de.intrabuild.groupware.Toolbar.controls');
+        td.style.width = document.body.offsetWidth-250+"px";
+        Ext.TabPanel.superclass.onResize.apply(this, arguments);
+        //this.el.setWidth(document.body.offsetWidth);
+        this.header.setWidth(document.body.offsetWidth-50)
+        this.header.dom.nextSibling.style.width = (document.body.offsetWidth-50)+"px";
+        this.el.dom.firstChild.style.marginLeft="50px"; 
+        this.delegateUpdates();
+    };
+    
+    contentPanel.on('add', function(container, component, index){
+    	
+    	var id = component.id;
+    	var add = true;
+    	switch (id) {
+    		case 'DOM:de.intrabuild.groupware.HomePanel':	
+    		case 'DOM:de.intrabuild.groupware.EmailPanel':	
+    		case 'DOM:de.intrabuild.groupware.ContactsPanel':	
+    		case 'DOM:de.intrabuild.groupware.TodoPanel':	
+    		case 'DOM:de.intrabuild.groupware.CalendarPanel':	
+    			add = false;
+    		break;
+    	}
+    	
+    	var title = component.title;
+    	var iconCls = component.iconCls;
+    	
+    	if (add && title) {
+    		var item = bookmarkButton.menu.add({iconCls : iconCls, text : title});
+    		item.on('click', function() {
+    			this.setActiveTab(component);
+    		}, contentPanel)
+    		component.on('titlechange', function(){
+    			item.setText(this.title);
+    		}, component);
+    		component.on('destroy', function() {
+    			bookmarkButton.menu.remove(item);
+    		});
+    	}
+    });
+    
+    var editPanel = new Ext.Panel({
+                        region:'north',
+                        title:'Quickpanel',
+                        height:205,
+                        cls:'de-intrabuild-groupware-PanelHead',
+                        collapsible:true,
+                        layout:'fit',
+                        iconCls: 'de-intrabuild-groupware-quickpanel-NewIcon',
+                        border:false,
+                        autoLoad:false,
+                        items: de.intrabuild.groupware.QuickEditPanel.getComponent()
+    });
+    
+
+    var quickPanel = new Ext.Panel({
+                    
+                    region:'east',
+                    collapsible: true,
+                    split:true,
+                    collapsed:false,
+                    collapseMode: 'mini',
+                    width: 225,
+                    minSize: 75,
+                    maxSize: 600,
+                    border:true,
+                    margins:'56 4 0 0',
+                    layout:'border',
+                    
+                    items: [
+                        editPanel
+                    ,{
+                        region:'center',
+                        border:false,
+                        layout:'accordion',
+                        cls:'de-intrabuild-groupware-AccordionHead',
+                        layoutConfig:{
+                            animate:true
+                        },
+                        items:[
+                        new de.intrabuild.groupware.email.LatestEmailsPanel(),
+                        new de.intrabuild.groupware.feeds.FeedGrid({collapsed:true})]
+                    }] 
+                 });    
+
+              
+                 
+                 
+        var mainViewport = new Ext.Viewport({
+            layout:'border',
+            order : false,
+            items:[{ 
+                    region:'north',
+                    el: 'DOM:de.intrabuild.groupware.Head.container',
+                    border:false,
+                    cls:"de-intrabuild-groupware-Head-utilcls"
+                },{
+                    region : 'south',
+                    html : '<div style=\'display:none\'></div>',
+                    bbar : de.intrabuild.groupware.StatusBar.getStatusBar(),
+                    border : false,
+                    margins : '3 0 0 0'       
+                },
+                
+                contentPanel,
+                quickPanel
+                
+             ]
+        });
+        
+
+        Ext.getBody().on('contextmenu', function(e){var t = e.getTarget().tagName; if (t != 'INPUT' && t != 'TEXTAREA'){e.stopEvent();}});
+  
+        
+        de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore'));
+        //de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore'));
+        //de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore'));
+        
+        de.intrabuild.util.PreLoader.on('load', function() {
+        	de.intrabuild.groupware.email.Letterman.wakeup();
+	        var splash = document.getElementById('DOM:de.intrabuild.groupware.Startup');
+	        splash.style.display = "none";
+	        document.body.removeChild(splash);	
+        });
+        
+        de.intrabuild.util.PreLoader.load();
+        
+        
+        
+ 
+ }); 
+ 
+
+
+    </script>    
+    
+</body>
+</html>

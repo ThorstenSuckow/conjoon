@@ -1,0 +1,37 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.x-progress-wrap.de-intrabuild-groupware-ProgressBar {
+    height:17px;
+    background-image:url(../images/progress-bar-container-right.gif);
+    background-repeat:no-repeat;
+    overflow:hidden;
+    border:none !important;
+    padding:0px 3px 0px 0px !important;
+    background-position:right top;
+}
+
+.de-intrabuild-groupware-ProgressBar .x-progress-inner {
+    height:17px;
+    overflow:hidden;
+    background-image:url(../images/progress-bar-container-left.gif);
+    background-repeat:no-repeat;
+    background-position:left top;
+}
+.de-intrabuild-groupware-ProgressBar .x-progress-bar {
+    height:13px !important;
+    background:#ffffff url(../images/progress-bar.gif) repeat-x 0 0;
+    border:none !important;
+    margin:2px 0px 0px 3px;
+}

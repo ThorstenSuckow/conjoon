@@ -1,0 +1,22 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author$
+ * $Id$
+ * $Date$ 
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$ 
+ */
+
+.de-intrabuild-groupware-email-EmailAccountDialog-introPanel .x-panel-body {
+    padding:15px;
+    background-color:#F6F6F6;
+    background-image:url(../images/groupware-emailaccountdialog-introbg.png);
+    background-position:15px bottom;
+    background-repeat:
+    no-repeat; 
+}

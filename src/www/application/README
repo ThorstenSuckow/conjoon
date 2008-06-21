@@ -1,0 +1,7 @@
+Development notes:
+==================
+"config.ini.default" is the template for the configuration settings of the
+application. Please copy and rename the file to "config.ini" and place it
+in this folder; once this is done, add "config.ini" either to the ignore-list 
+of your SVN client or make sure you never commit this file directly to the
+repository.
