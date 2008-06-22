@@ -11,7 +11,7 @@
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
- * 
+ *
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Protocol
@@ -185,7 +185,7 @@ class Zend_Mail_Protocol_Pop3
         if ($multiline) {
             $message = '';
             $line = fgets($this->_socket);
-            while ($line && trim($line) != '.') {
+            while ($line && $line != ".\r\n") {
                 $message .= $line;
                 $line = fgets($this->_socket);
             };
