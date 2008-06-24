@@ -1,2 +1,2 @@
 RewriteEngine on
-RewriteRule !\.(mp3|swf|js|ico|gif|jpg|png|css)$ index.php
+RewriteRule !(^blank.html)|\.(mp3|swf|js|ico|gif|jpg|png|css)$ index.php
