@@ -553,12 +553,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return;
         }
         
-        var tp = this.treePanel;
-        var isDrafts = this.clkNodeId == tp.folderDraft.id;
-        
-        this.editDraftButton.setVisible(isDrafts);	
-        
-        
         if (count == 0 || record == null) {
         	this.forwardButton.setDisabled(true);
             this.replyButton.setDisabled(true);
@@ -582,6 +576,11 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             this.editDraftButton.setDisabled(true);
         }
         
+        var tp = this.treePanel;
+        var isDrafts = this.clkNodeId == tp.folderDraft.id;
+        
+        this.editDraftButton.setVisible(isDrafts);		
+		
         var isSpam = record.data.isSpam;
         
         var isNotSpammable = (isDrafts) ||
