@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -22,7 +22,7 @@ require_once 'Zend/Validate/Abstract.php';
 class Intrabuild_Validate_Array extends Zend_Validate_Abstract
 {
     const NOT_ARRAY = 'notArray';
-    
+
     /**
      * @var array
      */
@@ -40,7 +40,7 @@ class Intrabuild_Validate_Array extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        return is_array($value)
+        return is_array($value);
     }
 
 }
