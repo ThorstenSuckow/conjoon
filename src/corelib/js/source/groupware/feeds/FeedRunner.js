@@ -1,4 +1,4 @@
-﻿/**
+/**
  * intrabuild
  * (c) 2002-2008 siteartwork.de/MindPatterns
  * license@siteartwork.de

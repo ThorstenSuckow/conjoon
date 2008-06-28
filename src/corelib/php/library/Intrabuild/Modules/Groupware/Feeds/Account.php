@@ -6,17 +6,17 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
- * Intrabuild_BeanContext 
- */ 
-require_once 'Intrabuild/BeanContext.php'; 
+ * Intrabuild_BeanContext
+ */
+require_once 'Intrabuild/BeanContext.php';
 
 
 /**
@@ -28,10 +28,10 @@ require_once 'Intrabuild/BeanContext.php';
  * @subpackage Feeds
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */  
- 
+ */
+
 class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanContext, Serializable {
-    
+
     private $id;
     private $userId;
     private $name;
@@ -43,17 +43,17 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
     private $deleteInterval;
     private $_isDeleted;
     private $_lastUpdated;
-    
+
     /**
      * Constructor.
-     * 
+     *
      */
     public function __construct()
     {
     }
-    
-// -------- accessors        
-    
+
+// -------- accessors
+
     public function getId(){return $this->id;}
     public function getUserId(){return $this->userId;}
     public function getName(){return $this->name;}
@@ -65,7 +65,7 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
     public function getDeleteInterval(){return $this->deleteInterval;}
     public function getLastUpdated(){return $this->_lastUpdated;}
     public function isDeleted(){return $this->_isDeleted;}
-    
+
     public function setLastUpdated($lastUpdated){$this->_lastUpdated = $lastUpdated;}
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
@@ -77,23 +77,23 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
     public function setUpdateInterval($updateInterval){$this->updateInterval = $updateInterval;}
     public function setDeleteInterval($deleteInterval){$this->deleteInterval = $deleteInterval;}
     public function setDeleted($isDeleted){$this->_isDeleted = $isDeleted;}
-    
+
 // -------- interface Serializable
     /**
      * Serializes properties and returns them as a string which can later on
      * be unserialized.
-     * 
+     *
      * @return string
      */
     public function serialize()
     {
         $data = $this->toArray();
-        
+
         return serialize($data);
     }
-    
+
     /**
-     * Unserializes <tt>$serialized</tt> and assigns the specific 
+     * Unserializes <tt>$serialized</tt> and assigns the specific
      * values found to the members in this class.
      *
      * @param string $serialized The serialized representation of a former
@@ -102,32 +102,32 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
     public function unserialize($serialized)
     {
         $str = unserialize($serialized);
-        
+
   	     foreach ($str as $member => $value) {
-            $this->$member = $value; 	
+            $this->$member = $value;
         }
     }
 
-// -------- interface Intrabuild_BeanContext    
-    
+// -------- interface Intrabuild_BeanContext
+
     /**
      * Returns a Dto for an instance of this class.
-     * 
-     * @return Intrabuild_Groupware_Email_AccountDto
-     */    
+     *
+     * @return Intrabuild_Groupware_Feeds_AccountDto
+     */
     public function getDto()
     {
-        require_once 'AccountDto.php';
-        
+        require_once 'Account/Dto.php';
+
         $data = $this->toArray();
-        
-        $dto = new Intrabuild_Modules_Groupware_Feeds_AccountDto();
+
+        $dto = new Intrabuild_Modules_Groupware_Feeds_Account_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
             }
-        }    
-        
+        }
+
         return $dto;
     }
 
@@ -150,7 +150,7 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
             'updateInterval' => $this->updateInterval,
             'deleteInterval' => $this->deleteInterval
         );
-    }   
+    }
 
     /**
      * Returns a textual representation of the current object.
@@ -160,7 +160,7 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
     public function __toString()
     {
         $data = $this->toArray();
-        return 
+        return
             'id: '.$data['id'].', '.
             'userId: '.$data['userId'].', '.
             'name: '.$data['name'].', '.
@@ -171,4 +171,4 @@ class Intrabuild_Modules_Groupware_Feeds_Account implements Intrabuild_BeanConte
             'updateInterval: '.$data['updateInterval'].', '.
             'deleteInterval: '.$data['deleteInterval'].';';
     }
-} 
+}

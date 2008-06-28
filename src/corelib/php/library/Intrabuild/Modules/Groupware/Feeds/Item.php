@@ -6,17 +6,17 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
- * Intrabuild_BeanContext 
- */ 
-require_once 'Intrabuild/BeanContext.php'; 
+ * Intrabuild_BeanContext
+ */
+require_once 'Intrabuild/BeanContext.php';
 
 
 /**
@@ -28,10 +28,10 @@ require_once 'Intrabuild/BeanContext.php';
  * @subpackage Feeds
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */  
- 
+ */
+
 class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext, Serializable {
-    
+
     protected $id;
     protected $groupwareFeedsAccountsId;
     protected $name;
@@ -45,17 +45,17 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
     protected $guid;
     protected $savedTimestamp;
 
-    
+
     /**
      * Constructor.
-     * 
+     *
      */
     public function __construct()
     {
     }
-    
-// -------- accessors        
-    
+
+// -------- accessors
+
     public function getId(){return $this->id;}
     public function getGuid(){return $this->guid;}
     public function getGroupwareFeedsAccountsId(){return $this->groupwareFeedsAccountsId;}
@@ -68,7 +68,7 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
     public function getLink(){return $this->link;}
     public function isRead(){return $this->isRead;}
     public function getSavedTimestamp(){return $this->savedTimestamp;}
-    
+
     public function setGuid($guid){$this->guid = $guid;}
     public function setId($id){$this->id = $id;}
     public function setGroupwareFeedsAccountsId($groupwareFeedsAccountsId){$this->groupwareFeedsAccountsId = $groupwareFeedsAccountsId;}
@@ -81,23 +81,23 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
     public function setLink($link){$this->link = $link;}
     public function setRead($isRead){$this->isRead = $isRead;}
     public function setSavedTimestamp($savedTimestamp){$this->savedTimestamp = $savedTimestamp;}
-    
+
 // -------- interface Serializable
     /**
      * Serializes properties and returns them as a string which can later on
      * be unserialized.
-     * 
+     *
      * @return string
      */
     public function serialize()
     {
         $data = $this->toArray();
-        
+
         return serialize($data);
     }
-    
+
     /**
-     * Unserializes <tt>$serialized</tt> and assigns the specific 
+     * Unserializes <tt>$serialized</tt> and assigns the specific
      * values found to the members in this class.
      *
      * @param string $serialized The serialized representation of a former
@@ -106,32 +106,32 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
     public function unserialize($serialized)
     {
         $str = unserialize($serialized);
-        
+
   	     foreach ($str as $member => $value) {
-            $this->$member = $value; 	
+            $this->$member = $value;
         }
     }
 
-// -------- interface Intrabuild_BeanContext    
-    
+// -------- interface Intrabuild_BeanContext
+
     /**
      * Returns a Dto for an instance of this class.
-     * 
+     *
      * @return Intrabuild_Groupware_Email_AccountDto
-     */    
+     */
     public function getDto()
     {
-        require_once 'ItemDto.php';
-        
+        require_once 'Item/Dto.php';
+
         $data = $this->toArray();
-        
-        $dto = new Intrabuild_Modules_Groupware_Feeds_ItemDto();
+
+        $dto = new Intrabuild_Modules_Groupware_Feeds_Item_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
             }
-        }    
-        
+        }
+
         return $dto;
     }
 
@@ -155,9 +155,9 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
             'content' => $this->content,
             'link' => $this->link ,
             'isRead' => $this->isRead ,
-            'savedTimestamp' => $this->savedTimestamp 
+            'savedTimestamp' => $this->savedTimestamp
         );
-    }   
+    }
 
     /**
      * Returns a textual representation of the current object.
@@ -167,7 +167,7 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
     public function __toString()
     {
         $data = $this->toArray();
-        return 
+        return
             'id: '.$data['id'].', '.
             'groupwareFeedsAccountsId: '.$data['groupwareFeedsAccountsId'].', '.
             'name: '.$data['name'].', '.
@@ -181,4 +181,4 @@ class Intrabuild_Modules_Groupware_Feeds_Item implements Intrabuild_BeanContext,
             'isRead: '.$data['isRead'].', '.
             'savedTimestamp: '.$data['savedTimestamp'].';';
     }
-} 
+}
