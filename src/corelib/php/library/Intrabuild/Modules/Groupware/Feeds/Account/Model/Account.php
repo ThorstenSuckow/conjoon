@@ -101,8 +101,8 @@ class Intrabuild_Modules_Groupware_Feeds_Account_Model_Account
         $affected = $this->delete($where);
 
         if ($affected != 0) {
-            require_once 'Intrabuild/Modules/Groupware/Feeds/ItemModel.php';
-            $itemModel = new Intrabuild_Modules_Groupware_Feeds_ItemModel();
+            require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Model/Item.php';
+            $itemModel = new Intrabuild_Modules_Groupware_Feeds_Item_Model_Item();
             $itemModel->deleteItemsForAccount($id);
         }
 

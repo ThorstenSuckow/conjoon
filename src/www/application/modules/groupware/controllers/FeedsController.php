@@ -163,13 +163,26 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             require_once 'Zend/Filter/HtmlEntities.php';
             $htmlEntities = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
             $filteredData['title'] = $htmlEntities->filter($import->title());
-            $filteredData['link'] = $import->link();
+            $filteredData['link']  = $import->link();
 
             // atom feeds may have more than 1 link tag. Simply take the first one's
             // node value
             if (!is_string($filteredData['link'])) {
-                $filteredData['link'] = $filteredData['link'][0]->firstChild->data;
-                if (!is_string($filteredData['link'])) {
+                if (isset($filteredData['link'][0])) {
+                    if (is_object($filteredData['link'][0])) {
+                        $cls = get_class($filteredData['link'][0]);
+                        if (strtolower($cls) === 'domelement'){
+                            $link = @$filteredData['link'][0]->firstChild->data;
+                            if (!$link) {
+                                $link = $filteredData['link'][0]->getAttribute('href');
+                            }
+
+                            $filteredData['link'] = $link;
+                        }
+                    }
+                }
+
+                if (!is_string($filteredData['link']) || $filteredData['link'] == "") {
                     // fallback - use the uri
                     $filteredData['link'] = $filteredData['uri'];
                 }
