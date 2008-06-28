@@ -128,7 +128,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                 [43200, "für 12 Stunden"],
                 [21600, "für 6 Stunden"],
                 [7200, "für 2 Stunden"],
-                [3600, "für eine Stunde"],
+                [3600, "für eine Stunde"]
             ],
             fields : ['id', 'text']
         })
@@ -159,7 +159,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                 [7200, "alle 2 Stunden"],
                 [3600, "jede Stunde"],
                 [1800, "alle 30 Minuten"],
-                [900, "alle 15 Minuten"],
+                [900, "alle 15 Minuten"]
             ],
             fields : ['id', 'text']
         }) 
