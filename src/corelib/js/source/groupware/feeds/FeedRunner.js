@@ -38,6 +38,8 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     
     var updateInterval = Number.MAX_VALUE;
     
+	var defaultUpdateInterval = 3600;
+	
     var onStoreLoad = function(store, records, options)
     {
         if (!records || (records && !records.length)) {
@@ -68,7 +70,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
             updateInterval = Math.min(recs[i].get('updateInterval'), updateInterval);
         }
         
-        run();
+		run();
     };
     
     var stopRunning = function()
@@ -83,7 +85,9 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     {
         task = {
             run      : updateFeeds,
-            interval : updateInterval*1000
+            interval : (updateInterval <= 0 ? 
+                        defaultUpdateInterval : 
+						updateInterval)*1000
         }
         Ext.TaskMgr.start(task);  
     };
