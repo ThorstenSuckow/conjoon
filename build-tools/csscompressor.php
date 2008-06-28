@@ -19,7 +19,7 @@
  * for css files loaded from vendor libraries, such as Ext JS or Ext user extensions.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @version 0.1
+ * @version 0.1.1
  */
 
 $cssPath      = "../src/corelib/js/resources/css";
@@ -27,19 +27,18 @@ $yuiPath      = "../vendor/yuicompressor/build/yuicompressor-2.3.4.jar";
 $dropFileName = 'intrabuild-all.css';
 $dropFilePath = "../src/corelib/js/resources/css/".$dropFileName;
 
-
-$cwd      = str_replace("\\", "/", getcwd());
+$pathinfo = pathinfo(__FILE__);
+$cwd      = $pathinfo['dirname'];
 
 fwrite(STDOUT, "\n"
                ."+--------------------------------------------+\n"
-               ."|            csscompressor V0.1              |\n"
+               ."|            csscompressor V0.1.1            |\n"
                ."| CSS Compressor for the intrabuild project. |\n"
                ."+--------------------------------------------+\n\n");
 
-$cssPath = $cwd."/".$cssPath."/";
-$yuiPath = $cwd."/".$yuiPath;
-
-$dropFilePath = $cwd."/".$dropFilePath;
+$cssPath      = str_replace("\\", "/", realpath($cwd."/".$cssPath)).'/';
+$yuiPath      = str_replace("\\", "/", realpath($cwd."/".$yuiPath));
+$dropFilePath = str_replace("\\", "/", realpath($cwd."/".$dropFilePath));
 
 // check if path to css dir exists
 $chk1 = "Checking if directory \"$cssPath\" exists...\n";
@@ -52,7 +51,7 @@ if (!file_exists($cssPath)) {
 }
 
 // check if yuicompressor exists
-$chk2 = "Checking if file \"$yuiPath\" exists...";
+$chk2 = "Checking if file \"$yuiPath\" exists...\n";
 fwrite(STDOUT, $chk2);
 if (!file_exists($yuiPath)) {
     fwrite(STDERR, "$yuiPath does not seem to exist. Exiting...\n");
@@ -61,7 +60,7 @@ if (!file_exists($yuiPath)) {
     fwrite(STDOUT, "Done.\n");
 }
 
-fwrite(STDOUT, "Looking for *.css-files in \"".$cssPath."/\"...\n");
+fwrite(STDOUT, "Looking for *.css-files in \"".$cssPath."\"...\n");
 
 $files = array();
 
