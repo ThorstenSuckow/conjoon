@@ -1,0 +1,40 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware-email-EmailEditorManager.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailEditorManager.css $ 
+ */
+
+.de-intrabuild-groupware-util-FormIntro-container {
+   padding-left:58px;
+}
+
+.de-intrabuild-groupware-util-FormIntro-description {
+   padding:5px 0 5px 0;
+}
+
+.de-intrabuild-groupware-util-FormIntro-label {
+   margin-left:-58px;
+   float:left;
+   padding-right:5px;
+   color:#15428b;
+   font-weight:bold;
+}
+
+.de-intrabuild-groupware-util-FormIntro-outersep{
+   position:relative;
+}       
+
+.de-intrabuild-groupware-util-FormIntro-sepx{
+   overflow:hidden;
+   background-image:url(../images/x-ux-formintro-sepx.png);
+   background-position:center;
+   background-repeat:repeat-x;
+}

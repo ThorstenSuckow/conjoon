@@ -1,0 +1,37 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware.css $ 
+ */
+
+/**
+ * Bookmarks Toolbar
+ */
+.de-intrabuild-groupware-Bookmarks-container {
+    width:36px;
+    left:10px;
+    top:30px;
+    position:absolute;
+}
+
+.de-intrabuild-groupware-Bookmarks {
+    background:none;
+    border:none;
+}
+
+.de-intrabuild-groupware-Bookmarks .x-btn-with-menu .x-btn-center em {
+    padding-right:0px;
+    background:none;
+}
+
+.de-intrabuild-groupware-Bookmark-toolbar-bookmarkButton-icon {
+    background-image:url(../images/16x16/actions/groupware-bookmark-launch.png)!important;
+} 

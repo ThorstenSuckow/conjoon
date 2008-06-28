@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * intrabuild
  * (c) 2002-2008 siteartwork.de/MindPatterns
  * license@siteartwork.de
@@ -37,6 +37,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         cls        : 'de-intrabuild-groupware-feeds-FeedOptionsDialog-feedPanel',
         autoScroll : true,
         height     : 195,
+		hideHeaders : true,
         enableColumnMove : false,
         enableHdMenu : false,
         store  : this.store,
@@ -119,15 +120,15 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
             data   : [
-                [2419200, "fÃ¼r 2 Wochen"],
-                [1209600, "fÃ¼r eine Woche"],
-                [432000, "fÃ¼r 5 Tage"],
-                [172800, "fÃ¼r 2 Tage"],
-                [86400, "fÃ¼r einen Tag"],
-                [43200, "fÃ¼r 12 Stunden"],
-                [21600, "fÃ¼r 6 Stunden"],
-                [7200, "fÃ¼r 2 Stunden"],
-                [3600, "fÃ¼r eine Stunde"],
+                [2419200, "für 2 Wochen"],
+                [1209600, "für eine Woche"],
+                [432000, "für 5 Tage"],
+                [172800, "für 2 Tage"],
+                [86400, "für einen Tag"],
+                [43200, "für 12 Stunden"],
+                [21600, "für 6 Stunden"],
+                [7200, "für 2 Stunden"],
+                [3600, "für eine Stunde"],
             ],
             fields : ['id', 'text']
         })

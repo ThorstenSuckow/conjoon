@@ -126,6 +126,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	border		   : true,
         	sortInfo	   : {field: 'name', direction: "DESC"},          
         	store		   : this.accountStore,
+			hideHeaders    : true,
         	trackMouseOver : false,
         	columns		  : [{
         		header	  : "Kontoname",

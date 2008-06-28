@@ -12,6 +12,24 @@
  * $URL$ 
  */
 
+.de-intrabuild-groupware-email-EmailForm-icon {
+    background-image:url(../images/16x16/apps/groupware-email-emailform.png) !important;        
+}
+
+.de-intrabuild-groupware-email-EmailForm-gridrow .x-grid3-row-table .x-grid3-cell-selected {
+    background:none !important;
+}
+.de-intrabuild-groupware-email-EmailForm-gridrow .x-grid3-row-table td {
+    border-right:1px solid #EDEDED !important;
+}
+
+.de-intrabuild-groupware-email-EmailForm-gridrow .x-grid3-row-table .x-grid3-cell-last div {
+    background-image:url(../images/16x16/apps/groupware-email-emailform-recepientrow.png) !important;
+    background-repeat:no-repeat;
+    padding-left:22px;
+    background-position:2px 0;
+}
+
 .de-intrabuild-groupware-email-EmailForm-toolbar-buttonSend-icon {
     background-image:url(../images/16x16/actions/groupware-email-send.png) !important;    
 }

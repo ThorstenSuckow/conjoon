@@ -84,9 +84,11 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
         cls     : 'x-btn-icon',
         iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
         handler : function(){
-                      var dialog = new de.intrabuild.groupware.feeds.AddFeedDialog({animateTarget : this.getTopToolbar().items.get(0).el.dom.id});
-                      dialog.show();
-                  },
+			var dialog = new de.intrabuild.groupware.feeds.AddFeedDialog({
+                animateTarget : this.getTopToolbar().items.get(0).el.dom.id
+            });
+            dialog.show();
+        },
         scope : this
       },{   
         cls     : 'x-btn-icon',

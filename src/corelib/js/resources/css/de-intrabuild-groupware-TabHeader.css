@@ -1,0 +1,76 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware.css $ 
+ */
+
+/**
+ * special main tab style
+ */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top {
+    background:none !important;
+}
+
+.de-intrabuild-groupware-TabHeader-body {
+    padding-top:33px;
+    padding-left:4px;
+    background-color:#C5D7EE !important;
+}
+
+   
+/* BG images for inactive Tab */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-left {
+    background:transparent url(../images/tabs-sprite.png)  no-repeat scroll right -351px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-inner {
+    background:transparent url(../images/tabs-sprite.png)  repeat-x scroll 0pt -201px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-right {
+    background:transparent url(../images/tabs-sprite.png) no-repeat scroll 0pt -51px;
+}
+
+/* BG images for active Tab */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-right {
+    background: transparent url(../images/tabs-sprite.png) no-repeat 0 -0px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-left {
+    background: transparent url(../images/tabs-sprite.png) no-repeat right -301px;
+}
+
+.de-intrabuild-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner {
+    background: transparent url(../images/tabs-sprite.png) repeat-x 0 -151px;
+}      
+
+/** closable image, inactive */
+.de-intrabuild-groupware-TabHeader a.x-tab-strip-close {
+    background-image:url(../images/tab-close.png) !important;
+} 
+
+/** closable image, active */
+.de-intrabuild-groupware-TabHeader .x-tab-strip-active a.x-tab-strip-close {
+    background-image:url(../images/tab-close-active.png) !important;
+}    
+
+/** font settings, inactive*/ 
+.de-intrabuild-groupware-TabHeader span.x-tab-strip-text { 
+    color:#D2D8E4;
+    font-weight:normal;
+}
+
+
+/** font settings, active*/  
+.de-intrabuild-groupware-TabHeader .x-tab-strip-active span.x-tab-strip-text { 
+    color:#15428b;
+    font-weight:bold;
+}

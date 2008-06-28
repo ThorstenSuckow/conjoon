@@ -1,0 +1,40 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware.css $ 
+ */
+
+ /**
+ * Menubar style for groupware
+ */
+.de-intrabuild-groupware-Menubar {
+    padding:0px 2px;
+    height:20px;
+    background:#ECE9D8;
+    border-bottom:1px solid #ACA899;
+}
+
+.de-intrabuild-groupware-Menubar .x-btn-with-menu .x-btn-center em {
+    padding-right:0px;
+    background:none;
+}
+
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-center,
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-left,
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-right,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-center,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-left,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-right,
+.de-intrabuild-groupware-Menubar .x-btn-over .x-btn-text,
+.de-intrabuild-groupware-Menubar .x-btn-menu-active .x-btn-text {
+   background:#316AC5;
+   color:white;
+}        

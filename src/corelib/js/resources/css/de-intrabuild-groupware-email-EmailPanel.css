@@ -12,6 +12,10 @@
  * $URL$ 
  */
 
+.de-intrabuild-groupware-email-EmailPanel-icon {
+    background-image:url(../images/16x16/apps/groupware-email.png) !important;        
+}
+
 .de-intrabuild-groupware-email-EmailPanel-toolbar-forwardButton-icon {
     background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;    
 }
@@ -50,5 +54,24 @@
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-previewButton-icon {
     background-image:url(../images/16x16/actions/groupware-email-preview.png)!important;    
+}
+
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-previewMenu .x-menu-item-checked {
+    border:1px dotted #a3bae9 !important;
+    background:#DFE8F6;
+    padding:0;
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-previewBottomButton-icon {
+    background-image: url(../images/16x16/actions/groupware-email-previewbottom.png) !important;
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-previewRightButton-icon {
+    background-image: url(../images/16x16/actions/groupware-email-previewright.png) !important;        
+}
+
+.de-intrabuild-groupware-email-EmailPanel-toolbar-previewHideButton-icon {
+    background-image: url(../images/16x16/actions/groupware-email-previewhide.png) !important;        
 }
 

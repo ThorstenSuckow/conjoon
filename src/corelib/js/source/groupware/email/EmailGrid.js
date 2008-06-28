@@ -47,9 +47,9 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         },
         getRowClass : function(record, rowIndex, p, ds){
             if (record.data.isRead) {
-                return 'de-intrabuild-groupware-grid-itemRead';
+                return 'de-intrabuild-groupware-email-EmailGrid-itemRead';
             } else {
-                return 'de-intrabuild-groupware-grid-itemUnread';
+                return 'de-intrabuild-groupware-email-EmailGrid-itemUnread';
             }
         }
     });

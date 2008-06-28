@@ -119,7 +119,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             hideMode   : 'offsets',
             closable   : true,
             border     : false,
-            iconCls    : 'de-intrabuild-groupware-email-emailform-icon',
+            iconCls    : 'de-intrabuild-groupware-email-EmailForm-icon',
             autoScroll : false
         });
         
@@ -557,7 +557,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var panelId = activePanel ? activePanel.id : null;
         
         try {
-            Ext.getCmp(id).setIconClass('de-intrabuild-groupware-email-emailform-icon');
+            Ext.getCmp(id).setIconClass('de-intrabuild-groupware-email-EmailForm-icon');
         } catch (e) {
             // @bug ext2.0
             // ignore, buggy in ext 2.0
@@ -1077,7 +1077,6 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     
     
     this.grid = new Ext.grid.EditorGridPanel({
-        cls : 'de-intrabuild-groupware-email-EmailForm-grid',
         autoExpandColumn : 'address',
         autoExpandMax : 4000,
         autoExpandMin : 0,

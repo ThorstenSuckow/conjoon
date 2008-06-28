@@ -1,0 +1,183 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: default-all.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/default-all.css $ 
+ */
+
+.de-intrabuild-msgbox-critical .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-critical .ext-mb-error {
+    background-image:url(../images/32x32/actions/messagebox-critical.png);
+}
+
+.de-intrabuild-msgbox-critical .ext-mb-content {
+    height:110px;
+    background:white;
+    padding:4px;
+    overflow:auto;
+    border:1px solid #99BBE8;
+}
+
+.de-intrabuild-msgbox-critical .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-critical .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * Error dialog "error"
+ */
+.de-intrabuild-msgbox-error .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-error .ext-mb-error {
+    background-image:url(../images/32x32/actions/messagebox-error.png);
+}
+
+.de-intrabuild-msgbox-error .ext-mb-content {
+    height:60px;
+    /*background:white;*/
+    padding:4px;
+    overflow:auto;
+    /*border:1px solid #99BBE8;*/
+}
+
+.de-intrabuild-msgbox-error .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-error .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}        
+
+/**
+ * Info dialog ""
+ */
+.de-intrabuild-msgbox-info .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-info .ext-mb-info {
+    background-image:url(../images/32x32/actions/messagebox-info.png);
+}
+
+.de-intrabuild-msgbox-info .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.de-intrabuild-msgbox-info .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-info .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}   
+
+/**
+ * Warning dialog ""
+ */
+.de-intrabuild-msgbox-warning .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-warning .ext-mb-warning {
+    background-image:url(../images/32x32/actions/messagebox-warning.png);
+}
+
+.de-intrabuild-msgbox-warning .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.de-intrabuild-msgbox-warning .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-warning .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}            
+
+/**
+ * Prompt dialog ""
+ */
+.de-intrabuild-msgbox-prompt .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-prompt .ext-mb-warning {
+    background-image:url(../images/32x32/actions/messagebox-warning.png);
+}
+
+.de-intrabuild-msgbox-prompt .ext-mb-content {
+    background:#F6F6F6;
+    padding:4px;
+}
+
+.de-intrabuild-msgbox-prompt .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-prompt .ext-mb-input {
+    margin-left:40px !important;
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-prompt .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}           
+
+/**
+ * question dialog 
+ */
+.de-intrabuild-msgbox-question .ext-mb-text {
+    font-size:11px !important;
+}
+
+.de-intrabuild-msgbox-question .ext-mb-question {
+    background-image:url(../images/32x32/actions/messagebox-question.png);
+}
+
+.de-intrabuild-msgbox-question .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.de-intrabuild-msgbox-question .x-window-header-text {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-msgbox-question .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}     

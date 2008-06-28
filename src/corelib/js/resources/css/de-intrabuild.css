@@ -1,0 +1,67 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware-email-EmailGrid.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailGrid.css $ 
+ */
+
+.de-intrabuild-attr-fontWeight-bold {
+    font-weight:bold !important;
+}
+
+.de-intrabuild-attr-fontWeight-normal {
+    font-weight:normal !important;
+}
+    
+
+.de-intrabuild-smalleditor .x-combo-list-item {
+    font-size:11px !important;
+}
+
+.de-intrabuild-smalleditor .x-form-cb-label /*label*/ {
+    font-size:11px !important;
+}        
+
+.de-intrabuild-go-trigger {
+    background-image: url(../images/trigger-go.png) !important;
+    cursor:pointer;
+}
+
+.de-intrabuild-margin-t-5 {
+    margin-top:5px;
+}
+
+.de-intrabuild-margin-b-5 {
+    margin-bottom:5px;
+}
+
+.de-intrabuild-margin-l-15 {
+    margin-left:15px;
+}        
+        
+.de-intrabuild-margin-b-10 {
+    margin-bottom:10px;
+}
+
+.de-intrabuild-margin-b-15 {
+    margin-bottom:15px;
+}        
+
+.de-intrabuild-margin-b-20 {
+    margin-bottom:20px;
+}        
+
+.de-intrabuild-float-left {
+   float:left;
+}        
+
+.de-intrabuild-clear {
+   clear:both;
+}        

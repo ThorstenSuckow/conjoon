@@ -1,4 +1,4 @@
-﻿/**
+/**
  * intrabuild
  * (c) 2002-2008 siteartwork.de/MindPatterns
  * license@siteartwork.de
@@ -134,6 +134,9 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 					tbarManager.show('de.intrabuild.groupware.feeds.FeedView.toolbar');	
 				}); 
 				
+				/**
+				 * @todo check why the EmailView-toolbar is referenced here.
+				 */
 				view.on('deactivate', function(panel) {
 					var tbarManager = de.intrabuild.groupware.ToolbarManager;
 	        		tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');	

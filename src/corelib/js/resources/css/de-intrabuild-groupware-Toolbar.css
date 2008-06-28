@@ -1,0 +1,30 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware.css $ 
+ */
+
+/**
+ * Toolbar style for groupware
+ */
+.de-intrabuild-groupware-Toolbar {
+    padding:2px 2px;
+    background:none;
+    border:none;
+}
+
+.de-intrabuild-groupware-Toolbar-searchMenu-email-icon {
+    background-image:url(../images/16x16/apps/groupware-email.png)!important;    
+}
+
+.de-intrabuild-groupware-Toolbar-startSearchButton-icon {
+    background-image:url(../images/16x16/actions/groupware-search.png)!important;        
+}

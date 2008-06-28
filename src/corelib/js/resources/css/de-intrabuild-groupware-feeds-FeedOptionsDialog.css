@@ -1,0 +1,24 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware-feeds-FeedGrid.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-feeds-FeedGrid.css $ 
+ */
+
+ /**
+ * Feed Options Dialog
+ */
+.de-intrabuild-groupware-feeds-FeedOptionsDialog-feedPanel {
+    margin-bottom:5px;
+}
+     
+.de-intrabuild-groupware-feeds-FeedOptionsDialog-feedPanel .x-grid3-row {
+    border:none;
+}      

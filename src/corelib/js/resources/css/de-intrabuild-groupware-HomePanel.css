@@ -17,3 +17,7 @@
     background-position:bottom left;
     background-repeat:no-repeat;
 }
+
+.de-intrabuild-groupware-HomePanel-icon {
+    background-image:url(../images/16x16/apps/groupware-home.png) !important;        
+}

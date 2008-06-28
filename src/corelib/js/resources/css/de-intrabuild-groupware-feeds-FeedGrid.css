@@ -27,3 +27,11 @@
 .de-intrabuild-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon {
     background-image:url(../images/16x16/actions/groupware-feeds-refresh.png)!important ;
 }
+
+.de-intrabuild-groupware-feeds-FeedGrid-itemRead div{
+    font-weight:normal;
+}
+
+.de-intrabuild-groupware-feeds-FeedGrid-itemUnread div {
+    font-weight:bold;
+}

@@ -52,9 +52,9 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         },
         getRowClass : function(record, rowIndex, p, ds){
             if (record.data.isRead) {
-                return 'de-intrabuild-groupware-grid-itemRead';
+                return 'de-intrabuild-groupware-email-LatestEmailsPanel-itemRead';
             } else {
-                return 'de-intrabuild-groupware-grid-itemUnread';
+                return 'de-intrabuild-groupware-email-LatestEmailsPanel-itemUnread';
             }
         }
     });

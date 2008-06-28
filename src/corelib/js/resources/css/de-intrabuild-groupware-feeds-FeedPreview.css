@@ -19,3 +19,20 @@
 .de-intrabuild-groupware-feeds-FeedPreview-openFeedButton-icon {
     background-image:url(../images/16x16/actions/groupware-feeds-opentab.png)!important;    
 }
+
+
+.de-intrabuild-groupware-feeds-FeedPreview-Icon {
+    background-image:url(../images/16x16/apps/groupware-feeds-preview.png) !important;
+}
+
+.de-intrabuild-groupware-feeds-FeedPreview-panel .x-window-body {
+    font-family:Verdana, Helvetica, Arial;
+    padding:2px !important;
+    font-size:10px;
+    background-color:#ffffff !important;
+}
+
+.de-intrabuild-groupware-feeds-FeedPreview-panel .x-window-body p {
+    line-height:16px;
+    margin:6px 0pt;
+} 

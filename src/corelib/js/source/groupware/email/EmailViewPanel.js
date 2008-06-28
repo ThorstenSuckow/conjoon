@@ -63,7 +63,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 	{
 	    Ext.apply(this, {
 	        closable  : true,
-	        iconCls   : this.iconCls || 'de-intrabuild-groupware-EmailView-Icon',
+	        iconCls   : this.iconCls || 'de-intrabuild-groupware-email-EmailView-Icon',
 	        hideMode  : 'offsets',
 	        listeners : de.intrabuild.groupware.util.LinkInterceptor.getListener()
 	    });
@@ -547,11 +547,11 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    if (!ts.header) {
 	    	ts.header = new Ext.Template(
 	    			'<div class="de-intrabuild-groupware-email-EmailView-wrap">',
-		               '<div class="de-intrabuild-groupware-EmailView-dataInset">',
-		                '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
+		               '<div class="de-intrabuild-groupware-email-EmailView-dataInset">',
+		                '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
 		                '{subject}',
-		                '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">Von:</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-		                '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">An:</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+		                '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">Von:</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+		                '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">An:</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
 		                '{cc}',
 		                '{bcc}',
 		               '</div>', 
@@ -560,19 +560,19 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    }
 	    if (!ts.subject) {
 		    ts.subject = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-EmailView-subject">{subject}</div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-subject">{subject}</div>'
 		    );
 		}
 	    
 	    if (!ts.cc) {
 		    ts.cc = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-EmailView-cc"><div style="float:left;width:30px;">CC:</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-cc"><div style="float:left;width:30px;">CC:</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
 		    );
 		}
 	    
 	    if (!ts.bcc) {
 		    ts.bcc = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-EmailView-bcc"><div style="float:left;width:30px;">BCC:</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-bcc"><div style="float:left;width:30px;">BCC:</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
 		    );
 		}	    
 	    
@@ -604,7 +604,7 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    
 	    if (!ts.attachmentItem) {
 		    ts.attachmentItem = new Ext.Template(
-		        '<a href="#" class="de-intrabuild-groupware-email-attachmentItem {mimeIconCls}">{name}</a>'
+		        '<a href="#" class="de-intrabuild-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</a>'
 		    );        
 		}
         

@@ -1,0 +1,78 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware-email-EmailAccountDialog.css 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailAccountDialog.css $ 
+ */
+
+/**
+ * Small Editor Font for the quickpanel
+ */
+.de-intrabuild-groupware-quickpanel-SmallEditorFont {
+    font-size:11px;
+}
+
+/**
+ * Icons for quickpanel
+ */
+.de-intrabuild-groupware-quickpanel-NewIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-newdata.png') !important;
+}
+
+.de-intrabuild-groupware-quickpanel-ContactsIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-contacts.png') !important;
+}
+
+.de-intrabuild-groupware-quickpanel-CalendarIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-calendar.png') !important;
+}        
+
+.de-intrabuild-groupware-quickpanel-EmailIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-email.png') !important;
+}        
+
+.de-intrabuild-groupware-quickpanel-TodoIcon {
+    background-image:url('../images/16x16/apps/groupware-quickpanel-todo.png') !important;
+}        
+
+/**
+ * Layout for upper panelhead of the quickpanel and the headers of the therin laying accordions
+ */
+.de-intrabuild-groupware-QuickPanel-editPanel .x-panel-header {
+    background:transparent url(../images/light-hd.gif) repeat-x scroll 0pt -9px;
+    border-top:none;
+    color:#15428B;
+    font-weight:bold;
+    padding-bottom:3px;
+    padding-top:4px;
+}
+
+.de-intrabuild-groupware-QuickPanel-editPanel .x-panel-body {
+    background-color:#CAD9EC;
+}
+
+.de-intrabuild-groupware-QuickPanel-editPanel ul.x-tab-strip-bottom {
+    background-image:url(../images/tab-strip-btm-bg.png) !important;
+    height:29px;
+}        
+
+.de-intrabuild-groupware-QuickPanel-editPanel .x-tool-collapse-north {
+    background-position:0 -240px;
+}
+
+.de-intrabuild-groupware-QuickPanel-editPanel .x-tool-collapse-north-over {
+    background-position:-15px -240px;
+}
+
+.de-intrabuild-groupware-QuickPanel-itemPanel .x-panel-header {
+    color:#15428B;
+    font-weight:bold;
+}        
+

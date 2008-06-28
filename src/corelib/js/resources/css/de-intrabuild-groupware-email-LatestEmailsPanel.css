@@ -12,6 +12,15 @@
  * $URL$ 
  */
  
+.de-intrabuild-groupware-email-LatestEmailsPanel-itemRead div{
+    font-weight:normal;
+}
+
+.de-intrabuild-groupware-email-LatestEmailsPanel-itemUnread div {
+    font-weight:bold;
+}
+
+ 
 .de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon {
     background-image:url(../images/16x16/actions/groupware-email-quickgrid-refresh.png)!important;
 }

@@ -12,6 +12,22 @@
  * $URL$ 
  */
 
+
+/**
+ * EmailGrid
+ */
+.de-intrabuild-groupware-email-EmailGrid .x-grid3-row {
+    border-style:none;
+}
+
+.de-intrabuild-groupware-email-EmailGrid-itemRead div{
+    font-weight:normal;
+}
+
+.de-intrabuild-groupware-email-EmailGrid-itemUnread div {
+    font-weight:bold;
+}
+
 /**
  * Definition for all contaier elements that only hold a background image in either 
  * a header or a cell.
@@ -24,6 +40,10 @@
 /**
  * Attachment column
  */
+.de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground {
+	float:left;
+}
+
 .de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground, 
 .de-intrabuild-groupware-email-EmailGrid-attachmentColumn-cellBackground {
     background-image:url(../images/12x12/apps/groupware-email-attachment.png);    
@@ -33,6 +53,7 @@
  * Read column
  */
 .de-intrabuild-groupware-email-EmailGrid-readColumn-headerBackground {
+	float:left;
     background-image:url(../images/12x12/apps/groupware-email-read.png);    
 }
 
@@ -48,7 +69,8 @@
  * Spam column
  */
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-headerBackground {
-    background-image:url(../images/12x12/apps/groupware-email-spam.png);    
+    background-image:url(../images/12x12/apps/groupware-email-spam.png);
+	float:left;    
 }
 
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-cellBackground.itemspam {
@@ -57,3 +79,4 @@
 
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-cellBackground.itemnospam {
     background-image:url(../images/12x12/apps/groupware-email-itemnospam.png);    
+}

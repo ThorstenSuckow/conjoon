@@ -35,3 +35,63 @@
 .de-intrabuild-groupware-email-EmailView-toolbar-editDraftButton-icon {
     background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;    
 }    
+
+.de-intrabuild-groupware-email-EmailView-dataInset {
+    padding-left:62px;background-image:url(../images/email-preview-header-icon.png);background-repeat:no-repeat;background-position:top left;
+}
+
+.de-intrabuild-groupware-email-EmailView-date {
+    position:relative;float:right;font-size:11px;font-weight:bold;color:#15428B;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-email-EmailView-subject {
+    position:relative;
+    margin-bottom:4px;
+    font-size:11px;
+    color:#15428B;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:bold;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-email-EmailView-from {
+    margin-bottom:2px;font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-email-EmailView-to {
+    margin-bottom:2px;font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-email-EmailView-cc {
+    font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-email-EmailView-bcc {
+    font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.de-intrabuild-groupware-email-EmailView-Icon {
+    background-image:url(../images/16x16/apps/groupware-email-emailview.png) !important;
+}    
+
+/**
+ * email view attachment items
+ */
+a.de-intrabuild-groupware-email-EmailView-attachmentItem {
+    background-repeat:no-repeat;
+    float:left;
+    font-family:Tahoma,Helvetica,Arial;
+    font-size:11px;
+    color:black;
+    text-decoration:none;
+    border:1px solid white;
+    margin-right:2px;
+    padding:2px 2px 2px 20px;
+}
+
+a.de-intrabuild-grupware-email-EmailView-attachmentItem:active {
+    background-color:#DFE8F6;
+    border:1px dotted #99BBE8;
+}        

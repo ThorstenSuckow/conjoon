@@ -13,24 +13,24 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 		tag : 'div',
 		children : [{
 		  	tag		 : 'div', 
-		  	cls		 : 'de-intrabuild-formintro-container',
+		  	cls		 : 'de-intrabuild-groupware-util-FormIntro-container',
 		  	children : [{
 		  		tag	 : 'div',
-		  		cls  :	'de-intrabuild-formintro-label',
+		  		cls  :	'de-intrabuild-groupware-util-FormIntro-label',
 		  		html : 'Formintro'
 		  	}, {
 		  		tag	 	 : 'div',
-		  		cls	 	 : 'de-intrabuild-formintro-outersep',
+		  		cls	 	 : 'de-intrabuild-groupware-util-FormIntro-outersep',
 		  		children : [{
 		  			tag	 : 'div',
-		  			cls  : 'de-intrabuild-formintro-sepx',
+		  			cls  : 'de-intrabuild-groupware-util-FormIntro-sepx',
 		  			html : '&nbsp;' 
 		  		}]
 		  	}]
 		}, {
 			tag  : 'div',
 			html : 'Hier könnte dann eine Beschreibung stehen',
-			cls  : 'de-intrabuild-formintro-description'
+			cls  : 'de-intrabuild-groupware-util-FormIntro-description'
 		}]
 	},
   

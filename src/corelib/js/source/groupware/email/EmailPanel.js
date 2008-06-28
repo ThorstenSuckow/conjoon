@@ -184,23 +184,23 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         text         : 'Vorschau',
         menu         : {
             id    : 'de.intrabuild.groupware.email.emailPreviewMenu',
-            cls   : 'de-intrabuild-groupware-email-previewMenu',
+            cls   : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewMenu',
             items : [{
-            iconCls      : 'de-intrabuild-groupware-email-preview-bottom',
+            iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
             text         : 'unten',
             checked      : true,
             group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this
           },{
-            iconCls      : 'de-intrabuild-groupware-email-preview-right',
+            iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
             text         : 'rechts',
             checked      : false,
             group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this  
           },{
-            iconCls      : 'de-intrabuild-groupware-email-preview-hide',
+            iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
             text         : 'verstecken',
             checked      : false,
             group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
@@ -220,7 +220,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     */
     de.intrabuild.groupware.email.EmailPanel.superclass.constructor.call(this,  {
         title          : 'Emails',
-        iconCls        : 'de-intrabuild-groupware-email-icon',
+        iconCls        : 'de-intrabuild-groupware-email-EmailPanel-icon',
         closable       : true,
         autoScroll     : false,
         deferredRender : true,
