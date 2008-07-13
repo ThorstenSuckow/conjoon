@@ -33,6 +33,10 @@ require_once 'Zend/Controller/Request/Abstract.php';
   * A plugin that checks if a user is currently logged in before a 
   * dispatch is being made. 
   *
+  * If the user is not logged in, the plugin will alter teh request to
+  * redirect to the login process. The plugin does also take the current
+  * format of the request being made into account. 
+  *
   * @uses Zend_Controller_Plugin_Abstract
   * @package Intrabuild_Controller
   * @subpackage Plugin
@@ -73,6 +77,24 @@ class Intrabuild_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract 
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
+        // check here if the user's authentity is already set
+        if ($this->auth->hasIdentity()) {
+            return;    
+        }
+        
+        // the user wants to login and requested the logi controller's process
+        // action. Let him pass! 
+        if ($request->action == 'process' && $request->controller == 'login' &&
+            $request->module == 'default') {
+            return;  
+        }
+        
+        // anything other means the user is not logged in
+        $request->setModuleName('default');
+        $request->setControllerName('login');
+        $request->setActionName('index');
+        return;
+        
         // let the user bypass and do not care about authentication state
         /*if ($request->action == 'process' && $request->controller == 'login' &&
             $request->module == 'default') {
@@ -85,12 +107,5 @@ class Intrabuild_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract 
             }
              return; 
         }*/
-        
-        if (!$this->auth->hasIdentity()) {
-            $request->setModuleName('default');
-            $request->setControllerName('login');
-            $request->setActionName('process');
-        }
-        
     }
 }

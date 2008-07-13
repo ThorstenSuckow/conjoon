@@ -28,3 +28,12 @@ Ext.BLANK_IMAGE_URL = "./s.gif";
  * src to prevent the IE insecure content warning 
  */
 Ext.SSL_SECURE_URL  = "./blank.html";
+
+/**
+ * Setting the default timeout to a higher value gives requests a higher timeout 
+ * tolerance when application used with slower systems, such as from a mobile
+ * USB 1.0 device. 
+ */
+//Ext.override(Ext.data.Connection, {
+//    timeout : 120000
+//});

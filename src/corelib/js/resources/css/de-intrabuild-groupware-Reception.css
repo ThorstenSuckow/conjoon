@@ -1,0 +1,86 @@
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: de-intrabuild-groupware-email-EmailPanel.css 12 2008-06-28 00:43:33Z T. Suckow $
+ * $Date: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $ 
+ * $Revision: 12 $
+ * $LastChangedDate: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailPanel.css $ 
+ */
+
+.de-intrabuild-groupware-Reception-body {
+	background:#355899 url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
+}
+	
+.de-intrabuild-groupware-reception-LoginWindow .x-window-body {
+    background-color:#ffffff;
+    background-image:url(../images/login-bg.png);
+    background-repeat:no-repeat;
+    background-position:bottom;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow .x-panel-body {
+    background:none!important;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-softwareLabel {
+    font-weight:bold;
+    font-size:12px;
+    text-align:right;
+    padding:5px 10px 0 10px;
+    color:#2D5094;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-editionLabel {
+    font-size:11px;
+    text-align:right;
+    padding:5px 10px 0 10px;
+    color:#2D5094;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-versionLabel {
+    position:absolute;
+    bottom:55px;
+    right:15px;
+    font-size:11px;
+    color:#2D5094;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-formPanel {
+    width:300px;
+    margin:-10px 0 0 75px; 
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-stateIndicator {
+    width:300px;
+    margin:10px 0 0 75px; 
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-stateIndicator .de-intrabuild-groupware-reception-LoginWindow-stateIndicator-messageCont {
+    height:16px;
+    line-height:16px;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-stateIndicator .de-intrabuild-groupware-reception-LoginWindow-stateIndicator-messageCont.error {
+    padding-left:20px;
+    color:red;
+    background-image:url(../images/16x16/actions/groupware-reception-loginerror.png);
+    background-repeat:no-repeat;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-stateIndicator .de-intrabuild-groupware-reception-LoginWindow-stateIndicator-messageCont.ok {
+    padding-left:20px;
+    color:green;
+    background-image:url(../images/16x16/actions/groupware-reception-loginok.png);
+    background-repeat:no-repeat;
+}
+
+.de-intrabuild-groupware-reception-LoginWindow-stateIndicator .de-intrabuild-groupware-reception-LoginWindow-stateIndicator-messageCont.loading {
+    padding-left:20px;
+    background-image:url(../images/login-processing.gif);
+    background-repeat:no-repeat;
+}

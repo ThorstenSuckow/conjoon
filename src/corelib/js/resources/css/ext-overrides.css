@@ -12,6 +12,10 @@
  * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailGrid.css $ 
  */
 
+html {
+	background:none!important;
+}
+
 .x-layout-split {
     background-color:#C5D7EE !important;
 }

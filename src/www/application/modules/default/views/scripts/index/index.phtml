@@ -27,7 +27,7 @@
 
 <body>
 
-<div id="DOM:de.intrabuild.groupware.Startup" class="de-intrabuild-groupware-SplashScreen-wrap" style="display:none">
+<div id="DOM:de.intrabuild.groupware.Startup" class="de-intrabuild-groupware-SplashScreen-wrap">
 
 
 	<div class="x-shadow" style="margin-top:-150px;margin-left:-248px;z-index: 9002; left: 50%; top: 50%; height:330px;width:502px; display: block;">
@@ -154,14 +154,17 @@ Ext.onReady(function(){
             mainMenubar.render('DOM:de.intrabuild.groupware.Menubar.container');
 
         mainMenubar.add({
-		    text:'Datei',
+		    text:'File',
 		    menu: [{
-				text:'Neu',
+				text:'New',
 				menu : [{
-					text : 'Nachricht...',
-					handler : function(){de.intrabuild.groupware.email.EmailEditorManager.createEditor();}
+					text : 'Email...',
+					handler : de.intrabuild.groupware.email.EmailEditorManager.createEditor
 				}]
-			}]
+			}, '-', {
+                text    : "Logout",
+                handler : de.intrabuild.groupware.Reception.logout
+            }]
 		},
             {
                 text:'Extras',
@@ -331,8 +334,8 @@ Ext.onReady(function(){
                             animate:true
                         },
                         items:[
-                        new de.intrabuild.groupware.email.LatestEmailsPanel(),
-                        new de.intrabuild.groupware.feeds.FeedGrid({collapsed:true})]
+                        new de.intrabuild.groupware.email.LatestEmailsPanel({collapsed:true}),
+                        new de.intrabuild.groupware.feeds.FeedGrid()]
                     }]
                  });
 
@@ -366,8 +369,8 @@ Ext.onReady(function(){
 
 
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore'));
-        //de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore'));
-        //de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore'));
+        de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore'));
+        de.intrabuild.util.PreLoader.addStore(de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore'));
 
         de.intrabuild.util.PreLoader.on('load', function() {
         	de.intrabuild.groupware.email.Letterman.wakeup();

@@ -33,12 +33,6 @@
         dlg.el.setLeftTop(pos.left, pos.top);
     });
 
-//30 sec for a request timeout might be too low on systems that use
-// the appfrom a cdrom or sb stick
-Ext.override(Ext.data.Connection, {
-	timeout : 120000
-});
-
 /**
  * Overwrites ext-adapter behavior for allowing queuing of AJAX requests.
  *

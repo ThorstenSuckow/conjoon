@@ -13,7 +13,7 @@
  */
 
 .de-intrabuild-groupware-util-FormIntro-container {
-   padding-left:58px;
+   padding-left:5px;
 }
 
 .de-intrabuild-groupware-util-FormIntro-description {
@@ -21,7 +21,7 @@
 }
 
 .de-intrabuild-groupware-util-FormIntro-label {
-   margin-left:-58px;
+   margin-left:-5px;
    float:left;
    padding-right:5px;
    color:#15428b;

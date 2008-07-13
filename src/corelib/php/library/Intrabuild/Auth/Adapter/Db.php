@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -38,13 +38,13 @@ require_once 'Zend/Auth/Result.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
+ */
 class Intrabuild_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
-     
+
     private $email;
-    
+
     private $password;
- 
+
     /**
      * Constructor.
      *
@@ -56,64 +56,73 @@ class Intrabuild_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
         $this->email     = $email;
         $this->password = $password;
     }
-    
+
     /**
      * We assume that the controller set the default adapter
-     * for all database operations, thus is available without futher specifying 
+     * for all database operations, thus is available without futher specifying
      * it .
      *
      * @return Zend_Auth_Result
-     * 
+     *
      * @throws Zend_Auth_Adapter_Exception
      */
     public function authenticate()
     {
         $email    = $this->email;
         $password = $this->password;
-        
-        // return a general failure if either username or password 
+
+        // return a general failure if either username or password
         // equal to <code>null</code>
         if (trim($email) == null || trim($password) == null) {
-            return new Zend_Auth_Result(Zend_Auth_Result::FAILURE, $email);  
+            return new Zend_Auth_Result(
+                Zend_Auth_Result::FAILURE,
+                $email,
+                array('Authentication failed. Invalid data.')
+             );
         }
-        
-        require_once 'Intrabuild/Modules/Default/User/Model/User.php'; 
-        $userTable = new Intrabuild_Modules_Default_User_Model_User();     
-        
+
+        require_once 'Intrabuild/Modules/Default/User/Model/User.php';
+        $userTable = new Intrabuild_Modules_Default_User_Model_User();
+
         // check here if the username exists
-        $rowUsername = $userTable->fetchAll('email_address = "'.$email.'"');
-         
+        $count = $userTable->getEmailAddressCount($email);
+
         // rowset! check count()... if this is > 1, 1..n users share the same
         // username, which is a bad thing
-        if ($rowUsername->count() > 1) {
-            return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_AMBIGUOUS, $email);      
-        } else if ($rowUsername->count() == 0) {
-             return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND, $email); 
+        if ($count > 1) {
+            return new Zend_Auth_Result(
+                Zend_Auth_Result::FAILURE_IDENTITY_AMBIGUOUS,
+                $email,
+                array('More than one record matches the supplied identity.')
+            );
+        } else if ($count == 0) {
+            return new Zend_Auth_Result(
+                Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,
+                $email,
+                array('A record with the supplied identity could not be found.')
+            );
         }
-        
-        // the username exists. check if username and password match.
-        $rowCredentials = $userTable->fetchRow('email_address = "'.$email.'" AND
-                                               password="'.md5($password).'"');
-        
-        // <code>null</code> means, that no user was found with the 
-        // username/ password combination
-        if ($rowCredentials === null) {
-             return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID, $email); 
-        }
-        
+
         require_once 'Intrabuild/BeanContext/Decorator.php';
-        
         $decorator = new Intrabuild_BeanContext_Decorator($userTable);
-        
-        $user = $decorator->getUserAsEntity($rowCredentials->id);
-       
-        // just to be sure...
+        $user = $decorator->getUserForEmailCredentialsAsEntity($email, md5($password));
+
+        // <code>null</code> means, that no user was found with the
+        // username/ password combination
         if ($user === null) {
-             return new Zend_Auth_Result(Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID, $email); 
-        }        
-        
-        // anything else from here on matches. 
-        return new Zend_Auth_Result(Zend_Auth_Result::SUCCESS, $user); 
+            return new Zend_Auth_Result(
+                Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID,
+                $email,
+                array('Supplied credential is invalid.')
+            );
+        }
+
+        // anything else from here on matches.
+        return new Zend_Auth_Result(
+            Zend_Auth_Result::SUCCESS,
+            $user,
+            array('Authentication successful.')
+        );
     }
- 
+
 }

@@ -42,27 +42,41 @@ class LoginController extends Zend_Controller_Action {
                       ->initContext();    
     } 
 
+    /**
+     * Index action of the controller.
+     * Shows the login screen.
+     *
+     */
+    public function indexAction()    
+    {   
+        
+    }
+
  
     public function processAction()
     {
         require_once 'Intrabuild/Auth/Adapter/Db.php';
         
+        /**
+         * @todo Filter username and password!
+         */
+        $username = $this->_getParam('username');
+        $password = $this->_getParam('password');
+        
         $auth        = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
-        $authAdapter = new Intrabuild_Auth_Adapter_Db('ts@siteartwork.de', 'rootPX');
+        $authAdapter = new Intrabuild_Auth_Adapter_Db($username, $password);
         
         // if the result is valid, the return value of the adapter will
         // be stored automatically in the supplied storage object
         // from the auth object
         $result = $auth->authenticate($authAdapter);
         
-        var_dump($result);
-
         if ($result->isValid()) {
-            
+            $this->view->success = true;
         } else {
-            
+            $this->view->error   = $result->getMessages();
+            $this->view->success = false;
         }
-        
     }
 }
 

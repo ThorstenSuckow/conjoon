@@ -50,6 +50,65 @@ class Intrabuild_Modules_Default_User_Model_User
     protected $_primary = 'id';
 
     /**
+     * Returs the row that matches both the email address and the password.
+     *
+     * @param string $emailAddress 
+     * @param string $password
+     *
+     * @return Zend_Db_Table_Row
+     */
+    public function getUserForEmailCredentials($emailAddress, $password)
+    {
+        $emailAddress = strtolower(trim((string)$emailAddress));
+        $password     = trim((string)$password);
+        
+        if ($emailAddress == "" || $password == "") {
+            return null;    
+        }
+        
+        /**
+         * @todo make sure email and username is a unique index
+         */
+        $select = $this->select()
+                       ->from($this)
+                       ->where('email_address = ?', $emailAddress)
+                       ->where('password=?', $password);
+        
+        $row = $this->fetchRow($select);
+        
+        return $row;
+    }
+
+    /**
+     * Returns the number of users that share the same email-address.
+     * 
+     * @param string $emailAddress
+     *
+     * @return integer
+     */
+    public function getEmailAddressCount($emailAddress)
+    {
+        $emailAddress = strtolower(trim((string)$emailAddress));
+        
+        if ($emailAddress == "") {
+            return 0;    
+        }   
+        
+        /**
+         * @todo make sure comparison uses lowercase even in db field
+         */
+        $select = $this->select()
+                  ->from($this, array(
+                    'COUNT(id) as count_id'
+                  ))
+                  ->where('email_address = ?', $emailAddress);
+        
+        $row = $this->fetchRow($select);
+            
+        return ($row !== null) ? $row->count_id : 0;
+    }
+
+    /**
      * Looks up the row with the primary key $id, fetches the data and
      * creates a new instance of Intrabuild_User out of it or returns the data
      * as fetched from the table.
@@ -86,7 +145,8 @@ class Intrabuild_Modules_Default_User_Model_User
     public function getDecoratableMethods()
     {
         return array(
-            'getUser'
+            'getUser',
+            'getUserForEmailCredentials'
         );
     }       
 

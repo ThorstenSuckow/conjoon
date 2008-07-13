@@ -12,6 +12,9 @@
  * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailGrid.css $ 
  */
 
+.de-intrabuild-empty {
+}
+
 .de-intrabuild-attr-fontWeight-bold {
     font-weight:bold !important;
 }
