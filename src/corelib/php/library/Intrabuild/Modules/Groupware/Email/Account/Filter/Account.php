@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -43,50 +43,50 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
     protected $_defaultEscapeFilter = 'StringTrim';
 
     protected $_presence = array(
-        'delete' => 
+        'delete' =>
             array(
                 'id'
             )
         ,
-        'update' => 
+        'update' =>
             array(
                 'id',
                 'name',
                 'address',
-                'replyAddress',     
+                'replyAddress',
                 'isStandard',
                 'protocol',
-                'serverInbox',    
-                'serverOutbox',    
-                'usernameInbox',        
-                'usernameOutbox',       
-                'userName', 
+                'serverInbox',
+                'serverOutbox',
+                'usernameInbox',
+                'usernameOutbox',
+                'userName',
                 'isOutboxAuth',
                 'passwordInbox',
                 'passwordOutbox',
                 'signature',
-                'isSignatureUsed',    
-                'portInbox',    
+                'isSignatureUsed',
+                'portInbox',
                 'portOutbox',
-                'isCopyLeftOnServer' 
-            
+                'isCopyLeftOnServer'
+
         ),
-        'create' => 
+        'create' =>
             array(
                 'name',
                 'address',
-                'serverInbox',    
-                'serverOutbox',    
-                'usernameInbox',        
-                'usernameOutbox',       
-                'userName', 
+                'serverInbox',
+                'serverOutbox',
+                'usernameInbox',
+                'usernameOutbox',
+                'userName',
                 'isOutboxAuth',
                 'passwordInbox',
                 'passwordOutbox'
-            
+
         )
     );
-    
+
     protected $_filters = array(
         'id' => array(
             'Int'
@@ -139,7 +139,7 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         ),
         'isCopyLeftOnServer' => array()
     );
-    
+
     protected $_validators = array(
         'id' => array(
             'allowEmpty' => false,
@@ -216,15 +216,15 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
             'default'    => 0
         )
     );
-   
+
     protected function _init()
     {
         $this->_filters['isOutboxAuth']       = new Intrabuild_Filter_FormBoolToInt();
         $this->_filters['isSignatureUsed']    = new Intrabuild_Filter_FormBoolToInt();
         $this->_filters['isStandard']         = new Intrabuild_Filter_FormBoolToInt();
-        $this->_filters['isCopyLeftOnServer'] = new Intrabuild_Filter_FormBoolToInt();   
+        $this->_filters['isCopyLeftOnServer'] = new Intrabuild_Filter_FormBoolToInt();
     }
-   
+
     /**
      * Adjusts validators based on submitted data.
      * outbox-password and -username are only needed if isOutBoxAuth was set
@@ -240,10 +240,10 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
                    $this->_validatorRules['usernameOutbox']['allowEmpty'] = true;
                 } else {
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = false;
-                   $this->_validatorRules['usernameOutbox']['allowEmpty'] = false;    
+                   $this->_validatorRules['usernameOutbox']['allowEmpty'] = false;
                 }
-            break;    
-            
+            break;
+
             case self::CONTEXT_CREATE:
                if (!$this->_data['isOutboxAuth']) {
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = true;
@@ -252,14 +252,14 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = false;
                    $this->_validatorRules['usernameOutbox']['allowEmpty'] = false;
                }
-            break;    
-            
+            break;
+
             case self::CONTEXT_DELETE:
-            
-            break;    
+
+            break;
         }
     }
-    
+
     /**
      * Returns an associative array with all filtered and validated
      * fields that where found in $_presence.
@@ -272,15 +272,15 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
     public function getProcessedData()
     {
         $data = parent::getProcessedData();
-        
+
         if (empty($data)) {
-            return $data;    
+            return $data;
         }
-        
+
         if (str_replace("*", "", $data['passwordInbox']) == "") {
             unset($data['passwordInbox']);
         }
-        
+
         if ($data['isOutboxAuth']) {
             if (str_replace("*", "", $data['passwordOutbox']) == "") {
                 unset($data['passwordOutbox']);
@@ -288,9 +288,9 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         } else if ($data['isOutboxAuth']) {
             $data['usernameOutbox'] = null;
             $data['passwordOutbox'] = null;
-        }  
-        
+        }
+
         return $data;
     }
-   
+
 }
