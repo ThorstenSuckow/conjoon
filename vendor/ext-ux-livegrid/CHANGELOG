@@ -1,4 +1,11 @@
 ﻿
+- enhancements:
+ - BufferedGridView: Added functionality for listening to erroneous responses from
+buffer-requests. Event "bufferfailure" will now be fired if the store indicated that
+the proxy's response was erroneous.
+ - BufferedGridToolbar: Toolbar is now listening to "bufferfailure"-event and resets
+the reload-button to "enabled" if necessary.
+
 Version 0.1
 16-June-2008
 
@@ -6,17 +13,17 @@ Version 0.1
  - BufferedGridStore - added overrride of getAt() method to translate
 the passed argument to the appropriate index in the model; updated sources to take
 overriden method into account
- - added cfg option "scrollDelay" in BufferedGridView for buffering calls to onLiveScroll 
+ - added cfg option "scrollDelay" in BufferedGridView for buffering calls to onLiveScroll
 when scroll-event gets fired (thanks to Rich Waters)
  - BufferedStore: removed custom applySort() implementation due to changes in findInsertIndex
- - BufferedStore: changed findInsertIndex to use parent implementation first, then check 
+ - BufferedStore: changed findInsertIndex to use parent implementation first, then check
 return value and adjust the index if needed
  - BufferedStore/BufferedGridView: moved bufferRange-member to BufferedStore
  - BufferedStore: optimized insert() method in BufferedStore
  - allowed to add records at position "0" in grid (existing records get shifted down)
- 
+
 - fixes:
- - wrong calculation in BufferedGridView.onLiveScroll (based on lastScrollPosition and actual 
+ - wrong calculation in BufferedGridView.onLiveScroll (based on lastScrollPosition and actual
 scrollPosition) caused the view sometimes to not re-render some rows
  - provided bug fix for "ensureVisible: returned x-coordinate does not take the x-position
 of the gridpanel into account" (see http://extjs.com/forum/showthread.php?p=175331#post175331)
