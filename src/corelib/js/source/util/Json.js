@@ -93,7 +93,7 @@ de.intrabuild.util.Json = function() {
                 return null;
             }
             
-            if (obj && obj.response && obj.response.type === 'error') {
+			if (obj && obj.response && obj.response.type === 'error') {
                 var sh = obj.response.value;
                 return {
                     message     : sh.message,

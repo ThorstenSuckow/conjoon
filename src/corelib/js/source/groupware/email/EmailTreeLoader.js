@@ -211,6 +211,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
 
     onLoadException : function(treeLoader, node, response)
     {
+		de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+			onLogin: {
+				fn : function(){
+					this.load(node);
+				},
+				scope : this
+			}
+		});
+		
         if (node.getUI().showProcessing) {
             node.getUI().showProcessing(false);
         }

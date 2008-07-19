@@ -24,6 +24,25 @@ Ext.namespace('de.intrabuild.groupware.reception');
 de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 
     /**
+     * @cfg {String} usernameValue
+     * If submitted, this value will be always send instead the value provided
+     * by the username textfield. Additionally, the username field will be always 
+     * rendered as disabled and the default value equals to this value.
+     */
+
+    /**
+     * @cfg {String} defaultFocusField
+     * Which field to focus when the dialog gets rendered. Can be either 
+     * 'username' or 'password'. Defaults to 'username'.
+     */
+	defaultFocusField : 'username',
+
+    /**
+     * @cfg {Boolean} showExit
+     * True to display the "exit"-button, otherwise "false"
+     */
+
+    /**
      * @cfg {String} loginUrl
      * The url for the form to submit the login data to.
      */
@@ -81,19 +100,43 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      * @private
      */
     _passwordField : null,
-
+    
+	/**
+	 * @param {de.intrabuild.groupware.util.FormIntro} The form intro for the
+	 * form panel.
+	 */
+	_formIntro : null,
 
     initComponent : function()
     {
+		var buttonConfig = [];
+		
         this._stateIndicator = this._createStateIndicator();
         this._loginButton    = this._createLoginButton();
+		
+		if (this.showExit) {
+            this._exitButton = this._createExitButton();
+			buttonConfig.push(this._exitButton);	
+		}
+		
+		buttonConfig.push(this._loginButton);
         
         this._usernameField = this._createUsernameField();
+		
+		if (this.usernameValue) {
+			this._usernameField.setValue(this.usernameValue);
+			this._usernameField.setDisabled(true);
+			this.defaultFocusField = 'password';
+		}
+		
         this._passwordField = this._createPasswordField();
         
+		this._formIntro = this._createFormIntro();
+		
         this._formPanel = this._createFormPanel(
             this._usernameField, 
-            this._passwordField
+            this._passwordField,
+			this._formIntro
         );
         
         Ext.apply(this, {
@@ -102,7 +145,6 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             resizable : false,
             width     : 490,
             height    : 335,
-            //layout    : 'fit',
             items     : [{
                 xtype  :'box', 
                 cls    : 'de-intrabuild-groupware-reception-LoginWindow-softwareLabel',
@@ -125,12 +167,15 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
                     html : this.versionLabel
             }}
             ],
-            buttons   : [
-                this._loginButton
-            ]
+            buttons   : buttonConfig
         });
         
         this.addEvents(
+            /**
+             * @event exit
+             * gets fired when the exit-button was clicked
+             */
+			'exit',
             /**
              * @event beforelogin
              * Gets fired before the form data is send to the server.
@@ -176,7 +221,11 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
         de.intrabuild.groupware.reception.LoginWindow.superclass.initEvents.call(this);
         this.on('show' , function() {
 			try {
-				this._usernameField.focus('', 10);
+				if (this.defaultFocusField == 'password') {
+					this._passwordField.focus('', 10);
+				} else {
+					this._usernameField.focus('', 10);
+				}
             } catch (e) {
 				// ignore
 			}
@@ -281,6 +330,16 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     {
         this._doSubmit();
     }, 
+	
+    /**
+     * Listener for the exit button's click event.
+     *
+     * @param {Ext.Button} button The button that triggered the event
+     */
+    _onExitButtonClick : function(button)
+    {
+        this.fireEvent('exit');
+    }, 	
     
     /**
      * Default-listener for special key events, like "escape" or "return".
@@ -324,6 +383,16 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     },
      
     /**
+     * Sets the text for the form intro.
+     * 
+     * @param {String}
+     */	 
+	setFormIntroText : function(text)
+	{
+	   this._formIntro.setText(text);	
+	},
+	 
+    /**
      * Either disables or enables the controls of this window .
      * This will also stop/start automatically monitoring the valid state of the
      * text input elements.
@@ -340,8 +409,13 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
         }
         
         this._loginButton.setDisabled(disable);
-        this._usernameField.setDisabled(disable);
+		if (!this.usernameValue) {
+			this._usernameField.setDisabled(disable);
+		}
         this._passwordField.setDisabled(disable);
+		if (this._exitButton) {
+            this._exitButton.setDisabled(disable);
+		}
     },
      
     /**
@@ -353,17 +427,19 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
     _doSubmit : function()
     {
+		var username = this.usernameValue || this._usernameField.getValue();
+		
         if (this.fireEvent(
                 'beforelogin', 
                 this, 
-                this._usernameField.getValue(),
+                username,
                 this._passwordField.getValue()) === false) {
             return;            
         }
         
         this._formPanel.form.submit({
             params  : {
-                username : this._usernameField.getValue(),
+                username : username,
                 password : this._passwordField.getValue()
             },
             success : this._onLoginSuccess,
@@ -393,6 +469,26 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
         return lbutton;
     },
     
+    /**
+     * Creates this window's exit button.
+     * The button will be shown in the footer of this window.
+     *
+     * @return {Ext.Button}
+     *
+     * @protected
+     */    
+    _createExitButton : function()
+    {
+        var ebutton = new Ext.Button({
+            text     : "Exit",
+            minWidth : 75,
+            handler  : this._onExitButtonClick,
+            scope    : this   
+        });
+        
+        return ebutton;
+    },	
+	
     /**
      * Creates the form field for entering the username.
      *
@@ -439,18 +535,34 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             }        
         });    
     },    
-    
+	
+	/**
+	 * Creates and returns the form intro for use within the form panel.
+	 * 
+	 * @return {de.intrabuild.groupware.util.FormIntro}
+	 */
+	_createFormIntro : function()
+	{
+        return new de.intrabuild.groupware.util.FormIntro({
+            style   : 'margin:0px 0 10px 0;',
+            label   : "Login",
+            text    : "Please input your username and your password. Press &quot;Login&quot; when ready."   
+        });
+    },
+	    
     /**
      * Creates the form panel that shows both the username and the password field.
      *
      * @param {Ext.form.TextField} usernameField The field for entering the username.
      * @param {Ext.form.TextField} passwordField The field for entering the password.
+     * @param {de.intrabuild.groupware.util.FormIntro} formIntro The form intro
+     * with the label and introduction text.
      *
      * @return {Ext.form.FormPanel}
      *
      * @protected
      */
-    _createFormPanel : function(usernameField, passwordField)
+    _createFormPanel : function(usernameField, passwordField, formIntro)
     {
         return new Ext.form.FormPanel({
             monitorValid : true,
@@ -465,11 +577,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             },
             border   : false,
             items    : [
-                new de.intrabuild.groupware.util.FormIntro({
-            		style   : 'margin:0px 0 10px 0;',
-            		label	: "Login",
-            		text	: "Please input your username and your password. Press &quot;Login&quot; when ready."	
-            	}),
+                formIntro,
                 usernameField,
                 passwordField
             ],

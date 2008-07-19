@@ -1,4 +1,4 @@
-﻿/**
+/**
  * intrabuild
  * (c) 2002-2008 siteartwork.de/MindPatterns
  * license@siteartwork.de
@@ -175,6 +175,17 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 					var tbarManager = de.intrabuild.groupware.ToolbarManager;
 					tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);	
 				});
+				
+				view.on('emailloadfailure', function(response, options) {
+			        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+			            onLogin: {
+			                fn : function(){
+			                    view.load();
+			                },
+			                scope : view
+			            }
+			        });
+                });
 				
 				view.on('beforeemailload', function() {
 					loadedViews[emailItem.id] = false;

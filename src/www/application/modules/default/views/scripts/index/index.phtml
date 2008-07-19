@@ -159,11 +159,15 @@ Ext.onReady(function(){
 				text:'New',
 				menu : [{
 					text : 'Email...',
-					handler : de.intrabuild.groupware.email.EmailEditorManager.createEditor
+					handler : function() {
+					   de.intrabuild.groupware.email.EmailEditorManager.createEditor();
+					}
 				}]
 			}, '-', {
-                text    : "Logout",
-                handler : de.intrabuild.groupware.Reception.logout
+                text    : "Logout...",
+                handler : function() {
+                    de.intrabuild.groupware.Reception.showLogout();
+                }
             }]
 		},
             {
@@ -379,7 +383,11 @@ Ext.onReady(function(){
 	        document.body.removeChild(splash);
         });
 
-        de.intrabuild.util.PreLoader.load();
+        de.intrabuild.groupware.Reception.init(true);
+        de.intrabuild.groupware.Reception.onUserLoad(function(){
+            de.intrabuild.util.PreLoader.load();
+        });
+
 
 
 

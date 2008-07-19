@@ -106,6 +106,10 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onShow = function()
     {
+        if (!previewPanel) {
+            return;
+        }
+				
         var y           = Ext.fly(clkCell).getY();
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
@@ -125,6 +129,20 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         }
     };    
     
+	var onLoadFailure = function(response, options)
+	{
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    decoratePreviewPanel();
+                }
+            }
+        });		
+        previewPanel.close();
+		previewPanel = null;
+        loadMask.hide();
+	};
+	
     var onLoad = function()
     {
         if (!previewPanel) {
@@ -144,13 +162,13 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     var initComponents = function()
     {
         container = Ext.DomHelper.append(document.body, {
-                        id    : 'DOM:de.intrabuild.groupware.email.EmailPreview.container',
-                        style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
-                     }, true);
+			id    : 'DOM:de.intrabuild.groupware.email.EmailPreview.container',
+			style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
+		}, true);
         
         emailPreviewFx = Ext.DomHelper.append(container, {
-                        style : "position:absolute;top:0;height:"+(height+5)+"px;width:"+width+"px;"
-                     }, true);
+            style : "position:absolute;top:0;height:"+(height+5)+"px;width:"+width+"px;"
+		}, true);
     };
 
     /**
@@ -193,8 +211,13 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onMove = function()
     {
+		if (lastRecord == null) {
+			previewPanel.close();
+			return;
+		}
 		var emailItem = lastRecord.copy();
     	previewPanel.close();
+		previewPanel = null;
     	var view = de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem);
     };
     
@@ -230,6 +253,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     		
     		emailView.on('emailload', onLoad, de.intrabuild.groupware.email.EmailPreview);
     		emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
+			emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
     		
     		var lc = null;
     		for (var i = 0, len = emailViewListeners.length; i < len; i++) {

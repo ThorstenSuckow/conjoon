@@ -38,6 +38,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
 	}); 
      
     this.preview.on('emailload', this.onEmailLoad, this); 
+	this.preview.on('emailloadfailure', this.onEmailLoadFailure, this);
      
     /**
      * The grid that shows the email items.
@@ -756,6 +757,21 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
     },
     
+	/**
+	 * Listener for a load failure of the email panel
+	 */
+	onEmailLoadFailure : function(response, options)
+	{
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    this.preview.load();
+                },
+                scope : this
+            }
+        });	
+	},
+	
     /**
      * Listener for the preview panel when an email message was fully loaded.
      * Sets the according email message to read = true.

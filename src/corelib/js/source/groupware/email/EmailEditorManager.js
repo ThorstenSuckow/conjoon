@@ -42,12 +42,12 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     var accountField   = null;
     var recipientStore = null;
     var recipientsGrid = null;
-    
+	
     var messages = {
-        loading : "Lade Nachricht...",
-        saving  : "Speichere Entwurf...",
-        sending : "Sende Nachricht...",
-        outbox  : "Verschiebe Nachricht..."    
+        loading : "Loading message....",
+        saving  : "Saving draft...",
+        sending : "Sending message...",
+        outbox  : "Moving message..."    
     };
     
     
@@ -71,8 +71,10 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             });
             form.on('render', function(){
                 this.loadMask = new Ext.LoadMask(this.el.dom.id, {msg : messages.loading});
+				this.loadMask.el.dom.style.zIndex = 1;
             }, form);
             form.on('initialize', onFormInitialize, de.intrabuild.groupware.email.EmailEditorManager);
+			form.on('initializefailure', onFormInitializeFailure, de.intrabuild.groupware.email.EmailEditorManager);
             
             masterPanel = new Ext.Panel({
                 id         : 'DOM:de.intrabuild.groupware.email.EmailEditor.masterTab', 
@@ -142,8 +144,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             autoLoad : false
         });
         rs.on('load', onRecipientsLoad, de.intrabuild.groupware.email.EmailEditorManager);
-        
-        var params = {id : draftId || -1, type : type || 'new'};
+        rs.on('loadexception', function(proxy, options, response, jsError) {   
+            onRecipientsLoadException(response, options, rs);
+        }, de.intrabuild.groupware.email.EmailEditorManager);
+		
+		var params = {id : draftId || -1, type : type || 'new'};
         
         if (form.initialized) {
             rs.load({panelId : panel.id, params : params});
@@ -211,15 +216,42 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         return true;
     };
     
+	var onFormInitializeFailure = function(form, response, options)
+	{
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    form.receiveTypeStore.load();
+                },
+                scope : form
+            }
+        });		
+	};
+	
     var onFormInitialize = function(form)
     {
-    	for (var i = 0, max_i = queue.length; i < max_i; i++) {
-            queue[i].store.load({panelId : queue[i].panelId, params : queue[i].params});
+		for (var i = 0, max_i = queue.length; i < max_i; i++) {
+			queue[i].store.load({
+				panelId : queue[i]['panelId'], 
+				params  : queue[i]['params']
+			});
         }
         
         queue = [];
     };
     
+	var onRecipientsLoadException = function(response, options, store)
+	{
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    store.load(options);
+                },
+                scope : store
+            }
+        }); 		
+	};
+	
     var onRecipientsLoad = function(store, records, options)
     {
         if (!formValues[options.panelId]) {
@@ -274,9 +306,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         completeForm(options.panelId);
         
         Ext.getCmp(options.panelId).setTitle(getTitle(record.data.subject));
-        /*if (ativePanel) {
-        	activePanel.setTitle(getTitle());    
-        }*/
     };
     
     var completeForm = function(panelId)
@@ -599,21 +628,9 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             clearPendingState(parameters.params.panelId);
         }
         
-        var msg  = Ext.MessageBox;
-        var json = de.intrabuild.util.Json;
-        
-        var error = json.forceErrorDecode(response);
-        
-        msg.show({
-            title   : "Konnte Entwurf nicht speichern "+ ' - ' +error.message,
-            msg     : error.description,
-            buttons : msg.OK,
-            icon    : msg.ERROR,
-            scope   : this,
-            cls     :'de-intrabuild-msgbox-'+error.level,
-            width   : 400
-        });        
-        
+		de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            title : "Error - Could not save draft"
+		});
     };
     
 
@@ -651,20 +668,9 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             clearPendingState(parameters.params.panelId);
         }
         
-        var msg  = Ext.MessageBox;
-        var json = de.intrabuild.util.Json;
-        
-        var error = json.forceErrorDecode(response);
-        
-        msg.show({
-            title   : "Konnte Nachricht nicht senden "+ ' - ' +error.message,
-            msg     : error.description,
-            buttons : msg.OK,
-            icon    : msg.ERROR,
-            scope   : this,
-            cls     :'de-intrabuild-msgbox-'+error.level,
-            width   : 400
-        });        
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            title : "Error - Could not send message"
+        });      
         
     };    
     
@@ -691,9 +697,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);        
         contentPanel.remove(Ext.getCmp(panelId));
         contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);        
-        
-        
-        
     };
     
     var onOutboxFailure = function(response, parameters, called)
@@ -702,20 +705,9 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             clearPendingState(parameters.params.panelId);
         }
         
-        var msg  = Ext.MessageBox;
-        var json = de.intrabuild.util.Json;
-        
-        var error = json.forceErrorDecode(response);
-        
-        msg.show({
-            title   : "Fehler beim Verschieben "+ ' - ' +error.message,
-            msg     : error.description,
-            buttons : msg.OK,
-            icon    : msg.ERROR,
-            scope   : this,
-            cls     :'de-intrabuild-msgbox-'+error.level,
-            width   : 400
-        });        
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            title : "Error - Could not move message to outbox"
+        });    
         
     };        
     
@@ -893,7 +885,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (!panel.rendered) {
             return;
         }
-        activePanel = panel;
+		
+		activePanel = panel;
         panel.getActionEl().addClass('x-hide-' + panel.hideMode);
         masterPanel.getActionEl().removeClass('x-hide-' + masterPanel.hideMode);
         
@@ -902,7 +895,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         
         var tbarManager = de.intrabuild.groupware.ToolbarManager;
         tbarManager.show('de.intrabuild.groupware.email.EmailForm.toolbar');
-        
+       
         completeForm(panel.id);
         //htmlEditor.on('push', onMessageEdit, de.intrabuild.groupware.email.EmailEditorManager);
     	htmlEditor.on('sync', onMessageEdit, de.intrabuild.groupware.email.EmailEditorManager);
@@ -988,6 +981,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
    
     this.addEvents(
         'initialize',
+		'initializefailure',
         'savedraft',
         'sendemail',
         'movedtooutbox'
@@ -1001,8 +995,10 @@ de.intrabuild.groupware.email.EmailForm = function(config){
         autoLoad : false
     });    
     
-    receiveTypeStore.on('load', this.onDefaultStoresLoad, this);
+    receiveTypeStore.on('load',          this.onDefaultStoresLoad, this);
+	receiveTypeStore.on('loadexception', this.onDefaultStoresLoadException, this);
     
+	this.receiveTypeStore = receiveTypeStore;
     
     var accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
     
@@ -1013,10 +1009,17 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     });
         
     var findAddressStore = new Ext.data.JsonStore({
-        url    : '/groupware/email/get.recipient/format/json',
-        root   : 'response.value',
-        fields : ['text'],
-        autoLoad : false
+        url       : '/groupware/email/get.recipient/format/json',
+        root      : 'response.value',
+        fields    : ['text'],
+        autoLoad  : false,
+		listeners : {
+			loadexception : {
+				fn:  function(proxy, options, response, jsError) {
+					de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+				}
+			}
+		}
     });        
     
     var isStandardIndex = accountStore.find('isStandard', true);
@@ -1253,18 +1256,17 @@ Ext.extend(de.intrabuild.groupware.email.EmailForm, Ext.Panel, {
 
     initialized  : false,
     
-    defaultStores : 1,
-
     
     onDefaultStoresLoad : function(store, records, options)
     {
-        this.defaultStores--;
-        
-        if (this.defaultStores <= 0) {
-            this.initialized = true;
-            this.fireEvent('initialize', this);
-        }
+        this.initialized = true;
+        this.fireEvent('initialize', this);
     },
+	
+    onDefaultStoresLoadException : function(proxy, options, response, jsError)
+    {
+		this.fireEvent('initializefailure', this, response, options);
+    },	
     
     onUpdate : function(store, record, operation)
     {

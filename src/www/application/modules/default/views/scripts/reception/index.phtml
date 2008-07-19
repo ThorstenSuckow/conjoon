@@ -1,0 +1,54 @@
+<?php
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: _scripts.phtml 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/www/application/modules/default/views/scripts/index/_scripts.phtml $
+ */
+?>
+
+<!DOCTYPE htmlPUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+ <head>
+  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>intraBuild 2.0</title>
+
+  <?php echo $this->render('reception/_stylesheets.phtml'); ?>
+
+
+ </head>
+
+ <body class="de-intrabuild-groupware-Reception-body">
+
+<?php echo $this->render('reception/_scripts.phtml'); ?>
+
+<script type="text/javascript">
+
+
+Ext.onReady(function(){
+
+    var reception = de.intrabuild.groupware.Reception;
+    reception.init(false);
+
+    <?php if ($this->locked === true) { ?>
+        reception.onUserLoad(function(){
+            reception.showLogin(reception.TYPE_UNLOCK);
+        });
+    <?php } else { ?>
+        reception.showLogin(reception.TYPE_LOGIN);
+    <?php } ?>
+
+
+});
+  </script>
+ </body>
+
+</html>

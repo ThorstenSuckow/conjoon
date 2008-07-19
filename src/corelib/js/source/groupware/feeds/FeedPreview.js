@@ -171,6 +171,10 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      */
     var onShow = function()
     {
+		if (!previewPanel) {
+			return;
+		}
+		
         var y           = Ext.fly(clkCell).getY();
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
@@ -235,6 +239,15 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     
     var onLoadFailure = function(response, options)
     {
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    decoratePreviewPanel();
+                }
+            }
+        });     
+		previewPanel.close();
+		previewPanel = null;
         loadMask.hide();
     };
     
@@ -248,6 +261,12 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      */
     var onMove = function()
     {
+		if (!lastRecord) {
+			previewPanel.close();
+            previewPanel = null;
+			return;
+		}
+		
         var feedItem = lastRecord.copy();
     	previewPanel.close();
     	previewPanel = null;

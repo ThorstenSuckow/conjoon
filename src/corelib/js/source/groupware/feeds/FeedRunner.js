@@ -40,6 +40,11 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     
 	var defaultUpdateInterval = 3600;
 	
+	var onStoreLoadException = function(proxy, options, response, jsError)
+	{
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response);	
+	};
+	
     var onStoreLoad = function(store, records, options)
     {
         if (!records || (records && !records.length)) {
@@ -124,6 +129,8 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     var feedStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore');
     feedStore.on('beforeload', stopRunning, de.intrabuild.groupware.feeds.FeedRunner);
     store.on('load', onStoreLoad, de.intrabuild.groupware.feeds.FeedRunner);
+	store.on('loadexception', onStoreLoadException, de.intrabuild.groupware.feeds.FeedRunner);
+	
     return {
         
         

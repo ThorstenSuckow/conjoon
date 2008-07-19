@@ -23,6 +23,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     
 // ------------------------- set up buffered grid ------------------------------    
     this.store = new Ext.ux.grid.BufferedStore({
+		storeId     : Ext.id(),
         bufferSize  : 300,
         autoLoad    : false,
         reader      : new Ext.ux.data.BufferedJsonReader({
@@ -151,11 +152,23 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     this.store.on('beforeselectionsload', this.onBeforeSelectionsLoad, this);
     this.store.on('selectionsload',       this.onSelectionsLoad,       this);
    
-  
+    this.store.proxy.on('loadexception', this.onLoadException, this);
     
 };
 
 Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
+
+    onLoadException : function(proxy, options, response, jsError)
+	{
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    this.view.reset(true);
+                },
+                scope : this
+            }
+        }); 
+	},
 
     onBeforeSelectionsLoad : function()
     {

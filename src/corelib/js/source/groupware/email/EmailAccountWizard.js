@@ -133,20 +133,7 @@ de.intrabuild.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 	{
 		this.switchDialogState(true);		
 		
-		// shorthands
-		var json = de.intrabuild.util.Json;
-		var msg  = Ext.MessageBox;
-		
-		var error = json.forceErrorDecode(response);
-		    
-		msg.show({
-		    title   : error.title || 'Error',
-		    msg     : error.message,
-		    buttons : msg.OK,
-		    icon    : msg[error.level.toUpperCase()],
-		    cls     :'de-intrabuild-msgbox-'+error.level,
-		    width   : 400
-		});		    
+		de.intrabuild.groupware.ResponseInspector.handleFailure(response);
 		
 		this.requestId = null;
 	}

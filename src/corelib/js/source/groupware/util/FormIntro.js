@@ -8,6 +8,10 @@ Ext.namespace('de.intrabuild.groupware.util');
  * @param {Number} height (optional) Spacer height in pixels (defaults to 22).
  */
 de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
+    
+	_textEl : null,
+	
+	_labelEl : null,
   
 	autoEl : {
 		tag : 'div',
@@ -34,16 +38,37 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 		}]
 	},
   
+    setLabel : function(label)
+    {
+        this.label = label;
+        
+		if (this.rendered) {
+			this._labelEl.update(label);
+		}
+    },  
+  
+    setText : function(text)
+	{
+		this.text = text;
+		
+		if (this.rendered) {
+			this._textEl.update(text);
+		}
+	},
+  
 	onRender : function(ct, position)
 	{
 		de.intrabuild.groupware.util.FormIntro.superclass.onRender.call(this, ct, position);
 	
+        this._labelEl = new Ext.Element(this.el.dom.firstChild.firstChild);
+	    this._textEl = new Ext.Element(this.el.dom.lastChild);
+		
 		if (this.label) {
-			this.el.dom.firstChild.firstChild.innerHTML = this.label;
+			this._labelEl.update(this.label);
 		}
 	
 		if (this.text) {
-			this.el.dom.lastChild.innerHTML = this.text;
+		    this._textEl.update(this.text);
 		}
 	}
 });

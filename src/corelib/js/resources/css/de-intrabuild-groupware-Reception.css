@@ -15,7 +15,49 @@
 .de-intrabuild-groupware-Reception-body {
 	background:#355899 url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
 }
-	
+
+.de-intrabuild-groupware-reception-LogoutWindow .x-window-body {
+    background-color:#ffffff;
+	padding:10px 25px;
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button {
+    height:100px;
+	width:64px;
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button .button {
+    height:64px;
+	cursor:pointer;
+    width:64px;
+	background-position:0px 0px;
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button.over .button {
+    background-position:64px 0px;
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button .text {
+    height:23px;
+    width:64px;
+	line-height:23px;
+	color:black;
+	font-weight:bold;
+	text-align:center;
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button.de-intrabuild-groupware-reception-LogoutWindow-logoutButton .button {
+    background-image:url(../images/groupware-logout.png);
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button.de-intrabuild-groupware-reception-LogoutWindow-lockButton .button {
+    background-image:url(../images/groupware-lockworkbench.png);
+}
+
+.de-intrabuild-groupware-reception-LogoutWindow-button.de-intrabuild-groupware-reception-LogoutWindow-restartButton .button {
+    background-image:url(../images/groupware-restart.png);
+}
+
 .de-intrabuild-groupware-reception-LoginWindow .x-window-body {
     background-color:#ffffff;
     background-image:url(../images/login-bg.png);

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * intrabuild
  * (c) 2002-2008 siteartwork.de/MindPatterns
  * license@siteartwork.de
@@ -256,8 +256,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
             this.clkNode = null;
             
             Ext.Ajax.request({
-                url            : '/groupware/email/delete.folder/format/json',
-                params         : {
+                url    : '/groupware/email/delete.folder/format/json',
+                params : {
                     id : nodeId        
                 },
                 disableCaching : true
@@ -702,36 +702,21 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         
         switch (mode) {
             case 'move':
-                msgAdd = 'Ordner verschieben';
+                msgAdd = "Error - Move folder";
             break;
             
             case 'edit':
-                msgAdd = 'Ordner umbenennen';
+                msgAdd = "Error - Rename folder";
             break;
             
             case 'add':
-                msgAdd = 'Ordner hinzuf&uuml;gen';
+                msgAdd = "Error - Add folder";
             break;
         }
         
-        // shorthands
-        var json = de.intrabuild.util.Json;
-        var msg  = Ext.MessageBox;
-        
-        var error = json.forceErrorDecode(response);
-        
         this.resetState(parameters.params.id, true);
-            
-        msg.show({
-		    title   : msgAdd+' '+(error.title || 'Error'),
-		    msg     : error.message,
-		    buttons : msg.OK,
-		    icon    : msg[error.level.toUpperCase()],
-		    cls     :'de-intrabuild-msgbox-'+error.level,
-		    width   : 400
-		});
-           
         
+		de.intrabuild.groupware.ResponseInspector.handleFailure(response);
     },
 
     /**

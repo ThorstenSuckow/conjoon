@@ -74,6 +74,10 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 			 */
 			'beforeemailload',
 			/**
+             * Gets fired before when loading the emails contents failed.
+             */
+            'emailloadfailure',
+			/**
 			 * Gets fired when the ajax request for this panel successfully 
 			 * loaded the email message which is about to be displayed.
 			 */
@@ -294,20 +298,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         	this.loadMask.hide(); 	
         }
         
-		// shorthands
-		var json = de.intrabuild.util.Json;
-		var msg  = Ext.MessageBox;
-		
-		var error = json.forceErrorDecode(response);
-		    
-		msg.show({
-		    title   : error.title || 'Error',
-		    msg     : error.message,
-		    buttons : msg.OK,
-		    icon    : msg[error.level.toUpperCase()],
-		    cls     :'de-intrabuild-msgbox-'+error.level,
-		    width   : 400
-		});
+		this.fireEvent('emailloadfailure', response, parameters);
         
         this.requestId = null;
 	}   

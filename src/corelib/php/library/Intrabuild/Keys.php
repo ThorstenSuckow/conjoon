@@ -6,23 +6,26 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
  /**
  * A collection of constants defining keys for registry- and session-entries.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */  
+ */
 interface Intrabuild_Keys {
 
 // -------- registry
     const REGISTRY_AUTH_OBJECT = 'de.intrabuild.registry.authObject';
-    
-// -------- session    
+
+// -------- session auth namespace
     const SESSION_AUTH_NAMESPACE = 'de.intrabuild.session.authNamespace';
-} 
+
+// -------- session reception controller
+    const SESSION_CONTROLLER_RECEPTION = 'de.intrabuild.session.receptionController';
+}

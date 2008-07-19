@@ -147,3 +147,71 @@ Ext.lib.Ajax.releaseObject = function(o)
     this._activeRequests--;
     this._processQueue();
 };
+
+Ext.lib.Ajax.handleTransactionResponse = function(o, callback, isAbort) {
+
+    if (!callback) {
+        this.releaseObject(o);
+        return;
+    }
+
+    var httpStatus, responseObject;
+
+    try {
+        if (o.conn.status !== undefined && o.conn.status != 0) {
+            httpStatus = o.conn.status;
+        } else {
+            httpStatus = 13030;
+        }
+    } catch(e) {
+        httpStatus = 13030;
+    }
+
+    if (httpStatus >= 200 && httpStatus < 300) {
+        responseObject = this.createResponseObject(o, callback.argument);
+        if (callback.success) {
+            if (!callback.scope) {
+                callback.success(responseObject);
+            } else {
+                callback.success.apply(callback.scope, [responseObject]);
+            }
+        }
+    } else {
+        switch (httpStatus) {
+            case 12002:
+            case 12029:
+            case 12030:
+            case 12031:
+            case 12152:
+            case 13030:
+                responseObject = this.createExceptionObject(o.tId, callback.argument, (isAbort ? isAbort : false));
+                if (callback.failure) {
+                    if (!callback.scope) {
+                        callback.failure(responseObject);
+                    } else {
+                        callback.failure.apply(callback.scope, [responseObject]);
+                    }
+                }
+            break;
+			case 401:
+                Ext.ux.util.MessageBus.publish('ext.lib.ajax.authorizationRequired', {
+                    requestObject : o,
+					rawResponse   : o.conn
+                });
+            default:
+                responseObject = this.createResponseObject(o, callback.argument);
+                if (callback.failure) {
+                    if (!callback.scope) {
+                        callback.failure(responseObject);
+                    } else {
+                        callback.failure.apply(callback.scope, [responseObject]);
+                    }
+                }
+			break;	
+        }
+    }
+
+    this.releaseObject(o);
+    responseObject = null;
+};
+
