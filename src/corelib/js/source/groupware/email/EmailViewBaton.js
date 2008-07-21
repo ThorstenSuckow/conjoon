@@ -135,17 +135,18 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 				
 				var view = new de.intrabuild.groupware.email.EmailViewPanel(config);
 				
+				var tbarManager = de.intrabuild.groupware.ToolbarManager;
+				
 				view.on('destroy', function(panel){
 					openedEmails[panel.emailItem.id] = null;
 					loadedViews[panel.emailItem.id] = null;
 					delete loadedViews[panel.emailItem.id];
-					delete openedEmails[panel.emailItem.id];},
-					de.intrabuild.groupware.email.EmailViewBaton
-				);
+					delete openedEmails[panel.emailItem.id];
+					tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');
+				});
 				
 				
 				view.on('activate', function(panel) {
-					var tbarManager = de.intrabuild.groupware.ToolbarManager;
 					tbarManager.show('de.intrabuild.groupware.email.EmailView.toolbar');	
 					if (loadedViews[panel.emailItem.id]) {
 						tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);	
@@ -165,14 +166,12 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 				}); 
 				
 				view.on('deactivate', function(panel) {
-					var tbarManager = de.intrabuild.groupware.ToolbarManager;
 	        		tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');	
 	        		tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', true);	
 				}); 
 				
 				view.on('emailload', function() {
 					loadedViews[emailItem.id] = true;
-					var tbarManager = de.intrabuild.groupware.ToolbarManager;
 					tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);	
 				});
 				

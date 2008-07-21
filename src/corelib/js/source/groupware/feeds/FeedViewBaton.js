@@ -15,7 +15,13 @@
 Ext.namespace('de.intrabuild.groupware.feeds');
 
 /**
- * Helps adding feed views to the main content panel.
+ * @class de.intrabuild.groupware.feeds.FeedViewBaton
+ * @singleton
+ * 
+ * Manages the opening of feed items as new tabs. Will not open a new tab if the 
+ * tab with the passed feed item id does already exist. 
+ * The class will also load the feed cpntents from the server if, and only if,
+ * the fully configured feed item record was not submitted.
  *
  */
 de.intrabuild.groupware.feeds.FeedViewBaton = function() {
@@ -67,12 +73,165 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 			return;	
 		}
 		
-		window.open.defer(1, window, [LinkInterceptor.getRedirectLink(openedFeeds[id]['link'])]);	
+		(function() {
+            this.open(LinkInterceptor.getRedirectLink(openedFeeds[id]['link']));	
+		}).defer(1, window);
+	};
+	
+	/**
+	 * Loads the feed's contents for the specified id from the server.
+	 * 
+	 * @param {Number} id
+	 * @param {String} panelId
+	 * 
+	 */
+	var loadFeedContents = function(id, panelId)
+	{
+	    Ext.Ajax.request({
+	        url    : '/groupware/feeds/get.feed.content/format/json',
+	        params : {
+	            id : id
+	        },
+			panelId : panelId,
+	        success : onFeedLoadSuccess,
+	        failure : onFeedLoadFailure
+	    });		
+	};
+	
+	/**
+	 * Callback for the successfull loading of a feed's content. 
+	 * 
+	 * @param {XmlHttpResponse} response
+	 * @param {Object} options
+	 */
+	var onFeedLoadSuccess = function(response, options)
+	{
+		var inspector = de.intrabuild.groupware.ResponseInspector;
+		
+		var data = inspector.isSuccess(response);
+		
+		if (data === null) {
+			onFeedLoadFailure(response, options);
+            return;
+		}
+		var item = data.item;
+		var rec = de.intrabuild.util.Record.convertTo(
+            de.intrabuild.groupware.feeds.ItemRecord,
+			item,
+			item.id
+		); 
+		
+		Ext.ux.util.MessageBus.publish(
+			'de.intrabuild.groupware.feeds.FeedViewbaton.onFeedLoadSuccess', {
+			id : item.id
+		});
+		
+		openedFeeds[options.panelId]['body'].update(rec.get('content'));
+	};
+	
+	/**
+     * Callback for an erroneous loading of a feed's content. 
+     * 
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     */
+    var onFeedLoadFailure = function(response, options)
+    {
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+			onLogin : {
+				fn : function(){
+					loadFeedContents(options.params.id, options.panelId);
+				}
+			}
+		});
+        
+    };	
+	
+	/**
+	 * 
+	 * 
+	 * @param {de.intrabuild.groupware.feeds.FeedItemRecord}
+	 */
+	var buildPanel = function(feedItemRecord)
+	{
+        var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId'));
+        var link   = accRec.get('link');
+        var name   = feedItemRecord.get('name')+' - '+accRec.get('description');
+        
+		var body = new Ext.Panel({
+			region     : 'center',
+			listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),    
+			autoScroll : true,
+			cls        : 'de-intrabuild-groupware-feeds-FeedView-panel',
+			html       : ''
+        }); 
+		
+        var view = new Ext.Panel({
+            layout     : 'border',
+            id         : idPrefix+feedItemRecord.id,
+            title      : feedItemRecord.get('title'),
+            closable   : true,
+            iconCls    : 'de-intrabuild-groupware-feeds-FeedView-Icon',
+            hideMode   : 'offsets',
+            items      : [{
+                region    : 'north',
+                bodyStyle : 'border-bottom:none',
+                cls       : 'de-intrabuild-groupware-feeds-FeedView-header',
+                html      : 
+                
+                   '<div class="header">'+
+                   '<span class="date">'+Ext.util.Format.date(feedItemRecord.get('pubDate'), 'd.m.Y H:i')+'</span>'+               
+                   '<div class="subject">'+feedItemRecord.get('title')+'</div>'+
+                   '<div class="name">'+name+'</div>'+
+                   '<div class="link"><a href="'+LinkInterceptor.getRedirectLink(link)+'" target="_blank">'+link+'</a></div>'+
+                   '<div class="author">Posted by: '+feedItemRecord.get('author')+'</div>'+
+                   '</div>'
+                
+            },body
+			]
+        });
+        
+		var tbarManager = de.intrabuild.groupware.ToolbarManager;
+		
+        view.on('destroy', function(panel){
+			tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar');
+            openedFeeds[panel.id] = null;
+            delete openedFeeds[panel.id];}
+        );
+        
+        
+        view.on('activate', function(panel) {
+            tbarManager.show('de.intrabuild.groupware.feeds.FeedView.toolbar'); 
+        }); 
+        
+        view.on('deactivate', function(panel) {
+            tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar'); 
+        });
+        
+        contentPanel.add(view);
+        contentPanel.setActiveTab(view);
+        openedFeeds[idPrefix+feedItemRecord.id] = {
+            view : view,
+			body : body.body,
+            link : feedItemRecord.get('link')    
+        };
+        
+        return view;
 	};
 	
 	return {
-	
-		showFeed : function(feedItemRecord, config)
+	   
+        /**
+         * Displays a feed item's content and it's details in a new tab.
+         * If the second argument is set to true, the baton will load additionally
+         * feed's contents from the server.
+         * 
+         * @param {de.intrabuild.groupware.feeds.FeedItemRecord} feedItemRecord either the fully configured 
+         * feed item record or the id of the feed item lo load
+         * @param {Boolean} loadFromServer true if the record is not fully 
+         * configured and needs loading from the server, otherwise false
+         */
+		showFeed : function(feedItemRecord, loadFromServer)
 		{
 			if (!contentPanel) {
 				contentPanel = de.intrabuild.util.Registry.get('de.intrabuild.groupware.ContentPanel');		
@@ -82,76 +241,25 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 				registerToolbar();	
 			}
 			
+			var recordId = -1; 
+			var isRecord = true;
+			
 			var opened = openedFeeds[idPrefix+feedItemRecord.id]; 
+			
 			if (opened) {
 				contentPanel.setActiveTab(opened['view']);
 				return opened;	
 			} else {
-				
-				var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId'));
-				var link = accRec.get('link');
-				var name = feedItemRecord.get('name')+' - '+accRec.get('description');
-				
-				var view = new Ext.Panel({
-				    layout     : 'border',
-				    id         : idPrefix+feedItemRecord.id,
-    				title      : feedItemRecord.get('title'),
-				    closable   : true,
-	                iconCls    : 'de-intrabuild-groupware-feeds-FeedView-Icon',
-	                hideMode   : 'offsets',
-	                items      : [{
-	                    region    : 'north',
-	                    bodyStyle : 'border-bottom:none',
-	                    cls       : 'de-intrabuild-groupware-feeds-FeedView-header',
-	                    html      : 
-	                    
-    	                   '<div class="header">'+
-    		               '<span class="date">'+Ext.util.Format.date(feedItemRecord.get('pubDate'), 'd.m.Y H:i')+'</span>'+               
-   		                   '<div class="subject">'+feedItemRecord.get('title')+'</div>'+
-   		                   '<div class="name">'+name+'</div>'+
-   		                   '<div class="link"><a href="'+LinkInterceptor.getRedirectLink(link)+'" target="_blank">'+link+'</a></div>'+
-   		                   '<div class="author">Posted by: '+feedItemRecord.get('author')+'</div>'+
-    		               '</div>'
-	                    
-	                },{
-	                    region     : 'center',
-    				    listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),    
-    	                autoScroll : true,
-    	                cls        : 'de-intrabuild-groupware-feeds-FeedView-panel',
-    	                html       : feedItemRecord.get('content')
-				    }]
-				});
-				
-				view.on('destroy', function(panel){
-					openedFeeds[panel.id] = null;
-					delete openedFeeds[panel.id];},
-					de.intrabuild.groupware.email.EmailViewBaton
-				);
-				
-				
-				view.on('activate', function(panel) {
-					var tbarManager = de.intrabuild.groupware.ToolbarManager;
-					tbarManager.show('de.intrabuild.groupware.feeds.FeedView.toolbar');	
-				}); 
-				
-				/**
-				 * @todo check why the EmailView-toolbar is referenced here.
-				 */
-				view.on('deactivate', function(panel) {
-					var tbarManager = de.intrabuild.groupware.ToolbarManager;
-	        		tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');	
-				}); 
-				
-		    	contentPanel.add(view);
-		    	contentPanel.setActiveTab(view);
-		    	openedFeeds[idPrefix+feedItemRecord.id] = {
-		    	    view : view,
-		    	    link : feedItemRecord.get('link')    
-		    	};
-		    	
-		    	return view;
+				buildPanel(feedItemRecord);
+				if (loadFromServer === true) {
+					loadFeedContents(
+                        feedItemRecord.id,
+					    idPrefix+feedItemRecord.id
+					);
+				} else {
+                    openedFeeds[idPrefix+feedItemRecord.id]['body'].update(feedItemRecord.get('content'));
+				}	
 			}
-			
 		}	
 	}
 }();

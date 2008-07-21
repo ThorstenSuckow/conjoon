@@ -147,6 +147,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
     {
         this.cellClickActive = true;
         var emailItem = grid.getStore().getAt(rowIndex);
+		this.emailPreview.hide(true, false);
     	de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem);
     },
 

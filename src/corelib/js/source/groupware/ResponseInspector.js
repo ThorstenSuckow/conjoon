@@ -207,7 +207,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
 		 * @return {Object}
 		 * 
 		 */
-		isSuccessfull : function(response)
+		isSuccess : function(response)
 		{
 			var resp = null;
 			

@@ -63,3 +63,10 @@ html {
 .x-panel-btn-td .x-btn-click .x-btn-center, .x-panel-btn-td  .x-btn-pressed .x-btn-center {
     background: url(../images/qp-btn-sprite.gif) repeat-x 0 -105px;
 }        
+
+.x-window-draggable, .x-window-draggable .x-window-header-text {
+    display:block;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;	
+}

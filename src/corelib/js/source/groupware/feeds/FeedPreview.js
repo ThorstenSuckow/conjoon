@@ -43,6 +43,12 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     var LinkInterceptor = de.intrabuild.groupware.util.LinkInterceptor;
 
     /**
+     * The y position of the last clicked cell.
+     * @param {Number} clkCellY
+     */
+	var clkCellY = 0;
+
+    /**
      * Initial width of the preview panel.
      * @param {Number}
      */
@@ -175,14 +181,13 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 			return;
 		}
 		
-        var y           = Ext.fly(clkCell).getY();
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
-        
-        if (y + panelHeight > viewHeight) {
-            container.shift({
-                y : container.getY() - (((y + panelHeight) - viewHeight) + 4)  
-            });
+		
+        if (clkCellY + panelHeight > viewHeight) {
+			container.shift({
+			    y : container.getY() - (((clkCellY + panelHeight) - viewHeight) + 4)  
+			});
         } 
     };
     
@@ -229,7 +234,16 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             return;
         }   
         
-        lastRecord = de.intrabuild.util.Record.convertTo(de.intrabuild.groupware.feeds.ItemRecord, item, item.id);
+        lastRecord = de.intrabuild.util.Record.convertTo(
+            de.intrabuild.groupware.feeds.ItemRecord, 
+			item, 
+			item.id
+        );
+		
+        Ext.ux.util.MessageBus.publish(
+            'de.intrabuild.groupware.feeds.FeedPreview.onLoadSuccess', {
+            id : item.id
+        });		
         
         previewPanel.setTitle(lastRecord.get('title'));
         previewPanel.body.update(lastRecord.get('content'));
@@ -281,7 +295,9 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         
         var link = lastRecord.get('link');
 		
-		window.open.defer(1, window, [LinkInterceptor.getRedirectLink(link)]);	
+        (function() {
+            this.open(LinkInterceptor.getRedirectLink(link));    
+        }).defer(1, window);		
     };
     
     var openEntryInNewTab = function()
@@ -365,8 +381,9 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 initComponents();
             }
             
-            clkRowIndex  = rowIndex;
-            clkCell      = grid.view.getCell(rowIndex, columnIndex);
+            clkRowIndex = rowIndex;
+			clkCell     = grid.view.getCell(rowIndex, columnIndex);
+			clkCellY    = Ext.fly(clkCell).getY();
             
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.

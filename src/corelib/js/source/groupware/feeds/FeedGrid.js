@@ -16,6 +16,18 @@ Ext.namespace('de.intrabuild.groupware.feeds');
 
 de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     
+	Ext.ux.util.MessageBus.subscribe(
+	   'de.intrabuild.groupware.feeds.FeedViewbaton.onFeedLoadSuccess',
+	   this.onFeedItemLoaded,
+	   this
+	);
+	
+    Ext.ux.util.MessageBus.subscribe(
+       'de.intrabuild.groupware.feeds.FeedPreview.onLoadSuccess',
+       this.onFeedItemLoaded,
+       this
+    );
+	
     Ext.apply(this, config);
 
     this.store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore');
@@ -116,22 +128,15 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
         title: 'Feeds',
         iconCls: 'de-intrabuild-groupware-feeds-Icon',
         border:false,
-        hideBorders:true//,
-        
-        /*viewConfig: {
-            forceFit:true,
-            enableRowBody:true,
-            showPreview:true,
-            getRowClass : this.applyRowClass
-        }*/
+        hideBorders:true
     });
 
     // install listeners
-    this.on('cellclick', this.onCellClick, this);
-    
+    this.on('cellclick',    this.onCellClick, this, {buffer : 200});
+    this.on('celldblclick', this.onCellDblClick, this);
+	
     var preview = de.intrabuild.groupware.feeds.FeedPreview;
     
-    this.on('cellclick',      preview.show.createDelegate(preview));
     this.on('resize',         preview.hide.createDelegate(preview, [true]));
     this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false])); 
     this.on('contextmenu',    preview.hide.createDelegate(preview, [false])); 
@@ -154,9 +159,9 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
 
 Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
 
-    clkRow : null,
-    clkRecord : null,
-   
+    clkRow          : null,
+    clkRecord       : null,
+    cellClickActive : false,
    
     /**
      * Checks the group state and checks/unchecks the "show feeds grouped" items
@@ -203,8 +208,8 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
         
         for (var i = 0; i < l; i++) {
             requestArray.push({
-                'id' : m[i].id, 
-                'isRead' :m[i].get('isRead')
+                'id'     : m[i].id, 
+                'isRead' : m[i].get('isRead')
             });    
         }
         
@@ -218,26 +223,55 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
         this.store.commitChanges();    
     },
     
-    markItemsRead : function(bRead)
+	onFeedItemLoaded : function(subject, message)
+	{
+		if (message.id) {
+			this.markItemsRead(true, message.id)
+		}
+	},
+	
+    markItemsRead : function(bRead, id)
     {
         var feedIds = new Array();
-        var selection = this.selModel.getSelections();
-        for (var i = 0; i < selection.length; i++) {
-            selection[i].set('isRead', bRead);
-        }
+        
+		if (!id) {
+			var selection = this.selModel.getSelections();
+			for (var i = 0; i < selection.length; i++) {
+				selection[i].set('isRead', bRead);
+			}
+		} else {
+			var rec = this.store.getById(id);
+			if (rec) {
+				rec.set('isRead', bRead);
+			}
+		}
         
         this.commitRecords();
     },
     
     onCellClick : function(grid, rowIndex, columnIndex, e)
     {
+		if (this.cellClickActive) {
+            this.cellClickActive = false;
+            return;    
+        }
+				
         if (e.shiftKey || e.ctrlKey) {
             return;
         }
-        this.markItemsRead(true);
+		
         this.clkRow    = this.view.getRow(rowIndex);
         this.clkRecord = this.store.getAt(rowIndex);
+		de.intrabuild.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);
     },
+	
+    onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
+    {
+		this.cellClickActive = true;
+		var feedItem = grid.getStore().getAt(rowIndex);
+		de.intrabuild.groupware.feeds.FeedPreview.hide(true, false);
+        de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem, true);
+    },	
     
     // private
     /**

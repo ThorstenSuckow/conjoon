@@ -80,7 +80,7 @@ de.intrabuild.groupware.Reception = function() {
 	{
 		var inspector = de.intrabuild.groupware.ResponseInspector;
 		
-		var data = inspector.isSuccessfull(response);
+		var data = inspector.isSuccess(response);
 		if (data === null) {
 			return inspector.handleFailure(response, options);
 		} 

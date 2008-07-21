@@ -24,6 +24,26 @@ require_once 'Intrabuild/Filter/Input.php';
 require_once 'Intrabuild/Filter/FormBoolToInt.php';
 
 /**
+ * @see Intrabuild_Filter_Raw
+ */
+require_once 'Intrabuild/Filter/Raw.php';
+
+/**
+ * @see Intrabuild_Filter_ShortenString
+ */
+require_once 'Intrabuild/Filter/ShortenString.php';
+
+/**
+ * @see Zend_Filter_HtmlEntities
+ */
+require_once 'Zend/Filter/HtmlEntities.php';
+
+/**
+ * @see Intrabuild_Filter_HtmlEntityDecode
+ */
+require_once 'Intrabuild/Filter/HtmlEntityDecode.php';
+
+/**
  * An input-filter class defining all validators and filters needed when
  * processing input data for mutating or creating feed items.
  *
@@ -37,7 +57,7 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
 
     const CONTEXT_READ = 'flag_item';
 
-    protected $_defaultEscapeFilter = 'StringTrim';
+    const CONTEXT_ITEM_RESPONSE = 'item_response';
 
     protected $_presence = array(
         'delete' =>
@@ -54,6 +74,29 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
             array(
                 'removeold'
             ),
+        self::CONTEXT_RESPONSE => array(
+            'id',
+            'groupwareFeedsAccountsId',
+            'name',
+            'title',
+            'author',
+            'description',
+            'pubDate',
+            'link',
+            'isRead'
+        ),
+        self::CONTEXT_ITEM_RESPONSE => array(
+            'id',
+            'groupwareFeedsAccountsId',
+            'name',
+            'content',
+            'title',
+            'author',
+            'description',
+            'pubDate',
+            'link',
+            'isRead'
+        ),
         'create' =>
             array(
                 'title',
@@ -72,6 +115,9 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
         'id' => array(
             'Int'
          ),
+         'name' => array(
+            'StringTrim'
+         ),
          'groupwareFeedsAccountsId' => array(
             'Int'
          ),
@@ -88,27 +134,6 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
             'StringTrim'
          ),
          'content' => array(
-            array('StripTags',
-                // allow all except object, script, embed etc.
-                array(
-                    'p','div','span','ul','li','table','tr','td','blockquote',
-                    'strong','b','i','u','sup','sub','tt','h1','h2','h3','h4',
-                    'h5','h6','small','big','br','nobr','center','ol','a','font'
-                ),
-                array(
-                    'style', 'class','id', 'href', 'border', 'cellspacing', 'cellpadding'
-                )
-            ),
-            array(
-                'PregReplace',
-                '/href="javascript:/',
-                'href="/index/javascript/'
-            ),
-            array(
-                'PregReplace',
-                "/href='javascript:/",
-                "href='/index/javascript/"
-            ),
             'StringTrim'
          ),
         'pubDate' => array(
@@ -137,6 +162,10 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
          ),
         'title' => array(
             'allowEmpty' => true
+         ),
+         'name' => array(
+            'allowEmpty' => true,
+            'default' => ''
          ),
         'author' => array(
             'allowEmpty' => true,
@@ -175,6 +204,67 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
 
     protected function _init()
     {
+        if ($this->_context == self::CONTEXT_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE) {
+
+            $this->_filters['title'] = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
+
+            $this->_filters['description'] = array(
+                array('StripTags',
+                    // allow all except img, a, object, script, embed etc.
+                    array(
+                        'p','div','span','ul','li','table','tr','td','blockquote',
+                        'strong','b','i','u','sup','sub','tt','h1','h2','h3','h4',
+                        'h5','h6','small','big','br','nobr','center','ol', 'font'
+                    ),
+                    array(
+                        'style', 'class','id', 'href', 'border', 'cellspacing', 'cellpadding'
+                    )
+                ),
+                array(
+                    'PregReplace',
+                    '/href="javascript:/',
+                    'href="/index/javascript/'
+                ),
+                array(
+                    'PregReplace',
+                    "/href='javascript:/",
+                    "href='/index/javascript/"
+                ),
+                'StringTrim',
+                new Intrabuild_Filter_ShortenString(128, '...')
+            );
+
+            if ($this->_context == self::CONTEXT_ITEM_RESPONSE) {
+                $this->_filters['content'] = array(
+                    array('StripTags',
+                        // allow all except img, object, script, embed etc.
+                        array(
+                            'p','div','span','ul','li','table','tr','td','blockquote',
+                            'strong','b','i','u','sup','sub','tt','h1','h2','h3','h4',
+                            'h5','h6','small','big','br','nobr','center','ol','a','font'
+                        ),
+                        array(
+                            'style', 'class','id', 'href', 'border', 'cellspacing', 'cellpadding'
+                        )
+                    ),
+                    array(
+                        'PregReplace',
+                        '/href="javascript:/',
+                        'href="/index/javascript/'
+                    ),
+                    array(
+                        'PregReplace',
+                        "/href='javascript:/",
+                        "href='/index/javascript/"
+                    ),
+                    'StringTrim'
+                );
+            }
+        }
+
+        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+
+
         $this->_filters['removeold'] = new Intrabuild_Filter_FormBoolToInt();
         $this->_validators['savedTimestamp']['default'] = time();
     }

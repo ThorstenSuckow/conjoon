@@ -44,7 +44,12 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      * @param {Number}
      */
     var height = 250;
-    
+
+    /**
+     * The y position of the last clicked cell.
+     * @param {Number} clkCellY
+     */
+    var clkCellY = 0;
     
     /**
      * Stores the id of the last previewed feed. If a preview panel gets closed,
@@ -110,13 +115,12 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             return;
         }
 				
-        var y           = Ext.fly(clkCell).getY();
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
         
-        if (y + panelHeight > viewHeight) {
+        if (clkCellY + panelHeight > viewHeight) {
             container.shift({
-                y : container.getY() - (((y + panelHeight) - viewHeight) + 4)  
+                y : container.getY() - (((clkCellY + panelHeight) - viewHeight) + 4)  
             });
         } 
     };
@@ -351,7 +355,8 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             
             clkRowIndex  = rowIndex;
             clkCell      = grid.view.getCell(rowIndex-grid.view.rowIndex, columnIndex);
-            
+            clkCellY     = Ext.fly(clkCell).getY();
+			
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
                 // abort all pending operations    

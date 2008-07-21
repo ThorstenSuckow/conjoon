@@ -68,6 +68,11 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item'
         );
 
+        $itemResponseFilter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+            array(),
+            Intrabuild_Filter_Input::CONTEXT_RESPONSE
+        );
+
         $filter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
             $_POST,
             Intrabuild_Filter_Input::CONTEXT_UPDATE
@@ -85,29 +90,24 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $updatedAccounts = array();
         $insertedItems   = array();
         for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-           // try {
+            try {
                 $import = Zend_Feed::import($accounts[$i]->uri);
                 $items = $this->_importFeedItems($import, $accounts[$i]->id);
                 for ($a = 0, $lena = count($items); $a < $lena; $a++) {
                     $items[$a]['saved_timestamp'] = time();
                     $added = $itemModel->addItemIfNotExists($items[$a], $accounts[$i]->id);
                     if ($added !== 0 && !$removeOld) {
-                        $it = $items[$i];
-                        Intrabuild_Util_Array::camelizeKeys($it);
-                        $object = Intrabuild_BeanContext_Inspector::create(
-                            'Intrabuild_Modules_Groupware_Feeds_Item',
-                            $it
-                        );
-                        $object->setName($accounts[$i]->name);
-                        $object = $object->getDto();
-                        $this->_transformItemDto($object);
-                        $insertedItems[] = $object;
+                        $items[$a]['name'] = $accounts[$i]->name;
+                        $items[$a]['id']   = $added;
+                        Intrabuild_Util_Array::camelizeKeys($items[$a]);
+                        $itemResponseFilter->setData($items[$a]);
+                        $insertedItems[] = $itemResponseFilter->getProcessedData();
                     }
                     $updatedAccounts[$accounts[$i]->id] = true;
                 }
-           // } catch (Exception $e) {
-                // ignore all!
-            //}
+            } catch (Exception $e) {
+                //inore all
+            }
         }
 
         // set the last updated timestamp for the accounts
@@ -402,11 +402,21 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function getFeedContentAction()
     {
+        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Filter/Item.php';
         require_once 'Intrabuild/BeanContext/Decorator.php';
+
+        $itemResponseFilter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+            array(),
+            Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE
+        );
         $itemModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item'
+            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item',
+            $itemResponseFilter
         );
 
+        /**
+         * @todo filter incoming data
+         */
         $id = $this->_request->getParam('id', 0);
 
         $item = $itemModel->getItemAsDto($id);
@@ -527,11 +537,19 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     {
         require_once 'Intrabuild/Keys.php';
         require_once 'Intrabuild/BeanContext/Decorator.php';
+
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        $itemResponseFilter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+            array(),
+            Intrabuild_Filter_Input::CONTEXT_RESPONSE
+        );
+
         $model = new Intrabuild_BeanContext_Decorator(
             'Intrabuild_Modules_Groupware_Feeds_Account_Model_Account'
         );
         $itemModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item'
+            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item',
+            $itemResponseFilter
         );
 
         $user = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
@@ -547,7 +565,6 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $tmpItems = $itemModel->getItemsForAccountAsDto($data[$i]->id);
             for ($a = 0, $len2 = count($tmpItems); $a < $len2; $a++) {
                 $items[] = $tmpItems[$a];
-                $this->_transformItemDto($items[$a]);
             }
         }
 
