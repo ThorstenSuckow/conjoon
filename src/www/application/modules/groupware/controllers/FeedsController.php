@@ -468,6 +468,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             if ($description = $item->description()) {
                 $itemData['description'] = $description;
             } else if ($description = $item->summary()) {
+                $itemData['description'] = $description;
+            } else {
                 $itemData['description'] = $itemData['title'];
             }
 
@@ -475,8 +477,6 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             if ($content = $item->content()) {
                 $itemData['content'] = $content;
             } else if ($itemData['description']) {
-                $itemData['content'] = $itemData['description'];
-            } else {
                 $itemData['content'] = $itemData['description'];
             }
 
