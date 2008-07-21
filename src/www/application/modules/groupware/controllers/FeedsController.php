@@ -58,6 +58,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     {
         require_once 'Intrabuild/Keys.php';
         require_once 'Zend/Feed.php';
+        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
         require_once 'Intrabuild/BeanContext/Decorator.php';
         $model = new Intrabuild_BeanContext_Decorator(
@@ -67,7 +68,12 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item'
         );
 
-        $removeOld = $this->_request->getParam('removeold');
+        $filter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+            $_POST,
+            Intrabuild_Filter_Input::CONTEXT_UPDATE
+        );
+        $filteredData = $filter->getProcessedData();
+        $removeOld = $filteredData['removeold'];
 
         $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
@@ -79,12 +85,13 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $updatedAccounts = array();
         $insertedItems   = array();
         for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-            try {
+           // try {
                 $import = Zend_Feed::import($accounts[$i]->uri);
                 $items = $this->_importFeedItems($import, $accounts[$i]->id);
                 for ($a = 0, $lena = count($items); $a < $lena; $a++) {
+                    $items[$a]['saved_timestamp'] = time();
                     $added = $itemModel->addItemIfNotExists($items[$a], $accounts[$i]->id);
-                    if ($added != -1 && $removeOld != true) {
+                    if ($added !== 0 && !$removeOld) {
                         $it = $items[$i];
                         Intrabuild_Util_Array::camelizeKeys($it);
                         $object = Intrabuild_BeanContext_Inspector::create(
@@ -98,15 +105,15 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                     }
                     $updatedAccounts[$accounts[$i]->id] = true;
                 }
-            } catch (Exception $e) {
+           // } catch (Exception $e) {
                 // ignore all!
-            }
+            //}
         }
 
         // set the last updated timestamp for the accounts
         $model->setLastUpdated(array_keys($updatedAccounts), $time);
 
-        if ($removeOld == true) {
+        if ($removeOld) {
             $model->deleteOldFeedItems($userId);
             $items = $this->_getFeedItems();
         } else {
@@ -114,8 +121,6 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             // to the client
             $items = $insertedItems;
         }
-
-
 
         $this->view->success = true;
         $this->view->items   = $items;

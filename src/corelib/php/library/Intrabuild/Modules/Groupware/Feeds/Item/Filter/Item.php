@@ -18,6 +18,10 @@
  */
 require_once 'Intrabuild/Filter/Input.php';
 
+/**
+ * @see Intrabuild_Filter_FormBoolToInt
+ */
+require_once 'Intrabuild/Filter/FormBoolToInt.php';
 
 /**
  * An input-filter class defining all validators and filters needed when
@@ -47,7 +51,9 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
                 'isRead'
             ),
         'update' =>
-            array(),
+            array(
+                'removeold'
+            ),
         'create' =>
             array(
                 'title',
@@ -117,6 +123,7 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
         'isRead' => array(
             'Int'
         ),
+        'removeold' =>array()
     );
 
     protected $_validators = array(
@@ -159,11 +166,16 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
         'isRead' => array(
            'allowEmpty' => true,
            'default'    => 0
+        ),
+        'removeold' => array(
+            'allowEmpty' => true,
+            'default'    => 0
         )
     );
 
     protected function _init()
     {
+        $this->_filters['removeold'] = new Intrabuild_Filter_FormBoolToInt();
         $this->_validators['savedTimestamp']['default'] = time();
     }
 

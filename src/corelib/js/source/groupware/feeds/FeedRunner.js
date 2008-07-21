@@ -13,7 +13,11 @@
  */
  
 Ext.namespace('de.intrabuild.groupware.feeds');
- 
+
+/**
+ * @class de.intrabuild.groupware.feeds.FeedRunner
+ * 
+ */ 
 de.intrabuild.groupware.feeds.FeedRunner = function(){
     
     var commitId = Ext.data.Record.COMMIT;
@@ -52,7 +56,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
         }
         
         for (var i = 0, len = records.length; i < len; i++) {
-            feedStore.addSorted(records[i].copy);    
+            feedStore.addSorted(records[i].copy());    
         }
         
         store.removeAll();

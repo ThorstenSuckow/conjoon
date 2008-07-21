@@ -167,35 +167,35 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Model_Item
      * @param $item array The item with it's data to insert.
      * @param $accountId The id of the account this item will belong to
      *
-     * @return boolean true, if the item was not already in the db, otherwise false
+     * @return integer 0 if the item was not added, otherwise the primary key of
+     * the newly added item
      */
     public function addItemIfNotExists(Array $item, $accountId)
     {
         $accountId = (int)$accountId;
 
         if ($accountId <= 0 || !isset($item['guid'])) {
-            return false;
+            return 0;
         }
 
-        $select = $this->select()
-                  ->where('guid = ?', $item['guid'])
-                  ->order('groupware_feeds_accounts_id', $accountId);
+        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Model/Flag.php';
+        $flagModel = new Intrabuild_Modules_Groupware_Feeds_Item_Model_Flag();
 
-        $row = $this->fetchRow($select);
-
-        if ($row != null) {
-            return false;
+        if ($flagModel->isItemPresent($accountId, $item['guid'])) {
+            return 0;
         }
 
-        $item['saved_timestamp']             = time();
         $item['groupware_feeds_accounts_id'] = $accountId;
         $id = $this->insert($item);
 
         if ($id > 0) {
+
+            $flagModel->addItem($accountId, $item['guid']);
+
             return $id;
         }
 
-        return -1;
+        return 0;
     }
 
    // -------- interface Intrabuild_BeanContext_Decoratable

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 18. Juni 2008 um 19:20
+-- Erstellungszeit: 21. Juli 2008 um 02:10
 -- Server Version: 5.0.51
 -- PHP-Version: 5.2.5
 
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_accounts` (
   `is_deleted` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='table for storing email accounts' AUTO_INCREMENT=18 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='table for storing email accounts';
 
 -- --------------------------------------------------------
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_folders` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`parent_id`,`name`),
   KEY `parent_id` (`parent_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=93 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items` (
   `content_text_html` longtext,
   PRIMARY KEY  (`id`),
   KEY `groupware_email_folders_id` (`groupware_email_folders_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Table for storing incomin emails in a readable format.' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Table for storing incomin emails in a readable format.';
 
 -- --------------------------------------------------------
 
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_attachments` (
   `content_id` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `groupware_email_items_id` (`groupware_email_items_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `groupware_feeds_accounts` (
   `is_deleted` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -199,7 +199,19 @@ CREATE TABLE IF NOT EXISTS `groupware_feeds_items` (
   `content` text,
   PRIMARY KEY  (`id`),
   KEY `groupware_feeds_accounts_id` (`groupware_feeds_accounts_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `groupware_feeds_items_flags`
+--
+
+CREATE TABLE IF NOT EXISTS `groupware_feeds_items_flags` (
+  `groupware_feeds_accounts_id` int(10) unsigned NOT NULL,
+  `guid` tinytext NOT NULL,
+  PRIMARY KEY  (`groupware_feeds_accounts_id`,`guid`(255))
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -214,4 +226,4 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email_address` varchar(255) NOT NULL,
   `password` varchar(32) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
