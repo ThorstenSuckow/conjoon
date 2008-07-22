@@ -9,6 +9,10 @@ Ext.namespace('de.intrabuild.groupware.util');
  */
 de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
     
+	/**
+	 * @cfg {String} imageClass
+	 */
+	
 	_textEl : null,
 	
 	_labelEl : null,
@@ -33,7 +37,7 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 		  	}]
 		}, {
 			tag  : 'div',
-			html : 'Hier könnte dann eine Beschreibung stehen',
+			html : '',
 			cls  : 'de-intrabuild-groupware-util-FormIntro-description'
 		}]
 	},
@@ -52,7 +56,12 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 		this.text = text;
 		
 		if (this.rendered) {
-			this._textEl.update(text);
+			if (this.text != undefined) {
+	            this._textEl.update(this.text);
+				this._textEl.setDisplayed(true);
+	        } else {
+	            this._textEl.setDisplayed(false);
+	        }
 		}
 	},
   
@@ -61,14 +70,21 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 		de.intrabuild.groupware.util.FormIntro.superclass.onRender.call(this, ct, position);
 	
         this._labelEl = new Ext.Element(this.el.dom.firstChild.firstChild);
-	    this._textEl = new Ext.Element(this.el.dom.lastChild);
+	    this._textEl  = new Ext.Element(this.el.dom.lastChild);
 		
 		if (this.label) {
 			this._labelEl.update(this.label);
 		}
 	
-		if (this.text) {
+		if (this.text != undefined) {
 		    this._textEl.update(this.text);
+		} else {
+			this._textEl.setDisplayed(false);
 		}
+		
+		if (this.imageClass) {
+			this._textEl.addClass(this.imageClass);
+		}
+		
 	}
 });
