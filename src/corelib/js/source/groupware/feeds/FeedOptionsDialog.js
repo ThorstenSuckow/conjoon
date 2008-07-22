@@ -327,7 +327,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     /**
      * Stores the last selected record.
      */
-    clkRecord : -1,
+    clkRecord : null,
     
     /**
      * Stores the number of deleted records during this dialog lifetime
