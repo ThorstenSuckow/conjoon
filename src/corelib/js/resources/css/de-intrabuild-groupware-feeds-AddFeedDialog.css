@@ -30,4 +30,7 @@
 
 .de-intrabuild-groupware-feeds-AddFeedDialog-introImage {
     background-image:url(../images/24x24/apps/groupware-feeds-addfeeddialog-intro.png);
+	background-position:10px 10px;
+    background-repeat:no-repeat;
+    padding-left:58px !important;
 }

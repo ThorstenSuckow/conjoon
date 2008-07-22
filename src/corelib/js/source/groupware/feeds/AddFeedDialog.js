@@ -234,7 +234,14 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         region    : 'center',  
         height    : 120, 
         border    : false,
-        items     : [{
+        items     : [
+            new de.intrabuild.groupware.util.FormIntro({
+				style      : 'padding:10px 10px 0px 10px;',
+				label      : "Feed-Adresse",
+				imageClass : 'de-intrabuild-groupware-feeds-AddFeedDialog-introImage',
+				text       : "Geben Sie die URL (beginnend mit \"http://\") des Feeds an, den Sie importieren m&ouml;chten, und klicken Sie danach auf den Button rechts vom Eingabefeld."        
+            }),  
+		/*{
             border    : false,
            bodyStyle : 'background:none;padding:10px 10px 0px 10px;',
             html      : '<div class="de-intrabuild-formintro-container">'+
@@ -245,7 +252,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                         '<div class="de-intrabuild-formintro-icon de-intrabuild-groupware-feeds-AddFeedDialog-introImage"></div>'+ 
                         '<div class="de-intrabuild-formintro-text">Geben Sie die URL (beginnend mit "http://") des Feeds an, den Sie importieren m&ouml;chten, und klicken Sie danach auf den Button rechts vom Eingabefeld.</div>'+ 
                         '</div>'  
-          },
+          },*/
             new Ext.FormPanel({
                 labelAlign : 'right',
                 border     : false,
@@ -255,11 +262,15 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                 items      : [
                     this.urlTrigger 
                 ]
-            }), {
-                border    : false,
-                bodyStyle : 'background:none;padding:0 10px 0 68px',
-                html      : '<div class="de-intrabuild-formintro-sepx" style="margin:5px 0px 0 0px">&nbsp;</div>' 
-            }
+            }),
+			new Ext.BoxComponent({
+				style  : 'margin:0px 10px 0 10px',
+				autoEl : {
+					tag : 'div',
+					cls : 'de-intrabuild-groupware-util-FormIntro-sepx',
+					html : '&#160;'
+			    }
+			}) 
          ]
       },
         this.card  

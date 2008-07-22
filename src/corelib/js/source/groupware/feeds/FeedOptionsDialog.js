@@ -190,15 +190,11 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         defaults  : {
             border : false
         },
-        items : [{
-            bodyStyle:'background:none',
-            html : '<div class="de-intrabuild-formintro-container">'+
-                   '<div class="de-intrabuild-formintro-label">Informationen</div>'+
-                   '<div class="de-intrabuild-formintro-outersep">'+
-                   '<div class="de-intrabuild-formintro-sepx">&nbsp;</div>'+
-                   '</div>'+ 
-                   '</div>' 
-          }, 
+        items : [
+            new de.intrabuild.groupware.util.FormIntro({
+                  label : "Informationen",
+                  text  : ''        
+            }),  
             new Ext.form.FormPanel({
                 bodyStyle  : 'margin:10px 0 20px 20px;background:none',
                 baseCls    : 'x-small-editor',
@@ -212,15 +208,11 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                     this.feedUrl,
                     this.feedName
                 ]
-          }),{
-            bodyStyle:'background:none',
-            html : '<div class="de-intrabuild-formintro-container">'+
-                   '<div class="de-intrabuild-formintro-label">Speicheroptionen</div>'+
-                   '<div class="de-intrabuild-formintro-outersep">'+
-                   '<div class="de-intrabuild-formintro-sepx">&nbsp;</div>'+
-                   '</div>'+ 
-                   '</div>' 
-          },       
+          }), 
+		  new de.intrabuild.groupware.util.FormIntro({
+			      label : "Speicheroptionen",
+				  text  : ''	
+		  }),       
             new Ext.form.FormPanel({
                 bodyStyle  : 'margin:10px 0 20px 0px;padding-left:20px;background:none',
                 baseCls    : 'x-small-editor',
