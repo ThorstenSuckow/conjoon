@@ -263,14 +263,18 @@ de.intrabuild.groupware.ResponseInspector = function() {
          */     		
 		handleFailure : function(response, options)
 		{
-			var resp = null;
+			var resp = response;
 			
-			if (response) {
-				if (response.responseText) {
-					resp = _tryDecode(response.responseText);
-				} else {
-					resp = _tryDecode(response);
+			try {
+				if (response) {
+					if (response.responseText) {
+						resp = _tryDecode(response.responseText);
+					} else {
+						resp = _tryDecode(response);
+					}
 				}
+			} catch (e) {
+				// ignore, so we can show an unexpected error
 			}
 			
 			// check if the response send an authentication failure
@@ -286,7 +290,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
             var json = de.intrabuild.util.Json;
             var msg  = Ext.MessageBox;
 
-            var error = json.forceErrorDecode(response);
+            var error = json.forceErrorDecode(resp);
               
             msg.show({
                 title   : error.title || 'Error',

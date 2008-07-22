@@ -14,6 +14,16 @@
  */
 
 /**
+ * @see Zend_Mime
+ */
+require_once 'Zend/Mime.php';
+
+/**
+ * @see Zend_Mime_Decode
+ */
+require_once 'Zend/Mime/Decode.php';
+
+/**
  * @see Intrabuild_BeanContext_Decorator
  */
 require_once 'Intrabuild/BeanContext/Decorator.php';
@@ -322,7 +332,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
      * @return boolean true, if a message with the specified message-id/hash is already stored
      * in the db for this account, otherwise false
      */
-    private static function _isMessageIdPresent($messageId, $accountId, &$rawHeader, &$rawBody)
+    private function _isMessageIdPresent($messageId, $accountId, &$rawHeader, &$rawBody)
     {
         if (trim((string)$messageId) != "") {
             return $this->_modelInbox->isUniqueKeyPresent(
@@ -332,13 +342,42 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             );
         }
 
-        $hash = Intrabuild_Modules_Groupware_Email_Model_Inbox::computeMessageHash($rawHeader, $rawBody);
+        $hash = Intrabuild_Modules_Groupware_Email_Item_Model_Inbox::computeMessageHash($rawHeader, $rawBody);
 
         return $this->_modelInbox->isUniqueKeyPresent(
             $hash,
             $accountId,
             Intrabuild_Modules_Groupware_Email_Item_Model_Inbox::HASH
         );
+    }
+
+    /**
+     * Splits a message into its header and its body, writing the results
+     * into $hader and $body
+     *
+     * @param string $message The message to split
+     * @param string $header The var to store the header into
+     * @param string $body The var to store the body into
+     * @param  string $EOL EOL string; defaults to {@link Zend_Mime::LINEEND}
+     *
+     */
+    private static function _splitMessage(&$message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
+    {
+        // code taken from ZF Zend_Mime_Decode::splitMessage V1.5.2
+        // find an empty line between headers and body
+        // default is set new line
+        if (strpos($message, $EOL . $EOL)) {
+            list($header, $body) = explode($EOL . $EOL, $message, 2);
+        // next is the standard new line
+        } else if ($EOL != "\r\n" && strpos($message, "\r\n\r\n")) {
+            list($header, $body) = explode("\r\n\r\n", $message, 2);
+        // next is the other "standard" new line
+        } else if ($EOL != "\n" && strpos($message, "\n\n")) {
+            list($header, $body) = explode("\n\n", $message, 2);
+        // at last resort find anything that looks like a new line
+        } else {
+            @list($header, $body) = @preg_split("%([\r\n]+)\\1%U", $message, 2);
+        }
     }
 
     /**
@@ -483,11 +522,11 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             }
 
             for ($oo = 1; $oo < $mailCount+1; $oo++) {
-            //foreach ($list as $messageNum => $uidValue) {
-
                 $messageNum = $oo;
                 $this->_attachmentCounter = 1;
                 $emailItem = array();
+                $rawHeader = "";
+                $rawBody   = "";
 
                 // check if the account supports UIDL, and skip the message
                 // if it is already available in the db
@@ -498,11 +537,45 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
                         }
                         continue;
                     } else {
-                        $message = $mail->getMessage($messageNum);
                         $emailItem['uid'] = $uidl[$oo];
                     }
+                }
+
+                $rm      = $mail->getRawMessage($messageNum);
+                $message = new Zend_Mail_Message(array(
+                    'raw' => $rm
+                ));
+
+                self::_splitMessage($rm, $rawHeader, $rawBody);
+
+                $messageId = "";
+                try {
+                    $messageId = $message->messageId;
+                } catch (Zend_Mail_Exception $e) {
+                    // ignore
+                }
+
+                $emailItem['messageId'] = $messageId;
+
+                $mail->noop();
+
+                // check here if we can remove the mail from the server
+                // check first if UIDL is supported. if not, look up the
+                // message
+                if (!$hasUniqueId) {
+                    $id = $this->_isMessageIdPresent($messageId, $accountId, $rawHeader, $rawBody);
+                    $mail->noop();
+
+                    if ($id === true) {
+                        if (!$isCopyLeftOnServer && $isPop3) {
+                            $mail->removeMessage($messageNum);
+                        }
+                        continue;
+                    }
                 } else {
-                    $message = $mail->getMessage($messageNum);
+                    if (!$isCopyLeftOnServer && $isPop3) {
+                        $mail->removeMessage($messageNum);
+                    }
                 }
 
                 $mail->noop();
@@ -561,41 +634,6 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
                     $emailItem['inReplyTo'] = $message->inReplyTo;
                 } catch (Zend_Mail_Exception $e) {
                     $emailItem['inReplyTo'] = '';
-                }
-
-                $messageId = "";
-                $mail->noop();
-                try {
-                    $messageId = $message->messageId;
-                } catch (Zend_Mail_Exception $e) {
-                    // ignore
-                }
-
-                $emailItem['messageId'] = $messageId;
-
-                $rawHeader  = $mail->getRawHeader($messageNum);
-                $rawBody    = $mail->getRawContent($messageNum);
-                try {$mail->noop();}catch(Exception $e) {
-                    var_dump($rawHeader);
-                    var_dump($rawBody);
-                }
-                // check here if we can remove the mail from the server
-                // check first if UIDL is supported. if not, look up the
-                // message
-                if (!$hasUniqueId) {
-                    $id = $this->_isMessageIdPresent($messageId, $accountId, $rawHeader, $rawBody);
-                    $mail->noop();
-
-                    if ($id === true) {
-                        if (!$isCopyLeftOnServer && $isPop3) {
-                            $mail->removeMessage($messageNum);
-                        }
-                        continue;
-                    }
-                } else {
-                    if (!$isCopyLeftOnServer && $isPop3) {
-                        $mail->removeMessage($messageNum);
-                    }
                 }
 
                 $encodingInformation = $this->_getEncodingInformation($message);

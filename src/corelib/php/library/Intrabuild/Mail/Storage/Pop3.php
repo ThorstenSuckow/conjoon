@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -31,11 +31,25 @@ require_once 'Intrabuild/Mail/Message.php';
  * bug gets released.
  */
 class Intrabuild_Mail_Storage_Pop3 extends Zend_Mail_Storage_Pop3 {
- 
+
     /**
      * used message class, change it in an extened class to extend the returned message class
      * @var string
      */
-    protected $_messageClass = 'Intrabuild_Mail_Message';    
-    
+    protected $_messageClass = 'Intrabuild_Mail_Message';
+
+
+    /*
+     * Get raw messagee
+     *
+     * @param  int $id   number of message
+     * @return string raw message
+     * @throws Zend_Mail_Protocol_Exception
+     */
+    public function getRawMessage($id)
+    {
+        $content = $this->_protocol->retrieve($id);
+        return $content;
+    }
+
 }
