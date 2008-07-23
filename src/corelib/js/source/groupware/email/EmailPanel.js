@@ -33,8 +33,10 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      */
      
     this.preview = new de.intrabuild.groupware.email.EmailViewPanel({
-		autoLoad  : false,
-		border	  : false
+		autoLoad     : false,
+		border	     : false,
+		hideMode     : 'offsets',
+		refreshFrame : true
 	}); 
      
     this.preview.on('emailload', this.onEmailLoad, this); 
@@ -62,6 +64,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
             ,{
             id:'de.intrabuild.groupware.email.rightPreview',
             layout:'fit',
+			hideMode : 'offsets',
             region:'east',
             width:350,
             split: true,
@@ -70,6 +73,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
             id:'de.intrabuild.groupware.email.bottomPreview',
             layout:'fit',
             items:this.preview,
+			hideMode : 'offsets',
             height: 250,
             split: true,
             region:'south'
@@ -647,6 +651,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             } else {
                 bot.hide();
                 right.hide();  
+				this.preview.hide();
                 this.ownerCt.doLayout();
                 return;
             }
@@ -659,21 +664,26 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             if (b.checked) {
                 button.toggle(true);
                 right.hide();  
+				this.preview.hide();
                 bot.add(this.preview);
                 bot.show();
                 this.ownerCt.doLayout();
+				this.preview.show();
                 return;
             } else if (r.checked) {
                 button.toggle(true);
                 bot.hide();
+				this.preview.hide();
                 right.add(this.preview);                
                 right.show();                  
                 this.ownerCt.doLayout();
+				this.preview.show();
                 return;
             } else if (h.checked) {
                 button.toggle(false);
                 bot.hide();
                 right.hide();  
+				this.preview.hide();
                 this.ownerCt.doLayout();
                 return;
             }

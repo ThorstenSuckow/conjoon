@@ -16,6 +16,12 @@ Ext.namespace('de.intrabuild.groupware.email');
 
 de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 	
+	/**
+	 * @cfg {Boolean} refreshFrame
+	 * Will totally rebuild the iframe when the panel gets hidden/shown for any 
+	 * other browser than IE.
+	 */
+	
     /**
      * @cfg {Boolean} autoLoad
      * Overrides completely the functionality of the parents implementation.
@@ -97,6 +103,11 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 			);	
 		}
 		
+		if (this.refreshFrame === true && !Ext.isIE) {
+			this.on('hide', this._onHide, this);
+			this.on('show', this._onShow, this);
+		}
+		
 		de.intrabuild.groupware.email.EmailViewPanel.superclass.initComponent.call(this);	
 	},
 	
@@ -106,7 +117,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 	 */
 	renderView : function()
 	{
-		if (this.emailRecord != null) {
+		if (this.emailRecord != null && this.viewReady) {
 			this.view.onEmailLoad(this.emailRecord);	
 		}		
 	},
@@ -225,6 +236,9 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     		this.loadMask.show();	
     	}
     	
+		this.emailRecord = null;
+		this.view.clear();
+		
     	this.requestId = Ext.Ajax.request({
             url            : '/groupware/email/get.email/format/json',
             params         : {
@@ -301,7 +315,27 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 		this.fireEvent('emailloadfailure', response, parameters);
         
         this.requestId = null;
+	},
+	
+	_onHide : function()
+	{
+		if (this.viewReady) {
+			this.view._removeIframe();
+			this.view.clear();
+			this.viewReady = false;
+		}
+	},
+	
+	_onShow : function()
+	{
+		if (!this.view) {
+			return;
+		}
+        this.view._createIframe();
+		this.viewReady = true;
+        this.renderView();
 	}   
+	
 });
 
 
@@ -363,10 +397,20 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	 * @param {Boolean} cleared false if the message was rendered
 	 */
 	cleared : true, 
+	
+	/**
+	 * 
+	 * @param {Mixed} viewId
+	 */
+	viewId : null, 
+	
 	 
     // private
     init: function(panel)
     {
+		if (!this.viewId) {
+			this.viewId = Ext.id();
+		}
         this.initTemplates();
         this.initData(panel);
         this.initUI(panel);
@@ -404,12 +448,14 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     	var height = this.panel.body.getHeight(true);
     
     	var iframe = this.iframe.dom;
-    	
-    	var heightPrev = iframe.previousSibling ? Ext.fly(iframe.previousSibling).getHeight() : 0;
-    	var heightNext = iframe.nextSibling ? Ext.fly(iframe.nextSibling).getHeight() : 0;
+    	var ifrAnchor = document.getElementById(this.viewId);
+		
+    	var heightPrev = ifrAnchor.previousSibling ? Ext.fly(ifrAnchor.previousSibling).getHeight() : 0;
+    	var heightNext = ifrAnchor.nextSibling ? Ext.fly(ifrAnchor.nextSibling).getHeight() : 0;
     	
     	var nHeight = height - (heightPrev + heightNext);
     	
+		ifrAnchor.style.height = (nHeight < 0 ? 0 : nHeight) + "px";
     	iframe.style.height = (nHeight < 0 ? 0 : nHeight) + "px";
     },
     
@@ -419,6 +465,12 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
      */
     doRender : function(subject, from, to, cc, bcc, date, body, attachments)
     {
+		if (!this.iframe) {
+			return;
+		}
+		
+		this.clear();
+		
     	var ts = this.templates;
     	
     	var ccHtml = cc ? ts.cc.apply({
@@ -444,29 +496,32 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     	
     	var attachItemsHtml = "";
     	var attachHtml = "";
-    	
-        for (var i = 0, max_i = attachments.length; i < max_i; i++) {
+    	var len = attachments.length;
+		
+        for (var i = 0; i < len; i++) {
             attachItemsHtml += ts.attachmentItem.apply({
                 mimeIconCls : de.intrabuild.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
                 name        : attachments[i].fileName
             });
         }
         
-        if (max_i > 0) {
+        var DomHelper = Ext.DomHelper;
+        var ifrAnchor = document.getElementById(this.viewId);
+        
+        DomHelper.insertHtml('beforeBegin', ifrAnchor, header);		
+		
+        if (len > 0) {
             attachHtml = ts.attachments.apply({
                 attachmentItems : attachItemsHtml
             });
+			
+			var footer = ts.footer.apply({
+                attachments : attachHtml
+            });
+			
+			DomHelper.insertAfter(ifrAnchor, footer);
         }    	
     	
-    	var footer = ts.footer.apply({
-    		attachments : attachHtml
-    	});
-    	
-    	var DomHelperInsertHtml = Ext.DomHelper.insertHtml;
-    	
-        DomHelperInsertHtml('beforeBegin', this.iframe.dom, header);
-        DomHelperInsertHtml('beforeEnd', this.el.dom, footer);
-        
         var doc = this.doc;
     	doc.open();
         doc.write(body)
@@ -478,11 +533,13 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     clear : function()
     {
     	var doc = this.doc;
-    	doc.open();
-        doc.write(this.emptyMarkup)
-        doc.close(); 
+		if (doc) {
+			doc.open();
+			doc.write(this.emptyMarkup)
+			doc.close();
+		}
         
-    	var dom = this.iframe.dom;
+    	var dom = document.getElementById(this.viewId);
     	var prev = dom.previousSibling;
     	var next = dom.nextSibling;
     	if (prev) {
@@ -497,18 +554,34 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     // private
     initElements : function()
     {
-        var E = Ext.Element;
+        this.el = new Ext.Element(this.panel.body.dom.firstChild);
+        this._createIframe();
+    },    
     
-        var el = this.panel.body.dom.firstChild;
-        var cs = el.childNodes;
-    
-        this.el = new E(el);
-        
-        var iframe = el.getElementsByTagName('iframe')[0];
-        iframe.name = Ext.id();
+	_removeIframe : function()
+	{
+        if (this.iframe) {
+			document.getElementById(this.viewId).removeChild(this.iframe.dom);
+			this.doc = null;
+			this.iframe = null;
+		}
+	}, 
+	
+	_createIframe : function()
+	{
+		var iframe = document.getElementById(this.viewId).firstChild;
+		
+		if (!iframe) {
+			iframe = document.createElement('iframe');
+			iframe.style.width = '100%';
+			iframe.style.border = '0px';
+			iframe.setAttribute('frameBorder', "0");
+			iframe.src = (Ext.SSL_SECURE_URL || "javascript:false");
+			document.getElementById(this.viewId).appendChild(iframe);
+		}
 
-		var doc;        
-    	if(Ext.isIE){
+        var doc;        
+        if(Ext.isIE){
             doc = iframe.contentWindow.document;
         } else {
             doc = (iframe.contentDocument || window.frames[iframe.name].document);
@@ -517,11 +590,11 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
         doc.write(this.emptyMarkup)
         doc.close();    
     
-    	this.doc = doc;
-    	this.iframe = new E(iframe);
-    	this.iframe.swallowEvent("click", true);
-    },    
-    
+        this.doc = doc;
+        this.iframe = new Ext.Element(iframe);
+        this.iframe.swallowEvent("click", true);		
+	},
+	
     // private
     initTemplates : function()
     {
@@ -529,8 +602,8 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
         
         if (!ts.master){
 		    ts.master = new Ext.Template(
-		             '<div style="height:100%">{header}',
-		             '<iframe style="width:100%;border:0px;" frameborder="0" src="'+(Ext.SSL_SECURE_URL || "javascript:false")+'"></iframe>',
+		             '<div style="height:100%">{header}<div id="'+this.viewId+'">',
+		             '<iframe name="'+Ext.id()+'" style="width:100%;border:0px;" frameborder="0" src="'+(Ext.SSL_SECURE_URL || "javascript:false")+'"></iframe></div>',
 		             '{footer}</div>'
 		    );
 		}
@@ -569,14 +642,6 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    
 	    if (!ts.footer) {
 		    ts.footer = new Ext.Template(
-		    	/**
-		    	 * @CSS_PROBLEM
-		    	 * problems with rendering div after iframe, somehow in Mozilla
-		    	 * the iframe adds a bottom margin.
-		    	 * tried with setting frameborder="yes", then the iframe height looks
-		    	 * as expected, but not if the attribute is missing
-		    	 * adding a margin-top -5px makes it look correct
-		    	 */
 		        '<table  cellspacing="0" cellpadding="0" border="0" style="width:100%;"><tr><td style="padding:2px;background-color:#F5F5F5;border-top:1px solid #99BBE8">',
 		        '{attachments}',
 		        '</td></tr></table>'
@@ -620,14 +685,6 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     // private
     initData : function(panel)
     {
-        if(this.panel){
-            //this.panel.un('emailload', this.onEmailLoad, this);
-            //this.panel.un('beforeemailload', this.onBeforeEmailLoad, this);
-        }
-        if(panel){
-        	//panel.on('emailload', this.onEmailLoad, this);
-        	//panel.on('beforeemailload', this.onBeforeEmailLoad, this);
-        }
         this.panel = panel;
     },
     
@@ -650,11 +707,6 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     	
     	this.doRender(subject, from, to, cc, bcc, date, body, attachments);	
     	this.layout();
-    },
-    
-    onBeforeEmailLoad : function(id)
-    {
-    	
     }
 	
 });

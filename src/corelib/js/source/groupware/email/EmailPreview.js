@@ -126,8 +126,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     var onBeforeLoad = function()
     {
         if (previewPanel !== null) {
-        	emailView.clearView();
-            loadMask.show();
+        	loadMask.show();
         }
     };    
     
