@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -43,17 +43,20 @@ class Intrabuild_Filter_DateIso8601 implements Zend_Filter_Interface
     public function filter($value)
     {
         $d = strtotime($value);
-        
         if ($d === false) {
-            $d = "1970-01-01 00:00:00";    
+            try {
+                $date = new Zend_Date($value);
+            } catch (Zend_Date_Exception $e) {
+                $date = new Zend_Date("1970-01-01 00:00:00");
+            }
+        } else {
+            try {
+                $date = new Zend_Date($d);
+            } catch (Zend_Date_Exception $e) {
+                $date = new Zend_Date("1970-01-01 00:00:00");
+            }
         }
-        
-        try {
-            $date = new Zend_Date($d);    
-        } catch (Zend_Date_Exception $e) {
-            $date = new Zend_Date("1970-01-01 00:00:00");    
-        }
-        
+
         return $date->get(Zend_Date::ISO_8601);
     }
 }
