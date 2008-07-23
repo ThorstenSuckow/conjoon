@@ -125,11 +125,32 @@ de.intrabuild.groupware.email.Letterman = function(config) {
     
     };
     
-    
+	/**
+	 * @param {de.intrabuild.groupware.email.AccountStore} 
+	 * Shorthand for the store with the configured email accounts.
+	 */
+	var _accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+	
+    /**
+     * Listener for the store's beforeload event.
+     * Will check if any account is currently configured. If none is found,
+     * the request to the server will be cancelled.
+     * 
+     */
+	var _onBeforeLoad = function()
+	{
+		if (_accountStore.getRange().length == 0) {
+			return false;
+		}
+		
+		_messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
+	};
+	
     return {
         
         init : function()
         {
+			store.on('beforeload',    _onBeforeLoad,         this);
             store.on('loadexception', this.onRequestFailure, this); 
             store.on('load',          this.onLoad, this); 
             store.proxy.loadResponse = proxyResponse;
@@ -209,7 +230,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
             if (store.proxy.activeRequest) {
                 return;    
             }
-            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
+            
             store.reload();
         },
         
