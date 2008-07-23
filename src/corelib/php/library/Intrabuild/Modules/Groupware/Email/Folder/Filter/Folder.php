@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -37,23 +37,26 @@ class Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder extends Intrabuild
 
     const CONTEXT_RENAME = 'rename';
     const CONTEXT_MOVE   = 'move';
-    
+
     protected $_presence = array(
         self::CONTEXT_RENAME => array(
             'id',
             'name'
-        ), 
+        ),
         self::CONTEXT_CREATE => array(
             'parentId',
             'name'
-        ), 
+        ),
         self::CONTEXT_MOVE => array(
             'parentId',
             'id'
+        ),
+        self::CONTEXT_DELETE => array(
+            'id'
         )
     );
-    
-    
+
+
     protected $_filters = array(
         'id' => array(
             'Int'
@@ -65,7 +68,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder extends Intrabuild
             'StringTrim'
          )
     );
-    
+
     protected $_validators = array(
         'id' => array(
             'allowEmpty' => false,
@@ -79,11 +82,11 @@ class Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder extends Intrabuild
             'allowEmpty' => false
          )
     );
-    
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();   
-    }  
-   
+        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+    }
+
 
 }

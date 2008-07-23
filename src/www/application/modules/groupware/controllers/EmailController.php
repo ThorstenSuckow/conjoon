@@ -189,7 +189,46 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function deleteFolderAction()
     {
-        //@todo: implement!
+        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Filter/Folder.php';
+        $filter = new Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder(
+            $_POST,
+            Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_DELETE
+        );
+
+        $filteredData = array();
+        try {
+            $filteredData = $filter->getProcessedData();
+        } catch (Zend_Filter_Exception $e) {
+            require_once 'Intrabuild/Error.php';
+            $error = Intrabuild_Error::fromFilter($filter, $e);
+            $this->view->success = false;
+            $this->view->error   = $error->getDto();
+            return;
+        }
+
+        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
+        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+
+        require_once 'Intrabuild/Keys.php';
+        $user   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        $userId = $user->getId();
+
+        $ret = $folderModel->deleteFolder($filteredData['id'], $userId);
+
+        if ($ret === 0) {
+            require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();
+            $error->title   = 'Error';
+            $error->level   = Intrabuild_Error::LEVEL_WARNING;
+            $error->message = 'Could not delete the specified folder.';
+            $this->view->success = false;
+            $this->view->error   = $error;
+            return;
+        }
+
+        $this->view->success = true;
+        $this->view->error   = null;
     }
 
     /**
@@ -707,7 +746,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function getEmailAction()
     {
-    	require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Intrabuild/BeanContext/Decorator.php';
         require_once 'Intrabuild/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
         require_once 'Intrabuild/Keys.php';
 

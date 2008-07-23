@@ -6,15 +6,15 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
-/** 
- * @see Zend_Db_Table 
+/**
+ * @see Zend_Db_Table
  */
 require_once 'Zend/Db/Table/Abstract.php';
 
@@ -27,8 +27,8 @@ require_once 'Zend/Db/Table/Abstract.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
-class Intrabuild_Modules_Groupware_Email_Folder_Model_FoldersAccounts extends Zend_Db_Table_Abstract {    
+ */
+class Intrabuild_Modules_Groupware_Email_Folder_Model_FoldersAccounts extends Zend_Db_Table_Abstract {
 
     /**
      * The name of the table in the underlying datastore this
@@ -45,7 +45,27 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_FoldersAccounts extends Ze
         'groupware_email_folders_id',
         'groupware_email_accounts_id'
     );
-    
+
+    /**
+     * Deletes all data for the folder with the specified id.
+     *
+     * @param integer $id
+     *
+     * @return integer 0 if no data was deleted, otherwise the number of deleted
+     * data
+     */
+    public function deleteForFolder($id)
+    {
+        $id = (int)$id;
+        if ($id <= 0) {
+            return 0;
+        }
+
+        $where    = $this->getAdapter()->quoteInto('groupware_email_folders_id = ?', $id, 'INTEGER');
+        $affected = $this->delete($where);
+
+        return $affected;
+    }
 
 
 }
