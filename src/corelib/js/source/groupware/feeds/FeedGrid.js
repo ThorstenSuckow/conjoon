@@ -63,11 +63,15 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
       }
     ];
     
+	var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})';
+	this.groupTextTpl = new Ext.XTemplate(groupTextTpl);
+	this.groupTextTpl.compile();
+	
     this.view = new Ext.grid.GroupingView({
-        forceFit:false,
+        forceFit      : false,
         showGroupName : false,
-        groupTextTpl: '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})',// ((rs.length]})',
-        getRowClass : this.applyRowClass
+        groupTextTpl  : groupTextTpl,
+        getRowClass   : this.applyRowClass
     });
     
     var displayOptionsMenu = new Ext.menu.Menu({
@@ -220,7 +224,8 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
             }
         });
         
-        this.store.commitChanges();    
+        this.store.commitChanges(); 
+		this._updateGroupTemplates();   
     },
     
 	onFeedItemLoaded : function(subject, message)
@@ -229,6 +234,44 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
 			this.markItemsRead(true, message.id)
 		}
 	},
+	
+	
+    _updateGroupTemplates : function()
+	{
+		var view = this.view;
+        var rs   = this.store.getRange();
+        var len  = rs.length;
+		if (len < 1) {
+			return [];
+		}
+		
+        var groupField = view.getGroupField();
+        
+		var r;
+        var gvalue;
+		var indexes = {};	
+	    var groups = []; 
+		 
+        for (var i = 0; i < len; i++) {
+            r      = rs[i];
+			gvalue = r.data[groupField];
+            
+			if (!indexes[gvalue]) {
+				indexes[gvalue] = [];
+			}    
+            
+			indexes[gvalue].push(r);
+        }
+        
+		var a  = 0;
+		var gr = view.getGroups();
+		for (var i in indexes) {
+			gr[a++].firstChild.firstChild.innerHTML = this.groupTextTpl.apply({
+                text : i, 
+				rs : indexes[i] 
+			});
+		} 
+    },	
 	
     markItemsRead : function(bRead, id)
     {
