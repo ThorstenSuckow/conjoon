@@ -147,30 +147,36 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
     /**
      * The button for submitting the dialogs form.
      */
-    this.addButton({
+    this.okButton = new Ext.Button({
         text     : 'Hinzuf&uuml;gen',
         disabled : true,
-        tooltip  : 'Speichert und f&uuml;gt die Angaben zum Feed-Reader hinzu'
-    }, this.onOk, this);       
+        tooltip  : 'Speichert und f&uuml;gt die Angaben zum Feed-Reader hinzu',
+		handler  : this.onOk,
+		scope    : this
+    });       
     
     /**
      * The button for resetting the dialogs form and starting a new input
      * procedure.
      */
-    this.addButton({
-        text    : 'Zur&uuml;cksetzen',
-        handler : this.onReset,
-        scope   : this,
-        tooltip : 'Bricht die Eingabe ab und setzt die Felder zur&uuml;ck'
-    }, this.onReset, this);
+    this.resetButton = new Ext.Button({
+		text    : 'Zur&uuml;cksetzen',
+		handler : this.onReset,
+		scope   : this,
+		tooltip : 'Bricht die Eingabe ab und setzt die Felder zur&uuml;ck',
+		handler : this.onReset,
+		scope   : this
+	});
 
     /**
      * Cancels and closes the dialog.
      */
-    this.addButton({
-        text    : 'Abbrechen',
-        tooltip : 'Bricht die Eingabe ab und schlie&szlig;t den Dialog'
-    }, this.onCancel, this);        
+    this.cancelButton = new Ext.Button({
+		text    : 'Abbrechen',
+		tooltip : 'Bricht die Eingabe ab und schlie&szlig;t den Dialog',
+		handler : this.onCancel,
+		scope   : this
+	});        
     
     /**
      * The card layout either displaying additional form fields or the panel
@@ -216,9 +222,6 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                 cls        : 'de-intrabuild-groupware-feeds-AddFeedDialog-formCard',
                 defaults   : {
                     labelStyle : 'font-size:11px'
-                    //allowBlank : false,
-                    //width      : 202,
-                    //bodyStyle  : 'background-color:#F6F6F6;'
                 },
                 items : [
                     this.feedNameTextField,
@@ -241,18 +244,6 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
 				imageClass : 'de-intrabuild-groupware-feeds-AddFeedDialog-introImage',
 				text       : "Geben Sie die URL (beginnend mit \"http://\") des Feeds an, den Sie importieren m&ouml;chten, und klicken Sie danach auf den Button rechts vom Eingabefeld."        
             }),  
-		/*{
-            border    : false,
-           bodyStyle : 'background:none;padding:10px 10px 0px 10px;',
-            html      : '<div class="de-intrabuild-formintro-container">'+
-                        '<div class="de-intrabuild-formintro-label">Feed-Adresse</div>'+
-                        '<div class="de-intrabuild-formintro-outersep">'+
-                        '<div class="de-intrabuild-formintro-sepx">&nbsp;</div>'+
-                        '</div>'+ 
-                        '<div class="de-intrabuild-formintro-icon de-intrabuild-groupware-feeds-AddFeedDialog-introImage"></div>'+ 
-                        '<div class="de-intrabuild-formintro-text">Geben Sie die URL (beginnend mit "http://") des Feeds an, den Sie importieren m&ouml;chten, und klicken Sie danach auf den Button rechts vom Eingabefeld.</div>'+ 
-                        '</div>'  
-          },*/
             new Ext.FormPanel({
                 labelAlign : 'right',
                 border     : false,
@@ -276,12 +267,6 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         this.card  
     ];
     
-    /*this.buttons = [
-        this.okButton,
-        this.resetButton,
-        this.cancelButton
-    ];*/
-    
     de.intrabuild.groupware.feeds.AddFeedDialog.superclass.constructor.call(this,  {
         iconCls   : 'de-intrabuild-groupware-feeds-Icon', 
         title     : 'Feed hinzuf&uuml;gen',
@@ -299,7 +284,12 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
          *                dialog reopens or when it is showed over an already modal
          *                window
          */
-        layout    : 'border'
+        layout    : 'border',
+		buttons : [
+            this.okButton,
+			this.resetButton,
+			this.cancelButton 
+		]
     });
 
    /* this.animContainer = Ext.DomHelper.append(this.el, {
@@ -316,7 +306,8 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
     this.updateComboBox.setValue(172800);
     this.feedNameTextField.on('valid',   this.onValid, this);
     this.feedNameTextField.on('invalid', this.onInvalid, this);
-  
+
+    this.on('beforeclose', this.onBeforeClose, this);
 };
 
 Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
@@ -373,7 +364,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      */
     onInvalid : function()
     {
-        this.buttons[0].setDisabled(true);
+        this.okButton.setDisabled(true);
     },    
     
     /**
@@ -381,7 +372,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      */
     onValid : function()
     {
-        this.buttons[0].setDisabled(false);
+        this.okButton.setDisabled(false);
     },
     
     /**
@@ -395,7 +386,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         if (value == "") {
             this.feedNameTextField.reset();
             this.feedNameTextField.markInvalid();
-            this.buttons[0].disable();
+            this.okButton.setDisabled(true);
             return;
         }
         
@@ -428,6 +419,35 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         this.saveFeed();     
     },
     
+    _disableControls : function(disable)
+	{
+        this.okButton.setDisabled(disable);  
+		this.resetButton.setDisabled(disable);
+		this.cancelButton.setDisabled(disable);
+		
+        if (disable) {
+            this.tools['close'].mask();           
+        } else {
+            this.tools['close'].unmask();
+        }		
+	},
+	
+    /**
+     * Listener for a beforeclose operation.
+     * Will return false if there is currently an ajax-request being made, otherwise
+     * true.
+     *
+     * @return {Boolean} true to allow close operation, otherwise false
+     */ 
+    onBeforeClose : function()
+    {
+        if (this.requestId !== null) {
+            return false;   
+        } else {
+            return true;
+        }
+        
+    },  	
    
     /**
      * Saves the newly added feed.
@@ -438,7 +458,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         
         this.loadMask.show(); 
         
-        this.buttons[0].disable();
+        this._disableControls(true);
         
         this.requestId = Ext.Ajax.request({
             url    : '/groupware/feeds/add.feed/format/json',
@@ -471,7 +491,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         
         var source = response.responseText;
         
-        this.buttons[0].setDisabled(false);
+        this._disableControls(false);
         
         if (json.isError(source)) {
             this.onFeedFailure(response, parameters);
@@ -496,9 +516,9 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         }
         store.add(recs);
        
-        if (this.keepAddModeCheckbox.getValue() === true) {
-            this.reset();    
-        } else {
+	    this.reset();
+		
+        if (this.keepAddModeCheckbox.getValue() !== true) {
             this.close();
         }
     },
@@ -516,7 +536,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         
         de.intrabuild.groupware.ResponseInspector.handleFailure(response);    
         
-        this.buttons[0].setDisabled(false);    
+        this._disableControls(false);    
     },
     
     /**
@@ -585,6 +605,9 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             this.loadMask.msg = this.loadMaskConfig.msg;
         }
         
+		this.tools['close'].mask();
+		this.cancelButton.setDisabled(true);
+		
         this.card.layout.setActiveItem(this.EMPTY_PANEL);
         this.loadMask.show();
         
@@ -611,7 +634,9 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     onSuccess : function(response, orgParameters)
     {
         this.loadMask.hide();    
-        
+        this.tools['close'].unmask();
+        this.cancelButton.setDisabled(false);
+		
         // status, i.e. 200
         // statusText, i.e OK
         // responseText, ie JSON OR no JSON (then something ugly happend.
@@ -643,7 +668,9 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     onFailure : function(response, orgParameters)
     {
         this.loadMask.hide();  
-        
+        this.tools['close'].unmask();
+        this.cancelButton.setDisabled(false);
+		
 		de.intrabuild.groupware.ResponseInspector.handleFailure(response);
     },    
     
@@ -705,7 +732,9 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         this.updateComboBox.reset();
         
         this.urlTrigger.setDisabled(false);
-        this.buttons[0].setDisabled(true);
+        this.okButton.setDisabled(true);
+		this.tools['close'].unmask();
+        this.cancelButton.setDisabled(false);
         
         this.card.layout.setActiveItem(this.EMPTY_PANEL);
         this.urlTrigger.reset();
