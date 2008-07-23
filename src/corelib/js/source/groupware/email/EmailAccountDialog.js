@@ -188,48 +188,54 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	}),
         	'serverInbox' : new TextField({
         		fieldLabel : "Server-Adresse",
-        		itemCls : 'de-intrabuild-float-left',
-        		width : 100,
+        		itemCls    : 'de-intrabuild-float-left',
+        		width      : 100,
+				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
         		allowBlank : false,
         		labelStyle : 'width:90px;font-size:11px',
         		validator  : this.isServerInboxValid.createDelegate(this)
         	}),
         	'portInbox' : new TextField({
         		fieldLabel : "Port",
-        		itemCls : 'de-intrabuild-margin-l-15 de-intrabuild-float-left',
-        		width : 50,
+        		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
+        		width      : 50,
+				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
         		labelStyle : 'width:55px;font-size:11px',
         		allowBlank : false,
         		validator  : this.isPortValid.createDelegate(this)
         	}),
         	'usernameInbox' : new TextField({
         		fieldLabel : "Benutzername",
-        		itemCls : 'de-intrabuild-float-left',
-        		width : 100,
+        		itemCls    : 'de-intrabuild-float-left',
+				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
+        		width      : 100,
         		labelStyle : 'width:90px;font-size:11px',
         		allowBlank : false
         	}),
         	'passwordInbox' : new TextField({
         		inputType  : 'password',
-        		itemCls : 'de-intrabuild-margin-l-15 de-intrabuild-float-left',
+        		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
+				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
         		fieldLabel : "Passwort",
-        		width : 50,
+        		width      : 50,
         		labelStyle : 'width:55px;font-size:11px',
         		allowBlank : false
         	}),
         	'serverOutbox' : new TextField({
         		fieldLabel : "Server-Adresse",
-        		itemCls : 'de-intrabuild-float-left',
-        		width : 100,
+        		itemCls    : 'de-intrabuild-float-left',
+				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
+        		width      : 100,
         		labelStyle : 'width:90px;font-size:11px',
         		allowBlank : false
         	}), 
         	'portOutbox' : new TextField({
         		fieldLabel : "Port",
-        		itemCls : 'de-intrabuild-margin-l-15 de-intrabuild-float-left',
-        		width : 50,
+        		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
+                ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
+        		width      : 50,
         		allowBlank : false,
-        		labelStyle : 'width:30px;font-size:11px',
+        		labelStyle : 'width:55px;font-size:11px',
         		validator  : this.isPortValid.createDelegate(this)
         	}), 
         	'isOutboxAuth' : new Checkbox({
@@ -238,18 +244,20 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	}), 
         	'usernameOutbox' : new TextField({
         		fieldLabel : "Benutzername",
-        		itemCls : 'de-intrabuild-float-left',
-        		width : 100,
-        		disabled : true,
+        		itemCls    : 'de-intrabuild-float-left',
+				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
+        		width      : 100,
+        		disabled   : true,
         		labelStyle : 'width:90px;font-size:11px',
         		allowBlank : false
         	}), 
         	'passwordOutbox' : new TextField({
         		inputType  : 'password',
-        		itemCls : 'de-intrabuild-margin-l-15 de-intrabuild-float-left',
+        		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
+                ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
         		fieldLabel : "Passwort",
-        		width : 50,
-        		disabled : true,
+        		width      : 50,
+        		disabled   : true,
         		labelStyle : 'width:55px;font-size:11px',
         		allowBlank : false
         	}),
