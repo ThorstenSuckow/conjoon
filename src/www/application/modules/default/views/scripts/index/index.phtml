@@ -173,7 +173,13 @@ Ext.onReady(function(){
             {
                 text:'Extras',
                 menu: [{
-                      text:'Konten...',
+                      text : "Feeds...",
+                      handler : function() {
+                          var dialog = new de.intrabuild.groupware.feeds.FeedOptionsDialog();
+                          dialog.show();
+                      }
+                      }, '-', {
+                      text:"Email Konten...",
                       handler : function() {
 						var dialog = new de.intrabuild.groupware.email.EmailAccountDialog();
 						dialog.show();
