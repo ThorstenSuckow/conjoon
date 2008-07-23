@@ -24,7 +24,19 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     
     Ext.apply(this, config);
 
-    
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.EmailViewBaton.onEmailLoad', 
+		this.onEmailItemLoad, 
+		this
+	);  
+	
+	Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.EmailPreview.onLoadSuccess', 
+        this.onEmailItemLoad, 
+        this
+    );
+	
+	
 // ------------------------- set up buffered grid ------------------------------    
     this.store = new Ext.ux.grid.BufferedStore({
         bufferSize  : 100,
@@ -125,8 +137,6 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false])); 
     this.on('contextmenu',    preview.hide.createDelegate(preview, [true])); 
 
-                         
-    preview.on('emailload', this.onPreviewLoad, this);
 };
 
 Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, {
@@ -218,9 +228,9 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         }
     },    
     
-    onPreviewLoad : function(record)
+    onEmailItemLoad : function(subject, message)
     {
-        var rec = this.store.getById(record.id);
+        var rec = this.store.getById(message.id);
         
         if (rec) {
         	this.setItemsAsRead([rec], true);

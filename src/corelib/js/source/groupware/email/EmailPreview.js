@@ -93,8 +93,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     
     var emailView = null;
 
-	var emailViewListeners = [];
-
     var lastRecord = null;
     
 	var emailPreviewFx = null;
@@ -147,15 +145,21 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         loadMask.hide();
 	};
 	
-    var onLoad = function()
+    var onLoadSuccess = function()
     {
         if (!previewPanel) {
             return;
         }
+		
+		lastRecord = emailView.emailRecord;
         
         loadMask.hide();
-        previewPanel.setTitle(emailView.emailRecord.get('subject'));
-        lastRecord = emailView.emailRecord;
+        previewPanel.setTitle(lastRecord.get('subject'));
+		
+		Ext.ux.util.MessageBus.publish(
+            'de.intrabuild.groupware.email.EmailPreview.onLoadSuccess', {
+            id : lastRecord.id
+        });     
     };
 
     /**
@@ -255,16 +259,10 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     			templates : templateConfig
     		});	
     		
-    		emailView.on('emailload', onLoad, de.intrabuild.groupware.email.EmailPreview);
+    		emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
     		emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
 			emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
-    		
-    		var lc = null;
-    		for (var i = 0, len = emailViewListeners.length; i < len; i++) {
-    			lc = emailViewListeners[i];
-    			emailView.on(lc[0], lc[1], lc[2], lc[3]);	
-    		}
-    		
+    		    		
     	}
     	
         var win =  new Ext.Window({
@@ -305,15 +303,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 
     return {
     	
-    	on : function(event, fn, scope, parameters)
-    	{
-    		if (emailView) {
-    			emailView.on(event, fn, scope, parameters);
-    		} else {
-    			emailViewListeners.push([event, fn, scope, parameters]);
-    		}
-    	},
-
         getActiveRecord : function()
         {
             return clkRecord;
