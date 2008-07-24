@@ -18,9 +18,9 @@ Ext.namespace('de.intrabuild.groupware.feeds');
  * Controller for previewing Feed contents.
  * This is a singleton-object and used byde.intrabuild.groupware.feeds.FeedGrid
  * to enable previewing a feed in a panel sliding out left of the grid panel, 
- * aligned to the current selected cell. The panel is closable and draggable. 
- * Upon drag, a new panel will be created and added to the document's body,
- * holding the same content as the preview panel, but behaves like a window.
+ * aligned to the current selected cell. The panel is closable and draggable.
+ * Once a panel was created, it can not be closed such that the object gets 
+ * destroyed.  
  * 
  * The preview panel depends on record properties passed from the grid to the
  * showPreview-method. The needed properties are
@@ -153,9 +153,9 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     var initComponents = function()
     {
         container = Ext.DomHelper.append(document.body, {
-                        id    : 'DOM:de.intrabuild.groupware.feeds.FeedPreview.container',
-                        style : "height:"+(height+5)+"px;width:"+width+"px"
-                     }, true);
+            id    : 'DOM:de.intrabuild.groupware.feeds.FeedPreview.container',
+            style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
+		}, true);
         
     };
 
@@ -163,12 +163,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      * Callback.
      * Called when the preview panel's hide-animation is finished.
      */
-    var onHide = function()
+    var onHide = function(skipAlign)
     {
         previewPanel.getUpdater().abort();
         previewPanel.setTitle('Loading...');
         previewPanel.body.update("");
-        container.alignTo(clkCell, 'tr-tl');
+		if (!skipAlign) {
+			container.alignTo(clkCell, 'tr-tl');
+		}
     };
     
     /**
@@ -177,10 +179,6 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      */
     var onShow = function()
     {
-		if (!previewPanel) {
-			return;
-		}
-		
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
 		
@@ -196,7 +194,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      */
     var decoratePreviewPanel = function()
     {
-        if (clkRecord == null || previewPanel == null) {
+        if (clkRecord == null) {
             return;
         }
         if (requestId !== null) {
@@ -261,7 +259,6 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             }
         });     
 		previewPanel.close();
-		previewPanel = null;
         loadMask.hide();
     };
     
@@ -277,13 +274,11 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     {
 		if (!lastRecord) {
 			previewPanel.close();
-            previewPanel = null;
 			return;
 		}
 		
         var feedItem = lastRecord.copy();
     	previewPanel.close();
-    	previewPanel = null;
     	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);        
     };
     
@@ -308,7 +303,6 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         
         var feedItem = lastRecord.copy();
     	previewPanel.close();
-    	previewPanel = null;
     	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);    
     };    
     
@@ -319,7 +313,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      */
     var createPreviewWindow = function()
     {
-        return new Ext.Window({
+        var win = new Ext.Window({
             cls        : 'de-intrabuild-groupware-feeds-FeedPreview-panel',
             autoScroll : true, 
             title      : 'Loading...', 
@@ -341,6 +335,23 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 			    handler  : openEntryInNewTab
             }]
         });
+		
+        win.initDraggable = function() {
+            Ext.Window.prototype.initDraggable.call(this);  
+            
+            this.dd.b4Drag = function(e) {
+                container.dom.style.overflow = "visible";       
+            };
+            
+            this.dd.endDrag = function(e){
+                this.win.unghost(true, false);
+                this.win.setPosition(0, 0);
+                this.win.saveState();
+                container.dom.style.overflow = "hidden";        
+            };
+        }		
+		
+		return win;
     };
     
 // }}}
@@ -363,7 +374,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             // ignore showPreview if the eventObject tells us that
             // shift or ctrl was pressed
             if (eventObject.shiftKey || eventObject.ctrlKey) {
-                this.hide(false, false);
+                this.hide(false);
                 return;
             }
             
@@ -406,7 +417,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 } else {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
-                    previewPanel.show();
+					container.setDisplayed(true);
                     container.alignTo(clkCell, 'tr-tl');
                     decoratePreviewPanel();
                     previewPanel.el.slideIn('r', {callback: onShow});
@@ -420,7 +431,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 decoratePreviewPanel();
                 previewPanel.el.slideIn('r', {callback: onShow});
                 
-                previewPanel.on('beforeclose', this.hide, this, [true, true]);
+                previewPanel.on('beforeclose', this.hide, this, [true]);
                 previewPanel.on('move', onMove);
             }
             
@@ -434,10 +445,10 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
          *
          * @param {boolean} <tt>true</tt> to skip animation, <tt>false</tt>
          *                  to show.
-         * @param {boolean} <tt>true</tt> to prevent bubbling the event up, 
-                            otherwise <tt>false</tt>.
+         *
+         * @todo update every call since second paramter is now deprecated! 
          */
-        hide : function(skipAnimation, preventBubbling)
+        hide : function(skipAnimation)
         {
             if (previewPanel == null || activeFeedId == null) {
                 return;
@@ -445,13 +456,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             if (!skipAnimation) {
                 previewPanel.el.slideOut("r", {duration : .4,  callback : onHide});
             } else {
-                previewPanel.hide();
-                onHide();
+				container.setDisplayed(false);
+                previewPanel.el.slideOut("r", {useDisplay : false, duration : .1});
+                onHide(true);				
             }
             
             activeFeedId = null;    
             
-            return preventBubbling ===  true ? false : true;
+            return false;
         }
         
     };

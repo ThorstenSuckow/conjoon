@@ -12,8 +12,8 @@ Ext.namespace('de.intrabuild.groupware.email');
  * This is a singleton-object and used byde.intrabuild.groupware.feeds.FeedGrid
  * to enable previewing a feed in a panel sliding out left of the grid panel, 
  * aligned to the current selected cell. The panel is closable and draggable. 
- * Upon drag, a new panel will be created and added to the document's body,
- * holding the same content as the preview panel, but behaves like a window.
+ * Once a panel was created, it can not be closed such that the object gets 
+ * destroyed.
  * 
  * The preview panel depends on record properties passed from the grid to the
  * showPreview-method. The needed properties are
@@ -94,8 +94,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     var emailView = null;
 
     var lastRecord = null;
-    
-	var emailPreviewFx = null;
 
 // }}}
 
@@ -109,10 +107,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onShow = function()
     {
-        if (!previewPanel) {
-            return;
-        }
-				
+		emailView.show();		
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
         
@@ -125,9 +120,8 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     
     var onBeforeLoad = function()
     {
-        if (previewPanel !== null) {
-        	loadMask.show();
-        }
+        loadMask.show();
+		emailView.hide();
     };    
     
 	var onLoadFailure = function(response, options)
@@ -140,16 +134,11 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             }
         });		
         previewPanel.close();
-		previewPanel = null;
-        loadMask.hide();
+		loadMask.hide();
 	};
 	
     var onLoadSuccess = function()
-    {
-        if (!previewPanel) {
-            return;
-        }
-		
+    {		
 		lastRecord = emailView.emailRecord;
         
         loadMask.hide();
@@ -171,10 +160,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         container = Ext.DomHelper.append(document.body, {
 			id    : 'DOM:de.intrabuild.groupware.email.EmailPreview.container',
 			style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
-		}, true);
-        
-        emailPreviewFx = Ext.DomHelper.append(container, {
-            style : "position:absolute;top:0;height:"+(height+5)+"px;width:"+width+"px;"
 		}, true);
     };
 
@@ -199,7 +184,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var decoratePreviewPanel = function()
     {
-        if (clkRecord == null || previewPanel == null) {
+        if (clkRecord == null) {
             return;
         }
       
@@ -224,7 +209,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 		}
 		var emailItem = lastRecord.copy();
     	previewPanel.close();
-		previewPanel = null;
     	var view = de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem);
     };
     
@@ -235,35 +219,33 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var createPreviewWindow = function()
     {
-    	if (!emailView) {
-    		var templateConfig = {
-    			header : new Ext.Template(
-	    			'<div class="de-intrabuild-groupware-email-EmailView-wrap">',
-		               '<div class="de-intrabuild-groupware-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
-		                '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
-		                '{subject}',
-		                '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">Von:</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-		                '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">An:</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
-		                '{cc}',
-		                '{bcc}',
-		               '</div>', 
-		            '</div>'
-	    	)};
-    		
-    		emailView = new de.intrabuild.groupware.email.EmailViewPanel({
-    			autoLoad  : false,
-    			loadMask  : false,
-    			border    : false,
-    			hideMode  : 'offsets',
-    			templates : templateConfig
-    		});	
-    		
-    		emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
-    		emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
-			emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
-    		    		
-    	}
-    	
+		var templateConfig = {
+			header : new Ext.Template(
+    			'<div class="de-intrabuild-groupware-email-EmailView-wrap">',
+	               '<div class="de-intrabuild-groupware-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
+	                '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
+	                '{subject}',
+	                '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">Von:</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+	                '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">An:</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+	                '{cc}',
+	                '{bcc}',
+	               '</div>', 
+	            '</div>'
+    	)};
+		
+		emailView = new de.intrabuild.groupware.email.EmailViewPanel({
+			autoLoad  : false,
+			loadMask  : false,
+			refreshFrame : true,
+			border    : false,
+			hideMode  : 'visibility',
+			templates : templateConfig
+		});	
+		
+		emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
+		emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
+		emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
+		  
         var win =  new Ext.Window({
             bodyStyle  : 'background:white;', 
             autoScroll : false, 
@@ -272,12 +254,13 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             iconCls    : 'de-intrabuild-groupware-email-EmailPreview-Icon', 
             resizable  : false, 
             shadow     : false, 
-            hideMode   : 'offsets',
+            hideMode   : 'visibility',
             items 	   : [emailView],
             height     : height,
             width      : width
         });
         
+	
         win.initDraggable = function() {
         	Ext.Window.prototype.initDraggable.call(this);	
         	
@@ -348,38 +331,41 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
                 // abort all pending operations    
-                emailPreviewFx.stopFx();
+                previewPanel.el.stopFx();
                 
                 if (activeEmailId != null) {
                     // if the activeEmailId does not equal to zero, the 
                     // previewPanel was hidden using the animation effect.
-                    emailPreviewFx.slideOut('r', {
-                    					wrap : emailPreviewFx,
-                                        duration : .4, 
+                    previewPanel.el.slideOut('r', {
+                    					duration : .4, 
                                         useDisplay: false,
                                         callback : function(){
                                             onHide();
-                                            decoratePreviewPanel();}, 
+											decoratePreviewPanel();
+											emailView.hide();
+										}, 
                                         scope:this
                                    })
-                                   .slideIn('l', {callback : onShow, duration : .4, wrap : emailPreviewFx, useDisplay: false});
+								   .slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
+					
+                    
+                    
                 } else {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
-                    previewPanel.show();
-                    container.alignTo(clkCell, 'tr-tl');
+					container.setDisplayed(true);
+					container.alignTo(clkCell, 'tr-tl');
                     decoratePreviewPanel();
-                    emailPreviewFx.slideIn('l', {callback : onShow, duration : .4, wrap : emailPreviewFx, useDisplay: false});
+                    previewPanel.el.slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
                 }
             } else {
                 container.alignTo(clkCell, 'tr-tl');
                 previewPanel = createPreviewWindow();
-                previewPanel.render(emailPreviewFx);
+				previewPanel.render(container);
                 loadMask = new Ext.LoadMask(previewPanel.el.dom);
                 previewPanel.show();
                 decoratePreviewPanel();
-                emailPreviewFx.slideIn('l', {callback : onShow, duration : .4, wrap : emailPreviewFx, useDisplay: false});
-                
+                previewPanel.el.slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
                 previewPanel.on('beforeclose', this.hide, this, [true, true]);
                 previewPanel.on('move', onMove);
             }
@@ -394,25 +380,26 @@ de.intrabuild.groupware.email.EmailPreview = function() {
          *
          * @param {boolean} <tt>true</tt> to skip animation, <tt>false</tt>
          *                  to show.
-         * @param {boolean} <tt>true</tt> to prevent bubbling the event up, 
-                            otherwise <tt>false</tt>.
+         *                  
+         * @todo update every call since second paramter is now deprecated!                  
          */
-        hide : function(skipAnimation, preventBubbling)
+        hide : function(skipAnimation)
         {
             if (previewPanel == null || activeEmailId == null) {
                 return;
             }
             if (!skipAnimation) {
-                emailPreviewFx.slideOut("r", {wrap : emailPreviewFx, useDisplay : false, duration : .4,  callback : onHide});
+                previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .4,  callback : onHide});
             } else {
-                previewPanel.hide();
-                onHide(true);
+				container.setDisplayed(false);
+				previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .1});
+				onHide(true);
             }
             
             lastRecord   = null;
             activeEmailId = null;    
             
-            return preventBubbling ===  true ? false : true;
+            return false;
         }
         
     };
