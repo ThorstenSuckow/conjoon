@@ -268,7 +268,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
     _onBeforeLogin : function(basicForm, action)
     {
-        this._stateIndicator.setMessage("Please wait, trying to login...", "loading");
+        this._stateIndicator.setMessage(de.intrabuild.Gettext.gettext("Please wait, trying to login..."), "loading");
     },
 
     /**
@@ -281,7 +281,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
     _onLoginSuccess : function(basicForm, action)
     {
-        this._stateIndicator.setMessage("Login valid!", 'ok');    
+        this._stateIndicator.setMessage(de.intrabuild.Gettext.gettext("Login valid!"), 'ok');    
         this.fireEvent('loginsuccess', this, basicForm, action);    
     },
 
@@ -299,13 +299,13 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 		if (action) {
             if (action.failureType == Ext.form.Action.CONNECT_FAILURE) {
                 this._stateIndicator.setErrorMessage(
-				    "Unexpected error: Connection to server lost."
+				    de.intrabuild.Gettext.gettext("Unexpected error: Connection to server lost.")
 			     );
             } else if (action.result && action.result.error) {
                 this._stateIndicator.setErrorMessage(action.result.error);
             } else {
 				this._stateIndicator.setErrorMessage(
-				    "Unexpected error: An unknown error occured"
+				    de.intrabuild.Gettext.gettext("Unexpected error: An unknown error occured")
 				);
 			}
 		}
@@ -459,7 +459,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createLoginButton : function()
     {
         var lbutton = new Ext.Button({
-            text     : "Login",
+            text     : de.intrabuild.Gettext.gettext("Login"),
             minWidth : 75,
             disabled : true,
             handler  : this._onLoginButtonClick,
@@ -480,7 +480,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createExitButton : function()
     {
         var ebutton = new Ext.Button({
-            text     : "Exit",
+            text     : de.intrabuild.Gettext.gettext("Exit"),
             minWidth : 75,
             handler  : this._onExitButtonClick,
             scope    : this   
@@ -499,7 +499,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createUsernameField : function()
     {
         return new Ext.form.TextField({
-            fieldLabel  : "Username",
+            fieldLabel  : de.intrabuild.Gettext.gettext("User name"),
             name        : 'username',
             preventMark : true,
             allowBlank  : false,
@@ -526,7 +526,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             allowBlank  : false,
             preventMark : true,
             name        : 'password',
-            fieldLabel  : "Password",
+            fieldLabel  : de.intrabuild.Gettext.gettext("Password"),
             listeners   : {
                 specialkey  : {
                     fn    : this._onSpecialKey,
@@ -545,8 +545,8 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 	{
         return new de.intrabuild.groupware.util.FormIntro({
             style   : 'margin:0px 0 10px 0;',
-            label   : "Login",
-            text    : "Please input your username and your password. Press &quot;Login&quot; when ready."   
+            label   : de.intrabuild.Gettext.gettext("Login"),
+            text    : de.intrabuild.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")   
         });
     },
 	    

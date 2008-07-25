@@ -35,8 +35,8 @@ de.intrabuild.groupware.QuickEditPanel = function(){
 				var msg   = Ext.MessageBox;
 			        msg.show({
 			        	prompt : true,
-			            title   : "Video laden",
-			            msg     : "Geben Sie die Youtube-Id des Videos an oder die URL, von der das Video geladen werden soll.",
+			            title   : de.intrabuild.Gettext.gettext("Load video"),
+			            msg     : de.intrabuild.Gettext.gettext("Please submit the id or the full url of the youtube video you want to load."),
 			            buttons : msg.OKCANCEL,
 			            fn      : function(btn, text){
 									var id = control._parseVideoId(text);

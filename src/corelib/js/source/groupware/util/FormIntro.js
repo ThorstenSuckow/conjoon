@@ -25,7 +25,7 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 		  	children : [{
 		  		tag	 : 'div',
 		  		cls  :	'de-intrabuild-groupware-util-FormIntro-label',
-		  		html : 'Formintro'
+		  		html : ''
 		  	}, {
 		  		tag	 	 : 'div',
 		  		cls	 	 : 'de-intrabuild-groupware-util-FormIntro-outersep',

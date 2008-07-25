@@ -137,7 +137,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         url: '/groupware/feeds/get.feed.content/format/json',
         discardUrl: false,
         nocache: true,
-        text: "Bitte warten. Lade Feed.",
+        text: de.intrabuild.Gettext.gettext("Please wait. Loading entry..."),
         timeout: 30,
         scripts: false
     };
@@ -166,7 +166,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     var onHide = function(skipAlign)
     {
         previewPanel.getUpdater().abort();
-        previewPanel.setTitle('Loading...');
+        previewPanel.setTitle(de.intrabuild.Gettext.gettext("Loading..."));
         previewPanel.body.update("");
 		if (!skipAlign) {
 			container.alignTo(clkCell, 'tr-tl');
@@ -202,7 +202,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         }
         loadMask.show();
         var feedTitle = clkRecord.get('title');
-        previewPanel.setTitle("Loading");
+        previewPanel.setTitle(de.intrabuild.Gettext.gettext("Loading"));
         
         requestId = Ext.Ajax.request({
             url       : '/groupware/feeds/get.feed.content/format/json',
@@ -316,7 +316,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         var win = new Ext.Window({
             cls        : 'de-intrabuild-groupware-feeds-FeedPreview-panel',
             autoScroll : true, 
-            title      : 'Loading...', 
+            title      : de.intrabuild.Gettext.gettext("Loading..."), 
             iconCls    : 'de-intrabuild-groupware-feeds-FeedPreview-Icon', 
             resizable  : false, 
             shadow     : false, 
@@ -326,12 +326,12 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             bbar       : [{
                 cls      : 'x-btn-text-icon',  
 			    iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-visitEntryButton-icon',
-			    text     : '&#160;Visit entry',
+			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
 			    handler  : visitFeedEntry
             }, {
                 cls      : 'x-btn-text-icon',  
 			    iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-openFeedButton-icon',
-			    text     : '&#160;Open in new tab',
+			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Open in new tab"),
 			    handler  : openEntryInNewTab
             }]
         });

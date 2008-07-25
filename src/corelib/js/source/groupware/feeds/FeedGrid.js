@@ -36,25 +36,25 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     
     this.columns = [{
         id:'name',
-        header: "Feed", 
+        header: de.intrabuild.Gettext.gettext("Feed"), 
         hidden:true, 
         width: 120, 
         sortable: true, 
         dataIndex: 'name'
       },{
         id:'title',
-        header: "Titel", 
+        header: de.intrabuild.Gettext.gettext("Title"), 
         width: 220, 
         sortable: true, 
         dataIndex: 'title'
       },{
-        header: "Beschreibung", 
+        header: de.intrabuild.Gettext.gettext("Description"), 
         hidden:true, 
         width: 180,
         sortable: true, 
         dataIndex: 'description'
       },{
-        header: "Datum", 
+        header: de.intrabuild.Gettext.gettext("Date"), 
         width: 120, 
         hidden:true, 
         sortable: true, 
@@ -77,7 +77,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     var displayOptionsMenu = new Ext.menu.Menu({
         items: [{
             id : 'groupFeeds',
-            text: 'nach Feeds gruppieren',
+            text: de.intrabuild.Gettext.gettext("group after feeds"),
             checked: true,
             //group: 'de.intrabuild.groupware.FeedGrid.display',
             checkHandler: this.toggleGroupView,
@@ -85,7 +85,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
           },
           "-",{
             iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon',
-            text    : "Einstellungen...",
+            text    : de.intrabuild.Gettext.gettext("Settings..."),
             scope   : this,
             handler : function() {
                 var optDialog = new de.intrabuild.groupware.feeds.FeedOptionsDialog();
@@ -125,11 +125,11 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     
     de.intrabuild.groupware.feeds.FeedGrid.superclass.constructor.call(this, {
         
-        loadMask : {msg:'Lade Feeds...'},
+        loadMask : {msg: de.intrabuild.Gettext.gettext("Loading feeds...")},
 
         autoScroll:true,
         style:'cursor:default',
-        title: 'Feeds',
+        title: de.intrabuild.Gettext.gettext("Feeds"),
         iconCls: 'de-intrabuild-groupware-feeds-Icon',
         border:false,
         hideBorders:true
@@ -326,7 +326,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
         if(!this.menu){ // create context menu on first right click
             this.menu = new Ext.menu.Menu({
                 items: [{
-                    text: 'Aktualisieren',
+                    text: de.intrabuild.Gettext.gettext("Refresh"),
                     scope:this,
                     handler: function(){
                         this.clkRow    = null;
@@ -335,18 +335,18 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
                         this.store.reload();}  
                   }, 
                  '-',{
-                    text: 'als gelesen markieren',
+                    text: de.intrabuild.Gettext.gettext("mark as read"),
                     scope:this,
                     handler: function(){
                         this.markItemsRead(true);}
                   },{
-                    text: 'als ungelesen markieren',
+                    text: de.intrabuild.Gettext.gettext("mark as unread"),
                     scope:this,
                     handler: function(){
                         this.markItemsRead(false);}
                   },
                   '-',{
-                    text:'Einstellungen...',
+                    text : de.intrabuild.Gettext.gettext("Settings..."),
                     scope:this,
                     handler: function(){
                         var dialog = new de.intrabuild.groupware.feeds.FeedOptionsDialog();

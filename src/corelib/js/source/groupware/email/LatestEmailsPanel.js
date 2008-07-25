@@ -60,7 +60,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     this.view = new Ext.ux.grid.BufferedGridView({
         nearLimit : 25,
         loadMask  : {
-            msg : "Please wait..."
+            msg : de.intrabuild.Gettext.gettext("Please wait...")
         },
         getRowClass : function(record, rowIndex, p, ds){
             if (record.data.isRead) {
@@ -75,12 +75,12 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
 // ------------------------- ^^ EO set up buffered grid ------------------------   
     
     this.columns = [{
-        header    : "Subject", 
+        header    : de.intrabuild.Gettext.gettext("Subject"), 
         width     : 160,
         sortable  : false, 
         dataIndex : 'subject'
       },{
-        header    : "From", 
+        header    : de.intrabuild.Gettext.gettext("From"), 
         width     : 160,
         sortable  : false, 
         dataIndex : 'from'
@@ -89,7 +89,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     
     this.fetchAllButton = new Ext.Toolbar.Button({
         //cls: 'x-btn-icon',
-        text    : "Receive all",
+        text    : de.intrabuild.Gettext.gettext("Receive all"),
         iconCls : 'de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon',
         handler : de.intrabuild.groupware.email.Letterman.peekIntoInbox,
         scope   : de.intrabuild.groupware.email.Letterman
@@ -105,10 +105,12 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     
 
     de.intrabuild.groupware.email.EmailGrid.superclass.constructor.call(this, {
-        title          : "Newest Emails",
+        title          : de.intrabuild.Gettext.gettext("Newest Emails"),
         border         : false,
         iconCls        : 'de-intrabuild-groupware-quickpanel-EmailIcon',
-        loadMask       : {msg:"Loading..."},
+        loadMask       : {
+			msg : de.intrabuild.Gettext.gettext("Loading...")
+		},
         autoScroll     : true//,
         //cls            : 'de-intrabuild-groupware-email-EmailGrid'
     });
@@ -247,7 +249,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
             this.queue = null;
             this.view.un('rowsinserted', this.processQueue, this);    
             this.fetchAllButton.setDisabled(false);
-            this.fetchAllButton.setText("Receive all");
+            this.fetchAllButton.setText(de.intrabuild.Gettext.gettext("Receive all"));
             this.fetchAllButton.setIconClass('de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon');
             return;
         }
@@ -260,14 +262,14 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
     {
         this.fetchAllButton.setDisabled(true);
         this.fetchAllButton.setIconClass('de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon-loading');
-        this.fetchAllButton.setText("Receiving...");
+        this.fetchAllButton.setText(de.intrabuild.Gettext.gettext("Receiving..."));
     },
 
     onLettermanLoadException : function()
     {
         this.fetchAllButton.setDisabled(false);
         this.fetchAllButton.setIconClass('de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon');
-        this.fetchAllButton.setText("Receive all");
+        this.fetchAllButton.setText(de.intrabuild.Gettext.gettext("Receive all"));
     },
 
     /**
@@ -358,11 +360,11 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         if(!this.menu){ 
             this.menu = new Ext.menu.Menu({
                 items: [{
-                    text    : "mark item as read",
+                    text    : de.intrabuild.Gettext.gettext("mark item as read"),
                     scope   : this,
                     handler : function(){this.setItemsAsRead(this.selModel.getSelections(), true);}
                   },{
-                    text    : "mark item as unread",
+                    text    : de.intrabuild.Gettext.gettext("mark item as unread"),
                     scope   : this,
                     handler : function(){this.setItemsAsRead(this.selModel.getSelections(), false);}
                   }]

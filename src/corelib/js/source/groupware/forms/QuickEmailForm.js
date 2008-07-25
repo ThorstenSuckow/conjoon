@@ -65,7 +65,7 @@ de.intrabuild.groupware.forms.QuickEmailForm = function() {
                 labelWidth: 0,
                 frame:false,
                 labelAlign:'left',
-                title: 'Email',
+                title: de.intrabuild.Gettext.gettext("Email"),
                 bodyStyle:'background:#DFE8F6;padding:5px;',
                 cls: 'x-small-editor',
                 labelPad: 0,

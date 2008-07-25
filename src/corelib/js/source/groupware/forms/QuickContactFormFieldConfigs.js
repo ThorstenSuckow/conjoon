@@ -9,16 +9,16 @@ var fields = de.intrabuild.groupware.forms.QuickContactFormFieldConfigs;
 fields.textField = {
     
     firstname :{
-        fieldLabel: 'Vorname',
+        fieldLabel: de.intrabuild.Gettext.gettext("First name"),
         name: 'first',
-        emptyText:'<Vorname>',
+        emptyText:de.intrabuild.Gettext.gettext("<First name>"),
         anchor: '100%'
     },
     
     
     lastname : {
-        fieldLabel: 'Nachname',
-        emptyText:'<Nachname>',
+        fieldLabel: de.intrabuild.Gettext.gettext("Last name"),
+        emptyText:de.intrabuild.Gettext.gettext("<Last name>"),
         name: 'true',
         anchor: '100%'
         
@@ -26,9 +26,9 @@ fields.textField = {
     
     
     email : {
-        fieldLabel: 'Email',
+        fieldLabel: de.intrabuild.Gettext.gettext("Email"),
         name: 'email',
-        emptyText:'<Email-Adresse>',
+        emptyText:de.intrabuild.Gettext.gettext("<Email address>"),
         vtype:'email',
         anchor: '100%'
     }
@@ -38,18 +38,18 @@ fields.textField = {
 fields.checkbox = {
     
     switchToEdit :{
-        boxLabel: 'zum Bearbeiten wechseln'
+        boxLabel: de.intrabuild.Gettext.gettext("switch to edit mode")
     }
 };
 
 fields.button = {
     
     save : {
-        text : 'Speichern'
+        text : de.intrabuild.Gettext.gettext("Save")
     },
     
     cancel : {
-        text : 'Abbrechen'    
+        text : de.intrabuild.Gettext.gettext("Cancel")    
     }
 }
 

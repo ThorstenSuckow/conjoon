@@ -129,14 +129,14 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 			hideHeaders    : true,
         	trackMouseOver : false,
         	columns		  : [{
-        		header	  : "Kontoname",
+        		header	  : de.intrabuild.Gettext.gettext("Account name"),
         		width	  : 173, 
         		sortable  : true,
         		dataIndex : 'name',
         		sortable  : true,
         		renderer  : function(value, metadata, record, rowIndex, colIndex, store) {
         			if (record.get('name') == "") {
-        				return "(Konten-Bezeichnung leer)";
+        				return de.intrabuild.Gettext.gettext("(no account name set)");
         			} 
         			
         			return record.get('name');
@@ -161,33 +161,33 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         
         this.fields = {
         	'name' : new TextField({
-        		fieldLabel : "Konten-Bezeichnung",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Account name"),
         		allowBlank : false,
         		validator  : this.isAccountNameValid.createDelegate(this)
         	}),
         	'userName' : new TextField({
-        		fieldLabel : "Ihr Name",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Your name"),
         		allowBlank : false
         	}),	
         	'address' : new TextField({
-        		fieldLabel : "Email-Adresse",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Email address"),
         		allowBlank : false,
         		validator  : Ext.form.VTypes.email
         	}),	
         	'replyAddress' : new TextField({
-        		fieldLabel : "Antwort an",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Reply to"),
         		allowBlank : true,
         		validator  : Ext.form.VTypes.email
         	}),
         	'protocol' : new TextField({
         		labelStyle : 'width:50px;font-size:11px',
-        		fieldLabel : "Protokoll",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Protocol"),
         		disabled   : true,
         		value	   : 'POP3',
         		width	   : 50
         	}),
         	'serverInbox' : new TextField({
-        		fieldLabel : "Server-Adresse",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Host"),
         		itemCls    : 'de-intrabuild-float-left',
         		width      : 100,
 				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
@@ -196,7 +196,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		validator  : this.isServerInboxValid.createDelegate(this)
         	}),
         	'portInbox' : new TextField({
-        		fieldLabel : "Port",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Port"),
         		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
         		width      : 50,
 				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
@@ -205,7 +205,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		validator  : this.isPortValid.createDelegate(this)
         	}),
         	'usernameInbox' : new TextField({
-        		fieldLabel : "Benutzername",
+        		fieldLabel : de.intrabuild.Gettext.gettext("User name"),
         		itemCls    : 'de-intrabuild-float-left',
 				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
         		width      : 100,
@@ -216,13 +216,13 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		inputType  : 'password',
         		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
 				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
-        		fieldLabel : "Passwort",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Password"),
         		width      : 50,
         		labelStyle : 'width:55px;font-size:11px',
         		allowBlank : false
         	}),
         	'serverOutbox' : new TextField({
-        		fieldLabel : "Server-Adresse",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Host"),
         		itemCls    : 'de-intrabuild-float-left',
 				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
         		width      : 100,
@@ -230,7 +230,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		allowBlank : false
         	}), 
         	'portOutbox' : new TextField({
-        		fieldLabel : "Port",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Port"),
         		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
                 ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
         		width      : 50,
@@ -239,11 +239,11 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		validator  : this.isPortValid.createDelegate(this)
         	}), 
         	'isOutboxAuth' : new Checkbox({
-        		fieldLabel : 'Server erfordert Authentifizierung',
+        		fieldLabel : de.intrabuild.Gettext.gettext("Server requires authorization"),
         		labelStyle : 'width:175px;font-size:11px'
         	}), 
         	'usernameOutbox' : new TextField({
-        		fieldLabel : "Benutzername",
+        		fieldLabel : de.intrabuild.Gettext.gettext("User name"),
         		itemCls    : 'de-intrabuild-float-left',
 				ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col1',
         		width      : 100,
@@ -255,7 +255,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		inputType  : 'password',
         		itemCls    : (Ext.isIE ? 'de-intrabuild-margin-l-25 ' : '' )+'de-intrabuild-float-left',
                 ctCls      : Ext.isIE ? undefined : 'de-intrabuild-groupware-email-EmailAccountDialog-serverCard-col2',
-        		fieldLabel : "Passwort",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Password"),
         		width      : 50,
         		disabled   : true,
         		labelStyle : 'width:55px;font-size:11px',
@@ -263,16 +263,16 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	}),
         	'isCopyLeftOnServer' : new Checkbox({
         		labelStyle : 'width:165px;font-size:11px',
-        		fieldLabel : "Nachrichten vom Server l&ouml;schen"		
+        		fieldLabel : de.intrabuild.Gettext.gettext("Delete messages from server")		
         	}),
         	'isSignatureUsed' : new Checkbox({
-        		fieldLabel : 'Signatur verwenden',
+        		fieldLabel : de.intrabuild.Gettext.gettext("Use signature"),
         		labelStyle : 'width:105px;font-size:11px'
         	}), 
         	'signature' : new TextArea({
         		disabled   : true,
         		labelStyle : 'width:105px;font-size:11px',
-        		fieldLabel : "Signatur-Text",
+        		fieldLabel : de.intrabuild.Gettext.gettext("Signature"),
         		style	   : 'font-family:Courier new, Times new Roman, helvetica, Arial, Verdana',
         		width 	   : 250,
         		height	   : 95	   		
@@ -282,7 +282,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         var fields = this.fields;
         
         var identitySettingsPanel = new Ext.FormPanel({
-        	title		: 'Identit&auml;t',
+        	title		: de.intrabuild.Gettext.gettext("Identity"),
         	bodyStyle	: 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
         	defaultType : 'textfield',
         	baseCls     : 'x-small-editor',
@@ -294,14 +294,14 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
              },
         	items 	    : [new de.intrabuild.groupware.util.FormIntro({
         		style   : 'margin:10px 0 5px 0;',
-        		label	: "Kontobezeichnung",
-        		text	: "&Uuml;ber diesen Namen wird das Email-Konto identifiziert."	
+        		label	: de.intrabuild.Gettext.gettext("Account name"),
+        		text	: de.intrabuild.Gettext.gettext("This name is used to identify the account later on.")	
         	}), 
         	fields['name'], 
         	new de.intrabuild.groupware.util.FormIntro({
         		style   : 'margin:15px 0 5px 0;',
-        		label	: "Pers&ouml;nliche Informationen",
-        		text	: "Die folgenden Informationen werden den Empf&auml;ngern Ihrer Email-Nachrichten &uuml;bermittelt."	
+        		label	: de.intrabuild.Gettext.gettext("Personal Informations"),
+        		text	: de.intrabuild.Gettext.gettext("The following informations will be visible to the recipients of your email messages.")	
         	}), 
         	fields['address'], 
         	fields['userName'], 
@@ -309,7 +309,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	]	
         });
         var serverSettingsPanel = new Ext.FormPanel({
-        	title	  	: 'Server',
+        	title	  	: de.intrabuild.Gettext.gettext("Server"),
         	bodyStyle	: 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
         	defaultType : 'textfield',
         	baseCls     : 'x-small-editor',
@@ -319,8 +319,8 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		fields['protocol'], 
         		new de.intrabuild.groupware.util.FormIntro({
 	        		style   : 'margin:10px 0 5px 0;',
-	        		label	: "Posteingang",
-	        		text	: "Mit diesen Verbindungseinstellungen werden die Nachrichten f&uuml;r dieses Konto von dem Server abgerufen."	
+	        		label	: de.intrabuild.Gettext.gettext("Inbox"),
+	        		text	: de.intrabuild.Gettext.gettext("These settings will be used to connect to the inbox server and retrieve new email messages.")	
         	}), 
         		fields['serverInbox'], 
         		fields['portInbox'],
@@ -329,8 +329,8 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         		fields['passwordInbox'],
         		new de.intrabuild.groupware.util.Clear(), new de.intrabuild.groupware.util.FormIntro({
 	        		style   : 'margin:10px 0 5px 0;',
-	        		label	: "Postausgang",
-	        		text	: "Mit diesen Verbindungseinstellungen werden die Nachrichten f&uuml;r dieses Konto &uuml;ber den Server versendet."	
+	        		label	: de.intrabuild.Gettext.gettext("Outbox"),
+	        		text	: de.intrabuild.Gettext.gettext("These settings will be used to connect to the outbox server to send email messages.")	
         	}), 
         		fields['serverOutbox'],
         		fields['portOutbox'],
@@ -341,30 +341,30 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	]	        		
         });
         var commonSettingsPanel = new Ext.FormPanel({
-        	title		: 'Einstellungen',
+        	title		: de.intrabuild.Gettext.gettext("Settings"),
         	bodyStyle	: 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
         	defaultType : 'textfield',
         	baseCls     : 'x-small-editor',
         	labelAlign : 'left',
         	items 	    : [new de.intrabuild.groupware.util.FormIntro({
         		style : 'margin:10px 0 5px 0;',
-        		label : "Nachrichten abrufen",
-        		text  : "Sie k&ouml;nnen die Nachrichten nach dem Herunterladen von dem Server automatisch löschen lassen. Wenn Sie noch andere Programme zum Abrufen Ihrer Emails benutzen, lohnt es sich, diese Option nicht zu aktivieren."
+        		label : de.intrabuild.Gettext.gettext("Fetch messages"),
+        		text  : de.intrabuild.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.")
         	}), 
         	fields['isCopyLeftOnServer']
         	]
         });
         
         var signatureSettingsPanel = new Ext.FormPanel({
-        	title		: 'Signatur',
+        	title		: de.intrabuild.Gettext.gettext("Signature"),
         	bodyStyle	: 'padding:5px 15px 5px 15px;background-color:#F6F6F6',
         	defaultType : 'textfield',
         	baseCls     : 'x-small-editor',
         	labelAlign : 'left',
         	items 	    : [new de.intrabuild.groupware.util.FormIntro({
         		style : 'margin:10px 0 5px 0;',
-        		label : "Signatur erstellen",
-        		text  : "Sie k&ouml;nnen f&uuml;r dieses Konto eine Signatur erstellen, die jeweils an das Ende Ihrer erstellten Nachrichten angehangen wird."
+        		label : de.intrabuild.Gettext.gettext("Create signature"),
+        		text  : de.intrabuild.Gettext.gettext("You can create a signature which will then be appended to each message you send using this account.")
         	}), 
         		fields['isSignatureUsed'],
         		fields['signature']
@@ -378,8 +378,8 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	items	 : [
 	        	new de.intrabuild.groupware.util.FormIntro({
 	        		style : 'margin:10px 0 5px 0;',
-	        		label : "Email-Konten",
-	        		text  : "W&auml;hlen Sie ein Konto aus, um es zu bearbeiten, oder erstellen Sie ein neues."
+	        		label : de.intrabuild.Gettext.gettext("Email accounts"),
+	        		text  : de.intrabuild.Gettext.gettext("Chose an existing account for editing or create a new one.")
 	        	})
         	]
         });
@@ -416,7 +416,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 	     * Button for adding an account
 	     */
 	    this.addAccountButton = new Ext.Button({
-	        text     : 'Konto hinzuf&uuml;gen...',
+	        text     : de.intrabuild.Gettext.gettext("Add account..."),
 	        cls      : 'de-intrabuild-margin-b-5',
 	        minWidth : 175,
 	        handler  : function(){
@@ -429,7 +429,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 	     * Button for removing an account
 	     */
 	    this.setAccountAsStandardButton = new Ext.Button({
-	        text     : 'Als Standard festlegen',
+	        text     : de.intrabuild.Gettext.gettext("Use as standard"),
 	        cls      : 'de-intrabuild-margin-b-5',
 	        minWidth : 175,    
 	        disabled : true,
@@ -441,7 +441,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 	     * Button for removing an account
 	     */
 	    this.removeAccountButton = new Ext.Button({
-	        text     : 'Konto entfernen',
+	        text     : de.intrabuild.Gettext.gettext("Remove account"),
 	        minWidth : 175,    
 	        disabled : true,
 	        handler  : this.onRemoveAccount,
@@ -481,17 +481,17 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
     	this.bodyStyle = 'background-color:#F6F6F6';
 
 		this.okButton = new Ext.Button({
-    		text : "OK",
+    		text : de.intrabuild.Gettext.gettext("OK"),
     		minWidth : 75
     	});
 
 		this.cancelButton = new Ext.Button({
-    		text 	 : "Abbrechen",
+    		text 	 : de.intrabuild.Gettext.gettext("Cancel"),
     		minWidth : 75
     	});
 		
 		this.applyButton = new Ext.Button({
-    		text 	 : "&Uuml;bernehmen",
+    		text 	 : de.intrabuild.Gettext.gettext("Apply"),
     		disabled : true,
     		minWidth : 75
     	});
@@ -713,43 +713,43 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 		
 		switch (errorType) {
 			case 'name':
-				message = "Die Kontenbezeichnung ist nicht vorhanden, fehlerhaft oder kommt doppelt vor.";
+				message = de.intrabuild.Gettext.gettext("Check the account name. It is either missing or the specified name does already exist for another account.");
 			break;
 			case 'userName':
-				message = "Der pers&ouml;nliche Name f&uuml;r dieses Konto mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You have to specify your name for this account.");
 			break;
 			case 'address':
-				message = "Bei der angegebenen Adresse handelt es sich um keine g&uuml;ltige Email-Adresse.";
+				message = de.intrabuild.Gettext.gettext("The specified email address does not seem to be in a valid format.");
 			break;
 			case 'replyAddress':
-				message = "Bei der angegebenen Adresse f&uuml;r die R&uuml;ckantwort handelt es sich um keine g&uuml;ltige Email-Adresse.";
+				message = de.intrabuild.Gettext.gettext("The specified reply email address does not seem to be in a valid format.");
 			break;
 			case 'serverInbox':
-				message = "Der Server f&uuml;r den Posteingang mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You must specify the host for the inbox server.");
 			break;
 			case 'portInbox':
-				message = "Der Port f&uuml;r den Posteingangsserver ist nicht vorhanden oder fehlerhaft.";
+				message = de.intrabuild.Gettext.gettext("You must specify a valid value for the port of the inbox server.");
 			break;
 			case 'usernameInbox':
-				message = "Der Benutzername f&uuml;r den Posteingangsserver mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You must specify a user name for the inbox server.");
 			break;
 			case 'passwordInbox':
-				message = "Das Passwort f&uuml;r den Posteingangsserver mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You must specify a password for the inbox server.");
 			break;
 			case 'serverOutbox':
-				message = "Der Server f&uuml;r den Postausgang mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You must specify the host for the outbox server.");
 			break;
 			case 'portOutbox':
-				message = "Der Port f&uuml;r den Postausgangsserver ist nicht vorhanden oder fehlerhaft.";
+				message = de.intrabuild.Gettext.gettext("You must specify a valid value for the port of the outbox server.");
 			break;
 			case 'usernameOutbox':
-				message = "Der Benutzername f&uuml;r den Postausgangsserver mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You must specify a user name for the outbox server.");
 			break;
 			case 'passwordOutbox':
-				message = "Das Passwort f&uuml;r den Postausgangsserver mu&szlig; angegeben werden.";
+				message = de.intrabuild.Gettext.gettext("You must specify a password for the outbox server.");
 			break;
 			default:
-				message = "Ein unbekannter Fehler ist aufgetreten.";
+				message = de.intrabuild.Gettext.gettext("An unknown error occured.");
 			break;
 		}
 		
@@ -761,7 +761,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         	at = fields[errorType].el.dom.id;
         }
         msg.show({
-            title         : 'Fehler',
+            title         : de.intrabuild.Gettext.gettext("Error"),
             msg           : message,
             buttons       : msg.OK,
             icon          : msg.WARNING,
@@ -945,11 +945,11 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         }
         
         if (failureBoth) {
-        	message = "Einige Email-Konten konnten weder gel&ouml;scht noch aktualisiert werden. Die entsprechenden &Auml;nderungen wurden r&uuml;ckg&auml;ngig gemacht.";
+        	message = de.intrabuild.Gettext.gettext("Some email accounts could neither be deleted nor updated. All changes have been reset.");
         } else if (failureDel) {
-        	message = "Einige Email-Konten konnten nicht gel&ouml;scht werden. Die entsprechenden &Auml;nderungen wurden r&uuml;ckg&auml;ngig gemacht.";
+        	message = de.intrabuild.Gettext.gettext("Some email accounts could not be deleted. All changes have been reset.");
         } else if (failureUpd) {
-        	message = "Einige Email-Konten konnten nicht aktualisiert werden. Die entsprechenden &Auml;nderungen wurden r&uuml;ckg&auml;ngig gemacht.";
+        	message = de.intrabuild.Gettext.gettext("Some email accounts could not be upated. The changes have been reset.");
         }
         
         this.requestId = null;
@@ -1206,8 +1206,8 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         var msg  = Ext.MessageBox;
         
         msg.show({
-            title   : "Email-Konto entfernen",
-            msg     : "Sind Sie sicher, da&szlig; Sie den Email-Account '"+record.get('name')+"' entfernen wollen?",
+            title   : de.intrabuild.Gettext.gettext("Remove email account"),
+            msg     : String.format(de.intrabuild.Gettext.gettext("Do you really want to remove the account \"{0}\"?"), record.get('name')),
             buttons : msg.YESNO,
             fn      : function(b) {
                         if (b == 'yes') {

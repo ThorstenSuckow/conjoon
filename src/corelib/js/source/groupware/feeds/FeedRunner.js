@@ -117,12 +117,19 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
         
     };
     
+	/**
+	 * 
+	 * @param {Number} feedCount any value > 0
+	 */
     var notifyUser = function(feedCount)
     {
-        var text = "There "+(feedCount > 1 ? "are " : "is ")+"<b>"+feedCount+"</b> new feed"+(feedCount > 1 ? "s " : " ")+"available.";  
-        
+		var text = String.format(
+            de.intrabuild.Gettext.ngettext("There is one new feed entry available", "There are {0} new feed entries available", feedCount),
+            length
+        );
+		
         new Ext.ux.ToastWindow({    
-            title   : "New feed"+(feedCount > 1 ? "s" : "")+" available",    
+            title   : de.intrabuild.Gettext.ngettext("New feed entry available", "New feed entries available", feedCount),    
             html    : text
         }).show(document); 
 

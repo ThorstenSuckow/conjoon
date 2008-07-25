@@ -293,7 +293,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
             var error = json.forceErrorDecode(resp);
               
             msg.show({
-                title   : error.title || 'Error',
+                title   : error.title || de.intrabuild.Gettext.gettext("Error"),
                 msg     : error.message,
                 buttons : msg.OK,
                 icon    : msg[error.level.toUpperCase()],

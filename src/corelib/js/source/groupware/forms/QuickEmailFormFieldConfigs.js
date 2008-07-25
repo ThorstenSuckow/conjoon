@@ -9,16 +9,16 @@ var fields = de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs;
 fields.textField = {
     
     emailAddress :{
-        fieldLabel: 'An',
+        fieldLabel: de.intrabuild.Gettext.gettext("To"),
         name: 'emailaddress',
-        emptyText: '<Email-Adrese>',
+        emptyText: de.intrabuild.Gettext.gettext("<Email address>"),
          vtype:'email',
         anchor: '100%'
     },
     
     subject : {
-        fieldLabel: 'Betreff',
-        emptyText: '<Betreff>',
+        fieldLabel: de.intrabuild.Gettext.gettext("Subject"),
+        emptyText: de.intrabuild.Gettext.gettext("<Subject>"),
         name: 'subject',
         anchor: '100%'
         
@@ -28,8 +28,8 @@ fields.textField = {
 fields.textArea = {
     
     message :{
-        emptyText: '<Nachricht>',
-        fieldLabel:'Nachricht',
+        emptyText: de.intrabuild.Gettext.gettext("<Message>"),
+        fieldLabel:de.intrabuild.Gettext.gettext("Message"),
         anchor: '100% -40'
     }
 };
@@ -37,11 +37,11 @@ fields.textArea = {
 fields.button = {
     
     save : {
-        text : 'Senden'
+        text : de.intrabuild.Gettext.gettext("Send now")
     },
     
     cancel : {
-        text : 'Abbrechen'    
+        text : de.intrabuild.Gettext.gettext("Cancel")    
     }
 }
 

@@ -55,7 +55,7 @@
                 	<div class="de-intrabuild-groupware-SplashScreen-body">
                 	<div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">intraBuild 2.0</div>
                 	<div style="position:absolute;top:135px;left:145px;width:220px;height:50px;color:#2D5094">
-                		<div style="padding-left:10px;padding-bottom:10px;">Bitte warten...</div>
+                		<div style="padding-left:10px;padding-bottom:10px;">Please wait...</div>
                 		<div class="de-intrabuild-groupware-SplashScreen-progressBar">&nbsp;</div>
                 	</div>
 
@@ -120,15 +120,15 @@ Ext.onReady(function(){
                 cls     : 'x-btn-icon',
                 iconCls : 'de-intrabuild-groupware-Bookmark-toolbar-bookmarkButton-icon',
                 menu    : [
-                        {text:'Home',
+                        {text: de.intrabuild.Gettext.gettext("Home"),
                         	handler : function(){
                             var reg = de.intrabuild.util.Registry;
                             var homePanel = reg.get('de.intrabuild.groupware.HomePanel');
                             contentPanel.setActiveTab(homePanel);}
                         }, '-', {
-                        	text:'Kontakte'
+                        	text:de.intrabuild.Gettext.gettext("Contacts")
                         },{
-                        	text:'Emails',
+                        	text: de.intrabuild.Gettext.gettext("Emails"),
                         	handler : function(){
                             var reg = de.intrabuild.util.Registry;
                             var emailPanel = reg.get('de.intrabuild.groupware.email.EmailPanel');
@@ -138,9 +138,9 @@ Ext.onReady(function(){
                             }
                             contentPanel.setActiveTab(emailPanel);}
                         }, {
-                        	text:'Kalender'
+                        	text:de.intrabuild.Gettext.gettext("Calendar")
                         }, {
-                        	text:'Aufgaben'
+                        	text:de.intrabuild.Gettext.gettext("Todos")
                         }, '-'
 
                      ]
@@ -179,7 +179,7 @@ Ext.onReady(function(){
                           dialog.show();
                       }
                       }, '-', {
-                      text:"Email Konten...",
+                      text:de.intrabuild.Gettext.gettext("Email accounts..."),
                       handler : function() {
 						var dialog = new de.intrabuild.groupware.email.EmailAccountDialog();
 						dialog.show();
@@ -189,7 +189,7 @@ Ext.onReady(function(){
             {
                 text:'?',
                 menu: [{
-                      text:'Info'
+                      text:de.intrabuild.Gettext.gettext("About")
                      }]
             }
         );
@@ -202,18 +202,18 @@ Ext.onReady(function(){
         mainToolbar.add(
             "->",
             "-",
-            "Suchen",
+            de.intrabuild.Gettext.gettext("Search"),
             {
                 cls     : 'x-btn-icon',
                 iconCls : 'de-intrabuild-groupware-Toolbar-searchMenu-email-icon',
                 menu:[
-                        {text:'Kontakte'},
-                        {text:'Emails'},
-                        {text:'Kalender'},
-                        {text:'Aufgaben'}
+                        {text: de.intrabuild.Gettext.gettext("Contacts")},
+                        {text: de.intrabuild.Gettext.gettext("Emails")},
+                        {text: de.intrabuild.Gettext.gettext("Calendar")},
+                        {text: de.intrabuild.Gettext.gettext("Todos")}
                      ]
             },
-            new Ext.form.TextField({emptyText:'<in Emails suchen>'}),
+            new Ext.form.TextField({emptyText : de.intrabuild.Gettext.gettext("<search in Emails>")}),
             {
 
                 cls     : 'x-btn-icon',
@@ -225,7 +225,7 @@ Ext.onReady(function(){
 
 
         var homePanel = new Ext.Panel({
-            title      : 'Willkommen',
+            title      : de.intrabuild.Gettext.gettext("Welcome"),
             cls        : 'de-intrabuild-groupware-HomePanel-body',
             closable   : false,
             iconCls    : 'de-intrabuild-groupware-HomePanel-icon',

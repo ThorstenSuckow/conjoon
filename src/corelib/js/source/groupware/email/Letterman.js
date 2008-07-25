@@ -235,14 +235,17 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         },
         
         /**
-         *
+         * @param {Number} length A value > 0
          */
         callout : function(length)
         {
-            var text = "You have <b>"+length+"</b> new email"+(length > 1 ? "s." : ".");  
+			var text = String.format(
+                de.intrabuild.Gettext.ngettext("You have one new email", "You have {0} new emails", length),
+				length
+			);
         
             new Ext.ux.ToastWindow({    
-                title   : "New email"+(length > 1 ? "s" : ""),    
+                title   : de.intrabuild.Gettext.ngettext("New email", "New emails", length),    
                 html    : text
             }).show(document); 
             

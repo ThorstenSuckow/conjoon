@@ -224,7 +224,7 @@ de.intrabuild.groupware.Reception = function() {
         var error = json.forceErrorDecode(response);
             
         msg.show({
-            title   : error.title || 'Error',
+            title   : error.title || de.intrabuild.Gettext.gettext("Error"),
             msg     : error.message,
             buttons : msg.OK,
             icon    : msg[error.level.toUpperCase()],
@@ -243,7 +243,7 @@ de.intrabuild.groupware.Reception = function() {
 			modal    : _applicationStarted
 		});
 		loginWindow.setFormIntroText(
-            "Please input your username and your password. Press &quot;Login&quot; when ready."
+            de.intrabuild.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
 		);
 	};
 	
@@ -261,7 +261,7 @@ de.intrabuild.groupware.Reception = function() {
             draggable     : true
 		});
         loginWindow.setFormIntroText(
-            "Your request could not be processed. Most likely did your session expire. Please log in again and retry your last action."
+            de.intrabuild.Gettext.gettext("Your request could not be processed. Most likely did your session expire. Please log in again and retry your last action.")
         );
 	};
 	
@@ -283,9 +283,9 @@ de.intrabuild.groupware.Reception = function() {
 
         var msg = null;
         if (_applicationStarted) {
-            msg = "The workbench has been locked. Please log in to unlock the workbench again.";
+            msg = de.intrabuild.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again.");
 		} else {
-			msg = "The workbench has been locked. Please log in to unlock the workbench again. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.";
+			msg = de.intrabuild.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
 		}
         loginWindow.setFormIntroText(msg);
 	};
@@ -566,8 +566,8 @@ de.intrabuild.groupware.Reception = function() {
             var msg = Ext.MessageBox;
             
             msg.show({
-                title   : "Restart",
-                msg     : "All unsaved data will be lost. Are you sure you want to restart?",
+                title   : de.intrabuild.Gettext.gettext("Restart"),
+                msg     : de.intrabuild.Gettext.gettext("All unsaved data will be lost. Are you sure you want to restart?"),
                 buttons : msg.YESNO,
                 icon    : msg.QUESTION,
                 cls     : 'de-intrabuild-msgbox-question',
@@ -587,8 +587,8 @@ de.intrabuild.groupware.Reception = function() {
 			var msg = Ext.MessageBox;
 			
 	        msg.show({
-	            title   : "Logout",
-	            msg     : "All unsaved data will be lost. Are you sure you want to log out and exit?",
+	            title   : de.intrabuild.Gettext.gettext("Logout"),
+	            msg     : de.intrabuild.Gettext.gettext("All unsaved data will be lost. Are you sure you want to log out and exit?"),
 	            buttons : msg.YESNO,
 				icon    : msg.QUESTION,
                 cls     : 'de-intrabuild-msgbox-question',

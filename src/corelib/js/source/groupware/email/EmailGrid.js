@@ -44,7 +44,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         nearLimit   : 100,
         scrollDelay : 0,
         loadMask    : {
-            msg : 'Bitte warten...'
+            msg : de.intrabuild.Gettext.gettext("Please wait...")
         },
         getRowClass : function(record, rowIndex, p, ds){
             if (record.data.isRead) {
@@ -66,8 +66,8 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     this.bbar = new Ext.ux.BufferedGridToolbar({
         view        : this.view,
         displayInfo : true,
-        displayMsg  : 'Emails {0} - {1} of {2}',
-        emptyMsg    : "Keine Emails vorhanden"
+        displayMsg  : de.intrabuild.Gettext.gettext("Emails {0} - {1} of {2}"),
+        emptyMsg    : de.intrabuild.Gettext.gettext("No emails available")
     });      
     
 // ------------------------- ^^ EO set up buffered grid ------------------------   
@@ -102,12 +102,12 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
                              + '">&#160;</div>';
                    }
       },{
-        header: "Betreff", 
+        header: de.intrabuild.Gettext.gettext("Subject"), 
         width: 415,
         sortable: true, 
         dataIndex: 'subject'
       },{
-        header: "Absender", 
+        header: de.intrabuild.Gettext.gettext("From"), 
         width: 220,
         sortable: true, 
         dataIndex: 'from'
@@ -126,7 +126,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
                                  + '">&#160;</div>';
            }        
       },{
-        header: "Datum", 
+        header: de.intrabuild.Gettext.gettext("Date"), 
         width: 120, 
         align:'right',
         sortable: true, 
@@ -137,13 +137,13 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     
 
     de.intrabuild.groupware.email.EmailGrid.superclass.constructor.call(this, {
-        loadMask       : {msg:'Lade Emails...'},
+        loadMask       : {msg: de.intrabuild.Gettext.gettext("Loading...")},
         autoScroll     : true,
         cls            : 'de-intrabuild-groupware-email-EmailGrid',
         trackMouseOver : false,
         enableDragDrop : true,
         ddGroup        : 'de.intrabuild.groupware-email-Email',
-        ddText         : "{0} ausgew&aumlhlte Email{1}"
+        ddText         : de.intrabuild.Gettext.gettext("{0} selected email(s)")
     });
 
     this.on('contextmenu',    this.onContextClick, this);  
@@ -283,50 +283,50 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
         if(!this.menu){ 
             this.menu = new Ext.menu.Menu({
                 items: [{
-                	text  : 'In neuem Tab &ouml;ffnen',
+                	text  : de.intrabuild.Gettext.gettext("Open in new tab"),
                     handler : this.controller.openEmailView,
                     scope : this.controller
                   }, {
-                    text  : 'Entwurf bearbeiten',
+                    text  : de.intrabuild.Gettext.gettext("Edit draft"),
                     handler : function(){this.openEmailEditPanel(true, 'edit');},
                     scope : this.controller
                   }, '-' , {
-                    text  : 'Antworten',
+                    text  : de.intrabuild.Gettext.gettext("Reply"),
                     handler : function(){this.openEmailEditPanel(true, 'reply');},
                     scope : this.controller
                   },{
-                    text  : 'Allen antworten',
+                    text  : de.intrabuild.Gettext.gettext("Reply all"),
                     handler : function(){this.openEmailEditPanel(true, 'reply_all');},
                     scope : this.controller
                   },{
-                    text  : 'Weiterleiten',
+                    text  : de.intrabuild.Gettext.gettext("Forward"),
                     handler : function(){this.openEmailEditPanel(true, 'forward');},
                     scope : this.controller
                   }, '-', {
-                      text : 'Markieren',
+                      text : de.intrabuild.Gettext.gettext("Mark email"),
                       menu : {
                           items : [{
-                                text    : 'Als gelesen',
+                                text    : de.intrabuild.Gettext.gettext("as read"),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsRead(this.selModel.getSelections(), true);}
                               },{
-                                text    : 'Als ungelesen',
+                                text    : de.intrabuild.Gettext.gettext("as unread"),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsRead(this.selModel.getSelections(), false);}
                               },
                               '-',{
-                                text    : 'Als Spam',
+                                text    : de.intrabuild.Gettext.gettext("as spam"),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsSpam(this.selModel.getSelections(), true);}
                               },{
-                                text    : 'Als "kein Spam"',
+                                text    : de.intrabuild.Gettext.gettext("as \"no spam\""),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsSpam(this.selModel.getSelections(), false);}
                           }]
                       }
                   },
                   '-',{
-                    text    : 'L&ouml;schen',
+                    text    : de.intrabuild.Gettext.gettext("Delete"),
                     scope   : this,
                     handler : function(){this.controller.deleteEmails(this.selModel.getSelections());}
                 }]

@@ -169,7 +169,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onHide = function(skipAlign)
     {
-        previewPanel.setTitle('Loading...');
+        previewPanel.setTitle(de.intrabuild.Gettext.gettext("Loading..."));
         
         if (skipAlign === true) {
             return;
@@ -225,8 +225,8 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 	               '<div class="de-intrabuild-groupware-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
 	                '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
 	                '{subject}',
-	                '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">Von:</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-	                '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">An:</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+	                '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("From"),':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+	                '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("To"),':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
 	                '{cc}',
 	                '{bcc}',
 	               '</div>', 
@@ -234,12 +234,19 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     	)};
 		
 		emailView = new de.intrabuild.groupware.email.EmailViewPanel({
-			autoLoad  : false,
-			loadMask  : false,
+			autoLoad     : false,
+			loadMask     : false,
 			refreshFrame : true,
-			border    : false,
-			hideMode  : 'visibility',
-			templates : templateConfig
+			border       :  false,
+			hideMode     : 'visibility',
+            viewConfig   : {
+				templates         : templateConfig,
+				fromString        : de.intrabuild.Gettext.gettext("From"),
+				toString          : de.intrabuild.Gettext.gettext("To"),
+				ccString          : de.intrabuild.Gettext.gettext("CC"),
+				bccString         : de.intrabuild.Gettext.gettext("BCC"),
+				attachmentString  : de.intrabuild.Gettext.gettext("Attachments")
+			}
 		});	
 		
 		emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
@@ -250,7 +257,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             bodyStyle  : 'background:white;', 
             autoScroll : false, 
             layout 	   : 'fit',
-            title      : 'Loading...', 
+            title      : ("Loading..."), 
             iconCls    : 'de-intrabuild-groupware-email-EmailPreview-Icon', 
             resizable  : false, 
             shadow     : false, 

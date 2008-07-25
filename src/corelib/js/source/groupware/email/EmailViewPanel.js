@@ -16,6 +16,11 @@ Ext.namespace('de.intrabuild.groupware.email');
 
 de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 	
+    /**
+     * @cfg {Object} viewConfig
+     */
+    viewConfig : {},
+	
 	/**
 	 * @cfg {Boolean} refreshFrame
 	 * Will totally rebuild the iframe when the panel gets hidden/shown for any 
@@ -142,7 +147,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 	{
         de.intrabuild.groupware.email.EmailViewPanel.superclass.onRender.apply(this, arguments);
         
-        var view = new de.intrabuild.groupware.email._EmailView({templates : this.templates});
+		var view = new de.intrabuild.groupware.email._EmailView(this.viewConfig);
         view.init(this);
 
 		view.render();
@@ -230,7 +235,9 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     		return;	
     	}
     	
-    	this.setTitle(/*@LNG*/"Loading...");
+    	this.setTitle(
+            de.intrabuild.Gettext.gettext("Loading...")
+		);
     	
     	if (this.loadMask) {
     		this.loadMask.show();	
@@ -358,17 +365,32 @@ de.intrabuild.groupware.email._EmailView = function(config){
 Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	
 	/**
-	 * @param {Ext.Element} iframe The iframe that displays the message body.
+	 * @cfg {String} toString
 	 */
-	iframe : null,
+	toString : 'To',
+
+    /**
+     * @cfg {String} ccString
+     */	
+	ccString : 'CC',
+	
+    /**
+     * @cfg {String} attachmentString
+     */	
+	attachmentString : 'Attachments', 
+	 
+    /**
+     * @cfg {String} bccString
+     */ 
+	bccString : 'BCC', 
+
+    /**
+     * @cfg {String} fromString
+     */	 
+	fromString : 'From', 
 	
 	/**
-	 * @param {HTMLElement} doc The document of the iframe
-	 */
-	doc : null, 
-	
-	/**
-	 * @cfg {String} emptyMarkup The default content of teh iframe when there is no 
+	 * @cfg {String} emptyMarkup The default content of the iframe when there is no 
 	 * message to display
 	 */	
 	emptyMarkup : '<html><head></head><body></body></html>',
@@ -392,6 +414,16 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	 *  <li><strong>attachmentItem</strong>: The template for a single attachment item</li>
 	 *  </ul>
 	 */
+
+    /**
+     * @param {Ext.Element} iframe The iframe that displays the message body.
+     */
+    iframe : null,
+    
+    /**
+     * @param {HTMLElement} doc The document of the iframe
+     */
+    doc : null, 
 	
 	/**
 	 * @param {Boolean} cleared false if the message was rendered
@@ -614,8 +646,8 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 		               '<div class="de-intrabuild-groupware-email-EmailView-dataInset">',
 		                '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
 		                '{subject}',
-		                '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">Von:</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-		                '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">An:</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+		                '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">',this.fromString,':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+		                '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">',this.toString,':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
 		                '{cc}',
 		                '{bcc}',
 		               '</div>', 
@@ -630,13 +662,13 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    
 	    if (!ts.cc) {
 		    ts.cc = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-email-EmailView-cc"><div style="float:left;width:30px;">CC:</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-cc"><div style="float:left;width:30px;">',this.ccString,':</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
 		    );
 		}
 	    
 	    if (!ts.bcc) {
 		    ts.bcc = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-email-EmailView-bcc"><div style="float:left;width:30px;">BCC:</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-bcc"><div style="float:left;width:30px;">',this.bccString,':</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
 		    );
 		}	    
 	    
@@ -651,7 +683,7 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    if (!ts.attachments) {
 		    ts.attachments = new Ext.Template(
 		            '<table cellspacing="0" cellpadding="0" border="0" style="width:100%"><tr>',
-		                '<td style="width:60px;vertical-align:top;"><span style="font-family:Tahoma,Helvetica,Arial;font-size:11px;float:left;padding:2px;font-weight:bold;color:#15428B;">Anh&auml;nge:</span></td>',
+		                '<td style="width:60px;vertical-align:top;"><span style="font-family:Tahoma,Helvetica,Arial;font-size:11px;float:left;padding:2px;font-weight:bold;color:#15428B;">',this.attachmentString,':</span></td>',
 		                '<td style="background:white;border:1px solid #767676;padding:2px;">',
 		                '{attachmentItems}',
 		            '</td></tr></table>'

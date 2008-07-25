@@ -28,14 +28,16 @@ de.intrabuild.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 	
 		this.cards = [
             new Ext.ux.Wiz.Card({
-    			title		 : "Willkommen",
+    			title		 : de.intrabuild.Gettext.gettext("Willkommen"),
     			header		 : false,
     			border		 : false,
     			monitorValid : false,
     			items		 : [{
     				border	  : false,
     				bodyStyle : 'background-color:#F6F6F6;',
-    				html	  : "<div style='margin-top:20px;'>Um Email-Nachrichten senden und empfangen zu k&ouml;nnen, m&uuml;ssen Sie zun&auml;chst ein Email-Konto einrichten.<br /><br />Dieser Assistent f&uuml;hrt Sie durch die einzelnen Schritte, um die jeweiligen Daten zu sammeln, die zur Einrichtung eines Kontos n&ouml;tig sind. Sollten Sie einzelne Daten nicht kennen, wenden Sie sich bitte an Ihren Provider.</div>"	
+    				html	  : '<div style="margin-top:20px;">'
+					            +de.intrabuild.Gettext.gettext("You need to have an email account configured for sending and receiving email messages.<br /><br />This assistant will guide you through the neccessary steps for collecting the needed account information. If you are unsure about specific information asked by this assistant, please contact your email provider.")
+								+'</div>'	
     			}]
             }),		
 			new de.intrabuild.groupware.email.EmailAccountWizardNameCard(),
@@ -45,9 +47,9 @@ de.intrabuild.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 			new de.intrabuild.groupware.email.EmailAccountWizardFinishCard()
 		];
 		this.cls = 'de-intrabuild-groupware-email-EmailAccountWizard-panelBackground';
-		this.title        = "Email-Account Assistant";
+		this.title        = de.intrabuild.Gettext.gettext("Email account assistant");
 		this.headerConfig = {
-		    title : "Create a new Email-Account"    
+		    title : de.intrabuild.Gettext.gettext("Create a new Email-Account")    
 		};
 		
 		de.intrabuild.groupware.email.EmailAccountWizard.superclass.initComponent.call(this);
@@ -154,7 +156,7 @@ de.intrabuild.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz
 		this.labelWidth	= 80;
         
 		this.defaultType = 'textfield';
-		this.title = "Pers&ouml;nliche Daten";
+		this.title = de.intrabuild.Gettext.gettext("Personal data");
 		this.defaults = {
             labelStyle : 'width:80px;font-size:11px',
             anchor: '100%'
@@ -162,13 +164,13 @@ de.intrabuild.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz
         
         
         this.nameField = new Ext.form.TextField({
-    		fieldLabel : "Ihr Name",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Your name"),
     		allowBlank : false,
     		name	   : 'userName'
     	});
          
         this.addressField = new Ext.form.TextField({
-    		fieldLabel : "Email-Adresse",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Email addresse"),
     		allowBlank : false,
     		validator  : Ext.form.VTypes.email,
     		name	   : 'address'
@@ -177,8 +179,8 @@ de.intrabuild.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz
 		this.items = [
 			new de.intrabuild.groupware.util.FormIntro({
         		style   : 'margin:10px 0 5px 0;',
-        		label	: "Pers&ouml;nliche Daten",
-        		text	: "Geben Sie hier Ihren Namen und Ihre Email-Adress ein, die mit diesem Konto verbunden sind. Diese Informationen sind f&uuml;r die Empf&auml;nger Ihrer Nachrichten sichtbar."	
+        		label	: de.intrabuild.Gettext.gettext("Personal data"),
+        		text	: "Specify your real name and your email address here. This information will be visible to the recipients of your messages."	
         	}),
         	this.nameField,	
         	this.addressField
@@ -205,7 +207,7 @@ de.intrabuild.groupware.email.EmailAccountWizardserverInboxCard = Ext.extend(Ext
 		this.labelWidth	= 100;
         
 		this.defaultType = 'textfield';
-		this.title = "Posteingangs-Server-informationen ";
+		this.title = de.intrabuild.Gettext.gettext("Inbox server");
 		this.defaults = {
             labelStyle : 'width:100px;font-size:11px',
             anchor: '100%'
@@ -213,21 +215,21 @@ de.intrabuild.groupware.email.EmailAccountWizardserverInboxCard = Ext.extend(Ext
          
         
         this.hostField = new Ext.form.TextField({
-    		fieldLabel : "Server-Adresse",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Host"),
     		allowBlank : false,
     		validator  : this.validateInbox.createDelegate(this),
     		name	   : 'serverInbox'
     	});
          
         this.usernameField = new Ext.form.TextField({
-    		fieldLabel : "Benutzerkennung",
+    		fieldLabel : de.intrabuild.Gettext.gettext("User name"),
     		allowBlank : false,
     		name	   : 'usernameInbox'
     	});
     	
         this.passwordField = new Ext.form.TextField({
         	inputType  : 'password',
-    		fieldLabel : "Passwort",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Password"),
     		allowBlank : false,
     		name	   : 'passwordInbox'
     	});    	
@@ -235,8 +237,8 @@ de.intrabuild.groupware.email.EmailAccountWizardserverInboxCard = Ext.extend(Ext
 		this.items = [
 			new de.intrabuild.groupware.util.FormIntro({
         		style   : 'margin:10px 0 5px 0;',
-        		label	: "Posteingangs-Server-Informationen",
-        		text	: "Geben Sie hier die Adresse des Posteingangsservers an (Bsp.: pop3.provider.de) sowie Ihre Benutzerdaten, mit denen Sie sich an diesem Server zum Abholen Ihrer Email-Nachrichten anmelden m&uuml;ssen.<br />Bitte beachten Sie, da&szlig; die Adresse f&uuml;r den Posteingangsserver nicht bereits in Ihrer Konfiguration vorkommen darf."	
+        		label	: de.intrabuild.Gettext.gettext("Inbox server"),
+        		text	: de.intrabuild.Gettext.gettext("Specify the host address of the inbox server here (e.g. pop3.provider.de) and your user credentials for authentication.")	
         	}),
         	this.hostField,	
         	this.usernameField,
@@ -287,11 +289,11 @@ de.intrabuild.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ex
 		this.baseCls    = 'x-small-editor';
 		
 		this.defaultType = 'textfield';
-		this.title = "Postausgangs-Server-Informationen ";
+		this.title = de.intrabuild.Gettext.gettext("Outbox server");
 		
         
         this.hostField = new Ext.form.TextField({
-    		fieldLabel : "Server-Adresse",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Host"),
     		allowBlank : false,
     		labelStyle : 'width:85px;font-size:11px',
     		width	   : 200,
@@ -299,7 +301,7 @@ de.intrabuild.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ex
     	});
 
         this.useAuthField = new Ext.form.Checkbox({
-    		fieldLabel : "Authentifizierung ben&ouml;tigt",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Server requires authentication"),
     		labelStyle : 'margin-top:12px;width:140px;font-size:11px',
     		style 	   : 'margin-top:14px;',
     		name	   : 'isOutboxAuth'
@@ -308,7 +310,7 @@ de.intrabuild.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ex
         this.useAuthField.on('check', this.onAuthCheck, this); 
          
         this.usernameField = new Ext.form.TextField({
-    		fieldLabel : "Benutzerkennung",
+    		fieldLabel : de.intrabuild.Gettext.gettext("User name"),
     		disabled   : true,
     		labelStyle : 'width:85px;font-size:11px',
     		width	   : 200,
@@ -317,7 +319,7 @@ de.intrabuild.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ex
     	
         this.passwordField = new Ext.form.TextField({
         	inputType  : 'password',
-    		fieldLabel : "Passwort",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Password"),
     		disabled   : true,
     		labelStyle : 'width:85px;font-size:11px',
     		width	   : 200,
@@ -327,8 +329,8 @@ de.intrabuild.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ex
 		this.items = [
 			new de.intrabuild.groupware.util.FormIntro({
         		style   : 'margin:10px 0 5px 0;',
-        		label	: "Postausgangs-Server-Informationen",
-        		text	: "Geben Sie hier die Adresse des Posteingangsservers an (Bsp.: smtp.provider.de) an. Wenn Sie sich vor dem versenden von Nachrichten an diesem Server mit Benutzerdaten anmelden m&uuml;ssen, geben Sie Ihren Benutzernamen sowie Ihr Passwort an."	
+        		label	: de.intrabuild.Gettext.gettext("Outbox server"),
+        		text    : de.intrabuild.Gettext.gettext("Specify the host address of the outbox server here (e.g. smtp.provider.de) and your user credentials, if the server requires authentication.")	
         	}),
         	this.hostField,	
         	this.useAuthField,
@@ -373,14 +375,14 @@ de.intrabuild.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext
 		this.labelWidth	= 75;
         
 		this.defaultType = 'textfield';
-		this.title = "Konten-Bezeichnung";
+		this.title = de.intrabuild.Gettext.gettext("Account name");
 		this.defaults = {
             labelStyle : 'width:75px;font-size:11px',
             anchor: '100%'
          };
         
         this.nameField = new Ext.form.TextField({
-    		fieldLabel : "Name",
+    		fieldLabel : de.intrabuild.Gettext.gettext("Name"),
     		allowBlank : false,
     		validator  : this.validateAccountName.createDelegate(this),
     		name	   : 'name'
@@ -389,8 +391,8 @@ de.intrabuild.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext
         this.items = [
 			new de.intrabuild.groupware.util.FormIntro({
         		style   : 'margin:10px 0 5px 0;',
-        		label	: "Konten-Bezeichnung",
-        		text	: "Geben Sie hier einen Namen f&uuml;r dieses Konto ein, &uuml;ber den es in Zukunft identifiziert werden soll. Der Name darf nicht bereits in Ihrer Konten-Konfiguration vorkommen."	
+        		label	: de.intrabuild.Gettext.gettext("Account name"),
+        		text	: de.intrabuild.Gettext.gettext("Specify a unique name for this account. This name will be used later on to identify this account. The name must not be already existing.")	
         	}),
         	this.nameField
 		];
@@ -438,21 +440,21 @@ de.intrabuild.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.W
 			master : new Ext.Template(
 				'<table style="margin-top:15px;" border="0", cellspacing="2" cellpadding="2">'+
 					'<tbody>'+
-					'<tr><td>Konten-Bezeichnung:</td><td>{name:htmlEncode}</td></tr>'+
-					'<tr><td>Ihr Name:</td><td>{userName:htmlEncode}</td></tr>'+
-					'<tr><td>Email-Adresse:</td><td>{address:htmlEncode}</td></tr>'+
-					'<tr><td>Posteingangs-Server:</td><td>{serverInbox:htmlEncode}</td></tr>'+
-					'<tr><td>Posteingang Benutzername:</td><td>{usernameInbox:htmlEncode}</td></tr>'+
-					'<tr><td>Posteingang Passwort:</td><td>{passwordInbox}</td></tr>'+
-					'<tr><td>Postausgangs-Server:</td><td>{serverOutbox:htmlEncode}</td></tr>'+
-					'<tr><td>Postausgang Authentifizierung:</td><td>{isOutboxAuth}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Account name")+':</td><td>{name:htmlEncode}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Your name")+':</td><td>{userName:htmlEncode}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Email address")+':</td><td>{address:htmlEncode}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Inbox host")+':</td><td>{serverInbox:htmlEncode}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Inbox user name")+':</td><td>{usernameInbox:htmlEncode}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Inbox password")+':</td><td>{passwordInbox}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Outbox host")+':</td><td>{serverOutbox:htmlEncode}</td></tr>'+
+					'<tr><td>'+de.intrabuild.Gettext.gettext("Outbox authentication")+':</td><td>{isOutboxAuth}</td></tr>'+
 					'{auth_template}'+
 					'</tbody>'+			
 				'</table>'
 			),
 			auth : new Ext.Template(
-				'<tr><td>Postausgang Benutzername:</td><td>{usernameOutbox:htmlEncode}</td></tr>'+
-				'<tr><td>Postausgang Passwort:</td><td>{passwordOutbox}</td></tr>'
+				'<tr><td>'+de.intrabuild.Gettext.gettext("Outbox user name")+':</td><td>{usernameOutbox:htmlEncode}</td></tr>'+
+				'<tr><td>'+de.intrabuild.Gettext.gettext("Outbox password")+':</td><td>{passwordOutbox}</td></tr>'
 			)
 		};
 		
@@ -466,7 +468,7 @@ de.intrabuild.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.W
 		this.border = false;
 		this.monitorValid = false;
 	
-		this.title = "Eingaben best&auml;tigen";
+		this.title = de.intrabuild.Gettext.gettext("Confirm");
 		
 		this.contentPanel = new Ext.Panel({
 			style : 'margin:0 0 0 20px'
@@ -474,7 +476,7 @@ de.intrabuild.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.W
 		
 		this.items = [{
 				border    : false,
-				html 	  : "<div>Das neue Konto kann nun angelegt werden.<br />Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben und korrigieren Sie Sie gegebenenfalls.</div>",	
+				html 	  : "<div>"+de.intrabuild.Gettext.gettext("The new account can now be created.<br />Please verify your submitted data and correct them if neccessary.")+"</div>",	
 				bodyStyle : 'background-color:#F6F6F6;margin:10px 0 10px 0'
 			},
 			this.contentPanel

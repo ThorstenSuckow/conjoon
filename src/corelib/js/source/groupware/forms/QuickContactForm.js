@@ -70,7 +70,7 @@ de.intrabuild.groupware.forms.QuickContactForm = function() {
                 labelWidth: 0,
                 frame:false,
                 labelAlign:'left',
-                title: 'Kontakt',
+                title: de.intrabuild.Gettext.gettext("Contact"),
                 //width: 220,
                 bodyStyle:'background:#DFE8F6;padding:5px;',
                 cls: 'x-small-editor',

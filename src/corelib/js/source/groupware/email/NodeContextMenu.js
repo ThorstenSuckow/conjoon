@@ -33,13 +33,13 @@ de.intrabuild.groupware.email.NodeContextMenu = function() {
         var menu = new Ext.menu.Menu({
             items: [{
                 id   : 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.newItem',  
-                text : 'Neuer Unterordner'
+                text : de.intrabuild.Gettext.gettext("New folder")
               },{
                 id   : 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.renameItem',    
-                text : 'Ordner umbenennen'
+                text : de.intrabuild.Gettext.gettext("Rename folder")
               }, '-',{
                 id   : 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.deleteItem',      
-                text :'L&ouml;schen...'
+                text : de.intrabuild.Gettext.gettext("Delete...")
               }]
         });
         

@@ -41,7 +41,7 @@ de.intrabuild.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
                     cls         : 'de-intrabuild-groupware-reception-LogoutWindow-lockButton',
 					overCls     : 'over',
 					columnWidth : .33,
-					text        : "Standby",
+					text        : de.intrabuild.Gettext.gettext("Standby"),
 					handler     : function () {
 						de.intrabuild.groupware.Reception.lockWorkbench();
 						this.close();
@@ -52,7 +52,7 @@ de.intrabuild.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
                     cls         : 'de-intrabuild-groupware-reception-LogoutWindow-logoutButton',
 					overCls     : 'over',
                     columnWidth : .33,
-                    text        : "Logout",
+                    text        : de.intrabuild.Gettext.gettext("Logout"),
                     handler     : function () {
                         de.intrabuild.groupware.Reception.logout();
                     }
@@ -61,7 +61,7 @@ de.intrabuild.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
                     cls         : 'de-intrabuild-groupware-reception-LogoutWindow-restartButton',
                     overCls     : 'over',
                     columnWidth : .33,
-                    text        : "Restart",
+                    text        : de.intrabuild.Gettext.gettext("Restart"),
                     handler     : function () {
                         de.intrabuild.groupware.Reception.restart();
                     }

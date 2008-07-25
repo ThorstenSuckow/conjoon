@@ -22,9 +22,10 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      * of the user.
      */
     this.treePanel = new de.intrabuild.groupware.email.EmailTree({
-        region : 'west',    
-        width  : 200,
-        split  : true
+        region            : 'west',    
+		anonymousNodeText : de.intrabuild.Gettext.gettext("New folder"),
+        width             : 200,
+        split             : true
     }, this);
 
  
@@ -88,7 +89,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.ForwardButton',
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-forwardButton-icon',
-        text     : '&#160;Weiterleiten',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("Forward"),
         handler  : function(){this.openEmailEditPanel(true, 'forward');},
         disabled : true,
         scope    : this        
@@ -97,7 +98,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.ReplyButton',  
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-replyButton-icon',
-        text     : '&#160;Antworten',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply"),
         handler  : function(){this.openEmailEditPanel(true, 'reply');},
         disabled : true,
         scope    : this        
@@ -106,7 +107,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.ReplyAllButton',  
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-replyAllButton-icon',
-        text     : '&#160;Allen antworten',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply all"),
         handler  : function(){this.openEmailEditPanel(true, 'reply_all');},
         disabled : true,
         scope    : this        
@@ -115,7 +116,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.DeleteButton',  
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-deleteButton-icon',
-        text     : '&#160;L&ouml;schen',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("Delete"),
         disabled : true,
         handler  : function(){this.deleteEmails(this.gridPanel.selModel.getSelections());},
         scope    : this     
@@ -124,7 +125,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.SpamButton',  
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-spamButton-icon',
-        text     : '&#160;Spam',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("Spam"),
         disabled : true,
         handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), true);},
         scope    : this    
@@ -133,7 +134,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.NoSpamButton',  
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-noSpamButton-icon',
-        text     : '&#160;Kein Spam',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("No spam"),
         disabled : true,
         hidden   : true,
         handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), false);},
@@ -143,7 +144,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         id       : 'de.intrabuild.groupware.email.toolbar.EditDraftButton',  
         cls      : 'x-btn-text-icon',  
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-editDraftButton-icon',
-        text     : '&#160;Entwurf bearbeiten',
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("Edit draft"),
         disabled : true,
         hidden   : true,
         handler  : function(){this.openEmailEditPanel(true, 'edit');},
@@ -152,7 +153,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     this.newButton = new Ext.Toolbar.Button({   
         cls  	 : 'x-btn-text-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-newButton-icon',
-        text 	 : '&#160;Neue Email',
+        text 	 : '&#160;'+de.intrabuild.Gettext.gettext("New email"),
         handler  : function(){this.openEmailEditPanel(false, 'new');},
         scope 	 : this 
     });
@@ -162,7 +163,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         cls      : 'x-btn-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-fetchButton-icon',
         menu     : [{
-            text : 'Alle empfangen'    
+            text : de.intrabuild.Gettext.gettext("Fetch all")    
         },'-',{
         }]
         
@@ -186,27 +187,27 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         scope        : this,
         cls          : 'x-btn-text-icon',  
         iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewButton-icon',
-        text         : 'Vorschau',
+        text         : de.intrabuild.Gettext.gettext("Preview"),
         menu         : {
             id    : 'de.intrabuild.groupware.email.emailPreviewMenu',
             cls   : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewMenu',
             items : [{
             iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
-            text         : 'unten',
+            text         : de.intrabuild.Gettext.gettext("bottom"),
             checked      : true,
             group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this
           },{
             iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
-            text         : 'rechts',
+            text         : de.intrabuild.Gettext.gettext("right"),
             checked      : false,
             group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this  
           },{
             iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
-            text         : 'verstecken',
+            text         : de.intrabuild.Gettext.gettext("hide"),
             checked      : false,
             group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
@@ -224,7 +225,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     * Constructor call.
     */
     de.intrabuild.groupware.email.EmailPanel.superclass.constructor.call(this,  {
-        title          : 'Emails',
+        title          : de.intrabuild.Gettext.gettext("Emails"),
         iconCls        : 'de-intrabuild-groupware-email-EmailPanel-icon',
         closable       : true,
         autoScroll     : false,

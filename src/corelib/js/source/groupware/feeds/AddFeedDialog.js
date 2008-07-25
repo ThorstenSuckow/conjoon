@@ -35,7 +35,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      * @param {Ext.form.TriggerField}
      */
     this.urlTrigger = new Ext.form.TriggerField({
-        fieldLabel   : 'Feed-Url',
+        fieldLabel   : de.intrabuild.Gettext.gettext("Feed url"),
         vtype        : 'url',
         //allowBlank   : false,
         triggerClass : 'de-intrabuild-go-trigger',
@@ -46,7 +46,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      * Textfield for submitting a custom name for identifying the feed later on.
      */
     this.feedNameTextField = new Ext.form.TextField({
-        fieldLabel   : 'Feed-Name',
+        fieldLabel   : de.intrabuild.Gettext.gettext("Feed name"),
         itemCls      : 'de-intrabuild-margin-b-10',
         allowBlank   : false,
         width        : 202,
@@ -62,7 +62,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      */
     this.keepEntriesComboBox = new Ext.form.ComboBox({
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : 'Speichere Eintr&auml;ge',
+        fieldLabel    : de.intrabuild.Gettext.gettext("Save entries"),
         listClass     : 'de-intrabuild-smalleditor',
         itemCls       : 'de-intrabuild-margin-b-15',
         displayField  : 'text',
@@ -74,15 +74,15 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
             data   : [
-                [2419200, "für 2 Wochen"],
-                [1209600, "für eine Woche"],
-                [432000, "für 5 Tage"],
-                [172800, "für 2 Tage"],
-                [86400, "für einen Tag"],
-                [43200, "für 12 Stunden"],
-                [21600, "für 6 Stunden"],
-                [7200, "für 2 Stunden"],
-                [3600, "für eine Stunde"]
+                [2419200, de.intrabuild.Gettext.gettext("for 2 weeks")],
+                [1209600, de.intrabuild.Gettext.gettext("for one week")],
+                [432000,  de.intrabuild.Gettext.gettext("for 5 days")],
+                [172800,  de.intrabuild.Gettext.gettext("for 2 days")],
+                [86400,   de.intrabuild.Gettext.gettext("for one day")],
+                [43200,   de.intrabuild.Gettext.gettext("for 12 hours")],
+                [21600,   de.intrabuild.Gettext.gettext("for 6 hours")],
+                [7200,    de.intrabuild.Gettext.gettext("for 2 hours")],
+                [3600,    de.intrabuild.Gettext.gettext("for one hour")]
             ],
             fields : ['id', 'text']
         })
@@ -97,7 +97,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      */
     this.updateComboBox = new Ext.form.ComboBox({
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : 'Aktualisiere',
+        fieldLabel    : de.intrabuild.Gettext.gettext("Refresh"),
         listClass     : 'de-intrabuild-smalleditor',
         itemCls       : 'de-intrabuild-margin-b-10',
         displayField  : 'text',
@@ -109,14 +109,14 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
             data   : [
-                [172800, "alle 2 Tage"],
-                [86400, "jeden Tag"],
-                [43200, "alle 12 Stunden"],
-                [21600, "alle 6 Stunden"],
-                [7200, "alle 2 Stunden"],
-                [3600, "jede Stunde"],
-                [1800, "alle 30 Minuten"],
-                [900, "alle 15 Minuten"]
+                [172800, de.intrabuild.Gettext.gettext("every 2 days")],
+                [86400,  de.intrabuild.Gettext.gettext("every day")],
+                [43200,  de.intrabuild.Gettext.gettext("evey 12 hours")],
+                [21600,  de.intrabuild.Gettext.gettext("every 6 hours")],
+                [7200,   de.intrabuild.Gettext.gettext("evey 2 hours")],
+                [3600,   de.intrabuild.Gettext.gettext("every hour")],
+                [1800,   de.intrabuild.Gettext.gettext("every 30 minutes")],
+                [900,    de.intrabuild.Gettext.gettext("every 15 minutes")]
             ],
             fields : ['id', 'text']
         }) 
@@ -133,7 +133,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
     this.keepAddModeCheckbox = new Ext.form.Checkbox({
         fieldLabel : '&#160',
         labelSeparator : '',
-        boxLabel   : 'nach Speichern Eingabe fortsetzen',
+        boxLabel   : de.intrabuild.Gettext.gettext("add another feed after saving"),
         ctCls      : 'de-intrabuild-smalleditor',
         width      : 'auto',
         autoWidth  : true
@@ -148,9 +148,9 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      * The button for submitting the dialogs form.
      */
     this.okButton = new Ext.Button({
-        text     : 'Hinzuf&uuml;gen',
+        text     : de.intrabuild.Gettext.gettext("Add"),
         disabled : true,
-        tooltip  : 'Speichert und f&uuml;gt die Angaben zum Feed-Reader hinzu',
+        tooltip  : de.intrabuild.Gettext.gettext("Saves and adds the configuration to the feed reader"),
 		handler  : this.onOk,
 		scope    : this
     });       
@@ -160,10 +160,10 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      * procedure.
      */
     this.resetButton = new Ext.Button({
-		text    : 'Zur&uuml;cksetzen',
+		text    : de.intrabuild.Gettext.gettext("Reset"),
 		handler : this.onReset,
 		scope   : this,
-		tooltip : 'Bricht die Eingabe ab und setzt die Felder zur&uuml;ck',
+		tooltip : de.intrabuild.Gettext.gettext("Cancels and resets all fields"),
 		handler : this.onReset,
 		scope   : this
 	});
@@ -172,8 +172,8 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      * Cancels and closes the dialog.
      */
     this.cancelButton = new Ext.Button({
-		text    : 'Abbrechen',
-		tooltip : 'Bricht die Eingabe ab und schlie&szlig;t den Dialog',
+		text    : de.intrabuild.Gettext.gettext("Cancel"),
+		tooltip : de.intrabuild.Gettext.gettext("Cancels and closes this dialog"),
 		handler : this.onCancel,
 		scope   : this
 	});        
@@ -240,9 +240,9 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         items     : [
             new de.intrabuild.groupware.util.FormIntro({
 				style      : 'padding:10px 10px 0px 10px;',
-				label      : "Feed-Adresse",
+				label      : de.intrabuild.Gettext.gettext("Feed address"),
 				imageClass : 'de-intrabuild-groupware-feeds-AddFeedDialog-introImage',
-				text       : "Geben Sie die URL (beginnend mit \"http://\") des Feeds an, den Sie importieren m&ouml;chten, und klicken Sie danach auf den Button rechts vom Eingabefeld."        
+				text       : de.intrabuild.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished."),        
             }),  
             new Ext.FormPanel({
                 labelAlign : 'right',
@@ -269,7 +269,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
     
     de.intrabuild.groupware.feeds.AddFeedDialog.superclass.constructor.call(this,  {
         iconCls   : 'de-intrabuild-groupware-feeds-Icon', 
-        title     : 'Feed hinzuf&uuml;gen',
+        title     : de.intrabuild.Gettext.gettext("Add feed"),
         bodyStyle : 'background-color:#F6F6F6',
         modal     : true,
         height    : 325,
@@ -342,21 +342,21 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      * Configuration for the loadMask
      */
     loadMaskConfig : {
-        msg : '&Uuml;berpr&uuml;fe Adresse...'    
+        msg : de.intrabuild.Gettext.gettext("Validating feed url..."),    
     },
 
     /**
      * Configuration for the loadMask on checking for a valid feedname
      */
     loadMaskConfigFeedName : {
-        msg : '&Uuml;berpr&uuml;fe Feed-Name...'    
+        msg : de.intrabuild.Gettext.gettext("Validating feed name..."),    
     },    
     
     /**
      * Configuration for the loadMask while saving the new feed
      */
     loadMaskConfigSaveFeed : {
-        msg : 'Speichere Daten...'    
+        msg : de.intrabuild.Gettext.gettext("Saving..."),    
     },        
     
     /**
@@ -404,8 +404,8 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         if (index != -1) {
             var msg = Ext.MessageBox;
             msg.show({
-                title : "Doppelter Feed-Name",
-                msg : "Der von Ihnen angegebene Feed-Name \""+Ext.util.Format.htmlEncode(this.feedNameTextField.getValue())+"\" ist bereits vorhanden. Bitte w&auml;hlen Sie einen anderen.",
+                title : de.intrabuild.Gettext.gettext("Feed name aready existing"),
+                msg : String.format(de.intrabuild.Gettext.gettext("The feed name \"{0}\" oes already exist. Please chose another one."), Ext.util.Format.htmlEncode(this.feedNameTextField.getValue())),
                 buttons: msg.OK,
                 icon: msg.INFO,
                 animateTarget : this.feedNameTextField.el.dom.id,
@@ -685,24 +685,28 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         
         switch (code) {
             case this.ERROR_NO_URL:
-                message = "Fehler:<br />Bitte geben Sie eine Feed-Adresse an.";        
+                message = de.intrabuild.Gettext.gettext("Error:<br />Please enter a feed url.");        
             break;
             
             case this.ERROR_NO_VALID_URL:
-                message = "Fehler:<br />Die von Ihnen angegebene URL "+
-                          "\""+url+"\" "+
-                          "ist keine g&uuml;ltige Feed-Adresse.";        
+                message = String.format(
+				    de.intrabuild.Gettext.gettext("Error:<br />The url \"{0}\" does not seem to be valid feed url."),
+					url
+				);
             break;
             
             case this.ERROR_FEED:
-                message = "Fehler:<br />An der angegebenen Adresse "+url+" konnte kein "+
-                          "Feed ermittelt werden."
+			    message = String.format(
+                    de.intrabuild.Gettext.gettext("Error:<br />The url \"{0}\" does not seem to contain a feed resource."),
+                    url
+                );
             break;
             
             case this.ERROR_SERVER:
-                message = "Fehler:<br />Es ist ein allgemeiner Fehler aufgetreten. Der "+
-                          "Response lieferte folgende Fehlerinformationen:<br />"+
-                          addMessage;
+                message = String.format(
+                    de.intrabuild.Gettext.gettext("Error:<br />An unexpected error occured. The response was:<br />{0}"),
+                    addMessage
+                );
             break;            
         }
         

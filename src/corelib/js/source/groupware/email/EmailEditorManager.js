@@ -44,10 +44,10 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     var recipientsGrid = null;
 	
     var messages = {
-        loading : "Loading message....",
-        saving  : "Saving draft...",
-        sending : "Sending message...",
-        outbox  : "Moving message..."    
+        loading : de.intrabuild.Gettext.gettext("Loading message..."),
+        saving  : de.intrabuild.Gettext.gettext("Saving draft..."),
+        sending : de.intrabuild.Gettext.gettext("Sending message..."),
+        outbox  : de.intrabuild.Gettext.gettext("Moving message...")    
     };
     
     
@@ -117,7 +117,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var panel = new Ext.Panel({
             id         : 'DOM:de.intrabuild.groupware.email.EmailEditor.tab_'+tabIdCount, 
             bodyStyle  : 'display:none',
-            title      : 'Lade...',
+            title      : de.intrabuild.Gettext.gettext("Loading..."),
             hideMode   : 'offsets',
             closable   : true,
             border     : false,
@@ -191,8 +191,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             if (formValues[id].dirty) {
 	            var msg   = Ext.MessageBox;
 	            msg.show({
-	                title   : 'Best&auml;tigen - Nachricht schlie&szlig;en',
-	                msg     : "Sie haben diese Nachricht noch nicht gesendet. Wollen Sie die Nachricht schlieﬂen, ohne vorher zu speichern?",
+	                title   : de.intrabuild.Gettext.gettext("Confirm - close message"),
+	                msg     : de.intrabuild.Gettext.gettext("You did not send this message. Do you really want to close this message without saving?"),
 	                buttons : msg.YESNO,
 	                fn      : function(btn){
 	                              if (btn == 'yes') {
@@ -356,17 +356,17 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             controlBar = new Ext.Toolbar([{   
                 cls     : 'x-btn-text-icon',
                 iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonSend-icon',
-                text    : '&#160;Jetzt senden',
+                text    : '&#160;'+de.intrabuild.Gettext.gettext("Send now"),
                 handler : onSend
               },{   
                 cls  	: 'x-btn-text-icon',
                 iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonOutbox-icon',
-                text	: '&#160;In den Postausgang',
+                text	: '&#160;'+de.intrabuild.Gettext.gettext("Move to outbox"),
                 handler : onOutbox
               } ,'-', {
                 cls     : 'x-btn-text-icon',
                 iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonDraft-icon',
-                text    : '&#160;Als Entwurf speichern',
+                text    : '&#160;'+de.intrabuild.Gettext.gettext("Save as draft"),
                 handler : onSaveDraft
             }]);        
 
@@ -411,8 +411,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             var msg  = Ext.MessageBox;
             
             msg.show({
-                title   : "Empf&auml;nger angeben - Fehler",
-                msg     : "Bitte geben Sie einen oder mehrere Empf&auml;nger f&uuml;r diese Nachricht an.",
+                title   : de.intrabuild.Gettext.gettext("Error - specify recipient(s)"),
+                msg     : de.intrabuild.Gettext.gettext("Please specify one or more recipients for this message."),
                 buttons : msg.OK,
                 icon    : msg.WARNING,
                 scope   : this,
@@ -480,8 +480,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             var msg  = Ext.MessageBox;
             
             msg.show({
-                title   : "Empf&auml;nger angeben - Fehler",
-                msg     : "Bitte geben Sie einen oder mehrere Empf&auml;nger f&uuml;r diese Nachricht an.",
+                title   : de.intrabuild.Gettext.gettext("Error - specify recipient(s)"),
+                msg     : de.intrabuild.Gettext.gettext("Please specify one or more recipients for this message."),
                 buttons : msg.OK,
                 icon    : msg.WARNING,
                 scope   : this,
@@ -629,7 +629,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
         
 		de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            title : "Error - Could not save draft"
+            title : de.intrabuild.Gettext.gettext("Error - Could not save draft")
 		});
     };
     
@@ -669,7 +669,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
         
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            title : "Error - Could not send message"
+            title : de.intrabuild.Gettext.gettext("Error - Could not send message")
         });      
         
     };    
@@ -706,7 +706,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
         
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            title : "Error - Could not move message to outbox"
+            title : de.intrabuild.Gettext.gettext("Error - Could not move message to outbox")
         });    
         
     };        
@@ -798,7 +798,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 		str = (str == "" && value != undefined) ? value : str;
 		
         if (str == "") {
-            str = "(kein Betreff)";
+            str = de.intrabuild.Gettext.gettext("(no subject)");
         } else {
             str = Ext.util.Format.htmlEncode(str);    
         }  	
@@ -1029,7 +1029,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     this.fromComboBox = new Ext.form.ComboBox({
        name : 'from', 
        tpl : '<tpl for="."><div class="x-combo-list-item">{address:htmlEncode} - {name:htmlEncode}</div></tpl>',
-       fieldLabel : 'Von',
+       fieldLabel : de.intrabuild.Gettext.gettext("From"),
        anchor     : '100%',
        typeAhead: false,
        triggerAction: 'all',
@@ -1136,7 +1136,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
 
     this.subjectField = new Ext.form.TextField({
         name : 'subject',
-        fieldLabel : 'Betreff',
+        fieldLabel : de.intrabuild.Gettext.gettext("Subject"),
         anchor     : '100%'
     });
     

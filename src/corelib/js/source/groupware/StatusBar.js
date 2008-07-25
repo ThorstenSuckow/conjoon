@@ -47,21 +47,29 @@ de.intrabuild.groupware.StatusBar = function(){
         switch (subject) {
             case 'de.intrabuild.groupware.email.Letterman.beforeload':
                 _statusBar.setStatus({
-                    text : "Checking for new emails..."
+                    text : de.intrabuild.Gettext.gettext("Checking for new emails...")
                 });
             break; 
             
             case 'de.intrabuild.groupware.email.Letterman.load':
-                var total = message.total;
+			    var total = message.total;
+				var text  = de.intrabuild.Gettext.gettext("No new emails");
+				
+				if (total > 0) {
+					text = String.format(
+                        de.intrabuild.Gettext.ngettext("One new email", "{0} new emails", total),
+						total
+					);
+				}
                 _statusBar.setStatus({
-                    text  : (total > 0 ? String.format("{0} new emails", total) : "No new emails"),
+                    text  : text,
                     clear : true
                 });
             break;
             
             case 'de.intrabuild.groupware.email.Letterman.loadexception':
                 _statusBar.setStatus({
-                    text  : "Error while trying to receive new emails",
+                    text  : de.intrabuild.Gettext.gettext("Error while trying to receive new emails"),
                     clear : true
                 });
             break;   
@@ -101,7 +109,7 @@ de.intrabuild.groupware.StatusBar = function(){
                 _statusBar = new Ext.StatusBar({
                     region:'south',
                     height : 21,
-                    defaultText :'Ready',
+                    defaultText : de.intrabuild.Gettext.gettext("Ready"),
                     border : false,
                     id : 'de.intrabuild.groupware.StatusBar',
                     cls: 'de-intrabuild-groupware-StatusBar',

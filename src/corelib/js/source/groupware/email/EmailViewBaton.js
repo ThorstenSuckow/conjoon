@@ -41,21 +41,21 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 			    id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ForwardButton',
 			    cls      : 'x-btn-text-icon',  
 			    iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-forwardButton-icon',
-			    text     : '&#160;Weiterleiten',
+			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Forward"),
 			    handler  : function(){openEmailEditPanel('forward');}
 			});
 			var replyButton = new Ext.Toolbar.Button({   
 			    id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ReplyButton',  
 			    cls      : 'x-btn-text-icon',  
 			    iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-replyButton-icon',
-			    text     : '&#160;Antworten',
+			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply"),
 			    handler  : function(){openEmailEditPanel('reply');}
 			});
 			var replyAllButton = new Ext.Toolbar.Button({   
 			    id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ReplyAllButton',  
 			    cls      : 'x-btn-text-icon',  
 			    iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-replyAllButton-icon',
-			    text     : '&#160;Allen antworten',
+			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply all"),
 			    handler  : function(){openEmailEditPanel('reply_all');},
 			    scope    : this        
 			});            
@@ -68,9 +68,9 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
     		    id       : 'de.intrabuild.groupware.email.EmailView.toolbar.EditDraftButton',  
     		    cls      : 'x-btn-text-icon',  
     		    iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-editDraftButton-icon',
-    		    text     : '&#160;Entwurf bearbeiten',
+    		    text     : '&#160;'+de.intrabuild.Gettext.gettext("Edit draft"),
     		    hidden   : true,
-    		    handler  : function(){openEmailEditPanel( 'edit');}
+    		    handler  : function(){openEmailEditPanel('edit');}
     		});                
             
             
@@ -126,12 +126,26 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 			} else {
 				
 				if (!config) {
-					config = {
-						emailItem : emailItem, 
-						autoLoad  : true,
-						border	  : true
-					};	
+					config = {};
+				}	
+				
+				if (!config['viewConfig']) {
+					config['viewConfig'] = {};
 				}
+				
+				Ext.applyIf(config['viewConfig'], {
+					fromString       : de.intrabuild.Gettext.gettext("From"),
+                    toString         : de.intrabuild.Gettext.gettext("To"),
+                    ccString         : de.intrabuild.Gettext.gettext("CC"),
+                    bccString        : de.intrabuild.Gettext.gettext("BCC"),
+                    attachmentString : de.intrabuild.Gettext.gettext("Attachments")
+				});
+				
+				Ext.applyIf(config, {
+					emailItem : emailItem, 
+					autoLoad  : true,
+					border	  : true
+            	});	
 				
 				var view = new de.intrabuild.groupware.email.EmailViewPanel(config);
 				

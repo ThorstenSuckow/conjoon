@@ -21,6 +21,11 @@ Ext.namespace('de.intrabuild.groupware.email');
 */
 de.intrabuild.groupware.email.EmailTree = function(config) {
 
+    /**
+     * The default value for an editing text field, if a new node is created.
+     */
+    anonymousNodeText : "New folder",
+
     Ext.apply(this, config); 
     
     
@@ -36,7 +41,6 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
      */
     this.root = new Ext.tree.AsyncTreeNode({
         id            : 'root',
-        text          : 'Emails von T. Suckow',
         iconCls       : 'de-intrabuild-groupware-email-EmailTree-rootIcon',
         draggable     : false,
         isTarget      : false,
@@ -74,13 +78,13 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
     this.tbar = [{    
         cls     : 'x-btn-icon',
         iconCls : 'de-intrabuild-groupware-email-EmailTree-toolbar-expandButton-icon',
-        tooltip : 'Alle Ordner zeigen',
+        tooltip : de.intrabuild.Gettext.gettext("Show all folders"),
         handler : function(){ this.root.expand(true); },
         scope   : this
       },'-',{    
         cls     : 'x-btn-icon',
         iconCls : 'de-intrabuild-groupware-email-EmailTree-toolbar-collapseButton-icon',
-        tooltip : 'Alle Ordner verstecken',
+        tooltip : de.intrabuild.Gettext.gettext("Hide all folders"),
         handler : function(){ this.root.collapse(true); },
         scope   : this
     }];
@@ -200,11 +204,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
     editingNodesStorage : null,
     
     /**
-     * The default value for an editing text field, if a new node is created.
-     */
-    anonymousNodeText : 'Neuer Ordner',
-    
-    /**
      * The last selected node in this tree.
      */
     clkNode : null,
@@ -313,10 +312,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         this.nodeEditor.el.prev().dom.style.zIndex = 99;
         
         msg.show({
-            title    : 'Ung&uuml;ltiger Ordnername',
-            msg      : 'Der von Ihnen eingegebene Ordnername existiert bereits '+
-                       'oder ist ung&uuml;tig. Bitte geben Sie einen '+
-                       'g&uuml;ltigen Ordnernamen ein.',
+            title    : de.intrabuild.Gettext.gettext("Invalid folder name"),
+            msg      : de.intrabuild.Gettext.gettext("The folder name does already exist or is invalid. Please chose another folder name"),
             buttons  : msg.OK,
             fn       : function(){
                            this.nodeEditor.resetEdit(value, startValue);
@@ -476,10 +473,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         var oldParent = node.parentNode;
         var msg   = Ext.MessageBox;
         msg.show({
-            title   : 'Best&auml;tigen - Ordner l&ouml;schen',
-            msg     : 'Sind Sie sicher, da&szlig; Sie den ausgew&auml;hlten '+
-                      'Ordner mitsamt seinem Inhalt in den Papierkorb '+
-                      'verschieben wollen?',
+            title   : de.intrabuild.Gettext.gettext("Confirm - Delete folder"),
+            msg     : de.intrabuild.Gettext.gettext("The selected folder and all its contents will be moved into the trash bin. Are you sure you want to continue?"),
             buttons : msg.YESNO,
             fn      : function(btn){if (btn == 'yes') {this.proxyAppend(tree, node, oldParent, parentNode);}},
             scope   : this,
@@ -622,9 +617,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         if (!this.isNodeNameAvailable(newParent, node, node.text)) {
             var msg   = Ext.MessageBox;
             msg.show({
-                title   : 'Warnung - Ordner verschieben',
-                msg     : 'Ein Ordner mit diesem Namen existiert bereits. '+
-                          'Bitte geben Sie einen anderen Namen an.',
+                title   : de.intrabuild.Gettext.gettext("Warning - Move folder"),
+                msg     : de.intrabuild.Gettext.gettext("A folder with the same name does already exist. Please specify another name"),
                 buttons : msg.OK,
                 icon    : msg.WARNING,
                 scope   : this,
@@ -702,15 +696,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         
         switch (mode) {
             case 'move':
-                msgAdd = "Error - Move folder";
+                msgAdd = de.intrabuild.Gettext.gettext("Error - Move folder");
             break;
             
             case 'edit':
-                msgAdd = "Error - Rename folder";
+                msgAdd = de.intrabuild.Gettext.gettext("Error - Rename folder");
             break;
             
             case 'add':
-                msgAdd = "Error - Add folder";
+                msgAdd = de.intrabuild.Gettext.gettext("Error - Add folder");
             break;
         }
         

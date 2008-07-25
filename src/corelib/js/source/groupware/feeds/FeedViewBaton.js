@@ -49,7 +49,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 			    id       : 'de.intrabuild.groupware.feeds.FeedView.toolbar.LinkButton',
 			    cls      : 'x-btn-text-icon',  
 			    iconCls  : 'de-intrabuild-groupware-feeds-FeedViewBaton-toolbar-visitEntryButton-icon',
-			    text     : '&#160;Visit entry',
+			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
 			    handler  : function(){visitFeedEntry();}
 			});
 			
@@ -178,13 +178,12 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
                 bodyStyle : 'border-bottom:none',
                 cls       : 'de-intrabuild-groupware-feeds-FeedView-header',
                 html      : 
-                
                    '<div class="header">'+
                    '<span class="date">'+Ext.util.Format.date(feedItemRecord.get('pubDate'), 'd.m.Y H:i')+'</span>'+               
                    '<div class="subject">'+feedItemRecord.get('title')+'</div>'+
                    '<div class="name">'+name+'</div>'+
                    '<div class="link"><a href="'+LinkInterceptor.getRedirectLink(link)+'" target="_blank">'+link+'</a></div>'+
-                   '<div class="author">Posted by: '+feedItemRecord.get('author')+'</div>'+
+                   '<div class="author">'+de.intrabuild.Gettext.gettext("Posted by")+': '+feedItemRecord.get('author')+'</div>'+
                    '</div>'
                 
             },body
