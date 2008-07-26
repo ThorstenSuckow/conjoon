@@ -767,6 +767,14 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
         $this->_setIconvErrorHandler();
         if ($charset != "") {
             $conv = iconv($charset, 'UTF-8', $text);
+
+            // first off, check if the charset is windows-1250 if  encoding fails
+            // broaden to windows-1252 then
+            if (($conv === false || $this->_lastIconvError) && strtolower($charset) == 'windows-1250') {
+                $this->_lastIconvError = false;
+                $conv = iconv('windows-1252', 'UTF-8', $text);
+            }
+
             // fallback! if we have mb-extension installed, we'll try to detect the encoding, if
             // first try with iconv didn't work
             if (($conv === false || $this->_lastIconvError) && function_exists('mb_detect_encoding')) {
@@ -785,6 +793,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             if ($conv !== false && !$this->_lastIconvError) {
                 $text = $conv;
             }
+
         } else {
             $conv = false;
             if (function_exists('mb_detect_encoding')) {
@@ -801,7 +810,6 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             }
         }
         $this->_restoreErrorHandler();
-
 
         return $text;
     }
