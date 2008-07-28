@@ -559,6 +559,9 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
         doc.write(body)
         doc.close(); 	
         
+		Ext.fly(doc.body).swallowEvent("click", true);  
+		de.intrabuild.groupware.util.LinkInterceptor.addListener(Ext.fly(doc.body));
+		
         this.cleared = false;
     },
     
@@ -571,7 +574,7 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 			doc.close();
 		}
         
-    	var dom = document.getElementById(this.viewId);
+    	var dom  = document.getElementById(this.viewId);
     	var prev = dom.previousSibling;
     	var next = dom.nextSibling;
     	if (prev) {
@@ -624,7 +627,7 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
     
         this.doc = doc;
         this.iframe = new Ext.Element(iframe);
-        this.iframe.swallowEvent("click", true);		
+		this.iframe.swallowEvent("click", true);		
 	},
 	
     // private

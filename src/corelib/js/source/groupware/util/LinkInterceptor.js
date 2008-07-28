@@ -1,4 +1,4 @@
-﻿/**
+/**
  * intrabuild
  * (c) 2002-2008 siteartwork.de/MindPatterns
  * license@siteartwork.de
@@ -17,24 +17,29 @@ Ext.namespace('de.intrabuild.groupware.util');
 de.intrabuild.groupware.util.LinkInterceptor = function(){
 
     return {
+		
+		addListener : function(p)
+		{
+            p.on({
+                'mousedown': function(e, t){
+					e.stopEvent();
+                },
+                'click': function(e, t){ 
+                    e.stopEvent();
+					window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
+                },
+                delegate:'a'
+            });			
+		},
+		
         getListener : function() 
         {
             return {
-                render: function(p)
+				
+				render: function(p)
                 {
-                    p.body.on({
-                        'mousedown': function(e, t){ 
-                            e.stopEvent();
-                            //window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
-                        },
-                        'click': function(e, t){ 
-                            //if(String(t.target).toLowerCase() != '_blank'){
-                                e.stopEvent();
-                                window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
-                            //}
-                        },
-                        delegate:'a'
-                });}
+					de.intrabuild.groupware.util.LinkInterceptor.addListener(p.body);
+				}
             };
         },
     

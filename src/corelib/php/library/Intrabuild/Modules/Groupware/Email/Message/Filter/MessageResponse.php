@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -20,9 +20,8 @@ require_once 'Intrabuild/Filter/Input.php';
 
 /**
  * @see Zend_Filter_HtmlEntities
- */ 
+ */
 require_once 'Zend/Filter/HtmlEntities.php';
-
 
 /**
  * A filter used for preparing data fetched from the database for sending as
@@ -49,24 +48,34 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
             'groupwareEmailFoldersId'
         )
     );
-    
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');  
-    }  
-   
+        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
+    }
+
     public function getProcessedData()
     {
         $data = parent::getProcessedData();
-        
+
         if ($data['body'] == "") {
             $data['body'] = " ";
         } else {
-            $data['body'] = nl2br($data['body']);
+
+            /**
+             * @see Intrabuild_Filter_UrlToATag
+             */
+            require_once 'Intrabuild/Filter/UrlToATag.php';
+
+            $filter = new Intrabuild_Filter_UrlToATag(array(
+                'target' => '_blank'
+            ));
+
+            $data['body'] = nl2br($filter->filter($data['body']));
         }
-        
+
         return $data;
-    } 
-   
+    }
+
 
 }
