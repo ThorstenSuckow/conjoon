@@ -38,6 +38,7 @@ Ext.ux.grid.BufferedGridView = function(config) {
          * @param {Number} rowIndex
          * @param {Number} visibleRows
          * @param {Number} totalCount
+         * @param {Object} options
          */
         'buffer' : true,
         /**
@@ -892,7 +893,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         if (success === true) {
             this.fireEvent('buffer', this, this.ds, this.rowIndex,
                 Math.max(this.visibleRows, this.getRows().length),
-                this.ds.getTotalCount()
+                this.ds.getTotalCount(),
+                options
             );
 
             this.isBuffering    = false;
