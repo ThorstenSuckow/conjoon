@@ -317,6 +317,49 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         return $rows;
     }
 
+    /**
+     * Returns a single folder entry.
+     *
+     * @param integer $folderId The id of the folder to fetch
+     * @param integer $userId The user id for reading the additional data out, such
+     * as unread items.
+     *
+     * @return Zend_Db_Table_Row
+     */
+    public function getFolder($folderId, $userId)
+    {
+        $userId   = (int)$userId;
+        $userId = (int)$userId;
+
+        if ($userId <= 0 || $userId < 0) {
+            return array();
+        }
+
+        $adapter = $this->getAdapter();
+        $select  = self::getFolderBaseQuery()
+                   ->join(array(
+                    'namefolder' => 'groupware_email_folders'
+                   ),
+                   'namefolder.id=folders.id',
+                   array('name')
+                   )
+                   ->joinLeft(array(
+                    'flag' => 'groupware_email_items_flags'),
+                    'items.id = flag.groupware_email_items_id'.
+                    ' AND '.
+                    'flag.is_read=0'.
+                    ' AND ' .
+                    $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
+                    array('pending_count' => 'COUNT(DISTINCT flag.groupware_email_items_id)')
+                   )
+                   ->where('folders.id = ?', $folderId);
+
+
+        $row = $adapter->fetchRow($select);
+
+        return $row;
+    }
+
 // -------- interface Intrabuild_BeanContext_Decoratable
 
     public function getRepresentedEntity()
@@ -327,7 +370,8 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     public function getDecoratableMethods()
     {
         return array(
-            'getFolders'
+            'getFolders',
+            'getFolder'
         );
     }
 }

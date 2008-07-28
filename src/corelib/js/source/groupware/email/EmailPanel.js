@@ -242,11 +242,14 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     letterman.on('load', this.newEmailsAvailable, this);
     
     var gs = this.gridPanel.store;
-    gs.on('beforeload',           this.onGridStoreBeforeLoad,  this);
-    gs.on('clear',                this.onGridStoreClear,       this);
-    gs.on('beforeselectionsload', this.onBeforeSelectionsLoad, this);
-    gs.on('selectionsload',       this.onSelectionsLoad,       this);
-    
+    gs.on('beforeload',              this.onGridStoreBeforeLoad,  this);
+    gs.on('clear',                   this.onGridStoreClear,       this);
+    gs.on('beforeselectionsload',    this.onBeforeSelectionsLoad, this);
+    gs.on('selectionsload',          this.onSelectionsLoad,       this);
+	gs.on('load',                    this.onStoreLoad,            this);
+    this.gridPanel.view.on('buffer', this.onStoreBuffer,          this);
+	
+	
     var gm = this.gridPanel.selModel;
     gm.on('rowselect', this.onRowSelect,     this, {buffer : 100});
     gm.on('rowdeselect', this.onRowDeselect, this, {buffer : 100});
@@ -260,7 +263,8 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     tp.on('render', function(){this.treePanel.getSelectionModel().on('selectionchange', this.onNodeSelectionChange, this);}, this);
     tp.on('nodedrop', this.onNodeDrop, this);
     tp.on('remove', this.onNodeRemove, this);
-    
+	tp.pendingItemStore.on('add', this.onPendingStoreAdd, this); 
+	
     this.on('render',  this.onPanelRender, this);
     this.on('hide',    function(){tbarManager.hide('de.intrabuild.groupware.email.Toolbar');}, this);
     
@@ -286,6 +290,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     buttonsLocked : false,
     
     pendingRecords : null,
+	
+	pendingRecordsDate : [],
     
     queue : null,
 
@@ -503,7 +509,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     clearPending : function()
     {
-        this.queue = null;
+		this.queue = null;
         this.gridPanel.view.un('rowsinserted', this.processQueue, this);    
         
         var pendingStore  = this.treePanel.pendingItemStore;
@@ -511,7 +517,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         
         for (var i in this.pendingRecords) {
             var pendingRecord = pendingStore.getById(i);
-            if (pendingRecord) {
+			if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+this.pendingRecords[i]);
             }     
         }
@@ -1294,6 +1300,67 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         
       
     },
+	
+	/**
+	 * Updates the pendning node of a folder only if the current timestamp is 
+	 * greater than the timestamp stored within the according record of the 
+	 * pending store.
+	 * 
+	 * @param {Ext.data.Store} store
+	 * @param {Object} options
+	 */
+	_updatePendingFromLoad : function(store, options)
+	{
+        var pendingItems = store.pendingItems;
+        
+        if (pendingItems == -1) {
+            return;
+        }   
+        // only update pending records if the last updated timestamp is less than
+        // the actual timestamp
+        var ts = (new Date()).getTime();            
+        if (this.pendingRecordsDate[folderId] > ts) {
+            return;     
+        }
+        
+		this.pendingRecordsDate[folderId] = ts;
+        
+        var folderId = options.params.groupwareEmailFoldersId;
+        
+        var pendingStore  = this.treePanel.pendingItemStore;
+        var pendingRecord = pendingStore.getById(folderId);
+        
+        if (pendingRecord) {
+            pendingRecord.set('pending', pendingItems);
+        }  
+	},
+	
+	onStoreLoad : function(store, records, options)
+	{
+		this._updatePendingFromLoad(store, options);
+	},
+	
+	onStoreBuffer : function(view, store, rowIndex, visibleRows, totalCount, options)
+    {
+        this._updatePendingFromLoad(store, options);  
+    },
+
+    /**
+     * Called when a pending record has been added to the treepanel's pending 
+     * item's store. 
+     * Inits the date-object with the date-property of the added records.
+     * 
+     * @param {Object} store
+     * @param {Array} records
+     * @param {number} index
+     */
+    onPendingStoreAdd : function(store, records, index)
+	{
+		for (var i = 0, len = records.length; i < len; i++) {
+            this.pendingRecordsDate[records[i].id] = records[i].get('date'); 	
+		}
+		
+	},
 
     /**
      * Called by the letterman when new emails have arrived.
@@ -1308,19 +1375,21 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         
         this.pendingRecords = {};
         
-        var folderId     = null;
+        var folderId = null;
         
         this.gridPanel.view.un('rowsinserted', this.processQueue, this);
         this.gridPanel.view.on('rowsinserted', this.processQueue, this);
         
-       
+        var ts = (new Date()).getTime();
         for (var i = 0, max_i = records.length; i < max_i; i++) {
             folderId = records[i].data.groupwareEmailFoldersId;
-            if (!this.pendingRecords[folderId]) {
-                this.pendingRecords[folderId] = 1;
-            } else {
-                this.pendingRecords[folderId]++;
-            }
+			if (this.pendingRecordsDate[folderId] < store.lastLoadingDate) {
+				if (!this.pendingRecords[folderId]) {
+					this.pendingRecords[folderId] = 1;
+				} else {
+					this.pendingRecords[folderId]++;
+				}
+			}
         
             this.queue.push(records[i].copy());
         }
@@ -1330,6 +1399,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         
         for (var i in this.pendingRecords) {
             folderId = parseInt(i);
+			this.pendingRecordsDate[folderId] = ts;
             if (folderId != this.clkNodeId) {
                 pendingRecord = pendingStore.getById(folderId);
                 if (pendingRecord) {

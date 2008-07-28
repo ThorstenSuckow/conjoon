@@ -553,6 +553,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
      *              for this user, or the total count of latest emails for the
      *              user since minDate
      * version - the version property for Ext.ux.grid.BufferedStore
+     * pendingItems - if a folder id other than 0 was supplied, the number of
+     * pending items will be read out and assigned to this view-variable
      *
      */
     public function getEmailItemsAction()
@@ -609,13 +611,18 @@ class Groupware_EmailController extends Zend_Controller_Action {
             Intrabuild_Filter_Input::CONTEXT_RESPONSE
         );
 
+        $pendingItems = -1;
+
         if ($context == $CONTEXT_REQUEST) {
 
             // get the number of emails currently available for this folder
             // and this user
             require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
-            $itemModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
-            $totalCount = $itemModel->getTotalItemCount($filteredData['groupwareEmailFoldersId']);
+            require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+            $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+            $itemModel   = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
+            $totalCount  = $itemModel->getTotalItemCount($filteredData['groupwareEmailFoldersId']);
 
             if ($totalCount == 0) {
                 $this->view->success    = true;
@@ -631,11 +638,23 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 $itemResponseFilter
             );
 
+            $folderDecorator = new Intrabuild_BeanContext_Decorator(
+                $folderModel
+            );
+
+
             $rows = $decoratedModel->getEmailItemsForAsDto(
                 $userId,
                 $filteredData['groupwareEmailFoldersId'],
                 $sortInfo
             );
+
+            $row = $folderDecorator->getFolderAsDto(
+                $filteredData['groupwareEmailFoldersId'],
+                $userId
+            );
+
+            $pendingItems = $row->pendingCount;
 
         } else if ($context == $CONTEXT_REQUEST_LATEST) {
 
@@ -667,11 +686,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
             );
         }
 
-        $this->view->success    = true;
-        $this->view->error      = null;
-        $this->view->items      = $rows;
-        $this->view->version    = 1;
-        $this->view->totalCount = $totalCount;
+        $this->view->success      = true;
+        $this->view->error        = null;
+        $this->view->items        = $rows;
+        $this->view->pendingItems = $pendingItems;
+        $this->view->version      = 1;
+        $this->view->totalCount   = $totalCount;
     }
 
 

@@ -85,7 +85,14 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         })
     });
     
-    
+    store.loadRecords = function(o, options, success)
+	{
+		this.lastLoadingDate = (new Date()).getTime(); 
+		
+		Ext.data.Store.prototype.loadRecords.call(this, o, options, success);
+	};
+	
+	
     /**
      * The interval in which the letterman should check for new mails, in minutes.
      * @param {Number}

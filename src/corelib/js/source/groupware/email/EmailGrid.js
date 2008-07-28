@@ -21,24 +21,57 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     this.controller = controller;
     this.enableHdMenu = false;
     
-// ------------------------- set up buffered grid ------------------------------    
-    this.store = new Ext.ux.grid.BufferedStore({
+// ------------------------- set up buffered grid ------------------------------
+
+    var reader = new Ext.ux.data.BufferedJsonReader({
+		root            : 'items',
+		totalProperty   : 'totalCount',
+		versionProperty : 'version',
+		id              : 'id'
+	}, de.intrabuild.groupware.email.EmailItemRecord);
+	
+    reader.read = function(response){
+        var json = response.responseText;
+        var o = eval("("+json+")");
+        if(!o) {
+            throw {message: "JsonReader.read: Json object not found"};
+        }
+		
+		var z = this.readRecords(o);
+		if (o.pendingItems === 0 || o.pendingItems > 0) {
+            z.pendingItems = parseInt(o.pendingItems);       	
+		}
+		
+		return z;
+    };	
+    
+	// we receive the pendingItems count through a property
+	// in the response object. We store it in the options
+	var MyStore = Ext.extend(Ext.ux.grid.BufferedStore, {
+        
+		loadRecords: function(o, options, success)
+		{
+			if (o.pendingItems === 0 || o.pendingItems > 0) {
+                this.pendingItems = o.pendingItems; 
+			} else {
+				this.pendingItems = -1;
+			}
+			
+			MyStore.superclass.loadRecords.call(this, o, options, success);
+		}
+	});
+	
+    this.store = new MyStore({
 		storeId     : Ext.id(),
         bufferSize  : 300,
         autoLoad    : false,
-        reader      : new Ext.ux.data.BufferedJsonReader({
-                          root            : 'items',
-                          totalProperty   : 'totalCount',
-                          versionProperty : 'version',
-                          id              : 'id'
-                      }, 
-                      de.intrabuild.groupware.email.EmailItemRecord
-                      ),
+        reader      : reader,
         sortInfo   : {field: 'date', direction: 'DESC'},
         pruneModifiedRecords : true,
         remoteSort  : true,              
         url         : '/groupware/email/get.email.items/format/json'
     });
+	
     
     this.view = new Ext.ux.grid.BufferedGridView({
         nearLimit   : 100,
