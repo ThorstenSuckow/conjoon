@@ -137,7 +137,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     
     // leave this here since listener only works if observer function gets defined before
     // (stopRunning, onStoreLoad)
-    var feedStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore');
+    var feedStore = de.intrabuild.groupware.feeds.FeedStore.getInstance();
     feedStore.on('beforeload', stopRunning, de.intrabuild.groupware.feeds.FeedRunner);
     store.on('load', onStoreLoad, de.intrabuild.groupware.feeds.FeedRunner);
 	store.on('loadexception', onStoreLoadException, de.intrabuild.groupware.feeds.FeedRunner);

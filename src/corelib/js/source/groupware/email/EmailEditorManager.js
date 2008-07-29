@@ -882,7 +882,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 	 */
     var _attachSignature = function(panelId, accountId, refresh)
 	{
-		var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+		var store = de.intrabuild.groupware.email.AccountStore.getInstance();
         var rec   = store.getById(accountId);
 		
 		var sigId = formValues[panelId]['signatureAttached'];
@@ -1099,7 +1099,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     
 	this.receiveTypeStore = receiveTypeStore;
     
-    var accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+    var accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
     
     var view = new Ext.grid.GridView({
         getRowClass : function(record, rowIndex, p, ds){

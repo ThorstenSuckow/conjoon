@@ -118,7 +118,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 	
 	initComponent : function()
 	{
-		this.accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+		this.accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 		
 		var accountGridPanel = new Ext.grid.GridPanel({
         	cls			   : 'de-intrabuild-groupware-email-EmailAccountDialog-accountGrid',

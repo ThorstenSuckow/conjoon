@@ -109,7 +109,7 @@ de.intrabuild.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         // fetch the response values
         var responseValues = json.getResponseValues(response.responseText);
         var account = responseValues.account;
-        var accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+        var accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
         
         var rec = new de.intrabuild.groupware.email.AccountRecord(
             account
@@ -200,7 +200,7 @@ de.intrabuild.groupware.email.EmailAccountWizardserverInboxCard = Ext.extend(Ext
 	initComponent : function()
 	{
 		this.monitorValid = true;
-		this.accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+		this.accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 	
 	
 		this.baseCls    = 'x-small-editor';
@@ -369,7 +369,7 @@ de.intrabuild.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext
 	{
 		this.monitorValid = true;
 	
-		this.accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+		this.accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 	
 		 this.baseCls    = 'x-small-editor';
 		this.labelWidth	= 75;

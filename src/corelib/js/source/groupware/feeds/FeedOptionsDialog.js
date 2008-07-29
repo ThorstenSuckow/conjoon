@@ -52,7 +52,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         }]
     });    
     
-    var tmpStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore');
+    var tmpStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
     var records = tmpStore.getRange();
     tmpStore.on('add', this.addRecordsFromStore, this);
     for (var i = 0, len = records.length; i < len; i++) {
@@ -276,7 +276,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
     }, this);
         
     this.on ('destroy', function() {
-        de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore').un('add', this.addRecordsFromStore, this);
+        de.intrabuild.groupware.feeds.AccountStore.getInstance().un('add', this.addRecordsFromStore, this);
     }, this);    
     
   
@@ -537,8 +537,8 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             return;
         }
         
-        var accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore');
-        var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore');
+        var accountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
+        var store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
         var updatedFailed = values.updatedFailed;
         var records = this.feedPanel.store.getModifiedRecords();
         var items = store.getRange();

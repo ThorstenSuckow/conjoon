@@ -30,7 +30,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
 	
     Ext.apply(this, config);
 
-    this.store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore');
+    this.store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
     
     this.store.setDefaultSort('pubDate', "DESC");
     
@@ -112,7 +112,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
         handler : function(){
             this.clkRow    = null;
             this.clkRecord = null;
-            de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore').reload();
+            de.intrabuild.groupware.feeds.AccountStore.getInstance().reload();
             this.store.reload();},
         scope: this
       },{   
@@ -331,7 +331,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
                     handler: function(){
                         this.clkRow    = null;
                         this.clkRecord = null;
-                        de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore').reload();
+                        de.intrabuild.groupware.feeds.AccountStore.getInstance().reload();
                         this.store.reload();}  
                   }, 
                  '-',{

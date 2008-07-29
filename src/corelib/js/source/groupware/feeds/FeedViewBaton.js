@@ -28,7 +28,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 	
 	var openedFeeds = {};
 	
-	var AccountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore');
+	var AccountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
 	
 	var LinkInterceptor = de.intrabuild.groupware.util.LinkInterceptor;
 	

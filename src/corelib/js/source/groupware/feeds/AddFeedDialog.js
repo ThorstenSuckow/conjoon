@@ -390,7 +390,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             return;
         }
         
-        var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore');
+        var store = de.intrabuild.groupware.feeds.AccountStore.getInstance();
         var recs = store.getRange();
         var tmpValue = value.toLowerCase();
         var index = -1;
@@ -504,9 +504,9 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         var account = responseValues['account'];
         var items = responseValues['items'];
         var rec = convertTo(de.intrabuild.groupware.feeds.AccountRecord, account, account.id);
-        de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore').add(rec);
+        de.intrabuild.groupware.feeds.AccountStore.getInstance().add(rec);
         
-        var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.FeedStore');
+        var store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
         var recs = [];
         var item = null;
         var recordClass = de.intrabuild.groupware.feeds.ItemRecord;
