@@ -908,6 +908,11 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             $encodingInformation = $this->_getEncodingInformation($part);
             $contentType         = $encodingInformation['contentType'];
 
+            // skip to attachments if encodingInformation detects "name" value
+            if (isset($encodingInformation['name']) && $encodingInformation['name'] != "") {
+                $contentType = "___";
+            }
+
             switch ($contentType) {
                 case 'text/plain':
                     if (!isset($emailItem['contentTextPlain'])) {
