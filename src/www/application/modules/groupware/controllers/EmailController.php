@@ -56,6 +56,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
                       ->addActionContext('add.folder', self::CONTEXT_JSON)
                       ->addActionContext('move.folder', self::CONTEXT_JSON)
                       ->addActionContext('delete.folder', self::CONTEXT_JSON)
+                      // editing emails
+                      ->addActionContext('get.draft', self::CONTEXT_JSON)
                       ->initContext();
     }
 
@@ -1097,68 +1099,61 @@ class Groupware_EmailController extends Zend_Controller_Action {
     	$id = $_POST['id'];
 
     	if ($id == -1) {
-	        $options = array('response' => array(
-	                                           'type'  => 'array',
-	                                           'value' => array(
-	                                            array(
-	                                                'id'         => -1,
-	                                                'message'    => '',
-	                                                'account_id' => 1,
-	                                                'folder_id'  => -1,
-	                                                'subject'    => '',
-	                                                'recipients' => array(
-	                                                	'to' => array('')
-	                                                )
-	                                            ))));
+    	    $this->view->success = true;
+    	    $this->view->draft   = array(
+                'id'         => -1,
+                'message'    => '',
+                'groupwareEmailAccountsId' => 1,
+                'groupwareEmailFoldersId'  => -1,
+                'subject'    => '',
+                'recipients' => array(
+                	'to' => array('')
+                )
+            );
+            $this->view->error = null;
 	    } else {
 
 	    	$prefix = "";
 
 	    	switch ($_POST['type']) {
-				case 'reply': $prefix = 'Re: '; break;
+				case 'reply':     $prefix = 'Re: '; break;
 				case 'reply_all': $prefix = 'Re: '; break;
-				case 'forward': $prefix = 'Fwd: '; break;
+				case 'forward':   $prefix = 'Fwd: '; break;
 	    	}
 
-	    	$msg = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh           <br>
-					euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad          <br>
-					minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut            <br>
-					aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in          <br>
-					vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis      <br>
-					at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril           <br>
-					delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,          <br>
-					consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet          <br>
-					dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud            <br>
-					exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.      <br>
-					Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,  <br>
-					vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim   <br>
-					qui blandit praesent luptatum zzril  delenit augue duis dolore te feugait nulla facilisi. <br>
-					 Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod  <br>
-					 mazim placerat facer possim assum.";
+	    	$msg = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh          <br/>
+euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad   <br/>
+minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut         <br/>
+aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in           <br/>
+vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis           <br/>
+at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril                <br/>
+<blockquote>delenit augue duis dolore <blockqoute>te feugait nulla facilisi. Lorem ipsum dolor sit amet,<br/>
+consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet           <br/>
+dolore <blockquote>magna <blockquote>aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud             <br/>
+exerci tation ullamcorper suscipit lo</blockquote>bortis nisl ut aliquip ex ea commodo consequat.<br />
+Duis</blockquote> autem vel eum </blockquote>iriure dolor in hendrerit in vulputate velit esse molestie consequat,<br />
+</blockquote>vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim<br />
+qui blandit praesent luptatum zzril  delenit augue duis dolore te feugait nulla facilisi.<br />
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod<br />
+mazim placerat facer possim assum.";
 
-	        $options = array('response' => array(
-	                                           'type'  => 'array',
-	                                           'value' => array(
-	                                            array(
-	                                                'id'         => $id,
-	                                                'message'    => '<blockquote class="de-intrabuild-groupware-email-HtmlEditor-blockquote">'.$msg.'</blockquote>',
-	                                                'account_id' => 1,
-	                                                'folder_id'  => -1,
-	                                                'subject'    => $prefix . 'Keine neue Email <YO>',
-	                                                'recipients' => array(
-	                                                	'to' => array('test@test.de', 'test2@test2.de'),
-	                                                	'cc' => array('test3@test3de', 'test4@test4.de'),
-	                                                	'bcc' => array('test5@test5de', 'test6@test6.de')
-	                                                )
-	                                            ))));
-
+            $this->view->success = true;
+            $clRep = md5(time());
+            $this->view->draft   = array(
+                'id'              => $id,
+                'classSubstitute' => $clRep,
+                'message'         => '<blockquote class="'.$clRep.'">'.$msg.'</blockquote>',
+                'groupwareEmailAccountsId'      => 1,
+                'groupwareEmailFoldersId'       => -1,
+                'subject'         => $prefix . 'Keine neue Email <YO>',
+                'recipients'      => array(
+                    'to'  => array('test@test.de', 'test2@test2.de'),
+                    'cc'  => array('test3@test3de', 'test4@test4.de'),
+                    'bcc' => array('test5@test5de', 'test6@test6.de')
+                )
+            );
+            $this->view->error = null;
 	    }
-
-        Zend_Loader::loadClass('Zend_Json');
-        $json = Zend_Json::encode($options, Zend_Json::TYPE_ARRAY);
-
-        echo $json;
-        die();
     }
 
     public function getRecipientAction()

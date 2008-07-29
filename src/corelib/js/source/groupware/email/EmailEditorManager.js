@@ -126,34 +126,34 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         });
         
         formValues[panel.id] = {
-        	dirty		   : false,
-            pending        : false,
-            disabled       : true,
-            subject        : "",
-            message        : "",
-            accountId      : null,
-            sourceEditMode : false,
-            recipients     : []
+			signatureAttached : false,
+			dirty		      : false,
+            pending           : false,
+            disabled          : true,
+            subject           : "",
+            message           : "",
+            accountId         : null,
+            sourceEditMode    : false,
+            recipients        : []
         };
         
-        var rs = new Ext.data.JsonStore({
-            url      : '/groupware/email/get.draft/format/json',
-            root     : 'response.value',
-            id       : 'id',
-            fields   : ['message', 'account_id', 'subject', 'recipients', 'groupwareEmailFoldersId'],
-            autoLoad : false
-        });
-        rs.on('load', onRecipientsLoad, de.intrabuild.groupware.email.EmailEditorManager);
-        rs.on('loadexception', function(proxy, options, response, jsError) {   
-            onRecipientsLoadException(response, options, rs);
-        }, de.intrabuild.groupware.email.EmailEditorManager);
-		
-		var params = {id : draftId || -1, type : type || 'new'};
+        var ajaxOptions = {
+            url            : '/groupware/email/get.draft/format/json',
+            disableCaching : true,
+			panelId        : panel.id,
+			params         : {
+				id   : draftId || -1, 
+				type : type || 'new'
+			}, 
+			success : onRecipientsLoad,
+			failure : onRecipientsLoadException,
+			scope   : de.intrabuild.groupware.email.EmailEditorManager
+        };
         
         if (form.initialized) {
-            rs.load({panelId : panel.id, params : params});
+            Ext.Ajax.request(ajaxOptions);
         } else {
-            queue.push({store : rs, panelId : panel.id, params : params});
+            queue.push(ajaxOptions);
         }
         
         registerToolbar();
@@ -231,81 +231,90 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     var onFormInitialize = function(form)
     {
 		for (var i = 0, max_i = queue.length; i < max_i; i++) {
-			queue[i].store.load({
-				panelId : queue[i]['panelId'], 
-				params  : queue[i]['params']
-			});
+			Ext.Ajax.request(queue[i]);
         }
         
         queue = [];
     };
     
-	var onRecipientsLoadException = function(response, options, store)
+	var onRecipientsLoadException = function(response, options)
 	{
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
-                    store.load(options);
+                    Ext.Ajax.request(options);
                 },
-                scope : store
+                scope : de.intrabuild.groupware.email.EmailEditorManager
             }
         }); 		
 	};
 	
-    var onRecipientsLoad = function(store, records, options)
+    var onRecipientsLoad = function(response, options)
     {
         if (!formValues[options.panelId]) {
             return;
         }
-        
-        var record = records[0];
-        
-        var tmpRecord;
+		        
+		var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
+		
+		if (data === null) {
+			return onRecipientsLoadException(response, options);
+		}		
+        				
         var recRecs = [];
-
-		var data = record.data.recipients;
+		var rdata = data.draft.recipients;
 		var rRec = de.intrabuild.groupware.email.RecipientRecord;
-		var tst = null;
+		var tst  = null;
 			
-		if (data.to) {
-			tst = data.to;
+		if (rdata.to) {
+			tst = rdata.to;
 			for (var i = 0, max_i = tst.length; i < max_i; i++) {
 	            tmpRecord = new rRec({receive_type : 'to', address : tst[i]}); 
 	            recRecs.push(tmpRecord);
         	}
 		}	
 		
-		if (data.cc) {
-			tst = data.cc;
+		if (rdata.cc) {
+			tst = rdata.cc;
 			for (var i = 0, max_i = tst.length; i < max_i; i++) {
 	            tmpRecord = new rRec({receive_type : 'cc', address : tst[i]}); 
 	            recRecs.push(tmpRecord);
         	}
 		}	
 			
-		if (data.bcc) {
-			tst = data.bcc;
+		if (rdata.bcc) {
+			tst = rdata.bcc;
 			for (var i = 0, max_i = tst.length; i < max_i; i++) {
 	            tmpRecord = new rRec({receive_type : 'bcc', address : tst[i]}); 
 	            recRecs.push(tmpRecord);
         	}
 		}	
         
+		var draft = data.draft;
+		
+		var cs      = draft.classSubstitute;
+		var message = draft.message;
+
+		if (cs && message) {
+            message = message.replace(
+                new RegExp(cs, 'g'), 
+				'de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote'
+            );
+		}
+		
         Ext.apply(formValues[options.panelId], {
-            id         : record.id,
+            id         : draft.id,
             disabled   : false,
-            subject    : record.data.subject,
-            message    : record.data.message,
-            accountId  : record.data.account_id,
+            subject    : draft.subject,
+            message    : message,
+            accountId  : draft.groupwareEmailAccountsId,
             recipients : recRecs,
-            folderId   : record.data.groupwareEmailFoldersId
+            folderId   : draft.groupwareEmailFoldersId
         });
-        
-        store.destroy();
         
         completeForm(options.panelId);
         
-        Ext.getCmp(options.panelId).setTitle(getTitle(record.data.subject));
+        Ext.getCmp(options.panelId).setTitle(getTitle(draft.subject));
     };
     
     var completeForm = function(panelId)
@@ -333,8 +342,9 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         
         if (formValues[panelId].accountId) {
             accountField.setValue(formValues[panelId].accountId);
+			_attachSignature(panelId, formValues[panelId].accountId);
         }
-        
+		
         
         recipientStore.removeAll();
         recipientStore.add(formValues[panelId].recipients);        
@@ -381,7 +391,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             htmlEditor.pushValue();
         }
         formValues[panelId].sourceEditMode = htmlEditor.sourceEditMode;
-        formValues[panelId].message = htmlEditor.getValue();
+		formValues[panelId].message = htmlEditor.getValue();
         formValues[panelId].accountId  = accountField.getValue();
         formValues[panelId].recipients = [];
         for (var i = 0, max_i = recipientStore.getCount(); i < max_i; i++) {
@@ -723,26 +733,22 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 	{
 		var doc = htmlEditor.doc;
 		
-		var splitRange = Ext.isIE ? doc.selection.createRange() : null;
+		var splitRange = Ext.isIE 
+		                 ? doc.selection.createRange() 
+						 : htmlEditor.win.getSelection().getRangeAt(0);
 	    
-	    var splitId = 'ibuild_splitter';
-	    var splitCount = 0;
-	    
-	    var id = splitId+splitCount;
-	    
-	    while(doc.getElementById(id)) {
-	    	splitCount++;
-	    	id = splitId + splitCount;		
-	    }
+	    var id = '_'+(new Date()).getTime();
 	    
 	    if (Ext.isIE) {
 	    	splitRange.pasteHTML('<span id="'+id+'"></span>');
-	    } else {
-	    	htmlEditor.insertAtCursor('<span id="'+id+'"></span>');
+		} else {
+			var span = doc.createElement('span');
+			span.id = id;
+            splitRange.surroundContents(span);	
 	    }
 	    
 	    var splitter = doc.getElementById(id);
-	    splitter.id = "";
+		splitter.id = "";
 	    var parent = splitter.parentNode;
 	    var quoteEl = null;
 	    var tagName = "";
@@ -755,11 +761,12 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 	    	}
 	    	parent = parent.parentNode;
 	    }
+		
 	    
 	    if (quoteEl) {
 	    	eventObject.stopEvent();
 	    	var splitterClone = splitter.cloneNode(false);
-	    	var dividedNode = utilDom.divideNode(splitter , splitterClone, quoteEl);
+	    	var dividedNode   = utilDom.divideNode(splitter , splitterClone, quoteEl);
 			
 			if(!quoteEl.nextSibling){
 				quoteEl.parentNode.appendChild(dividedNode);
@@ -767,13 +774,13 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 				quoteEl.parentNode.insertBefore(dividedNode, quoteEl.nextSibling);
 			}
 			
-			var br = doc.createElement('br');
+			var br  = doc.createElement('br');
 			var div = doc.createElement('div');
-			quoteEl.parentNode.insertBefore(br, dividedNode);
-			quoteEl.parentNode.insertBefore(div, br);
+			div.className = 'de-intrabuild-groupware-email-EmailForm-htmlEditor-insertDiv';
+			quoteEl.parentNode.insertBefore(div, dividedNode);
 			div.innerHTML="&nbsp;";
 			
-			if (splitRange) {
+			if (Ext.isIE && splitRange) {
 				splitRange.move("character",2);
 				splitRange.select();
 				div.innerHTML="";
@@ -783,10 +790,16 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 			
 			splitterClone.parentNode.removeChild(splitterClone);
 			splitter.parentNode.removeChild(splitter);
+			
+			var fc = dividedNode.firstChild;
+			if (fc && fc.tagName && fc.tagName.toLowerCase() == 'br') {
+                dividedNode.removeChild(fc);
+            }
+			
 	    } else {
 	    	splitter.parentNode.removeChild(splitter);
 	    }
-	   	
+	  
 	};
 
 
@@ -845,11 +858,97 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
     };
     
+	/**
+	 * Listener for the select event of the "from"-combobox of the EmailForm.
+	 * 
+	 * @param {Object} comboBox
+	 * @param {Object} record
+	 * @param {Number} index
+	 */
     var onAccountSelect = function(comboBox, record, index)
     {
-    	formValues[activePanel.id].dirty = true;
+		formValues[activePanel.id].dirty = true;
+		_attachSignature(activePanel.id, record.id, true);
+		
     };
+	
+	/**
+	 * 
+	 * @param {Object} panelId
+	 * @param {Object} accountId
+	 * @param {Boolean} refresh Wether the signature has to be re-build if the 
+	 * signature's container was not found. This should be set to true whenever 
+	 * the "select"-event of the account field is involved
+	 */
+    var _attachSignature = function(panelId, accountId, refresh)
+	{
+		var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+        var rec   = store.getById(accountId);
+		
+		var sigId = formValues[panelId]['signatureAttached'];
+		
+		// no signature used yet
+        if (sigId === false) {
+			if (!rec || !rec.get('isSignatureUsed')) {
+	            return;
+	        }
+			var signature = rec.get('signature')
+			formValues[panelId]['signatureAttached'] = '_' + (new Date()).getTime();
+			htmlEditor.setValue(
+                htmlEditor.getValue() 
+				+ _getSignatureHtml(signature, formValues[panelId]['signatureAttached']) 
+			);
+		} else {
+			var doc    = htmlEditor.doc;
+			var sigDiv = doc.getElementById(sigId);
+			
+			// the selected account does not have a signature configured,
+			// remove any currently used signature
+			if (!rec || !rec.get('isSignatureUsed')) {
+                if (!sigDiv) {
+					return;
+				} else {
+					sigDiv.parentNode.removeChild(sigDiv);
+					formValues[panelId]['signatureAttached'] = false;
+					htmlEditor.syncValue();
+					return;
+				}   
+            }
+            
+            if (!sigDiv && refresh === true) {
+				var sig = _getSignatureHtml(
+                    rec.get('signature'),
+                    formValues[panelId]['signatureAttached']
+                );
+                htmlEditor.setValue(htmlEditor.getValue()+sig); 
+            } else if (sigDiv) {
+				sigDiv.innerHTML = _prepareSignature(rec.get('signature'));
+				htmlEditor.syncValue();
+			} 
+		}		
+	};	
     
+	var _prepareSignature = function(signature)
+	{
+		signature = signature.replace(/\r\n/g, "<br />");
+        signature = signature.replace(/\r/g, "<br />");
+        signature = signature.replace(/\n/g, "<br />");
+		
+		return '-- <br />' + signature;
+	};
+	
+	var _getSignatureHtml = function(signature, id)
+	{
+	    
+	    return '<br /><br /><div ' +
+			   'class="de-intrabuild-groupware-email-EmailForm-htmlEditor-signature" ' +
+			   'id="' +
+			    id +
+			   '">' +
+			   _prepareSignature(signature);
+	           '</div>';
+	};
+	
     var onMessageEdit = function()
     {
     	formValues[activePanel.id].dirty = true;    	
@@ -1168,16 +1267,50 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body',
                 excludeMask
             );
-            
-            var blockquote = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote',
+			
+			var insertDiv = getCssTextFromStyleSheet(
+                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-insertDiv',
                 excludeMask
             );
             
-            this.__doc_markup__ = '<html><head><style type="text/css">'
+			var cblockquote = getCssTextFromStyleSheet(
+                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote',
+                excludeMask
+            );
+			
+			var signature = getCssTextFromStyleSheet(
+                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-signature',
+				excludeMask
+			);
+			
+            var blockquote = getCssTextFromStyleSheet(
+                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote',
+                excludeMask
+            );
+
+            var abs = [];
+            for (var i = 0; i < 10; i++) {
+				abs.push('blockquote');
+				blockquote += getCssTextFromStyleSheet(
+	                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote '+abs.join(' '),
+	                excludeMask
+	            );	
+			}
+            						
+			this.__doc_markup__ =  '<html>'
+								  + '<head>'
+								  + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+                                  + '<title></title>'
+								  + '<style type="text/css">'
                                   + body
+								  + ' '
+                                  + cblockquote
                                   + ' '
                                   + blockquote
+								  + ' '
+								  + insertDiv
+								  + ' '
+                                  + signature
                                   + '</style></head>'
                                   + '<body class="de-intrabuild-groupware-email-EmailForm-htmlEditor-body">'
                                   + '</body></html>';
