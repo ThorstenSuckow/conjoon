@@ -242,7 +242,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
 				style      : 'padding:10px 10px 0px 10px;',
 				label      : de.intrabuild.Gettext.gettext("Feed address"),
 				imageClass : 'de-intrabuild-groupware-feeds-AddFeedDialog-introImage',
-				text       : de.intrabuild.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished."),        
+				text       : de.intrabuild.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished.")        
             }),  
             new Ext.FormPanel({
                 labelAlign : 'right',
@@ -342,21 +342,21 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      * Configuration for the loadMask
      */
     loadMaskConfig : {
-        msg : de.intrabuild.Gettext.gettext("Validating feed url..."),    
+        msg : de.intrabuild.Gettext.gettext("Validating feed url...")    
     },
 
     /**
      * Configuration for the loadMask on checking for a valid feedname
      */
     loadMaskConfigFeedName : {
-        msg : de.intrabuild.Gettext.gettext("Validating feed name..."),    
+        msg : de.intrabuild.Gettext.gettext("Validating feed name...")    
     },    
     
     /**
      * Configuration for the loadMask while saving the new feed
      */
     loadMaskConfigSaveFeed : {
-        msg : de.intrabuild.Gettext.gettext("Saving..."),    
+        msg : de.intrabuild.Gettext.gettext("Saving...")    
     },        
     
     /**
@@ -390,7 +390,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             return;
         }
         
-        var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore')
+        var store = de.intrabuild.util.Registry.get('de.intrabuild.groupware.feeds.AccountStore');
         var recs = store.getRange();
         var tmpValue = value.toLowerCase();
         var index = -1;
