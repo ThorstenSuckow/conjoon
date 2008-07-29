@@ -136,7 +136,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
 	 * @param {de.intrabuild.groupware.email.AccountStore} 
 	 * Shorthand for the store with the configured email accounts.
 	 */
-	var _accountStore = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.AccountStore');
+	var _accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 	
     /**
      * Listener for the store's beforeload event.
