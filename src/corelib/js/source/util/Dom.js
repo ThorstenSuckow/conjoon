@@ -56,6 +56,7 @@ var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
 	     */
 	    getCssTextFromStyleSheet : function(styleName, excludes)
 	    {
+			styleName = styleName.toLowerCase().trim();
             var styleSheets   = document.styleSheets;
             var styleSheet    = null;
             var excludeValue  = "";
@@ -107,11 +108,13 @@ var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
                 }
                 
                 // exclude did not match, process cssRules
-                cssRules = styleSheet.cssRules;
+                cssRules = Ext.isIE ? styleSheet.rules : styleSheet.cssRules;
                 for (var a = 0, lena = cssRules.length; a < lena; a++) {
-                    cssText = cssRules[a].cssText;
-                    if (cssText.indexOf(styleName) == 0 && cssText.substring(styleName.length).trim().indexOf('{') === 0) {
-                        return cssText;
+                    cssText = cssRules[a].selectorText.toLowerCase();
+					if (cssText == styleName) {
+						return Ext.isIE 
+						      ? cssText + '{' + cssRules[a].style.cssText + '}'  
+							  : cssRules[a].cssText;
                     }
                 }
             }
