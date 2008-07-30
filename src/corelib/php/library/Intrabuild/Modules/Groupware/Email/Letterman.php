@@ -104,6 +104,11 @@ require_once 'Intrabuild/Error.php';
 require_once 'Intrabuild/Filter/MimeDecodeHeader.php';
 
 /**
+ * @see Intrabuild_Db_Util
+ */
+require_once 'Intrabuild/Db/Util.php';
+
+/**
  * A utility class for fetching/sending emails.
  *
  * @category   Email
@@ -134,6 +139,8 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
     private $_cachedUidList = array();
 
     private $_accountModelDecorator = null;
+
+    private $_maxAllowedPacket = 0;
 
     /**
      * @var Intrabuild_Modules_Groupware_Email_Letterman
@@ -381,14 +388,18 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
     }
 
     /**
-     * Saves the email and it's attachments.
+     * Saves the email and it's attachments. Uses the default db adapter as
+     * configured by the application. If an exception occurs, the exception's
+     * message will be stored in an array (together with other exceptions that
+     * may have occured) and returned later on. Any db operation that failed will
+     * be rolled back.
      *
      * @param array $emailItem An associative array with the data to insert into the
      * different tables. All attachments will be stored in the key/value pair "attachments",
      * which is itself a numeric array
      *
-     * @return array Return the $emailItem upon success, or null if an error occured. The emailItems
-     * key 'id' will be set to the insert id of the data in the table items.
+     * @return mixed Return the id of the last inserted email item, or an
+     * error message if an error occured.
      */
     private function _saveEmail(Array $emailItem)
     {
@@ -402,67 +413,81 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
         $modelItem       = $this->_modelItem;
         $modelInbox      = $this->_modelInbox;
 
-        $this->_setPlainFromHtml($emailItem);
-         // filter and insert into groupware_email_items
-        $filterItem->setData($emailItem);
-        try {
-            $itemData = $filterItem->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
-            var_dump(Intrabuild_Error::fromFilter($filterItem, $e));
-            die();
-        }
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
 
-        Intrabuild_Util_Array::underscoreKeys($itemData);
-        $id = (int)$modelItem->insert($itemData);
-
-        if ($id <= 0) {
-            return null;
-        }
-
-        // assign needed (reference) keys
-        $emailItem['isRead']                = 0;
-        $emailItem['id']                    = $id;
-        $emailItem['groupwareEmailItemsId'] = $id;
-
-        // filter and insert into groupware_email_items_inbox
-        $filterInbox->setData($emailItem);
-        try {
-            $itemData = $filterInbox->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
-            var_dump(Intrabuild_Error::fromFilter($filterInbox, $e));
-            die();
-        }
-        Intrabuild_Util_Array::underscoreKeys($itemData);
-        $modelInbox->insert($itemData);
-
-        // filter and insert into groupware_email_items_flag
-        $filterFlag->setData($emailItem);
-        try {
-            $itemData = $filterFlag->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
-            var_dump(Intrabuild_Error::fromFilter($filterFlag, $e));
-            die();
-        }
-        Intrabuild_Util_Array::underscoreKeys($itemData);
-        $modelFlag->insert($itemData);
-
-        // loop through attachments and insert into groupware_email_items_attachments
-        $attachmentCount = count($emailItem['attachments']);
-        for ($i = 0; $i < $attachmentCount; $i++) {
-            $emailItem['attachments'][$i]['groupwareEmailItemsId'] = $id;
-            $filterAttachment->setData($emailItem['attachments'][$i]);
-            try {
-                $itemData = $filterAttachment->getProcessedData();
-            } catch (Zend_Filter_Exception $e) {
-                var_dump(Intrabuild_Error::fromFilter($filterAttachment, $e));
-                die();
+        if (!$this->_maxAllowedPacket) {
+            $config = Zend_Registry::get(Intrabuild_Keys::REGISTRY_CONFIG_OBJECT);
+            $this->_maxAllowedPacket = $config->database->variables->max_allowed_packet;
+            if (!$this->_maxAllowedPacket) {
+                $this->_maxAllowedPacket = Intrabuild_Db_Util::getMaxAllowedPacket($dbAdapter);
             }
-            Intrabuild_Util_Array::underscoreKeys($itemData);
-            $modelAttachment->insert($itemData);
         }
 
+        $this->_setPlainFromHtml($emailItem);
+        // filter and insert into groupware_email_items
+        $filterItem->setData($emailItem);
+        $itemData = $filterItem->getProcessedData();
 
-        return $id;
+        if ($this->_maxAllowedPacket < strlen($emailItem['rawBody'])) {
+            return 'Could not save message with subject "'.$itemData['subject']
+                   .'" - message is larger than allowed size ('.$this->_maxAllowedPacket. ' bytes).';
+        }
+
+        $dbAdapter->beginTransaction();
+
+        try {
+
+            Intrabuild_Util_Array::underscoreKeys($itemData);
+            $id = (int)$modelItem->insert($itemData);
+
+            if ($id <= 0) {
+                return null;
+            }
+
+            // assign needed (reference) keys
+            $emailItem['isRead']                = 0;
+            $emailItem['id']                    = $id;
+            $emailItem['groupwareEmailItemsId'] = $id;
+
+            // filter and insert into groupware_email_items_inbox
+            $filterInbox->setData($emailItem);
+
+            $itemData = $filterInbox->getProcessedData();
+
+            Intrabuild_Util_Array::underscoreKeys($itemData);
+            $modelInbox->insert($itemData);
+
+            // filter and insert into groupware_email_items_flag
+            $filterFlag->setData($emailItem);
+            $itemData = $filterFlag->getProcessedData();
+
+            Intrabuild_Util_Array::underscoreKeys($itemData);
+            $modelFlag->insert($itemData);
+
+            // loop through attachments and insert into groupware_email_items_attachments
+            $attachmentCount = count($emailItem['attachments']);
+            for ($i = 0; $i < $attachmentCount; $i++) {
+                $emailItem['attachments'][$i]['groupwareEmailItemsId'] = $id;
+                $filterAttachment->setData($emailItem['attachments'][$i]);
+                $itemData = $filterAttachment->getProcessedData();
+                Intrabuild_Util_Array::underscoreKeys($itemData);
+                $modelAttachment->insert($itemData);
+            }
+
+            $dbAdapter->commit();
+
+            return $id;
+
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            try {
+                $dbAdapter->rollBack();
+            } catch (Exception $m) {
+                $error .= '; '.$m->getMessage();
+            }
+
+            return $error;
+        }
     }
 
 
@@ -471,12 +496,13 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
     * @param int $accountId The id of the account to fetch the emails for, or null
     * to query all accounts
     *
-    * @return Array A numeric array with the key/value pairs of the
-    * inserted data.
+    * @return Array An associative array with the keys of the fetched and saved
+    * emails in the array 'fetched', and error-messages in the key 'errors'.
     */
     private function _fetchEmails($userId, $accountId = null)
     {
-        $fetchedEmailIds = array();
+        $fetchedEmailIds    = array();
+        $fetchedEmailErrors = array();
 
         $userId = (int)$userId;
 
@@ -704,9 +730,10 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
                 $mail->noop();
                 $saved = $this->_saveEmail($emailItem, $userId);
                 $mail->noop();
-                if ((int)$saved > 0) {
+                if (is_int($saved) > 0) {
                     $fetchedEmailIds[] = $saved;
                 } else {
+                    $fetchedEmailErrors[] = $saved;
                     continue;
                 }
 
@@ -719,7 +746,10 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
         }
         self::_setIconvEncoding(self::ICONV_OLD);
 
-        return $fetchedEmailIds;
+        return array(
+            'fetched' => $fetchedEmailIds,
+            'errors'  => $fetchedEmailErrors
+        );
       }
 
 

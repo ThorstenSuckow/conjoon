@@ -23,6 +23,9 @@ interface Intrabuild_Keys {
 // -------- registry
     const REGISTRY_AUTH_OBJECT = 'de.intrabuild.registry.authObject';
 
+// -------- app config in registry
+    const REGISTRY_CONFIG_OBJECT = 'de.intrabuild.registry.config';
+
 // -------- session auth namespace
     const SESSION_AUTH_NAMESPACE = 'de.intrabuild.session.authNamespace';
 

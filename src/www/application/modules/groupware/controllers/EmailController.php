@@ -86,10 +86,14 @@ class Groupware_EmailController extends Zend_Controller_Action {
         require_once 'Intrabuild/Keys.php';
         require_once 'Intrabuild/Modules/Groupware/Email/Letterman.php';
         require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Intrabuild/Error.php';
 
         $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
-        $emails = array();
+
+        $emails        = array();
+        $errorMessages = array();
+
         $time = time();
         $currentAccount = null;
         try {
@@ -127,12 +131,13 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 }
                 $currentAccount =& $accounts[$i];
                 $tmpEmails = Intrabuild_Modules_Groupware_Email_Letterman::fetchEmails($userId, $accId);
-                $emails = array_merge($emails, $tmpEmails);
+
+                $emails        = array_merge($emails, $tmpEmails['fetched']);
+                $errorMessages = array_merge($errorMessages, $tmpEmails['errors']);
             }
 
 
         } catch (Zend_Mail_Protocol_Exception $e) {
-            require_once 'Intrabuild/Error.php';
             $error = Intrabuild_Error::fromException($e)->getDto();
             $error->title = 'Error while connecting to host';
             $error->message = $e->getMessage()."<br /> - host: ".
@@ -177,6 +182,15 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->totalCount = $len;
         $this->view->items      = $emails;
         $this->view->error      = null;
+
+        if (count($errorMessages) > 0) {
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while fetching email(s)';
+            $error->message = implode('<br />', $errorMessages);
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $this->view->error = $error;
+        }
 
 
     }

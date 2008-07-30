@@ -82,6 +82,8 @@ require_once 'Intrabuild/Modules/Default/User.php';
    // load config
    $config = new Zend_Config_Ini('../application/config.ini', 'sandbox');
 
+   Zend_Registry::set(Intrabuild_Keys::REGISTRY_CONFIG_OBJECT, $config);
+
    // set as default adapter for all db operations
    Zend_Db_Table::setDefaultAdapter(
        Zend_Db::factory($config->database->adapter, array(
