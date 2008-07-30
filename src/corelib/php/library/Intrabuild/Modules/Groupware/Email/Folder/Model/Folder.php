@@ -300,17 +300,18 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                    'namefolder.id=folders.id',
                    array('name')
                    )
-                   ->joinLeft(array(
-                    'flag' => 'groupware_email_items_flags'),
+                   ->joinLeft(
+                       array(
+                           'flag' => 'groupware_email_items_flags'
+                       ),
                     'items.id = flag.groupware_email_items_id'.
                     ' AND '.
                     'flag.is_read=0'.
                     ' AND ' .
                     $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
-                    array('pending_count' => 'COUNT(DISTINCT flag.groupware_email_items_id)')
+                    array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")
                    )
                    ->where('folders.parent_id = ?', $parentId);
-
 
         $rows = $adapter->fetchAll($select);
 
@@ -350,7 +351,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                     'flag.is_read=0'.
                     ' AND ' .
                     $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
-                    array('pending_count' => 'COUNT(DISTINCT flag.groupware_email_items_id)')
+                    array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")
                    )
                    ->where('folders.id = ?', $folderId);
 
