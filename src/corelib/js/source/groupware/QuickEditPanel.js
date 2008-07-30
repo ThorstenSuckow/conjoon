@@ -25,6 +25,7 @@ de.intrabuild.groupware.QuickEditPanel = function(){
 			playerId	 : 'myplayer',
 			border		 : false,
 			ratioMode    : 'strict',
+			autoScroll   : false,
 			bgColor 	 : "#000000",
 			bodyStyle 	 : 'background-color:#000000;'
 	   	});
@@ -68,7 +69,7 @@ de.intrabuild.groupware.QuickEditPanel = function(){
 		var w = new Ext.Panel({
 	        title        : 'Ytube',
 	        layout 		 : 'fit',
-	        hideMode 	 : 'offsets',
+			hideMode 	 : 'offsets',
 	        items        : [playerPanel], 
 	        bbar		 : pControl,
 	        listeners   : {
