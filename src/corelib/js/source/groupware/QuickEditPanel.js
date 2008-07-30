@@ -39,10 +39,15 @@ de.intrabuild.groupware.QuickEditPanel = function(){
 			            msg     : de.intrabuild.Gettext.gettext("Please submit the id or the full url of the youtube video you want to load."),
 			            buttons : msg.OKCANCEL,
 			            fn      : function(btn, text){
+							        if (btn != 'ok') {
+									   return;
+									}
 									var id = control._parseVideoId(text);
-							        control.player.stopVideo();
-							        control.player.clearVideo();
-							        control.player.cueVideoById(id);
+									if (id) {
+										control.player.stopVideo();
+										control.player.clearVideo();
+										control.player.cueVideoById(id);
+									}
 			                      },
 			            icon    : msg.QUESTION,
 			            cls     :'de-intrabuild-msgbox-prompt',
