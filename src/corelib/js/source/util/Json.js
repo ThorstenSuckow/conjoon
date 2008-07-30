@@ -38,11 +38,11 @@ de.intrabuild.util.Json = function() {
          * succeds, the decoded object will be returned. If the check fails, an
          * object will be returned with 'description' set to the content of the value.
          *
-         * @param {XmlHttpRequest} The response of the request to decode
+         * @param {Object|XmlHttpRequest} The response of the request to decode
          */
         forceErrorDecode : function(response)
         {
-            var error = this.isError(response.responseText);
+            var error = response.error || this.isError(response.responseText);
             
             if (error === null) {
                 return { 

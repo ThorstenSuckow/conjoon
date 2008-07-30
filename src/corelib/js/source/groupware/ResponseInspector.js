@@ -266,11 +266,11 @@ de.intrabuild.groupware.ResponseInspector = function() {
 			var resp = response;
 			
 			try {
-				if (response) {
-					if (response.responseText) {
-						resp = _tryDecode(response.responseText);
+				if (resp) {
+					if (resp.responseText) {
+						resp = _tryDecode(resp.responseText);
 					} else {
-						resp = _tryDecode(response);
+						resp = _tryDecode(resp);
 					}
 				}
 			} catch (e) {

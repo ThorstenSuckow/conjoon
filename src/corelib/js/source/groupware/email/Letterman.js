@@ -125,7 +125,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
     { 
         var json = de.intrabuild.util.Json;
     	if (json.isError(response.responseText)) {
-    	    de.intrabuild.groupware.email.Letterman.onRequestFailure(this, null, response, null);
+    	    de.intrabuild.groupware.email.Letterman.onRequestFailure(this, o, response);
     	}	
     		
     	return Ext.data.HttpProxy.prototype.loadResponse.call(this, o, success, response);
@@ -278,9 +278,9 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         /**
          *
          */
-        onRequestFailure : function(proxy, request, response, event)
+        onRequestFailure : function(proxy, options, response)
         {
-            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.loadexception', {});
+			_messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.loadexception', {});
             
 			de.intrabuild.groupware.ResponseInspector.handleFailure(response);
         }
