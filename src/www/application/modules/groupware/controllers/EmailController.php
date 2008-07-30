@@ -641,11 +641,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $totalCount  = $itemModel->getTotalItemCount($filteredData['groupwareEmailFoldersId']);
 
             if ($totalCount == 0) {
-                $this->view->success    = true;
-                $this->view->error      = null;
-                $this->view->items      = array();
-                $this->view->version    = 1;
-                $this->view->totalCount = 0;
+                $this->view->success      = true;
+                $this->view->error        = null;
+                $this->view->items        = array();
+                $this->view->version      = 1;
+                $this->view->totalCount   = 0;
+                $this->view->pendingItems = 0;
                 return;
             }
 
