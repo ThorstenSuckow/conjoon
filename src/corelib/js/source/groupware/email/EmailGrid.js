@@ -38,7 +38,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         }
 		
 		var z = this.readRecords(o);
-		if (o.pendingItems === 0 || o.pendingItems > 0) {
+		if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
             z.pendingItems = parseInt(o.pendingItems);       	
 		}
 		
