@@ -240,12 +240,12 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 			border       :  false,
 			hideMode     : 'visibility',
             viewConfig   : {
-				templates         : templateConfig,
-				fromString        : de.intrabuild.Gettext.gettext("From"),
-				toString          : de.intrabuild.Gettext.gettext("To"),
-				ccString          : de.intrabuild.Gettext.gettext("CC"),
-				bccString         : de.intrabuild.Gettext.gettext("BCC"),
-				attachmentString  : de.intrabuild.Gettext.gettext("Attachments")
+				templates        : templateConfig,
+				fromValue        : de.intrabuild.Gettext.gettext("From"),
+				toValue          : de.intrabuild.Gettext.gettext("To"),
+				ccValue          : de.intrabuild.Gettext.gettext("CC"),
+				bccValue         : de.intrabuild.Gettext.gettext("BCC"),
+				attachmentValue  : de.intrabuild.Gettext.gettext("Attachments")
 			}
 		});	
 		

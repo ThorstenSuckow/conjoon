@@ -365,29 +365,29 @@ de.intrabuild.groupware.email._EmailView = function(config){
 Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	
 	/**
-	 * @cfg {String} toString
+	 * @cfg {String} toValue
 	 */
-	toString : 'To',
+	toValue : 'To',
 
     /**
-     * @cfg {String} ccString
+     * @cfg {String} ccValue
      */	
-	ccString : 'CC',
+	ccValue : 'CC',
 	
     /**
-     * @cfg {String} attachmentString
+     * @cfg {String} attachmentValue
      */	
-	attachmentString : 'Attachments', 
+	attachmentValue : 'Attachments', 
 	 
     /**
-     * @cfg {String} bccString
+     * @cfg {String} bccValue
      */ 
-	bccString : 'BCC', 
+	bccValue : 'BCC', 
 
     /**
-     * @cfg {String} fromString
+     * @cfg {String} fromValue
      */	 
-	fromString : 'From', 
+	fromValue : 'From', 
 	
 	/**
 	 * @cfg {String} emptyMarkup The default content of the iframe when there is no 
@@ -649,8 +649,8 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 		               '<div class="de-intrabuild-groupware-email-EmailView-dataInset">',
 		                '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',               
 		                '{subject}',
-		                '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">',this.fromString,':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-		                '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">',this.toString,':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+		                '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">',this.fromValue,':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+		                '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">',this.toValue,':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
 		                '{cc}',
 		                '{bcc}',
 		               '</div>', 
@@ -665,13 +665,13 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    
 	    if (!ts.cc) {
 		    ts.cc = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-email-EmailView-cc"><div style="float:left;width:30px;">',this.ccString,':</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-cc"><div style="float:left;width:30px;">',this.ccValue,':</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
 		    );
 		}
 	    
 	    if (!ts.bcc) {
 		    ts.bcc = new Ext.Template(
-		        '<div class="de-intrabuild-groupware-email-EmailView-bcc"><div style="float:left;width:30px;">',this.bccString,':</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
+		        '<div class="de-intrabuild-groupware-email-EmailView-bcc"><div style="float:left;width:30px;">',this.bccValue,':</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
 		    );
 		}	    
 	    
@@ -686,7 +686,7 @@ Ext.extend(de.intrabuild.groupware.email._EmailView, Ext.util.Observable, {
 	    if (!ts.attachments) {
 		    ts.attachments = new Ext.Template(
 		            '<table cellspacing="0" cellpadding="0" border="0" style="width:100%"><tr>',
-		                '<td style="width:60px;vertical-align:top;"><span style="font-family:Tahoma,Helvetica,Arial;font-size:11px;float:left;padding:2px;font-weight:bold;color:#15428B;">',this.attachmentString,':</span></td>',
+		                '<td style="width:60px;vertical-align:top;"><span style="font-family:Tahoma,Helvetica,Arial;font-size:11px;float:left;padding:2px;font-weight:bold;color:#15428B;">',this.attachmentValue,':</span></td>',
 		                '<td style="background:white;border:1px solid #767676;padding:2px;">',
 		                '{attachmentItems}',
 		            '</td></tr></table>'
