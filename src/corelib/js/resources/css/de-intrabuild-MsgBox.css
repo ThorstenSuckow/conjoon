@@ -148,6 +148,10 @@
     font-size:11px !important;
 }        
 
+.de-intrabuild-msgbox-prompt .ext-mb-fix-cursor {
+    overflow:visible;
+}
+
 .de-intrabuild-msgbox-prompt .x-window-mc {
     border:1px solid #99BBE8 !important;
     background-color:#F6F6F6 !important;
