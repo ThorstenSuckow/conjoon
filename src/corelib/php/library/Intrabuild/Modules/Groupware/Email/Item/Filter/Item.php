@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -20,27 +20,27 @@ require_once 'Intrabuild/Filter/Input.php';
 
 /**
  * @see Intrabuild_Filter_Raw
- */ 
+ */
 require_once 'Intrabuild/Filter/Raw.php';
 
 /**
  * @see Intrabuild_Validate_Date
- */ 
+ */
 require_once 'Intrabuild/Validate/Date.php';
 
 /**
  * @see Intrabuild_Filter_DateIso8601
- */ 
+ */
 require_once 'Intrabuild/Filter/DateIso8601.php';
 
 /**
  * @see Intrabuild_Filter_QuotedPrintableDecode
- */ 
+ */
 require_once 'Intrabuild/Filter/QuotedPrintableDecode.php';
 
 /**
  * @see Intrabuild_Filter_Base64Decode
- */ 
+ */
 require_once 'Intrabuild/Filter/Base64Decode.php';
 
 /**
@@ -69,44 +69,44 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
             'groupwareEmailFoldersId',
             'date',
             'subject',
-            'from',        
-            'to',    
-            'cc',         
-            'bcc',      
-            'inReplyTo',  
+            'from',
+            'to',
+            'cc',
+            'bcc',
+            'inReplyTo',
             'references',
             'contentTextPlain',
             'contentTextHtml',
         )
     );
-    
+
     protected $_filters = array(
         'id' => array(
             'Int'
-         ),     
+         ),
         'groupwareEmailFoldersId' => array(
             'Int'
-         ), 
+         ),
          'date' => array(
             'StringTrim',
             'DateIso8601'
-         ), 
+         ),
          'subject' => array(
             'StringTrim',
             'MimeDecodeHeader'
-        ), 
+        ),
          'from' => array(
             'StringTrim'
-         ), 
+         ),
          'to' => array(
             'StringTrim'
-         ), 
+         ),
          'cc' => array(
             'StringTrim'
-         ), 
+         ),
          'bcc' => array(
             'StringTrim'
-         ), 
+         ),
          'inReplyTo' => array(
             'StringTrim'
          ),
@@ -118,37 +118,37 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
          'contentTextHtml' => array(
          ),
     );
-    
+
     protected $_validators = array(
         'id' => array(
             'allowEmpty' => false
         ),
         'groupwareEmailFoldersId' => array(
             'allowEmpty' => false
-         ), 
+         ),
          'date' => array(
             'Date'
-         ), 
+         ),
          'subject' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'from' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'to' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'cc' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'bcc' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'inReplyTo' => array(
             'allowEmpty' => true,
             'default' => ''
@@ -166,12 +166,12 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
             'default' => ''
          )
     );
-   
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();  
-    }  
-   
-   
+        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+    }
+
+
 
 }

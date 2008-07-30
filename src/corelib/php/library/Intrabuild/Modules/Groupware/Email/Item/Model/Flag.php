@@ -6,15 +6,15 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
-/** 
- * Zend_Db_Table 
+/**
+ * Zend_Db_Table
  */
 require_once 'Zend/Db/Table/Abstract.php';
 
@@ -27,8 +27,8 @@ require_once 'Zend/Db/Table/Abstract.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
-class Intrabuild_Modules_Groupware_Email_Item_Model_Flag extends Zend_Db_Table_Abstract {    
+ */
+class Intrabuild_Modules_Groupware_Email_Item_Model_Flag extends Zend_Db_Table_Abstract {
 
     /**
      * The name of the table in the underlying datastore this
@@ -45,7 +45,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Flag extends Zend_Db_Table_A
         'groupware_email_items_id',
         'user_id'
     );
-    
+
     /**
      * Marks a specified item for the specified user as either "read" or "unread"
      *
@@ -55,19 +55,19 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Flag extends Zend_Db_Table_A
     {
         $groupwareEmailItemsId = (int)$groupwareEmailItemsId;
         $userId                = (int)$userId;
-        
+
         if ($groupwareEmailItemsId <= 0 || $userId <= 0) {
-            return 0;    
+            return 0;
         }
-        
+
         $data = array('is_read' => (bool)$isRead);
         $adapter = $this->getAdapter();
         return $this->update($data, array(
             $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),
             $adapter->quoteInto('user_id = ?', $userId, 'INTEGER')
         ));
-    } 
-    
+    }
+
     /**
      * Marks a specified item for the specified user as either "spam" or "no spam"
      *
@@ -77,18 +77,18 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Flag extends Zend_Db_Table_A
     {
         $groupwareEmailItemsId = (int)$groupwareEmailItemsId;
         $userId                = (int)$userId;
-        
+
         if ($groupwareEmailItemsId <= 0 || $userId <= 0) {
-            return 0;    
+            return 0;
         }
-        
+
         $data = array('is_spam' => (bool)$isSpam);
         $adapter = $this->getAdapter();
         return $this->update($data, array(
             $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),
             $adapter->quoteInto('user_id = ?', $userId, 'INTEGER')
         ));
-    }     
-    
+    }
+
 
 }
