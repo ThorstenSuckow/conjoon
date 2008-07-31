@@ -105,8 +105,9 @@ require_once 'Intrabuild/Modules/Default/User.php';
 // | Set up the controller
 // +----------------------------------------------------------------------------
    $controller = Zend_Controller_Front::getInstance();
-   $controller->throwExceptions(false);
-   $controller->addModuleDirectory('../application/modules');
+   $controller->throwExceptions(false)
+              ->addModuleDirectory('../application/modules')
+              ->setBaseUrl($config->domain->base_url);
 
    // add the plugins
    // authentication plugin, checks on each request if the user is logged in
@@ -121,7 +122,6 @@ require_once 'Intrabuild/Modules/Default/User.php';
 // +----------------------------------------------------------------------------
 // | Set up Routing
 // +----------------------------------------------------------------------------
-
 
 
 

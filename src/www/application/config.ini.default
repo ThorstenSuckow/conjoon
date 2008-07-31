@@ -36,6 +36,7 @@ sandbox.when.domain.port    =
 
 ; Configuration settings for running the app from USB-sticks or CD-ROMs.
 [mobile]
+domain.base_url          = /
 domain.host              = 127.0.0.1
 domain.port              = 4001
 database.adapter         = pdo_mysql
@@ -48,6 +49,7 @@ database.variables.max_allowed_packet =
 
 ; Configuration settings for development
 [sandbox]
+domain.base_url          = /
 domain.host              = 127.0.0.1
 domain.port              = 80
 webhost                  = intrabuild
