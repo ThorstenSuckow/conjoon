@@ -8,6 +8,7 @@ de.intrabuild.groupware.email.EmailRecord = Ext.data.Record.create([
     {name : 'from', type : 'string'},
     {name : 'date', type : 'date', dateFormat : 'Y-m-d H:i:s'},
     {name : 'isSpam', type : 'boolean'},
+	{name : 'isPlainText', type : 'boolean'},
     {name : 'body', type : 'string'},
     {name : 'cc', type : 'string'},
     {name : 'to', type : 'string'},

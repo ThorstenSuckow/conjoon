@@ -6,26 +6,26 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
-/** 
- * Zend_Db_Table 
+/**
+ * Zend_Db_Table
  */
 require_once 'Zend/Db/Table.php';
 
-/** 
+/**
  * Intrabuild_BeanContext_Decoratable
  */
 require_once 'Intrabuild/BeanContext/Decoratable.php';
 
 /**
  *
- * 
+ *
  *
  * @uses Zend_Db_Table
  * @package Intrabuild_Groupware_Email
@@ -33,23 +33,23 @@ require_once 'Intrabuild/BeanContext/Decoratable.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
-class Intrabuild_Modules_Groupware_Email_Message_Model_Message 
-    implements Intrabuild_BeanContext_Decoratable {    
+ */
+class Intrabuild_Modules_Groupware_Email_Message_Model_Message
+    implements Intrabuild_BeanContext_Decoratable {
 
     /**
      * Returns the message for the specified items id.
      */
-    public function getEmailMessage($groupwareEmailItemsId, $userId) 
+    public function getEmailMessage($groupwareEmailItemsId, $userId)
     {
         $groupwareEmailItemsId = (int)$groupwareEmailItemsId;
-        
+
         if ($groupwareEmailItemsId <= 0) {
-            return 0;    
+            return 0;
         }
-        
+
         $adapter = Zend_Db_Table::getDefaultAdapter();
-        
+
          $select= $adapter->select()
                 ->from(array('items' => 'groupware_email_items'),
                   array(
@@ -60,6 +60,7 @@ class Intrabuild_Modules_Groupware_Email_Message_Model_Message
                       'from',
                       'date',
                       'content_text_plain AS body',
+                      '(1) AS is_plain_text',
                       'groupware_email_folders_id'
                 ))
                 ->joinLeft(
@@ -70,21 +71,21 @@ class Intrabuild_Modules_Groupware_Email_Message_Model_Message
                     array('is_spam')
                 )
                 ->where('items.id=?', $groupwareEmailItemsId);
-        
+
         $row = $adapter->fetchRow($select);
-                
+
         return ($row != false) ? $row : null;
-        
+
     }
 
-      
-// -------- interface Intrabuild_BeanContext_Decoratable       
+
+// -------- interface Intrabuild_BeanContext_Decoratable
 
     public function getRepresentedEntity()
     {
-        return 'Intrabuild_Modules_Groupware_Email_Message';    
+        return 'Intrabuild_Modules_Groupware_Email_Message';
     }
-    
+
     public function getDecoratableMethods()
     {
         return array(

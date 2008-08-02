@@ -292,15 +292,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         
 		var draft = data.draft;
 		
-		var cs      = draft.classSubstitute;
 		var message = draft.message;
-
-		if (cs && message) {
-            message = message.replace(
-                new RegExp(cs, 'g'), 
-				'de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote'
-            );
-		}
+		
 		
         Ext.apply(formValues[options.panelId], {
             id         : draft.id,
@@ -776,7 +769,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 			
 			var br  = doc.createElement('br');
 			var div = doc.createElement('div');
-			div.className = 'de-intrabuild-groupware-email-EmailForm-htmlEditor-insertDiv';
+			div.className = 'text';
 			quoteEl.parentNode.insertBefore(div, dividedNode);
 			div.innerHTML="&nbsp;";
 			
@@ -941,7 +934,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 	{
 	    
 	    return '<br /><br /><div ' +
-			   'class="de-intrabuild-groupware-email-EmailForm-htmlEditor-signature" ' +
+			   'class="signature" ' +
 			   'id="' +
 			    id +
 			   '">' +
@@ -1257,63 +1250,54 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     this.htmlEditor.getDocMarkup = function(){
         
         if (!this.__doc_markup__) {
+			
             var excludeMask = {
-                href : '*/ext-all.css' 
-            };
-            
-            var getCssTextFromStyleSheet = de.intrabuild.util.Dom.getCssTextFromStyleSheet;
-                
-            var body = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body',
-                excludeMask
-            );
-			
-			var insertDiv = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-insertDiv',
-                excludeMask
-            );
-            
-			var cblockquote = getCssTextFromStyleSheet(
-                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote',
-                excludeMask
-            );
-			
-			var signature = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-signature',
-				excludeMask
-			);
-			
-            var blockquote = getCssTextFromStyleSheet(
-                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote',
-                excludeMask
-            );
-
-            var abs = [];
-            for (var i = 0; i < 10; i++) {
-				abs.push('blockquote');
-				blockquote += getCssTextFromStyleSheet(
-	                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote '+abs.join(' '),
+	            href : '*/ext-all.css' 
+	        };
+        
+	        var getCssTextFromStyleSheet = de.intrabuild.util.Dom.getCssTextFromStyleSheet;
+	            
+	        var body = getCssTextFromStyleSheet(
+	            '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body',
+	            excludeMask
+	        );
+	        
+	        var insertDiv = getCssTextFromStyleSheet(
+	            '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.text',
+	            excludeMask
+	        );
+	        
+	        var signature = getCssTextFromStyleSheet(
+	            '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.signature',
+	            excludeMask
+	        );
+	        
+	        var blockquote = "";
+	
+	        var abs = [];
+	        for (var i = 0; i < 10; i++) {
+	            abs.push('blockquote');
+	            blockquote += getCssTextFromStyleSheet(
+	                 '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body '+abs.join(' '),
 	                excludeMask
-	            );	
-			}
-            						
-			this.__doc_markup__ =  '<html>'
-								  + '<head>'
-								  + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-                                  + '<title></title>'
-								  + '<style type="text/css">'
-                                  + body
-								  + ' '
-                                  + cblockquote
-                                  + ' '
-                                  + blockquote
-								  + ' '
-								  + insertDiv
-								  + ' '
-                                  + signature
-                                  + '</style></head>'
-                                  + '<body class="de-intrabuild-groupware-email-EmailForm-htmlEditor-body">'
-                                  + '</body></html>';
+	            );  
+	        }
+	                                
+	        this.__doc_markup__ =  '<html>'
+	                              + '<head>'
+	                              + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+	                              + '<title></title>'
+	                              + '<style type="text/css">'
+	                              + body
+	                              + ' '
+	                              + blockquote
+	                              + ' '
+	                              + insertDiv
+	                              + ' '
+	                              + signature
+	                              + '</style></head>'
+	                              + '<body class="de-intrabuild-groupware-email-EmailForm-htmlEditor-body">'
+	                              + '</body></html>';
         }
         
         return this.__doc_markup__;

@@ -24,6 +24,11 @@ require_once 'Intrabuild/Filter/Input.php';
 require_once 'Zend/Filter/HtmlEntities.php';
 
 /**
+ * @see Intrabuild_Filter_Raw
+ */
+require_once 'Intrabuild/Filter/Raw.php';
+
+/**
  * A filter used for preparing data fetched from the database for sending as
  * a response to the client.
  *
@@ -45,6 +50,7 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
             'body',
             'date',
             'isSpam',
+            'isPlainText',
             'groupwareEmailFoldersId'
         )
     );
@@ -67,12 +73,45 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
              */
             require_once 'Intrabuild/Filter/UrlToATag.php';
 
-            $filter = new Intrabuild_Filter_UrlToATag(array(
+            /**
+             * @see Intrabuild_Filter_QuoteToBlockquote
+             */
+            require_once 'Intrabuild/Filter/QuoteToBlockquote.php';
+
+            /**
+             * @see Intrabuild_Filter_SignatureWrap
+             */
+            require_once 'Intrabuild/Filter/SignatureWrap.php';
+
+            /**
+             * @see Intrabuild_Filter_NormalizeLineFeeds
+             */
+            require_once 'Intrabuild/Filter/NormalizeLineFeeds.php';
+
+            $urlFilter = new Intrabuild_Filter_UrlToATag(array(
                 'target' => '_blank'
             ));
+            $quoteFilter     = new Intrabuild_Filter_QuoteToBlockquote();
+            $lineFeedFilter  = new Intrabuild_Filter_NormalizeLineFeeds();
+            $signatureFilter = new Intrabuild_Filter_SignatureWrap(
+                '<div class="signature">',
+                '</div>'
+            );
 
-            $data['body'] = nl2br($filter->filter($data['body']));
+
+            $data['body'] = nl2br(
+                $signatureFilter->filter(
+                    $quoteFilter->filter(
+                        $urlFilter->filter(
+                            $lineFeedFilter->filter(
+                                $data['body']
+                            )
+                        )
+                    )
+                )
+            );
         }
+
 
         return $data;
     }

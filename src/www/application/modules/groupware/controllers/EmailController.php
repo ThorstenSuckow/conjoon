@@ -806,7 +806,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
         if (!$message) {
             $this->view->success    = true;
             $this->view->error      = null;
-            $this->view->item       = array(array());
+            $this->view->item       = array();
             return;
         }
 
@@ -826,7 +826,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $this->view->success    = true;
         $this->view->error      = null;
-        $this->view->item       = array($message);
+        $this->view->item       = $message;
     }
 
 
@@ -1153,11 +1153,9 @@ Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming 
 mazim placerat facer possim assum.";
 
             $this->view->success = true;
-            $clRep = md5(time());
             $this->view->draft   = array(
                 'id'              => $id,
-                'classSubstitute' => $clRep,
-                'message'         => '<blockquote class="'.$clRep.'">'.$msg.'</blockquote>',
+                'message'         => '<blockquote>'.$msg.'</blockquote>',
                 'groupwareEmailAccountsId'      => 1,
                 'groupwareEmailFoldersId'       => -1,
                 'subject'         => $prefix . 'Keine neue Email <YO>',

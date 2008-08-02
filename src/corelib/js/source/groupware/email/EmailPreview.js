@@ -235,7 +235,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 		
 		emailView = new de.intrabuild.groupware.email.EmailViewPanel({
 			autoLoad     : false,
-			loadMask     : false,
 			refreshFrame : true,
 			border       :  false,
 			hideMode     : 'visibility',

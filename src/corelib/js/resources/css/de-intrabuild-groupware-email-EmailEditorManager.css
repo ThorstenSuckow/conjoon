@@ -46,65 +46,58 @@
 	border:0;
 	margin:0;
 	padding:5px;
-	height:98%;
 	cursor:text;
+	height:98%;
 } 
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-signature {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.signature {
     font-family:Courier New,Tahoma,Times New Roman,Verdana;
 	color:#808080;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-insertDiv {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.text {
     margin:10px 0 10px 0;
 }
 
 .de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote {
     margin:0px 0px 0px 6px;
     padding:4px 0px 4px 10px; 
+    border-left:2px solid #15428B;	
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote {
-    border-left:2px solid #15428B;
-} 
-
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote {
-    border-left:2px solid #990000;
-}
-
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote  blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote  blockquote {
     border-left:2px solid #990099;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote {
     border-left:2px solid #99CCCC;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote {
     border-left:2px solid #99CC00;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote {
     border-left:2px solid #99FF00;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote {
     border-left:2px solid #990033;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
     border-left:2px solid #993333;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
     border-left:2px solid #996633;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
     border-left:2px solid #999933;
 }
 
-.de-intrabuild-groupware-email-EmailForm-htmlEditor-blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
     border-left:2px solid #99CC33;
 }
 
