@@ -125,7 +125,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     {
 		var text = String.format(
             de.intrabuild.Gettext.ngettext("There is one new feed entry available", "There are {0} new feed entries available", feedCount),
-            length
+            feedCount
         );
 		
         new Ext.ux.ToastWindow({    
