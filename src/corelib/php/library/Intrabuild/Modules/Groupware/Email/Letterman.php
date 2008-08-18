@@ -579,13 +579,13 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
                 if (!$this->_maxMemory) {
                     $this->_maxMemory = Intrabuild_Util_Format::convertToBytes(ini_get('memory_limit'));
                 }
-
-                if ($this->_maxMemory / $mail->getSize($messageNum) >= 18) {
+                $s = $mail->getSize($messageNum);
+                if ($this->_maxMemory / $s <= 17) {
                     $fetchedEmailErrors[] = 'Could not save message No. '
                                             .$messageNum
-                                            .' - message is larger than available memory size ('
+                                            .' - message could exceed available memory size ('
                                             .$this->_maxMemory
-                                            . ' bytes).';
+                                            . ' bytes, message size '.$s.').';
                     continue;
                 }
 
