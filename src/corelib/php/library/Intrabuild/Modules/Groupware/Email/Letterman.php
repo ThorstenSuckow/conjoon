@@ -109,6 +109,11 @@ require_once 'Intrabuild/Filter/MimeDecodeHeader.php';
 require_once 'Intrabuild/Db/Util.php';
 
 /**
+ * @see Intrabuild_Util_Format
+ */
+require_once 'Intrabuild/Util/Format.php';
+
+/**
  * A utility class for fetching/sending emails.
  *
  * @category   Email
@@ -141,6 +146,8 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
     private $_accountModelDecorator = null;
 
     private $_maxAllowedPacket = 0;
+
+    private $_maxMemory = 0;
 
     /**
      * @var Intrabuild_Modules_Groupware_Email_Letterman
@@ -430,7 +437,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
 
         if ($this->_maxAllowedPacket < strlen($emailItem['rawBody'])) {
             return 'Could not save message with subject "'.$itemData['subject']
-                   .'" - message is larger than allowed size ('.$this->_maxAllowedPacket. ' bytes).';
+                   .'" - message is larger than available packet size ('.$this->_maxAllowedPacket. ' bytes).';
         }
 
         $dbAdapter->beginTransaction();
@@ -567,12 +574,28 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
                     }
                 }
 
-                $rm      = $mail->getRawMessage($messageNum);
-                $message = new Zend_Mail_Message(array(
-                    'raw' => $rm
-                ));
+                // check here if we can process the message, taking memory limit
+                // of php ini into account
+                if (!$this->_maxMemory) {
+                    $this->_maxMemory = Intrabuild_Util_Format::convertToBytes(ini_get('memory_limit'));
+                }
 
-                self::_splitMessage($rm, $rawHeader, $rawBody);
+                if ($this->_maxMemory / $mail->getSize($messageNum) >= 18) {
+                    $fetchedEmailErrors[] = 'Could not save message No. '
+                                            .$messageNum
+                                            .' - message is larger than available memory size ('
+                                            .$this->_maxMemory
+                                            . ' bytes).';
+                    continue;
+                }
+
+                self::_splitMessage($mail->getRawMessage($messageNum), $rawHeader, $rawBody);
+
+                $message = new Zend_Mail_Message(array(
+                    'headers'    => $rawHeader,
+                    'noToplines' => true,
+                    'content'    => $rawBody
+                ));
 
                 $messageId = "";
                 try {
