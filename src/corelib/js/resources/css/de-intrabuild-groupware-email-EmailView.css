@@ -105,6 +105,20 @@ a.de-intrabuild-grupware-email-EmailView-attachmentItem:active {
     font-family:Courier New, Times New Roman, Tahoma, Arial, Verdana;
 }
 
+.de-intrabuild-groupware-email-EmailView-body pre {
+    white-space:pre-wrap;
+    white-space:-moz-pre-wrap !important;
+    white-space:-pre-wrap;
+    white-space:-o-pre-wrap;
+    word-wrap:break-word;
+}
+
+.de-intrabuild-groupware-email-EmailView-body a {
+    white-space:nowrap!important;
+    word-wrap:normal!important;
+}
+
+
 .de-intrabuild-groupware-email-EmailView-body div.signature {
     font-family:Courier New,Tahoma,Times New Roman,Verdana;
     color:#808080;
@@ -160,6 +174,7 @@ a.de-intrabuild-grupware-email-EmailView-attachmentItem:active {
 /**
 * Smilies
 */
+
 .de-intrabuild-groupware-email-EmailView-body .emoticon {
     width:20px;
     height:20px;

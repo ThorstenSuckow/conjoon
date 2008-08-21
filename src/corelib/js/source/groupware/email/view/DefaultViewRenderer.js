@@ -126,18 +126,8 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         var cssBase = utilDom.getHrefFromStyleSheet('intrabuild-all.css');
 
-        var body = getCssTextFromStyleSheet(
-            '.de-intrabuild-groupware-email-EmailView-body',
-            excludeMask
-        );
-
         var cblockquote = getCssTextFromStyleSheet(
              '.de-intrabuild-groupware-email-EmailView-body blockquote',
-            excludeMask
-        );
-
-        var signature = getCssTextFromStyleSheet(
-            '.de-intrabuild-groupware-email-EmailView-body div.signature',
             excludeMask
         );
 
@@ -203,11 +193,27 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
                + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
                + '<title></title>'
                + '<style type="text/css">'
-               + body
+               + getCssTextFromStyleSheet(
+                    '.de-intrabuild-groupware-email-EmailView-body',
+                    excludeMask
+                )
+               + ' '
+               + getCssTextFromStyleSheet(
+                    '.de-intrabuild-groupware-email-EmailView-body pre',
+                    excludeMask
+                )
+               + ' '
+               + getCssTextFromStyleSheet(
+                    '.de-intrabuild-groupware-email-EmailView-body a',
+                    excludeMask
+                )
                + ' '
                + cblockquote
                + ' '
-               + signature
+               + getCssTextFromStyleSheet(
+                    '.de-intrabuild-groupware-email-EmailView-body div.signature',
+                    excludeMask
+                )
                + ' '
                + emoticons
                + '</style></head>'

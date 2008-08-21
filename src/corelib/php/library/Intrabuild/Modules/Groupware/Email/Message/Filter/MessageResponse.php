@@ -136,7 +136,7 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
                     ':-X'     => '<span class="emoticon sealed"></span>'
             ));
 
-            $data['body'] = str_replace("\n", "<br />",
+            $data['body'] = "<pre>".
                 $signatureFilter->filter(
                     $quoteFilter->filter(
                         $urlFilter->filter(
@@ -150,7 +150,7 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
                         )
                     )
                 )
-            );
+             . "</pre>";
         }
 
 
