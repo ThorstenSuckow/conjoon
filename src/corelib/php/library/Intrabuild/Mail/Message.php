@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 
@@ -23,11 +23,11 @@ require_once 'Zend/Mail/Message.php';
 /**
  * Fix for http://framework.zend.com/issues/browse/ZF-3318
  *
- * This class will be used as default Message-class for Zend_Mail until above 
+ * This class will be used as default Message-class for Zend_Mail until above
  * bug has been fixed.
  */
 class Intrabuild_Mail_Message extends Zend_Mail_Message {
-    
+
     /**
      * Cache content and split in parts if multipart
      *
@@ -60,6 +60,6 @@ class Intrabuild_Mail_Message extends Zend_Mail_Message {
         foreach ($parts as $part) {
             $this->_parts[$counter++] = new self(array('headers' => $part['header'], 'content' => $part['body']));
         }
-    }    
-    
+    }
+
 }
