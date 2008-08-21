@@ -88,6 +88,16 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
              */
             require_once 'Intrabuild/Filter/NormalizeLineFeeds.php';
 
+            /**
+             * @see Intrabuild_Filter_PlainToHtml
+             */
+            require_once 'Intrabuild/Filter/PlainToHtml.php';
+
+            /**
+             * @see Intrabuild_Filter_EmoticonReplacement
+             */
+            require_once 'Intrabuild/Filter/EmoticonReplacement.php';
+
             $urlFilter = new Intrabuild_Filter_UrlToATag(array(
                 'target' => '_blank'
             ));
@@ -97,14 +107,45 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
                 '<div class="signature">',
                 '</div>'
             );
+            $plainToHtmlFilter  = new Intrabuild_Filter_PlainToHtml();
+            $emoticonFilter     = new Intrabuild_Filter_EmoticonReplacement(
+                array(
+                    'O:-)'    => '<span class="emoticon innocent"></span>',
+                    ':-)'     => '<span class="emoticon smile"></span>',
+                    ':)'      => '<span class="emoticon smile"></span>',
+                    ':-D'     => '<span class="emoticon laughing"></span>',
+                    ':D'      => '<span class="emoticon laughing"></span>',
+                    ':-('     => '<span class="emoticon frown"></span>',
+                    ':('      => '<span class="emoticon frown"></span>',
+                    ':-['     => '<span class="emoticon embarassed"></span>',
+                    ';-)'     => '<span class="emoticon wink"></span>',
+                    ';)'      => '<span class="emoticon wink"></span>',
+                    ':-\\'    => '<span class="emoticon undecided"></span>',
+                    ':-P'     => '<span class="emoticon tongue"></span>',
+                    ';-P'     => '<span class="emoticon tongue"></span>',
+                    ':P'      => '<span class="emoticon tongue"></span>',
+                    '=-O'     => '<span class="emoticon surprise"></span>',
+                    ':-*'     => '<span class="emoticon kiss"></span>',
+                    ':*'      => '<span class="emoticon kiss"></span>',
+                    '&gt;:o'  => '<span class="emoticon yell"></span>',
+                    '&gt;:-o' => '<span class="emoticon yell"></span>',
+                    '8-)'     => '<span class="emoticon cool"></span>',
+                    ':-$'     => '<span class="emoticon money"></span>',
+                    ':-!'     => '<span class="emoticon foot"></span>',
+                    ':\'('    => '<span class="emoticon cry"></span>',
+                    ':-X'     => '<span class="emoticon sealed"></span>'
+            ));
 
-
-            $data['body'] = nl2br(
+            $data['body'] = str_replace("\n", "<br />",
                 $signatureFilter->filter(
                     $quoteFilter->filter(
                         $urlFilter->filter(
-                            $lineFeedFilter->filter(
-                                $data['body']
+                            $plainToHtmlFilter->filter(
+                                $emoticonFilter->filter(
+                                    $lineFeedFilter->filter(
+                                        $data['body']
+                                    )
+                                )
                             )
                         )
                     )

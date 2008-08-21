@@ -16,16 +16,16 @@ Ext.namespace('de.intrabuild.groupware.email.view');
 
 /**
  * @class de.intrabuild.groupware.email.view.DefaultViewRenderer
- * 
+ *
  * A view implementation for the {@see de.intrabuild.groupware.email.EmailViewPanel}.
  * Takes care of additional preparing the data received by the ViewPanel for
  * displaying, though it assumes that encoding etc. is already done server
  * side.
  */
 de.intrabuild.groupware.email.view.DefaultViewRenderer = function(config){
-  
+
     Ext.apply(this, config);
-};  
+};
 
 de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
@@ -75,15 +75,15 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
      */
 
     /**
-     *  @cfg {String} emptyMarkup The default content of the iframe when there 
-     *  is no message to display, and to which body-element a plain text message 
-     *  gets appended. Overwrite getEmptyMarkup to return a custom markup for the 
+     *  @cfg {String} emptyMarkup The default content of the iframe when there
+     *  is no message to display, and to which body-element a plain text message
+     *  gets appended. Overwrite getEmptyMarkup to return a custom markup for the
      *  iframe or submit it via the config-object.
      */
 
     /**
      * The iframe that displays the message body.
-     * @type {Ext.Element} 
+     * @type {Ext.Element}
      */
     iframe : null,
 
@@ -111,42 +111,93 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
     /**
      * Returns the html-code for the iframe which displays the message content.
-     * 
+     *
      * @return {String}
      */
     getDocMarkup : function()
 	{
         var excludeMask = {
-            href : '*/ext-all.css' 
+            href : '*/ext-all.css'
         };
-        
-        var getCssTextFromStyleSheet = de.intrabuild.util.Dom.getCssTextFromStyleSheet;
-            
+
+        var utilDom = de.intrabuild.util.Dom;
+
+        var getCssTextFromStyleSheet = utilDom.getCssTextFromStyleSheet;
+
+        var cssBase = utilDom.getHrefFromStyleSheet('intrabuild-all.css');
+
         var body = getCssTextFromStyleSheet(
             '.de-intrabuild-groupware-email-EmailView-body',
             excludeMask
         );
-        
+
         var cblockquote = getCssTextFromStyleSheet(
              '.de-intrabuild-groupware-email-EmailView-body blockquote',
             excludeMask
         );
-        
+
         var signature = getCssTextFromStyleSheet(
             '.de-intrabuild-groupware-email-EmailView-body div.signature',
             excludeMask
         );
-        
+
+        var smileys = [
+            'smile',
+            'laughing',
+            'frown',
+            'embarassed',
+            'wink',
+            'undecided',
+            'tongue',
+            'surprise',
+            'kiss',
+            'yell',
+            'cool',
+            'money',
+            'foot',
+            'innocent',
+            'cry',
+            'sealed'
+        ];
+
+        var emoticons = getCssTextFromStyleSheet(
+            '.de-intrabuild-groupware-email-EmailView-body .emoticon',
+            excludeMask
+        );
+
+        var emo = "";
+        for (var i = 0, len = smileys.length; i < len; i++) {
+            emo = getCssTextFromStyleSheet(
+                        '.de-intrabuild-groupware-email-EmailView-body '
+                        /**
+                         * Strange behavior: IE delivers the styles in reverse order,
+                         * but we need to query then aggain reverse, i.e. in css is
+                         * .smile.emoticon, but we have to query for .emoticon.smile
+                         */
+                        + (Ext.isIE
+                            ? '.emoticon.'+smileys[i]
+                            : '.'+smileys[i]+'.emoticon'),
+                        excludeMask
+            );
+
+            if (Ext.isIE || Ext.isGecko) {
+                // Safari 3.1 (Windows) seems to automatically resolve ../ in
+                // the css
+                emo = emo.replace(/..\//, cssBase+'../');
+            }
+
+            emoticons += emo;
+        }
 
         var abs = [];
         for (var i = 0; i < 10; i++) {
             abs.push('blockquote');
             cblockquote += getCssTextFromStyleSheet(
-                 '.de-intrabuild-groupware-email-EmailView-body '+abs.join(' '),
+                '.de-intrabuild-groupware-email-EmailView-body '+abs.join(' '),
                 excludeMask
-            );  
+            );
         }
-                                
+
         return '<html>'
                + '<head>'
                + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
@@ -157,6 +208,8 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
                + cblockquote
                + ' '
                + signature
+               + ' '
+               + emoticons
                + '</style></head>'
                + '<body class="de-intrabuild-groupware-email-EmailView-body">'
                + '</body></html>';
@@ -168,11 +221,11 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         if (!this.viewId) {
             this.viewId = Ext.id();
         }
-		
+
 		if (!this.emptyMarkup) {
             this.emptyMarkup = this.getDocMarkup();
 		}
-		
+
         this.initTemplates();
         this.initData(panel);
     },
@@ -222,9 +275,9 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
     /**
      * Renders the view with the given data
-     * 
+     *
      * @param {Object}
-     * 
+     *
      * @private
      */
     doRender : function(data)
@@ -235,7 +288,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         this.clear();
 
-        var subject     = data.subject; 
+        var subject     = data.subject;
 		var from        = data.from;
 		var to          = data.to;
 		var cc          = data.cc;
@@ -487,7 +540,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
     onEmailLoad : function(record)
     {
 		var data = record.data;
-		
+
         var subject     = data.subject     || '';
         var from        = data.from        || '';
         var to          = data.to          || '';
@@ -499,14 +552,14 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         var isPlainText = data.isPlainText || false;
 
         this.doRender({
-			subject     : subject, 
-			from        : from, 
-			to          : to, 
-			cc          : cc, 
-			bcc         : bcc, 
-			date        : date, 
-			body        : body, 
-			attachments : attachments, 
+			subject     : subject,
+			from        : from,
+			to          : to,
+			cc          : cc,
+			bcc         : bcc,
+			date        : date,
+			body        : body,
+			attachments : attachments,
 			isPlainText :isPlainText
 		});
         this.layout();
