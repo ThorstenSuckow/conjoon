@@ -48,10 +48,10 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
 
         var store = de.intrabuild.groupware.email.AccountStore.getInstance();
 
-        store.on('load',   this._onAccountStoreAdd,   this);
+        store.on('load',   this._onAccountStoreAdd,    this);
         store.on('remove', this._onAccountStoreRemove, this);
         store.on('remove', this._onAccountStoreAdd,    this);
-        store.on('update', this._onAccountUpdate,      this);
+        store.on('update', this._onAccountStoreUpdate, this);
 
         de.intrabuild.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
     },
