@@ -22,11 +22,11 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      */
     viewConfig : {},
 
-	/**
-	 * @cfg {Boolean} refreshFrame
-	 * Will totally rebuild the iframe when the panel gets hidden/shown for any
-	 * other browser than IE.
-	 */
+    /**
+     * @cfg {Boolean} refreshFrame
+     * Will totally rebuild the iframe when the panel gets hidden/shown for any
+     * other browser than IE.
+     */
 
     /**
      * @cfg {Boolean} autoLoad
@@ -36,122 +36,122 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      * Set this to <tt>false</tt> to load messages manually for this panel.
      */
 
-	/**
-	 * @cfg {de.intrabuild.groupware.email.EmailItemRecord} emailItem The email item this
-	 * panel represents. Will load the message body according to the record's id.
-	 * If provided, the title will be automatically set to the value of the record's
-	 * subject field.
-	 */
+    /**
+     * @cfg {de.intrabuild.groupware.email.EmailItemRecord} emailItem The email item this
+     * panel represents. Will load the message body according to the record's id.
+     * If provided, the title will be automatically set to the value of the record's
+     * subject field.
+     */
 
-	/**
-	 * @param {de.intrabuild.groupware.email._EmailView} view the view for this panel
-	 * to render the message
-	 */
-	view : null,
+    /**
+     * @param {de.intrabuild.groupware.email._EmailView} view the view for this panel
+     * to render the message
+     */
+    view : null,
 
-	/**
-	 * @param {Object} requestId The id of the current ajax request in progress
-	 */
-	requestId : null,
+    /**
+     * @param {Object} requestId The id of the current ajax request in progress
+     */
+    requestId : null,
 
-	/**
-	 * @param {Ext.data.JsonReader} reader The reader for the email message loaded
-	 */
-	reader : null,
+    /**
+     * @param {Ext.data.JsonReader} reader The reader for the email message loaded
+     */
+    reader : null,
 
-	/**
-	 * @param {Boolean} viewReady Flag to help determine wether the view is rendered
-	 * or not.
-	 */
-	viewReady : false,
+    /**
+     * @param {Boolean} viewReady Flag to help determine wether the view is rendered
+     * or not.
+     */
+    viewReady : false,
 
-	/**
-	 * @param {de.intrabuild.groupware.email.EmailRecord} emailRecord The last loaded
-	 * email record as specified in the id of emailItem
-	 */
-	emailRecord : null,
+    /**
+     * @param {de.intrabuild.groupware.email.EmailRecord} emailRecord The last loaded
+     * email record as specified in the id of emailItem
+     */
+    emailRecord : null,
 
-	initComponent : function()
-	{
-	    Ext.apply(this, {
-	        closable  : true,
-	        iconCls   : this.iconCls || 'de-intrabuild-groupware-email-EmailView-Icon',
-	        hideMode  : 'offsets',
-	        listeners : de.intrabuild.groupware.util.LinkInterceptor.getListener()
-	    });
+    initComponent : function()
+    {
+        Ext.apply(this, {
+            closable  : true,
+            iconCls   : this.iconCls || 'de-intrabuild-groupware-email-EmailView-Icon',
+            hideMode  : 'offsets',
+            listeners : de.intrabuild.groupware.util.LinkInterceptor.getListener()
+        });
 
-		this.addEvents(
-			/**
-			 * Gets fired before the ajax request for this panel gets started.
-			 */
-			'beforeemailload',
-			/**
+        this.addEvents(
+            /**
+             * Gets fired before the ajax request for this panel gets started.
+             */
+            'beforeemailload',
+            /**
              * Gets fired before when loading the emails contents failed.
              */
             'emailloadfailure',
-			/**
-			 * Gets fired when the ajax request for this panel successfully
-			 * loaded the email message which is about to be displayed.
-			 */
-			'emailload'
-		);
+            /**
+             * Gets fired when the ajax request for this panel successfully
+             * loaded the email message which is about to be displayed.
+             */
+            'emailload'
+        );
 
-		if (this.emailItem) {
-			this.title = this.emailItem.data.subject;
-		}
+        if (this.emailItem) {
+            this.title = this.emailItem.data.subject;
+        }
 
-		if (this.refreshFrame === true && !Ext.isIE) {
-			this.on('hide', this._onHide, this);
-			this.on('show', this._onShow, this);
-		}
-        
-		de.intrabuild.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
-	},
+        if (this.refreshFrame === true && !Ext.isIE) {
+            this.on('hide', this._onHide, this);
+            this.on('show', this._onShow, this);
+        }
+
+        de.intrabuild.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
+    },
 
     getView : function()
-	{
+    {
         if (!this.view) {
             this.view = new de.intrabuild.groupware.email.view.DefaultViewRenderer(
                 this.viewConfig
             );
-        }		
-		
-		return this.view;
-	},
+        }
 
-	/**
-	 * Renders the view to display the current message.
-	 *
-	 */
-	renderView : function()
-	{
-		if (this.emailRecord != null && this.viewReady) {
-			this.view.onEmailLoad(this.emailRecord);
-		}
-	},
+        return this.view;
+    },
 
-	clearView : function()
-	{
-		if (this.viewReady) {
-			this.view.clear();
-		}
+    /**
+     * Renders the view to display the current message.
+     *
+     */
+    renderView : function()
+    {
+        if (this.emailRecord != null && this.viewReady) {
+            this.view.onEmailLoad(this.emailRecord);
+        }
+    },
 
-		if (this.requestId) {
-			Ext.Ajax.abort(this.requestId);
-			this.requestId = null;
-		}
-	},
+    clearView : function()
+    {
+        if (this.viewReady) {
+            this.view.clear();
+        }
 
-	onRender : function(ct, position)
-	{
+        if (this.requestId) {
+            Ext.Ajax.abort(this.requestId);
+            this.requestId = null;
+        }
+    },
+
+    onRender : function(ct, position)
+    {
         de.intrabuild.groupware.email.EmailViewPanel.superclass.onRender.apply(this, arguments);
 
         var view = this.getView()
-		view.init(this);
+        view.init(this);
 
-		this.view.render();
+        this.view.render();
 
-		this.viewReady = true;
+        this.viewReady = true;
     },
 
     // private
@@ -177,57 +177,57 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         }
     },
 
-	/**
-	 * Sets a new email item to for this panel to display
-	 *
-	 * @param {de.intrabuild.groupware.email.EmailItemRecord} emailItem The
-	 * new emailItem this panel should represent
-	 * @param {Boolean} suspendAutoLoad If set to true, the according message will not be loaded
-	 *
-	 */
-	setEmailItem : function(emailItem, suspendAutoLoad)
-	{
-		this.emailItem = emailItem;
-		this.setTitle(emailItem.data.subject);
+    /**
+     * Sets a new email item to for this panel to display
+     *
+     * @param {de.intrabuild.groupware.email.EmailItemRecord} emailItem The
+     * new emailItem this panel should represent
+     * @param {Boolean} suspendAutoLoad If set to true, the according message will not be loaded
+     *
+     */
+    setEmailItem : function(emailItem, suspendAutoLoad)
+    {
+        this.emailItem = emailItem;
+        this.setTitle(emailItem.data.subject);
 
-		if (suspendAutoLoad === true) {
-			return;
-		}
+        if (suspendAutoLoad === true) {
+            return;
+        }
 
-		this.load();
-	},
+        this.load();
+    },
 
-	/**
-	 * Loads an email message into this panel.
-	 *
-	 * @param {Number} id The id of the email to load. If not provided,
-	 * the id of the emailItem that was passed to the constriuctor will be used
-	 * instead
-	 */
+    /**
+     * Loads an email message into this panel.
+     *
+     * @param {Number} id The id of the email to load. If not provided,
+     * the id of the emailItem that was passed to the constriuctor will be used
+     * instead
+     */
     load : function(id)
     {
-    	if (id == undefined) {
-    		if (this.emailItem) {
-    			id = this.emailItem.id;
-    		} else {
-    			return;
-    		}
-    	}
+        if (id == undefined) {
+            if (this.emailItem) {
+                id = this.emailItem.id;
+            } else {
+                return;
+            }
+        }
 
         this.view.clear();
 
-    	if (this.fireEvent('beforeemailload', id) === false) {
-    		return;
-    	}
+        if (this.fireEvent('beforeemailload', id) === false) {
+            return;
+        }
 
-    	this.setTitle(
+        this.setTitle(
             de.intrabuild.Gettext.gettext("Loading...")
-		);
+        );
 
-		this.emailRecord = null;
+        this.emailRecord = null;
 
 
-    	this.requestId = Ext.Ajax.request({
+        this.requestId = Ext.Ajax.request({
             url            : '/groupware/email/get.email/format/json',
             params         : {
                 id  : id
@@ -249,64 +249,64 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     // private
     doAutoLoad : function()
     {
-    	this.load();
+        this.load();
     },
 
-	/**
-	 * Callback for successfully retrieving an email
-	 */
-	onEmailLoadSuccess : function(response, parameters)
-	{
+    /**
+     * Callback for successfully retrieving an email
+     */
+    onEmailLoadSuccess : function(response, parameters)
+    {
         var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
-		if (data === null) {
-			this.onEmailLoadFailure(response, parameters);
+        if (data === null) {
+            this.onEmailLoadFailure(response, parameters);
             return;
-		}
+        }
 
-		var record = de.intrabuild.util.Record.convertTo(
+        var record = de.intrabuild.util.Record.convertTo(
             de.intrabuild.groupware.email.EmailRecord,
-			data.item,
-			data.item.id
-		);
+            data.item,
+            data.item.id
+        );
 
         this.emailRecord = record;
 
         this.setTitle(record.data.subject);
         this.renderView();
 
-		this.fireEvent('emailload', record);
-
-		this.requestId = null;
-	},
-
-	/**
-	 * Callback for any error that occured during loading an email
-	 */
-	onEmailLoadFailure : function(response, parameters)
-	{
-		this.fireEvent('emailloadfailure', response, parameters);
+        this.fireEvent('emailload', record);
 
         this.requestId = null;
-	},
+    },
 
-	_onHide : function()
-	{
-		if (this.viewReady) {
-			this.view._removeIframe();
-			this.view.clear();
-			this.viewReady = false;
-		}
-	},
+    /**
+     * Callback for any error that occured during loading an email
+     */
+    onEmailLoadFailure : function(response, parameters)
+    {
+        this.fireEvent('emailloadfailure', response, parameters);
 
-	_onShow : function()
-	{
-		if (!this.view) {
-			return;
-		}
+        this.requestId = null;
+    },
+
+    _onHide : function()
+    {
+        if (this.viewReady) {
+            this.view._removeIframe();
+            this.view.clear();
+            this.viewReady = false;
+        }
+    },
+
+    _onShow : function()
+    {
+        if (!this.view) {
+            return;
+        }
         this.view._createIframe();
-		this.viewReady = true;
+        this.viewReady = true;
         this.renderView();
-	}
+    }
 
 });
 
