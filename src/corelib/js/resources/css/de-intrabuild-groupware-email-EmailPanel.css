@@ -5,55 +5,51 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 .de-intrabuild-groupware-email-EmailPanel-icon {
-    background-image:url(../images/16x16/apps/groupware-email.png) !important;        
+    background-image:url(../images/16x16/apps/groupware-email.png) !important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-forwardButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-replyButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-mailreply.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-mailreply.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-replyAllButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-mailreplyall.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-mailreplyall.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-deleteButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-delete.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-delete.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-spamButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-noSpamButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-editDraftButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-newButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-mailnew.png)!important;    
-}
-
-.de-intrabuild-groupware-email-EmailPanel-toolbar-fetchButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-fetch.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-mailnew.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-previewButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-preview.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-preview.png)!important;
 }
 
 
@@ -68,10 +64,10 @@
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-previewRightButton-icon {
-    background-image: url(../images/16x16/actions/groupware-email-previewright.png) !important;        
+    background-image: url(../images/16x16/actions/groupware-email-previewright.png) !important;
 }
 
 .de-intrabuild-groupware-email-EmailPanel-toolbar-previewHideButton-icon {
-    background-image: url(../images/16x16/actions/groupware-email-previewhide.png) !important;        
+    background-image: url(../images/16x16/actions/groupware-email-previewhide.png) !important;
 }
 

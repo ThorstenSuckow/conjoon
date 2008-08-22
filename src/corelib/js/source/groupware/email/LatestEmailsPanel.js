@@ -87,20 +87,13 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
       }
     ];
 
-    this.fetchAllButton = new Ext.Toolbar.Button({
-        //cls: 'x-btn-icon',
-        text    : de.intrabuild.Gettext.gettext("Receive all"),
-        iconCls : 'de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon',
-        handler : de.intrabuild.groupware.email.Letterman.peekIntoInbox,
-        scope   : de.intrabuild.groupware.email.Letterman
-    });
 
     /**
      * Top toolbar
      * @param {Ext.Toolbar}
      */
     this.tbar = new Ext.Toolbar([
-        this.fetchAllButton
+        new de.intrabuild.groupware.email.FetchMenuButton()
     ]);
 
 
@@ -115,10 +108,8 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         //cls            : 'de-intrabuild-groupware-email-EmailGrid'
     });
 
-    var l = de.intrabuild.groupware.email.Letterman;
-    l.on('load',          this.newEmailsAvailable, this);
-    l.on('beforeload',    this.onLettermanOnTheRun, this);
-    l.on('loadexception', this.onLettermanLoadException, this);
+    de.intrabuild.groupware.email.Letterman.on('load', this.newEmailsAvailable, this);
+
 
     this.on('contextmenu',    this.onContextClick, this);
     this.on('rowcontextmenu', this.onRowContextClick, this);
@@ -258,9 +249,6 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         if (!record) {
             this.queue = null;
             this.view.un('rowsinserted', this.processQueue, this);
-            this.fetchAllButton.setDisabled(false);
-            this.fetchAllButton.setText(de.intrabuild.Gettext.gettext("Receive all"));
-            this.fetchAllButton.setIconClass('de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon');
             return;
         }
 
@@ -268,19 +256,6 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         ds.insert.defer(0.0001, ds, [0, record]);
     },
 
-    onLettermanOnTheRun : function()
-    {
-        this.fetchAllButton.setDisabled(true);
-        this.fetchAllButton.setIconClass('de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon-loading');
-        this.fetchAllButton.setText(de.intrabuild.Gettext.gettext("Receiving..."));
-    },
-
-    onLettermanLoadException : function()
-    {
-        this.fetchAllButton.setDisabled(false);
-        this.fetchAllButton.setIconClass('de-intrabuild-groupware-email-LatestEmailsPanel-toolbar-fetchAllIcon');
-        this.fetchAllButton.setText(de.intrabuild.Gettext.gettext("Receive all"));
-    },
 
     /**
      * Called by the letterman when new emails have arrived.
