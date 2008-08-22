@@ -137,13 +137,10 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
     private $_modelFlag       = null;
     private $_modelItem       = null;
     private $_modelInbox      = null;
-    private $_modelAccount    = null;
 
     private $_lastIconvError = false;
 
     private $_cachedUidList = array();
-
-    private $_accountModelDecorator = null;
 
     private $_maxAllowedPacket = 0;
 
@@ -183,9 +180,6 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
         $this->_modelFlag       = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
         $this->_modelItem       = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
         $this->_modelInbox      = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
-        $this->_modelAccount    = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
-
-        $this->_accountModelDecorator = new Intrabuild_BeanContext_Decorator($this->_modelAccount);
     }
 
     /**
@@ -198,7 +192,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
      *
      * @return array
      */
-    public static function fetchEmails($userId, $accountId = null)
+    public static function fetchEmails($userId, Intrabuild_Modules_Groupware_Email_Account $accountId)
     {
         if (!self::$_instance) {
             self::$_instance = new Intrabuild_Modules_Groupware_Email_Letterman();
@@ -316,7 +310,6 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
         $cachedUidList =& $this->_cachedUidList[$accountId];
         while (count($uidList) > 0) {
             $arrayChunks = array_splice($uidList, 0, $chunks);
-
             $rows = $this->_modelInbox->getMatchingUids(
                 $arrayChunks,
                 $accountId
@@ -500,13 +493,12 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
 
     /**
     * @param int $userId The id of the user to process the email-accounts for.
-    * @param int $accountId The id of the account to fetch the emails for, or null
-    * to query all accounts
+    * @param int $accountId The id of the account to fetch the emails for
     *
     * @return Array An associative array with the keys of the fetched and saved
     * emails in the array 'fetched', and error-messages in the key 'errors'.
     */
-    private function _fetchEmails($userId, $accountId = null)
+    private function _fetchEmails($userId, Intrabuild_Modules_Groupware_Email_Account $account)
     {
         $fetchedEmailIds    = array();
         $fetchedEmailErrors = array();
@@ -517,256 +509,249 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             return $fetchedEmailIds;
         }
 
-        if ($accountId !== null) {
-            $accounts = array($this->_accountModelDecorator->getAccountAsEntity($accountId, $userId));
-        } else {
-            $accounts = $this->_accountModelDecorator->getAccountsForUserAsEntity($userId);
-        }
-        $account = null;
         $transports = array(
             Intrabuild_Modules_Groupware_Email_Account::PROTOCOL_POP3 => "Intrabuild_Mail_Storage_Pop3",
             Intrabuild_Modules_Groupware_Email_Account::PROTOCOL_IMAP => "Intrabuild_Mail_Storage_Imap"
         );
 
         self::_setIconvEncoding(self::ICONV_UTF_8);
-        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-            $account        = $accounts[$i];
-            $accountId      = $account->getId();
-            $transport      = $transports[$account->getProtocol()];
-            $isPop3         = $account->getProtocol() == Intrabuild_Modules_Groupware_Email_Account::PROTOCOL_POP3;
 
-            $isCopyLeftOnServer = $account->isCopyLeftOnServer();
+        $accountId = $account->getId();
+        $transport = $transports[$account->getProtocol()];
+        $isPop3    = $account->getProtocol() == Intrabuild_Modules_Groupware_Email_Account::PROTOCOL_POP3;
 
-            $mail = new $transport(array(
-                'host'     => $account->getServerInbox(),
-                'port'     => $account->getPortInbox(),
-                'user'     => $account->getUsernameInbox(),
-                'password' => $account->getPasswordInbox()
-            ));
+        $isCopyLeftOnServer = $account->isCopyLeftOnServer();
 
-            $hasUniqueId = $mail->hasUniqueId;
+        $mail = new $transport(array(
+            'host'     => $account->getServerInbox(),
+            'port'     => $account->getPortInbox(),
+            'user'     => $account->getUsernameInbox(),
+            'password' => $account->getPasswordInbox()
+        ));
 
-            $mailCount = count($mail);
+        $hasUniqueId = $mail->hasUniqueId;
 
-            if ($mail->hasUniqueId) {
-                $uidl = $mail->getUniqueId();
-                $this->_cacheUidl($uidl, $accountId);
-                // compute message list based on messages already in the db
-            }
+        $mailCount = count($mail);
 
-            for ($oo = 1; $oo < $mailCount+1; $oo++) {
-                $messageNum = $oo;
-                $this->_attachmentCounter = 1;
-                $emailItem = array();
-                $rawHeader = "";
-                $rawBody   = "";
+        if ($hasUniqueId) {
+            $uidl = $mail->getUniqueId();
+            $this->_cacheUidl($uidl, $accountId);
+            // compute message list based on messages already in the db
+        }
 
-                // check if the account supports UIDL, and skip the message
-                // if it is already available in the db
-                if ($hasUniqueId) {
-                    if ($this->_isUidPresent($accountId, $uidl[$oo]) === true) {
-                        if (!$isCopyLeftOnServer && $isPop3) {
-                            $mail->removeMessage($messageNum);
-                        }
-                        continue;
-                    } else {
-                        $emailItem['uid'] = $uidl[$oo];
-                    }
-                }
+        for ($oo = 1; $oo < $mailCount+1; $oo++) {
+            $messageNum = $oo;
+            $this->_attachmentCounter = 1;
+            $emailItem = array();
+            $rawHeader = "";
+            $rawBody   = "";
 
-                // check here if we can process the message, taking memory limit
-                // of php ini into account
-                if (!$this->_maxMemory) {
-                    $this->_maxMemory = Intrabuild_Util_Format::convertToBytes(ini_get('memory_limit'));
-                }
-                $s = $mail->getSize($messageNum);
-                if ($this->_maxMemory / $s <= 17) {
-                    $fetchedEmailErrors[] = 'Could not save message No. '
-                                            .$messageNum
-                                            .' - message could exceed available memory size ('
-                                            .$this->_maxMemory
-                                            . ' bytes, message size '.$s.').';
-                    continue;
-                }
-
-                self::_splitMessage($mail->getRawMessage($messageNum), $rawHeader, $rawBody);
-
-                $message = new Zend_Mail_Message(array(
-                    'headers'    => $rawHeader,
-                    'noToplines' => true,
-                    'content'    => $rawBody
-                ));
-
-                $messageId = "";
-                try {
-                    $messageId = $message->messageId;
-                } catch (Zend_Mail_Exception $e) {
-                    // ignore
-                }
-
-                $emailItem['messageId'] = $messageId;
-
-                $mail->noop();
-
-                // check here if we can remove the mail from the server
-                // check first if UIDL is supported. if not, look up the
-                // message
-                if (!$hasUniqueId) {
-                    $id = $this->_isMessageIdPresent($messageId, $accountId, $rawHeader, $rawBody);
-                    $mail->noop();
-
-                    if ($id === true) {
-                        if (!$isCopyLeftOnServer && $isPop3) {
-                            $mail->removeMessage($messageNum);
-                        }
-                        continue;
-                    }
-                } else {
+            // check if the account supports UIDL, and skip the message
+            // if it is already available in the db
+            if ($hasUniqueId) {
+                if ($this->_isUidPresent($accountId, $uidl[$oo]) === true) {
                     if (!$isCopyLeftOnServer && $isPop3) {
                         $mail->removeMessage($messageNum);
                     }
-                }
-
-                $mail->noop();
-
-                $emailItem['attachments'] = array();
-                $emailItem['userId']      = $userId;
-                $emailItem['from']        = $message->from;
-
-                // very few emails will come in without a subject.
-                try {
-                    $emailItem['subject'] = $message->subject;
-                } catch (Zend_Mail_exception $e) {
-                    $emailItem['subject'] = "";
-                }
-
-                $emailItem['date'] = "";
-
-                // date field will be given presedence
-                try {
-                    $emailItem['date'] = $message->date;
-                    if (!$emailItem['date']) {
-                        $emailItem['date'] = $message->deliveryDate;
-                    }
-                } catch (Zend_Mail_Exception $e) {
-                    // ignore
-                }
-
-
-                try {
-                    $emailItem['to'] = $message->to;
-                } catch (Zend_Mail_Exception $e) {
-                    // "to" might not be used, instead "cc" will be probably available
-                    // then
-                    $emailItem['to'] = "";
-                }
-
-                try {
-                    $emailItem['cc'] = $message->cc;
-                } catch (Zend_Mail_Exception $e) {
-                    $emailItem['cc'] = '';
-                }
-
-                try {
-                    $emailItem['references'] = $message->references;
-                } catch (Zend_Mail_Exception $e) {
-                    $emailItem['references'] = '';
-                }
-
-                try {
-                    $emailItem['replyTo'] = $message->replyTo;
-                } catch (Zend_Mail_Exception $e) {
-                    $emailItem['replyTo'] = '';
-                }
-
-                try {
-                    $emailItem['inReplyTo'] = $message->inReplyTo;
-                } catch (Zend_Mail_Exception $e) {
-                    $emailItem['inReplyTo'] = '';
-                }
-
-                $encodingInformation = $this->_getEncodingInformation($message);
-
-                $contentType = $encodingInformation['contentType'];
-
-                $mail->noop();
-                switch ($contentType) {
-                    case 'text/plain':
-                        $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
-                    break;
-
-                    case 'text/html':
-                        $emailItem['contentTextHtml'] = $this->_decode($message->getContent(), $encodingInformation);
-                    break;
-
-                    case 'multipart/mixed':
-                        $this->_parseMultipartMixed($message, $emailItem);
-                    break;
-
-                    case 'multipart/alternative':
-                        $this->_parseMultipartAlternative($message, $emailItem);
-                    break;
-
-                    case 'multipart/related':
-                        $this->_parseMultipartRelated($message, $emailItem);
-                    break;
-
-                    case 'multipart/signed':
-                        $this->_parseMultipartSigned($message, $emailItem);
-                    break;
-
-                    case 'multipart/report':
-                        $this->_parseMultipartReport($message, $emailItem);
-                    break;
-
-                    default:
-                        $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
-                    break;
-                }
-
-                $mail->noop();
-
-                if (!isset($emailItem['contentTextPlain'])) {
-                    $emailItem['contentTextPlain'] = '';
-                }
-
-                if (!isset($emailItem['contentTextHtml'])) {
-                    $emailItem['contentTextHtml'] = '';
-                }
-
-
-
-                $this->_assignJunkStatus($userId, $emailItem);
-                $this->_assignFolderId($userId, $emailItem);
-
-                $emailItem['rawHeader'] =& $rawHeader;
-                $emailItem['rawBody']   =& $rawBody;
-
-                $mail->noop();
-
-                if (!$emailItem['messageId']) {
-                    $emailItem['hash'] = Intrabuild_Modules_Groupware_Email_Item_Model_Inbox::computeMessageHash(
-                        $rawHeader,
-                        $rawBody
-                    );
-                }
-                $mail->noop();
-                $saved = $this->_saveEmail($emailItem, $userId);
-                $mail->noop();
-                if (is_int($saved) > 0) {
-                    $fetchedEmailIds[] = $saved;
-                } else {
-                    $fetchedEmailErrors[] = $saved;
                     continue;
-                }
-
-                $mail->noop();
-
-                if (!$isCopyLeftOnServer && $isPop3) {
-                   $mail->removeMessage($messageNum);
+                } else {
+                    $emailItem['uid'] = $uidl[$oo];
                 }
             }
+
+            // check here if we can process the message, taking memory limit
+            // of php ini into account
+            if (!$this->_maxMemory) {
+                $this->_maxMemory = Intrabuild_Util_Format::convertToBytes(ini_get('memory_limit'));
+            }
+            $s = $mail->getSize($messageNum);
+            if ($this->_maxMemory / $s <= 17) {
+                $fetchedEmailErrors[] = 'Could not save message No. '
+                                        .$messageNum
+                                        .' - message could exceed available memory size ('
+                                        .$this->_maxMemory
+                                        . ' bytes, message size '.$s.').';
+                continue;
+            }
+
+            self::_splitMessage($mail->getRawMessage($messageNum), $rawHeader, $rawBody);
+
+            $message = new Zend_Mail_Message(array(
+                'headers'    => $rawHeader,
+                'noToplines' => true,
+                'content'    => $rawBody
+            ));
+
+            $messageId = "";
+            try {
+                $messageId = $message->messageId;
+            } catch (Zend_Mail_Exception $e) {
+                // ignore
+            }
+
+            $emailItem['messageId'] = $messageId;
+
+            $mail->noop();
+
+            // check here if we can remove the mail from the server
+            // check first if UIDL is supported. if not, look up the
+            // message
+            if (!$hasUniqueId) {
+                $id = $this->_isMessageIdPresent($messageId, $accountId, $rawHeader, $rawBody);
+                $mail->noop();
+
+                if ($id === true) {
+                    if (!$isCopyLeftOnServer && $isPop3) {
+                        $mail->removeMessage($messageNum);
+                    }
+                    continue;
+                }
+            } else {
+                if (!$isCopyLeftOnServer && $isPop3) {
+                    $mail->removeMessage($messageNum);
+                }
+            }
+
+            $mail->noop();
+
+            $emailItem['attachments'] = array();
+            $emailItem['userId']      = $userId;
+            $emailItem['from']        = $message->from;
+
+            // very few emails will come in without a subject.
+            try {
+                $emailItem['subject'] = $message->subject;
+            } catch (Zend_Mail_exception $e) {
+                $emailItem['subject'] = "";
+            }
+
+            $emailItem['date'] = "";
+
+            // date field will be given presedence
+            try {
+                $emailItem['date'] = $message->date;
+                if (!$emailItem['date']) {
+                    $emailItem['date'] = $message->deliveryDate;
+                }
+            } catch (Zend_Mail_Exception $e) {
+                // ignore
+            }
+
+
+            try {
+                $emailItem['to'] = $message->to;
+            } catch (Zend_Mail_Exception $e) {
+                // "to" might not be used, instead "cc" will be probably available
+                // then
+                $emailItem['to'] = "";
+            }
+
+            try {
+                $emailItem['cc'] = $message->cc;
+            } catch (Zend_Mail_Exception $e) {
+                $emailItem['cc'] = '';
+            }
+
+            try {
+                $emailItem['references'] = $message->references;
+            } catch (Zend_Mail_Exception $e) {
+                $emailItem['references'] = '';
+            }
+
+            try {
+                $emailItem['replyTo'] = $message->replyTo;
+            } catch (Zend_Mail_Exception $e) {
+                $emailItem['replyTo'] = '';
+            }
+
+            try {
+                $emailItem['inReplyTo'] = $message->inReplyTo;
+            } catch (Zend_Mail_Exception $e) {
+                $emailItem['inReplyTo'] = '';
+            }
+
+            $encodingInformation = $this->_getEncodingInformation($message);
+
+            $contentType = $encodingInformation['contentType'];
+
+            $mail->noop();
+            switch ($contentType) {
+                case 'text/plain':
+                    $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
+                break;
+
+                case 'text/html':
+                    $emailItem['contentTextHtml'] = $this->_decode($message->getContent(), $encodingInformation);
+                break;
+
+                case 'multipart/mixed':
+                    $this->_parseMultipartMixed($message, $emailItem);
+                break;
+
+                case 'multipart/alternative':
+                    $this->_parseMultipartAlternative($message, $emailItem);
+                break;
+
+                case 'multipart/related':
+                    $this->_parseMultipartRelated($message, $emailItem);
+                break;
+
+                case 'multipart/signed':
+                    $this->_parseMultipartSigned($message, $emailItem);
+                break;
+
+                case 'multipart/report':
+                    $this->_parseMultipartReport($message, $emailItem);
+                break;
+
+                default:
+                    $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
+                break;
+            }
+
+            $mail->noop();
+
+            if (!isset($emailItem['contentTextPlain'])) {
+                $emailItem['contentTextPlain'] = '';
+            }
+
+            if (!isset($emailItem['contentTextHtml'])) {
+                $emailItem['contentTextHtml'] = '';
+            }
+
+
+
+            $this->_assignJunkStatus($userId, $emailItem);
+            $this->_assignFolderId($userId, $emailItem);
+
+            $emailItem['rawHeader'] =& $rawHeader;
+            $emailItem['rawBody']   =& $rawBody;
+
+            $mail->noop();
+
+            if (!$emailItem['messageId']) {
+                $emailItem['hash'] = Intrabuild_Modules_Groupware_Email_Item_Model_Inbox::computeMessageHash(
+                    $rawHeader,
+                    $rawBody
+                );
+            }
+            $mail->noop();
+            $saved = $this->_saveEmail($emailItem, $userId);
+            $mail->noop();
+            if (is_int($saved) > 0) {
+                $fetchedEmailIds[] = $saved;
+            } else {
+                $fetchedEmailErrors[] = $saved;
+                continue;
+            }
+
+            $mail->noop();
+
+            if (!$isCopyLeftOnServer && $isPop3) {
+               $mail->removeMessage($messageNum);
+            }
         }
+
         self::_setIconvEncoding(self::ICONV_OLD);
 
         return array(

@@ -72,12 +72,14 @@ class Groupware_EmailController extends Zend_Controller_Action {
     {
         if (isset($_POST['accountId'])) {
             $accountId = (int)$_POST['accountId'];
-            if ($accountId <= 0) {
+            if ($accountId < 0) {
                 $this->view->success    = true;
                 $this->view->totalCount = 0;
                 $this->view->items      = array();
                 $this->view->error      = null;
                 return;
+            } else if ($accountId == 0) {
+                $accountId = null;
             }
         } else {
             $accountId = null;
@@ -125,12 +127,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
             }
 
             for ($i = 0, $accLen = count($accounts); $i < $accLen; $i++) {
-                $accId = $accounts[$i]->getId();
-                if ($accId <= 0) {
-                    continue;
-                }
                 $currentAccount =& $accounts[$i];
-                $tmpEmails = Intrabuild_Modules_Groupware_Email_Letterman::fetchEmails($userId, $accId);
+                $tmpEmails = Intrabuild_Modules_Groupware_Email_Letterman::fetchEmails($userId, $currentAccount);
 
                 $emails        = array_merge($emails, $tmpEmails['fetched']);
                 $errorMessages = array_merge($errorMessages, $tmpEmails['errors']);
