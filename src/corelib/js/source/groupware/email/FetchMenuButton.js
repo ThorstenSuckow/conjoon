@@ -50,7 +50,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
 
         store.on('load',   this._onAccountStoreAdd,    this);
         store.on('remove', this._onAccountStoreRemove, this);
-        store.on('remove', this._onAccountStoreAdd,    this);
+        store.on('add',    this._onAccountStoreAdd,    this);
         store.on('update', this._onAccountStoreUpdate, this);
 
         de.intrabuild.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
@@ -81,7 +81,6 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
             delete this._accountItemMap[id];
         }
 
-        var a = 0;
         for (var i in this._accountItemMap) {
             a++;
         }
