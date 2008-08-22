@@ -81,6 +81,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
             delete this._accountItemMap[id];
         }
 
+        var a = 0;
         for (var i in this._accountItemMap) {
             a++;
         }
