@@ -107,7 +107,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onShow = function()
     {
-		emailView.show();
+        emailView.show();
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
 
@@ -121,11 +121,11 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     var onBeforeLoad = function()
     {
         loadMask.show();
-		emailView.hide();
+        emailView.hide();
     };
 
-	var onLoadFailure = function(response, options)
-	{
+    var onLoadFailure = function(response, options)
+    {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
@@ -134,17 +134,17 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             }
         });
         previewPanel.close();
-		loadMask.hide();
-	};
+        loadMask.hide();
+    };
 
     var onLoadSuccess = function()
     {
-		lastRecord = emailView.emailRecord;
+        lastRecord = emailView.emailRecord;
 
         loadMask.hide();
         previewPanel.setTitle(lastRecord.get('subject'));
 
-		Ext.ux.util.MessageBus.publish(
+        Ext.ux.util.MessageBus.publish(
             'de.intrabuild.groupware.email.EmailPreview.onLoadSuccess', {
             id : lastRecord.id
         });
@@ -158,9 +158,9 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     var initComponents = function()
     {
         container = Ext.DomHelper.append(document.body, {
-			id    : 'DOM:de.intrabuild.groupware.email.EmailPreview.container',
-			style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
-		}, true);
+            id    : 'DOM:de.intrabuild.groupware.email.EmailPreview.container',
+            style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
+        }, true);
     };
 
     /**
@@ -191,6 +191,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         var subject = clkRecord.get('subject');
         var rec = de.intrabuild.groupware.email.EmailViewBaton.getRecord(clkRecord.id);
         if (rec) {
+            lastRecord = rec;
             emailView.emailRecord = rec;
             emailView.renderView();
         } else {
@@ -210,14 +211,14 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onMove = function()
     {
-		if (lastRecord == null) {
-			previewPanel.close();
-			return;
-		}
-		var emailItem = lastRecord.copy();
-    	previewPanel.close();
-    	var view = de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem, {
-    	    autoLoad : false
+        if (lastRecord == null) {
+            previewPanel.close();
+            return;
+        }
+        var emailItem = lastRecord.copy();
+        previewPanel.close();
+        var view = de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem, {
+            autoLoad : false
         }, true);
 
     };
@@ -229,72 +230,72 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var createPreviewWindow = function()
     {
-		var templateConfig = {
-			header : new Ext.Template(
-    			'<div class="de-intrabuild-groupware-email-EmailView-wrap">',
-	               '<div class="de-intrabuild-groupware-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
-	                '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',
-	                '{subject}',
-	                '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("From"),':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-	                '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("To"),':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
-	                '{cc}',
-	                '{bcc}',
-	               '</div>',
-	            '</div>'
-    	)};
+        var templateConfig = {
+            header : new Ext.Template(
+                '<div class="de-intrabuild-groupware-email-EmailView-wrap">',
+                   '<div class="de-intrabuild-groupware-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
+                    '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',
+                    '{subject}',
+                    '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("From"),':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+                    '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("To"),':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+                    '{cc}',
+                    '{bcc}',
+                   '</div>',
+                '</div>'
+        )};
 
-		emailView = new de.intrabuild.groupware.email.EmailViewPanel({
-			autoLoad     : false,
-			refreshFrame : true,
-			border       :  false,
-			hideMode     : 'visibility',
+        emailView = new de.intrabuild.groupware.email.EmailViewPanel({
+            autoLoad     : false,
+            refreshFrame : true,
+            border       :  false,
+            hideMode     : 'visibility',
             viewConfig   : {
-				templates        : templateConfig,
-				fromValue        : de.intrabuild.Gettext.gettext("From"),
-				toValue          : de.intrabuild.Gettext.gettext("To"),
-				ccValue          : de.intrabuild.Gettext.gettext("CC"),
-				bccValue         : de.intrabuild.Gettext.gettext("BCC"),
-				attachmentValue  : de.intrabuild.Gettext.gettext("Attachments")
-			}
-		});
+                templates        : templateConfig,
+                fromValue        : de.intrabuild.Gettext.gettext("From"),
+                toValue          : de.intrabuild.Gettext.gettext("To"),
+                ccValue          : de.intrabuild.Gettext.gettext("CC"),
+                bccValue         : de.intrabuild.Gettext.gettext("BCC"),
+                attachmentValue  : de.intrabuild.Gettext.gettext("Attachments")
+            }
+        });
 
-		emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
-		emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
-		emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
+        emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
+        emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
+        emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
 
         var win =  new Ext.Window({
             bodyStyle  : 'background:white;',
             autoScroll : false,
-            layout 	   : 'fit',
+            layout     : 'fit',
             title      : ("Loading..."),
             iconCls    : 'de-intrabuild-groupware-email-EmailPreview-Icon',
             resizable  : false,
             shadow     : false,
             hideMode   : 'visibility',
-            items 	   : [emailView],
+            items      : [emailView],
             height     : height,
             width      : width
         });
 
         win.on('render', function() {
             this.header.on('dblclick', function(){
-                onMove();
+               onMove();
             });
         }, win);
 
         win.initDraggable = function() {
-        	Ext.Window.prototype.initDraggable.call(this);
+            Ext.Window.prototype.initDraggable.call(this);
 
-        	this.dd.b4Drag = function(e) {
-        		container.dom.style.overflow = "visible";
-        	};
+            this.dd.b4Drag = function(e) {
+                container.dom.style.overflow = "visible";
+            };
 
-        	this.dd.endDrag = function(e){
-        		this.win.unghost(true, false);
-        		this.win.setPosition(0, 0);
-        		this.win.saveState();
-        		container.dom.style.overflow = "hidden";
-	    	};
+            this.dd.endDrag = function(e){
+                this.win.unghost(true, false);
+                this.win.setPosition(0, 0);
+                this.win.saveState();
+                container.dom.style.overflow = "hidden";
+            };
         }
 
 
@@ -363,31 +364,31 @@ de.intrabuild.groupware.email.EmailPreview = function() {
                     // if the activeEmailId does not equal to zero, the
                     // previewPanel was hidden using the animation effect.
                     previewPanel.el.slideOut('r', {
-                    					duration : .4,
+                                        duration : .4,
                                         useDisplay: false,
                                         callback : function(){
                                             onHide();
-											decoratePreviewPanel();
-											emailView.hide();
-										},
+                                            decoratePreviewPanel();
+                                            emailView.hide();
+                                        },
                                         scope:this
                                    })
-								   .slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
+                                   .slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
 
 
 
                 } else {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
-					container.setDisplayed(true);
-					container.alignTo(clkCell, 'tr-tl');
+                    container.setDisplayed(true);
+                    container.alignTo(clkCell, 'tr-tl');
                     decoratePreviewPanel();
                     previewPanel.el.slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
                 }
             } else {
                 container.alignTo(clkCell, 'tr-tl');
                 previewPanel = createPreviewWindow();
-				previewPanel.render(container);
+                previewPanel.render(container);
                 loadMask = new Ext.LoadMask(previewPanel.el.dom);
                 previewPanel.show();
                 decoratePreviewPanel();
@@ -417,9 +418,9 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             if (!skipAnimation) {
                 previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .4,  callback : onHide});
             } else {
-				container.setDisplayed(false);
-				previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .1});
-				onHide(true);
+                container.setDisplayed(false);
+                previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .1});
+                onHide(true);
             }
 
             lastRecord   = null;
