@@ -276,6 +276,11 @@ de.intrabuild.groupware.email.EmailPreview = function() {
             width      : width
         });
 
+        win.on('render', function() {
+            this.header.on('dblclick', function(){
+                onMove();
+            });
+        }, win);
 
         win.initDraggable = function() {
         	Ext.Window.prototype.initDraggable.call(this);

@@ -5,11 +5,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 Ext.namespace('de.intrabuild.groupware.feeds');
@@ -17,11 +17,11 @@ Ext.namespace('de.intrabuild.groupware.feeds');
 /**
  * Controller for previewing Feed contents.
  * This is a singleton-object and used byde.intrabuild.groupware.feeds.FeedGrid
- * to enable previewing a feed in a panel sliding out left of the grid panel, 
+ * to enable previewing a feed in a panel sliding out left of the grid panel,
  * aligned to the current selected cell. The panel is closable and draggable.
- * Once a panel was created, it can not be closed such that the object gets 
- * destroyed.  
- * 
+ * Once a panel was created, it can not be closed such that the object gets
+ * destroyed.
+ *
  * The preview panel depends on record properties passed from the grid to the
  * showPreview-method. The needed properties are
  *
@@ -29,16 +29,16 @@ Ext.namespace('de.intrabuild.groupware.feeds');
  *  <li>id - the id of the feed to preview</li>
  *  <li>title - the title of the feed</li>
  *  <li>link - the link of the feed  of the feed to preview</li>
- *  <li>pubDate - the publication date of the feed</li>   
+ *  <li>pubDate - the publication date of the feed</li>
  * </ul>
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de> 
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  * @copyright 2007 MindPatterns Software Solutions
  *
  */
 de.intrabuild.groupware.feeds.FeedPreview = function() {
 
-// {{{ private members    
+// {{{ private members
 
     var LinkInterceptor = de.intrabuild.groupware.util.LinkInterceptor;
 
@@ -59,78 +59,78 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      * @param {Number}
      */
     var height = 250;
-    
+
     /**
      * The id of the ajax-request loading a feed-item
      * @param {Object} requestId
      */
     var requestId = null;
-    
+
     /**
      * The loadMask used to mask the previewWindow.
      * @param {Ext.LoadMask} loadMask
      */
     var loadMask =null;
-    
+
     /**
      * The latest record that was fully loaded into a preview panel.
-     * @param {de.intrabuild.groupware.feeds.ItemRecord} lastRecord 
+     * @param {de.intrabuild.groupware.feeds.ItemRecord} lastRecord
      */
     var lastRecord = null;
-    
+
     /**
      * Stores the id of the last previewed feed. If a preview panel gets closed,
      * the property will be reset to <tt>null</tt>.
      */
     var activeFeedId = null;
-    
+
     /**
-     * The html container that is responsible for enabling animation effects 
+     * The html container that is responsible for enabling animation effects
      * of the preview panel.
      */
     var container = null;
-    
+
     /**
-     * The panel that is used for previewing a feed content. The property will 
+     * The panel that is used for previewing a feed content. The property will
      * hold an instance of <tt>Ext.Panel</tt> which is being reused for previewing
      * until the panel was detached from the grid.
      */
     var previewPanel = null;
-    
+
     /**
      * Any window that needs to be created after detaching a preview panel from
      * it's cell will be created using this window config.
      * @param {Ext.Window}
      */
     var tmpWindow = null;
-    
+
     /**
-     * Any preview panel that needs to be created uses a cloned version of this 
+     * Any preview panel that needs to be created uses a cloned version of this
      * tmpPreview property.
      * @param {Ext.Window}
      */
-    var tmpPreview = null;    
-    
+    var tmpPreview = null;
+
     /**
      * Stores the active cell to which the preview panel is aligned.
      */
     var clkCell = null;
-    
+
     /**
      * Stores the row index of the cell to which the preview panel is aligned.
      */
     var clkRowIndex = -1;
-    
+
     /**
-     * Stores the record information of the cell's row associated with previewing. 
-     * The record needs to have a id-property that holds a unique id of the 
+     * Stores the record information of the cell's row associated with previewing.
+     * The record needs to have a id-property that holds a unique id of the
      * grid's record that was selected.
      */
     var clkRecord = null;
-    
+
     /**
-     * The load configuration for reading out feeds. Will be used by the preview 
-     * panel and the window that gets created when the panel was detached from 
+     * The load configuration for reading out feeds. Will be used by the preview
+     * panel and the window that gets created when the panel was detached from
      * the corresponding grid.
      */
     var loadConfig = {
@@ -146,7 +146,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 // {{{ private methods
 
     /**
-     * Inits any component that is needed for displaying/animating 
+     * Inits any component that is needed for displaying/animating
      * the preview panel.
      * This method will only be called once.
      */
@@ -156,7 +156,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             id    : 'DOM:de.intrabuild.groupware.feeds.FeedPreview.container',
             style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
 		}, true);
-        
+
     };
 
     /**
@@ -172,7 +172,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 			container.alignTo(clkCell, 'tr-tl');
 		}
     };
-    
+
     /**
      * Callback.
      * Called when the preview panel's show-animation is finished.
@@ -181,14 +181,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     {
         var viewHeight  = Ext.fly(document.body).getHeight();
         var panelHeight = previewPanel.el.getHeight();
-		
+
         if (clkCellY + panelHeight > viewHeight) {
 			container.shift({
-			    y : container.getY() - (((clkCellY + panelHeight) - viewHeight) + 4)  
+			    y : container.getY() - (((clkCellY + panelHeight) - viewHeight) + 4)
 			});
-        } 
+        }
     };
-    
+
     /**
      * Loads the feed's data into the preview panel.
      */
@@ -198,57 +198,57 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             return;
         }
         if (requestId !== null) {
-            Ext.Ajax.abort(requestId);    
+            Ext.Ajax.abort(requestId);
         }
         loadMask.show();
         var feedTitle = clkRecord.get('title');
         previewPanel.setTitle(de.intrabuild.Gettext.gettext("Loading"));
-        
+
         requestId = Ext.Ajax.request({
             url       : '/groupware/feeds/get.feed.content/format/json',
             params    : {id : clkRecord.id},
-            success   : onLoadSuccess, 
+            success   : onLoadSuccess,
             failure   : onLoadFailure,
             disableCaching : true
-        });   
+        });
     };
-    
+
     var onLoadSuccess = function(response, options)
     {
         requestId = null;
-        var json = de.intrabuild.util.Json; 
-        
+        var json = de.intrabuild.util.Json;
+
         var responseText = response.responseText;
-        
+
         if (json.isError(responseText)) {
-            onLoadFailure(response, options);    
+            onLoadFailure(response, options);
             return;
         }
-        
+
         var values = json.getResponseValues(responseText);
         var item   = values.item;
         if (item == null) {
-            onLoadFailure(response, options);    
+            onLoadFailure(response, options);
             return;
-        }   
-        
+        }
+
         lastRecord = de.intrabuild.util.Record.convertTo(
-            de.intrabuild.groupware.feeds.ItemRecord, 
-			item, 
+            de.intrabuild.groupware.feeds.ItemRecord,
+			item,
 			item.id
         );
-		
+
         Ext.ux.util.MessageBus.publish(
             'de.intrabuild.groupware.feeds.FeedPreview.onLoadSuccess', {
             id : item.id
-        });		
-        
+        });
+
         previewPanel.setTitle(lastRecord.get('title'));
         previewPanel.body.update(lastRecord.get('content'));
-        
+
         loadMask.hide();
     };
-    
+
     var onLoadFailure = function(response, options)
     {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
@@ -257,11 +257,11 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                     decoratePreviewPanel();
                 }
             }
-        });     
+        });
 		previewPanel.close();
         loadMask.hide();
     };
-    
+
     /**
      * Callback.
      * Called after the panel was detached from the grid and dropped anywhere
@@ -276,36 +276,36 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 			previewPanel.close();
 			return;
 		}
-		
+
         var feedItem = lastRecord.copy();
     	previewPanel.close();
-    	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);        
+    	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);
     };
-    
+
     var visitFeedEntry = function()
     {
         if (!lastRecord) {
-            return;    
+            return;
         }
-        
+
         var link = lastRecord.get('link');
-		
+
         (function() {
-            this.open(LinkInterceptor.getRedirectLink(link));    
-        }).defer(1, window);		
+            this.open(LinkInterceptor.getRedirectLink(link));
+        }).defer(1, window);
     };
-    
+
     var openEntryInNewTab = function()
     {
         if (!lastRecord) {
-            return;    
+            return;
         }
-        
+
         var feedItem = lastRecord.copy();
     	previewPanel.close();
-    	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);    
-    };    
-    
+    	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);
+    };
+
     /**
      * Creates a window for displaying feed contents.
      *
@@ -315,45 +315,51 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
     {
         var win = new Ext.Window({
             cls        : 'de-intrabuild-groupware-feeds-FeedPreview-panel',
-            autoScroll : true, 
-            title      : de.intrabuild.Gettext.gettext("Loading..."), 
-            iconCls    : 'de-intrabuild-groupware-feeds-FeedPreview-Icon', 
-            resizable  : false, 
-            shadow     : false, 
+            autoScroll : true,
+            title      : de.intrabuild.Gettext.gettext("Loading..."),
+            iconCls    : 'de-intrabuild-groupware-feeds-FeedPreview-Icon',
+            resizable  : false,
+            shadow     : false,
             height     : height,
             width      : width,
             listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),
             bbar       : [{
-                cls      : 'x-btn-text-icon',  
+                cls      : 'x-btn-text-icon',
 			    iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-visitEntryButton-icon',
 			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
 			    handler  : visitFeedEntry
             }, {
-                cls      : 'x-btn-text-icon',  
+                cls      : 'x-btn-text-icon',
 			    iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-openFeedButton-icon',
 			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Open in new tab"),
 			    handler  : openEntryInNewTab
             }]
         });
-		
+
+        win.on('render', function() {
+            this.header.on('dblclick', function(){
+                onMove();
+            });
+        }, win);
+
         win.initDraggable = function() {
-            Ext.Window.prototype.initDraggable.call(this);  
-            
+            Ext.Window.prototype.initDraggable.call(this);
+
             this.dd.b4Drag = function(e) {
-                container.dom.style.overflow = "visible";       
+                container.dom.style.overflow = "visible";
             };
-            
+
             this.dd.endDrag = function(e){
                 this.win.unghost(true, false);
                 this.win.setPosition(0, 0);
                 this.win.saveState();
-                container.dom.style.overflow = "hidden";        
+                container.dom.style.overflow = "hidden";
             };
-        }		
-		
+        }
+
 		return win;
     };
-    
+
 // }}}
 
 
@@ -377,40 +383,40 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 this.hide(false);
                 return;
             }
-            
+
             // get the record information of the current selected cell
             clkRecord = grid.getSelectionModel().getSelected();
-            
+
             var pId = clkRecord.id;
             if (activeFeedId == pId) {
                 // previewing is already active for this record.
                 return;
             }
-            
-            // lazy create needed components 
+
+            // lazy create needed components
             if (container == null) {
                 initComponents();
             }
-            
+
             clkRowIndex = rowIndex;
 			clkCell     = grid.view.getCell(rowIndex, columnIndex);
 			clkCellY    = Ext.fly(clkCell).getY();
-            
+
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
-                // abort all pending operations    
+                // abort all pending operations
                 previewPanel.getUpdater().abort();
-                
+
                 previewPanel.el.stopFx();
-                
+
                 if (activeFeedId != null) {
-                    // if the activeFeedId does not equal to zero, the 
+                    // if the activeFeedId does not equal to zero, the
                     // previewPanel was hidden using the animation effect.
                     previewPanel.el.slideOut('r', {
-                                        duration : .4, 
+                                        duration : .4,
                                         callback : function(){
                                             onHide();
-                                            decoratePreviewPanel();}, 
+                                            decoratePreviewPanel();},
                                         scope:this
                                    })
                                    .slideIn('r', {callback: onShow});
@@ -430,14 +436,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 previewPanel.show();
                 decoratePreviewPanel();
                 previewPanel.el.slideIn('r', {callback: onShow});
-                
+
                 previewPanel.on('beforeclose', this.hide, this, [true]);
                 previewPanel.on('move', onMove);
             }
-            
+
             activeFeedId = pId;
         },
-        
+
         /**
          * Hides the preview panel.
          * Returns <tt>false</tt> to prevents bubbling the <tt>close</tt> event
@@ -446,7 +452,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
          * @param {boolean} <tt>true</tt> to skip animation, <tt>false</tt>
          *                  to show.
          *
-         * @todo update every call since second paramter is now deprecated! 
+         * @todo update every call since second paramter is now deprecated!
          */
         hide : function(skipAnimation)
         {
@@ -458,14 +464,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             } else {
 				container.setDisplayed(false);
                 previewPanel.el.slideOut("r", {useDisplay : false, duration : .1});
-                onHide(true);				
+                onHide(true);
             }
-            
-            activeFeedId = null;    
-            
+
+            activeFeedId = null;
+
             return false;
         }
-        
+
     };
-    
+
 }();
