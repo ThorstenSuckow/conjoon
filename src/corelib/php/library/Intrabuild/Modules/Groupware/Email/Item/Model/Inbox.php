@@ -6,19 +6,19 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
-/** 
- * Zend_Db_Table 
+/**
+ * Zend_Db_Table
  */
 require_once 'Zend/Db/Table/Abstract.php';
 
-/** 
+/**
  * Intrabuild_BeanContext_Decoratable
  */
 require_once 'Intrabuild/BeanContext/Decoratable.php';
@@ -32,9 +32,9 @@ require_once 'Intrabuild/BeanContext/Decoratable.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
-class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox 
-    extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable { 
+ */
+class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
+    extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable {
 
     const HASH       = 'hash';
     const UID        = 'uid';
@@ -52,7 +52,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
      * @var string
      */
     protected $_primary = 'groupware_email_items_id';
-    
+
     /**
      * A helper method for computing a unique hash for a message.
      * If the implementation of the algorithm changes, the inbox-table's
@@ -65,15 +65,15 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
      */
     public static function computeMessageHash(&$rawHeader, &$rawBody)
     {
-        return md5($rawHeader . $rawBody);    
-    }    
-    
+        return md5($rawHeader . $rawBody);
+    }
+
     /**
      * Returns the rows found in the database, matching the account-id and the
      * submitted $uids. Only those rows will be returned, where the field "uid"
      * matches the value in the corresponding index of $uid.
      *
-     * @param array $uids A list of uid to look up 
+     * @param array $uids A list of uid to look up
      * @param integer $accountId The id of the account for which the presence of
      * the uids should be checked.
      *
@@ -82,21 +82,21 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
     public function getMatchingUids(Array $uids, $accountId)
     {
         $accountId = (int)$accountId;
-        
+
         if ($accountId <= 0 || count($uids) == 0) {
-            return array();    
+            return array();
         }
-        
+
         $adapter = $this->getAdapter();
-        
+
         $uidParts = array();
         for ($i = 0, $len = count($uids); $i < $len; $i++) {
             $uidParts[] = $adapter->quote($uids[$i], 'STRING');
         }
-        
+
         $uidString = implode(',', $uidParts);
-        
-        $select = $adapter->select()->from(   
+
+        $select = $adapter->select()->from(
                     array('items' => 'groupware_email_items'),
                     array()
                   )
@@ -118,16 +118,16 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
                     array('uid')
                   )
                   ->where('items.groupware_email_folders_id=folders.id');
-                  
+
         $rows = $adapter->fetchAll($select);
-        
+
         if ($rows == false) {
-            return array();    
+            return array();
         }
-        
-        return $rows;        
+
+        return $rows;
     }
-    
+
     /**
      * Checks if there is an entry for the specified hash/uid/message_id
      * in the inbox-table.
@@ -135,7 +135,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
      * specific value already exists for an email that was alreatdy downloaded
      * with the specific $accountId.
      *
-     * @param string $uid The uid as generated from the server's uidl 
+     * @param string $uid The uid as generated from the server's uidl
      * support, or the message_id as transported by the message-header
      * @param integer $accountId The id of the account for which the uid
      * should be looked up
@@ -145,26 +145,26 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
     public function isUniqueKeyPresent($uid, $accountId, $type)
     {
         switch ($type) {
-            case (self::UID):    
+            case (self::UID):
                 $queryPortion = 'inbox.uid = ?';
             break;
-            
-            case (self::HASH):    
+
+            case (self::HASH):
                 $queryPortion = 'inbox.hash = ?';
             break;
-            
+
             case (self::MESSAGE_ID):
                 $queryPortion = 'inbox.message_id = ?';
             break;
-            
+
             default:
                 throw new InvalidArgumentException("Invalid type: '".$type."'");
             return;
         }
-        
+
         $adapter = $this->getAdapter();
-        
-        $select = $adapter->select()->from(   
+
+        $select = $adapter->select()->from(
                     array('items' => 'groupware_email_items'),
                     array('id')
                   )
@@ -186,13 +186,13 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
                     array()
                   )
                   ->where('items.groupware_email_folders_id=folders.id');
-                  
+
         $row = $adapter->fetchRow($select);
-        
+
         if ($row == false) {
-            return false;    
+            return false;
         }
-        
+
         return true;
     }
 
@@ -203,15 +203,15 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
      * @param interger $userId
      * @param $integer $minDate
      *
-     * @return integer The total number of items fetched since minDate, 
+     * @return integer The total number of items fetched since minDate,
      * or 0 if there where no items
      */
     public function getLatestItemCount($userId, $minDate)
     {
         if ((int)$userId <= 0 || (int)$minDate < 0) {
-            return 0;    
+            return 0;
         }
-        
+
         // fetch the requested range of email items
         $adapter = self::getDefaultAdapter();
         $select = $adapter->select()
@@ -240,16 +240,16 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
                     'items.groupware_email_folders_id=foldersaccounts.groupware_email_folders_id',
                     array()
                   );
-        
+
         $row = $adapter->fetchRow($select);
         if ($row == false) {
-            return 0;       
+            return 0;
         }
         return $row['count_id'];
-    } 
+    }
 
     /**
-     * Fetches all email items for the specified user where fetched_timestamp 
+     * Fetches all email items for the specified user where fetched_timestamp
      * is greater than or equal to $minDate. This query will respect
      * all accounts of the user and all folders that are of the meta-type
      * 'inbox'.
@@ -264,14 +264,14 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
     public function getLatestEmailItemsFor($userId, $minDate, Array $sortInfo)
     {
         if ((int)$userId <= 0 || (int)$minDate < 0) {
-            return array();    
+            return array();
         }
-        
+
         // fetch the requested range of email items
         $adapter = self::getDefaultAdapter();
-        
+
         require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
-        
+
         $select = Intrabuild_Modules_Groupware_Email_Item_Model_Item::getItemBaseQuery($userId, $sortInfo);
         $select = $select
                   ->join(
@@ -295,24 +295,24 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
                     'items.groupware_email_folders_id=foldersaccounts.groupware_email_folders_id',
                     array()
                   );
-        
-        
-        $rows = $adapter->fetchAll($select);
-        
-        if ($rows != false) {
-            return $rows;    
-        }
-        
-        return array();
-    }     
 
-// -------- interface Intrabuild_BeanContext_Decoratable       
+
+        $rows = $adapter->fetchAll($select);
+
+        if ($rows != false) {
+            return $rows;
+        }
+
+        return array();
+    }
+
+// -------- interface Intrabuild_BeanContext_Decoratable
 
     public function getRepresentedEntity()
     {
-        return 'Intrabuild_Modules_Groupware_Email_Item';    
+        return 'Intrabuild_Modules_Groupware_Email_Item';
     }
-    
+
     public function getDecoratableMethods()
     {
         return array(
