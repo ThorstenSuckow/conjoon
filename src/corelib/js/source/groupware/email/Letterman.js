@@ -153,6 +153,8 @@ de.intrabuild.groupware.email.Letterman = function(config) {
 		_messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
 	};
 
+	var _reception = de.intrabuild.groupware.Reception;
+
     return {
 
         init : function()
@@ -217,11 +219,17 @@ de.intrabuild.groupware.email.Letterman = function(config) {
          * Since the taskrunner executes the given method as soon as the thread
          * starts, this method will check each call and skip if it was called
          * for the first time.
+         *
+         * If the workbench is locked, the task will be skipped.
          */
         run : function()
         {
             if (!called) {
                 called = true;
+                return;
+            }
+
+            if (_reception.isLocked()) {
                 return;
             }
 
