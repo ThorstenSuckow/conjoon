@@ -58,6 +58,11 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
         fields : [{name : 'pending', type : 'int'}]
     });
 
+    var store = de.intrabuild.groupware.email.AccountStore.getInstance();
+    store.on('add', this._onAccountStoreAdd, this);
+
+
+
 
     /**
      * The loader responsible for loading nodes into the tree.
@@ -1090,7 +1095,26 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         this.pendingItemStore.add(new de.intrabuild.groupware.email.PendingNodeItemRecord({
             pending : parseInt(attr.pendingCount)
         }, attr.id));
+    },
+
+    /**
+     * Tries to reload this tree if no email accounts where configured
+     * on initial load. Ass soon as accounts are available, the panel will
+     * try to build the tree.
+     */
+    _onAccountStoreAdd : function()
+    {
+        if (this.root.firstChild == null) {
+            this.root.reload();
+        }
+
+        de.intrabuild.groupware.email.AccountStore.getInstance().un(
+            'add',
+            this._onAccountStoreAdd,
+            this
+        );
     }
+
 
 
 });

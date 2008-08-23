@@ -49,6 +49,113 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      */
     protected $_primary = 'id';
 
+
+    /**
+     * Adds a default folder hierarchy and returns all the id's added
+     * in a flat numeric array.
+     *
+     * @return array
+     */
+    public function addAccountsRootBaseHierarchy()
+    {
+        $adapter = $this->getAdapter();
+
+        $adapter->beginTransaction();
+
+        $ids = array();
+
+        try {
+
+            // root folder
+            $parentId = $this->insert(array(
+                'name'             => 'Local Folders',
+                'is_child_allowed' => 0,
+                'is_locked'        => 1,
+                'type'             => 'accounts_root',
+                'meta_info'        => 'inbox',
+                'parent_id'        => 0
+            ));
+            $ids[] = $parentId;
+
+            // inbox folder
+            $id = $this->insert(array(
+                'name'             => 'Inbox',
+                'is_child_allowed' => 1,
+                'is_locked'        => 1,
+                'type'             => 'inbox',
+                'meta_info'        => 'inbox',
+                'parent_id'        => $parentId
+            ));
+            $ids[] = $id;
+
+            // spam folder
+            $id = $this->insert(array(
+                'name'             => 'Spam',
+                'is_child_allowed' => 1,
+                'is_locked'        => 1,
+                'type'             => 'spam',
+                'meta_info'        => 'inbox',
+                'parent_id'        => $parentId
+            ));
+            $ids[] = $id;
+
+            // outbox folder
+            $id = $this->insert(array(
+                'name'             => 'Outbox',
+                'is_child_allowed' => 0,
+                'is_locked'        => 1,
+                'type'             => 'outbox',
+                'meta_info'        => 'outbox',
+                'parent_id'        => $parentId
+            ));
+            $ids[] = $id;
+
+            // draft folder
+            $id = $this->insert(array(
+                'name'             => 'Drafts',
+                'is_child_allowed' => 0,
+                'is_locked'        => 1,
+                'type'             => 'draft',
+                'meta_info'        => 'draft',
+                'parent_id'        => $parentId
+            ));
+            $ids[] = $id;
+
+            // sent folder
+            $id = $this->insert(array(
+                'name'             => 'Sent',
+                'is_child_allowed' => 0,
+                'is_locked'        => 1,
+                'type'             => 'sent',
+                'meta_info'        => 'sent',
+                'parent_id'        => $parentId
+            ));
+            $ids[] = $id;
+
+            // trash folder
+            $id = $this->insert(array(
+                'name'             => 'Trash',
+                'is_child_allowed' => 1,
+                'is_locked'        => 1,
+                'type'             => 'trash',
+                'meta_info'        => 'inbox',
+                'parent_id'        => $parentId
+            ));
+            $ids[] = $id;
+
+            $adapter->commit();
+
+            return $ids;
+
+        } catch (Exception $e) {
+            $adapter->rollBack();
+            return array();
+        }
+
+    }
+
+
+
     /**
      * Deletes a folder and all related data permanently from the datastore.
      *
@@ -89,7 +196,6 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         return $affected;
 
     }
-
 
     /**
      * Moves a folder to a new node.
@@ -232,6 +338,10 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                   ->group('folders.id');
 
         $row = $adapter->fetchRow($select);
+
+        if ($row === false) {
+            return array();
+        }
 
         $ids = array();
 

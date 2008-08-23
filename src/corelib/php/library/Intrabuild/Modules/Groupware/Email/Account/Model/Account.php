@@ -134,6 +134,13 @@ class Intrabuild_Modules_Groupware_Email_Account_Model_Account
         $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
         $folderIds   = $folderModel->getFoldersForAccountsRoot($userId);
 
+        if (empty($folderIds)) {
+            // user creates his very first email account.
+            // create base folder hierarchy and map them to the
+            // account later on
+            $folderIds = $folderModel->addAccountsRootBaseHierarchy();
+        }
+
 
         /**
          * @see Intrabuild_Modules_Groupware_Email_Folder_Model_FoldersAccounts
