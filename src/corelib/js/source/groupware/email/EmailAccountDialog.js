@@ -1160,7 +1160,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      */
     onOkButton : function(button, eventObject)
     {
-        if (this.valuesValid(true, true)) {
+        if (this.clkRecord === null || this.valuesValid(true, true)) {
             this.un('beforeclose', this.onBeforeClose, this);
             this.saveConfiguration(true);
         }
