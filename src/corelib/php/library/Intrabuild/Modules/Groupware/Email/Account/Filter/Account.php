@@ -100,7 +100,9 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         'replyAddress' => array(
             'StringTrim'
          ),
-        'isStandard' => array(),
+        'isStandard' => array(
+            'FormBoolToInt'
+        ),
         'protocol' => array(
             'StringTrim',
             'StringToUpper'
@@ -120,7 +122,9 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         'userName' => array(
             'StringTrim'
         ),
-        'isOutboxAuth' => array(),
+        'isOutboxAuth' => array(
+            'FormBoolToInt'
+        ),
         'passwordInbox' => array(
             'StringTrim'
          ),
@@ -130,14 +134,18 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         'signature' => array(
             'StringTrim'
         ),
-        'isSignatureUsed' => array(),
+        'isSignatureUsed' => array(
+            'FormBoolToInt'
+        ),
         'portInbox' => array(
             'Int'
         ),
         'portOutbox' => array(
             'Int'
         ),
-        'isCopyLeftOnServer' => array()
+        'isCopyLeftOnServer' => array(
+            'FormBoolToInt'
+        )
     );
 
     protected $_validators = array(
@@ -217,13 +225,6 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         )
     );
 
-    protected function _init()
-    {
-        $this->_filters['isOutboxAuth']       = new Intrabuild_Filter_FormBoolToInt();
-        $this->_filters['isSignatureUsed']    = new Intrabuild_Filter_FormBoolToInt();
-        $this->_filters['isStandard']         = new Intrabuild_Filter_FormBoolToInt();
-        $this->_filters['isCopyLeftOnServer'] = new Intrabuild_Filter_FormBoolToInt();
-    }
 
     /**
      * Adjusts validators based on submitted data.

@@ -136,19 +136,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
 
         } catch (Zend_Mail_Protocol_Exception $e) {
-            $error = Intrabuild_Error::fromException($e)->getDto();
-            $error->title = 'Error while connecting to host';
-            $error->message = $e->getMessage()."<br /> - host: ".
-                              $currentAccount->getServerInbox().':'.
-                              $currentAccount->getPortInbox().'<br /> user: '.
-                              $currentAccount->getUsernameInbox().' (using password: '.
-                              (strlen($currentAccount->getPasswordInbox()) > 0 ? 'yes' : 'no').')';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
-            $this->view->error = $error;
-            $this->view->success    = false;
-            $this->view->totalCount = 0;
-            $this->view->items      = array();
-            return;
+            $errorMessages[] = $e->getMessage()."<br /> - host: ".
+                               $currentAccount->getServerInbox().':'.
+                               $currentAccount->getPortInbox().'<br /> user: '.
+                               $currentAccount->getUsernameInbox().' (using password: '.
+                               (strlen($currentAccount->getPasswordInbox()) > 0 ? 'yes' : 'no').')';
         }
 
         $len = count($emails);
@@ -853,17 +845,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function updateEmailAccountsAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/AccountFilter.php';
+        require_once 'Intrabuild/Modules/Groupware/Email/Account/Filter/Account.php';
         require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/AccountModel.php';
+        require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
 
         $toDelete      = array();
         $toUpdate      = array();
         $deletedFailed = array();
         $updatedFailed = array();
 
-        $model   = new Intrabuild_Modules_Groupware_Email_AccountModel();
-        $adapter = $model->getAdapter();
+        $model   = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
 
         $data  = array();
         $error = null;
@@ -883,9 +874,13 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         for ($i = 0, $len = count($toUpdate); $i < $len; $i++) {
             $_ = $toUpdate[$i];
-            $filter = new Intrabuild_Modules_Groupware_Email_AccountFilter($_, Intrabuild_Filter_Input::CONTEXT_UPDATE);
+            $filter = new Intrabuild_Modules_Groupware_Email_Account_Filter_Account(
+                $_,
+                Intrabuild_Filter_Input::CONTEXT_UPDATE
+            );
             try {
-                $data[$i] = Intrabuild_Util_Array::underscoreKeys($filter->getProcessedData());
+                $data[$i] = $filter->getProcessedData();
+                Intrabuild_Util_Array::underscoreKeys($data[$i]);
             } catch (Zend_Filter_Exception $e) {
                  require_once 'Intrabuild/Error.php';
                  $error = Intrabuild_Error::fromFilter($filter, $e);
@@ -893,24 +888,24 @@ class Groupware_EmailController extends Zend_Controller_Action {
                  $this->view->updatedFailed = array($_['id']);
                  $this->view->deletedFailed = $deletedFailed;
                  $this->view->error = $error->getDto();
-                 break;
+                 return;
             }
         }
 
-        if ($error === null) {
-            for ($i = 0, $len = count($data); $i < $len; $i++) {
-                $where    = $adapter->quoteInto('id = ?', $data[$i]['id'], 'INTEGER');
-                $affected = $model->update($data[$i], $where);
-                if ($affected == 0) {
-                    $updatedFailed[] = $data[$i]['id'];
-                }
+        for ($i = 0, $len = count($data); $i < $len; $i++) {
+            $id = $data[$i]['id'];
+            unset($data[$i]['id']);
+            $affected = $model->updateAccount($id, $data[$i]);
+            if ($affected == -1) {
+                $updatedFailed[] = $id;
             }
-
-            $this->view->success        = empty($updatedFailed) ? true : false;
-            $this->view->updatedFailed = $updatedFailed;
-            $this->view->deletedFailed = $deletedFailed;
-            $this->view->error         = null;
         }
+
+        $this->view->success        = empty($updatedFailed) ? true : false;
+        $this->view->updatedFailed = $updatedFailed;
+        $this->view->deletedFailed = $deletedFailed;
+        $this->view->error         = null;
+
 	}
 
     /**
@@ -993,11 +988,14 @@ class Groupware_EmailController extends Zend_Controller_Action {
         require_once 'Intrabuild/Util/Array.php';
         require_once 'Intrabuild/Keys.php';
         require_once 'Intrabuild/BeanContext/Inspector.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/AccountModel.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/AccountFilter.php';
+        require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
+        require_once 'Intrabuild/Modules/Groupware/Email/Account/Filter/Account.php';
 
-        $model  = new Intrabuild_Modules_Groupware_Email_AccountModel();
-        $filter = new Intrabuild_Modules_Groupware_Email_AccountFilter($_POST, Intrabuild_Filter_Input::CONTEXT_CREATE);
+        $model  = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+        $filter = new Intrabuild_Modules_Groupware_Email_Account_Filter_Account(
+            array(),
+            Intrabuild_Filter_Input::CONTEXT_CREATE
+        );
 
         $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
@@ -1008,23 +1006,34 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->error = null;
 
         try {
+            $filter->setData($_POST);
             $processedData = $filter->getProcessedData();
-            $data = Intrabuild_Util_Array::underscoreKeys($processedData);
-            $data['user_id'] = $userId;
-            $processedData['id'] = $model->insert($data);
+            $data = $processedData;
+            Intrabuild_Util_Array::underscoreKeys($data);
+            $processedData['id']     = $model->addAccount($userId, $data);
             $processedData['userId'] = $userId;
             $processedData['passwordInbox']  = str_pad("", strlen($processedData['passwordInbox']), '*');
             if ($processedData['isOutboxAuth']) {
                 $processedData['passwordOutbox'] = str_pad("", strlen($processedData['passwordOutbox']), '*');
             }
-            $this->view->account = Intrabuild_BeanContext_Inspector::create($classToCreate, $processedData)->getDto();
+            $this->view->account = Intrabuild_BeanContext_Inspector::create(
+                $classToCreate,
+                $processedData
+            )->getDto();
         } catch (Zend_Filter_Exception $e) {
             require_once 'Intrabuild/Error.php';
             $error = Intrabuild_Error::fromFilter($filter, $e);
             $accountData = $_POST;
-            $accountData['passwordOutbox'] = str_pad("", strlen($accountData['passwordOutbox']), '*');
-            $accountData['passwordInbox']  = str_pad("", strlen($accountData['passwordInbox']), '*');
-            $this->view->account = Intrabuild_BeanContext_Inspector::create($classToCreate, $accountData)->getDto();
+            $accountData['passwordOutbox'] = isset($accountData['passwordOutbox'])
+                                             ? str_pad("", strlen($accountData['passwordOutbox']), '*')
+                                             : '';
+            $accountData['passwordInbox'] = isset($accountData['passwordInbox'])
+                                            ? str_pad("", strlen($accountData['passwordInbox']), '*')
+                                            : '';
+            $this->view->account = Intrabuild_BeanContext_Inspector::create(
+                $classToCreate,
+                $accountData
+            )->getDto();
             $this->view->success = false;
             $this->view->error = $error->getDto();
         }

@@ -201,6 +201,67 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Returns all the ids of the folder hierarchy marked as accounts_root
+     * for a specific user. The ids will be returned in a flat numeric array.
+     *
+     */
+    public function getFoldersForAccountsRoot($userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            return array();
+        }
+
+        $adapter = self::getAdapter();
+
+        $select = $adapter->select()
+                  ->from(array('folders' => 'groupware_email_folders'), array(
+                      'id'
+                  ))->join(
+                        array('accounts' => 'groupware_email_accounts'),
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                        array()
+                  )->join(
+                      array('accounts_folders' => 'groupware_email_folders_accounts'),
+                      'accounts_folders.groupware_email_folders_id=folders.id '
+                      . 'AND '
+                      . 'accounts_folders.groupware_email_accounts_id=accounts.id',
+                      array()
+                  )->where('folders.type=?', 'accounts_root')
+                  ->group('folders.id');
+
+        $row = $adapter->fetchRow($select);
+
+        $ids = array();
+
+        $ids[] = $row['id'];
+
+        $this->_getFoldersForAccountsRoot($adapter, $row['id'], $ids);
+
+        return $ids;
+    }
+
+    private function _getFoldersForAccountsRoot($adapter, $folderId, &$collectedIds)
+    {
+        $select = $adapter->select()
+                  ->from(array('folders' => 'groupware_email_folders'), array(
+                      'id'
+                  ))
+                  ->where('folders.parent_id=?', $folderId);
+
+        $rows = $adapter->fetchAll($select);
+
+        foreach ($rows as $row) {
+            $collectedIds[] = $row['id'];
+            $this->_getFoldersForAccountsRoot($adapter, $row['id'], $collectedIds);
+        }
+
+    }
+
+
+
+    /**
      * Returns the base query for reading out folders.
      */
     public static function getFolderBaseQuery()
