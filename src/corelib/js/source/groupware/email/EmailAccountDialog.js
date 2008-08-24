@@ -66,7 +66,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
     /**
      * @param {Object} fields An object containing all fields available in the form.
      */
-    fields : {},
+    fields : null,
 
     /**
      * @param {Ext.grid.GridPanel} accountGridPanel The grid showing all accounts
@@ -113,11 +113,14 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      * If deleting fails, the changes can be rejected and the records which could
      * not be deleted can be added to the data store again
      */
-    deletedRecords : {},
+    deletedRecords : null,
 
 
     initComponent : function()
     {
+        this.fields         = {};
+        this.deletedRecords = {};
+
         this.accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 
         var accountGridPanel = new Ext.grid.GridPanel({
