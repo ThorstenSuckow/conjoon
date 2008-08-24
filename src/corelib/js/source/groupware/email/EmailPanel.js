@@ -1313,7 +1313,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // only update pending records if the last updated timestamp is less than
         // the actual timestamp
         var ts = (new Date()).getTime();
-        var folderId = options.params.groupwareEmailFoldersId;
+		var folderId = options.params.groupwareEmailFoldersId;
         if (this.pendingRecordsDate[folderId] > ts) {
             return;
         }
@@ -1390,14 +1390,13 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var pendingStore  = this.treePanel.pendingItemStore;
         var pendingRecord = null;
 
-        for (var i in this.pendingRecords) {
-            folderId = i;
-			this.pendingRecordsDate[folderId] = ts;
+        for (var folderId in this.pendingRecords) {
+            this.pendingRecordsDate[folderId] = ts;
             if (folderId != this.clkNodeId) {
                 pendingRecord = pendingStore.getById(folderId);
                 if (pendingRecord) {
-                    pendingRecord.set('pending', pendingRecord.data.pending+this.pendingRecords[i]);
-                    this.pendingRecords[i] = 0;
+                    pendingRecord.set('pending', pendingRecord.data.pending+this.pendingRecords[folderId]);
+                    this.pendingRecords[folderId] = 0;
                 }
             }
         }
