@@ -7,7 +7,7 @@ var fields = de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs;
 
 
 fields.textField = {
-    
+
     emailAddress :{
         fieldLabel: de.intrabuild.Gettext.gettext("To"),
         name: 'emailaddress',
@@ -15,18 +15,18 @@ fields.textField = {
          vtype:'email',
         anchor: '100%'
     },
-    
+
     subject : {
         fieldLabel: de.intrabuild.Gettext.gettext("Subject"),
         emptyText: de.intrabuild.Gettext.gettext("<Subject>"),
         name: 'subject',
         anchor: '100%'
-        
+
     }
 };
 
 fields.textArea = {
-    
+
     message :{
         emptyText: de.intrabuild.Gettext.gettext("<Message>"),
         fieldLabel:de.intrabuild.Gettext.gettext("Message"),
@@ -35,13 +35,13 @@ fields.textArea = {
 };
 
 fields.button = {
-    
+
     save : {
         text : de.intrabuild.Gettext.gettext("Send now")
     },
-    
+
     cancel : {
-        text : de.intrabuild.Gettext.gettext("Cancel")    
+        text : de.intrabuild.Gettext.gettext("Cancel")
     }
 }
 

@@ -157,12 +157,12 @@ Ext.onReady(function(){
 		    text:'File',
 		    menu: [{
 				text:'New',
-				menu : [{
+				menu : [de.intrabuild.groupware.email.decorator.AccountActionComp.decorate(new Ext.menu.Item({
 					text : 'Email...',
 					handler : function() {
 					   de.intrabuild.groupware.email.EmailEditorManager.createEditor();
 					}
-				}]
+				}))]
 			}, '-', {
                 text    : "Logout...",
                 handler : function() {
