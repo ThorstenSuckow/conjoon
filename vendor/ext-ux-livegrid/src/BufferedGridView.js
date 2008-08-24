@@ -595,6 +595,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     // private
     onRemove : function(ds, record, index, isUpdate)
     {
+
         if (index == Number.MIN_VALUE || index == Number.MAX_VALUE) {
             this.fireEvent("beforerowremoved", this, index, record);
             this.fireEvent("rowremoved",       this, index, record);
@@ -639,13 +640,14 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                     // no more records, neither in the underlying data model
                     // nor in the data store
                     if (this.rowIndex == 0) {
-                        // simply remove the row from the dom
+                        // simply remove the row from the end of the dom dom
                         this.removeRows(cInd, cInd);
 
                     } else {
                         // scroll a new row in the rect so the whole rect is filled
                         // with rows
                         this.rowIndex--;
+                        this.lastRowIndex = this.rowIndex;
                         if (this.rowIndex < this.ds.bufferRange[0]) {
                             // buffer range is invalid! request new data
                             if(isUpdate !== true){
@@ -655,9 +657,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
                             return;
                         } else {
-                            // still records in the store, simply update the dom
-                            this.replaceLiveRows(this.rowIndex);
-
+                            // still records in the store, simply update the dom,
+                            //but leave processing to this method after the event rowremoved
+                            // was fired so the selection store can update properly
+                            this.replaceLiveRows(this.rowIndex, true, false);
                         }
                     }
                 }
@@ -1029,7 +1032,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             if (paintSelections == true) {
                 if (this.grid.selModel.bufferedSelections[index] === true) {
                     this.addRowClass(i, "x-grid3-row-selected");
-                    selections.add(ds.getAt(index));
                 }
                 this.fly(row).removeClass("x-grid3-row-over");
             }
@@ -1375,7 +1377,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      *                               view, otherwise <tt>false</tt>.
      */
     // private
-    replaceLiveRows : function(cursor, forceReplace)
+    replaceLiveRows : function(cursor, forceReplace, processRows)
     {
         var spill = cursor-this.lastRowIndex;
 
@@ -1414,7 +1416,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             }
         }
 
-        this.processRows(0, undefined, true);
+        if (processRows !== false) {
+            this.processRows(0, undefined, true);
+        }
         this.lastRowIndex = cursor;
     },
 
