@@ -444,6 +444,18 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     },
 
 // {{{ ----------------------dom/mouse listeners--------------------------------
+
+    // private
+    onColumnMove : function(cm, oldIndex, newIndex)
+    {
+        this.indexMap = null;
+        this.replaceLiveRows(this.rowIndex, true);
+        this.updateHeaders();
+        this.updateHeaderSortState();
+        this.afterMove(newIndex);
+    },
+
+
     /**
      * Called when a column width has been updated. Adjusts the scroller height
      * and the number of visible rows wether the horizontal scrollbar is shown
