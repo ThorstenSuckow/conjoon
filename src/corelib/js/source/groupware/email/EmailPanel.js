@@ -285,7 +285,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     pendingRecords : null,
 
-	pendingRecordsDate : [],
+	pendingRecordsDate : {},
 
     queue : null,
 
@@ -1276,7 +1276,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         var folderId = record.data.groupwareEmailFoldersId;
-        //alert(folderId);
+
         if (this.clkNodeId && (this.clkNodeId == folderId
             && !this.gridPanel.store.proxy.activeRequest)) {
             var pendingStore  = this.treePanel.pendingItemStore;
@@ -1313,13 +1313,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // only update pending records if the last updated timestamp is less than
         // the actual timestamp
         var ts = (new Date()).getTime();
+        var folderId = options.params.groupwareEmailFoldersId;
         if (this.pendingRecordsDate[folderId] > ts) {
             return;
         }
 
 		this.pendingRecordsDate[folderId] = ts;
-
-        var folderId = options.params.groupwareEmailFoldersId;
 
         var pendingStore  = this.treePanel.pendingItemStore;
         var pendingRecord = pendingStore.getById(folderId);
@@ -1392,7 +1391,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var pendingRecord = null;
 
         for (var i in this.pendingRecords) {
-            folderId = parseInt(i);
+            folderId = i;
 			this.pendingRecordsDate[folderId] = ts;
             if (folderId != this.clkNodeId) {
                 pendingRecord = pendingStore.getById(folderId);
