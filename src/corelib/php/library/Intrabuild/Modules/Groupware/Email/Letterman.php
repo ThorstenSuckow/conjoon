@@ -539,6 +539,8 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             // compute message list based on messages already in the db
         }
 
+        $messagesToRemove = array();
+
         for ($oo = 1; $oo < $mailCount+1; $oo++) {
             $messageNum = $oo;
             $this->_attachmentCounter = 1;
@@ -551,7 +553,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             if ($hasUniqueId) {
                 if ($this->_isUidPresent($accountId, $uidl[$oo]) === true) {
                     if (!$isCopyLeftOnServer && $isPop3) {
-                        $mail->removeMessage($messageNum);
+                        $messagesToRemove[] = $messageNum;
                     }
                     continue;
                 } else {
@@ -602,13 +604,13 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
 
                 if ($id === true) {
                     if (!$isCopyLeftOnServer && $isPop3) {
-                        $mail->removeMessage($messageNum);
+                        $messagesToRemove[] = $messageNum;
                     }
                     continue;
                 }
             } else {
                 if (!$isCopyLeftOnServer && $isPop3) {
-                    $mail->removeMessage($messageNum);
+                    $messagesToRemove[] = $messageNum;
                 }
             }
 
@@ -748,8 +750,13 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             $mail->noop();
 
             if (!$isCopyLeftOnServer && $isPop3) {
-               $mail->removeMessage($messageNum);
+                $messagesToRemove[] = $messageNum;
             }
+        }
+
+        $messagesToRemove = array_unique($messagesToRemove);
+        foreach ($messagesToRemove as $id) {
+            $mail->removeMessage($id);
         }
 
         self::_setIconvEncoding(self::ICONV_OLD);
