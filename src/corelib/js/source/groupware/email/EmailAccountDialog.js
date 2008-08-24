@@ -1049,7 +1049,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 isOutboxAuth       : currUpd.get('isOutboxAuth'),
                 usernameOutbox     : currUpd.get('usernameOutbox'),
                 passwordOutbox     : currUpd.get('passwordOutbox'),
-                isCopyLeftOnServer : !currUpd.get('isCopyLeftOnServer'),
+                isCopyLeftOnServer : currUpd.get('isCopyLeftOnServer'),
                 isSignatureUsed    : currUpd.get('isSignatureUsed'),
                 signature          : currUpd.get('signature')
             });
@@ -1380,7 +1380,6 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         fields['usernameOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
         fields['passwordOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
-
         fields['name'].setValue(data.name);
         fields['userName'].setValue(data.userName);
         fields['address'].setValue(data.address);
@@ -1423,6 +1422,7 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         var fields = this.fields;
         var record = this.clkRecord;
+
         record.set('name',            fields['name'].getValue());
         record.set('userName',       fields['userName'].getValue());
         record.set('address',         fields['address'].getValue());
@@ -1437,7 +1437,6 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         record.set('isCopyLeftOnServer',      !fields['isCopyLeftOnServer'].getValue());
         record.set('isSignatureUsed',   fields['isSignatureUsed'].getValue());
         record.set('signature',       fields['signature'].getValue());
-
         var passwordInbox  = fields['passwordInbox'].getValue();
         var passwordOutbox = fields['passwordOutbox'].getValue();
 
