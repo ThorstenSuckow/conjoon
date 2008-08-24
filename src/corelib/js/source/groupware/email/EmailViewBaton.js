@@ -37,6 +37,8 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
         if (toolbar == null) {
             var tbarManager = de.intrabuild.groupware.ToolbarManager;
 
+            var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+
             var forwardButton = new Ext.Toolbar.Button({
                 id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ForwardButton',
                 cls      : 'x-btn-text-icon',
@@ -74,13 +76,13 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
             });
 
 
-            toolbar = new Ext.Toolbar([
+            toolbar = decorateAccountRelatedClk(new Ext.Toolbar([
                 replyButton,
                 replyAllButton,
                 forwardButton,
                 separator,
                 editDraftButton
-            ]);
+            ]));
 
             separator.render = function(td){
                 this.td = td;

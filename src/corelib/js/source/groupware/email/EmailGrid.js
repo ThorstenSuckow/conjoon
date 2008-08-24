@@ -314,28 +314,38 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
     createContextMenu : function()
     {
         if(!this.menu){
+
+            var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+
             this.menu = new Ext.menu.Menu({
                 items: [{
                 	text  : de.intrabuild.Gettext.gettext("Open in new tab"),
                     handler : this.controller.openEmailView,
                     scope : this.controller
-                  }, {
-                    text  : de.intrabuild.Gettext.gettext("Edit draft"),
+                  },
+
+                  decorateAccountRelatedClk(new Ext.menu.Item({
+                    text    : de.intrabuild.Gettext.gettext("Edit draft"),
                     handler : function(){this.openEmailEditPanel(true, 'edit');},
-                    scope : this.controller
-                  }, '-' , {
+                    scope   : this.controller
+                  })),
+                  '-' ,
+                  decorateAccountRelatedClk(new Ext.menu.Item({
                     text  : de.intrabuild.Gettext.gettext("Reply"),
                     handler : function(){this.openEmailEditPanel(true, 'reply');},
                     scope : this.controller
-                  },{
+                  })),
+
+                  decorateAccountRelatedClk(new Ext.menu.Item({
                     text  : de.intrabuild.Gettext.gettext("Reply all"),
                     handler : function(){this.openEmailEditPanel(true, 'reply_all');},
                     scope : this.controller
-                  },{
+                  })),
+                  decorateAccountRelatedClk(new Ext.menu.Item({
                     text  : de.intrabuild.Gettext.gettext("Forward"),
                     handler : function(){this.openEmailEditPanel(true, 'forward');},
                     scope : this.controller
-                  }, '-', {
+                  })), '-', {
                       text : de.intrabuild.Gettext.gettext("Mark email"),
                       menu : {
                           items : [{

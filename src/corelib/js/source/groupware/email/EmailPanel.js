@@ -85,7 +85,9 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      * Top toolbar
      * @param {Ext.Toolbar}
      */
-    this.forwardButton = new Ext.Toolbar.Button({
+    var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+
+    this.forwardButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
         id       : 'de.intrabuild.groupware.email.toolbar.ForwardButton',
         cls      : 'x-btn-text-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-forwardButton-icon',
@@ -93,8 +95,8 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         handler  : function(){this.openEmailEditPanel(true, 'forward');},
         disabled : true,
         scope    : this
-    });
-    this.replyButton = new Ext.Toolbar.Button({
+    }));
+    this.replyButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
         id       : 'de.intrabuild.groupware.email.toolbar.ReplyButton',
         cls      : 'x-btn-text-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-replyButton-icon',
@@ -102,8 +104,8 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         handler  : function(){this.openEmailEditPanel(true, 'reply');},
         disabled : true,
         scope    : this
-    });
-    this.replyAllButton = new Ext.Toolbar.Button({
+    }));
+    this.replyAllButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
         id       : 'de.intrabuild.groupware.email.toolbar.ReplyAllButton',
         cls      : 'x-btn-text-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-replyAllButton-icon',
@@ -111,7 +113,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         handler  : function(){this.openEmailEditPanel(true, 'reply_all');},
         disabled : true,
         scope    : this
-    });
+    }));
     this.deleteButton = new Ext.Toolbar.Button({
         id       : 'de.intrabuild.groupware.email.toolbar.DeleteButton',
         cls      : 'x-btn-text-icon',
@@ -150,13 +152,13 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         handler  : function(){this.openEmailEditPanel(true, 'edit');},
         scope    : this
     });
-    this.newButton = new Ext.Toolbar.Button({
+    this.newButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
         cls  	 : 'x-btn-text-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-newButton-icon',
         text 	 : '&#160;'+de.intrabuild.Gettext.gettext("New email"),
         handler  : function(){this.openEmailEditPanel(false, 'new');},
         scope 	 : this
-    });
+    }));
 
     this.controlBar = new Ext.Toolbar([
         new de.intrabuild.groupware.email.FetchMenuButton(),
