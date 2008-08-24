@@ -1,8 +1,24 @@
-﻿
+﻿Version 0.1.1
+25-August-2008
+
+- fixes:
+ - BufferedGridView: grid would not be repainted correctly if a column was moved:
+method "onColumnMove()" with appropriate implementation added (fixes google issue 9);
+"onRemove()" would not work properly if the end of the data was reached in the visible
+rect and rows from within that rect are removed. Adjusted "lastRowIndex" to be equal to
+"rowIndex", and skipped implicit "processRows()" call in "replaceLiveRows()" via passing
+a new third argument "processRows", which will only call "processRows()" if the argument
+was not set to false; removed call to "selections.add()" in "processRows()" since selections
+are already in the "bufferedSelections" property of the selection model, and previously
+selected records are still part of the "selections"-property of the selection model.
+
+
 - enhancements:
  - BufferedGridView: Added functionality for listening to erroneous responses from
 buffer-requests. Event "bufferfailure" will now be fired if the store indicated that
-the proxy's response was erroneous.
+the proxy's response was erroneous; added "options" parameter to be passed to
+"buffer"-event
+
  - BufferedGridToolbar: Toolbar is now listening to "bufferfailure"-event and resets
 the reload-button to "enabled" if necessary.
 
