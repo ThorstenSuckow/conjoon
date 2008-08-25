@@ -1,4 +1,13 @@
-﻿Version 0.1.1
+﻿Version 0.1.2
+25-August-2008
+
+- fixes:
+ - BufferedGridView: wrong calculation of "start"-parameter for the buffer-request
+caused infinite loop. Adjusted calculation of return value in "getPredictedBufferIndex()"
+to always return correct value for "start"-parameter if the "nearLimit" property is greater
+than or equals to half of store's "bufferSize" property (fixes google issue 4)
+
+Version 0.1.1
 25-August-2008
 
 - fixes:

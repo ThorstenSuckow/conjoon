@@ -1201,6 +1201,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     {
         var lastRowIndex = Math.min(this.ds.totalLength-1,
                                     rowIndex + this.visibleRows);
+
         return (rowIndex     >= this.ds.bufferRange[0]) &&
                (lastRowIndex <= this.ds.bufferRange[1]);
     },
@@ -1215,7 +1216,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     getPredictedBufferIndex : function(index, inRange, down)
     {
         if (!inRange) {
-            return Math.max(0, index-(2*this.nearLimit));
+            var dNear = 2*this.nearLimit;
+            return Math.max(0, index-((dNear >= this.ds.bufferSize ? this.nearLimit : dNear)));
         }
         if (!down) {
             return Math.max(0, (index-this.ds.bufferSize)+this.visibleRows);
@@ -1315,7 +1317,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         this.isBuffering = true
 
         var bufferOffset = this.getPredictedBufferIndex(index, inRange, down);
-        var fetchSize    = this.ds.bufferSize;
 
         if (!inRange) {
             this.showLoadMask(true);
