@@ -1,4 +1,10 @@
-﻿Version 0.1.2
+﻿
+- fixes:
+ - BufferedRowSelectionModel: "selectRow()" would allow selecting indexes greater than
+the "totalLength"-property of the store; added condition to check whether the index is
+out of bounds (closes google issue 5)
+
+Version 0.1.2
 25-August-2008
 
 - fixes:
