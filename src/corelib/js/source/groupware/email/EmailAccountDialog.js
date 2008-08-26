@@ -1197,8 +1197,13 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      * teh selected record server-side), the record will be appended to the store again.
      * Before deleting, all modifications done to this record will be rejected.
      * Additionally, the isStandard property will be set to false, and the first record
-     * in the grid will have it's is_standard property set to true (in case the
-     * is_standard property of the removed button equals to true).
+     * in the grid will have it's isStandard property set to true (in case the
+     * isStandard property of the removed button equals to true).
+     * The method will also check first if there is currently an email being edited that
+     * uses the account that is about to be removed. If that is the case, a message box
+     * will notify the user that the account is in use. The method will then return,
+     * without deleting the record.
+     *
      *
      * @param {Ext.Button} button The button that initiated a call to this method.
      */
@@ -1211,6 +1216,23 @@ de.intrabuild.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         }
 
         var msg  = Ext.MessageBox;
+
+        // check if the account is currently being used by an email
+        // being written / edited
+        if (de.intrabuild.groupware.email.EmailEditorManager.isAccountUsed(record.id)) {
+
+            msg.show({
+                title   : de.intrabuild.Gettext.gettext("Remove email account - account is locked"),
+                msg     : de.intrabuild.Gettext.gettext("The account you want to delete is currently in use. Please finish all work related with this account first and then try again."),
+                buttons : msg.OK,
+                scope   : this,
+                icon    : msg.INFO,
+                cls     :'de-intrabuild-msgbox-info',
+                width   :400
+            });
+
+            return;
+        }
 
         msg.show({
             title   : de.intrabuild.Gettext.gettext("Remove email account"),
