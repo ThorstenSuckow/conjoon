@@ -91,7 +91,7 @@ class Intrabuild_Filter_MimeDecodeHeader implements Zend_Filter_Interface
             for ($i = 0; $i < $len; $i++) {
                 $ms[$i] = trim($ms[$i]);
                 if (stripos($ms[$i], $bid) !== false) {
-                    if (strpos($ms[$i], '=') !== 0) {
+                    if (strpos($ms[$i], '=') === 0) {
                         $spec = ' ';
                     }
                     break;
