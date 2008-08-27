@@ -51,6 +51,98 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
 
     /**
+     * Returns the total count of messages for the specified folder
+     * belonging to the specified user.
+     *
+     * @param integer $folderId
+     * @param integer $userId
+     *
+     * @return integer the total count of items, or 0 if an error occured
+     * or no items where available.
+     */
+    public function getItemCountForFolderAndUser($folderId, $userId)
+    {
+        $folderId = (int)$folderId;
+        $userId   = (int)$userId;
+
+        if ($folderId <= 0 || $userId <= 0) {
+            return 0;
+        }
+
+        $adapter = $this->getAdapter();
+
+        $select = $adapter->select()
+                  ->from('groupware_email_items', array(
+                    'COUNT(id) as count_id'
+                  ))
+                  ->join(
+                        array('flags' => 'groupware_email_items_flags'),
+                        'flags.groupware_email_items_id=groupware_email_items.id '.
+                        ' AND ' .
+                        'flags.is_deleted=0 '.
+                        'AND '.
+                        $adapter->quoteInto('flags.user_id=?', $userId, 'INTEGER'),
+                        array())
+                 ->where('groupware_email_folders_id = ?', $folderId);
+
+        $row = $adapter->fetchRow($select);
+
+        return ($row != null) ? $row['count_id'] : 0;
+    }
+
+    /**
+     * Returns the total count of pendning messages for the specified folder
+     * belonging to the specified user.
+     *
+     * A pending item is either a message flagged as unread, or a message
+     * in a draft or outbox folder waiting to be edited/send.
+     *
+     * @param integer $folderId
+     * @param integer $userId
+     *
+     * @return integer the total count of pending items, or 0 if an error occured
+     * or no items where available.
+     */
+    public function getPendingCountForFolderAndUser($folderId, $userId)
+    {
+        $folderId = (int)$folderId;
+        $userId   = (int)$userId;
+
+        if ($folderId <= 0 || $userId <= 0) {
+            return 0;
+        }
+
+        $adapter = $this->getAdapter();
+
+        $select = $adapter->select()
+                  ->from(array('folders' => 'groupware_email_folders'), array(
+                    'meta_info'
+                  ))
+                  ->joinLeft(
+                    array('items' => 'groupware_email_items'),
+                    'items.groupware_email_folders_id=folders.id'
+                  )
+                  ->joinLeft(
+                        array('flag' => 'groupware_email_items_flags'),
+                        'flag.groupware_email_items_id=items.id '.
+                        ' AND ' .
+                        'flag.is_read=0 '.
+                        ' AND ' .
+                        'flag.is_deleted=0 '.
+                        'AND '.
+                        $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
+                        array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")
+                 )
+                 ->where('folders.id = ?', $folderId)
+                 ->where('folders.is_deleted = ?', 0)
+                 ->group('folders.id');
+
+        $row = $adapter->fetchRow($select);
+
+        return ($row != null) ? $row['pending_count'] : 0;
+    }
+
+    /**
      * Adds a default folder hierarchy and returns all the id's added
      * in a flat numeric array.
      *

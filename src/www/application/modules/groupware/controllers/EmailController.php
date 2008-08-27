@@ -628,7 +628,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
             $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
             $itemModel   = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
-            $totalCount  = $itemModel->getTotalItemCount($filteredData['groupwareEmailFoldersId'], $userId);
+
+            $totalCount  = $folderModel->getItemCountForFolderAndUser(
+                $filteredData['groupwareEmailFoldersId'], $userId
+            );
 
             if ($totalCount == 0) {
                 $this->view->success      = true;
@@ -645,10 +648,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 $itemResponseFilter
             );
 
-            $folderDecorator = new Intrabuild_BeanContext_Decorator(
-                $folderModel
-            );
-
 
             $rows = $decoratedModel->getEmailItemsForAsDto(
                 $userId,
@@ -656,12 +655,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 $sortInfo
             );
 
-            $row = $folderDecorator->getFolderAsDto(
-                $filteredData['groupwareEmailFoldersId'],
-                $userId
+            $pendingItems = $folderModel->getPendingCountForFolderAndUser(
+                $filteredData['groupwareEmailFoldersId'], $userId
             );
 
-            $pendingItems = $row->pendingCount;
 
         } else if ($context == $CONTEXT_REQUEST_LATEST) {
 

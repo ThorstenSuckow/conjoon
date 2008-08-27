@@ -53,45 +53,6 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     protected $_primary = 'id';
 
     /**
-     * Returns the total count of messages for the specified folder
-     * belonging to the specified user.
-     *
-     * @param integer $folderId
-     * @param integer $userId
-     *
-     * @return integer the total count of items, or 0 if an error occured
-     * or no items where available.
-     */
-    public function getTotalItemCount($folderId, $userId)
-    {
-        $folderId = (int)$folderId;
-        $userId   = (int)$userId;
-
-        if ($folderId <= 0 || $userId <= 0) {
-            return 0;
-        }
-
-        $select = $this->select()
-                  ->from($this, array(
-                    'COUNT(id) as count_id'
-                  ))
-                  ->join(
-                        array('flags' => 'groupware_email_items_flags'),
-                        'flags.groupware_email_items_id=groupware_email_items.id '.
-                        ' AND ' .
-                        'flags.is_deleted=0 '.
-                        'AND '.
-                        $this->getAdapter()->quoteInto('flags.user_id=?', $userId, 'INTEGER'),
-                        array())
-                 ->where('groupware_email_folders_id = ?', $folderId);
-
-        $row = $this->fetchRow($select);
-
-        return ($row !== null) ? $row->count_id : 0;
-
-    }
-
-    /**
      * Applies the correct table alias to the passed fieldname
      *
      */
