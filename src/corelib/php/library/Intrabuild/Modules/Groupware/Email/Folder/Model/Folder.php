@@ -49,6 +49,125 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      */
     protected $_primary = 'id';
 
+    /**
+     * Returns true if the folder's name may be edited, otherwise false.
+     *
+     * @param integer $id The id of the folder to rename
+     *
+     * @return boolean true if the folder may be renamed, otherwise false
+     */
+    public function isFolderNameEditable($id)
+    {
+        $where  = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
+
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from($this, array('is_locked'))
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        if ($row) {
+            if ($row->is_locked) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns true if the folder may be deleted, otherwise false.
+     *
+     * @param integer $id The id of the folder to delete
+     *
+     * @return boolean true if the folder may be deleted, otherwise false
+     */
+    public function isFolderDeletable($id)
+    {
+        $where  = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
+
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from($this, array('is_locked'))
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        if ($row) {
+            if ($row->is_locked) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns true if the specified folder allows child nodes to be added,
+     * otherwise false.
+     *
+     * @param integer $id The id of the folder to check
+     *
+     * @return boolean true if the folder allows child nodes to be appended,
+     * otherwise false
+     */
+    public function doesFolderAllowChildren($id)
+    {
+        $id = (int)$id;
+
+        if ($id <= 0) {
+            return false;
+        }
+
+        $where  = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
+
+        $select = $this->select()
+                  ->from($this, array('is_child_allowed'))
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        if ($row && $row->is_child_allowed) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the specified folder may be moved to the , otherwise false.
+     *
+     * @param integer $id The id of the folder to delete
+     * @param integer $parentId The id of the folder the folder gets moved into
+     *
+     * @return boolean true if the folder may be deleted, otherwise false
+     */
+    public function isFolderMoveableToFolder($id, $parentId)
+    {
+        $where  = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from($this, array('is_locked'))
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        if ($row) {
+            if ($row->is_locked) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return $this->doesFolderAllowChildren($parentId);
+    }
+
 
     /**
      * Returns the total count of messages for the specified folder
@@ -262,8 +381,6 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      *
      * @return integer 0 if the folder was not deleted, otherwise 1 (equals to
      * the number of deleted folders)
-     *
-     * @todo check if the folder is allowed to be deleted (see moveFolder)
      */
     public function deleteFolder($id, $userId)
     {
@@ -273,7 +390,12 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
             return 0;
         }
 
-        $where    = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
+        // check first if the folder may get deleted
+        if (!$this->isFolderDeletable($id)) {
+            return 0;
+        }
+
+        $where  = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
         $affected = $this->delete($where);
 
         require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
@@ -298,8 +420,6 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      *
      * @return integer The number of rows updated, i.e. 0 if no update happened,
      * otherwise 1
-     *
-     * @todo check if the folder is allowed to be moved
      */
     public function moveFolder($id, $parentId)
     {
@@ -307,6 +427,11 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         $parentId = (int)$parentId;
 
         if ($id <= 0 || $parentId <= 0) {
+            return 0;
+        }
+
+        // check first if the folder may be moved.
+        if (!$this->isFolderMoveableToFolder($id, $parentId)) {
             return 0;
         }
 
@@ -334,6 +459,10 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
             return 0;
         }
 
+        if (!$this->isFolderNameEditable($id)) {
+            return 0;
+        }
+
         $adapter = $this->getAdapter();
         $data = array('name' => $name);
         return $this->update($data, array(
@@ -347,6 +476,8 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      * will inherit the account-id from it's parent-folder. The new folder
      * will also inherit the meta-info-value of the parent folder
      *
+     * Checks first if the
+     *
      * @param integer $parentId
      * @param string $name
      * @param integer $userId
@@ -354,6 +485,10 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     public function addFolder($parentId, $name, $userId)
     {
         if ((int)$parentId <= 0 || (int)$userId <= 0 || $name == "") {
+            return -1;
+        }
+
+        if (!$this->doesFolderAllowChildren($parentId)) {
             return -1;
         }
 
