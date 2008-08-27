@@ -227,3 +227,19 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(32) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `groupware_email_items_flags` ADD `is_deleted` BOOL NOT NULL DEFAULT '0' AFTER `is_spam` ;
+
+ALTER TABLE `groupware_email_items_flags` DROP INDEX `is_spam` ,
+ADD INDEX `is_spam` ( `groupware_email_items_id` , `user_id` , `is_spam` , `is_deleted` );
+
+ALTER TABLE `groupware_email_items_flags` DROP INDEX `is_read` ,
+ADD INDEX `is_read` ( `user_id` , `is_read` , `groupware_email_items_id` , `is_deleted` );
+
+ALTER TABLE `groupware_email_items_flags` DROP INDEX `flags` ,
+ADD INDEX `flags` ( `groupware_email_items_id` , `user_id` , `is_read` , `is_spam` , `is_deleted` );
+
+
+ALTER TABLE `groupware_email_items_flags` DROP INDEX `flags` ,
+ADD INDEX `flags` ( `groupware_email_items_id` , `user_id` , `is_read` , `is_spam` , `is_deleted` );

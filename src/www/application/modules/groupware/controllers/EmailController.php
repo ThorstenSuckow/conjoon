@@ -628,7 +628,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
             $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
             $itemModel   = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
-            $totalCount  = $itemModel->getTotalItemCount($filteredData['groupwareEmailFoldersId']);
+            $totalCount  = $itemModel->getTotalItemCount($filteredData['groupwareEmailFoldersId'], $userId);
 
             if ($totalCount == 0) {
                 $this->view->success      = true;

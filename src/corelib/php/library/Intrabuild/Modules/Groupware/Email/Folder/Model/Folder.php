@@ -478,6 +478,8 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                     'items.id = flag.groupware_email_items_id'.
                     ' AND '.
                     'flag.is_read=0'.
+                    ' AND '.
+                    'flag.is_deleted=0'.
                     ' AND ' .
                     $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
                     array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")
@@ -520,6 +522,8 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                     'items.id = flag.groupware_email_items_id'.
                     ' AND '.
                     'flag.is_read=0'.
+                    ' AND '.
+                    'flag.is_deleted=0'.
                     ' AND ' .
                     $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
                     array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")

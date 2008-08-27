@@ -62,11 +62,12 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
      * @return integer the total count of items, or 0 if an error occured
      * or no items where available.
      */
-    public function getTotalItemCount($folderId)
+    public function getTotalItemCount($folderId, $userId)
     {
         $folderId = (int)$folderId;
+        $userId   = (int)$userId;
 
-        if ($folderId <= 0) {
+        if ($folderId <= 0 || $userId <= 0) {
             return 0;
         }
 
@@ -74,7 +75,15 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                   ->from($this, array(
                     'COUNT(id) as count_id'
                   ))
-                  ->where('groupware_email_folders_id = ?', $folderId);
+                  ->join(
+                        array('flags' => 'groupware_email_items_flags'),
+                        'flags.groupware_email_items_id=groupware_email_items.id '.
+                        ' AND ' .
+                        'flags.is_deleted=0 '.
+                        'AND '.
+                        $this->getAdapter()->quoteInto('flags.user_id=?', $userId, 'INTEGER'),
+                        array())
+                 ->where('groupware_email_folders_id = ?', $folderId);
 
         $row = $this->fetchRow($select);
 
@@ -140,11 +149,13 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                       'date',
                       'groupware_email_folders_id'
                 ))
-                ->joinLeft(
+                ->join(
                     array('flag' => 'groupware_email_items_flags'),
                     '`flag`.`groupware_email_items_id` = `items`.`id`' .
                     ' AND '.
-                    $adapter->quoteInto('`flag`.`user_id`=?', $userId, 'INTEGER'),
+                    $adapter->quoteInto('`flag`.`user_id`=?', $userId, 'INTEGER').
+                    ' AND '.
+                    '`flag`.`is_deleted`=0',
                     array('is_spam', 'is_read')
                 )
                 ->joinLeft(
@@ -271,8 +282,10 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     }
 
     /**
-     * Deletes all items with the specified ids permanently for the
-     * specified user.
+     * Deletes all items with the specified ids for the specified user.
+     * The items will only be deleted if all rows in groupware_email_items_flags
+     * for the corresponding item have been set to is_deleted=1. Otherwise,
+     * only the is_deleted field for the specified user will be set to 1.
      *
      * @param array $itemIds A numeric array with all id's of the items that are
      * about to be deleted
@@ -301,15 +314,24 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
             return 0;
         }
 
-        $idString = implode(',', $clearedItemIds);
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
+        $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
+        $flagModel->flagItemsAsDeleted($clearedItemIds, $userId);
+
+        $deleteValues = $flagModel->areItemsFlaggedAsDeleted($clearedItemIds);
+
+        // if the second argument to array_filter is ommited, array_filter gets
+        // all keys which values does not equal to false
+        $itemsToDelete = array_filter($deleteValues);
+
+        $idString = implode(',', array_keys($itemsToDelete));
         $deleted = $this->delete('id IN ('.$idString.')');
 
         if ($deleted > 0) {
-            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
+
             require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
             require_once 'Intrabuild/Modules/Groupware/Email/Attachment/Model/Attachment.php';
 
-            $flagModel       = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
             $inboxModel      = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
             $attachmentModel = new Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment();
 
