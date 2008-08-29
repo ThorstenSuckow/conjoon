@@ -1,4 +1,13 @@
-﻿Version 0.2rc1
+﻿Version 0.2rc2
+29-August-2008
+
+- fixes:
+ - BufferedGridView.js: re-rendering rows would not work proper if a resize of the panel
+during buffering happened; "adjustVisibleRows()" skips recalculating the "rowIndex"
+property now if the livegrid is currently buffering. "replaceLiveRows()" would not always
+calculate the exact range of rows to render; adjusted conditions to check for valid ranges
+
+Version 0.2rc1
 29-August-2008
 
 - fixes:

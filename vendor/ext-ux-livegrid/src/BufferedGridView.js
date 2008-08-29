@@ -453,11 +453,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.autoExpand();
         }
 
-
         // adjust the number of visible rows and the height of the scroller.
         this.adjustVisibleRows();
         this.adjustBufferInset();
-
 
         this.onLayout(vw, vh);
     },
@@ -1432,22 +1430,27 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         // adjust cursor to the buffered model index
         var cursorBuffer = cursor-this.ds.bufferRange[0];
 
+        // compute the last possible renderindex
+        var lpIndex = Math.min(cursorBuffer+this.visibleRows-1, this.ds.bufferRange[1]-this.ds.bufferRange[0]);
+
         // we can skip checking for append or prepend if the spill is larger than
         // visibleRows. We can paint the whole rows new then-
         if (spill >= this.visibleRows || spill == 0) {
             this.mainBody.update(this.renderRows(
                 cursorBuffer,
-                cursorBuffer+this.visibleRows-1
+                lpIndex
             ));
         } else {
             if (append) {
                 this.removeRows(0, spill-1);
-
-                if (cursor+this.visibleRows-1 < this.ds.bufferRange[1]) {
-                    var html = this.renderRows(cursorBuffer+this.visibleRows-spill,
-                               cursorBuffer+this.visibleRows-1);
+                if (cursorBuffer+this.visibleRows-spill < this.ds.bufferRange[1]-this.ds.bufferRange[0]) {
+                    var html = this.renderRows(
+                        cursorBuffer+this.visibleRows-spill,
+                        lpIndex
+                    );
                     Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
                 }
+
             } else {
                 this.removeRows(this.visibleRows-spill, this.visibleRows-1);
                 var html = this.renderRows(cursorBuffer, cursorBuffer+spill-1);
@@ -1561,13 +1564,16 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         this.visibleRows = visibleRows;
 
+        // skip recalculating the row index if we are currently buffering.
+        if (this.isBuffering) {
+            return;
+        }
         if (this.rowIndex + visibleRows > totalLength) {
             this.rowIndex     = Math.max(0, totalLength-visibleRows);
             this.lastRowIndex = this.rowIndex;
         }
 
         this.updateLiveRows(this.rowIndex, true);
-
     },
 
 
