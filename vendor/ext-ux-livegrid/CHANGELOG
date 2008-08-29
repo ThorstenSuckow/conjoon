@@ -1,8 +1,23 @@
-﻿
+﻿Version 0.2rc1
+29-August-2008
+
 - fixes:
+ - BufferedGridView.js: fixed a bug that would not recalculate the scrollbar's
+height if the number of possible rows to display in the view would exceed the
+total number of records in the store
  - BufferedRowSelectionModel: "selectRow()" would allow selecting indexes greater than
 the "totalLength"-property of the store; added condition to check whether the index is
 out of bounds (closes google issue 5)
+- BufferedStore.js: buffer range would not store the number of the total length
+of the records when last possible range is reached, but instead the number of the
+start-parameter with the "limit"-parameter, which lead to errors when a last
+possible record to render is requested that cannot be found in the store
+
+ - enhancements:
+- BufferedGridView.js: last row in the grid is now clipped instead of removed if
+it is not fully displayable
+
+
 
 Version 0.1.2
 25-August-2008

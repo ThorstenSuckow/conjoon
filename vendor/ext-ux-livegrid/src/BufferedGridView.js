@@ -127,6 +127,20 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
 // {{{ --------------------------properties-------------------------------------
     /**
+     * Stores the height of the header. Needed for recalculating scroller inset height.
+     * @param {Number}
+     */
+    hdHeight : 0,
+
+    /**
+     * Indicates wether the last row in the grid is clipped and thus not fully display.
+     * 1 if clipped, otherwise 0.
+     * @param {Number}
+     */
+    rowClipped : 0,
+
+
+    /**
      * This is the actual y-scroller that does control sending request to the server
      * based upon the position of the scrolling cursor.
      * @param {Ext.Element}
@@ -238,12 +252,13 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.lastScrollPos = 0;
             this.lastRowIndex = 0;
             this.lastIndex    = 0;
+            this.adjustVisibleRows();
             this.adjustScrollerPos(-this.liveScroller.dom.scrollTop, true);
             this.showLoadMask(false);
             this.refresh(true);
             //this.replaceLiveRows(0, true);
             this.fireEvent('cursormove', this, 0,
-                           Math.min(this.ds.totalLength, this.visibleRows),
+                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
         } else {
 
@@ -362,7 +377,11 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         this.liveScrollerInset  = this.liveScroller.dom.firstChild;
         this.liveScroller.on('scroll', this.onLiveScroll,  this, {buffer : this.scrollDelay});
 
-	    this.mainHd = new E(this.mainWrap.dom.firstChild);
+        var thd = this.mainWrap.dom.firstChild;
+	    this.mainHd = new E(thd);
+
+	    this.hdHeight = thd.offsetHeight;
+
 	    this.innerHd = this.mainHd.dom.firstChild;
         this.scroller = new E(this.mainWrap.dom.childNodes[1]);
         if(this.forceFit){
@@ -628,7 +647,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.lastRowIndex = this.rowIndex;
             this.adjustScrollerPos(-this.rowHeight, true);
             this.fireEvent('cursormove', this, this.rowIndex,
-                           Math.min(this.ds.totalLength, this.visibleRows),
+                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
 
         } else if (viewIndex >= this.rowIndex && viewIndex < this.rowIndex+domLength) {
@@ -752,7 +771,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                 this.processRows();
                 // the cursor did virtually move
                 this.fireEvent('cursormove', this, this.rowIndex,
-                               Math.min(this.ds.totalLength, this.visibleRows),
+                               Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                                this.ds.totalLength);
 
                 return;
@@ -811,7 +830,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.fireEvent("rowsinserted", this, start, end);
             this.processRows();
             this.fireEvent('cursormove', this, this.rowIndex,
-                           Math.min(this.ds.totalLength, this.visibleRows),
+                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
         }
 
@@ -1156,7 +1175,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         col = (col !== undefined ? col : 0);
 
         var rowInd = row-this.rowIndex;
-        if (row >= this.rowIndex+this.visibleRows) {
+
+        if (this.rowClipped && row == this.rowIndex+this.visibleRows-1) {
+            this.adjustScrollerPos(this.rowHeight );
+        } else if (row >= this.rowIndex+this.visibleRows) {
             this.adjustScrollerPos(((row-(this.rowIndex+this.visibleRows))+1)*this.rowHeight);
         } else if (row <= this.rowIndex) {
             this.adjustScrollerPos((rowInd)*this.rowHeight);
@@ -1170,6 +1192,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             }
             cellEl = this.getCell(row-this.rowIndex, col);
         }
+
         if(!rowEl){
             return;
         }
@@ -1244,7 +1267,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     updateLiveRows: function(index, forceRepaint, forceReload)
     {
         this.fireEvent('cursormove', this, index,
-                       Math.min(this.ds.totalLength, this.visibleRows),
+                       Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                        this.ds.totalLength);
 
         var inRange = this.isInRange(index);
@@ -1419,9 +1442,12 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         } else {
             if (append) {
                 this.removeRows(0, spill-1);
-                var html = this.renderRows(cursorBuffer+this.visibleRows-spill,
-                           cursorBuffer+this.visibleRows-1);
-                Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
+
+                if (cursor+this.visibleRows-1 < this.ds.bufferRange[1]) {
+                    var html = this.renderRows(cursorBuffer+this.visibleRows-spill,
+                               cursorBuffer+this.visibleRows-1);
+                    Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
+                }
             } else {
                 this.removeRows(this.visibleRows-spill, this.visibleRows-1);
                 var html = this.renderRows(cursorBuffer, cursorBuffer+spill-1);
@@ -1452,31 +1478,35 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         var scrollbar = this.cm.getTotalWidth()+this.scrollOffset > c.getSize().width;
 
         // adjust the height of the scrollbar
-        this.liveScroller.dom.style.height = this.liveScroller.dom.parentNode.offsetHeight +
-                                             (Ext.isGecko
-                                             ? ((ds.totalLength > 0 && scrollbar)
-                                                ? - this.horizontalScrollOffset
-                                                : 0)
-                                             : (((ds.totalLength > 0 && scrollbar)
-                                                ? 0 : this.horizontalScrollOffset)))+"px";
+
+        var contHeight = this.liveScroller.dom.parentNode.offsetHeight +
+                         (Ext.isGecko
+                         ? ((ds.totalLength > 0 && scrollbar)
+                            ? - this.horizontalScrollOffset
+                            : 0)
+                         : (((ds.totalLength > 0 && scrollbar)
+                            ? 0 : this.horizontalScrollOffset)))
+
+        this.liveScroller.dom.style.height = contHeight+"px";
+
         if (this.rowHeight == -1) {
             return;
         }
 
-        if (ds.totalLength <= this.visibleRows) {
-            this.liveScrollerInset.style.height = "0px";
-            return;
+        // calculate the spill of the inner layer.
+        // spillHeight will contain the number of pixels
+        // the inner layer exceeds the scrollbar
+        var spillHeight = ((this.rowHeight*ds.totalLength)+this.hdHeight)-contHeight;
+
+        // hidden rows is the number of rows which cannot be
+        // displayed and for which a scrollbar needs to be
+        // rendered. This does alsso take clipped rows into account
+        var hiddenRows = 0;
+        if (spillHeight > 0) {
+            hiddenRows = Math.ceil(spillHeight/this.rowHeight);
         }
 
-        var height = this.rowHeight*ds.totalLength;
-
-        height += (c.getSize().height-(this.visibleRows*this.rowHeight));
-
-        if (scrollbar) {
-            height -= this.horizontalScrollOffset;
-        }
-
-        this.liveScrollerInset.style.height = (height)+"px";
+        this.liveScrollerInset.style.height = contHeight+(hiddenRows*this.rowHeight)+"px";
     },
 
     /**
@@ -1513,23 +1543,31 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         vh -= this.mainHd.getHeight();
 
+        var totalLength = ds.totalLength || 0;
+
         var visibleRows = Math.max(1, Math.floor(vh/this.rowHeight));
 
-        var totalLength = ds.getTotalCount();
+        this.rowClipped = 0;
+        if (this.rowHeight / 3 < (vh - (visibleRows*this.rowHeight))) {
+            visibleRows = Math.min(visibleRows+1, totalLength);
+            this.rowClipped = 1;
+        }
 
-        if (totalLength < this.visibleRows || this.visibleRows == visibleRows) {
+        // adjusted condition to force rerendering of scrollbar if the
+        // toalLength is less than visibleRows
+        if (this.visibleRows == visibleRows) {
             return;
         }
 
         this.visibleRows = visibleRows;
 
         if (this.rowIndex + visibleRows > totalLength) {
-            this.rowIndex     = Math.max(0, ds.totalLength-this.visibleRows);
+            this.rowIndex     = Math.max(0, totalLength-visibleRows);
             this.lastRowIndex = this.rowIndex;
-            this.updateLiveRows(this.rowIndex, true);
-        } else {
-            this.updateLiveRows(this.rowIndex, true);
         }
+
+        this.updateLiveRows(this.rowIndex, true);
+
     },
 
 

@@ -270,7 +270,6 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
     },
 
 
-
     /**
      * Deselects a row.
      * @param {Number} row The index of the row to deselect
