@@ -639,17 +639,23 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     // private
     onRemove : function(ds, record, index, isUpdate)
     {
+        if (isUpdate) {
+            throw "BufferedGridView.onRemove: argument \"isUpdate\" not supported";
+        }
 
         if (index == Number.MIN_VALUE || index == Number.MAX_VALUE) {
             this.fireEvent("beforerowremoved", this, index, record);
             this.fireEvent("rowremoved",       this, index, record);
+            if (index == Number.MIN_VALUE) {
+                this.rowIndex--;
+                this.lastRowIndex = this.rowIndex;
+            }
             this.adjustBufferInset();
+            this.processRows(0, undefined, true);
             return;
         }
         var viewIndex = index + this.ds.bufferRange[0];
-        if(isUpdate !== true){
-            this.fireEvent("beforerowremoved", this, viewIndex, record);
-        }
+        this.fireEvent("beforerowremoved", this, viewIndex, record);
 
         var domLength = this.getRows().length;
 
@@ -664,7 +670,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                            this.ds.totalLength);
 
         } else if (viewIndex >= this.rowIndex && viewIndex < this.rowIndex+domLength) {
-
             var lastPossibleRIndex = ((this.rowIndex-this.ds.bufferRange[0])+this.visibleRows)-1;
 
             var cInd = viewIndex-this.rowIndex;
@@ -674,9 +679,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             if (rec == null) {
                 // are there more records we could use? send a buffer request
                 if (this.ds.totalLength > this.rowIndex+this.visibleRows) {
-                    if(isUpdate !== true){
-                        this.fireEvent("rowremoved", this, viewIndex, record);
-                    }
+                    this.fireEvent("rowremoved", this, viewIndex, record);
+
                     this.updateLiveRows(this.rowIndex, true, true);
 
                     return;
@@ -692,11 +696,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                         // with rows
                         this.rowIndex--;
                         this.lastRowIndex = this.rowIndex;
+
                         if (this.rowIndex < this.ds.bufferRange[0]) {
                             // buffer range is invalid! request new data
-                            if(isUpdate !== true){
-                               this.fireEvent("rowremoved", this, viewIndex, record);
-                            }
+                            this.fireEvent("rowremoved", this, viewIndex, record);
                             this.updateLiveRows(this.rowIndex);
 
                             return;
@@ -709,7 +712,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                     }
                 }
             } else {
-
                 // the record is right within the visible rect of the grid.
                 // remove the row that represents the record and append another
                 // record from the store
@@ -723,9 +725,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         // range
         this.adjustBufferInset();
 
-        if(isUpdate !== true){
-            this.fireEvent("rowremoved", this, viewIndex, record);
-        }
+        this.fireEvent("rowremoved", this, viewIndex, record);
+
 
         this.processRows(0, undefined, true);
     },
@@ -953,7 +954,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             }
 
             if (this.isInRange(this.rowIndex)) {
-                this.replaceLiveRows(this.rowIndex);
+                this.replaceLiveRows(this.rowIndex, options.forceRepaint);
             } else {
                 this.updateLiveRows(this.rowIndex);
             }
@@ -1136,9 +1137,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
         }
 
-
-
-        if (!isUpdate === true) {
+        // if a row is replaced, we need to set the row index for this
+        // row
+        if (isUpdate === true) {
             var rows   = this.getRows();
             var cursor = this.rowIndex;
             for (var i = 0, max_i = rows.length; i < max_i; i++) {
@@ -1381,6 +1382,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             params.sort = sInfo.field;
         }
         this.ds.load({
+            forceRepaint : forceRepaint,
             callback : this.liveBufferUpdate,
             scope    : this,
             params   : params

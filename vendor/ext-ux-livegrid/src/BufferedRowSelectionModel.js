@@ -30,6 +30,8 @@ Ext.ux.grid.BufferedRowSelectionModel = function(config) {
 
     this.bufferedSelections = {};
 
+    this.bufferedSelectionMap = {};
+
     this.pendingSelections = {};
 
     Ext.ux.grid.BufferedRowSelectionModel.superclass.constructor.call(this);
@@ -91,7 +93,18 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         // if index equals to Number.MIN_VALUE or Number.MAX_VALUE, mark current
         // pending selections as dirty
         if ((index == Number.MIN_VALUE || index == Number.MAX_VALUE)) {
+
+            if (r) {
+                var ind = this.bufferedSelectionMap[r.id];
+                if (ind != undefined) {
+                    delete this.bufferedSelections[ind];
+                    delete this.bufferedSelectionMap[r.id];
+                    this.shiftSelections(ind+1, -1);
+                }
+            }
+
             this.selections.remove(r);
+
             this.fireEvent('selectiondirty', this, index, r);
             return;
         }
@@ -183,6 +196,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         var newSelections = {};
         var newIndex      = 0;
         var newRequests   = {};
+        var newSelectionMap = {};
         var totalLength = this.grid.store.totalLength;
 
         this.last = false;
@@ -196,6 +210,11 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
 
             if (index >= startRow) {
                 newSelections[newIndex] = true;
+                for (var a in this.bufferedSelectionMap) {
+                    if (this.bufferedSelectionMap[a] == index) {
+                        newSelectionMap[a] = newIndex;
+                    }
+                }
 
                 if (this.pendingSelections[i]) {
                     newRequests[newIndex] = true;
@@ -203,6 +222,11 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
 
             } else {
                 newSelections[i] = true;
+                for (var a in this.bufferedSelectionMap) {
+                    if (this.bufferedSelectionMap[a] == parseInt(i)) {
+                        newSelectionMap[a] = parseInt(i);
+                    }
+                }
 
                 if (this.pendingSelections[i]) {
                     newRequests[i] = true;
@@ -210,8 +234,9 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
             }
         }
 
-        this.bufferedSelections  = newSelections;
-        this.pendingSelections   = newRequests;
+        this.bufferedSelections   = newSelections;
+        this.bufferedSelectionMap = newSelectionMap;
+        this.pendingSelections    = newRequests;
     },
 
     /**
@@ -287,8 +312,10 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
 
         delete this.pendingSelections[index];
         delete this.bufferedSelections[index];
+
         if (r) {
             this.selections.remove(r);
+            delete this.bufferedSelections[r.id];
         }
         if(!preventViewNotify){
             this.grid.getView().onRowDeselect(index);
@@ -329,6 +356,9 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
             }
 
             this.bufferedSelections[index] = true;
+            if (r) {
+                this.bufferedSelectionMap[r.id] = index;
+            }
 
             this.last = this.lastActive = index;
 
@@ -414,8 +444,9 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
 
         }else{
             this.selections.clear();
-            this.bufferedSelections  = {};
-            this.pendingSelections = {};
+            this.bufferedSelections   = {};
+            this.bufferedSelectionMap = {};
+            this.pendingSelections    = {};
         }
         this.last = false;
     },

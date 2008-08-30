@@ -251,6 +251,12 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
             if(this.pruneModifiedRecords){
                 this.modified.remove(record);
             }
+            // adjust the buffer range if a record was removed
+            // in the range that is actually behind the bufferRange
+            if (ind == Number.MIN_VALUE) {
+                this.bufferRange[0] = Math.max(0, this.bufferRange[0]-1);
+                this.bufferRange[1] = Math.max(0, this.bufferRange[1]-1);
+            }
             this.fireEvent("remove", this, record, ind);
             return false;
         }
