@@ -123,10 +123,10 @@ Ext.ux.grid.BufferedStore = function(config) {
      * the indexes of the data model.
      * @param {Array}
      */
-    this.bufferRange = [0, this.bufferSize];
+    this.bufferRange = [0, 0];
 
     this.on('clear', function (){
-        this.bufferRange = [0, this.bufferSize];
+        this.bufferRange = [0, 0];
     }, this);
 
     if(this.url && !this.selectionsProxy){
@@ -190,6 +190,12 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
             insertRecords = records.splice(0, this.bufferSize-index)
         }
         this.totalLength += insertRecords.length;
+
+        // if the store was loaded without data and the bufferRange
+        // has to be filled first
+        if (this.bufferRange[1] < this.bufferSize) {
+            this.bufferRange[1] = Math.min(this.bufferRange[1] + insertRecords.length, this.bufferSize);
+        }
 
         for (var i = 0, len = insertRecords.length; i < len; i++) {
             this.data.insert(index, insertRecords[i]);

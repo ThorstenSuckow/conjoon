@@ -44,7 +44,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
     {
         Ext.ux.grid.BufferedRowSelectionModel.superclass.initEvents.call(this);
 
-        this.grid.store.on('add',            this.onAdd,            this);
+        this.grid.view.on('rowsinserted',    this.onAdd,            this);
         this.grid.store.on('selectionsload', this.onSelectionsLoad, this);
     },
 
@@ -128,14 +128,13 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
 
 
     /**
-     * If records where added to the store, this method will work as a callback.
-     * The method gets usually called <b>after</b> the onAdd method of the according
-     * view was called.
+     * If records where added to the store, this method will work as a callback,
+     * called by the views' rowsinserted event.
      * Selections will be shifted down if, and only if, the listeners for the
      * selectiondirty event will return <tt>true</tt>.
      *
      */
-    onAdd : function(store, records, index)
+    onAdd : function(store, index, endIndex, recordLength)
     {
         var ranges       = this.getPendingSelections();
         var rangesLength = ranges.length;
@@ -147,15 +146,15 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
             // we may shift selections if there are no pendning selections. Everything
             // in the current buffer range will be shifted up!
             if (rangesLength == 0 && index == Number.MIN_VALUE) {
-                this.shiftSelections(this.grid.getStore().bufferRange[0], records.length);
+                this.shiftSelections(this.grid.getStore().bufferRange[0], recordLength);
             }
 
-            this.fireEvent('selectiondirty', this, index, records.length);
+            this.fireEvent('selectiondirty', this, index, recordLength);
             return;
         }
 
         if (rangesLength == 0) {
-            this.shiftSelections(this.grid.getStore().bufferRange[0]+index, records.length);
+            this.shiftSelections(index, recordLength);
             return;
         }
 
@@ -164,10 +163,10 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         // to the last selection range index
         var s         = ranges[0];
         var e         = ranges[rangesLength-1];
-        var viewIndex = this.grid.getStore().bufferRange[0]+index;
+        var viewIndex = index;
         if (viewIndex <= e || viewIndex <= s) {
-            if (this.fireEvent('selectiondirty', this, viewIndex, records.length) !== false) {
-                this.shiftSelections(viewIndex, records.length);
+            if (this.fireEvent('selectiondirty', this, viewIndex, recordLength) !== false) {
+                this.shiftSelections(viewIndex, recordLength);
             }
         }
     },

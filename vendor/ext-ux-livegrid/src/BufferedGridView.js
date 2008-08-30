@@ -336,6 +336,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     {
         Ext.ux.grid.BufferedGridView.superclass.init.call(this, grid);
 
+        grid.on('expand', this._onExpand, this);
+
         this.ds.on('beforeload', this.onBeforeLoad, this);
 	},
 
@@ -461,6 +463,19 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     },
 
 // {{{ ----------------------dom/mouse listeners--------------------------------
+
+    /**
+     * Tells the view to recalculate the number of rows displayable
+     * and the buffer inset, when it gets expanded after it has been
+     * collapsed.
+     *
+     */
+    _onExpand : function(panel)
+    {
+        this.adjustVisibleRows();
+        this.adjustBufferInset();
+        this.adjustScrollerPos(this.rowHeight*this.rowIndex, true);
+    },
 
     // private
     onColumnMove : function(cm, oldIndex, newIndex)
@@ -765,7 +780,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                 this.adjustBufferInset();
                 this.adjustScrollerPos(this.rowHeight*recordLen, true);
 
-                this.fireEvent("rowsinserted", this, index, index);
+                this.fireEvent("rowsinserted", this, index, index, recordLen);
                 this.processRows();
                 // the cursor did virtually move
                 this.fireEvent('cursormove', this, this.rowIndex,
@@ -776,7 +791,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             }
 
             this.adjustBufferInset();
-            this.fireEvent("rowsinserted", this, index, index);
+            this.fireEvent("rowsinserted", this, index, index, recordLen);
             return;
         }
 
@@ -789,34 +804,42 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         var lastRow  = 0;
 
         // rows would be added at the end of the rows which are currently
-        // displayed, so fire the evnt and return
-        if (index >= (this.rowIndex-this.ds.bufferRange[0])+len && len == this.visibleRows) {
+        // displayed, so fire the event, resize buffer and adjust visible
+        // rows and return
+        if (start > this.rowIndex+(this.visibleRows-1)) {
             this.fireEvent("beforerowsinserted", this, start, end);
-            this.fireEvent("rowsinserted", this, start, end);
+            this.fireEvent("rowsinserted",       this, start, end, recordLen);
 
             this.adjustVisibleRows();
             this.adjustBufferInset();
 
         }
 
-        // we are all up in the grid, first row is first record,
-        // prepend!
-        else if (index == 0 && this.rowIndex == 0) {
+        // rows get added somewhere in the current view.
+        else if (start >= this.rowIndex && start <= this.rowIndex+(this.visibleRows-1)) {
             firstRow = index;
-            lastRow  = Math.min(end, this.rowIndex+this.visibleRows-1) - this.ds.bufferRange[0];
+            // compute the last row that would be affected of an insert operation
+            lastRow  = index+(recordLen-1);
             this.lastRowIndex  = this.rowIndex;
-            this.rowIndex      = 0;
+            this.rowIndex      = (start > this.rowIndex) ? this.rowIndex : start;
+
             this.insertRows(ds, firstRow, lastRow);
 
+            if (this.lastRowIndex != this.rowIndex) {
+                this.fireEvent('cursormove', this, this.rowIndex,
+                               Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                               this.ds.totalLength);
+            }
+
             this.adjustVisibleRows();
             this.adjustBufferInset();
         }
 
-        // rows get added before the first row in the view
-        else if (len == this.visibleRows && index <= this.rowIndex-this.ds.bufferRange[0]) {
-
+        // rows get added before the first visible row, which would not affect any
+        // rows to be re-rendered
+        else if (start < this.rowIndex) {
             this.fireEvent("beforerowsinserted", this, start, end);
-            this.liveScroller.un('scroll', this.onLiveScroll, this);
+
             this.rowIndex     = this.rowIndex+recordLen;
             this.lastRowIndex = this.rowIndex;
 
@@ -825,22 +848,12 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
             this.adjustScrollerPos(this.rowHeight*recordLen, true);
 
-            this.fireEvent("rowsinserted", this, start, end);
-            this.processRows();
+            this.fireEvent("rowsinserted", this, start, end, recordLen);
+            this.processRows(0, undefined, true);
+
             this.fireEvent('cursormove', this, this.rowIndex,
                            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
-        }
-
-        // rows get added somewhere IN the current view
-        else if ((len < this.visibleRows ) || index > this.rowIndex-this.ds.bufferRange[0]) {
-            firstRow = index;
-            lastRow  = Math.min(end, this.rowIndex+this.visibleRows-1) - this.ds.bufferRange[0];
-            this.insertRows(ds, firstRow, lastRow);
-
-            this.adjustVisibleRows();
-            this.adjustBufferInset();
-
         }
 
 
@@ -1052,15 +1065,18 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         var index      = 0;
         var selections = this.grid.selModel.selections;
         var ds         = this.ds;
+        var row        = null;
         for(var i = startRow, len = rows.length; i < len; i++){
-            index   = i+cursor;
-            var row = rows[i];
+            index = i+cursor;
+            row   = rows[i];
             // changed!
             row.rowIndex = index;
 
             if (paintSelections == true) {
                 if (this.grid.selModel.bufferedSelections[index] === true) {
                     this.addRowClass(i, "x-grid3-row-selected");
+                } else {
+                    this.removeRowClass(i, "x-grid3-row-selected");
                 }
                 this.fly(row).removeClass("x-grid3-row-over");
             }
@@ -1098,15 +1114,19 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         // first off, remove the rows at the bottom of the view to match the
         // visibleRows value and to not cause any spill in the DOM
-        if (isUpdate !== true && this.getRows().length == this.visibleRows) {
+        if (isUpdate !== true && (this.getRows().length + (lastRow-firstRow)) >= this.visibleRows) {
             this.removeRows((this.visibleRows-1)-(lastRow-firstRow), this.visibleRows-1);
-        }
-
-        if (isUpdate) {
+        } else if (isUpdate) {
             this.removeRows(viewIndexFirst-this.rowIndex, viewIndexLast-this.rowIndex);
         }
 
-        var html   = this.renderRows(firstRow, lastRow);
+        // compute the range of possible records which could be drawn into the view without
+        // causing any spill
+        var lastRenderRow = (firstRow == lastRow)
+                          ? lastRow
+                          : Math.min(lastRow,  (this.rowIndex-this.ds.bufferRange[0])+(this.visibleRows-1));
+
+        var html = this.renderRows(firstRow, lastRenderRow);
 
         var before = this.getRow(firstRow-(this.rowIndex-this.ds.bufferRange[0]));
 
@@ -1118,7 +1138,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
 
 
-        if (isUpdate === true) {
+        if (!isUpdate === true) {
             var rows   = this.getRows();
             var cursor = this.rowIndex;
             for (var i = 0, max_i = rows.length; i < max_i; i++) {
@@ -1127,8 +1147,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         }
 
         if (!isUpdate) {
-            this.fireEvent("rowsinserted", this, viewIndexFirst, viewIndexLast);
-            this.processRows();
+            this.fireEvent("rowsinserted", this, viewIndexFirst, viewIndexLast, (viewIndexLast-viewIndexFirst)+1);
+            this.processRows(0, undefined, true);
         }
     },
 
@@ -1520,6 +1540,12 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         if (this.rowHeight == -1) {
             if (this.getRows()[0]) {
                 this.rowHeight = this.getRows()[0].offsetHeight;
+
+                if (this.rowHeight <= 0) {
+                    this.rowHeight = -1;
+                    return;
+                }
+
             } else {
                 return;
             }
@@ -1564,6 +1590,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         if (this.isBuffering) {
             return;
         }
+
         // when re-rendering, doe not take the clipped row into account
         if (this.rowIndex + (visibleRows-this.rowClipped) > totalLength) {
             this.rowIndex     = Math.max(0, totalLength-(visibleRows-this.rowClipped));
