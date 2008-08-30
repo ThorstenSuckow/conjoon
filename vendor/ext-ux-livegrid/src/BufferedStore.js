@@ -274,6 +274,7 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     removeAll : function()
     {
         this.totalLength = 0;
+        this.bufferRange = [0, 1];
         this.data.clear();
 
         if(this.pruneModifiedRecords){
