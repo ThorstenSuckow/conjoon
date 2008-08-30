@@ -1,7 +1,32 @@
-﻿Version 0.2rc3
+﻿Version 0.2rc4
 30-August-2008
 
-- fixes;
+- fixes:
+ - BufferedStore.js: store would not allow for adding records without throwing errors when
+the store was initialized with no records; changed bufferRange to be initialized with [0,0]
+instead of [0, bufferSize] and incremented bufferRange-count according to the records coming
+in, until bufferRange[1] equals to bufferSize
+ - BufferedGridView.js, BufferedRowSelectionModel.js: store "add" event would neccessarily
+trigger the selectionmodel's onAdd-listener before the onAdd-listener of the GridView, resulting
+in false rendering of selected records; changed the selection model to listen to the "rowsinserted"
+event of the view and extended this event to pass the length of added record as the fourth
+parameter to all it's listeners
+ - BufferedGridView.js: collapsed panel would hide added records of the grid when the grid is
+expanded again and would lose scroll-position; added listener for "expand"-event of the view's
+gridpanel to recalculate visible rows, the buffer inset and reset the scrollbar's position to the
+proper value
+ - BufferedGridView.js: "onAdd()" would not always insert records depending on the position they got
+added in the store; updated and improved code based on "rows get added before first visible row",
+"rows get added after the last visible row", "rows get added somewhere in between the first and last visible row"
+- enhancements:
+ - BufferedGridView.js: improved calculation of rows that would cause spill when new records
+get added in "insertRows()"
+
+
+Version 0.2rc3
+30-August-2008
+
+- fixes:
  - BufferedGridView.js: last row would not always be rendered proper if the end of
 records is reached and the panel would be resized so that more records are displayable
 - enhancements:
