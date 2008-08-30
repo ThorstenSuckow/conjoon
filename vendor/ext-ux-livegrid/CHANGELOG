@@ -1,4 +1,14 @@
-﻿Version 0.2rc2
+﻿Version 0.2rc3
+30-August-2008
+
+- fixes;
+ - BufferedGridView.js: last row would not always be rendered proper if the end of
+records is reached and the panel would be resized so that more records are displayable
+- enhancements:
+ - BufferedGridView.js: improved calculating the height of the buffer inset in both
+performance and functionality. Component now working with Safari 3.1 under Windows XP
+
+Version 0.2rc2
 29-August-2008
 
 - fixes:

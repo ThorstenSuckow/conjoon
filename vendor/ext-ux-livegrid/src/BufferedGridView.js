@@ -1482,7 +1482,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         // adjust the height of the scrollbar
 
-        var contHeight = this.liveScroller.dom.parentNode.offsetHeight +
+        var liveScrollerDom = this.liveScroller.dom;
+
+        var contHeight = liveScrollerDom.parentNode.offsetHeight +
                          (Ext.isGecko
                          ? ((ds.totalLength > 0 && scrollbar)
                             ? - this.horizontalScrollOffset
@@ -1490,26 +1492,20 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                          : (((ds.totalLength > 0 && scrollbar)
                             ? 0 : this.horizontalScrollOffset)))
 
-        this.liveScroller.dom.style.height = contHeight+"px";
+        liveScrollerDom.style.height = contHeight+"px";
 
         if (this.rowHeight == -1) {
             return;
         }
 
-        // calculate the spill of the inner layer.
-        // spillHeight will contain the number of pixels
-        // the inner layer exceeds the scrollbar
-        var spillHeight = ((this.rowHeight*ds.totalLength)+this.hdHeight)-contHeight;
-
         // hidden rows is the number of rows which cannot be
         // displayed and for which a scrollbar needs to be
-        // rendered. This does alsso take clipped rows into account
-        var hiddenRows = 0;
-        if (spillHeight > 0) {
-            hiddenRows = Math.ceil(spillHeight/this.rowHeight);
-        }
+        // rendered. This does also take clipped rows into account
+        var hiddenRows = (ds.totalLength == this.visibleRows-this.rowClipped)
+                       ? 0
+                       : Math.max(0, ds.totalLength-(this.visibleRows-this.rowClipped));
 
-        this.liveScrollerInset.style.height = contHeight+(hiddenRows*this.rowHeight)+"px";
+        this.liveScrollerInset.style.height = (hiddenRows == 0 ? 0 : contHeight+(hiddenRows*this.rowHeight))+"px";
     },
 
     /**
@@ -1551,14 +1547,14 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         var visibleRows = Math.max(1, Math.floor(vh/this.rowHeight));
 
         this.rowClipped = 0;
-        if (this.rowHeight / 3 < (vh - (visibleRows*this.rowHeight))) {
+        // only compute the clipped row if the total length of records
+        // exceeds the number of visible rows displayable
+        if (totalLength > visibleRows && this.rowHeight / 3 < (vh - (visibleRows*this.rowHeight))) {
             visibleRows = Math.min(visibleRows+1, totalLength);
             this.rowClipped = 1;
         }
 
-        // adjusted condition to force rerendering of scrollbar if the
-        // toalLength is less than visibleRows
-        if (this.visibleRows == visibleRows) {
+        if (this.visibleRows == visibleRows - this.rowsClipped) {
             return;
         }
 
@@ -1568,8 +1564,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         if (this.isBuffering) {
             return;
         }
-        if (this.rowIndex + visibleRows > totalLength) {
-            this.rowIndex     = Math.max(0, totalLength-visibleRows);
+        // when re-rendering, doe not take the clipped row into account
+        if (this.rowIndex + (visibleRows-this.rowClipped) > totalLength) {
+            this.rowIndex     = Math.max(0, totalLength-(visibleRows-this.rowClipped));
             this.lastRowIndex = this.rowIndex;
         }
 
