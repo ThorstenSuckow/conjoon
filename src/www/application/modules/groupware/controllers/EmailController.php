@@ -169,7 +169,9 @@ class Groupware_EmailController extends Zend_Controller_Action {
         }
 
         $this->view->success    = true;
-        $this->view->totalCount = $len;
+        // count again, since during db operation old records might have
+        // been deleted from the db
+        $this->view->totalCount = count($emails);
         $this->view->items      = $emails;
         $this->view->error      = null;
 
