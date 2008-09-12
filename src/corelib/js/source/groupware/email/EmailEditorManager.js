@@ -1002,7 +1002,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (tabCount == 0) {
             contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
             contentPanel.remove(masterPanel, true);
-            form.destroy();
             form = null;
             masterPanel = null;
             var tbarManager = de.intrabuild.groupware.ToolbarManager;
