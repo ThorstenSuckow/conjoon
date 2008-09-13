@@ -46,9 +46,9 @@ class Intrabuild_Filter_PlainToHtml implements Zend_Filter_Interface {
         $value = preg_replace(
             array(
                //   1       2             3               4
-                "/(^| )(\*[a-zA-Z])(.*?[a-zA-Z]\*|\*)(-|,|\.|:|;|\s)/im",
-                "/(^| )(_[a-zA-Z])(.*?[a-zA-Z]_|_)(-|,|\.|:|;|\s)/im",
-                "/(^| )(\/[a-zA-Z])(.*?[a-zA-Z]\/|\/)(-|,|\.|:|;|\s)/im",
+                "/(^|\(| )(\*[a-zA-Z])(.*?[a-zA-Z]\*|\*)(\)|-|,|\.|:|;|\s)/im",
+                "/(^|\(| )(_[a-zA-Z])(.*?[a-zA-Z]_|_)(\)|-|,|\.|:|;|\s)/im",
+                "/(^|\(| )(\/[a-zA-Z])(.*?[a-zA-Z]\/|\/)(\)|-|,|\.|:|;|\s)/im",
             ),
             array (
                 "\\1<b>\\2\\3</b>\\4",
