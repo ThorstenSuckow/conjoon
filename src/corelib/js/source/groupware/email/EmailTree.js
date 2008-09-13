@@ -151,42 +151,6 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
 
 Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
 
-    initEvents : function()
-    {
-        de.intrabuild.groupware.email.EmailTree.superclass.initEvents.call(this);
-
-        /**
-        * @ext-bug 2.0 rc1 see onBeforeNodeDrop
-        */
-        this.dropZone.completeDrop = function(de)
-        {
-            var ns = de.dropNode, p = de.point, t = de.target;
-            if(!(ns instanceof Array)){
-                ns = [ns];
-            }
-            var n;
-
-            if (p !== false) {
-                for(var i = 0, len = ns.length; i < len; i++){
-                    n = ns[i];
-                    if(p == "above"){
-                        t.parentNode.insertBefore(n, t);
-                    }else if(p == "below"){
-                        t.parentNode.insertBefore(n, t.nextSibling);
-                    }else{
-                        t.appendChild(n);
-                    }
-                }
-                n.ui.focus();
-                if(this.tree.hlDrop){
-                    n.ui.highlight();
-                }
-            }
-            t.ui.endDrop();
-            this.tree.fireEvent("nodedrop", de);
-        };
-    },
-
     /**
      * Shorthands for the none-editable folders. They get assigned in the
      * <tt>onNodeLoaded</tt>-method.
@@ -549,14 +513,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
 
         var source = dropEvent.source;
         if (source instanceof Ext.ux.grid.BufferedGridDragZone) {
-            /**
-            * @ext-bug 2.0 rc1 HACK! So we can allow dropping anything else than
-            * TreeNodes
-            */
-            dropEvent.dropNode = true;
-            dropEvent.cancel   = false;
-            dropEvent.point    = false;
-            return true;
+            // Cancel the event and fire the nodedrop event
+            // if the source was selections from the email grid
+            this.fireEvent("nodedrop", dropEvent);
+            return false;
         }
     },
 
