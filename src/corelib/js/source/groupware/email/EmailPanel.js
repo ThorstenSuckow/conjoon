@@ -1100,9 +1100,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         this.spamButton.setDisabled(true);
         this.noSpamButton.setDisabled(true);
 
-        this.deleteButton.addClass('de-intrabuild-groupware-selectionsLoading');
-        this.spamButton.addClass('de-intrabuild-groupware-selectionsLoading');
-        this.noSpamButton.addClass('de-intrabuild-groupware-selectionsLoading');
+        this.deleteButton.setIconClass('de-intrabuild-groupware-selectionsLoading');
+        this.spamButton.setIconClass('de-intrabuild-groupware-selectionsLoading');
+        this.noSpamButton.setIconClass('de-intrabuild-groupware-selectionsLoading');
     },
 
     /**
@@ -1112,9 +1112,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     {
         this.buttonsLocked = false;
 
-        this.deleteButton.removeClass('de-intrabuild-groupware-selectionsLoading');
-        this.spamButton.removeClass('de-intrabuild-groupware-selectionsLoading');
-        this.noSpamButton.removeClass('de-intrabuild-groupware-selectionsLoading');
+        this.deleteButton.setIconClass('de-intrabuild-groupware-email-EmailPanel-toolbar-deleteButton-icon');
+        this.spamButton.setIconClass('de-intrabuild-groupware-email-EmailPanel-toolbar-spamButton-icon');
+        this.noSpamButton.setIconClass('de-intrabuild-groupware-email-EmailPanel-toolbar-noSpamButton-icon');
 
         var sm = this.gridPanel.selModel;
         var c  = sm.getCount();
