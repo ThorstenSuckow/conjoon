@@ -5,18 +5,19 @@
  *
  * $Author: T. Suckow $
  * $Id: de-intrabuild-groupware-email-EmailGrid.css 2 2008-06-21 10:38:49Z T. Suckow $
- * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
  * $Revision: 2 $
  * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
  * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailGrid.css $ 
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailGrid.css $
  */
 
 .de-intrabuild-groupware-email-EmailPreview-Icon {
     background-image:url(../images/16x16/apps/groupware-email-preview.png) !important;
-}        
+}
 
 .de-intrabuild-groupware-email-EmailPreview-inset {
     background-image:none !important;
     padding-left:0px !important;
+    min-height:0px !important;
 }

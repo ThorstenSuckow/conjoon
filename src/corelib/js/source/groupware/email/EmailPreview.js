@@ -233,11 +233,11 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         var templateConfig = {
             header : new Ext.Template(
                 '<div class="de-intrabuild-groupware-email-EmailView-wrap">',
-                   '<div class="de-intrabuild-groupware-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
-                    '<span class="de-intrabuild-groupware-EmailView-date">{date:date("d.m.Y H:i")}</span>',
+                   '<div class="de-intrabuild-groupware-email-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
+                    '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
                     '{subject}',
-                    '<div class="de-intrabuild-groupware-EmailView-from"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("From"),':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-                    '<div class="de-intrabuild-groupware-EmailView-to"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("To"),':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+                    '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("From"),':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
+                    '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">',de.intrabuild.Gettext.gettext("To"),':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
                     '{cc}',
                     '{bcc}',
                    '</div>',
