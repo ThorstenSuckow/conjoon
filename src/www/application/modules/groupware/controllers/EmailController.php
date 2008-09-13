@@ -57,6 +57,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                       ->addActionContext('move.folder', self::CONTEXT_JSON)
                       ->addActionContext('delete.folder', self::CONTEXT_JSON)
                       // editing emails
+                      ->addActionContext('get.recipient', self::CONTEXT_JSON)
                       ->addActionContext('get.draft', self::CONTEXT_JSON)
                       ->initContext();
     }
@@ -580,17 +581,14 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         if (isset($_POST['minDate']) && !isset($_POST['groupwareEmailFoldersId'])) {
             $context = $CONTEXT_REQUEST_LATEST;
-            $itemRequestFilter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Request(
-                $_POST,
-                $context
-            );
         } else {
             $context = $CONTEXT_REQUEST;
-            $itemRequestFilter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Request(
-                $_POST,
-                $context
-            );
         }
+
+        $itemRequestFilter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Request(
+            $_POST,
+            $context
+        );
 
         try {
             $filteredData = $itemRequestFilter->getProcessedData();
@@ -1038,6 +1036,62 @@ class Groupware_EmailController extends Zend_Controller_Action {
         }
     }
 
+// -------- email drafts
+
+    /**
+     * Looks up a recipient from the contacts table and returns it to the view.
+     * The value submitted is a fragment of either a contacts real name or the
+     * email address of the contact.
+     *
+     *
+     */
+    public function getRecipientAction()
+    {
+        require_once 'Intrabuild/Util/Array.php';
+        require_once 'Intrabuild/Keys.php';
+        require_once 'Intrabuild/BeanContext/Inspector.php';
+        require_once 'Intrabuild/Modules/Groupware/Contact/Item/Model/Item.php';
+
+        $query = isset($_POST['query']) ? $_POST['query'] : '';
+
+        if (trim($query) == "") {
+            $this->view->success = true;
+            $this->view->error   = null;
+            $this->view->matches = array();
+            return;
+        }
+
+        $model  = new Intrabuild_Modules_Groupware_Contact_Item_Model_Item();
+
+        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        $contacts = $model->getContactsByNameOrEmailAddress($userId, $query);
+
+        $response = array();
+
+        foreach ($contacts as $contact) {
+            $address = $contact['email_address'];
+            $name    = ($contact['first_name']
+                       ? $contact['first_name'] .' '
+                       : '')
+                       . ($contact['last_name']
+                       ? $contact['last_name'] .' '
+                       : '');
+
+            if ($name) {
+                $address = $name . '<' . $address . '>';
+            }
+
+            $response[]['address'] = $address;
+        }
+
+        $this->view->success = true;
+        $this->view->error   = null;
+        $this->view->matches = $response;
+
+    }
+
 
     /**
      *
@@ -1175,25 +1229,6 @@ mazim placerat facer possim assum.";
 	    }
     }
 
-    public function getRecipientAction()
-    {
-        if (isset($_POST['query'])) {
-
-            $options['response']['value'][]['text'] = $_POST['query']." <".str_replace(" ", "", $_POST['query'])."@testdomain.co.uk.org.de>";
-
-        } else {
-            $options = array('response' => array(
-                                               'type'  => 'array',
-                                               'value' => array(
-                                                array())));
-        }
-
-        Zend_Loader::loadClass('Zend_Json');
-        $json = Zend_Json::encode($options, Zend_Json::TYPE_ARRAY);
-
-        echo $json;
-        die();
-    }
 
 
     public function getEmailFormRecipientsAction()

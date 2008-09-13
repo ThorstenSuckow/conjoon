@@ -243,3 +243,44 @@ ADD INDEX `flags` ( `groupware_email_items_id` , `user_id` , `is_read` , `is_spa
 
 ALTER TABLE `groupware_email_items_flags` DROP INDEX `flags` ,
 ADD INDEX `flags` ( `groupware_email_items_id` , `user_id` , `is_read` , `is_spam` , `is_deleted` );
+
+CREATE TABLE IF NOT EXISTS `groupware_contact_items` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+`first_name` VARCHAR( 128 ) NOT NULL ,
+`last_name` VARCHAR( 128 ) NOT NULL ,
+PRIMARY KEY ( `id` )
+) ENGINE = MYISAM;
+
+ALTER TABLE `groupware_contact_items` ADD INDEX `first_name` ( `first_name` );
+
+ALTER TABLE `groupware_contact_items` ADD INDEX `last_name` ( `last_name` );
+
+ALTER TABLE `groupware_contact_items` ADD INDEX `first/last_name` ( `first_name` , `last_name` );
+
+ CREATE TABLE IF NOT EXISTS `groupware_contact_items_flags` (
+`groupware_contact_items_id` INT UNSIGNED NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`is_deleted` BOOL NOT NULL DEFAULT '0'
+) ENGINE = MYISAM;
+
+ ALTER TABLE `groupware_contact_items_flags` ADD PRIMARY KEY ( `groupware_contact_items_id` , `user_id` );
+
+ ALTER TABLE `groupware_contact_items_flags` ADD INDEX `contact_for_user` ( `user_id` , `is_deleted` );
+
+ CREATE TABLE IF NOT EXISTS `groupware_contact_items_email` (
+`groupware_contact_items_id` INT UNSIGNED NOT NULL ,
+`email_address` TEXT NOT NULL ,
+`is_standard` BOOL NOT NULL DEFAULT '0'
+) ENGINE = MYISAM;
+
+ALTER TABLE `groupware_contact_items_email` ADD INDEX `groupware_contact_items_id` ( `groupware_contact_items_id` );
+
+ALTER TABLE `groupware_contact_items_email` ADD INDEX `is_standard` ( `groupware_contact_items_id` , `email_address` ( 255 ),  `is_standard`);
+
+ALTER TABLE `groupware_contact_items_email` ADD INDEX `email_address` ( `groupware_contact_items_id` , `email_address` ( 255 ) );
+
+ALTER TABLE `groupware_contact_items_email` ADD `id` INT UNSIGNED NOT NULL FIRST ;
+
+ALTER TABLE `groupware_contact_items_email` ADD PRIMARY KEY ( `id` );
+
+ ALTER TABLE `groupware_contact_items_email` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT

@@ -1118,20 +1118,6 @@ de.intrabuild.groupware.email.EmailForm = function(config){
         }
     });
 
-    var findAddressStore = new Ext.data.JsonStore({
-        url       : '/groupware/email/get.recipient/format/json',
-        root      : 'response.value',
-        fields    : ['text'],
-        autoLoad  : false,
-        listeners : {
-            loadexception : {
-                fn:  function(proxy, options, response, jsError) {
-                    de.intrabuild.groupware.ResponseInspector.handleFailure(response);
-                }
-            }
-        }
-    });
-
     var isStandardIndex = accountStore.find('isStandard', true);
     var standardAcc     = accountStore.getAt(isStandardIndex);
 
@@ -1155,30 +1141,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
 
     receiveTypeStore.load();
 
-    var addressQueryComboBox = new Ext.form.ComboBox({
-       hideTrigger : true,
-       tpl : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-       typeAhead: true,
-       queryDelay : 250,
-       lazyRender:true,
-       triggerAction: 'query',
-       minChars : 3,
-       displayField  : 'text',
-       mode : 'remote',
-       listClass: 'x-combo-list-small',
-       store : findAddressStore
-    });
-
-    addressQueryComboBox.on('beforequery', function(queryObject){
-        var str = queryObject.query;
-        if (str.trim() == "") {
-            return false;
-        }
-        var alpha = /^[a-zA-Z_ -.]+$/;
-
-        return alpha.test(str);
-
-    }, addressQueryComboBox);
+    var addressQueryComboBox = new de.intrabuild.groupware.email.form.RecipientComboBox();
 
     this.gridStore = new Ext.data.JsonStore({
        // url      : '/groupware/email/get.email.form.recipients/format/json',
