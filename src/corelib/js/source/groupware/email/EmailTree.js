@@ -420,7 +420,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
             if (this.editingNodesStorage) {
                 pend = this.editingNodesStorage[childs[i].id];
 
-                if (pend && (pend.value == value || pend.startValue == value)) {
+                if (pend && (pend.value.toLowerCase() == value || pend.startValue.toLowerCase() == value)) {
                     return false;
                 }
             }
