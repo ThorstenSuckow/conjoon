@@ -2,7 +2,7 @@ Ext.namespace('de.intrabuild.groupware.email');
 
 
 de.intrabuild.groupware.email.NodeEditor = function(treePanel, config) {
-    
+
     Ext.apply(this, config);
 
     /**
@@ -12,18 +12,18 @@ de.intrabuild.groupware.email.NodeEditor = function(treePanel, config) {
     this.addEvents({
         'escapekey'    : true,
         'enterkey'     : true
-    });    
-    
+    });
+
 
     /**
      * @ext-bug beta1 Applying these values in the config gets ignored
      */
     this.shadow        = 'drop';
     this.revertInvalid = false;
-    
-    
+
+
     /**
-     * The editor for the tree's nodes. 
+     * The editor for the tree's nodes.
      * The beforeNodeClick method gets assigned to an empty function
      * so cliking on a node won'
      */
@@ -34,46 +34,51 @@ de.intrabuild.groupware.email.NodeEditor = function(treePanel, config) {
         revertInvalid : false,
         cancelOnEsc   : false
     });
-    
+
+    // should prevent a selected node from being edited when
+    // click on selected node occurs
     this.beforeNodeClick = Ext.emptyFn;
-       
-    
+
+
     // install listeners
-    // looks like we can skip the call to onbeforecomplete, since first the 
+    // looks like we can skip the call to onbeforecomplete, since first the
     // beforehide will be called
     this.on('beforecomplete', this.onBeforeEditingComplete, this);
     this.on('escapekey',      this.onEditorEscape, this);
     this.on('enterkey',       this.onEditorEnter, this);
-    this.on('complete',       this.onEditorComplete, this); 
+    this.on('complete',       this.onEditorComplete, this);
     this.on('show',           this.onEditorShow,  this);
     this.on('beforehide',     this.onBeforeHide,  this);
     this.on('hide',           this.onEditorHide,  this);
-    
+
 };
 
 
 Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
 
-// ------------------------- Members -------------------------------------------    
+// ------------------------- Members -------------------------------------------
     /**
      * Edit modes
      */
     NONE : 0,
     EDIT : 1,
     SAVE : 2,
-    
+
     /**
      * The current mode the editor is in. Equals to SAVE, EDIT or NONE
      */
     editMode : this.NONE,
-    
 
-// ----------------------------- Methods ---------------------------------------    
+
+// ----------------------------- Methods ---------------------------------------
 
     initEditor : function(tree)
     {
         de.intrabuild.groupware.email.NodeEditor.superclass.initEditor.call(this, tree);
         // needed to overwrite since the mousdwon wad not in the ext2.0rc1
+        // this is needed since a node which is currently being edited must not be draggable,
+        // but without this custom implementation the tree would allow a node being
+        // currently edited to be dragged around
         tree.getTreeEl().on('mousedown', this.hide, this);
     },
 
@@ -85,39 +90,46 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
         if (!this.editNode) {
             return true;
         }
-        
+
         var value = value.trim();
-       
+
         if (value == "") {
             return false;
         }
-        
+
         // editnode still available?
         if (!this.editNode.parentNode) {
             return true;
         }
-        
+
         return this.tree.isNodeNameAvailable(this.editNode.parentNode, this.editNode, value);
     },
-    
+
     /**
-     * Returns <tt>true</tt> if a node is being edited and the editor 
+     * Returns <tt>true</tt> if a node is being edited and the editor
      * waits for valid data.
      */
     isEditPending : function()
     {
-        return (this.editNode != null && !this.field.isValid());    
-    },    
-    
+        return (this.editNode != null && !this.field.isValid());
+    },
+
     /**
      *
      */
     triggerEdit : function(node, mode)
     {
         this.editMode = mode;
+        /**
+         * @ext-bug2.2
+         * see http://www.extjs.com/forum/showthread.php?t=41432
+         */
+        var as = this.tree.autoScroll;
+        this.tree.autoScroll = false;
         de.intrabuild.groupware.email.NodeEditor.superclass.triggerEdit.call(this, node);
-    },    
-    
+        this.tree.autoScroll = as;
+    },
+
     /**
      *
      */
@@ -135,9 +147,9 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
         de.intrabuild.groupware.email.NodeEditor.superclass.updateNode.call(this, ed, value.trim());
     },
 
-// ------------------------------ Listeners ------------------------------------   
+// ------------------------------ Listeners ------------------------------------
     /**
-     * Method occurs no matter what. Tree calls it. Check if editor exists and 
+     * Method occurs no matter what. Tree calls it. Check if editor exists and
      * react.
      */
     onBeforeHide : function()
@@ -145,7 +157,7 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
         if (this.isWarning || this.isEditPending()) {
             return false;
         }
-        
+
         return true;
     },
 
@@ -161,26 +173,26 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     onBeforeEditingComplete : function(editor, value, startValue)
     {
         var msg = Ext.MessageBox;
-        
+
         if (this.isWarning) {
             return false;
         }
-        
+
         if (!this.field.isValid()) {
             this.isWarning = true;
             this.tree.valueInvalid(editor, value, startValue);
             return false;
         }
-        
+
         return true;
     },
 
     /**
      * Starts saving the newly added/edited node respecting SAVE or EDIT mode.
-     * The complete event gets fired even when a node was edited and it's value 
+     * The complete event gets fired even when a node was edited and it's value
      * did not change when requesting another components focus using mouse/keyboard.
-     * However, if we are in EDIT mode, comparing the actual value with the start 
-     * value will tell us if we should proceed in requesting a XMLHttpRequest for 
+     * However, if we are in EDIT mode, comparing the actual value with the start
+     * value will tell us if we should proceed in requesting a XMLHttpRequest for
      * this. In SAVE mode the node was newly added, thus requesting a XMLHttpRequest
      * object is needed in every case.
      *
@@ -188,25 +200,25 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
      */
     onEditorComplete : function(editor, value, startValue)
     {
-        if (this.editMode == this.NONE || 
+        if (this.editMode == this.NONE ||
            (this.editMode == this.EDIT && value.trim() === startValue.trim())) {
             return;
         }
-        
+
         this.tree.saveNode({
             mode   : (this.editMode == this.EDIT ? 'edit' : 'add'),
-            parent : this.editNode.parentNode.id, 
+            parent : this.editNode.parentNode.id,
             child  : {
                 id         : this.editNode.id,
                 value      : value,
                 startValue : startValue
             }
         });
-        
+
         this.editMode  = this.NONE;
         this.isWarning = false;
-    },            
-    
+    },
+
     /**
     *
     */
@@ -220,9 +232,9 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     */
     onEditorHide : function()
     {
-        //alert(this.editMode+": HIDE");  
-    },      
-    
+        //alert(this.editMode+": HIDE");
+    },
+
     /**
      *
      */
@@ -230,23 +242,23 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     {
          e.stopEvent();
          this.completeEdit();
-    },        
-    
+    },
+
     /**
      * When the user presses escapes he usually wants to revert any changes and
      * does not go into save mode. However, we hate to check if the node gets
      * edited or if it is a new node that needs to get saved.
      * In edit mode, we simply revert the changes and hide the editor, not invoking
-     * any event. 
-     * In save mode however, we invoke the completeEdit method after we reverted 
-     * the fields value. 
+     * any event.
+     * In save mode however, we invoke the completeEdit method after we reverted
+     * the fields value.
      *
      *
      */
     onEditorEscape : function(field, e)
     {
         switch (this.editMode) {
-            case this.SAVE: 
+            case this.SAVE:
                 e.stopEvent();
                 this.field.setValue(this.startValue);
                 this.completeEdit();
@@ -257,9 +269,9 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
                 this.cancelEdit();
                 this.resumeEvents();
             return;
-        }    
-    },    
-    
+        }
+    },
+
     /**
      *
      */
@@ -270,6 +282,6 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
         } else if (e.getKey() == e.ESC) {
             this.fireEvent('escapekey', field, e);
         }
-    }    
-    
+    }
+
 });
