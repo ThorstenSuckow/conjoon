@@ -578,7 +578,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
 
             self::_splitMessage($mail->getRawMessage($messageNum), $rawHeader, $rawBody);
 
-            $message = new Zend_Mail_Message(array(
+            $message = new Intrabuild_Mail_Message(array(
                 'headers'    => $rawHeader,
                 'noToplines' => true,
                 'content'    => $rawBody
@@ -632,13 +632,18 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
             // date field will be given presedence
             try {
                 $emailItem['date'] = $message->date;
-                if (!$emailItem['date']) {
-                    $emailItem['date'] = $message->deliveryDate;
-                }
             } catch (Zend_Mail_Exception $e) {
                 // ignore
             }
 
+            // if date not found, look up deliveryDate
+            if (!$emailItem['date']) {
+                try {
+                    $emailItem['date'] = $message->deliveryDate;
+                } catch (Zend_Mail_Exception $e) {
+                    // ignore
+                }
+            }
 
             try {
                 $emailItem['to'] = $message->to;
@@ -1003,19 +1008,22 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
              * submit a bug report for this
              */
              try {
+                // this is a fallback for "end is missing", if a mime message does not contain
+                // the closing boundary
                 $ct       = $message->getContent();
                 $boundary = $message->getHeaderField('content-type', 'boundary');
                 if ($boundary) {
                     $p = strpos($ct, '--' . $boundary . '--');
                     if ($p === false) {
                         $ct .= "\r\n" . '--' . $boundary . '--';
-                        $hd = $message->getHeaders();
-                        $headers = array();
-                        foreach ($hd as $key => $value) {
-                            $headers[] = $key . ': '.$value;
-                        }
-                        $message = new Zend_Mail_Message(array('raw' => implode("\r\n", $headers) . "\r\n" . $ct));
-                        $len     = 2;
+                        $message = new Intrabuild_Mail_Message(array(
+                            'headers'    => 'Content-Type: '
+                                            . $message->contentType,
+                            'noTopLines' => true,
+                            'content'    => $ct
+                        ));
+
+                        $len = 2;
                     }
                 } else {
                     throw new Zend_Mail_Exception('');
@@ -1180,7 +1188,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
 
         if ($contentType == 'message/rfc822' || $contentType == 'rfc822') {
             try {
-                $nm = new Zend_Mail_Message(array('raw' => $part->getContent()));
+                $nm = new Intrabuild_Mail_Message(array('raw' => $part->getContent()));
                 $n = $nm->subject;
                 $filter = new Intrabuild_Filter_MimeDecodeHeader();
                 $fileName = $filter->filter($n).'.eml';
