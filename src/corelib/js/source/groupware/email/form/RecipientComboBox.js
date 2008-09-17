@@ -97,7 +97,7 @@ de.intrabuild.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.Combo
         var i = blacklist.length-1;
         if (i >= 0) {
             do {
-                if (blacklist[i].indexOf(str) != -1) {
+                if (blacklist[i].indexOf(str) != -1 || str.indexOf(blacklist[i]) != -1) {
                     return false;
                 }
             } while (--i >= 0);
