@@ -53,8 +53,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var formValues = {};
 
-    var queue = [];
-
     var activePanelMasks = [];
 
     var createPanel = function(draftId, type)
@@ -73,8 +71,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 this.loadMask = new Ext.LoadMask(this.el.dom.id, {msg : messages.loading});
                 this.loadMask.el.dom.style.zIndex = 1;
             }, form);
-            form.on('initialize', onFormInitialize, de.intrabuild.groupware.email.EmailEditorManager);
-            form.on('initializefailure', onFormInitializeFailure, de.intrabuild.groupware.email.EmailEditorManager);
+
 
             masterPanel = new Ext.Panel({
                 id         : 'DOM:de.intrabuild.groupware.email.EmailEditor.masterTab',
@@ -150,11 +147,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             scope   : de.intrabuild.groupware.email.EmailEditorManager
         };
 
-        if (form.initialized) {
-            Ext.Ajax.request(ajaxOptions);
-        } else {
-            queue.push(ajaxOptions);
-        }
+        Ext.Ajax.request(ajaxOptions);
 
         registerToolbar();
 
@@ -216,27 +209,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         return true;
     };
 
-    var onFormInitializeFailure = function(form, response, options)
-    {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            onLogin: {
-                fn : function(){
-                    form.receiveTypeStore.load();
-                },
-                scope : form
-            }
-        });
-    };
-
-    var onFormInitialize = function(form)
-    {
-        for (var i = 0, max_i = queue.length; i < max_i; i++) {
-            Ext.Ajax.request(queue[i]);
-        }
-
-        queue = [];
-    };
-
     var onRecipientsLoadException = function(response, options)
     {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
@@ -269,7 +241,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (rdata.to) {
             tst = rdata.to;
             for (var i = 0, max_i = tst.length; i < max_i; i++) {
-                tmpRecord = new rRec({receive_type : 'to', address : tst[i]});
+                tmpRecord = new rRec({receiveType : 'to', address : tst[i]});
                 recRecs.push(tmpRecord);
             }
         }
@@ -277,7 +249,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (rdata.cc) {
             tst = rdata.cc;
             for (var i = 0, max_i = tst.length; i < max_i; i++) {
-                tmpRecord = new rRec({receive_type : 'cc', address : tst[i]});
+                tmpRecord = new rRec({receiveType : 'cc', address : tst[i]});
                 recRecs.push(tmpRecord);
             }
         }
@@ -285,7 +257,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (rdata.bcc) {
             tst = rdata.bcc;
             for (var i = 0, max_i = tst.length; i < max_i; i++) {
-                tmpRecord = new rRec({receive_type : 'bcc', address : tst[i]});
+                tmpRecord = new rRec({receiveType : 'bcc', address : tst[i]});
                 recRecs.push(tmpRecord);
             }
         }
@@ -517,7 +489,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             subject    : subjectField.getValue(),
             message    : htmlEditor.getValue(),
             accountId  : accountField.getValue(),
-            recipients : recipients
+            recipients : Ext.encode(recipients)
         };
 
         cacheFormValues(panelId);
@@ -560,7 +532,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var rec = null;
         for (var i = 0, max_i = recipientStore.getCount(); i < max_i; i++) {
             rec = recipientStore.getAt(i).copy();
-            recipients.push([rec.data.receive_type, rec.data.address]);
+            recipients.push([rec.data.receiveType, rec.data.address]);
         }
 
         var params = {
@@ -842,7 +814,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             store.getAt(row+1) == null) {
 
             var tmpRecord = new de.intrabuild.groupware.email.RecipientRecord({
-                receive_type : 'to',
+                receiveType : 'to',
                 address : ''
             });
 
@@ -1090,25 +1062,10 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     Ext.apply(this, config);
 
     this.addEvents(
-        'initialize',
-        'initializefailure',
         'savedraft',
         'sendemail',
         'movedtooutbox'
     );
-
-    var receiveTypeStore = new Ext.data.JsonStore({
-        url    : '/groupware/email/get.receive.types/format/json',
-        root   : 'response.value',
-        id     : 'id',
-        fields : ['id', 'text'],
-        autoLoad : false
-    });
-
-    receiveTypeStore.on('load',          this.onDefaultStoresLoad, this);
-    receiveTypeStore.on('loadexception', this.onDefaultStoresLoadException, this);
-
-    this.receiveTypeStore = receiveTypeStore;
 
     var accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 
@@ -1139,18 +1096,27 @@ de.intrabuild.groupware.email.EmailForm = function(config){
        store : accountStore
     });
 
-    receiveTypeStore.load();
-
     var addressQueryComboBox = new de.intrabuild.groupware.email.form.RecipientComboBox();
 
     this.gridStore = new Ext.data.JsonStore({
-       // url      : '/groupware/email/get.email.form.recipients/format/json',
-       // root     : 'response.value',
         id       : 'id',
-        fields   : ['receive_type', 'address']
-       // autoLoad : false
+        fields   : ['receiveType', 'address']
     });
 
+    var receiveTypeEditor = new Ext.form.ComboBox({
+        typeAhead     : false,
+        triggerAction : 'all',
+        lazyRender    : true,
+        editable      : false,
+        mode          : 'local',
+        value         : 'gg',
+        listClass     : 'x-combo-list-small',
+        store         : [
+            ['to',  de.intrabuild.Gettext.gettext('To:')],
+            ['cc',  de.intrabuild.Gettext.gettext('CC:')],
+            ['bcc', de.intrabuild.Gettext.gettext('BCC:')],
+        ]
+    });
 
     this.grid = new Ext.grid.EditorGridPanel({
         autoExpandColumn : 'address',
@@ -1161,23 +1127,18 @@ de.intrabuild.groupware.email.EmailForm = function(config){
         style   : 'background:none',
         store   : this.gridStore,
         columns : [{
-            id : 'receive_type',
-            header: "receive_type",
-            width: 100,
-            dataIndex : 'receive_type',
-            editor: new Ext.form.ComboBox({
-               typeAhead: false,
-               triggerAction: 'all',
-               lazyRender:true,
-               displayField  : 'text',
-               editable: false,
-               mode : 'local',
-               valueField    : 'id',
-               listClass: 'x-combo-list-small',
-               store : receiveTypeStore
-            }),
-            renderer: function(value, p, record) {
-                var sRecord = receiveTypeStore.getById(value);
+            id        : 'receiveType',
+            header    : 'receiveType',
+            width     : 100,
+            dataIndex : 'receiveType',
+            editor    : receiveTypeEditor,
+            renderer  : function(value, metadata, record, rowIndex, colIndex, store) {
+                var st  = receiveTypeEditor.store;
+                var ind = st.find('value', value, 0, false, true);
+                var sRecord = null;
+                if (ind >= 0) {
+                    sRecord = st.getAt(ind);
+                }
                 if(sRecord) {
                     return sRecord.data.text;
                 } else {
@@ -1352,19 +1313,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailForm, Ext.Panel, {
 
     __is : 'de.intrabuild.groupware.email.EmailForm',
 
-    initialized  : false,
-
-
-    onDefaultStoresLoad : function(store, records, options)
-    {
-        this.initialized = true;
-        this.fireEvent('initialize', this);
-    },
-
-    onDefaultStoresLoadException : function(proxy, options, response, jsError)
-    {
-        this.fireEvent('initializefailure', this, response, options);
-    },
 
     onUpdate : function(store, record, operation)
     {
@@ -1374,5 +1322,5 @@ Ext.extend(de.intrabuild.groupware.email.EmailForm, Ext.Panel, {
 
 
 de.intrabuild.groupware.email.RecipientRecord = Ext.data.Record.create([
-    {name: 'receive_type'}, {name: 'address'}
+    {name: 'receiveType'}, {name: 'address'}
 ]);
