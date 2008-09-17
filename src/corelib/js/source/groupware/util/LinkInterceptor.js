@@ -37,7 +37,8 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
 
 		addListener : function(p)
 		{
-            p.on(_listener);
+		    p.on('mousedown', _listener.mousedown);
+			p.on('click',     _listener.click);
 		},
 
         getListener : function()
@@ -46,7 +47,7 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
 			return {
 				render: function(p)
                 {
-					de.intrabuild.groupware.util.LinkInterceptor.addListener(p.body);
+					m.addListener(p.body);
 					p.on('destroy', function(){this.removeListener(p.body)}, m);
 				}
             };
