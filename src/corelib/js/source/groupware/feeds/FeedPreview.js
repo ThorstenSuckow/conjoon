@@ -146,6 +146,30 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 // {{{ private methods
 
     /**
+     * Returns the first left outermost columnIndex of the first column
+     * that is not hidden in the grid.
+     * This method is guaranteed to return a value in the range of [0, columnIndex].
+     *
+     * @param {Ext.grid.GridPanel} grid
+     * @param {Numbe} columnIndex
+     *
+     * @return {Number}
+     */
+    var _getColumnIndex = function(grid, columnIndex)
+    {
+        var colModel = grid.getColumnModel();
+        i = 0;
+        while (i < columnIndex) {
+            if (!colModel.isHidden(i)) {
+                return i;
+            }
+            i++;
+        }
+
+        return i;
+    };
+
+    /**
      * Inits any component that is needed for displaying/animating
      * the preview panel.
      * This method will only be called once.
@@ -399,7 +423,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             }
 
             clkRowIndex = rowIndex;
-			clkCell     = grid.view.getCell(rowIndex, columnIndex);
+            clkCell     = grid.view.getCell(rowIndex, _getColumnIndex(grid, columnIndex));
 			clkCellY    = Ext.fly(clkCell).getY();
 
             if (previewPanel !== null) {
