@@ -24,21 +24,23 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
             e.stopEvent();
             window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
         },
-        delegate:'a'
+        options : {
+            delegate:'a'
+        }
     };
 
     return {
 
         removeListener : function(p)
         {
-            p.un('mousedown', _listener.mousedown);
-			p.un('click',     _listener.click);
+            p.un('mousedown', _listener.mousedown, window, _listener.options);
+			p.un('click',     _listener.click,     window, _listener.options);
         },
 
 		addListener : function(p)
 		{
-		    p.on('mousedown', _listener.mousedown);
-			p.on('click',     _listener.click);
+		    p.on('mousedown', _listener.mousedown, window, _listener.options);
+			p.on('click',     _listener.click,     window, _listener.options);
 		},
 
         getListener : function()
