@@ -983,6 +983,10 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
                     }
                 break;
 
+                case 'multipart/related':
+                    $this->_parseMultipartRelated($part, $emailItem);
+                break;
+
                 case 'multipart/alternative':
                     $this->_parseMultipartAlternative($part, $emailItem);
                 break;
