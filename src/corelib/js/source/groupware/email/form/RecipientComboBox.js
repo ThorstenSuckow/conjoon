@@ -57,7 +57,15 @@ de.intrabuild.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.Combo
                         }
                     }
                 }
-            })
+            }),
+            validator : function(value) {
+                if (value && value.trim() != "") {
+                    if (value.indexOf(';') != -1) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         });
 
         this._blacklist = [];
