@@ -59,6 +59,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
                       // editing emails
                       ->addActionContext('get.recipient', self::CONTEXT_JSON)
                       ->addActionContext('get.draft', self::CONTEXT_JSON)
+                      // send emails
+                      ->addActionContext('send', self::CONTEXT_JSON)
                       ->initContext();
     }
 
@@ -1089,7 +1091,167 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->success = true;
         $this->view->error   = null;
         $this->view->matches = $response;
+    }
 
+    /**
+     * Sends an email to the specified recipients.
+     * The action expects the following arguments to be passed:
+     *
+     * - format: The format the email should be send. Can default to
+     *           "text/plain", "text/html" - or "multipart" if the email should
+     *           be send both as html and plain-text.
+     * - id: The id of the messge if this was loaded from an already existing
+     *       draft. Can default to 0 or -1 if the emil was created from the scratch
+     * - groupwareEmailAccountsId: An integer specifying the id of the email account of the
+     *              user which will be used to send the message
+     * - groupwareEmailFoldersId: The id of the folder from which this email was opened. Equals
+     *             to -1 or 0 if the messge was created from scratch
+     * - subject: The subject of the message
+     * - message: The message as edited in the browser. Will most likely have
+     *            HTML tags in it depending on the editor used
+     * - to: An json encoded array with all addresses being specified in the "to"
+     *       field. Addresses may be separated by a comma "," or a semicolon ";"
+     * - cc: An json encoded array with all addresses being specified in the "cc"
+     *       field. Addresses may be separated by a comma "," or a semicolon ";"
+     * - bcc: An json encoded array with all addresses being specified in the "bcc"
+     *        field. Addresses may be separated by a comma "," or a semicolon ";"
+     *
+     * The view awaits the param "savedId" to be set with the id of the saved message
+     * that was successfully sent, and the "savedFolderId" under which this email was
+     * saved (most likely the "sent"-folder associated with the account).
+     */
+    public function sendAction()
+    {
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+
+        $data = array();
+        try {
+            // the filter will transform the "message" into bodyHtml and bodyText, depending
+            // on the passed format. both will only be filled if format equals to "multipart"
+            $filter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+                $_POST,
+                Intrabuild_Filter_Input::CONTEXT_CREATE
+            );
+            $data = $filter->getProcessedData();
+        } catch (Exception $e) {
+             require_once 'Intrabuild/Error.php';
+             $error = Intrabuild_Error::fromFilter($filter, $e);
+             $this->view->success = false;
+             $this->view->error   = $error->getDto();
+             $this->view->savedId = -1;
+             $this->view->savedFolderId = -1;
+             return;
+        }
+
+
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+        require_once 'Intrabuild/BeanContext/Inspector.php';
+
+        // create the message object here
+        $to  = array();
+        $cc  = array();
+        $bcc = array();
+
+        foreach ($data['cc'] as $dcc) {
+            $add  = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+            $cc[] = $add;
+        }
+        foreach ($data['bcc'] as $dbcc) {
+            $add  = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+            $bcc[] = $add;
+        }
+        foreach ($data['to'] as $dto) {
+            $add  = new Intrabuild_Modules_Groupware_Email_Address($dto);
+            $to[] = $add;
+        }
+
+        $data['cc']  = $cc;
+        $data['to']  = $to;
+        $data['bcc'] = $bcc;
+
+        // get the specified account for the user
+        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Intrabuild/Keys.php';
+
+        $accountDecorator = new Intrabuild_BeanContext_Decorator(
+            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        );
+
+        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        $account = $accountDecorator->getAccountAsEntity($data['groupwareEmailAccountsId'], $userId);
+
+        // no account found?
+        if (!$account) {
+            require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while sending email';
+            $error->message = 'Could not find specified account.';
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $this->view->error   = $error;
+            $this->view->success = false;
+            $this->view->savedId = -1;
+            $this->view->savedFolderId = -1;
+            return;
+        }
+
+        $message = Intrabuild_BeanContext_Inspector::create(
+                'Intrabuild_Modules_Groupware_Email_Draft',
+                $data
+        );
+
+        require_once 'Intrabuild/Modules/Groupware/Email/Sender.php';
+
+        try {
+            $mail = Intrabuild_Modules_Groupware_Email_Sender::send($message, $account);
+        } catch (Exception $e) {
+            require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while sending email';
+            $error->message = $e->getMessage();
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $this->view->error   = $error;
+            $this->view->success = false;
+            $this->view->savedId = -1;
+            $this->view->savedFolderId = -1;
+            return;
+        }
+
+
+        // if the email was send successfully, save it into the db and
+        // return the params savedId (id of the newly saved email)
+        // and savedFolderId (id of the folder where the email was saved in)
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Item
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
+
+        $itemModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
+        // returns array with "id" items id and "groupware_email_folders_id" folder id
+        $stData = $itemModel->saveSentEmail($message, $account, $userId, $mail);
+
+        if (empty($stData)) {
+            require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while saving email';
+            $error->message = 'The email was sent, but it could not be stored into the database.';
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $this->view->error   = $error;
+            $this->view->success = false;
+            $this->view->savedId = -1;
+            $this->view->savedFolderId = -1;
+            return;
+        }
+
+        $this->view->error   = null;
+        $this->view->success = true;
+        $this->view->savedId = $stData['id'];
+        $this->view->savedFolderId = $stData['groupware_email_folders_id'];
     }
 
 
@@ -1112,24 +1274,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
     }
 
-    /**
-     *
-     */
-    public function sendAction()
-    {
-        require_once 'Zend/Json.php';
 
-        $response = array('response'  => array(
-                              'type'  => 'integer',
-                              'value' =>  rand(1, 100000)
-                        ));
-
-        $json = Zend_Json::encode($response, Zend_Json::TYPE_ARRAY);
-
-        echo $json;
-        die();
-
-    }
 
 
     /**
@@ -1196,21 +1341,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
 				case 'forward':   $prefix = 'Fwd: '; break;
 	    	}
 
-	    	$msg = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh          <br/>
-euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad   <br/>
-minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut         <br/>
-aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in           <br/>
-vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis           <br/>
-at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril                <br/>
-<blockquote>delenit augue duis dolore <blockqoute>te feugait nulla facilisi. Lorem ipsum dolor sit amet,<br/>
-consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet           <br/>
-dolore <blockquote>magna <blockquote>aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud             <br/>
-exerci tation ullamcorper suscipit lo</blockquote>bortis nisl ut aliquip ex ea commodo consequat.<br />
-Duis</blockquote> autem vel eum </blockquote>iriure dolor in hendrerit in vulputate velit esse molestie consequat,<br />
-</blockquote>vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim<br />
-qui blandit praesent luptatum zzril  delenit augue duis dolore te feugait nulla facilisi.<br />
-Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod<br />
-mazim placerat facer possim assum.";
+	    	$msg = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh<br/>euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad<br/>minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut         <br/>aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in           <br/>vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis           <br/>at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril                <br/><blockquote>delenit augue duis dolore <blockquote>te feugait nulla facilisi. Lorem ipsum dolor sit amet,<br/>consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet           <br/>dolore <blockquote>magna <blockquote>aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud             <br/>exerci tation ullamcorper suscipit lo</blockquote>bortis nisl ut aliquip ex ea commodo consequat.<br />Duis</blockquote> autem vel eum </blockquote>iriure dolor in hendrerit in vulputate velit esse molestie consequat,<br /></blockquote>vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim<br />qui blandit praesent luptatum zzril  delenit augue duis dolore te feugait nulla facilisi.<br />Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod<br />mazim placerat facer possim assum.";
 
             $this->view->success = true;
             $this->view->draft   = array(
@@ -1238,7 +1369,7 @@ mazim placerat facer possim assum.";
                                            'type'  => 'array',
                                            'value' => array(
                                             array(
-                                                'receive_type'   => 'to',
+                                                'receiveType'   => 'to',
                                                 'address' => ''
                                        ))));
 
@@ -1249,28 +1380,6 @@ mazim placerat facer possim assum.";
         die();
     }
 
-    public function getReceiveTypesAction()
-    {
-        $options = array('response' => array(
-                                           'type'  => 'array',
-                                           'value' => array(
-                                            array(
-                                                'id'   => 'to',
-                                                'text' => 'An:'
-                                            ), array(
-                                                'id'   => 'cc',
-                                                'text' => 'CC:'
-                                             ), array(
-                                                'id'   => 'bcc',
-                                                'text' => 'BCC:'
-                                       ))));
-
-        Zend_Loader::loadClass('Zend_Json');
-        $json = Zend_Json::encode($options, Zend_Json::TYPE_ARRAY);
-
-        echo $json;
-        die();
-    }
 
 
 
