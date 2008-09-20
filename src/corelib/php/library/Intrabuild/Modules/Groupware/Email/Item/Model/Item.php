@@ -85,6 +85,39 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
 
     }
 
+    /**
+     * Returns a single item with the specified id for the specified user.
+     * Returns an empty array if entry was not found.
+     *
+     * @param integer $itemId
+     * @param integer $userId
+     *
+     * @return array
+     */
+    public function getItemForUser($itemId, $userId)
+    {
+        $itemId = (int)$itemId;
+        $userId = (int)$userId;
+
+        if ($itemId <= 0 || $userId <= 0) {
+            return array();
+        }
+
+        $adapter = $this->getAdapter();
+
+        $where   = $adapter->quoteInto('items.id = ?', $itemId, 'INTEGER');
+
+        $select = self::getItemBaseQuery($userId)
+                  ->where($where);
+
+        $row = $adapter->fetchRow($select);
+
+        if (!$row) {
+            return array();
+        }
+
+        return $row;
+    }
 
     /**
      * Returns the base query for email-items
@@ -316,6 +349,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
      * @param integer $userId
      * @param Intrabuild_Mail_Sent $mailSent
      *
+     * @return array the data from groupware_email_item associated with
+     * the newly saved entry
      */
     public function saveSentEmail(Intrabuild_Modules_Groupware_Email_Draft $message,
                                   Intrabuild_Modules_Groupware_Email_Account $account,
@@ -425,11 +460,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         switch ($messageType) {
             // most simple: mesageType is outbox which means we have simply to update a few fields
             case 'outbox':
-                if ($messageId <= 0) {
-                    return array();
-                }
-
-                if ($sentFolderId == 0) {
+                if ($messageId <= 0 || $sentFolderId == 0) {
                     return array();
                 }
 
@@ -439,10 +470,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 $itemWhere = $this->getAdapter()->quoteInto('id = ?', $messageId);
                 $this->update($itemUpdate, $itemWhere);
 
-                return array(
-                    'id' => $messageId,
-                    'groupware_email_folders_id' => $sentFolderId
-                );
+                return $this->getItemForUser($messageId, $userId);
             break;
 
             // if the message was sent from an opened draft, we simply can create a new entry in the tables,
@@ -497,14 +525,11 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
 
                     $outboxModel->insert($outboxUpdate);
 
-                    return array(
-                        'id' => $messageId,
-                        'groupware_email_folders_id' => $sentFolderId
-                    );
+                    return $this->getItemForUser($messageId, $userId);
             break;
         }
 
-
+        return null;
 
     }
 
@@ -520,7 +545,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     public function getDecoratableMethods()
     {
         return array(
-            'getEmailItemsFor'
+            'getEmailItemsFor',
+            'saveSentEmail'
         );
     }
 
