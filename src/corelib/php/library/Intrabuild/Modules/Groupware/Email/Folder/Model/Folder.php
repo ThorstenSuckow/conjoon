@@ -56,6 +56,47 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     protected $_primary = 'id';
 
     /**
+     * Returns the base sent folder id for the specified account and the specified
+     * user, i.e. the folder with type "sent".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return intger
+     */
+    public function getSentFolder($accountId, $userId)
+    {
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($accountId == 0 || $userId == 0) {
+            return 0;
+        }
+
+        $adapter = self::getDefaultAdapter();
+
+        $select = $adapter->select()
+                  ->from('groupware_email_folders', array('id'))
+                  ->join(
+                        array('folders_accounts' => 'groupware_email_folders_accounts'),
+                        'folders_accounts.groupware_email_folders_id=id '.
+                        ' AND ' .
+                        $adapter->quoteInto('folders_accounts.groupware_email_accounts_id=?', $accountId, 'INTEGER'),
+                        array())
+                  ->where('type = ? ', 'sent');
+
+        $row = $adapter->fetchRow($select);
+
+        if (!$row || empty($row)) {
+            return 0;
+        }
+
+        return $row['id'];
+    }
+
+
+    /**
      * Returns the meta info for the folder with the specified id.
      * Returns null if the folder was not found.
      *
