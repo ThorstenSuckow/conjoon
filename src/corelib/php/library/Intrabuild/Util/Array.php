@@ -33,6 +33,22 @@ class Intrabuild_Util_Array  {
     }
 
     /**
+     * Applies the key/value pairs from array 2 to array 1.
+     * Overwrites existing keys.
+     *
+     * @param array $array1
+     * @param array $array2
+     *
+     */
+    public static function apply(Array &$array1, Array $array2)
+    {
+        foreach ($array2 as $key => $value) {
+            $array1[$key] = $value;
+        }
+    }
+
+
+    /**
      * Camelizes the keys of an assoziative array and returns
      * the array with the new keys, if the second parameter is set to "true".
      * Otherwise, the reference to the passed argument will be used and the array
