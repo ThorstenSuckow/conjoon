@@ -54,6 +54,35 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
     protected $_primary = 'groupware_email_items_id';
 
     /**
+     * Returns the message id from the specified item.
+     * Returns empty string if the item was not found or if no message-id was
+     * explicit set for this item.
+     *
+     * @param integer $itemId
+     *
+     * @return string
+     */
+    public function getMessageIdForItem($itemId)
+    {
+        $itemId = (int)$itemId;
+
+        if ($itemId <= 0) {
+            return "";
+        }
+
+        $row = $this->fetchRow(
+            $this->select()->from($this, array('message_id'))
+                 ->where('groupware_email_items_id = ?', $itemId)
+        );
+
+        if (!$row || $row->message_id == "") {
+            return "";
+        }
+
+        return $row->message_id;
+    }
+
+    /**
      * A helper method for computing a unique hash for a message.
      * If the implementation of the algorithm changes, the inbox-table's
      * column "hash" has to be changed accordingly.
