@@ -291,14 +291,17 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         if ($deleted > 0) {
 
             require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
+            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
             require_once 'Intrabuild/Modules/Groupware/Email/Attachment/Model/Attachment.php';
 
             $inboxModel      = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
+            $outboxModel     = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
             $attachmentModel = new Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment();
 
             $flagModel->delete('user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $attachmentModel->delete('groupware_email_items_id IN ('.$idString.')');
             $inboxModel->delete('groupware_email_items_id IN ('.$idString.')');
+            $outboxModel->delete('groupware_email_items_id IN ('.$idString.')');
         }
 
         return $deleted;

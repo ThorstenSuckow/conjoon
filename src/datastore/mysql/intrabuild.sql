@@ -290,3 +290,14 @@ ALTER TABLE `groupware_email_items` ADD `reply_to` TEXT NOT NULL AFTER `from`;
 ALTER TABLE `groupware_email_items_inbox` DROP `reply_to`;
 
 ALTER TABLE `groupware_email_items` CHANGE `reply_to` `reply_to` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+
+
+CREATE TABLE IF NOT EXISTS `intrabuild`.`groupware_email_items_outbox` (
+`groupware_email_items_id` INT UNSIGNED NOT NULL ,
+`raw_header` LONGBLOB NOT NULL ,
+`raw_body` LONGBLOB NOT NULL ,
+`sent_timestamp` INT UNSIGNED NOT NULL ,
+PRIMARY KEY ( `groupware_email_items_id` )
+) ENGINE = MYISAM;
+
+ALTER TABLE `groupware_email_items_outbox` CHANGE `sent_timestamp` `sent_timestamp` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'
