@@ -50,6 +50,49 @@ class Intrabuild_Modules_Groupware_Email_Account_Model_Account
     protected $_primary = 'id';
 
     /**
+     * Returns the id of the standard account for this user. If no standard
+     * account could be found, any other account id will be returned.
+     * If no account was found, 0 will be returned.
+     *
+     * @param int $id The id of the user to get the standard email account for
+     *
+     * @return integer
+     */
+    public function getStandardAccountIdForUser($userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            return 0;
+        }
+
+        $row = $this->fetchRow(
+            $this->select()
+                ->where('user_id=?', $userId)
+                ->where('is_deleted=?', 0)
+                ->where('is_standard=?', 1)
+                // in case there are accidently more than 1 standard accounts
+                // configured
+                ->limit(1, 0)
+        );
+
+        if (!$row) {
+            $row = $this->fetchRow(
+                $this->select()
+                    ->where('user_id=?', $userId)
+                    ->where('is_deleted=?', 0)
+                    ->limit(1, 0)
+            );
+        }
+
+        if (!$row) {
+            return 0;
+        }
+
+        return $row->id;
+    }
+
+    /**
      * Updates the is_deleted field in the table to "1" to indicate that this account
      * was deleted and should not be used anymore.
      *
