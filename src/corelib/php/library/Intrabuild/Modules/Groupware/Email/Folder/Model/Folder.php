@@ -36,6 +36,12 @@ require_once 'Intrabuild/BeanContext/Decoratable.php';
 class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable{
 
+    const META_INFO_OUTBOX = 'outbox';
+    const META_INFO_DRAFT  = 'draft';
+    const META_INFO_SENT   = 'sent';
+    const META_INFO_INBOX  = 'inbox';
+
+
     /**
      * The name of the table in the underlying datastore this
      * class represents.
