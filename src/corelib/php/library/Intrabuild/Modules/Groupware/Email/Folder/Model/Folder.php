@@ -50,6 +50,38 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     protected $_primary = 'id';
 
     /**
+     * Returns the meta info for the folder with the specified id.
+     * Returns null if the folder was not found.
+     *
+     * @param integer $folderId
+     *
+     * @return string
+     */
+    public function getMetaInfo($folderId)
+    {
+        $folderId = (int)$folderId;
+
+        if ($folderId <= 0) {
+            return null;
+        }
+
+        $where  = $this->getAdapter()->quoteInto('id = ?', $folderId, 'INTEGER');
+
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from($this, array('meta_info'))
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        if ($row) {
+            return $row->meta_info;
+        }
+
+        return null;
+    }
+
+    /**
      * Returns true if the folder's name may be edited, otherwise false.
      *
      * @param integer $id The id of the folder to rename
