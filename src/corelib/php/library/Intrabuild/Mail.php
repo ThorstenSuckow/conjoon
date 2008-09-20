@@ -17,7 +17,7 @@
 /**
  * @see Zend_Mail
  */
-require_once 'Intrabuild/Mail.php';
+require_once 'Zend/Mail.php';
 
 
 /**
