@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -20,7 +20,7 @@ require_once 'Intrabuild/Filter/Input.php';
 
 /**
  * @see Intrabuild_Filter_Raw
- */ 
+ */
 require_once 'Intrabuild/Filter/Raw.php';
 
 /**
@@ -41,37 +41,34 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Inbox extends Intrabuild_Fi
             'groupwareEmailItemsId',
             'rawHeader',
             'rawBody',
-            'hash',        
-            'messageId',    
-            'replyTo',         
-            'uid',      
+            'hash',
+            'messageId',
+            'uid',
             'fetchedTimestamp'
         )
     );
-    
+
     protected $_filters = array(
         'groupwareEmailItemsId' => array(
             'Int'
-         ), 
+         ),
          'hash' => array(
             'StringTrim'
-         ), 
+         ),
          'messageId' => array(
             'StringTrim'
-         ), 
-         'replyTo' => array(
-            'StringTrim'
-         ), 
+         ),
+
          'uid' => array(
             'StringTrim'
-         ), 
+         ),
          'fetchedTimestamp' => array(
             'Int'
-         ), 
+         ),
          'rawHeader'        => array(),
          'rawBody'          => array()
     );
-    
+
     protected $_validators = array(
         'groupwareEmailItemsId' => array(
             'allowEmpty' => false,
@@ -85,11 +82,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Inbox extends Intrabuild_Fi
             'allowEmpty' => true,
             'default' => null
          ),
-         'replyTo' => array(
-            'allowEmpty' => true,
-            'default' => null
-         ),
-        'uid' => array(
+         'uid' => array(
             'allowEmpty' => true,
             'default' => null
          ),
@@ -104,13 +97,13 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Inbox extends Intrabuild_Fi
             'default' => ''
          )
     );
-   
+
     protected function _init()
     {
         $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
-        $this->_validators['fetchedTimestamp']['default'] = time();    
-    }  
-   
-   
+        $this->_validators['fetchedTimestamp']['default'] = time();
+    }
+
+
 
 }

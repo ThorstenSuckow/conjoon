@@ -70,6 +70,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
             'date',
             'subject',
             'from',
+            'replyTo',
             'to',
             'cc',
             'bcc',
@@ -96,6 +97,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
             'MimeDecodeHeader'
         ),
          'from' => array(
+            'StringTrim'
+         ),
+         'replyTo' => array(
             'StringTrim'
          ),
          'to' => array(
@@ -134,6 +138,10 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
             'default' => ''
          ),
          'from' => array(
+            'allowEmpty' => true,
+            'default' => ''
+         ),
+        'replyTo' => array(
             'allowEmpty' => true,
             'default' => ''
          ),

@@ -283,4 +283,10 @@ ALTER TABLE `groupware_contact_items_email` ADD `id` INT UNSIGNED NOT NULL FIRST
 
 ALTER TABLE `groupware_contact_items_email` ADD PRIMARY KEY ( `id` );
 
- ALTER TABLE `groupware_contact_items_email` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT
+ALTER TABLE `groupware_contact_items_email` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `groupware_email_items` ADD `reply_to` TEXT NOT NULL AFTER `from`;
+
+ALTER TABLE `groupware_email_items_inbox` DROP `reply_to`;
+
+ALTER TABLE `groupware_email_items` CHANGE `reply_to` `reply_to` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
