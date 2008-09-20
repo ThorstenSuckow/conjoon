@@ -437,16 +437,35 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var onSend = function()
     {
-        var recipients = [];
-
+        var to  = [];
+        var cc  = [];
+        var bcc = [];
         var validRecipients = false;
-
         recipientsGrid.stopEditing();
 
-        for (var i = 0, max_i = recipientStore.getCount(); i < max_i; i++) {
-            recipients.push(recipientStore.getAt(i).copy());
-            if (recipients[i].data.address.trim() != "") {
-                validRecipients = true;
+        var receiveType = null;
+        var address     = null;
+        var recipients = recipientStore.getRange();
+        for (var i = 0, max_i = recipients.length; i < max_i; i++) {
+            address = recipients[i].get('address').trim();
+            if (address != "") {
+                receiveType = recipients[i].get('receiveType');
+                switch (receiveType) {
+                    case 'to':
+                        validRecipients = true;
+                        to.push(address);
+                    break;
+
+                    case 'cc':
+                        validRecipients = true;
+                        cc.push(address);
+                    break;
+
+                    case 'bcc':
+                        validRecipients = true;
+                        bcc.push(address);
+                    break;
+                }
             }
         }
 
@@ -484,12 +503,17 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var url = '/groupware/email/send/format/json';
 
         var params = {
-            panelId    : panelId,
-            folderId   : formValues[panelId].folderId,
-            subject    : subjectField.getValue(),
-            message    : htmlEditor.getValue(),
-            accountId  : accountField.getValue(),
-            recipients : Ext.encode(recipients)
+            format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
+            id      : formValues[panelId].id,
+            panelId : panelId,
+            date    : (new Date().getTime())/1000,
+            subject : subjectField.getValue(),
+            message : htmlEditor.getValue(),
+            to      : to.length > 0  ? Ext.encode(to)  : '',
+            cc      : cc.length > 0  ? Ext.encode(cc)  : '',
+            bcc     : bcc.length > 0 ? Ext.encode(bcc) : '',
+            groupwareEmailFoldersId  : formValues[panelId].folderId,
+            groupwareEmailAccountsId : accountField.getValue()
         };
 
         cacheFormValues(panelId);
@@ -611,23 +635,24 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var onSendSuccess = function(response, parameters)
     {
-        var data = parameters.params;
-        var panelId = data.panelId;
-        clearPendingState(panelId);
+        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
 
-        var json = de.intrabuild.util.Json;
-
-        if (!json.isResponseType('integer', response.responseText)) {
-            onSendFailure(response, parameters, true);
+        if (data == null) {
+            onSendFailure(response, parameters);
             return;
         }
-        var savedId = json.getResponseValue(response.responseText);
+        var savedId       = data.saveId;
+        var savedFolderId = data.saveFolderId;
 
-        Ext.apply(data, {
-            from : accountField.store.getById(data.accountId).data.address
+        var params = parameters.params;
+        var panelId = params.panelId;
+        clearPendingState(panelId);
+
+        Ext.apply(params, {
+            from : accountField.store.getById(params.accountId).get('address')
         });
 
-        form.fireEvent('sendemail', data, savedId);
+        form.fireEvent('sendemail', params, savedId, savedFolderId);
 
         contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
         contentPanel.remove(Ext.getCmp(panelId));
@@ -1063,6 +1088,13 @@ de.intrabuild.groupware.email.EmailForm = function(config){
 
     this.addEvents(
         'savedraft',
+        /**
+         * @event sendemail
+         * @param {Object}
+         * @param {Number} savedId The id under which the email was saved in the
+         * database
+         * @param {Number} savedFolderId The folder id in which the email was saved
+         */
         'sendemail',
         'movedtooutbox'
     );

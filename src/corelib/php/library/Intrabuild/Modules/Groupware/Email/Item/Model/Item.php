@@ -307,6 +307,209 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         return $deleted;
     }
 
+
+    /**
+     * Saves a sent email into the database.
+     *
+     * @param Intrabuild_Modules_Groupware_Email_Draft $message
+     * @param Intrabuild_Modules_Groupware_Email_Account $account
+     * @param integer $userId
+     * @param Intrabuild_Mail_Sent $mailSent
+     *
+     */
+    public function saveSentEmail(Intrabuild_Modules_Groupware_Email_Draft $message,
+                                  Intrabuild_Modules_Groupware_Email_Account $account,
+                                  $userId, Intrabuild_Mail_Sent $mailSent)
+    {
+        $mail = $mailSent->getMailObject();
+
+        $userId = (int)$userId;
+
+        $accountId = (int)$account->getId();
+
+        $messageId = (int)$message->getId();
+
+        if ($userId <= 0 || $accountId <= 0) {
+            return array();
+        }
+
+        /**
+         * @see Zend_Date
+         */
+        require_once 'Zend/Date.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Outbox
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        $outboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
+        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+
+        // first check the folder type of the email
+        $folderId = $message->getGroupwareEmailFoldersId();
+
+        $messageType = 'scratch';
+
+        // negative/0, means the message was created from draft
+        if ($folderId <= 0) {
+            $messageType = 'scratch';
+        } else {
+            // anything else needs the meta info type fetched out of the folder model
+            $metaInfo = $folderModel->getMetaInfo($folderId);
+            switch ($metaInfo) {
+                case Intrabuild_Modules_Groupware_Email_Folder_Model_Folder::META_INFO_OUTBOX:
+                    $messageType = 'outbox';
+                break;
+                case Intrabuild_Modules_Groupware_Email_Folder_Model_Folder::META_INFO_DRAFT:
+                    $messageType = 'draft';
+                break;
+                // failed!
+                default:
+                    return array();
+
+            }
+        }
+
+        // prefill update/insert arrays
+        $sentFolderId = $folderModel->getSentFolder($accountId, $userId);
+        $date         = new Zend_Date($mail->getDate(), Zend_Date::RFC_2822);
+        $replyTo      = (string)$mail->getReplyTo();
+        $to           = $message->getTo();
+        $cc           = $message->getCc();
+        $bcc          = $message->getBcc();
+        $fromAddress  = new Intrabuild_Modules_Groupware_Email_Address(
+            array($account->getAddress(), $account->getUserName())
+        );
+
+        $toString     = array();
+        foreach ($to as $recipient) {
+            $toString[] = $recipient->__toString();
+        }
+        $toString = implode(', ', $toString);
+
+        $ccString     = array();
+        foreach ($cc as $recipient) {
+            $ccString[] = $recipient->__toString();
+        }
+        $ccString = implode(', ', $ccString);
+
+        $bccString = array();
+        foreach ($bcc as $recipient) {
+            $bccString[] = $recipient->__toString();
+        }
+        $bccString = implode(', ', $bccString);
+
+        $outboxUpdate = array(
+            'sent_timestamp' => time(),
+            'raw_header'     => $mailSent->getHeader(),
+            'raw_body'       => $mailSent->getBody()
+        );
+        $itemUpdate = array(
+            'reply_to'                   => $replyTo,
+            'from'                       => $fromAddress->__toString(),
+            'groupware_email_folders_id' => $sentFolderId,
+            'date'                       => $date->get(Zend_Date::ISO_8601)
+        );
+
+        switch ($messageType) {
+            // most simple: mesageType is outbox which means we have simply to update a few fields
+            case 'outbox':
+                if ($messageId <= 0) {
+                    return array();
+                }
+
+                if ($sentFolderId == 0) {
+                    return array();
+                }
+
+                $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $messageId);
+                $outboxModel->update($outboxUpdate, $where);
+
+                $itemWhere = $this->getAdapter()->quoteInto('id = ?', $messageId);
+                $this->update($itemUpdate, $itemWhere);
+
+                return array(
+                    'id' => $messageId,
+                    'groupware_email_folders_id' => $sentFolderId
+                );
+            break;
+
+            // if the message was sent from an opened draft, we simply can create a new entry in the tables,
+            // as if it was created from scratch
+            case 'draft':
+            // if the message was created from scratch, i.e. has no id and no folderId,
+            // save a fresh row into the tables groupware_email_items_id, groupware_email_items_flags,
+            // groupware_email_items_outbox
+            case 'scratch':
+                    /**
+                     * @see Intrabuild_Util_Array
+                     */
+                    require_once 'Intrabuild/Util/Array.php';
+
+                    Intrabuild_Util_Array::apply($itemUpdate, array(
+                        'subject'            => $message->getSubject(),
+                        'to'                 => $toString,
+                        'cc'                 => $ccString,
+                        'bcc'                => $bccString,
+                        'in_reply_to'        => $message->getInReplyTo(),
+                        'references'         => $message->getReferences(),
+                        'content_text_plain' => $message->getContentTextPlain(),
+                        'content_text_html'  => $message->getContentTextHtml(),
+                    ));
+
+                    $messageId = (int)$this->insert($itemUpdate);
+
+                    if ($messageId <= 0) {
+                        return array();
+                    }
+
+                    /**
+                     * @see Intrabuild_Modules_Groupware_Email_Item_Model_Flag
+                     */
+                    require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
+
+                    $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
+
+                    $flagUpdate = array(
+                        'groupware_email_items_id' => $messageId,
+                        'user_id'                  => $userId,
+                        'is_read'                  => 1,
+                        'is_spam'                  => 0,
+                        'is_deleted'               => 0
+                    );
+
+                    $flagModel->insert($flagUpdate);
+
+                    Intrabuild_Util_Array::apply($outboxUpdate, array(
+                        'groupware_email_items_id' => $messageId
+                    ));
+
+                    $outboxModel->insert($outboxUpdate);
+
+                    return array(
+                        'id' => $messageId,
+                        'groupware_email_folders_id' => $sentFolderId
+                    );
+            break;
+        }
+
+
+
+    }
+
+
+
 // -------- interface Intrabuild_BeanContext_Decoratable
 
     public function getRepresentedEntity()
