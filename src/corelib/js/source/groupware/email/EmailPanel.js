@@ -274,7 +274,14 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
 
     de.intrabuild.util.Registry.register('de.intrabuild.groupware.email.EmailPanel', this, true);
 
-    de.intrabuild.util.Registry.on('register', this.onRegister, this);
+    // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.Smtp.emailSent'
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.emailSent',
+        this.onSendEmail,
+        this
+    );
+
 };
 
 
@@ -310,8 +317,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             for (var i = 0, max_i = records.length; i < max_i; i++) {
                 unread += (records[i].data.isRead ? 0 : 1);
                 requestArray.push({ id : records[i].id });
-                gs.remove(records[i]);
             }
+
+            gs.bulkRemove(records);
 
             this.fireEvent('emailsdeleted', records);
 
@@ -367,9 +375,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         gs.commitChanges();
 
-        for (var i = 0; i < max_i; i++) {
-            gs.remove(records[i]);
-        }
+        gs.bulkRemove(records);
 
         if (requestArray.length > 0) {
             Ext.Ajax.request({
@@ -420,6 +426,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 });
             }
         }
+
 
         if (currFolderId && this.allowNodePendingUpdate(currFolderId)) {
             var pendingStore  = this.treePanel.pendingItemStore;
@@ -871,70 +878,57 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     },
 
     /**
-     * Callback if an email was successfully send.
+     * Callback if an email was successfully send. Listens to messages with the subject
+     * "de.intrabuild.groupware.email.Smtp.emailSent" as published by Ext.ux.util.MessageBus.
      *
-     * @param {Object} data An object containing all needed information as
-	 * available in EmailItemRecord
-	 * @param {Number} savedId The id of the email that was generated while
-	 * being saved as a unique identifer for this email
+     * @param {String} subject The subject of the message
+	 * @param {Object} data The message's data. For the event this listener observes, the
+	 * object will provide the following properties:
+	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
+	 * id - the id of the message before it was saved
+	 * groupwareEmailFoldersId - id of the folder before it was saved.
+	 *
      */
-    onSendEmail : function(data, savedId)
+    onSendEmail : function(subject, message)
     {
-    	// first off, we have to check where the email was loaded from
-    	// it could have been a newly created email or an email that was loaded
-    	// from drafts
-    	// if the email was loaded from drafts, we have to delete it from this folder
-    	// if the folder is visible.
-    	// if the sent folder is visible, we have to create a record and put the email
-    	// in there.
-    	var currFolderId = this.clkNodeId;
-    	var tp = this.treePanel;
-    	var draftId = tp.folderDraft.id;
-    	var sentId  = tp.folderSent.id;
-    	var messageId = data.id;
-    	var folderId = data.folderId;
+        var emailRecord = message.itemRecord;
+        var oldId       = message.id;
+        var oldFolderId = message.groupwareEmailFoldersId;
 
-    	// it's easy if the currFolder is not sent or drafts. We do not need
-    	// to take any action then, except for update the pending node count
-    	// if the email has been in the drafts folder
-    	if (folderId == draftId) {
-    		// update the pending nodes store
-    		var pendingStore  = tp.pendingItemStore;
-            var pendingRecord = pendingStore.getById(draftId);
-            if (pendingRecord) {
-                pendingRecord.set('pending', pendingRecord.data.pending-1);
+        var tp           = this.treePanel;
+        var currFolderId = this.clkNodeId;
+        var store        = this.gridPanel.store;
+        var pendingStore = tp.pendingItemStore;
+
+
+        // if the email was loaded from outbox and sent, update pending nodes
+        // minus 1
+        if (oldFolderId == tp.folderOutbox.id) {
+            // if grid is visible, remove the record with the specified id!
+            if (currFolderId == oldFolderId) {
+                var record = store.getById(oldId);
+			    if (record) {
+				    store.remove(record);
+			    }
+            } else {
+                // grid for outbox is not visible, simply update pending count
+                var pendingRecord = pendingStore.getById(oldFolderId);
+                if (pendingRecord) {
+                    pendingRecord.set('pending', pendingRecord.data.pending-1);
+                }
             }
-    	}
+        }
 
-    	// return now if we do not need to take any other action
-    	if (currFolderId != draftId && currFolderId != sentId) {
-    		return;
-    	}
+        // if the email was loaded from drafts, nothing will happen, as a draft
+        // will not be deleted, thus can be reused after an email was sent from it
 
-    	var store = this.gridPanel.store;
+        // if the visible grid is the grid for sent items, add the recod to the store
+        if (emailRecord.get('groupwareEmailFoldersId') == currFolderId) {
+            var index = store.findInsertIndex(emailRecord);
+			store.insert(index, emailRecord);
+        }
 
-    	// if we are in drafts, remove the record from the store
-    	if (currFolderId == draftId) {
-    		var record = store.getById(messageId);
-			if (record) {
-				store.remove(record);
-			}
-    	} else if (currFolderId == sentId) {
-    		// create a new record and add it to the store
-			var nRecord = new de.intrabuild.groupware.email.EmailItemRecord({
-				'id'		               : savedId,
-				'isAttachment'               : data.isAttachment,
-			    'isRead'                     : true,
-			    'subject'                  : Ext.util.Format.htmlEncode(data.subject),
-			    'from'                     : Ext.util.Format.htmlEncode(data.from),
-			    'date'                     : (new Date()).format('m/d/Y H:i:s'),
-			    'isSpam'                     : false,
-			    'groupwareEmailFoldersId'  : sentId
-			});
 
-			var index = store.findInsertIndex(nRecord);
-			store.insert(index, nRecord);
-    	}
     },
 
 	/**
@@ -1040,9 +1034,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     		var form = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.EmailForm')
     		form.un('savedraft', this.onSaveDraft, this);
     		form.on('savedraft', this.onSaveDraft, this);
-
-    		form.un('sendemail', this.onSendEmail, this);
-    		form.on('sendemail', this.onSendEmail, this);
 
     		form.un('movedtooutbox', this.onMoveOutbox, this);
     		form.on('movedtooutbox', this.onMoveOutbox, this);
@@ -1201,12 +1192,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return false;
         }
 
-        if (options.params) {
-            options.params.groupwareEmailFoldersId = this.clkNodeId;
-        } else {
-            options.params = {};
-            options.params.groupwareEmailFoldersId = this.clkNodeId;
-        }
+        (options.params = options.params || {}).groupwareEmailFoldersId = this.clkNodeId;
+
     },
 
 

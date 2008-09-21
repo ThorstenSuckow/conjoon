@@ -97,7 +97,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
      * ...Yeah, I pretty much stole this one from the PagingToolbar!
      */
     this.bbar = new Ext.ux.BufferedGridToolbar({
-        view        : this.view,
+        grid        : this,
         displayInfo : true,
         displayMsg  : de.intrabuild.Gettext.gettext("Emails {0} - {1} of {2}"),
         emptyMsg    : de.intrabuild.Gettext.gettext("No emails available")

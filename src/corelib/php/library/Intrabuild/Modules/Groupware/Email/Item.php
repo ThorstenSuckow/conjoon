@@ -6,24 +6,24 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
- * Intrabuild_BeanContext 
- */ 
-require_once 'Intrabuild/BeanContext.php'; 
+ * Intrabuild_BeanContext
+ */
+require_once 'Intrabuild/BeanContext.php';
 
 
 /**
  * An email item defines itself as a collection of data from the emails header,
- * such as 
+ * such as
  *  to
- *  cc 
+ *  cc
  *  from
  *  subject
  *  date (delivery date)
@@ -43,10 +43,10 @@ require_once 'Intrabuild/BeanContext.php';
  * @subpackage Email
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */  
- 
+ */
+
 class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext, Serializable {
-    
+
     private $id;
     private $to;
     private $cc;
@@ -58,16 +58,16 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     private $isSpam;
     private $isDraft;
     private $groupwareEmailFoldersId;
-    
+
     /**
      * Constructor.
      */
     public function __construct()
     {
     }
-    
-// -------- accessors        
-    
+
+// -------- accessors
+
     public function getId(){return $this->id;}
     public function getTo(){return $this->to;}
     public function getCc(){return $this->cc;}
@@ -79,7 +79,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function isSpam(){return $this->isSpam;}
     public function isDraft(){return $this->isDraft;}
     public function getGroupwareEmailFoldersId(){return $this->groupwareEmailFoldersId;}
-    
+
     public function setId($id){$this->id = $id;}
     public function setTo($to){$this->to = $to;}
     public function setCc($cc){$this->cc = $cc;}
@@ -91,24 +91,24 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function setSpam($isSpam){$this->isSpam = $isSpam;}
     public function setDraft($isDraft){$this->isDraft = $isDraft;}
     public function setGroupwareEmailFoldersId($groupwareEmailFoldersId){$this->groupwareEmailFoldersId = $groupwareEmailFoldersId;}
-    
-    
+
+
 // -------- interface Serializable
     /**
      * Serializes properties and returns them as a string which can later on
      * be unserialized.
-     * 
+     *
      * @return string
      */
     public function serialize()
     {
         $data = $this->toArray();
-        
+
         return serialize($data);
     }
-    
+
     /**
-     * Unserializes <tt>$serialized</tt> and assigns the specific 
+     * Unserializes <tt>$serialized</tt> and assigns the specific
      * values found to the members in this class.
      *
      * @param string $serialized The serialized representation of a former
@@ -117,32 +117,32 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function unserialize($serialized)
     {
         $str = unserialize($serialized);
-        
+
   	     foreach ($str as $member => $value) {
-            $this->$member = $value; 	
+            $this->$member = $value;
         }
     }
 
-// -------- interface Intrabuild_BeanContext    
-    
+// -------- interface Intrabuild_BeanContext
+
     /**
      * Returns a Dto for an instance of this class.
-     * 
+     *
      * @return Intrabuild_Groupware_Email_AccountDto
-     */    
+     */
     public function getDto()
     {
         require_once 'Item/Dto.php';
-        
+
         $data = $this->toArray();
-        
+
         $dto = new Intrabuild_Modules_Groupware_Email_Item_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
             }
-        }    
-        
+        }
+
         return $dto;
     }
 
@@ -167,7 +167,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
             'isDraft'      => $this->isDraft,
             'groupwareEmailFoldersId' => $this->groupwareEmailFoldersId
         );
-    }   
+    }
 
     /**
      * Returns a textual representation of the current object.
@@ -177,11 +177,11 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function __toString()
     {
         $data = $this->toArray();
-        
+
         $strs = array();
         foreach ($data as $key => $value) {
             $strs[] = $key.': '.$value;
         }
         return get_class($this).'['.implode('; ', $strs).']';
     }
-} 
+}

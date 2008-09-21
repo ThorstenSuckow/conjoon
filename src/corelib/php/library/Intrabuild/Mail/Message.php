@@ -48,6 +48,7 @@ class Intrabuild_Mail_Message extends Zend_Mail_Message {
         // split content in parts
         // fix! @see http://framework.zend.com/issues/browse/ZF-3318
         $boundary = trim(str_replace('"', "", $this->getHeaderField('content-type', 'boundary')));
+
         if (!$boundary) {
             /**
              * @see Zend_Mail_Exception
@@ -56,6 +57,7 @@ class Intrabuild_Mail_Message extends Zend_Mail_Message {
             throw new Zend_Mail_Exception('no boundary found in content type to split message');
         }
         $parts = Zend_Mime_Decode::splitMessageStruct($this->_content, $boundary);
+
         $counter = 1;
         foreach ($parts as $part) {
             $this->_parts[$counter++] = new self(array('headers' => $part['header'], 'content' => $part['body']));

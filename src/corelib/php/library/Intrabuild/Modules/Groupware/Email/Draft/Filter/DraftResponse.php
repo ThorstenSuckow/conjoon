@@ -1,0 +1,311 @@
+<?php
+/**
+ * intrabuild
+ * (c) 2002-2008 siteartwork.de/MindPatterns
+ * license@siteartwork.de
+ *
+ * $Author: T. Suckow $
+ * $Id: Request.php 2 2008-06-21 10:38:49Z T. Suckow $
+ * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $Revision: 2 $
+ * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/php/library/Intrabuild/Modules/Groupware/Email/Item/Filter/Request.php $
+ */
+
+/**
+ * @see Intrabuild_Filter_Input
+ */
+require_once 'Intrabuild/Filter/Input.php';
+
+/**
+ * @see Intrabuild_Filter_Raw
+ */
+require_once 'Intrabuild/Filter/Raw.php';
+
+/**
+ * @see Zend_Filter_HtmlEntities
+ */
+require_once 'Zend/Filter/HtmlEntities.php';
+
+/**
+ * @see Intrabuild_Filter_StringPrependIf
+ */
+require_once 'Intrabuild/Filter/StringPrependIf.php';
+
+/**
+ * An input-filter class defining all validators and filters needed when
+ * processing input data for mutating or creating feed items.
+ *
+ * @uses Intrabuild_Filter_Input
+ * @package    Intrabuild_Filter_Input
+ * @category   Filter
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ */
+class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intrabuild_Filter_Input {
+
+    const CONTEXT_REPLY     = 'reply';
+    const CONTEXT_REPLY_ALL = 'reply_all';
+    const CONTEXT_FORWARD   = 'forward';
+    const CONTEXT_EDIT      = 'edit';
+
+
+    protected $_presence = array(
+
+        self::CONTEXT_EDIT => array(
+            'id',
+            'date',
+            'subject',
+            'from',
+            'replyTo',
+            'to',
+            'cc',
+            'bcc',
+            'inReplyTo',
+            'references',
+            'contentTextPlain',
+            'contentTextHtml',
+            'groupwareEmailFoldersId',
+            'groupwareEmailAccountsId',
+        ),
+
+        self::CONTEXT_FORWARD => array(
+            'id',
+            'date',
+            'subject',
+            'from',
+            'replyTo',
+            'to',
+            'cc',
+            'bcc',
+            'inReplyTo',
+            'references',
+            'contentTextPlain',
+            'contentTextHtml',
+            'groupwareEmailFoldersId',
+            'groupwareEmailAccountsId',
+        ),
+
+        self::CONTEXT_REPLY_ALL => array(
+            'id',
+            'date',
+            'subject',
+            'from',
+            'replyTo',
+            'to',
+            'cc',
+            'bcc',
+            'inReplyTo',
+            'references',
+            'contentTextPlain',
+            'contentTextHtml',
+            'groupwareEmailFoldersId',
+            'groupwareEmailAccountsId',
+        ),
+
+        self::CONTEXT_REPLY => array(
+            'id',
+            'date',
+            'subject',
+            'from',
+            'replyTo',
+            'to',
+            'cc',
+            'bcc',
+            'inReplyTo',
+            'references',
+            'contentTextPlain',
+            'contentTextHtml',
+            'groupwareEmailFoldersId',
+            'groupwareEmailAccountsId',
+        ),
+
+    );
+
+    protected $_filters = array(
+        'contentTextPlain' => array(
+
+        ),
+        'subject' => array(
+
+        ),
+        'from' => array(
+            'EmailRecipients'
+        ),
+        'replyTo' => array(
+            'EmailRecipients'
+        ),
+        'to' => array(
+            'EmailRecipients'
+        ),
+        'cc' => array(
+            'EmailRecipients'
+        ),
+        'bcc' => array(
+            'EmailRecipients'
+        )
+    );
+
+
+    protected function _init()
+    {
+        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+
+        $this->_filters['contentTextPlain'] = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
+
+        $context = "";
+
+        switch ($this->_context) {
+            case self::CONTEXT_REPLY:
+                $context = "Re: ";
+            break;
+
+            case self::CONTEXT_REPLY_ALL:
+                $context = "Re: ";
+            break;
+
+            case self::CONTEXT_FORWARD:
+                $context = "Fwd: ";
+            break;
+
+        }
+
+        $this->_filters['subject'][] = new Intrabuild_Filter_StringPrependIf($context);
+    }
+
+    public function getProcessedData()
+    {
+        $data = parent::getProcessedData();
+
+        $data['contentTextHtml']  = "";
+
+        switch ($this->_context) {
+            case self::CONTEXT_REPLY:
+                if (!empty($data['replyTo'])) {
+                    $data['to'] = $data['replyTo'];
+                } else {
+                    $data['to'] = $data['from'];
+                }
+
+                $data['cc']  = array();
+                $data['bcc'] = array();
+            break;
+
+            case self::CONTEXT_REPLY_ALL:
+                $data['cc'] = array_merge($data['to'], $data['cc']);
+                if (!empty($data['replyTo'])) {
+                    $data['to'] = $data['replyTo'];
+                } else {
+                    $data['to'] = $data['from'];
+                }
+            break;
+
+            case self::CONTEXT_EDIT:
+            break;
+
+            case self::CONTEXT_FORWARD:
+                $data['inReplyTo'] = "";
+                $data['to']  = array();
+                $data['cc']  = array();
+                $data['bcc'] = array();
+            break;
+
+        }
+
+        unset($data['from']);
+        unset($data['replyTo']);
+
+
+            /**
+             * @see Intrabuild_Filter_QuoteToBlockquote
+             */
+            require_once 'Intrabuild/Filter/QuoteToBlockquote.php';
+
+            /**
+             * @see Intrabuild_Filter_NormalizeLineFeeds
+             */
+            require_once 'Intrabuild/Filter/NormalizeLineFeeds.php';
+
+            /**
+             * @see Intrabuild_Filter_PlainToHtml
+             */
+            require_once 'Intrabuild/Filter/PlainToHtml.php';
+
+            /**
+             * @see Intrabuild_Filter_EmoticonReplacement
+             */
+            require_once 'Intrabuild/Filter/EmoticonReplacement.php';
+
+            /**
+             * @see Intrabuild_Filter_SignatureStrip
+             */
+            require_once 'Intrabuild/Filter/SignatureStrip.php';
+
+            $signatureStripper  = new Intrabuild_Filter_SignatureStrip();
+            $quoteFilter        = new Intrabuild_Filter_QuoteToBlockquote();
+            $lineFeedFilter     = new Intrabuild_Filter_NormalizeLineFeeds();
+            $plainToHtmlFilter  = new Intrabuild_Filter_PlainToHtml();
+            $emoticonFilter     = new Intrabuild_Filter_EmoticonReplacement(
+                array(
+                    'O:-)'    => '<span class="emoticon innocent"></span>',
+                    ':-)'     => '<span class="emoticon smile"></span>',
+                    ':)'      => '<span class="emoticon smile"></span>',
+                    ':-D'     => '<span class="emoticon laughing"></span>',
+                    ':D'      => '<span class="emoticon laughing"></span>',
+                    ':-('     => '<span class="emoticon frown"></span>',
+                    ':('      => '<span class="emoticon frown"></span>',
+                    ':-['     => '<span class="emoticon embarassed"></span>',
+                    ';-)'     => '<span class="emoticon wink"></span>',
+                    ';)'      => '<span class="emoticon wink"></span>',
+                    ':-\\'    => '<span class="emoticon undecided"></span>',
+                    ':-P'     => '<span class="emoticon tongue"></span>',
+                    ';-P'     => '<span class="emoticon tongue"></span>',
+                    ':P'      => '<span class="emoticon tongue"></span>',
+                    '=-O'     => '<span class="emoticon surprise"></span>',
+                    ':-*'     => '<span class="emoticon kiss"></span>',
+                    ':*'      => '<span class="emoticon kiss"></span>',
+                    '&gt;:o'  => '<span class="emoticon yell"></span>',
+                    '&gt;:-o' => '<span class="emoticon yell"></span>',
+                    '8-)'     => '<span class="emoticon cool"></span>',
+                    ':-$'     => '<span class="emoticon money"></span>',
+                    ':-!'     => '<span class="emoticon foot"></span>',
+                    ':\'('    => '<span class="emoticon cry"></span>',
+                    ':-X'     => '<span class="emoticon sealed"></span>'
+            ));
+
+            $startTag = "<pre>";
+            $endTag   = "</pre>";
+
+            switch ($this->_context) {
+                case self::CONTEXT_REPLY:
+
+                case self::CONTEXT_REPLY_ALL:
+                case self::CONTEXT_FORWARD:
+                    $startTag .= "<blockquote>";
+                    $endTag   = "</blockquote>" . $endTag;
+                break;
+            }
+
+            $data['contentTextPlain'] = $startTag.
+                $quoteFilter->filter(
+                     $plainToHtmlFilter->filter(
+                        $emoticonFilter->filter(
+                            $signatureStripper->filter(
+                                $lineFeedFilter->filter(
+                                    $data['contentTextPlain']
+                                )
+                            )
+                        )
+                    )
+                )
+             . $endTag;
+
+             $data['contentTextPlain'] = str_replace("\n", "<br />",  $data['contentTextPlain']);
+
+
+
+        return $data;
+    }
+
+}

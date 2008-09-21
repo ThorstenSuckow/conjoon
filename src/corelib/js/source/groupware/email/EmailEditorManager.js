@@ -142,8 +142,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 id   : draftId || -1,
                 type : type || 'new'
             },
-            success : onRecipientsLoad,
-            failure : onRecipientsLoadException,
+            success : onDraftLoad,
+            failure : onDraftLoadException,
             scope   : de.intrabuild.groupware.email.EmailEditorManager
         };
 
@@ -209,7 +209,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         return true;
     };
 
-    var onRecipientsLoadException = function(response, options)
+    var onDraftLoadException = function(response, options)
     {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
@@ -221,7 +221,16 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         });
     };
 
-    var onRecipientsLoad = function(response, options)
+    /**
+     * Callback for the successfull loading of a draft. This method awaits a fully
+     * configured Intrabuild_Modules_Groupware_Email_Draft in the response property
+     * "draft".
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     *
+     */
+    var onDraftLoad = function(response, options)
     {
         if (!formValues[options.panelId]) {
             return;
@@ -230,48 +239,62 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
 
         if (data === null) {
-            return onRecipientsLoadException(response, options);
+            return onDraftLoadException(response, options);
         }
 
-        var recRecs = [];
-        var rdata = data.draft.recipients;
-        var rRec = de.intrabuild.groupware.email.RecipientRecord;
-        var tst  = null;
+        var draft   = data.draft;
 
-        if (rdata.to) {
-            tst = rdata.to;
-            for (var i = 0, max_i = tst.length; i < max_i; i++) {
-                tmpRecord = new rRec({receiveType : 'to', address : tst[i]});
-                recRecs.push(tmpRecord);
+        var recRecs         = [];
+        var recipientRecord = de.intrabuild.groupware.email.RecipientRecord;
+        var add = null;
+
+        // get all the recipients
+        var len = Math.max(draft.to.length, draft.cc.length, draft.bcc.length);
+        for (var i = 0; i < len; i++) {
+            add = draft.to[i];
+            if (add) {
+                recRecs.push(new recipientRecord({
+                    receiveType : 'to',
+                    address     : add['name']
+                                ? add['name'] + " <" + add['address']+">"
+                                : add['address']
+                }));
+            }
+
+            add = draft.cc[i];
+            if (add) {
+                recRecs.push(new recipientRecord({
+                    receiveType : 'cc',
+                    address     : add['name']
+                                ? add['name'] + " <" + add['address']+">"
+                                : add['address']
+                }));
+            }
+
+            add = draft.bcc[i];
+            if (add) {
+                recRecs.push(new recipientRecord({
+                    receiveType : 'cc',
+                    address     : add['name']
+                                ? add['name'] + " <" + add['address']+">"
+                                : add['address']
+                }));
             }
         }
 
-        if (rdata.cc) {
-            tst = rdata.cc;
-            for (var i = 0, max_i = tst.length; i < max_i; i++) {
-                tmpRecord = new rRec({receiveType : 'cc', address : tst[i]});
-                recRecs.push(tmpRecord);
-            }
+        // fallback! no recipient specified? Add an empty one here!
+        if (len == 0) {
+            recRecs.push(new recipientRecord({
+                    receiveType : 'to',
+                    address     : ''
+            }));
         }
-
-        if (rdata.bcc) {
-            tst = rdata.bcc;
-            for (var i = 0, max_i = tst.length; i < max_i; i++) {
-                tmpRecord = new rRec({receiveType : 'bcc', address : tst[i]});
-                recRecs.push(tmpRecord);
-            }
-        }
-
-        var draft = data.draft;
-
-        var message = draft.message;
-
 
         Ext.apply(formValues[options.panelId], {
             id         : draft.id,
             disabled   : false,
             subject    : draft.subject,
-            message    : message,
+            message    : draft.contentTextPlain,
             accountId  : draft.groupwareEmailAccountsId,
             recipients : recRecs,
             folderId   : draft.groupwareEmailFoldersId
@@ -632,7 +655,22 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         });
     };
 
-
+    /**
+     * Callback for successfully sending an email.
+     * The response will have a property "item" which holds the data for a
+     * de.intrabuild.groupware.email.EmailItemRecord.
+     * The methow will publish this event using Ext.ux.util.MessageBus
+     * sending the item along with another object holding the following properties:
+     * groupwareEmailFoldersId - the id of the folder from which this email was originally
+     * edited
+     * id - the id of the draft that was opened to send this email
+     *
+     * @publish de.intrabuild.groupware.email.Smtp.emailSent
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object}          parameters
+     *
+     */
     var onSendSuccess = function(response, parameters)
     {
         var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
@@ -641,27 +679,35 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             onSendFailure(response, parameters);
             return;
         }
-        var savedId       = data.saveId;
-        var savedFolderId = data.saveFolderId;
 
         var params = parameters.params;
         var panelId = params.panelId;
         clearPendingState(panelId);
 
-        Ext.apply(params, {
-            from : accountField.store.getById(params.accountId).get('address')
-        });
+        var itemRecord = de.intrabuild.util.Record.convertTo(
+            de.intrabuild.groupware.email.EmailItemRecord,
+            data.item,
+            data.item.id
+        );
 
-        form.fireEvent('sendemail', params, savedId, savedFolderId);
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSent', {
+            itemRecord              : itemRecord,
+            id                      : params.id,
+            groupwareEmailFoldersId : params.groupwareEmailFoldersId
+        });
 
         contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
         contentPanel.remove(Ext.getCmp(panelId));
         contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
-
-
-
     };
 
+    /**
+     * Callback for an unsuccessfull attempt to send an email.
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object}          parameters
+     * @param {Boolean}         called
+     */
     var onSendFailure = function(response, parameters, called)
     {
         if (called !== true) {
@@ -1085,19 +1131,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 de.intrabuild.groupware.email.EmailForm = function(config){
 
     Ext.apply(this, config);
-
-    this.addEvents(
-        'savedraft',
-        /**
-         * @event sendemail
-         * @param {Object}
-         * @param {Number} savedId The id under which the email was saved in the
-         * database
-         * @param {Number} savedFolderId The folder id in which the email was saved
-         */
-        'sendemail',
-        'movedtooutbox'
-    );
 
     var accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 

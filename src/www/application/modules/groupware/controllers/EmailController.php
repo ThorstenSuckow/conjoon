@@ -1116,9 +1116,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      * - bcc: An json encoded array with all addresses being specified in the "bcc"
      *        field. Addresses may be separated by a comma "," or a semicolon ";"
      *
-     * The view awaits the param "savedId" to be set with the id of the saved message
-     * that was successfully sent, and the "savedFolderId" under which this email was
-     * saved (most likely the "sent"-folder associated with the account).
+     * The view awaits a fully configured email item as the response.
      */
     public function sendAction()
     {
@@ -1138,8 +1136,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
              $error = Intrabuild_Error::fromFilter($filter, $e);
              $this->view->success = false;
              $this->view->error   = $error->getDto();
-             $this->view->savedId = -1;
-             $this->view->savedFolderId = -1;
+             $this->view->item    = null;
              return;
         }
 
@@ -1153,18 +1150,26 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $cc  = array();
         $bcc = array();
 
+        $toString  = array();
+        $ccString  = array();
+
         foreach ($data['cc'] as $dcc) {
-            $add  = new Intrabuild_Modules_Groupware_Email_Address($dcc);
-            $cc[] = $add;
+            $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+            $cc[]       = $add;
+            $toString[] = $add->__toString();
         }
         foreach ($data['bcc'] as $dbcc) {
-            $add  = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
-            $bcc[] = $add;
+            $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+            $bcc[]       = $add;
         }
         foreach ($data['to'] as $dto) {
-            $add  = new Intrabuild_Modules_Groupware_Email_Address($dto);
-            $to[] = $add;
+            $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+            $to[]       = $add;
+            $toString[] = $add->__toString();
         }
+
+        $toString  = implode(', ', $toString);
+        $ccString  = implode(', ', $ccString);
 
         $data['cc']  = $cc;
         $data['to']  = $to;
@@ -1193,8 +1198,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $error->level = Intrabuild_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
-            $this->view->savedId = -1;
-            $this->view->savedFolderId = -1;
+            $this->view->item    = null;
             return;
         }
 
@@ -1216,8 +1220,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $error->level = Intrabuild_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
-            $this->view->savedId = -1;
-            $this->view->savedFolderId = -1;
+            $this->view->item    = null;
             return;
         }
 
@@ -1225,16 +1228,15 @@ class Groupware_EmailController extends Zend_Controller_Action {
         // if the email was send successfully, save it into the db and
         // return the params savedId (id of the newly saved email)
         // and savedFolderId (id of the folder where the email was saved in)
-        /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Item
-         */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
+        $itemDecorator = new Intrabuild_BeanContext_Decorator(
+            'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
+            null,
+            false
+        );
 
-        $itemModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
-        // returns array with "id" items id and "groupware_email_folders_id" folder id
-        $stData = $itemModel->saveSentEmail($message, $account, $userId, $mail);
+        $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail);
 
-        if (empty($stData)) {
+        if (!$item) {
             require_once 'Intrabuild/Error.php';
             $error = new Intrabuild_Error();
             $error = $error->getDto();;
@@ -1243,17 +1245,196 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $error->level = Intrabuild_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
-            $this->view->savedId = -1;
-            $this->view->savedFolderId = -1;
+            $this->view->item    = null;
             return;
         }
 
+
         $this->view->error   = null;
         $this->view->success = true;
-        $this->view->savedId = $stData['id'];
-        $this->view->savedFolderId = $stData['groupware_email_folders_id'];
+        $this->view->item    = $item;
     }
 
+    /**
+     * A draft can be loaded from the database if an id was supplied
+     * or filled with dummy data if no id was supplied. If no id was supplied,
+     * the user wants to create a new email. In this case, the id defaults to
+     * -1. If the user requests to save the draft later on, the id will be updated
+     * to the value of the auto_increment field of the table.
+     * Along with an id the application will need a folder_id so it can tell whether
+     * an existing view has to be updated if this draft was edited and the folder
+     * is currently visible.
+     * Note, that getDraft will also be executed when the user wants to reply to
+     * an email or forward an email. in this case, the id defaults to the email to
+     * which the user wants to forward/ reply to.
+     *
+     * The method awaits two POST parameters:
+     * id - the original message to reply to OR the id of the draft that is being
+     * edited
+     * type - the context the draft is in: can be either "new", "forward",
+     *        "reply", "reply_all" or "edit"
+     *
+     */
+    public function getDraftAction()
+    {
+        /**
+         * @see Intrabuild_Keys
+         */
+        require_once 'Intrabuild/Keys.php';
+
+        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        $id   = (int)$_POST['id'];
+        $type = (string)$_POST['type'];
+
+        // create a new draft so that the user is able to write an email from scratch!
+    	if ($id <= 0) {
+
+        	/**
+             * @see Intrabuild_Modules_Groupware_Email_Draft
+             */
+            require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+
+    	    /**
+             * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
+             */
+            require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
+
+    	    $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+    	    $standardId   = $accountModel->getStandardAccountIdForUser($userId);
+
+    	    if ($standardId == 0) {
+    	        require_once 'Intrabuild/Error.php';
+                $error = new Intrabuild_Error();
+                $error = $error->getDto();;
+                $error->title = 'Error while opening draft';
+                $error->message = 'Please configure an email account first.';
+                $error->level = Intrabuild_Error::LEVEL_ERROR;
+
+    	        $this->view->draft   = null;
+    	        $this->view->success = false;
+    	        $this->view->error   = $error;
+
+    	        return;
+    	    }
+
+    	    $draft = new Intrabuild_Modules_Groupware_Email_Draft();
+    	    $draft->setId(-1);
+    	    $draft->setGroupwareEmailFoldersId(-1);
+    	    $draft->setGroupwareEmailAccountsId($standardId);
+
+    	    $this->view->success = true;
+    	    $this->view->error   = null;
+    	    $this->view->draft   = $draft->getDto();
+
+
+    	    return;
+    	}
+
+        // load an email to edit, to reply or to forward it
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Model_Draft
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Model/Draft.php';
+
+        $draftModel = new Intrabuild_Modules_Groupware_Email_Draft_Model_Draft();
+        $draftData = $draftModel->getDraft($id, $userId);
+
+        if (empty($draftData)) {
+	        require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while opening draft';
+            $error->message = 'Could not find the referenced draft.';
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+
+	        $this->view->draft   = null;
+	        $this->view->success = false;
+	        $this->view->error   = $error;
+
+	        return;
+        }
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftResponse.php';
+
+        $context = "";
+
+        switch ($type) {
+            case 'reply':
+                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_REPLY;
+            break;
+
+            case 'reply_all':
+                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_REPLY_ALL;
+            break;
+
+            case 'forward':
+                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_FORWARD;
+            break;
+
+            case 'edit':
+                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_EDIT;
+            break;
+
+            default:
+                throw new Exception("Type $type not supported.");
+            break;
+        }
+
+        /**
+         * @see Intrabuild_Util_Array
+         */
+        require_once 'Intrabuild/Util/Array.php';
+
+        Intrabuild_Util_Array::camelizeKeys($draftData);
+
+        $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse(
+            $draftData,
+            $context
+        );
+
+        $data = $draftFilter->getProcessedData();
+
+        // convert email addresses
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        $to   = array();
+        $cc   = array();
+        $bcc  = array();
+        foreach ($data['to'] as $add) {
+            $to[] = new Intrabuild_Modules_Groupware_Email_Address($add);
+        }
+        foreach ($data['cc'] as $add) {
+            $cc[] = new Intrabuild_Modules_Groupware_Email_Address($add);
+        }
+        foreach ($data['bcc'] as $add) {
+            $bcc[] = new Intrabuild_Modules_Groupware_Email_Address($add);
+        }
+        $data['to']  = $to;
+        $data['cc']  = $cc;
+        $data['bcc'] = $bcc;
+
+        /**
+         * @see Intrabuild_BeanContext_Inspector
+         */
+        require_once 'Intrabuild/BeanContext/Inspector.php';
+
+        $draft = Intrabuild_BeanContext_Inspector::create(
+            'Intrabuild_Modules_Groupware_Email_Draft',
+            $data
+        );
+
+        $this->view->success = true;
+        $this->view->error   = null;
+        $this->view->draft   = $draft->getDto();
+    }
 
     /**
      *
@@ -1301,64 +1482,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
     }
 
 
-    /**
-     * A draft can be loaded from the database if an id was supplied
-     * or filled with dummy data if no id was supplied. If no id was supplied,
-     * the user wants to create a new email. In this case, the id defaults to
-     * -1. If the user requests to save the draft later on, the id will be updated
-     * to the value of teh auto_increment field of the table.
-     * Along with an id the application will need a folder_id so it can tell wether
-     * an existing view has to be updated if this draft was edited and the folder
-     * is currently visible.
-     * Note, that getDraft will also be executed when the user wants to reply to
-     * an email or forward an email. in this case, the id defaults to the email to
-     * which the user wants to forward/ reply to.
-     */
-    public function getDraftAction()
-    {
-    	$id = $_POST['id'];
-
-    	if ($id == -1) {
-    	    $this->view->success = true;
-    	    $this->view->draft   = array(
-                'id'         => -1,
-                'message'    => '',
-                'groupwareEmailAccountsId' => 1,
-                'groupwareEmailFoldersId'  => -1,
-                'subject'    => '',
-                'recipients' => array(
-                	'to' => array('')
-                )
-            );
-            $this->view->error = null;
-	    } else {
-
-	    	$prefix = "";
-
-	    	switch ($_POST['type']) {
-				case 'reply':     $prefix = 'Re: '; break;
-				case 'reply_all': $prefix = 'Re: '; break;
-				case 'forward':   $prefix = 'Fwd: '; break;
-	    	}
-
-	    	$msg = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh<br/>euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad<br/>minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut         <br/>aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in           <br/>vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis           <br/>at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril                <br/><blockquote>delenit augue duis dolore <blockquote>te feugait nulla facilisi. Lorem ipsum dolor sit amet,<br/>consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet           <br/>dolore <blockquote>magna <blockquote>aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud             <br/>exerci tation ullamcorper suscipit lo</blockquote>bortis nisl ut aliquip ex ea commodo consequat.<br />Duis</blockquote> autem vel eum </blockquote>iriure dolor in hendrerit in vulputate velit esse molestie consequat,<br /></blockquote>vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim<br />qui blandit praesent luptatum zzril  delenit augue duis dolore te feugait nulla facilisi.<br />Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod<br />mazim placerat facer possim assum.";
-
-            $this->view->success = true;
-            $this->view->draft   = array(
-                'id'              => $id,
-                'message'         => '<blockquote>'.$msg.'</blockquote>',
-                'groupwareEmailAccountsId'      => 1,
-                'groupwareEmailFoldersId'       => -1,
-                'subject'         => $prefix . 'Keine neue Email <YO>',
-                'recipients'      => array(
-                    'to'  => array('test@test.de', 'test2@test2.de'),
-                    'cc'  => array('test3@test3de', 'test4@test4.de'),
-                    'bcc' => array('test5@test5de', 'test6@test6.de')
-                )
-            );
-            $this->view->error = null;
-	    }
-    }
 
 
 

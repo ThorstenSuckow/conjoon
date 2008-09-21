@@ -50,7 +50,6 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
                       de.intrabuild.groupware.email.EmailItemRecord
                       ),
         sortInfo   : {field: 'id', direction: 'DESC'},
-        remoteSort : true,
         baseParams : {
             minDate : Math.round(new Date().getTime()/1000)
         },
