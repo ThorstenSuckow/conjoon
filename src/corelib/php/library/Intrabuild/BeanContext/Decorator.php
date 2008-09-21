@@ -104,7 +104,7 @@ final class Intrabuild_BeanContext_Decorator {
         }
 
         if (!is_a($this->_decoratedModel, 'Intrabuild_BeanContext_Decoratable')) {
-            throw new Exception("Decorated class is no subclass of \"Zend_Db_Table_Abstract\"");
+            throw new Exception("Decorated class is no subclass of \"Intrabuild_BeanContext_Decoratable\"");
         }
 
         $this->_decoratedMethods = $this->_decoratedModel->getDecoratableMethods();
