@@ -900,6 +900,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var store        = this.gridPanel.store;
         var pendingStore = tp.pendingItemStore;
 
+        /**
+         * @todo  it is possible that the tree is not fully loaded yet. Thus we
+         * check if the folderOutbox.id is available and exit if that is not the
+         * case. This should be enhancened when support for one tree per account
+         * is available
+         */
+        if (!tp.folderOutbox) {
+            return;
+        }
 
         // if the email was loaded from outbox and sent, update pending nodes
         // minus 1

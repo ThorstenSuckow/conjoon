@@ -233,11 +233,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             require_once 'Intrabuild/Filter/PlainToHtml.php';
 
             /**
-             * @see Intrabuild_Filter_EmoticonReplacement
-             */
-            require_once 'Intrabuild/Filter/EmoticonReplacement.php';
-
-            /**
              * @see Intrabuild_Filter_SignatureStrip
              */
             require_once 'Intrabuild/Filter/SignatureStrip.php';
@@ -246,33 +241,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             $quoteFilter        = new Intrabuild_Filter_QuoteToBlockquote();
             $lineFeedFilter     = new Intrabuild_Filter_NormalizeLineFeeds();
             $plainToHtmlFilter  = new Intrabuild_Filter_PlainToHtml();
-            $emoticonFilter     = new Intrabuild_Filter_EmoticonReplacement(
-                array(
-                    'O:-)'    => '<span class="emoticon innocent"></span>',
-                    ':-)'     => '<span class="emoticon smile"></span>',
-                    ':)'      => '<span class="emoticon smile"></span>',
-                    ':-D'     => '<span class="emoticon laughing"></span>',
-                    ':D'      => '<span class="emoticon laughing"></span>',
-                    ':-('     => '<span class="emoticon frown"></span>',
-                    ':('      => '<span class="emoticon frown"></span>',
-                    ':-['     => '<span class="emoticon embarassed"></span>',
-                    ';-)'     => '<span class="emoticon wink"></span>',
-                    ';)'      => '<span class="emoticon wink"></span>',
-                    ':-\\'    => '<span class="emoticon undecided"></span>',
-                    ':-P'     => '<span class="emoticon tongue"></span>',
-                    ';-P'     => '<span class="emoticon tongue"></span>',
-                    ':P'      => '<span class="emoticon tongue"></span>',
-                    '=-O'     => '<span class="emoticon surprise"></span>',
-                    ':-*'     => '<span class="emoticon kiss"></span>',
-                    ':*'      => '<span class="emoticon kiss"></span>',
-                    '&gt;:o'  => '<span class="emoticon yell"></span>',
-                    '&gt;:-o' => '<span class="emoticon yell"></span>',
-                    '8-)'     => '<span class="emoticon cool"></span>',
-                    ':-$'     => '<span class="emoticon money"></span>',
-                    ':-!'     => '<span class="emoticon foot"></span>',
-                    ':\'('    => '<span class="emoticon cry"></span>',
-                    ':-X'     => '<span class="emoticon sealed"></span>'
-            ));
 
             $startTag = "<pre>";
             $endTag   = "</pre>";
@@ -290,13 +258,12 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             $data['contentTextPlain'] = $startTag.
                 $quoteFilter->filter(
                      $plainToHtmlFilter->filter(
-                        $emoticonFilter->filter(
-                            $signatureStripper->filter(
-                                $lineFeedFilter->filter(
-                                    $data['contentTextPlain']
-                                )
+                        $signatureStripper->filter(
+                            $lineFeedFilter->filter(
+                                $data['contentTextPlain']
                             )
                         )
+
                     )
                 )
              . $endTag;
