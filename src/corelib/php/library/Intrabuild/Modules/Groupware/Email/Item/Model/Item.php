@@ -409,9 +409,11 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 case Intrabuild_Modules_Groupware_Email_Folder_Model_Folder::META_INFO_DRAFT:
                     $messageType = 'draft';
                 break;
-                // failed!
+                // anything else is probably a reply or forward to an existing message in any other
+                // folder
                 default:
-                    return array();
+                    $messageType = 'scratch';
+                break;
 
             }
         }
