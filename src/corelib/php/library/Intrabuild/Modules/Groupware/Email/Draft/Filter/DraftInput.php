@@ -215,8 +215,8 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
                         $blockquoteToQuoteFilter->filter(
                             $normalizeLineFeedsFilter->filter(
                                 str_replace(
-                                    array("<br>", "<br/>", "<br />"),
-                                    "\n",
+                                    array("&nbsp;", "<br>", "<br/>", "<br />"),
+                                    array(" ", "\n"),
                                     $message
                                 )
                             )
