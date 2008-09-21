@@ -46,11 +46,10 @@ class Intrabuild_Filter_SignatureStrip implements Zend_Filter_Interface
             return "";
         }
 
-        $index = strrpos($value, "\n-- \n");
+        $index = strpos($value, "\n-- \n");
 
-        if ($index !== false) {
-            $value = substr($value, 0, $index-1);
-        }
+        $value = substr($value, 0, $index-1);
+
 
         return $value;
     }

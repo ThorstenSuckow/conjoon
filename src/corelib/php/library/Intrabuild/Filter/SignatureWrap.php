@@ -77,7 +77,7 @@ class Intrabuild_Filter_SignatureWrap implements Zend_Filter_Interface
      */
     public function filter($value)
     {
-        $index = strrpos($value, "\n-- \n");
+        $index = strpos($value, "\n-- \n");
 
         if ($index === false) {
             return $value;
