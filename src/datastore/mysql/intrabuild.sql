@@ -300,4 +300,6 @@ CREATE TABLE IF NOT EXISTS `intrabuild`.`groupware_email_items_outbox` (
 PRIMARY KEY ( `groupware_email_items_id` )
 ) ENGINE = MYISAM;
 
-ALTER TABLE `groupware_email_items_outbox` CHANGE `sent_timestamp` `sent_timestamp` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'
+ALTER TABLE `groupware_email_items_outbox` CHANGE `sent_timestamp` `sent_timestamp` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
+
+ALTER TABLE `groupware_email_items_outbox` ADD `groupware_email_accounts_id` INT UNSIGNED NOT NULL AFTER `groupware_email_items_id` ;

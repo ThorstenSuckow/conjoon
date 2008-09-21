@@ -446,9 +446,10 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         $bccString = implode(', ', $bccString);
 
         $outboxUpdate = array(
-            'sent_timestamp' => time(),
-            'raw_header'     => $mailSent->getHeader(),
-            'raw_body'       => $mailSent->getBody()
+            'sent_timestamp'              => time(),
+            'raw_header'                  => $mailSent->getHeader(),
+            'raw_body'                    => $mailSent->getBody(),
+            'groupware_email_accounts_id' => $message->getGroupwareEmailAccountsId()
         );
         $itemUpdate = array(
             'reply_to'                   => $replyTo,
