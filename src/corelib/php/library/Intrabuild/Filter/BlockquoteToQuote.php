@@ -38,6 +38,26 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
      */
     public function filter($value)
     {
+        // first off, add an extra whitespace char to every "&gt;" that appears
+        // at the beginning of a line, so they are not accidently identified as
+        // as quotes. We will also check if the &gt; appears after a closing tag, in this case we
+        // will also add an extra whitespace.
+        // This also applies to text that starts with a &gt;
+        $index = strpos($value, "&gt;");
+
+        if ($index === 0) {
+            $value = " ". $value;
+        }
+
+        $value = str_replace(
+            array("\n&gt;", ">&gt;"),
+            array("\n &gt;", "> &gt;"),
+            $value
+        );
+
+       // var_dump($value);
+        //die();
+
         // normalize blockquote
         $value = preg_replace("/(<\/?)(blockquote)[^>]*>/i",
              "$1blockquote>",
