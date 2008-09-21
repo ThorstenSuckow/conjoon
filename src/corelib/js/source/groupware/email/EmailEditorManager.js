@@ -282,13 +282,12 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             }
         }
 
-        // fallback! no recipient specified? Add an empty one here!
-        if (len == 0) {
-            recRecs.push(new recipientRecord({
-                    receiveType : 'to',
-                    address     : ''
-            }));
-        }
+        // Add an empty line so the user is able to submit another recipient
+        recRecs.push(new recipientRecord({
+                receiveType : 'to',
+                address     : ''
+        }));
+
 
         Ext.apply(formValues[options.panelId], {
             id         : draft.id,
