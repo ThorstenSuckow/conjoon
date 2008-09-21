@@ -1,7 +1,7 @@
 /*
  * Ext.ux.grid.BufferedGridDragZone V0.1
  * Copyright(c) 2007, http://www.siteartwork.de
- * 
+ *
  * Licensed under the terms of the Open Source LGPL 3.0
  * http://www.gnu.org/licenses/lgpl.html
  *
@@ -14,16 +14,16 @@
 Ext.namespace('Ext.ux.grid');
 
 Ext.ux.grid.BufferedGridDragZone = function(grid, config){
-    
-    
-    
+
+
+
     this.view = grid.getView();
     Ext.ux.grid.BufferedGridDragZone.superclass.constructor.call(this, this.view.mainBody.dom, config);
-    
+
   //  this.addEvents({
     //    'startdrag' : true
     //});
-    
+
     if(this.view.lockedBody){
         this.setHandleElId(Ext.id(this.view.mainBody.dom));
         this.setOuterHandleElId(Ext.id(this.view.lockedBody.dom));
@@ -32,7 +32,7 @@ Ext.ux.grid.BufferedGridDragZone = function(grid, config){
     this.grid = grid;
     this.ddel = document.createElement('div');
     this.ddel.className = 'x-grid-dd-wrap';
-    
+
     this.view.ds.on('beforeselectionsload', this.onBeforeSelectionsLoad, this);
     this.view.ds.on('selectionsload',       this.onSelectionsLoad,       this);
 };
@@ -41,7 +41,7 @@ Ext.extend(Ext.ux.grid.BufferedGridDragZone, Ext.dd.DragZone, {
     ddGroup : "GridDD",
 
     isDropValid : true,
-    
+
     getDragData : function(e)
     {
         var t = Ext.lib.Event.getTarget(e);
@@ -51,6 +51,7 @@ Ext.extend(Ext.ux.grid.BufferedGridDragZone, Ext.dd.DragZone, {
             if(!sm.isSelected(rowIndex) || e.hasModifier()){
                 sm.handleMouseDown(this.grid, rowIndex, e);
             }
+
             return {grid: this.grid, ddel: this.ddel, rowIndex: rowIndex, selections:sm.getSelections()};
         }
         return false;
@@ -59,7 +60,7 @@ Ext.extend(Ext.ux.grid.BufferedGridDragZone, Ext.dd.DragZone, {
     onInitDrag : function(e)
     {
         this.view.ds.loadSelections(this.grid.selModel.getPendingSelections(true));
-        
+
         var data = this.dragData;
         this.ddel.innerHTML = this.grid.getDragDropText();
         this.proxy.update(this.ddel);
@@ -69,16 +70,16 @@ Ext.extend(Ext.ux.grid.BufferedGridDragZone, Ext.dd.DragZone, {
     onBeforeSelectionsLoad : function()
     {
         this.isDropValid = false;
-        Ext.fly(this.proxy.el.dom.firstChild).addClass('x-dd-drop-waiting');    
+        Ext.fly(this.proxy.el.dom.firstChild).addClass('x-dd-drop-waiting');
     },
-    
+
     onSelectionsLoad : function()
     {
         this.isDropValid = true;
         this.ddel.innerHTML = this.grid.getDragDropText();
-        Ext.fly(this.proxy.el.dom.firstChild).removeClass('x-dd-drop-waiting');    
+        Ext.fly(this.proxy.el.dom.firstChild).removeClass('x-dd-drop-waiting');
     },
-    
+
     afterRepair : function()
     {
         this.dragging = false;
@@ -91,9 +92,9 @@ Ext.extend(Ext.ux.grid.BufferedGridDragZone, Ext.dd.DragZone, {
 
     onStartDrag : function()
     {
-        
+
     },
-    
+
     onEndDrag : function(data, e)
     {
         // fire end drag?

@@ -93,7 +93,7 @@ Ext.ux.grid.BufferedGridView = function(config) {
      * columns exceeds the width of the grid component.
      * On Windows XP (IE7, FF2), this value defaults to 16.
      */
-    this.horizontalScrollOffset = 16;
+    this.horizontalScrollOffset = 17;
 
     /**
      * @cfg {Object} loadMaskConfig The config of the load mask that will be shown
@@ -109,10 +109,10 @@ Ext.ux.grid.BufferedGridView = function(config) {
      * data possible.
      */
     this.templates.master = new Ext.Template(
-        '<div class="x-grid3" hidefocus="true"><div style="z-index:2000;background:none;position:relative;height:321px; float:right; width: 18px;overflow: scroll;"><div style="background:none;width:1px;overflow:hidden;font-size:1px;height:0px;"></div></div>',
-            '<div class="x-grid3-viewport" style="float:left">',
+        '<div class="x-grid3" hidefocus="true"><div class="ext-ux-livegrid-liveScroller"><div></div></div>',
+            '<div class="x-grid3-viewport"">',
                 '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset">{header}</div></div><div class="x-clear"></div></div>',
-                '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body" style="position:relative;">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
+                '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
             "</div>",
             '<div class="x-grid3-resize-marker">&#160;</div>',
             '<div class="x-grid3-resize-proxy">&#160;</div>',
@@ -126,6 +126,23 @@ Ext.ux.grid.BufferedGridView = function(config) {
 Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
 // {{{ --------------------------properties-------------------------------------
+
+    /**
+     * Used to store the z-index of the mask that is used to show while buffering,
+     * so the scrollbar can be displayed above of it.
+     * @type {Number} _maskIndex
+     */
+    _maskIndex : 20001,
+
+    /**
+     * Needed to indicate that IE has rendered the scrollbar properly. Used in
+     * adjustBufferInset to tell whether IE has to activate the scrollbar
+     * programmatically, otherwise it would be rendered as disabled.
+     * @type {Boolean} _scrollInit
+     * @private
+     */
+    _scrollInit : false,
+
     /**
      * Stores the height of the header. Needed for recalculating scroller inset height.
      * @param {Number}
@@ -242,6 +259,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      *
      * @param {Boolean} forceReload <tt>true</tt> to reload the buffers contents,
      *                              othwerwise <tt>false</tt>
+     *
+     * @return {Boolean} Whether the store loads after reset(true); returns false
+     * if any of the attached beforeload listeners cancels the load-event
      */
     reset : function(forceReload)
     {
@@ -260,25 +280,20 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.fireEvent('cursormove', this, 0,
                            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
+            return false;
         } else {
 
-            var params = {
-                    start : 0,
-                    limit : this.ds.bufferSize
-            };
-
+            var params = {};
             var sInfo = this.ds.sortInfo;
 
             if (sInfo) {
-                params.dir  = sInfo.direction;
-                params.sort = sInfo.field;
+                params = {
+                    dir  : sInfo.direction,
+                    sort : sInfo.field
+                };
             }
 
-            this.ds.load({
-                callback : function(){this.reset(false);},
-                scope    : this,
-                params   : params
-            });
+            return this.ds.load({params : params});
         }
 
     },
@@ -316,10 +331,12 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
 
 	    if (this.loadMask) {
+
             this.loadMask = new Ext.LoadMask(
                                 this.mainBody.dom.parentNode.parentNode,
                                 this.loadMask
                             );
+
         }
     },
 
@@ -426,7 +443,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         var csize = c.getSize(true);
 
         // set vw to 19 to take scrollbar width into account!
-        var vw = csize.width-this.scrollOffset;
+        var vw = csize.width;
 
         if(vw < 20 || csize.height < 20){ // display: none?
             return;
@@ -446,6 +463,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             }
         }
 
+        this.liveScroller.dom.style.top = this.hdHeight+"px";
+
         if(this.forceFit){
             if(this.lastViewWidth != vw){
                 this.fitColumns(false, false);
@@ -460,6 +479,31 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         this.adjustBufferInset();
 
         this.onLayout(vw, vh);
+    },
+
+    /**
+     * Overriden for Ext 2.2 to prevent call to focus Row.
+     * This method i s here for dom operations only - the passed argument is the
+     * index of the node in the dom, not in the model.
+     *
+     */
+    removeRow : function(row)
+    {
+        Ext.removeNode(this.getRow(row));
+    },
+
+    /**
+     * Overriden for Ext 2.2 to prevent call to focus Row.
+     * This method i s here for dom operations only - the passed arguments are the
+     * index of the nodes in the dom, not in the model.
+     *
+     */
+    removeRows : function(firstRow, lastRow)
+    {
+        var bd = this.mainBody.dom;
+        for(var rowIndex = firstRow; rowIndex <= lastRow; rowIndex++){
+            Ext.removeNode(bd.childNodes[firstRow]);
+        }
     },
 
 // {{{ ----------------------dom/mouse listeners--------------------------------
@@ -625,8 +669,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     // private
     onClear : function()
     {
-        this.reset(false);//var newIndex = Math.max(this.ds.bufferRange[0] - this.visibleRows, 0);
-        //this.updateLiveRows(newIndex, true, true);
+        this.reset(false);
     },
 
 
@@ -635,12 +678,32 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      * implementation does only remove the selected row which record is in the
      * current store.
      *
+     * @param {Number} currentBulkRecord
+     * @param {Number lastBulkRecord
      */
     // private
-    onRemove : function(ds, record, index, isUpdate)
+    onRemove : function(ds, record, index, currentBulkRecord, lastBulkRecord)
     {
-        if (isUpdate) {
-            throw "BufferedGridView.onRemove: argument \"isUpdate\" not supported";
+        var viewIndex = (index != Number.MIN_VALUE && index != Number.MAX_VALUE)
+                      ? index + this.ds.bufferRange[0]
+                      : index;
+
+        if (currentBulkRecord != undefined) {
+
+            if (viewIndex < this.rowIndex) {
+                this.rowIndex--;
+            }
+
+            this.fireEvent("beforerowremoved", this, viewIndex, record);
+            this.fireEvent("rowremoved",       this, viewIndex, record);
+
+            if (currentBulkRecord == lastBulkRecord) {
+                this.adjustBufferInset();
+                this.adjustScrollerPos((this.rowIndex-this.lastRowIndex)*this.rowHeight, true)
+                this.lastRowIndex = this.rowIndex;
+                this.updateLiveRows(this.rowIndex, true);
+            }
+            return;
         }
 
         if (index == Number.MIN_VALUE || index == Number.MAX_VALUE) {
@@ -649,6 +712,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             if (index == Number.MIN_VALUE) {
                 this.rowIndex--;
                 this.lastRowIndex = this.rowIndex;
+                this.adjustScrollerPos(-this.rowHeight, true);
+                this.fireEvent('cursormove', this, this.rowIndex,
+                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                           this.ds.totalLength);
             }
             this.adjustBufferInset();
             this.processRows(0, undefined, true);
@@ -670,7 +737,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                            this.ds.totalLength);
 
         } else if (viewIndex >= this.rowIndex && viewIndex < this.rowIndex+domLength) {
-            var lastPossibleRIndex = ((this.rowIndex-this.ds.bufferRange[0])+this.visibleRows)-1;
+            var lastPossibleRIndex = (this.rowIndex-this.ds.bufferRange[0])+(this.visibleRows-1);
 
             var cInd = viewIndex-this.rowIndex;
             var rec  = this.ds.getAt(this.rowIndex+this.visibleRows-1);
@@ -877,15 +944,21 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      */
     onBeforeLoad : function(store, options)
     {
-        if (!options.params) {
-            options.params = {start : 0, limit : this.ds.bufferSize};
-        } else {
-            options.params.start = 0;
-            options.params.limit = this.ds.bufferSize;
-        }
+        options.params = options.params || {};
 
-        options.scope    = this;
-        options.callback = function(){this.reset(false);};
+        var apply = Ext.apply;
+
+        apply(options, {
+            scope    : this,
+            callback : function(){
+                this.reset(false);
+            }
+        });
+
+        apply(options.params, {
+            start    : 0,
+            limit    : this.ds.bufferSize
+        });
 
         return true;
     },
@@ -938,8 +1011,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     {
         if (success === true) {
             this.fireEvent('buffer', this, this.ds, this.rowIndex,
-                Math.max(this.visibleRows, this.getRows().length),
-                this.ds.getTotalCount(),
+                Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+                this.ds.totalLength,
                 options
             );
 
@@ -947,11 +1020,11 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.isPrebuffering = false;
             this.showLoadMask(false);
 
-            var pendingSelections = this.grid.selModel.getPendingSelections(false);
+            // this is needed since references to records which have been unloaded
+            // get lost when the store gets loaded with new data.
+            // from the store
+            this.grid.selModel.replaceSelections(records);
 
-            for (var i = 0, max_i = pendingSelections.length; i < max_i; i++) {
-                this.grid.selModel.clearPendingSelection(pendingSelections[i]);
-            }
 
             if (this.isInRange(this.rowIndex)) {
                 this.replaceLiveRows(this.rowIndex, options.forceRepaint);
@@ -1006,7 +1079,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      */
     onLiveScroll : function()
     {
-        var scrollTop     = this.liveScroller.dom.scrollTop;
+        var scrollTop = this.liveScroller.dom.scrollTop;
 
         var cursor = Math.floor((scrollTop)/this.rowHeight);
         this.rowIndex = cursor;
@@ -1074,7 +1147,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             row.rowIndex = index;
 
             if (paintSelections == true) {
-                if (this.grid.selModel.bufferedSelections[index] === true) {
+                if (this.grid.selModel.isSelected(this.ds.getAt(index)) === true) {
                     this.addRowClass(i, "x-grid3-row-selected");
                 } else {
                     this.removeRowClass(i, "x-grid3-row-selected");
@@ -1323,7 +1396,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
                 // while scrolling, we have not yet reached the row index
                 // that would trigger a re-buffer
-                if (index+this.visibleRows+this.nearLimit < this.ds.bufferRange[1]) {
+                if (index+this.visibleRows+this.nearLimit <= this.ds.bufferRange[1]) {
                     return;
                 }
 
@@ -1331,7 +1404,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                 // by the queried data repository, we don't need to buffer again.
                 // This basically means that a re-buffer would only occur again
                 // if we are scrolling up.
-                if (this.ds.bufferRange[1] >= totalCount) {
+                if (this.ds.bufferRange[1]+1 >= totalCount) {
                     return;
                 }
             } else if (index < lastIndex) { // scrolling up
@@ -1365,7 +1438,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         }
 
         this.fireEvent('beforebuffer', this, this.ds, index,
-                       this.visibleRows, this.ds.totalLength);
+            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+            this.ds.totalLength
+        );
 
         this.ds.suspendEvents();
         var sInfo  = this.ds.sortInfo;
@@ -1374,6 +1449,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         if (this.ds.lastOptions) {
             Ext.apply(params, this.ds.lastOptions.params);
         }
+
         params.start = bufferOffset;
         params.limit = this.ds.bufferSize;
 
@@ -1381,6 +1457,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             params.dir  = sInfo.direction;
             params.sort = sInfo.field;
         }
+
         this.ds.load({
             forceRepaint : forceRepaint,
             callback : this.liveBufferUpdate,
@@ -1400,8 +1477,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     {
         if (this.loadMask == null) {
             if (show) {
-                this.loadMask = new Ext.LoadMask(this.mainBody.dom.parentNode.parentNode,
-                                this.loadMaskConfig);
+                this.loadMask = new Ext.LoadMask(
+                    this.mainBody.dom.parentNode.parentNode,
+                    this.loadMaskConfig
+                );
             } else {
                 return;
             }
@@ -1409,8 +1488,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         if (show) {
             this.loadMask.show();
+            this.liveScroller.setStyle('zIndex', this._maskIndex);
         } else {
             this.loadMask.hide();
+            this.liveScroller.setStyle('zIndex', 1);
         }
     },
 
@@ -1450,33 +1531,39 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         spill = Math.abs(spill);
 
         // adjust cursor to the buffered model index
-        var cursorBuffer = cursor-this.ds.bufferRange[0];
+        var bufferRange = this.ds.bufferRange;
+        var cursorBuffer = cursor-bufferRange[0];
 
         // compute the last possible renderindex
-        var lpIndex = Math.min(cursorBuffer+this.visibleRows-1, this.ds.bufferRange[1]-this.ds.bufferRange[0]);
+        var lpIndex = Math.min(cursorBuffer+this.visibleRows-1, bufferRange[1]-bufferRange[0]);
 
         // we can skip checking for append or prepend if the spill is larger than
         // visibleRows. We can paint the whole rows new then-
         if (spill >= this.visibleRows || spill == 0) {
-            this.mainBody.update(this.renderRows(
-                cursorBuffer,
-                lpIndex
-            ));
+
+            this.mainBody.update(this.renderRows(cursorBuffer, lpIndex));
+
         } else {
             if (append) {
+
                 this.removeRows(0, spill-1);
-                if (cursorBuffer+this.visibleRows-spill < this.ds.bufferRange[1]-this.ds.bufferRange[0]) {
+
+                if (cursorBuffer+this.visibleRows-spill <= bufferRange[1]-bufferRange[0]) {
+
                     var html = this.renderRows(
                         cursorBuffer+this.visibleRows-spill,
                         lpIndex
                     );
                     Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
+
                 }
 
             } else {
+
                 this.removeRows(this.visibleRows-spill, this.visibleRows-1);
                 var html = this.renderRows(cursorBuffer, cursorBuffer+spill-1);
                 Ext.DomHelper.insertHtml('beforeBegin', this.mainBody.dom.firstChild, html);
+
             }
         }
 
@@ -1496,29 +1583,10 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
     // protected
     adjustBufferInset : function()
     {
-        var g = this.grid, ds = g.store;
-
-        var c  = g.getGridEl();
-
-        var scrollbar = this.cm.getTotalWidth()+this.scrollOffset > c.getSize().width;
-
-        // adjust the height of the scrollbar
-
         var liveScrollerDom = this.liveScroller.dom;
-
-        var contHeight = liveScrollerDom.parentNode.offsetHeight +
-                         (Ext.isGecko
-                         ? ((ds.totalLength > 0 && scrollbar)
-                            ? - this.horizontalScrollOffset
-                            : 0)
-                         : (((ds.totalLength > 0 && scrollbar)
-                            ? 0 : this.horizontalScrollOffset)))
-
-        liveScrollerDom.style.height = contHeight+"px";
-
-        if (this.rowHeight == -1) {
-            return;
-        }
+        var g = this.grid, ds = g.store;
+        var c  = g.getGridEl();
+        var elWidth = c.getSize().width;
 
         // hidden rows is the number of rows which cannot be
         // displayed and for which a scrollbar needs to be
@@ -1527,7 +1595,43 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                        ? 0
                        : Math.max(0, ds.totalLength-(this.visibleRows-this.rowClipped));
 
+        if (hiddenRows == 0) {
+            this.scroller.setWidth(elWidth);
+            liveScrollerDom.style.display = 'none';
+            return;
+        } else {
+            this.scroller.setWidth(elWidth-this.scrollOffset);
+            liveScrollerDom.style.display = '';
+        }
+
+        var scrollbar = this.cm.getTotalWidth()+this.scrollOffset > elWidth;
+
+        // adjust the height of the scrollbar
+        var contHeight = liveScrollerDom.parentNode.offsetHeight +
+                         (Ext.isGecko
+                         ? ((ds.totalLength > 0 && scrollbar)
+                            ? - this.horizontalScrollOffset
+                            : 0)
+                         : (((ds.totalLength > 0 && scrollbar)
+                            ? 0 : this.horizontalScrollOffset)))
+                         - this.hdHeight;
+
+        liveScrollerDom.style.height = contHeight+"px";
+
+        if (this.rowHeight == -1) {
+            return;
+        }
+
         this.liveScrollerInset.style.height = (hiddenRows == 0 ? 0 : contHeight+(hiddenRows*this.rowHeight))+"px";
+
+        // do action with the scrolling! IE would otherwise render the scrollbar as
+        // disabled when the scrollbar is shown for the first time and there are
+        // more records in the grid than displayable
+        if (Ext.isIE && !this._scrollInit) {
+            this._scrollInit = true;
+            this.adjustScrollerPos(1, true);
+            this.adjustScrollerPos(-1, true);
+        }
     },
 
     /**

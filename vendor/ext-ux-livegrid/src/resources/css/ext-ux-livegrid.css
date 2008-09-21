@@ -1,3 +1,21 @@
 .x-dd-drop-waiting {
     background-image:url(../images/loading.gif) !important;
 }
+
+.ext-ux-livegrid-liveScroller {
+    z-index:1;
+    background:none;
+    position:absolute;
+    height:321px;
+    right:0px;
+    width:17px;
+    overflow: scroll;
+}
+
+.ext-ux-livegrid-liveScroller div {
+    background:none;
+    width:1px;
+    overflow:hidden;
+    font-size:1px;
+    height:0px;
+}

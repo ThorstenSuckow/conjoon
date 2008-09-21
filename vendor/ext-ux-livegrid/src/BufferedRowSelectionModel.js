@@ -28,10 +28,6 @@ Ext.ux.grid.BufferedRowSelectionModel = function(config) {
 
     Ext.apply(this, config);
 
-    this.bufferedSelections = {};
-
-    this.bufferedSelectionMap = {};
-
     this.pendingSelections = {};
 
     Ext.ux.grid.BufferedRowSelectionModel.superclass.constructor.call(this);
@@ -55,18 +51,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
     // private
     onRefresh : function()
     {
-        //var ds = this.grid.store, index;
-        //var s = this.getSelections();
         this.clearSelections(true);
-        /*for(var i = 0, len = s.length; i < len; i++){
-            var r = s[i];
-            if((index = ds.indexOfId(r.id)) != -1){
-                this.selectRow(index, true);
-            }
-        }
-        if(s.length != this.selections.getCount()){
-            this.fireEvent("selectionchange", this);
-        }*/
     },
 
 
@@ -90,51 +75,67 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
      */
     onRemove : function(v, index, r)
     {
+        var ranges           = this.getPendingSelections();
+        var rangesLength     = ranges.length;
+        var selectionChanged = false;
+
         // if index equals to Number.MIN_VALUE or Number.MAX_VALUE, mark current
         // pending selections as dirty
-        if ((index == Number.MIN_VALUE || index == Number.MAX_VALUE)) {
+        if (index == Number.MIN_VALUE || index == Number.MAX_VALUE) {
 
             if (r) {
-                var ind = this.bufferedSelectionMap[r.id];
-                if (ind != undefined) {
-                    delete this.bufferedSelections[ind];
-                    delete this.bufferedSelectionMap[r.id];
-                    this.shiftSelections(ind+1, -1);
+                // if the record is part of the current selection, shift the selection down by 1
+                // if the index equals to Number.MIN_VALUE
+                if (this.isIdSelected(r.id) && index == Number.MIN_VALUE) {
+                    // bufferRange already counted down when this method gets
+                    // called
+                    this.shiftSelections(this.grid.store.bufferRange[1], -1);
                 }
+                this.selections.remove(r);
+                selectionChanged = true;
             }
 
-            this.selections.remove(r);
+            // clear all pending selections that are behind the first
+            // bufferrange, and shift all pending Selections that lay in front
+            // front of the second bufferRange down by 1!
+            if (index == Number.MIN_VALUE) {
+                this.clearPendingSelections(0, this.grid.store.bufferRange[0]);
+            } else {
+                // clear pending selections that are in front of bufferRange[1]
+                this.clearPendingSelections(this.grid.store.bufferRange[1]);
+            }
 
-            this.fireEvent('selectiondirty', this, index, r);
-            return;
-        }
+            // only fire the selectiondirty event if there were pendning ranges
+            if (rangesLength != 0) {
+                this.fireEvent('selectiondirty', this, index, 1);
+            }
 
-        var viewIndex    = index;
-        var fire         = this.bufferedSelections[viewIndex] === true;
-        var ranges       = this.getPendingSelections();
-        var rangesLength = ranges.length;
-
-
-        delete this.bufferedSelections[viewIndex];
-        delete this.pendingSelections[viewIndex];
-
-        if (r) {
-            this.selections.remove(r);
-        }
-
-        if (rangesLength == 0) {
-            this.shiftSelections(viewIndex, -1);
         } else {
-            var s = ranges[0];
-            var e = ranges[rangesLength-1];
-            if (viewIndex <= e || viewIndex <= s) {
-                if (this.fireEvent('selectiondirty', this, viewIndex, -1) !== false) {
-                    this.shiftSelections(viewIndex, -1);
-                }
+
+            selectionChanged = this.isIdSelected(r.id);
+
+            // if the record was not part of the selection, return
+            if (!selectionChanged) {
+                return;
             }
+
+            this.selections.remove(r);
+            //this.last = false;
+            // if there are currently pending selections, look up the interval
+            // to tell whether removing the record would mark the selection dirty
+            if (rangesLength != 0) {
+
+                var startRange = ranges[0];
+                var endRange   = ranges[rangesLength-1];
+                if (index <= endRange || index <= startRange) {
+                    this.shiftSelections(index, -1);
+                    this.fireEvent('selectiondirty', this, index, 1);
+                }
+             }
+
         }
 
-        if (fire) {
+        if (selectionChanged) {
             this.fireEvent('selectionchange', this);
         }
     },
@@ -156,31 +157,32 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         // pending selections as dirty
         if ((index == Number.MIN_VALUE || index == Number.MAX_VALUE)) {
 
-            // we may shift selections if there are no pendning selections. Everything
-            // in the current buffer range will be shifted up!
-            if (rangesLength == 0 && index == Number.MIN_VALUE) {
-                this.shiftSelections(this.grid.getStore().bufferRange[0], recordLength);
+            if (index == Number.MIN_VALUE) {
+                // bufferRange already counted down when this method gets
+                // called
+                this.clearPendingSelections(0, this.grid.store.bufferRange[0]);
+                this.shiftSelections(this.grid.store.bufferRange[1], recordLength);
+            } else {
+                this.clearPendingSelections(this.grid.store.bufferRange[1]);
             }
 
-            this.fireEvent('selectiondirty', this, index, recordLength);
-            return;
-        }
+            // only fire the selectiondirty event if there were pendning ranges
+            if (rangesLength != 0) {
+                this.fireEvent('selectiondirty', this, index, r);
+            }
 
-        if (rangesLength == 0) {
-            this.shiftSelections(index, recordLength);
             return;
         }
 
         // it is safe to say that the selection is dirty when the inserted index
         // is less or equal to the first selection range index or less or equal
         // to the last selection range index
-        var s         = ranges[0];
-        var e         = ranges[rangesLength-1];
-        var viewIndex = index;
-        if (viewIndex <= e || viewIndex <= s) {
-            if (this.fireEvent('selectiondirty', this, viewIndex, recordLength) !== false) {
-                this.shiftSelections(viewIndex, recordLength);
-            }
+        var startRange = ranges[0];
+        var endRange   = ranges[rangesLength-1];
+        var viewIndex  = index;
+        if (viewIndex <= endRange || viewIndex <= startRange) {
+            this.fireEvent('selectiondirty', this, viewIndex, recordLength);
+            this.shiftSelections(viewIndex, recordLength);
         }
     },
 
@@ -193,50 +195,46 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
     shiftSelections : function(startRow, length)
     {
         var index         = 0;
-        var newSelections = {};
         var newIndex      = 0;
         var newRequests   = {};
-        var newSelectionMap = {};
-        var totalLength = this.grid.store.totalLength;
 
-        this.last = false;
+        var ds            = this.grid.store;
+        var storeIndex    = startRow-ds.bufferRange[0];
+        var newStoreIndex = 0;
+        var totalLength   = this.grid.store.totalLength;
+        var rec           = null;
 
-        for (var i in this.bufferedSelections) {
-            index    = parseInt(i);
-            newIndex = index+length;
+        //this.last = false;
+
+        var ranges       = this.getPendingSelections();
+        var rangesLength = ranges.length;
+
+        if (rangesLength == 0) {
+            return;
+        }
+
+        for (var i = 0; i < rangesLength; i++) {
+            index = ranges[i];
+
+            if (index < startRow) {
+                continue;
+            }
+
+            newIndex      = index+length;
+            newStoreIndex = storeIndex+length;
             if (newIndex >= totalLength) {
                 break;
             }
 
-            if (index >= startRow) {
-                newSelections[newIndex] = true;
-                for (var a in this.bufferedSelectionMap) {
-                    if (this.bufferedSelectionMap[a] == index) {
-                        newSelectionMap[a] = newIndex;
-                    }
-                }
-
-                if (this.pendingSelections[i]) {
-                    newRequests[newIndex] = true;
-                }
-
+            rec = ds.getAt(newStoreIndex);
+            if (rec) {
+                this.selections.add(rec);
             } else {
-                newSelections[i] = true;
-                for (var a in this.bufferedSelectionMap) {
-                    if (this.bufferedSelectionMap[a] == parseInt(i)) {
-                        newSelectionMap[a] = parseInt(i);
-                    }
-                }
-
-                if (this.pendingSelections[i]) {
-                    newRequests[i] = true;
-                }
+                newRequests[newIndex] = true;
             }
         }
 
-        this.bufferedSelections   = newSelections;
-        this.bufferedSelectionMap = newSelectionMap;
-        this.pendingSelections    = newRequests;
+        this.pendingSelections = newRequests;
     },
 
     /**
@@ -247,10 +245,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
      */
     onSelectionsLoad : function(store, records, ranges)
     {
-        this.pendingSelections = {};
-
-        this.selections.addAll(records);
-
+        this.replaceSelections(records);
     },
 
     /**
@@ -268,25 +263,25 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
      */
     getCount : function()
     {
-        var sels = this.bufferedSelections;
-
-        var c = 0;
-        for (var i in sels) {
-            c++;
-        }
-
-        return c;
+        return this.selections.length + this.getPendingSelections().length;
     },
 
     /**
      * Returns True if the specified row is selected.
+     *
      * @param {Number/Record} record The record or index of the record to check
      * @return {Boolean}
      */
     isSelected : function(index)
     {
         if (typeof index == "number") {
-            return this.bufferedSelections[index] === true;
+            index = this.grid.store.getAt(index);
+            if (!index) {
+                var ind = this.getPendingSelections().indexOf(tind);
+                if (ind != -1) {
+                    return true;
+                }
+            }
         }
 
         var r = index;
@@ -311,11 +306,9 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         var r = this.grid.store.getAt(index);
 
         delete this.pendingSelections[index];
-        delete this.bufferedSelections[index];
 
         if (r) {
             this.selections.remove(r);
-            delete this.bufferedSelections[r.id];
         }
         if(!preventViewNotify){
             this.grid.getView().onRowDeselect(index);
@@ -332,14 +325,13 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
      */
     selectRow : function(index, keepExisting, preventViewNotify)
     {
-        if(this.last === index
-           || this.locked
+        if(//this.last === index
+           //||
+           this.locked
            || index < 0
            || index >= this.grid.store.getTotalCount()) {
             return;
         }
-
-
 
         var r = this.grid.store.getAt(index);
 
@@ -355,11 +347,6 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
                 this.pendingSelections[index] = true;
             }
 
-            this.bufferedSelections[index] = true;
-            if (r) {
-                this.bufferedSelectionMap[r.id] = index;
-            }
-
             this.last = this.lastActive = index;
 
             if(!preventViewNotify){
@@ -370,14 +357,72 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         }
     },
 
-    clearPendingSelection : function(index)
+    clearPendingSelections : function(startIndex, endIndex)
     {
-        var r = this.grid.store.getAt(index);
-        if (!r) {
+        if (endIndex == undefined) {
+            endIndex = Number.MAX_VALUE;
+        }
+
+        var newSelections = {};
+
+        var ranges       = this.getPendingSelections();
+        var rangesLength = ranges.length;
+
+        var index = 0;
+
+        for (var i = 0; i < rangesLength; i++) {
+            index = ranges[i];
+            if (index <= endIndex && index >= startIndex) {
+                continue;
+            }
+
+            newSelections[index] = true;
+        }
+
+        this.pendingSelections = newSelections;
+    },
+
+    /**
+     * Replaces already set data with new data from the store if those
+     * records can be found within this.selections or this.pendingSelections
+     *
+     * @param {Array} An array with records buffered by the store
+     */
+    replaceSelections : function(records)
+    {
+        if (!records || records.length == 0) {
             return;
         }
-        this.selections.add(r);
-        delete this.pendingSelections[index];
+
+        var ds  = this.grid.store;
+        var rec = null;
+
+        var assigned     = [];
+        var ranges       = this.getPendingSelections();
+        var rangesLength = ranges.length
+
+        var selections = this.selections;
+        var index      = 0;
+
+        for (var i = 0; i < rangesLength; i++) {
+            index = ranges[i];
+            rec   = ds.getAt(index);
+            if (rec) {
+                selections.add(rec);
+                assigned.push(rec.id);
+                delete this.pendingSelections[index];
+            }
+        }
+
+        var id  = null;
+        for (i = 0, len = records.length; i < len; i++) {
+            rec = records[i];
+            id  = rec.id;
+            if (assigned.indexOf(id) == -1 && selections.containsKey(id)) {
+                selections.add(rec);
+            }
+        }
+
     },
 
     getPendingSelections : function(asRange)
@@ -401,7 +446,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
             }
         });
 
-        if (asRange === false) {
+        if (!asRange) {
             return tmpArray;
         }
 
@@ -431,21 +476,21 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
     {
         if(this.locked) return;
         if(fast !== true){
-            //var ds = this.grid.store;
-            var s = this.selections;
-            /*s.each(function(r){
-                this.deselectRow(ds.indexOfId(r.id)+this.grid.getView().bufferRange[0]);
-            }, this);*/
+            var ds  = this.grid.store;
+            var s   = this.selections;
+            var ind = -1;
+            s.each(function(r){
+                ind = ds.indexOfId(r.id);
+                if (ind != -1) {
+                    this.deselectRow(ind+ds.bufferRange[0]);
+                }
+            }, this);
             s.clear();
 
-            for (var i in this.bufferedSelections) {
-                this.deselectRow(i);
-            }
+            this.pendingSelections = {};
 
         }else{
             this.selections.clear();
-            this.bufferedSelections   = {};
-            this.bufferedSelectionMap = {};
             this.pendingSelections    = {};
         }
         this.last = false;
@@ -479,6 +524,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
                 this.selectRow(i, true);
             }
         }
+
     }
 
 });

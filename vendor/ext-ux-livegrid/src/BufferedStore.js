@@ -82,8 +82,6 @@ Ext.ux.grid.BufferedStore = function(config) {
     // remoteSort will always be set to true.
     config.remoteSort = true;
 
-    Ext.apply(this, config);
-
     this.addEvents({
          /**
           * @event versionchange
@@ -118,15 +116,17 @@ Ext.ux.grid.BufferedStore = function(config) {
 
     this.totalLength = 0;
 
+
     /**
      * The array represents the range of rows available in the buffer absolute to
-     * the indexes of the data model.
+     * the indexes of the data model. Initialized with  [-1, -1] which tells that no
+     * records are currrently buffered
      * @param {Array}
      */
-    this.bufferRange = [0, 0];
+    this.bufferRange = [-1, -1];
 
     this.on('clear', function (){
-        this.bufferRange = [0, 0];
+        this.bufferRange = [-1, -1];
     }, this);
 
     if(this.url && !this.selectionsProxy){
@@ -193,8 +193,11 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
 
         // if the store was loaded without data and the bufferRange
         // has to be filled first
-        if (this.bufferRange[1] < this.bufferSize) {
-            this.bufferRange[1] = Math.min(this.bufferRange[1] + insertRecords.length, this.bufferSize);
+        if (this.bufferRange[0] <= -1) {
+            this.bufferRange[0] = 0;
+        }
+        if (this.bufferRange[1] < (this.bufferSize-1)) {
+            this.bufferRange[1] = Math.min(this.bufferRange[1] + insertRecords.length, this.bufferSize-1);
         }
 
         for (var i = 0, len = insertRecords.length; i < len; i++) {
@@ -216,6 +219,9 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     /**
      * Remove a Record from the Store and fires the remove event.
      *
+     * This implementation will check for the appearance of the record id
+     * in the store. The record to be removed does not neccesarily be bound
+     * to the instance of this store.
      * If the record is not within the store, the method will try to guess it's
      * index by calling findInsertIndex.
      *
@@ -240,10 +246,22 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
      * B may not update the view of an attached BufferedGridView immediately.
      *
      * @param {Ext.data.Record} record
+     * @param {Boolean} suspendEvent true to suspend the "remove"-event
+     *
+     * @return Number the index of the record removed.
      */
-    remove : function(record)
+    remove : function(record, suspendEvent)
     {
-        var index = this.data.indexOf(record);
+        if(typeof currentBulkRecord != 'number') {
+            currentBulkRecord = 1;
+        }
+
+        if(typeof lastBulkRecord != 'number') {
+            lastBulkRecord = 1;
+        }
+
+        // check wether the record.id can be found in this store
+        var index = this.indexOfId(record.id);
 
         if (index < 0) {
             var ind = this.findInsertIndex(record);
@@ -254,13 +272,15 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
             // adjust the buffer range if a record was removed
             // in the range that is actually behind the bufferRange
             if (ind == Number.MIN_VALUE) {
-                this.bufferRange[0] = Math.max(0, this.bufferRange[0]-1);
-                this.bufferRange[1] = Math.max(0, this.bufferRange[1]-1);
+                this.bufferRange[0] = Math.max(-1, this.bufferRange[0]-1);
+                this.bufferRange[1] = Math.max(-1, this.bufferRange[1]-1);
             }
-            this.fireEvent("remove", this, record, ind);
-            return false;
+            if (suspendEvent !== true) {
+                this.fireEvent("remove", this, record, ind);
+            }
+            return ind;
         }
-        this.bufferRange[1]--;
+        this.bufferRange[1] = Math.max(-1, this.bufferRange[1]-1);
         this.data.removeAt(index);
 
         if(this.pruneModifiedRecords){
@@ -268,8 +288,32 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
         }
 
         this.totalLength -= 1;
-        this.fireEvent("remove", this, record, index);
-        return true;
+        if (suspendEvent !== true) {
+            this.fireEvent("remove", this, record, index);
+        }
+
+        return index;
+    },
+
+    /**
+     * Removes a larger amount of records from the store and fires the "remove"
+     * event.
+     * This helps listeners to determine whether the remove operation of multiple
+     * records is still pending. Listeners for the remove event ill be called with
+     * two additional parameters - the number of the record currently removed, and
+     * the index of the last record which is about to be removed.
+     *
+     * @param {Array} records
+     */
+    bulkRemove : function(records)
+    {
+        var ind = "";
+        var rec = null;
+        for (var i = 0, len = records.length, sus = len -1; i < len; i++) {
+            rec = records[i];
+            ind = this.remove(rec, true);
+            this.fireEvent("remove", this, rec, ind, i, sus);
+        }
     },
 
     /**
@@ -280,7 +324,7 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     removeAll : function()
     {
         this.totalLength = 0;
-        this.bufferRange = [0, 1];
+        this.bufferRange = [-1, -1];
         this.data.clear();
 
         if(this.pruneModifiedRecords){
@@ -337,6 +381,9 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
      */
     loadSelections : function(ranges)
     {
+        if (ranges.length == 0) {
+            return;
+        }
         this.loadRanges(ranges);
     },
 
@@ -349,6 +396,12 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     selectionsLoaded : function(o, options, success)
     {
         if (this.checkVersionChange(o, options, success) !== false) {
+
+            var r = o.records;
+            for(var i = 0, len = r.length; i < len; i++){
+                r[i].join(this);
+            }
+
             this.fireEvent("selectionsload", this, o.records, Ext.decode(options.ranges));
         } else {
             this.fireEvent("selectionsload", this, [], Ext.decode(options.ranges));
@@ -390,10 +443,14 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
         var index = Ext.ux.grid.BufferedStore.superclass.findInsertIndex.call(this, record);
         this.remoteSort = true;
 
-        if (this.bufferRange[0] > 0 && index == 0) {
-            index = Number.MIN_VALUE;
+        // special case... index is 0 and we are at the very first record
+        // buffered
+        if (this.bufferRange[0] <= 0 && index == 0) {
+            return index;
+        } else if (this.bufferRange[0] > 0 && index == 0) {
+            return Number.MIN_VALUE;
         } else if (index >= this.bufferSize) {
-            index = Number.MAX_VALUE;
+            return Number.MAX_VALUE;
         }
 
         return index;
@@ -448,10 +505,15 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
 
         // we have to stay in sync with rows that may have been skipped while
         // the request was loading.
-        this.bufferRange = [
-            options.params.start,
-            Math.min(options.params.start+options.params.limit, o.totalRecords)
-        ];
+        // if the response didn't make it through, set buffer range to -1,-1
+        if (!o) {
+            this.bufferRange = [-1,-1];
+        } else {
+            this.bufferRange = [
+                options.params.start,
+                Math.max(0, Math.min((options.params.start+options.params.limit)-1, o.totalRecords-1))
+            ];
+        }
 
         Ext.ux.grid.BufferedStore.superclass.loadRecords.call(this, o, options, success);
     },
@@ -466,6 +528,10 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
      */
     getAt : function(index)
     {
+        //anything buffered yet?
+        if (this.bufferRange[0] == -1) {
+            return -1;
+        }
         var modelIndex = index - this.bufferRange[0];
         return this.data.itemAt(modelIndex);
     },

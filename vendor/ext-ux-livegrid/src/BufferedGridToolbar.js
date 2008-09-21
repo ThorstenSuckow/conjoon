@@ -48,7 +48,7 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
     initComponent : function()
     {
         Ext.ux.BufferedGridToolbar.superclass.initComponent.call(this);
-        this.bind(this.view);
+        this.bind(this.grid);
     },
 
     // private
@@ -64,36 +64,58 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
     },
 
     /**
-     * Unbinds the toolbar from the specified {@link Ext.ux.grid.BufferedGridView}
-     * @param {@link Ext.ux.grid.BufferedGridView} view The view to unbind
+     * Unbinds the toolbar from the specified {@link Ext.ux.grid.Livegrid}
+     * @param {@link Ext.ux.grid.Livegrid} view The view to unbind
      */
-    unbind : function(view)
+    unbind : function(grid)
     {
-        view.un('rowremoved',    this.onRowRemoved,    this);
-        view.un('rowsinserted',  this.onRowsInserted,  this);
-        view.un('beforebuffer',  this.beforeBuffer,    this);
-        view.un('cursormove',    this.onCursorMove,    this);
-        view.un('buffer',        this.onBuffer,        this);
-        view.un('bufferfailure', this.onBufferFailure, this);
-        this.view = undefined;
+        var st = grid.getStore();
+        var vw = grid.view;
+
+        st.un('loadexception', this.enableLoading,  this);
+        st.un('beforeload',    this.disableLoading, this);
+        st.un('load',          this.enableLoading,  this);
+        vw.un('rowremoved',    this.onRowRemoved,   this);
+        vw.un('rowsinserted',  this.onRowsInserted, this);
+        vw.un('beforebuffer',  this.beforeBuffer,   this);
+        vw.un('cursormove',    this.onCursorMove,   this);
+        vw.un('buffer',        this.onBuffer,       this);
+        vw.un('bufferfailure', this.enableLoading,  this);
+        this.grid = undefined;
     },
 
     /**
-     * Binds the toolbar to the specified {@link Ext.ux.grid.BufferedGridView}
-     * @param {Ext.grid.GridPanel} view The view to bind
+     * Binds the toolbar to the specified {@link Ext.ux.grid.Livegrid}
+     * @param {Ext.ux.grid.Livegrid} view The view to bind
      */
-    bind : function(view)
+    bind : function(grid)
     {
-        view.on('rowremoved',    this.onRowRemoved,    this);
-        view.on('rowsinserted',  this.onRowsInserted,  this);
-        view.on('beforebuffer',  this.beforeBuffer,    this);
-        view.on('cursormove',    this.onCursorMove,    this);
-        view.on('buffer',        this.onBuffer,        this);
-        view.on('bufferfailure', this.onBufferFailure, this);
-        this.view = view;
+        var st = grid.getStore();
+        var vw = grid.view;
+
+        st.on('loadexception', this.enableLoading,  this);
+        st.on('beforeload',    this.disableLoading, this);
+        st.on('load',          this.enableLoading,  this);
+        vw.on('rowremoved',    this.onRowRemoved,   this);
+        vw.on('rowsinserted',  this.onRowsInserted, this);
+        vw.on('beforebuffer',  this.beforeBuffer,   this);
+        vw.on('cursormove',    this.onCursorMove,   this);
+        vw.on('buffer',        this.onBuffer,       this);
+        vw.on('bufferfailure', this.enableLoading,  this);
+        this.grid = grid;
     },
 
 // ----------------------------------- Listeners -------------------------------
+    enableLoading : function()
+    {
+        this.loading.setDisabled(false);
+    },
+
+    disableLoading : function()
+    {
+        this.loading.setDisabled(true);
+    },
+
     onCursorMove : function(view, rowIndex, visibleRows, totalCount)
     {
         this.updateInfo(rowIndex, visibleRows, totalCount);
@@ -102,14 +124,14 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
     // private
     onRowsInserted : function(view, start, end)
     {
-        this.updateInfo(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows),
+        this.updateInfo(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows-view.rowClipped),
                         view.ds.totalLength);
     },
 
     // private
     onRowRemoved : function(view, index, record)
     {
-        this.updateInfo(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows),
+        this.updateInfo(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows-view.rowClipped),
                         view.ds.totalLength);
     },
 
@@ -118,12 +140,6 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
     {
         this.loading.disable();
         this.updateInfo(rowIndex, visibleRows, totalCount);
-    },
-
-    // priate
-    onBufferFailure : function(view, store, options)
-    {
-        this.loading.enable();
     },
 
     // private
@@ -138,7 +154,11 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
     {
         switch (type) {
             case 'refresh':
-                this.view.reset(true);
+                if (this.grid.view.reset(true)) {
+                    this.loading.disable();
+                } else {
+                    this.loading.enable();
+                }
             break;
 
         }
