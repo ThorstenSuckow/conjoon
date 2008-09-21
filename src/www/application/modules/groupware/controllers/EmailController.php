@@ -1288,6 +1288,13 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $id   = (int)$_POST['id'];
         $type = (string)$_POST['type'];
 
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
+
+	    $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+
         // create a new draft so that the user is able to write an email from scratch!
     	if ($id <= 0) {
 
@@ -1296,12 +1303,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
              */
             require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
 
-    	    /**
-             * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
-             */
-            require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
-
-    	    $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
     	    $standardId   = $accountModel->getStandardAccountIdForUser($userId);
 
     	    if ($standardId == 0) {
@@ -1391,6 +1392,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
         require_once 'Intrabuild/Util/Array.php';
 
         Intrabuild_Util_Array::camelizeKeys($draftData);
+
+        $addresses = $accountModel->getEmailAddressesForUser($userId);
+
+        $draftData['userEmailAddresses'] = $addresses;
 
         $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse(
             $draftData,

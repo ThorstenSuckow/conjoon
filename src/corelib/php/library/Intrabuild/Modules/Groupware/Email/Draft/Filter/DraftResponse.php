@@ -95,6 +95,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             'replyTo',
             'to',
             'cc',
+            'userEmailAddresses',
             'bcc',
             'inReplyTo',
             'references',
@@ -124,6 +125,9 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
     );
 
     protected $_filters = array(
+        'userEmailAddresses' => array(
+            'Raw'
+        ),
         'contentTextPlain' => array(
 
         ),
@@ -145,6 +149,20 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
         'bcc' => array(
             'EmailRecipients'
         )
+    );
+
+    protected $_validators = array(
+        /**
+         * @todo document this; write a fix(?) ZF 1.5.2
+         * We cannot use the Array validator, as the Zend Input will walk throgh
+         * each element in the given array and check if the value is valid.
+         * means, if you are passing a numeric array with values of type string,
+         * validation will fail since each value of the array is being checked agains
+         * the validator rule, instead of the array as a whole-
+         */
+        //'userEmailAddresses' => array(
+            //'Array'
+        //)
     );
 
 
@@ -193,7 +211,20 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             break;
 
             case self::CONTEXT_REPLY_ALL:
-                $data['cc'] = array_merge($data['to'], $data['cc']);
+
+                $data['userEmailAddresses'] = (array)$data['userEmailAddresses'];
+
+                $merge = array();
+                for ($i = 0, $len = max(count($data['cc']), count($data['to'])); $i < $len; $i++) {
+                    if (isset($data['cc'][$i]) && !in_array($data['cc'][$i][0], $data['userEmailAddresses'])) {
+                        $merge[] = $data['cc'][$i];
+                    }
+                    if (isset($data['to'][$i]) && !in_array($data['to'][$i][0], $data['userEmailAddresses'])) {
+                        $merge[] = $data['to'][$i];
+                    }
+                }
+
+                $data['cc'] = $merge;
                 if (!empty($data['replyTo'])) {
                     $data['to'] = $data['replyTo'];
                 } else {
@@ -213,64 +244,63 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
 
         }
 
+        unset($data['userEmailAddresses']);
         unset($data['from']);
         unset($data['replyTo']);
 
 
-            /**
-             * @see Intrabuild_Filter_QuoteToBlockquote
-             */
-            require_once 'Intrabuild/Filter/QuoteToBlockquote.php';
+        /**
+         * @see Intrabuild_Filter_QuoteToBlockquote
+         */
+        require_once 'Intrabuild/Filter/QuoteToBlockquote.php';
 
-            /**
-             * @see Intrabuild_Filter_NormalizeLineFeeds
-             */
-            require_once 'Intrabuild/Filter/NormalizeLineFeeds.php';
+        /**
+         * @see Intrabuild_Filter_NormalizeLineFeeds
+         */
+        require_once 'Intrabuild/Filter/NormalizeLineFeeds.php';
 
-            /**
-             * @see Intrabuild_Filter_PlainToHtml
-             */
-            require_once 'Intrabuild/Filter/PlainToHtml.php';
+        /**
+         * @see Intrabuild_Filter_PlainToHtml
+         */
+        require_once 'Intrabuild/Filter/PlainToHtml.php';
 
-            /**
-             * @see Intrabuild_Filter_SignatureStrip
-             */
-            require_once 'Intrabuild/Filter/SignatureStrip.php';
+        /**
+         * @see Intrabuild_Filter_SignatureStrip
+         */
+        require_once 'Intrabuild/Filter/SignatureStrip.php';
 
-            $signatureStripper  = new Intrabuild_Filter_SignatureStrip();
-            $quoteFilter        = new Intrabuild_Filter_QuoteToBlockquote();
-            $lineFeedFilter     = new Intrabuild_Filter_NormalizeLineFeeds();
-            $plainToHtmlFilter  = new Intrabuild_Filter_PlainToHtml();
+        $signatureStripper  = new Intrabuild_Filter_SignatureStrip();
+        $quoteFilter        = new Intrabuild_Filter_QuoteToBlockquote();
+        $lineFeedFilter     = new Intrabuild_Filter_NormalizeLineFeeds();
+        $plainToHtmlFilter  = new Intrabuild_Filter_PlainToHtml();
 
-            $startTag = "<pre>";
-            $endTag   = "</pre>";
+        $startTag = "<pre>";
+        $endTag   = "</pre>";
 
-            switch ($this->_context) {
-                case self::CONTEXT_REPLY:
+        switch ($this->_context) {
+            case self::CONTEXT_REPLY:
 
-                case self::CONTEXT_REPLY_ALL:
-                case self::CONTEXT_FORWARD:
-                    $startTag .= "<blockquote>";
-                    $endTag   = "</blockquote>" . $endTag;
-                break;
-            }
+            case self::CONTEXT_REPLY_ALL:
+            case self::CONTEXT_FORWARD:
+                $startTag .= "<blockquote>";
+                $endTag   = "</blockquote>" . $endTag;
+            break;
+        }
 
-            $data['contentTextPlain'] = $startTag.
-                $quoteFilter->filter(
-                     $plainToHtmlFilter->filter(
-                        $signatureStripper->filter(
-                            $lineFeedFilter->filter(
-                                $data['contentTextPlain']
-                            )
+        $data['contentTextPlain'] = $startTag.
+            $quoteFilter->filter(
+                 $plainToHtmlFilter->filter(
+                    $signatureStripper->filter(
+                        $lineFeedFilter->filter(
+                            $data['contentTextPlain']
                         )
-
                     )
+
                 )
-             . $endTag;
+            )
+         . $endTag;
 
-             $data['contentTextPlain'] = str_replace("\n", "<br />",  $data['contentTextPlain']);
-
-
+         $data['contentTextPlain'] = str_replace("\n", "<br />",  $data['contentTextPlain']);
 
         return $data;
     }

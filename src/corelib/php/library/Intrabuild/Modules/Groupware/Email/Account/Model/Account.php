@@ -287,6 +287,45 @@ class Intrabuild_Modules_Groupware_Email_Account_Model_Account
     }
 
     /**
+     * Returns all email addresses which are configured for a user.
+     * This takes also reply-addresses into account.
+     *
+     * @param int $id The id of the user to get the email addresses for
+     *
+     * @return array A numeric array with all email addresses found in the accounts
+     * from the user
+     */
+    public function getEmailAddressesForUser($id)
+    {
+        $id = (int)$id;
+
+        if ($id <= 0) {
+            return array();
+        }
+
+        $rows = $this->fetchAll(
+            $this->select($this, array('address', 'reply_address'))
+                ->where('user_id=?', $id)
+                ->where('is_deleted=?', false)
+                ->order('is_standard DESC')
+        );
+
+        $data = array();
+
+        foreach ($rows as $row) {
+            if ($row->address != "") {
+                $data[] = $row->address;
+            }
+
+            if ($row->reply_address != "") {
+                $data[] = $row->reply_address;
+            }
+        }
+
+        return array_unique($data);;
+    }
+
+    /**
      * Returns all email accounts for the specified user-id.
      * Note, that the field 'user_id' won't be available in the returned
      * array.
