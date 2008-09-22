@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -20,7 +20,7 @@ require_once 'Intrabuild/Filter/Input.php';
 
 /**
  * @see Zend_Filter_HtmlEntities
- */ 
+ */
 require_once 'Zend/Filter/HtmlEntities.php';
 
 
@@ -51,13 +51,27 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
             'groupwareEmailFoldersId'
         )
     );
-    
-  
+
+    protected $_filters = array(
+        'from' => array(
+            'EmailRecipients'
+        )
+    );
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');  
-    }  
-   
-   
+        $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
+    }
+
+    public function getProcessedData()
+    {
+        $data = parent::getProcessedData();
+
+        $data['from'] = isset($data['from'][0][1]) ? $data['from'][0][1] : $data['from'][0][0];
+
+        return $data;
+    }
+
+
 
 }

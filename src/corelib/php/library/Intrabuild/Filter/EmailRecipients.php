@@ -55,13 +55,23 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
         $value = (array)$value;
 
         $addr = array();
-        for ($i = 0, $len = count($value); $i < $len; $i++) {
-            $parts = explode(',', $value[$i]);
 
-            for ($a = 0, $lena = count($parts); $a < $lena; $a++) {
-                $rep = $this->_extractRecipient(trim($parts[$a]));
-                if (!empty($rep)) {
-                    $addr[] = $rep;
+        /**
+         * @todo this could probably need some improvement
+         */
+        $pattern = '/"(.*?)"\s*<(.*?)>(,|$)|(([^",]*?)\s<(.*)>)(,|$)|([^"]+?)(,|$)/';
+
+        for ($i = 0, $len = count($value); $i < $len; $i++) {
+
+            preg_match_all($pattern, $value[$i], $matches, PREG_SET_ORDER);
+
+            foreach ($matches as $match) {
+                if (isset($match[8])) {
+                    $addr[] = array(trim($match[8]));
+                } else if (isset($match[6])) {
+                    $addr[] = array(trim($match[6]), trim($match[5]));
+                } else {
+                       $addr[] = array(trim($match[2]), trim($match[1]));
                 }
             }
         }
@@ -69,35 +79,5 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
         return $addr;
     }
 
-    private function _extractRecipient($address)
-    {
-        $parts = explode("<", $address);
 
-        if (count($parts) == 1) {
-            if ($parts[0] == "") {
-                return array();
-            } else {
-                return array($parts[0]);
-            }
-        } else {
-            $email = trim(str_replace(">", "", $parts[1]));
-            $name  = trim(str_replace(
-                array("\"", "'"),
-                "",
-                $parts[0]
-            ));
-
-            if ($email == "") {
-                return array();
-            }
-
-            if ($name == "") {
-                return array($email);
-            }
-
-            return array($email, $name);
-        }
-
-        return array();
-    }
 }
