@@ -1298,6 +1298,16 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                                   + ' '
                                   + blockquote
                                   + ' '
+                                  + getCssTextFromStyleSheet(
+                                       '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body pre',
+                                       excludeMask
+                                   )
+                                  + ' '
+                                  + getCssTextFromStyleSheet(
+                                       '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body a',
+                                       excludeMask
+                                   )
+                                  + ' '
                                   + insertDiv
                                   + ' '
                                   + signature
