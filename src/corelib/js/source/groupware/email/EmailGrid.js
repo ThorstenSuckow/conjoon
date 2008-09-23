@@ -136,14 +136,19 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
                    }
       },{
         header: de.intrabuild.Gettext.gettext("Subject"),
-        width: 415,
+        width: 315,
         sortable: true,
         dataIndex: 'subject'
       },{
         header: de.intrabuild.Gettext.gettext("From"),
-        width: 220,
+        width: 160,
         sortable: true,
         dataIndex: 'from'
+      },{
+        header: de.intrabuild.Gettext.gettext("Recipients"),
+        width: 160,
+        sortable: true,
+        dataIndex: 'recipients'
       },{
         header : '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
                  + 'de-intrabuild-groupware-email-EmailGrid-spamColumn-headerBackground">&#160;</div>',

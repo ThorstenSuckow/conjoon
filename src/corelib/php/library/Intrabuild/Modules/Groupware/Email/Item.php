@@ -22,11 +22,12 @@ require_once 'Intrabuild/BeanContext.php';
 /**
  * An email item defines itself as a collection of data from the emails header,
  * such as
- *  to
- *  cc
+ *
  *  from
  *  subject
  *  date (delivery date)
+ *
+ * to, cc, and bcc will be grouped together in the field "recipients".
  *
  * Additionally, a few other properties will be set, which will help to identify
  * the properties of the email represented by the item:
@@ -48,8 +49,7 @@ require_once 'Intrabuild/BeanContext.php';
 class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext, Serializable {
 
     private $id;
-    private $to;
-    private $cc;
+    private $recipients;
     private $from;
     private $subject;
     private $date;
@@ -69,8 +69,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
 // -------- accessors
 
     public function getId(){return $this->id;}
-    public function getTo(){return $this->to;}
-    public function getCc(){return $this->cc;}
+    public function getRecipients(){return $this->recipients;}
     public function getFrom(){return $this->from;}
     public function getSubject(){return $this->subject;}
     public function getDate(){return $this->date;}
@@ -81,8 +80,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function getGroupwareEmailFoldersId(){return $this->groupwareEmailFoldersId;}
 
     public function setId($id){$this->id = $id;}
-    public function setTo($to){$this->to = $to;}
-    public function setCc($cc){$this->cc = $cc;}
+    public function setRecipients($recipients){$this->recipients = $recipients;}
     public function setFrom($from){$this->from = $from;}
     public function setSubject($subject){$this->subject = $subject;}
     public function setDate($date){$this->date = $date;}
@@ -156,8 +154,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     {
         return array(
             'id'           => $this->id,
-            'to'           => $this->to,
-            'cc'           => $this->cc,
+            'recipients'   => $this->recipients,
             'from'         => $this->from,
             'subject'      => $this->subject,
             'date'         => $this->date,

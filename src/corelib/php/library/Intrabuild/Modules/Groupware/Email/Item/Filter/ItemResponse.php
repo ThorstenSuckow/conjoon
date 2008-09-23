@@ -39,8 +39,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
     protected $_presence = array(
          self::CONTEXT_RESPONSE => array(
             'id',
-            'to',
-            'cc',
+            'recipients',
             'from',
             'subject',
             'date',
@@ -55,6 +54,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
     protected $_filters = array(
         'from' => array(
             'EmailRecipients'
+        ),
+        'recipients' => array(
+            'EmailRecipients'
         )
     );
 
@@ -68,6 +70,15 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
         $data = parent::getProcessedData();
 
         $data['from'] = isset($data['from'][0][1]) ? $data['from'][0][1] : $data['from'][0][0];
+
+        $recipients = (array)$data['recipients'];
+
+        $tos = array();
+        foreach ($recipients as $recipient) {
+            $tos[] = isset($recipient[1]) ? $recipient[1] : $recipient[0];
+        }
+
+        $data['recipients'] = implode(', ', $tos);
 
         return $data;
     }

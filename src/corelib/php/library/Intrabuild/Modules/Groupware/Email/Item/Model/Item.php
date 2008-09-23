@@ -69,8 +69,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 return 'items.cc';
             case 'date':
                 return 'items.date';
-            case 'to':
-                return 'items.to';
+            case 'recipients':
+                return 'recipients';
             case 'to':
                 return 'items.to';
             case 'subject':
@@ -136,8 +136,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 ->from(array('items' => 'groupware_email_items'),
                   array(
                       'id',
-                      'cc',
-                      'to',
+                      'recipients' => 'CONCAT_WS(",", IF(items.to = "", null, items.to), IF(items.cc = "", null, items.cc), IF(items.bcc = "", null, items.bcc))',// AS recipients',
                       'subject',
                       'from',
                       'date',

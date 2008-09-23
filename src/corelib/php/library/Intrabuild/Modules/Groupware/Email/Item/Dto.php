@@ -21,8 +21,7 @@ require_once 'Intrabuild/Dto.php';
 class Intrabuild_Modules_Groupware_Email_Item_Dto extends Intrabuild_Dto {
 
     public $id;
-    public $to;
-    public $cc;
+    public $recipients;
     public $from;
     public $subject;
     public $date;

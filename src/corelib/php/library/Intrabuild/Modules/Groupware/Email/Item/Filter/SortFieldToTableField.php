@@ -6,11 +6,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -43,25 +43,26 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_SortFieldToTableField imple
                 return 'id';
             case 'isattachment':
                 return 'is_attachment';
+            case 'recipients':
+                return 'recipients';
             case 'isread':
                 return 'is_read';
             case 'cc':
                 return 'cc';
             case 'date':
-                return 'date';    
+                return 'date';
             case 'to':
-                return 'to';        
+                return 'to';
             case 'to':
-                return 'to';            
+                return 'to';
             case 'subject':
-                return 'subject';                
+                return 'subject';
             case 'from':
-                return 'from';                    
+                return 'from';
             case 'isspam':
-                return 'is_spam';                        
+                return 'is_spam';
             default:
                 return 'subject';
         }
     }
 }
- 
