@@ -67,6 +67,10 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
                 $value[$i]
             );
 
+            if (trim($value[$i]) == "") {
+                continue;
+            }
+
             preg_match_all($pattern, $value[$i], $matches, PREG_SET_ORDER);
 
             foreach ($matches as $match) {
