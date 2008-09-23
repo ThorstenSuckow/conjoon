@@ -56,22 +56,26 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
 
         $addr = array();
 
-        /**
-         * @todo this could probably need some improvement
-         */
-        $pattern = '/"(.*?)"\s*<(.*?)>(,|$)|(([^",]*?)\s<(.*)>)(,|$)|([^"]+?)(,|$)/';
+        $pattern = '/(^|\s|,)*+("(.*?)"\s<(.*?)>|([^",]+)\s<(.*?)>|([^,\s"<>]+))[,\s$]?/msi';
 
         for ($i = 0, $len = count($value); $i < $len; $i++) {
+
+            // normalize the string - replace linebreaks, tabs and leading/trailing whitespace/commas
+            $value[$i] = preg_replace(
+                "/^[\s,]+|[\s,]+$|[\t\r\n]/",
+                '',
+                $value[$i]
+            );
 
             preg_match_all($pattern, $value[$i], $matches, PREG_SET_ORDER);
 
             foreach ($matches as $match) {
-                if (isset($match[8])) {
-                    $addr[] = array(trim($match[8]));
+                if (isset($match[7])) {
+                    $addr[] = array(trim($match[7]));
                 } else if (isset($match[6])) {
                     $addr[] = array(trim($match[6]), trim($match[5]));
                 } else {
-                       $addr[] = array(trim($match[2]), trim($match[1]));
+                    $addr[] = array(trim($match[4]), trim($match[3]));
                 }
             }
         }
