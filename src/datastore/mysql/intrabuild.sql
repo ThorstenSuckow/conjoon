@@ -303,3 +303,5 @@ PRIMARY KEY ( `groupware_email_items_id` )
 ALTER TABLE `groupware_email_items_outbox` CHANGE `sent_timestamp` `sent_timestamp` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
 
 ALTER TABLE `groupware_email_items_outbox` ADD `groupware_email_accounts_id` INT UNSIGNED NOT NULL AFTER `groupware_email_items_id` ;
+
+ALTER TABLE `groupware_email_items` ADD `recipients` TEXT NOT NULL AFTER `content_text_html` , ADD `sender` TEXT NOT NULL AFTER `recipients` ;

@@ -45,6 +45,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_SortFieldToTableField imple
                 return 'is_attachment';
             case 'recipients':
                 return 'recipients';
+            case 'sender':
+                return 'sender';
             case 'isread':
                 return 'is_read';
             case 'cc':

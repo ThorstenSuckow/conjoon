@@ -180,6 +180,42 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
         $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
     }
 
+    public function getProcessedData()
+    {
+        $data = parent::getProcessedData();
 
+        $recs = array(
+            $data['to'],
+            $data['cc'],
+            $data['bcc']
+        );
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipients
+         */
+        require_once 'Intrabuild/Filter/EmailRecipients.php';
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipientsToString
+         */
+        require_once 'Intrabuild/Filter/EmailRecipientsToString.php';
+
+        $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
+        $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
+
+        $data['recipients'] = $emailRecipientsToStringFilter->filter(
+            $emailRecipientsFilter->filter(
+                $recs
+            )
+        );
+
+        $data['sender'] = $emailRecipientsToStringFilter->filter(
+            $emailRecipientsFilter->filter(
+                $data['from']
+            )
+        );
+
+        return $data;
+    }
 
 }

@@ -1224,13 +1224,20 @@ class Groupware_EmailController extends Zend_Controller_Action {
             return;
         }
 
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
         // if the email was send successfully, save it into the db and
         // return the params savedId (id of the newly saved email)
         // and savedFolderId (id of the folder where the email was saved in)
         $itemDecorator = new Intrabuild_BeanContext_Decorator(
             'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
-            null,
+            new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+                array(),
+                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+            ),
             false
         );
 

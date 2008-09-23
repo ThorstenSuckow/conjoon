@@ -79,10 +79,10 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         sortable  : false,
         dataIndex : 'subject'
       },{
-        header    : de.intrabuild.Gettext.gettext("From"),
+        header    : de.intrabuild.Gettext.gettext("Sender"),
         width     : 160,
         sortable  : false,
-        dataIndex : 'from'
+        dataIndex : 'sender'
       }
     ];
 

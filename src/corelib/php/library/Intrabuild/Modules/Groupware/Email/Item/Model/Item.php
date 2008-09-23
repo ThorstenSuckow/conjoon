@@ -70,7 +70,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
             case 'date':
                 return 'items.date';
             case 'recipients':
-                return 'recipients';
+                return 'items.recipients';
+            case 'sender':
+                return 'items.sender';
             case 'to':
                 return 'items.to';
             case 'subject':
@@ -136,9 +138,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 ->from(array('items' => 'groupware_email_items'),
                   array(
                       'id',
-                      'recipients' => 'CONCAT_WS(",", IF(items.to = "", null, items.to), IF(items.cc = "", null, items.cc), IF(items.bcc = "", null, items.bcc))',// AS recipients',
+                      'recipients',
                       'subject',
-                      'from',
+                      'sender',
                       'date',
                       'groupware_email_folders_id'
                 ))
@@ -368,6 +370,16 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         }
 
         /**
+         * @see Intrabuild_Filter_EmailRecipients
+         */
+        require_once 'Intrabuild/Filter/EmailRecipients.php';
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipientsToString
+         */
+        require_once 'Intrabuild/Filter/EmailRecipientsToString.php';
+
+        /**
          * @see Zend_Date
          */
         require_once 'Zend/Date.php';
@@ -386,6 +398,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
          * @see Intrabuild_Modules_Groupware_Email_Address
          */
         require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
+        $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
 
         $outboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
         $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
@@ -455,6 +470,18 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         $itemUpdate = array(
             'reply_to'                   => $replyTo,
             'from'                       => $fromAddress->__toString(),
+            'recipients'                 => $emailRecipientsToStringFilter->filter(
+                $emailRecipientsFilter->filter(array(
+                    $toString,
+                    $ccString,
+                    $bccString
+                ))
+            ),
+            'sender'                 => $emailRecipientsToStringFilter->filter(
+                $emailRecipientsFilter->filter(array(
+                    $fromAddress->__toString()
+                ))
+            ),
             'groupware_email_folders_id' => $sentFolderId,
             'date'                       => $date->get(Zend_Date::ISO_8601)
         );

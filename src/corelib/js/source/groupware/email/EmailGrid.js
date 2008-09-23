@@ -140,10 +140,10 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         sortable: true,
         dataIndex: 'subject'
       },{
-        header: de.intrabuild.Gettext.gettext("From"),
+        header: de.intrabuild.Gettext.gettext("Sender"),
         width: 160,
         sortable: true,
-        dataIndex: 'from'
+        dataIndex: 'sender'
       },{
         header: de.intrabuild.Gettext.gettext("Recipients"),
         width: 160,

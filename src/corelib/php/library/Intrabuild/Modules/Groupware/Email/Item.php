@@ -50,7 +50,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
 
     private $id;
     private $recipients;
-    private $from;
+    private $sender;
     private $subject;
     private $date;
     private $isRead;
@@ -70,7 +70,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
 
     public function getId(){return $this->id;}
     public function getRecipients(){return $this->recipients;}
-    public function getFrom(){return $this->from;}
+    public function getSender(){return $this->sender;}
     public function getSubject(){return $this->subject;}
     public function getDate(){return $this->date;}
     public function isRead(){return $this->isRead;}
@@ -81,7 +81,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
 
     public function setId($id){$this->id = $id;}
     public function setRecipients($recipients){$this->recipients = $recipients;}
-    public function setFrom($from){$this->from = $from;}
+    public function setSender($sender){$this->sender = $sender;}
     public function setSubject($subject){$this->subject = $subject;}
     public function setDate($date){$this->date = $date;}
     public function setRead($isRead){$this->isRead = $isRead;}
@@ -155,7 +155,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
         return array(
             'id'           => $this->id,
             'recipients'   => $this->recipients,
-            'from'         => $this->from,
+            'sender'       => $this->sender,
             'subject'      => $this->subject,
             'date'         => $this->date,
             'isRead'       => $this->isRead,

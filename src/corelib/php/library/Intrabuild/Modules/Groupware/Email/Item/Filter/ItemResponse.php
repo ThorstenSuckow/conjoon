@@ -40,7 +40,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
          self::CONTEXT_RESPONSE => array(
             'id',
             'recipients',
-            'from',
+            'sender',
             'subject',
             'date',
             'isRead',
@@ -51,38 +51,10 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
         )
     );
 
-    protected $_filters = array(
-        'from' => array(
-            'EmailRecipients'
-        ),
-        'recipients' => array(
-            'EmailRecipients'
-        )
-    );
-
     protected function _init()
     {
         $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
     }
-
-    public function getProcessedData()
-    {
-        $data = parent::getProcessedData();
-
-        $data['from'] = isset($data['from'][0][1]) ? $data['from'][0][1] : $data['from'][0][0];
-
-        $recipients = (array)$data['recipients'];
-
-        $tos = array();
-        foreach ($recipients as $recipient) {
-            $tos[] = isset($recipient[1]) ? $recipient[1] : $recipient[0];
-        }
-
-        $data['recipients'] = implode(', ', $tos);
-
-        return $data;
-    }
-
 
 
 }

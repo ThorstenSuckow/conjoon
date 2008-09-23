@@ -22,7 +22,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Dto extends Intrabuild_Dto {
 
     public $id;
     public $recipients;
-    public $from;
+    public $sender;
     public $subject;
     public $date;
     public $isRead;
