@@ -56,7 +56,7 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
 
         $addr = array();
 
-        $pattern = '/(^|\s|,)*+("(.*?)"\s<(.*?)>|([^",]+)\s<(.*?)>|([^,\s"<>]+))[,\s$]?/msi';
+        $pattern = '/(^|\s|,)*+("(.*?)"\s*<(.*?)>|([^",]+)\s*<(.*?)>|([^,\s"<>]+))[,\s$]?/msi';
 
         for ($i = 0, $len = count($value); $i < $len; $i++) {
 
