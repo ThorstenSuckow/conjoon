@@ -250,13 +250,15 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         // get all the recipients
         var len = Math.max(draft.to.length, draft.cc.length, draft.bcc.length);
+        var quoteTest = /[,\"]/;
+
         for (var i = 0; i < len; i++) {
             add = draft.to[i];
             if (add) {
                 recRecs.push(new recipientRecord({
                     receiveType : 'to',
                     address     : add['name']
-                                ? add['name'] + " <" + add['address']+">"
+                                ? (quoteTest.test(add['name']) ? '"' + add['name'] + '"' : add['name']) + " <" + add['address']+">"
                                 : add['address']
                 }));
             }
@@ -266,7 +268,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 recRecs.push(new recipientRecord({
                     receiveType : 'cc',
                     address     : add['name']
-                                ? add['name'] + " <" + add['address']+">"
+                                ? (quoteTest.test(add['name']) ? '"' + add['name'] + '"' : add['name']) + " <" + add['address']+">"
                                 : add['address']
                 }));
             }
@@ -276,7 +278,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 recRecs.push(new recipientRecord({
                     receiveType : 'cc',
                     address     : add['name']
-                                ? add['name'] + " <" + add['address']+">"
+                                ? (quoteTest.test(add['name']) ? '"' + add['name'] + '"' : add['name']) + " <" + add['address']+">"
                                 : add['address']
                 }));
             }
