@@ -23,6 +23,8 @@ class Intrabuild_Modules_Groupware_Email_Message_Dto extends Intrabuild_Dto {
     public $id;
     public $to;
     public $cc;
+    public $bcc;
+    public $replyTo;
     public $from;
     public $subject;
     public $date;

@@ -35,6 +35,11 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
     toValue : 'To',
 
     /**
+     * @cfg {String} replyToValue
+     */
+    replyToValue : 'Reply to',
+
+    /**
      * @cfg {String} ccValue
      */
     ccValue : 'CC',
@@ -280,6 +285,38 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
     },
 
     /**
+     * Renders a list of recipients into the recipient template.
+     *
+     * @param {Array} recipients
+     *
+     * @return {String}
+     */
+    _renderAddresses : function(recipients)
+    {
+        if (!recipients) {
+            return "";
+        }
+        var addresses = recipients.addresses;
+
+        if (!addresses || addresses.length == 0) {
+            return "";
+        }
+
+        var ret = [];
+        var template = this.templates.addresses
+        for (var i = 0, len = addresses.length; i < len; i++) {
+            ret.push(
+                template.apply({
+                    address : addresses[i]['address'],
+                    name    : addresses[i]['name'] || addresses[i]['address']
+                })
+            );
+        }
+
+        return ret.join(', ');
+    },
+
+    /**
      * Renders the view with the given data
      *
      * @param {Object}
@@ -299,6 +336,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 		var to          = data.to;
 		var cc          = data.cc;
 		var bcc         = data.bcc;
+		var replyTo     = data.replyTo;
 		var date        = data.date;
 		var body        = data.body;
 		var attachments = data.attachments;
@@ -306,12 +344,29 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         var ts = this.templates;
 
+        var cc = this._renderAddresses(cc);
         var ccHtml = cc ? ts.cc.apply({
             cc : cc
         }) : "";
 
+        var bcc = this._renderAddresses(bcc);
         var bccHtml = bcc ? ts.bcc.apply({
             bcc : bcc
+        }) : "";
+
+        var to = this._renderAddresses(to);
+        var toHtml = to ? ts.to.apply({
+            to : to
+        }) : "";
+
+        var from = this._renderAddresses(from);
+        var fromHtml = from ? ts.from.apply({
+            from : from
+        }) : "";
+
+        var replyTo = this._renderAddresses(replyTo);
+        var replyToHtml = replyTo ? ts.replyTo.apply({
+            replyTo : replyTo
         }) : "";
 
         var subjectHtml = ts.subject.apply({
@@ -319,10 +374,11 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         });
 
         var header = ts.header.apply({
-            from    : from,
-            to      : to,
+            from    : fromHtml,
+            to      : toHtml,
             cc      : ccHtml,
             bcc     : bccHtml,
+            replyTo : replyToHtml,
             date    : date,
             subject : subjectHtml
         });
@@ -468,29 +524,57 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
                        '<div class="de-intrabuild-groupware-email-EmailView-dataInset">',
                         '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
                         '{subject}',
-                        '<div class="de-intrabuild-groupware-email-EmailView-from"><div style="float:left;width:30px;">',this.fromValue,':</div><div style="float:left">{from}</div><div style="clear:both"></div></div>',
-                        '<div class="de-intrabuild-groupware-email-EmailView-to"><div style="float:left;width:30px;">',this.toValue,':</div><div style="float:left">{to}</div><div style="clear:both"></div></div>',
+                        '<table border="0" cellspacing="0" cellpadding="0" class="de-intrabuild-groupware-email-EmailView-headerTable">',
+                        '{from}',
+                        '{replyTo}',
+                        '{to}',
                         '{cc}',
                         '{bcc}',
+                        '</table>',
                        '</div>',
                     '</div>'
             );
         }
+
+        if (!ts.addresses) {
+            ts.addresses = new Ext.Template(
+                '<a href="mailto:{address:htmlEncode}">{name:htmlEncode}</a>'
+            );
+        }
+
         if (!ts.subject) {
             ts.subject = new Ext.Template(
                 '<div class="de-intrabuild-groupware-email-EmailView-subject">{subject}</div>'
             );
         }
 
+        if (!ts.from) {
+            ts.from = new Ext.Template(
+                '<tr><td class="headerField">',this.fromValue,':</td><td class="headerValue">{from}</td></tr>'
+            );
+        }
+
+        if (!ts.to) {
+            ts.to = new Ext.Template(
+                '<tr><td class="headerField">',this.toValue,':</td><td class="headerValue">{to}</td></tr>'
+            );
+        }
+
+        if (!ts.replyTo) {
+            ts.replyTo = new Ext.Template(
+                '<tr><td class="headerField">',this.replyToValue,':</td><td class="headerValue">{replyTo}</td></tr>'
+            );
+        }
+
         if (!ts.cc) {
             ts.cc = new Ext.Template(
-                '<div class="de-intrabuild-groupware-email-EmailView-cc"><div style="float:left;width:30px;">',this.ccValue,':</div><div style="float:left">{cc}</div><div style="clear:both"></div></div>'
-            );
+                '<tr><td class="headerField">',this.ccValue,':</td><td class="headerValue">{cc}</td></tr>'
+             );
         }
 
         if (!ts.bcc) {
             ts.bcc = new Ext.Template(
-                '<div class="de-intrabuild-groupware-email-EmailView-bcc"><div style="float:left;width:30px;">',this.bccValue,':</div><div style="float:left">{bcc}</div><div style="clear:both"></div></div>'
+                '<tr><td class="headerField">',this.bccValue,':</td><td class="headerValue">{bcc}</td></tr>'
             );
         }
 
@@ -551,6 +635,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         var from        = data.from        || '';
         var to          = data.to          || '';
         var cc          = data.cc          || '';
+        var replyTo     = data.replyTo     || '';
         var bcc         = data.bcc         || '';
         var date        = data.date        || '';
         var body        = data.body        || '';
@@ -563,10 +648,11 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 			to          : to,
 			cc          : cc,
 			bcc         : bcc,
+			replyTo     : replyTo,
 			date        : date,
 			body        : body,
 			attachments : attachments,
-			isPlainText :isPlainText
+			isPlainText : isPlainText
 		});
         this.layout();
         this.isPlainTextView = isPlainText;

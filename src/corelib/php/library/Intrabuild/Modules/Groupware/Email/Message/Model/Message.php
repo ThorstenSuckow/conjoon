@@ -55,6 +55,8 @@ class Intrabuild_Modules_Groupware_Email_Message_Model_Message
                   array(
                       'id',
                       'cc',
+                      'bcc',
+                      'reply_to',
                       'to',
                       'subject',
                       'from',

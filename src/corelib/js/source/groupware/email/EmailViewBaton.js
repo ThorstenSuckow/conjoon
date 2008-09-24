@@ -161,6 +161,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                     toValue         : de.intrabuild.Gettext.gettext("To"),
                     ccValue         : de.intrabuild.Gettext.gettext("CC"),
                     bccValue        : de.intrabuild.Gettext.gettext("BCC"),
+                    replyToValue    : de.intrabuild.Gettext.gettext("Reply to"),
                     attachmentValue : de.intrabuild.Gettext.gettext("Attachments")
                 });
 

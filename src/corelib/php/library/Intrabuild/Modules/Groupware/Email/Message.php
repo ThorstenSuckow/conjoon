@@ -18,6 +18,10 @@
  */
 require_once 'Intrabuild/BeanContext.php';
 
+/**
+ * @see Intrabuild_Modules_Groupware_Email_Address_List
+ */
+require_once 'Intrabuild/Modules/Groupware/Email/Address/List.php';
 
 /**
  * An email item defines itself as a collection of data from the emails header,
@@ -50,6 +54,8 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
     private $id;
     private $to;
     private $cc;
+    private $bcc;
+    private $replyTo;
     private $from;
     private $subject;
     private $date;
@@ -65,6 +71,12 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
     public function __construct()
     {
         $this->attachments = array();
+
+        $this->from    = new Intrabuild_Modules_Groupware_Email_Address_List();
+        $this->replyTo = new Intrabuild_Modules_Groupware_Email_Address_List();
+        $this->to      = new Intrabuild_Modules_Groupware_Email_Address_List();
+        $this->cc      = new Intrabuild_Modules_Groupware_Email_Address_List();
+        $this->bcc     = new Intrabuild_Modules_Groupware_Email_Address_List();
     }
 
 // -------- accessors
@@ -72,7 +84,9 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
     public function getId(){return $this->id;}
     public function getTo(){return $this->to;}
     public function getCc(){return $this->cc;}
+    public function getBcc(){return $this->bcc;}
     public function getFrom(){return $this->from;}
+    public function getReplyTo(){return $this->replyTo;}
     public function getBody(){return $this->body;}
     public function getSubject(){return $this->subject;}
     public function getDate(){return $this->date;}
@@ -82,10 +96,12 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
     public function getGroupwareEmailFoldersId(){return $this->groupwareEmailFoldersId;}
 
     public function setId($id){$this->id = $id;}
-    public function setTo($to){$this->to = $to;}
+    public function setTo(Intrabuild_Modules_Groupware_Email_Address_List $to){$this->to = $to;}
+    public function setBcc(Intrabuild_Modules_Groupware_Email_Address_List $bcc){$this->bcc = $bcc;}
     public function setBody($body){$this->body = $body;}
-    public function setCc($cc){$this->cc = $cc;}
-    public function setFrom($from){$this->from = $from;}
+    public function setReplyTo(Intrabuild_Modules_Groupware_Email_Address_List $replyTo){$this->replyTo = $replyTo;}
+    public function setCc(Intrabuild_Modules_Groupware_Email_Address_List $cc){$this->cc = $cc;}
+    public function setFrom(Intrabuild_Modules_Groupware_Email_Address_List $from){$this->from = $from;}
     public function setSubject($subject){$this->subject = $subject;}
     public function setDate($date){$this->date = $date;}
     public function setAttachments(array $attachments){$this->attachments = $attachments;}
@@ -140,7 +156,17 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
         $dto = new Intrabuild_Modules_Groupware_Email_Message_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
-                if ($key == 'attachments') {
+                if ($key == 'from') {
+                    $dto->$key = $this->from->toArray();
+                } else if ($key == 'replyTo') {
+                    $dto->$key = $this->replyTo->toArray();
+                } else if ($key == 'to') {
+                    $dto->$key = $this->to->toArray();
+                } else if ($key == 'cc') {
+                    $dto->$key = $this->cc->toArray();
+                } else if ($key == 'bcc') {
+                    $dto->$key = $this->bcc->toArray();
+                } else if ($key == 'attachments') {
                     $attachments = array();
                     for ($i = 0; $i < count($this->attachments); $i++) {
                         $attachments[] = $this->attachments[$i]->getDto();
@@ -170,9 +196,11 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
 
         return array(
             'id'           => $this->id,
-            'to'           => $this->to,
-            'cc'           => $this->cc,
-            'from'         => $this->from,
+            'to'           => $this->cc->toArray(),
+            'cc'           => $this->cc->toArray(),
+            'bcc'          => $this->bcc->toArray(),
+            'replyTo'      => $this->replyTo->toArray(),
+            'from'         => $this->from->toArray(),
             'body'         => $this->body,
             'subject'      => $this->subject,
             'isPlainText'  => $this->isPlainText,
@@ -194,7 +222,17 @@ class Intrabuild_Modules_Groupware_Email_Message implements Intrabuild_BeanConte
 
         $strs = array();
         foreach ($data as $key => $value) {
-            if ($key == 'attachments') {
+            if ($key == 'from') {
+                $strs[] = 'from: ['.$this->from->__toString().']';
+            } else if ($key == 'to') {
+                $strs[] = 'to: ['.$this->to->_toString.']';
+            } else if ($key == 'cc') {
+                $strs[] = 'cc: ['.$this->cc->__toString().']';
+            } else if ($key == 'replyTo') {
+                $strs[] = 'replyTo: ['.$this->replyTo->__toString().']';
+            } else if ($key == 'bcc') {
+                $strs[] = 'bcc: ['.$this->bcc->__toString().']';
+            } else if ($key == 'attachments') {
                 $attachments = array();
                 for ($i = 0; $i < count($this->attachments); $i++) {
                     $attachments[] = $this->attachments[$i]->__toString();

@@ -65,20 +65,26 @@
     font-family:Tahoma, Verdana, Helvetica, Arial;
 }
 
-.de-intrabuild-groupware-email-EmailView-from {
-    margin-bottom:2px;font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+.de-intrabuild-groupware-email-EmailView-headerTable {
+    margin-top:5px;
 }
 
-.de-intrabuild-groupware-email-EmailView-to {
-    margin-bottom:2px;font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+.de-intrabuild-groupware-email-EmailView-headerTable td {
+    font-size:11px;
+    padding-bottom:4px;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+    vertical-align:top;
 }
 
-.de-intrabuild-groupware-email-EmailView-cc {
-    font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+.de-intrabuild-groupware-email-EmailView-headerTable .headerField {
+    white-space:nowrap;
+    padding-right:8px;
+    font-weight:bold;
+    text-align:right;
 }
 
-.de-intrabuild-groupware-email-EmailView-bcc {
-    font-size:11px;font-family:Tahoma, Verdana, Helvetica, Arial;
+.de-intrabuild-groupware-email-EmailView-headerTable .headerValue {
+    width:100%;
 }
 
 .de-intrabuild-groupware-email-EmailView-Icon {

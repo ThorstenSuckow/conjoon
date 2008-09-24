@@ -45,6 +45,8 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
             'id',
             'to',
             'cc',
+            'bcc',
+            'replyTo',
             'from',
             'subject',
             'body',
@@ -55,9 +57,47 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
         )
     );
 
+    protected $_filters = array(
+        'subject' => array(
+            array('Htmlentities', ENT_COMPAT, 'UTF-8'),
+        ),
+        'body' => array(
+            array('Htmlentities', ENT_COMPAT, 'UTF-8'),
+        ),
+        'from' => array(
+            'EmailRecipients'
+        ),
+        'replyTo' => array(
+            'EmailRecipients'
+        ),
+        'to' => array(
+            'EmailRecipients'
+        ),
+        'cc' => array(
+            'EmailRecipients'
+        ),
+        'bcc' => array(
+            'EmailRecipients'
+        ),
+
+    );
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
+        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address_Filter_EmailRecipientsToAddressList
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address/Filter/EmailRecipientsToAddressList.php';
+
+        $filter = new Intrabuild_Modules_Groupware_Email_Address_Filter_EmailRecipientsToAddressList();
+
+        $this->_filters['from'][]    = $filter;
+        $this->_filters['replyTo'][] = $filter;
+        $this->_filters['to'][]      = $filter;
+        $this->_filters['cc'][]      = $filter;
+        $this->_filters['bcc'][]     = $filter;
     }
 
     public function getProcessedData()
