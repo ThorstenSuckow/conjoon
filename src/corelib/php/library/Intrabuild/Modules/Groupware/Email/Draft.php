@@ -224,7 +224,7 @@ class Intrabuild_Modules_Groupware_Email_Draft implements Intrabuild_BeanContext
                     $bcc[] = $this->bcc[$i]->__toString();
                 }
                 $strs[] = 'bcc: ['.implode(',', $bcc).']';
-            }else {
+            } else {
                 $strs[] = $key.': '.$value;
             }
         }
