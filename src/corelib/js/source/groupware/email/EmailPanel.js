@@ -282,6 +282,11 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         this
     );
 
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.LatestEmailCache.clear',
+        this._onLatestCacheClear,
+        this
+    );
 };
 
 
@@ -805,6 +810,35 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     	if (rec) {
 			this.setItemsAsRead([rec], true);
     	}
+    },
+
+    /**
+     * Called when the Ext.ux.util.MessageBus publishes the
+     * de.intrabuild.groupware.email.LatestEmailCache.clear message.
+     *
+     * @param {String} subject
+     * @param {Object} message
+     *
+     */
+    _onLatestCacheClear : function(subject, message)
+    {
+        var itemIds = message.itemIds;
+        var len     = itemIds.length;
+
+        if(len == 0) {
+            return;
+        }
+
+        var store = this.gridPanel.getStore();
+        var view  = this.gridPanel.getView();
+        var rec   = null;
+
+        for (var i = 0; i < len; i++) {
+            rec = store.getById(itemIds[i]);
+            if (rec) {
+                view.refreshRow(rec);
+            }
+        }
     },
 
     /**

@@ -69,6 +69,19 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         sortInfo   : {field: 'date', direction: 'DESC'},
         pruneModifiedRecords : true,
         remoteSort  : true,
+        listeners   : {
+            remove : function (store, record, index) {
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.remove', {
+                    item : record
+                });
+            },
+            update : function (store, record, operation) {
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.update', {
+                    item      : record,
+                    operation : operation
+                });
+            }
+        },
         url         : '/groupware/email/get.email.items/format/json'
     });
 
@@ -136,9 +149,10 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
                    }
       },{
         header: de.intrabuild.Gettext.gettext("Subject"),
-        width: 315,
-        sortable: true,
-        dataIndex: 'subject'
+        width     : 315,
+        sortable  : true,
+        dataIndex : 'subject',
+        renderer  : de.intrabuild.groupware.email.view.EmailGridRowRenderer.getSubjectRenderer
       },{
         header: de.intrabuild.Gettext.gettext("Sender"),
         width: 160,

@@ -233,15 +233,27 @@ de.intrabuild.groupware.email.Letterman = function(config) {
                 return;
             }
 
-            this.peekIntoInbox();
+            this.peekIntoInbox(undefined, false);
         },
 
         /**
          * Method sends a request to the server to fetch new mails.
          *
+         * @param {Number} accountId optional, the id of the account to fetch new
+         * emails for. If not specified, the server will query all configured
+         * accounts for new emails.
+         * @param {Boolean} publish When set to false, the method will not publish
+         * the 'de.intrabuild.groupware.email.Letterman.peekIntoInbox' message
+         *
          */
-        peekIntoInbox : function(accountId)
+        peekIntoInbox : function(accountId, publish)
         {
+            if (publish !== false) {
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Letterman.peekIntoInbox', {
+                    accountId : accountId
+                });
+            }
+
             if (store.proxy.activeRequest) {
                 return;
             }

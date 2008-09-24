@@ -5,11 +5,11 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 
@@ -18,6 +18,16 @@
  */
 .de-intrabuild-groupware-email-EmailGrid .x-grid3-row {
     border-style:none;
+}
+
+.de-intrabuild-groupware-email-EmailGrid .newItem {
+    background-image:url(../images/12x12/apps/groupware-email-itemnew.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.de-intrabuild-groupware-email-EmailGrid .newItem div {
+    padding-left:16px;
 }
 
 .de-intrabuild-groupware-email-EmailGrid-itemRead div{
@@ -29,7 +39,7 @@
 }
 
 /**
- * Definition for all contaier elements that only hold a background image in either 
+ * Definition for all contaier elements that only hold a background image in either
  * a header or a cell.
  */
 .de-intrabuild-groupware-email-EmailGrid-backgroundContainer {
@@ -44,9 +54,9 @@
 	float:left;
 }
 
-.de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground, 
+.de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground,
 .de-intrabuild-groupware-email-EmailGrid-attachmentColumn-cellBackground {
-    background-image:url(../images/12x12/apps/groupware-email-attachment.png);    
+    background-image:url(../images/12x12/apps/groupware-email-attachment.png);
 }
 
 /**
@@ -54,15 +64,15 @@
  */
 .de-intrabuild-groupware-email-EmailGrid-readColumn-headerBackground {
 	float:left;
-    background-image:url(../images/12x12/apps/groupware-email-read.png);    
+    background-image:url(../images/12x12/apps/groupware-email-read.png);
 }
 
 .de-intrabuild-groupware-email-EmailGrid-readColumn-cellBackground.itemread {
-    background-image:url(../images/12x12/apps/groupware-email-itemread.png);    
+    background-image:url(../images/12x12/apps/groupware-email-itemread.png);
 }
 
 .de-intrabuild-groupware-email-EmailGrid-readColumn-cellBackground.itemunread {
-    background-image:url(../images/12x12/apps/groupware-email-itemunread.png);    
+    background-image:url(../images/12x12/apps/groupware-email-itemunread.png);
 }
 
 /**
@@ -70,13 +80,13 @@
  */
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-headerBackground {
     background-image:url(../images/12x12/apps/groupware-email-spam.png);
-	float:left;    
+	float:left;
 }
 
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-cellBackground.itemspam {
-    background-image:url(../images/12x12/apps/groupware-email-itemspam.png);    
+    background-image:url(../images/12x12/apps/groupware-email-itemspam.png);
 }
 
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-cellBackground.itemnospam {
-    background-image:url(../images/12x12/apps/groupware-email-itemnospam.png);    
+    background-image:url(../images/12x12/apps/groupware-email-itemnospam.png);
 }
