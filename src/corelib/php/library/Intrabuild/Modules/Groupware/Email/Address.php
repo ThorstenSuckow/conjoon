@@ -46,7 +46,9 @@ class Intrabuild_Modules_Groupware_Email_Address implements Intrabuild_BeanConte
         if (!empty($parts)) {
             $this->address = $parts[0];
             if (isset($parts[1])) {
-                $this->name = $parts[1];
+                if ($parts[1] != $parts[0]) {
+                    $this->name = $parts[1];
+                }
             }
         }
     }

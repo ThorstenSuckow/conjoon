@@ -55,7 +55,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var activePanelMasks = [];
 
-    var createPanel = function(draftId, type)
+    var createPanel = function(draftId, type, recipient)
     {
         if (form == null) {
 
@@ -139,13 +139,22 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             disableCaching : true,
             panelId        : panel.id,
             params         : {
-                id   : draftId || -1,
-                type : type || 'new'
+                id      : draftId || -1,
+                type    : type || 'new',
+                name    : '',
+                address : ''
             },
             success : onDraftLoad,
             failure : onDraftLoadException,
             scope   : de.intrabuild.groupware.email.EmailEditorManager
         };
+
+        if (recipient) {
+            Ext.apply(ajaxOptions.params, {
+                name    : recipient.name,
+                address : recipient.address
+            });
+        }
 
         Ext.Ajax.request(ajaxOptions);
 
@@ -1087,12 +1096,20 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
          * corresponding data will be loaded from teh server to fill out the
          * form and edit it.
          * @param {String} type The type of the action, if an id was supplied.
-         * Possible values are 'edit', 'reply', 'reply_all', 'forward'.
-         *
+         * Possible values are 'edit', 'reply', 'reply_all', 'forward', 'new'.
+         * @param {Object} recipient optional, if supplied the id will be set to -1,
+         * and the type to new. Most likely a mailto link was then clicked and the
+         * user wants to write an email immediately to the email address. The properties
+         * of this object are "name" and address.
          */
-        createEditor : function(id, type)
+        createEditor : function(id, type, recipient)
         {
             init();
+
+            if (recipient) {
+                id   = -1;
+                type = 'new';
+            }
 
             if (id == undefined) {
                 id = -1;
@@ -1102,7 +1119,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 type = 'new';
             }
 
-            createPanel(id, type);
+            createPanel(id, type, recipient);
         },
 
         /**

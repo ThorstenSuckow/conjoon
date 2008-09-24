@@ -50,7 +50,9 @@ class Intrabuild_Modules_Groupware_Email_Draft implements Intrabuild_BeanContext
      */
     public function __construct()
     {
-
+        $this->to  = array();
+        $this->cc  = array();
+        $this->bcc = array();
     }
 
 // -------- accessors

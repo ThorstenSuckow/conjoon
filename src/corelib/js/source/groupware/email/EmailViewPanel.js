@@ -73,13 +73,6 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
     initComponent : function()
     {
-        Ext.apply(this, {
-            closable  : true,
-            iconCls   : this.iconCls || 'de-intrabuild-groupware-email-EmailView-Icon',
-            hideMode  : 'offsets',
-            listeners : de.intrabuild.groupware.util.LinkInterceptor.getListener()
-        });
-
         this.addEvents(
             /**
              * Gets fired before the ajax request for this panel gets started.
@@ -104,6 +97,18 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             this.on('hide', this._onHide, this);
             this.on('show', this._onShow, this);
         }
+
+        Ext.apply(this, {
+            closable  : true,
+            iconCls   : this.iconCls || 'de-intrabuild-groupware-email-EmailView-Icon',
+            hideMode  : 'offsets'
+            /**
+             * @bug adding listeners via listeners property does not work in initComponent!!!
+             */
+
+        });
+
+        this.on('render', de.intrabuild.groupware.util.LinkInterceptor.getListener().render);
 
         de.intrabuild.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
     },

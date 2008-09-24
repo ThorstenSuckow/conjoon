@@ -49,9 +49,17 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
     const CONTEXT_REPLY_ALL = 'reply_all';
     const CONTEXT_FORWARD   = 'forward';
     const CONTEXT_EDIT      = 'edit';
+    const CONTEXT_NEW       = 'new';
 
 
     protected $_presence = array(
+        self::CONTEXT_NEW => array(
+            'name',
+            'address',
+            'groupwareEmailAccountsId',
+            'groupwareEmailFoldersId',
+            'id'
+        ),
 
         self::CONTEXT_EDIT => array(
             'id',
@@ -68,6 +76,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             'contentTextHtml',
             'groupwareEmailFoldersId',
             'groupwareEmailAccountsId',
+            'userEmailAddresses'
         ),
 
         self::CONTEXT_FORWARD => array(
@@ -84,7 +93,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             'contentTextPlain',
             'contentTextHtml',
             'groupwareEmailFoldersId',
-            'groupwareEmailAccountsId',
+            'groupwareEmailAccountsId'
         ),
 
         self::CONTEXT_REPLY_ALL => array(
@@ -103,6 +112,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             'contentTextHtml',
             'groupwareEmailFoldersId',
             'groupwareEmailAccountsId',
+            'userEmailAddresses'
         ),
 
         self::CONTEXT_REPLY => array(
@@ -120,11 +130,93 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             'contentTextHtml',
             'groupwareEmailFoldersId',
             'groupwareEmailAccountsId',
-        ),
+            'userEmailAddresses'
+        )
 
     );
 
+    protected $_validators = array(
+        /**
+         * @todo document this; write a fix(?) ZF 1.5.2
+         * We cannot use the Array validator, as the Zend Input will walk throgh
+         * each element in the given array and check if the value is valid.
+         * means, if you are passing a numeric array with values of type string,
+         * validation will fail since each value of the array is being checked agains
+         * the validator rule, instead of the array as a whole-
+         */
+        //'userEmailAddresses' => array(
+            //'Array'
+        //)
+         'name' => array(
+            'allowEmpty' => true
+         ),
+         'address' => array(
+            'allowEmpty' => true
+         ),
+         'id' => array(
+            'allowEmpty' => false
+         ),
+         'date' => array(
+            'allowEmpty' => false
+         ),
+         'subject' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'from' => array(
+            'allowEmpty' => false
+         ),
+         'replyTo' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'to' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'cc' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'bcc' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'inReplyTo' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'references' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'contentTextPlain' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'contentTextHtml' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         ),
+         'groupwareEmailFoldersId' => array(
+            'allowEmpty' => false
+         ),
+         'groupwareEmailAccountsId' => array(
+            'allowEmpty' => false
+         ),
+         'userEmailAddresses' => array(
+            'allowEmpty' => true,
+            'default'    => ''
+         )
+    );
+
     protected $_filters = array(
+        'name' => array(
+            'StringTrim'
+        ),
+        'address' => array(
+            'StringTrim'
+        ),
         'userEmailAddresses' => array(
             'Raw'
         ),
@@ -151,26 +243,12 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
         )
     );
 
-    protected $_validators = array(
-        /**
-         * @todo document this; write a fix(?) ZF 1.5.2
-         * We cannot use the Array validator, as the Zend Input will walk throgh
-         * each element in the given array and check if the value is valid.
-         * means, if you are passing a numeric array with values of type string,
-         * validation will fail since each value of the array is being checked agains
-         * the validator rule, instead of the array as a whole-
-         */
-        //'userEmailAddresses' => array(
-            //'Array'
-        //)
-    );
-
 
     protected function _init()
     {
         $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
 
-        $this->_filters['contentTextPlain'] = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
+        $this->_filters['contentTextPlain'][] = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
 
         $context = "";
 
@@ -199,6 +277,31 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
         $data['contentTextHtml']  = "";
 
         switch ($this->_context) {
+
+            case self::CONTEXT_NEW:
+                $name    = $data['name'];
+                $address = $data['address'];
+
+                unset($data['name']);
+                unset($data['type']);
+                unset($data['address']);
+
+                $data['to'] = array();
+
+                if ($address != "") {
+                    /**
+                     * @see Intrabuild_Modules_Groupware_Email_Address
+                     */
+                    require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+                    $data['to'] = array(
+                        new Intrabuild_Modules_Groupware_Email_Address(array($address, $name))
+                    );
+                }
+
+                return $data;
+            break;
+
             case self::CONTEXT_REPLY:
                 if (!empty($data['replyTo'])) {
                     $data['to'] = $data['replyTo'];

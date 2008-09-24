@@ -22,7 +22,17 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
         },
         'click': function(e, t){
             e.stopEvent();
-            window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
+
+            var href = t.href, mInd;
+            if (href && (mInd = href.indexOf('mailto:')) == 0) {
+                de.intrabuild.groupware.email.EmailEditorManager.createEditor(-1, 'new', {
+                    name    : t.firstChild.data,
+                    address : href.substr(7)
+                });
+            } else {
+                window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
+            }
+
         },
         options : {
             delegate:'a'
@@ -34,24 +44,23 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
         removeListener : function(p)
         {
             p.un('mousedown', _listener.mousedown, window, _listener.options);
-			p.un('click',     _listener.click,     window, _listener.options);
+            p.un('click',     _listener.click,     window, _listener.options);
         },
 
-		addListener : function(p)
-		{
-		    p.on('mousedown', _listener.mousedown, window, _listener.options);
-			p.on('click',     _listener.click,     window, _listener.options);
-		},
+        addListener : function(p)
+        {
+            p.on('mousedown', _listener.mousedown, window, _listener.options);
+            p.on('click',     _listener.click,     window, _listener.options);
+        },
 
         getListener : function()
         {
             var m = this;
-			return {
-				render: function(p)
-                {
-					m.addListener(p.body);
-					p.on('destroy', function(){this.removeListener(p.body)}, m);
-				}
+            return {
+                render : function(p) {
+                    m.addListener(p.body);
+                    p.on('destroy', function(){this.removeListener(p.body)}, m);
+                }
             };
         },
 

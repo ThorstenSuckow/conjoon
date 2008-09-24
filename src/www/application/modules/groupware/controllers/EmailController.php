@@ -905,7 +905,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->deletedFailed = $deletedFailed;
         $this->view->error         = null;
 
-	}
+    }
 
     /**
      * Reads out all email accounts belonging to the currently logged in user and
@@ -1275,12 +1275,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
      * an email or forward an email. in this case, the id defaults to the email to
      * which the user wants to forward/ reply to.
      *
-     * The method awaits two POST parameters:
+     * The method awaits 4 POST parameters:
      * id - the original message to reply to OR the id of the draft that is being
      * edited
      * type - the context the draft is in: can be either "new", "forward",
      *        "reply", "reply_all" or "edit"
-     *
+     * name:    the name of an recipient to send this email to
+     * address: the address of an recipient to send this email to. If that value is not
+     *          empty. id will be set to -1 and type will be set to new. If address equals
+     *          to name or if name is left empty, only the address will be used to send the
+     *          email to. Address is given presedence in any case
      */
     public function getDraftAction()
     {
@@ -1289,56 +1293,84 @@ class Groupware_EmailController extends Zend_Controller_Action {
          */
         require_once 'Intrabuild/Keys.php';
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
-        $userId = $auth->getIdentity()->getId();
+        /**
+         * @see Intrabuild_BeanContext_Inspector
+         */
+        require_once 'Intrabuild/BeanContext/Inspector.php';
 
-        $id   = (int)$_POST['id'];
-        $type = (string)$_POST['type'];
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftResponse.php';
 
         /**
          * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
          */
         require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
 
-	    $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+        /**
+         * @see Intrabuild_Util_Array
+         */
+        require_once 'Intrabuild/Util/Array.php';
+
+        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        $id   = (int)$_POST['id'];
+        $type = (string)$_POST['type'];
+
+        $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
 
         // create a new draft so that the user is able to write an email from scratch!
-    	if ($id <= 0) {
+        if ($id <= 0) {
 
-        	/**
+            /**
              * @see Intrabuild_Modules_Groupware_Email_Draft
              */
             require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
 
-    	    $standardId   = $accountModel->getStandardAccountIdForUser($userId);
+            $standardId   = $accountModel->getStandardAccountIdForUser($userId);
 
-    	    if ($standardId == 0) {
-    	        require_once 'Intrabuild/Error.php';
+            if ($standardId == 0) {
+                require_once 'Intrabuild/Error.php';
                 $error = new Intrabuild_Error();
                 $error = $error->getDto();;
                 $error->title = 'Error while opening draft';
                 $error->message = 'Please configure an email account first.';
                 $error->level = Intrabuild_Error::LEVEL_ERROR;
 
-    	        $this->view->draft   = null;
-    	        $this->view->success = false;
-    	        $this->view->error   = $error;
+                $this->view->draft   = null;
+                $this->view->success = false;
+                $this->view->error   = $error;
 
-    	        return;
-    	    }
+                return;
+            }
 
-    	    $draft = new Intrabuild_Modules_Groupware_Email_Draft();
-    	    $draft->setId(-1);
-    	    $draft->setGroupwareEmailFoldersId(-1);
-    	    $draft->setGroupwareEmailAccountsId($standardId);
+            $post = $_POST;
 
-    	    $this->view->success = true;
-    	    $this->view->error   = null;
-    	    $this->view->draft   = $draft->getDto();
+            Intrabuild_Util_Array::apply($post, array(
+                'groupwareEmailAccountsId' => $standardId,
+                'groupwareEmailFoldersId'  => -1
+            ));
 
+            $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse(
+                $post,
+                Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_NEW
+            );
 
-    	    return;
-    	}
+            $data = $draftFilter->getProcessedData();
+
+            $draft = Intrabuild_BeanContext_Inspector::create(
+                'Intrabuild_Modules_Groupware_Email_Draft',
+                $data
+            );
+
+            $this->view->success = true;
+            $this->view->error   = null;
+            $this->view->draft   = $draft->getDto();
+
+            return;
+        }
 
         // load an email to edit, to reply or to forward it
         /**
@@ -1350,24 +1382,19 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $draftData = $draftModel->getDraft($id, $userId);
 
         if (empty($draftData)) {
-	        require_once 'Intrabuild/Error.php';
+            require_once 'Intrabuild/Error.php';
             $error = new Intrabuild_Error();
             $error = $error->getDto();;
             $error->title = 'Error while opening draft';
             $error->message = 'Could not find the referenced draft.';
             $error->level = Intrabuild_Error::LEVEL_ERROR;
 
-	        $this->view->draft   = null;
-	        $this->view->success = false;
-	        $this->view->error   = $error;
+            $this->view->draft   = null;
+            $this->view->success = false;
+            $this->view->error   = $error;
 
-	        return;
+            return;
         }
-
-        /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse
-         */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftResponse.php';
 
         $context = "";
 
@@ -1392,11 +1419,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 throw new Exception("Type $type not supported.");
             break;
         }
-
-        /**
-         * @see Intrabuild_Util_Array
-         */
-        require_once 'Intrabuild/Util/Array.php';
 
         Intrabuild_Util_Array::camelizeKeys($draftData);
 
@@ -1432,11 +1454,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $data['to']  = $to;
         $data['cc']  = $cc;
         $data['bcc'] = $bcc;
-
-        /**
-         * @see Intrabuild_BeanContext_Inspector
-         */
-        require_once 'Intrabuild/BeanContext/Inspector.php';
 
         $draft = Intrabuild_BeanContext_Inspector::create(
             'Intrabuild_Modules_Groupware_Email_Draft',
