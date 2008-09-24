@@ -259,7 +259,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         // get all the recipients
         var len = Math.max(draft.to.length, draft.cc.length, draft.bcc.length);
-        var quoteTest = /[,\[\]\"]/;
+        var quoteTest = /[,\[\];\"]/;
 
         for (var i = 0; i < len; i++) {
             add = draft.to[i];
