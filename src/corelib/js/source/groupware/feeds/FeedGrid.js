@@ -17,7 +17,7 @@ Ext.namespace('de.intrabuild.groupware.feeds');
 de.intrabuild.groupware.feeds.FeedGrid = function(config) {
 
 	Ext.ux.util.MessageBus.subscribe(
-	   'de.intrabuild.groupware.feeds.FeedViewbaton.onFeedLoadSuccess',
+	   'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
 	   this.onFeedItemLoaded,
 	   this
 	);
