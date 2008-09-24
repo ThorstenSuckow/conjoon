@@ -54,7 +54,7 @@ class Intrabuild_Filter_EmailRecipientsToString implements Zend_Filter_Interface
     {
         $parts = array();
 
-        $pattern = '/[,"]/';
+        $pattern = '/[,\[\]"]/';
 
         foreach ($value as $address) {
             if (isset($address[1])) {
