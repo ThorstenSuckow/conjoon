@@ -437,7 +437,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         controlBar.setDisabled(true);
 
         var url = '/groupware/email/move.to.outbox/format/json';
-
+        htmlEditor.syncValue();
         var params = {
             panelId    : panelId,
             folderId   : formValues[panelId].folderId,
@@ -525,7 +525,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         controlBar.setDisabled(true);
 
         var url = '/groupware/email/send/format/json';
-
+        htmlEditor.syncValue();
         var params = {
             format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
             id      : formValues[panelId].id,
@@ -582,7 +582,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             rec = recipientStore.getAt(i).copy();
             recipients.push([rec.data.receiveType, rec.data.address]);
         }
-
+        htmlEditor.syncValue();
         var params = {
             id         : formValues[panelId].id,
             panelId    : panelId,
@@ -982,7 +982,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                'id="' +
                 id +
                '">' +
-               _prepareSignature(signature);
+               _prepareSignature(signature) +
                '</div>';
     };
 
