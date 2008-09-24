@@ -86,11 +86,11 @@ de.intrabuild.groupware.email.Letterman = function(config) {
     });
 
     store.loadRecords = function(o, options, success)
-	{
-		this.lastLoadingDate = (new Date()).getTime();
+    {
+        this.lastLoadingDate = (new Date()).getTime();
 
-		Ext.data.Store.prototype.loadRecords.call(this, o, options, success);
-	};
+        Ext.data.Store.prototype.loadRecords.call(this, o, options, success);
+    };
 
 
     /**
@@ -124,19 +124,19 @@ de.intrabuild.groupware.email.Letterman = function(config) {
     var proxyResponse = function(o, success, response)
     {
         var json = de.intrabuild.util.Json;
-    	if (json.isError(response.responseText)) {
-    	    de.intrabuild.groupware.email.Letterman.onRequestFailure(this, o, response);
-    	}
+        if (json.isError(response.responseText)) {
+            de.intrabuild.groupware.email.Letterman.onRequestFailure(this, o, response);
+        }
 
-    	return Ext.data.HttpProxy.prototype.loadResponse.call(this, o, success, response);
+        return Ext.data.HttpProxy.prototype.loadResponse.call(this, o, success, response);
 
     };
 
-	/**
-	 * @param {de.intrabuild.groupware.email.AccountStore}
-	 * Shorthand for the store with the configured email accounts.
-	 */
-	var _accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
+    /**
+     * @param {de.intrabuild.groupware.email.AccountStore}
+     * Shorthand for the store with the configured email accounts.
+     */
+    var _accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
 
     /**
      * Listener for the store's beforeload event.
@@ -144,22 +144,22 @@ de.intrabuild.groupware.email.Letterman = function(config) {
      * the request to the server will be cancelled.
      *
      */
-	var _onBeforeLoad = function()
-	{
-		if (_accountStore.getRange().length == 0) {
-			return false;
-		}
+    var _onBeforeLoad = function()
+    {
+        if (_accountStore.getRange().length == 0) {
+            return false;
+        }
 
-		_messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
-	};
+        _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
+    };
 
-	var _reception = de.intrabuild.groupware.Reception;
+    var _reception = de.intrabuild.groupware.Reception;
 
     return {
 
         init : function()
         {
-			store.on('beforeload',    _onBeforeLoad,         this);
+            store.on('beforeload',    _onBeforeLoad,         this);
             store.on('loadexception', this.onRequestFailure, this);
             store.on('load',          this.onLoad, this);
             store.proxy.loadResponse = proxyResponse;
@@ -258,10 +258,10 @@ de.intrabuild.groupware.email.Letterman = function(config) {
          */
         callout : function(length)
         {
-			var text = String.format(
+            var text = String.format(
                 de.intrabuild.Gettext.ngettext("You have one new email", "You have {0} new emails", length),
-				length
-			);
+                length
+            );
 
             new Ext.ux.ToastWindow({
                 title   : de.intrabuild.Gettext.ngettext("New email", "New emails", length),
@@ -281,7 +281,10 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         {
             store.removeAll();
             var length = records.length;
-            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.load', {total : length});
+            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.load', {
+                items : records,
+                total : length
+            });
             if (length > 0) {
                 this.callout(length)
             }
@@ -292,9 +295,9 @@ de.intrabuild.groupware.email.Letterman = function(config) {
          */
         onRequestFailure : function(proxy, options, response)
         {
-			_messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.loadexception', {});
+            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.loadexception', {});
 
-			de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+            de.intrabuild.groupware.ResponseInspector.handleFailure(response);
         }
 
 
