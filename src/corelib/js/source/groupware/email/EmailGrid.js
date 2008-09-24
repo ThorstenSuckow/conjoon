@@ -152,7 +152,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         width     : 315,
         sortable  : true,
         dataIndex : 'subject',
-        renderer  : de.intrabuild.groupware.email.view.EmailGridRowRenderer.getSubjectRenderer
+        renderer  : de.intrabuild.groupware.email.view.EmailGridRowRenderer.renderSubjectColumn
       },{
         header: de.intrabuild.Gettext.gettext("Sender"),
         width: 160,
