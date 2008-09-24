@@ -32,7 +32,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
         this._accountItemMap = {};
 
         Ext.apply(this, {
-            text     : de.intrabuild.Gettext.gettext("Retrieve"),
+            text     : de.intrabuild.Gettext.gettext("Get mail"),
             cls      : 'x-btn-text-icon',
             iconCls  : 'de-intrabuild-groupware-email-FetchMenuButton-icon',
             menu     : this._getMenu(),
@@ -129,7 +129,6 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
         this.busy = false;
         this.setDisabled(false);
         this.setIconClass('de-intrabuild-groupware-email-FetchMenuButton-icon');
-        this.setText(de.intrabuild.Gettext.gettext("Retrieve"));
     },
 
     _onLettermanBeforeLoad : function()
@@ -137,7 +136,6 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
         this.busy = true;
         this.setDisabled(true);
         this.setIconClass('de-intrabuild-groupware-email-FetchMenuButton-icon-loading');
-        this.setText(de.intrabuild.Gettext.gettext("Retrieving..."));
     },
 
     _onLettermanLoadException : function()
@@ -145,7 +143,6 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
         this.busy = false;
         this.setDisabled(false);
         this.setIconClass('de-intrabuild-groupware-email-FetchMenuButton-icon');
-        this.setText(de.intrabuild.Gettext.gettext("Retrieve"));
     },
 
 
@@ -158,7 +155,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
             this.menu = new Ext.menu.Menu({
                 items : [
                     new Ext.menu.Item({
-                        text    : de.intrabuild.Gettext.gettext("Retrieve all"),
+                        text    : de.intrabuild.Gettext.gettext("For all accounts"),
                         handler : this._onRetrieveAllClick,
                         scope   : this
                     }),
