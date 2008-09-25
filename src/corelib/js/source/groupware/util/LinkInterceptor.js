@@ -24,13 +24,18 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
             e.stopEvent();
 
             var href = t.href, mInd;
+
+            if (href == '#') {
+                return;
+            }
+
             if (href && (mInd = href.indexOf('mailto:')) == 0) {
                 de.intrabuild.groupware.email.EmailEditorManager.createEditor(-1, 'new', {
                     name    : t.firstChild.data,
                     address : href.substr(7)
                 });
             } else {
-                window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(t.href));
+                window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(href));
             }
 
         },
