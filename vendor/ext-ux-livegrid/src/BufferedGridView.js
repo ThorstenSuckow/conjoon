@@ -1156,7 +1156,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             }
 
             if(!skipStripe){
-                var isAlt = ((i+1) % 2 == 0);
+                var isAlt = ((index+1) % 2 == 0);
                 var hasAlt = (' '+row.className + ' ').indexOf(cls) != -1;
                 if(isAlt == hasAlt){
                     continue;
