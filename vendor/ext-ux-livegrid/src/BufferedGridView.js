@@ -1608,12 +1608,9 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         // adjust the height of the scrollbar
         var contHeight = liveScrollerDom.parentNode.offsetHeight +
-                         (Ext.isGecko
-                         ? ((ds.totalLength > 0 && scrollbar)
-                            ? - this.horizontalScrollOffset
-                            : 0)
-                         : (((ds.totalLength > 0 && scrollbar)
-                            ? 0 : this.horizontalScrollOffset)))
+                         ((ds.totalLength > 0 && scrollbar)
+                         ? - this.horizontalScrollOffset
+                         : 0)
                          - this.hdHeight;
 
         liveScrollerDom.style.height = Math.max(contHeight, this.horizontalScrollOffset*2)+"px";

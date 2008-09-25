@@ -1,4 +1,7 @@
-﻿ - fixed: vertical scrollbar would disappear in FF3 if the size of the viewport gets
+﻿- fixed: rendering bug of the vertical scrollbar in IE7 did not trigger the scroll
+event
+to small; set min height to two times of horizontalScrollOffset property
+ - fixed: vertical scrollbar would disappear in FF3 if the size of the viewport gets
 to small; set min height to two times of horizontalScrollOffset property
  - fixed: view would not always calculate the grid's size leading to errors when it
 should decide whether the horizontal scrollbar is shown
