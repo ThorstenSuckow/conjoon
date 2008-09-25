@@ -24,11 +24,11 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 // ------------------------- set up buffered grid ------------------------------
 
     var reader = new Ext.ux.data.BufferedJsonReader({
-		root            : 'items',
-		totalProperty   : 'totalCount',
-		versionProperty : 'version',
-		id              : 'id'
-	}, de.intrabuild.groupware.email.EmailItemRecord);
+        root            : 'items',
+        totalProperty   : 'totalCount',
+        versionProperty : 'version',
+        id              : 'id'
+    }, de.intrabuild.groupware.email.EmailItemRecord);
 
     reader.read = function(response){
         var json = response.responseText;
@@ -37,32 +37,32 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
             throw {message: "JsonReader.read: Json object not found"};
         }
 
-		var z = this.readRecords(o);
-		if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
+        var z = this.readRecords(o);
+        if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
             z.pendingItems = parseInt(o.pendingItems);
-		}
+        }
 
-		return z;
+        return z;
     };
 
-	// we receive the pendingItems count through a property
-	// in the response object. We store it in the options
-	var MyStore = Ext.extend(Ext.ux.grid.BufferedStore, {
+    // we receive the pendingItems count through a property
+    // in the response object. We store it in the options
+    var MyStore = Ext.extend(Ext.ux.grid.BufferedStore, {
 
-		loadRecords: function(o, options, success)
-		{
-			if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
+        loadRecords: function(o, options, success)
+        {
+            if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
                 this.pendingItems = o.pendingItems;
-			} else {
-				this.pendingItems = -1;
-			}
+            } else {
+                this.pendingItems = -1;
+            }
 
-			MyStore.superclass.loadRecords.call(this, o, options, success);
-		}
-	});
+            MyStore.superclass.loadRecords.call(this, o, options, success);
+        }
+    });
 
     this.store = new MyStore({
-		storeId     : Ext.id(),
+        storeId     : Ext.id(),
         bufferSize  : 300,
         autoLoad    : false,
         reader      : reader,
@@ -179,11 +179,10 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
            }
       },{
         header: de.intrabuild.Gettext.gettext("Date"),
-        width: 120,
-        align:'right',
+        width: 100,
         sortable: true,
         dataIndex: 'date',
-        renderer: Ext.util.Format.dateRenderer('d.m.Y H:i')
+        renderer: de.intrabuild.groupware.email.view.EmailGridRowRenderer.renderDateColumn
       }
     ];
 
@@ -211,7 +210,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
 
     onLoadException : function(proxy, options, response, jsError)
-	{
+    {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
@@ -220,7 +219,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
                 scope : this
             }
         });
-	},
+    },
 
     onBeforeSelectionsLoad : function()
     {
@@ -296,7 +295,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
         var clkNodeId = this.controller.clkNodeId;
         var isDrafts = clkNodeId == tp.folderDraft.id;
         var disableSpamItems = isDrafts || clkNodeId == tp.folderOutbox.id  ||
-        						clkNodeId == tp.folderSent.id;
+                                clkNodeId == tp.folderSent.id;
         var editDraft = menuItems.get(1);
         var openView = menuItems.get(0);
         editDraft.setVisible(isDrafts);
@@ -316,8 +315,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
             }
 
         } else {
-        	openView.setDisabled(true);
-        	editDraft.setDisabled(true);
+            openView.setDisabled(true);
+            editDraft.setDisabled(true);
             var pendingRanges = this.selModel.getPendingSelections(true);
 
             if (pendingRanges.length == 0) {
@@ -338,7 +337,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
 
             this.menu = new Ext.menu.Menu({
                 items: [{
-                	text  : de.intrabuild.Gettext.gettext("Open in new tab"),
+                    text  : de.intrabuild.Gettext.gettext("Open in new tab"),
                     handler : this.controller.openEmailView,
                     scope : this.controller
                   },
