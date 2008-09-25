@@ -1,4 +1,44 @@
-﻿Version 0.2rc4
+﻿ - fixed: view would not always calculate the grid's size leading to errors when it should decide whether the
+horizontal scrollbar is shown
+ - enhancement: added Ext 2.2 compatibility, refactored code, changed ui to match
+Ext style
+ - enhancement: added "bulkRemove()" method to store
+ - fixed: (BufferedRowSelectionModel.js) added a property for mapping already
+selected records to their view index, so that the position of records, which are
+no longer in the store, can still be referenced. Added support for removing and
+shifting selections if a record was removed that is not part of the store, but
+still could be referenced using the map
+ - fixed: (BufferedStore.js) when removing records which are not buffered by the
+store, and which are behind the range of the currently buffered record set, the
+"remove" method now adjusts the values of the "bufferRange"-property minus the
+number of records removed, to reflect the changes in the underlying data model
+ - fixed: (BufferedGridView.js) when removing rows which are not part of the data
+model, the "rowIndex" and "lastRowIndex" properties are now both updated, and the
+remaining rows in the view processed by "processRows()"
+ - fixed: (BufferedGridView.js) "forceRepaint" argument for the "updateLiveRows"
+method is now passed using the "options"-object of the Ajax.request, which will
+then be passed to the "replaceLiveRows()".method called by the "liveBufferUpdate()".
+ - fixed: (BufferedGridView.js) last revision had a typo left that caused the rows
+not to be updated when the "insertRows()" method would be called with the
+"isUpdate"-argument set to true
+ - enhancement: (BufferedGridView.js) changed "onRemove()" method to not support
+"isUpdate" argument, since the current implementation of BufferedGridView would never call "onRemove" for simply updating a row in the view
+ - fixed: bufferRange will now get reset if all records in the store are removed
+
+Version 0.2
+11-September-2008
+
+Version 0.2rc5
+31-August-2008
+
+- fixed:
+ - BufferedGridView.js: typo left in "insertRows()" would prevent the view to reassign
+the proper rowIndex when argument "isUpdate" was set to true
+ - BufferedGridView.js: wrong parameter passed to "buffer" and "beforebuffer" event caused
+listeners to use wrong number of visible rows in the grid
+
+
+Version 0.2rc4
 30-August-2008
 
 - fixes:
