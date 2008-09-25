@@ -191,6 +191,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     de.intrabuild.groupware.email.EmailGrid.superclass.constructor.call(this, {
         loadMask       : {msg: de.intrabuild.Gettext.gettext("Loading...")},
         autoScroll     : true,
+        stripeRows     : true,
         cls            : 'de-intrabuild-groupware-email-EmailGrid',
         trackMouseOver : false,
         enableDragDrop : true,
