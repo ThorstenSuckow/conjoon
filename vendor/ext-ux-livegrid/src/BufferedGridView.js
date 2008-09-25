@@ -91,7 +91,7 @@ Ext.ux.grid.BufferedGridView = function(config) {
      * @cfg {Number} horizontalScrollOffset The height of a horizontal aligned
      * scrollbar.  The scrollbar is shown if the total width of all visible
      * columns exceeds the width of the grid component.
-     * On Windows XP (IE7, FF2), this value defaults to 16.
+     * On Windows XP (IE7, FF2), this value defaults to 17.
      */
     this.horizontalScrollOffset = 17;
 
@@ -1660,12 +1660,13 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         var g = this.grid, ds = g.store;
 
-        var c    = g.getGridEl();
-        var cm   = this.cm;
-        var size = c.getSize(true);
-        var vh   = size.height;
+        var c     = g.getGridEl();
+        var cm    = this.cm;
+        var size  = c.getSize();
+        var width = size.width;
+        var vh    = size.height;
 
-        var vw = size.width-this.scrollOffset;
+        var vw = width-this.scrollOffset;
         // horizontal scrollbar shown?
         if (cm.getTotalWidth() > vw) {
             // yes!
