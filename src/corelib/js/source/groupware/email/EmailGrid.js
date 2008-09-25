@@ -148,6 +148,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
                              + '">&#160;</div>';
                    }
       },{
+        id : 'subject',
         header: de.intrabuild.Gettext.gettext("Subject"),
         width     : 315,
         sortable  : true,
