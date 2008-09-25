@@ -32,7 +32,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
         this._accountItemMap = {};
 
         Ext.apply(this, {
-            text     : de.intrabuild.Gettext.gettext("Get mail"),
+            text     : de.intrabuild.Gettext.gettext("Get email"),
             cls      : 'x-btn-text-icon',
             iconCls  : 'de-intrabuild-groupware-email-FetchMenuButton-icon',
             menu     : this._getMenu(),
