@@ -1616,7 +1616,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                             ? 0 : this.horizontalScrollOffset)))
                          - this.hdHeight;
 
-        liveScrollerDom.style.height = contHeight+"px";
+        liveScrollerDom.style.height = Math.max(contHeight, this.horizontalScrollOffset*2)+"px";
 
         if (this.rowHeight == -1) {
             return;

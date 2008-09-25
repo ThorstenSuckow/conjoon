@@ -1,5 +1,7 @@
-﻿ - fixed: view would not always calculate the grid's size leading to errors when it should decide whether the
-horizontal scrollbar is shown
+﻿ - fixed: vertical scrollbar would disappear in FF3 if the size of the viewport gets
+to small; set min height to two times of horizontalScrollOffset property
+ - fixed: view would not always calculate the grid's size leading to errors when it
+should decide whether the horizontal scrollbar is shown
  - enhancement: added Ext 2.2 compatibility, refactored code, changed ui to match
 Ext style
  - enhancement: added "bulkRemove()" method to store
@@ -22,7 +24,8 @@ then be passed to the "replaceLiveRows()".method called by the "liveBufferUpdate
 not to be updated when the "insertRows()" method would be called with the
 "isUpdate"-argument set to true
  - enhancement: (BufferedGridView.js) changed "onRemove()" method to not support
-"isUpdate" argument, since the current implementation of BufferedGridView would never call "onRemove" for simply updating a row in the view
+"isUpdate" argument, since the current implementation of BufferedGridView would
+never call "onRemove" for simply updating a row in the view
  - fixed: bufferRange will now get reset if all records in the store are removed
 
 Version 0.2
