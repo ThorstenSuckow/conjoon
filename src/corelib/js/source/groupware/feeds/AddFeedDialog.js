@@ -5,17 +5,17 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 Ext.namespace('de.intrabuild.groupware.feeds');
 
 de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
-    
+
     Ext.apply(this, config);
 
     /**
@@ -24,12 +24,12 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
      * @param {Ext.Panel}
      */
     this.errorPanel = new Ext.Panel({
-        columnWidth : .82, 
-        height      : 130, 
+        columnWidth : .82,
+        height      : 130,
         autoScroll  : true,
         html        : ""
     });
-    
+
     /**
      * The trigger field for submitting the feed's url.
      * @param {Ext.form.TriggerField}
@@ -39,9 +39,9 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         vtype        : 'url',
         //allowBlank   : false,
         triggerClass : 'de-intrabuild-go-trigger',
-        anchor       : '100%'  
-    }); 
-    
+        anchor       : '100%'
+    });
+
     /**
      * Textfield for submitting a custom name for identifying the feed later on.
      */
@@ -55,7 +55,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                            return alphanum.test(v);
                        }
     });
-    
+
     /**
      * Combobox to store the duration of how long to store the entries before
      * wiped in the DB.
@@ -87,8 +87,8 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
             fields : ['id', 'text']
         })
     });
-    
-    
+
+
     /**
      * @ext-bug beta 1 not setting listWidth renders not correct
      */
@@ -119,13 +119,13 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                 [900,    de.intrabuild.Gettext.gettext("every 15 minutes")]
             ],
             fields : ['id', 'text']
-        }) 
-    });    
-    
-    
+        })
+    });
+
+
     /**
-     * @ext-bug beta 1 using hideLabel renders causes jumpy checkbox 
-     */    
+     * @ext-bug beta 1 using hideLabel renders causes jumpy checkbox
+     */
     /**
      * Checkbox telling wether to close the dialog after a feed was successfully
      * added. If checked, the dialog won't close and stay in input mode.
@@ -139,7 +139,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         autoWidth  : true
         //style      : 'margin-left:105px'
     });
-    
+
     /**
      * @ext-bug something breaks a reference to button.el if using the button and
      *          its return value
@@ -151,40 +151,43 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         text     : de.intrabuild.Gettext.gettext("Add"),
         disabled : true,
         tooltip  : de.intrabuild.Gettext.gettext("Saves and adds the configuration to the feed reader"),
-		handler  : this.onOk,
-		scope    : this
-    });       
-    
+        handler  : this.onOk,
+        scope    : this,
+        minWidth : 75
+    });
+
     /**
      * The button for resetting the dialogs form and starting a new input
      * procedure.
      */
     this.resetButton = new Ext.Button({
-		text    : de.intrabuild.Gettext.gettext("Reset"),
-		handler : this.onReset,
-		scope   : this,
-		tooltip : de.intrabuild.Gettext.gettext("Cancels and resets all fields"),
-		handler : this.onReset,
-		scope   : this
-	});
+        text    : de.intrabuild.Gettext.gettext("Reset"),
+        handler : this.onReset,
+        scope   : this,
+        tooltip : de.intrabuild.Gettext.gettext("Cancels and resets all fields"),
+        handler : this.onReset,
+        scope   : this,
+        minWidth : 75
+    });
 
     /**
      * Cancels and closes the dialog.
      */
     this.cancelButton = new Ext.Button({
-		text    : de.intrabuild.Gettext.gettext("Cancel"),
-		tooltip : de.intrabuild.Gettext.gettext("Cancels and closes this dialog"),
-		handler : this.onCancel,
-		scope   : this
-	});        
-    
+        text    : de.intrabuild.Gettext.gettext("Cancel"),
+        tooltip : de.intrabuild.Gettext.gettext("Cancels and closes this dialog"),
+        handler : this.onCancel,
+        scope   : this,
+        minWidth : 75
+    });
+
     /**
      * The card layout either displaying additional form fields or the panel
      * showing error messages.
      * @param {Ext.Panel}
-     */    
+     */
     this.card = new Ext.Panel({
-       region     : 'south',  
+       region     : 'south',
         height   : 140,
         border         : false,
         deferredRender : true,
@@ -197,7 +200,7 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
         },
         items : [{
             // empty card
-            html : ""    
+            html : ""
           },{
             // error card
             id        : 'DOM:de.intrabuild.groupware.feeds.AddFeedDialog.errorPanel',
@@ -227,23 +230,23 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                     this.feedNameTextField,
                     this.updateComboBox,
                     this.keepEntriesComboBox,
-                    this.keepAddModeCheckbox   
+                    this.keepAddModeCheckbox
                 ]
-            })                  
+            })
         }]
-    });    
-    
+    });
+
     this.items = [{
-        region    : 'center',  
-        height    : 120, 
+        region    : 'center',
+        height    : 120,
         border    : false,
         items     : [
             new de.intrabuild.groupware.util.FormIntro({
-				style      : 'padding:10px 10px 0px 10px;',
-				label      : de.intrabuild.Gettext.gettext("Feed address"),
-				imageClass : 'de-intrabuild-groupware-feeds-AddFeedDialog-introImage',
-				text       : de.intrabuild.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished.")        
-            }),  
+                style      : 'padding:10px 10px 0px 10px;',
+                label      : de.intrabuild.Gettext.gettext("Feed address"),
+                imageClass : 'de-intrabuild-groupware-feeds-AddFeedDialog-introImage',
+                text       : de.intrabuild.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished.")
+            }),
             new Ext.FormPanel({
                 labelAlign : 'right',
                 border     : false,
@@ -251,56 +254,56 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
                 cls        : 'x-small-editor',
                 bodyStyle  : 'background:none;padding:0 10px 0 68px',
                 items      : [
-                    this.urlTrigger 
+                    this.urlTrigger
                 ]
             }),
-			new Ext.BoxComponent({
-				style  : 'margin:0px 10px 0 10px',
-				autoEl : {
-					tag : 'div',
-					cls : 'de-intrabuild-groupware-util-FormIntro-sepx',
-					html : '&#160;'
-			    }
-			}) 
+            new Ext.BoxComponent({
+                style  : 'margin:0px 10px 0 10px',
+                autoEl : {
+                    tag : 'div',
+                    cls : 'de-intrabuild-groupware-util-FormIntro-sepx',
+                    html : '&#160;'
+                }
+            })
          ]
       },
-        this.card  
+        this.card
     ];
-    
+
     de.intrabuild.groupware.feeds.AddFeedDialog.superclass.constructor.call(this,  {
-        iconCls   : 'de-intrabuild-groupware-feeds-Icon', 
+        iconCls   : 'de-intrabuild-groupware-feeds-Icon',
         title     : de.intrabuild.Gettext.gettext("Add feed"),
         bodyStyle : 'background-color:#F6F6F6',
         modal     : true,
         height    : 325,
         width     : 400,
         defaults  : {
-            bodyStyle : 'background:none;'    
+            bodyStyle : 'background:none;'
         },
         resizable : false,
         /**
-         * @ext-bug beta1 not setting the layout mode to border does not render 
+         * @ext-bug beta1 not setting the layout mode to border does not render
          *                the form intro right, i.e. text not displayed when the
          *                dialog reopens or when it is showed over an already modal
          *                window
          */
         layout    : 'border',
-		buttons : [
+        buttons : [
             this.okButton,
-			this.resetButton,
-			this.cancelButton 
-		]
+            this.resetButton,
+            this.cancelButton
+        ]
     });
 
    /* this.animContainer = Ext.DomHelper.append(this.el, {
                         id:'DOM:de.intrabuild.groupware.feeds.FeedPreview.container',
                         style:"height:120px;background-color:red"
                      }, true);*/
-    
+
     // install listeners
     this.urlTrigger.onTriggerClick = this.onTriggerClick.createDelegate(this);
 
-    
+
     // finish other components
     this.keepEntriesComboBox.setValue(2419200);
     this.updateComboBox.setValue(172800);
@@ -315,58 +318,58 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     EMPTY_PANEL : 0,
     ERROR_PANEL : 1,
     FORM_PANEL  : 2,
-    
+
     ERROR_NO_URL       : 0,
     ERROR_NO_VALID_URL : 1,
     ERROR_FEED         : 2,
     ERROR_SERVER       : 3,
-    
+
     /**
      * The request ID as being returned from any made Ajax request.
      * @param {Number}
      */
     requestId : null,
-    
+
     /**
      * Load Mask being used for indicating server requests.
      */
     loadMask : null,
-    
+
     /**
      * Stores the number of feeds that have been added during the dialog's
      * session.
      */
     feedCount : 0,
-    
+
     /**
      * Configuration for the loadMask
      */
     loadMaskConfig : {
-        msg : de.intrabuild.Gettext.gettext("Validating feed url...")    
+        msg : de.intrabuild.Gettext.gettext("Validating feed url...")
     },
 
     /**
      * Configuration for the loadMask on checking for a valid feedname
      */
     loadMaskConfigFeedName : {
-        msg : de.intrabuild.Gettext.gettext("Validating feed name...")    
-    },    
-    
+        msg : de.intrabuild.Gettext.gettext("Validating feed name...")
+    },
+
     /**
      * Configuration for the loadMask while saving the new feed
      */
     loadMaskConfigSaveFeed : {
-        msg : de.intrabuild.Gettext.gettext("Saving...")    
-    },        
-    
+        msg : de.intrabuild.Gettext.gettext("Saving...")
+    },
+
     /**
      * Listener for the feed name textfield.
      */
     onInvalid : function()
     {
         this.okButton.setDisabled(true);
-    },    
-    
+    },
+
     /**
      * Listener for the feed name textfield.
      */
@@ -374,14 +377,14 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     {
         this.okButton.setDisabled(false);
     },
-    
+
     /**
      * Callback for the "Add"-Button.
      */
     onOk : function()
     {
         var value = this.feedNameTextField.getValue().trim();
-        
+
         // last check if the value in the field was valid
         if (value == "") {
             this.feedNameTextField.reset();
@@ -389,18 +392,18 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             this.okButton.setDisabled(true);
             return;
         }
-        
+
         var store = de.intrabuild.groupware.feeds.AccountStore.getInstance();
         var recs = store.getRange();
         var tmpValue = value.toLowerCase();
         var index = -1;
         for (var i = 0, len = recs.length; i < len; i++) {
-        	if (recs[i].get('name').toLowerCase() == tmpValue) {
-        		index = i;
-        		break;
-        	}
+            if (recs[i].get('name').toLowerCase() == tmpValue) {
+                index = i;
+                break;
+            }
         }
-		
+
         if (index != -1) {
             var msg = Ext.MessageBox;
             msg.show({
@@ -414,98 +417,98 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             });
             return;
         }
-       
+
         // if we have made it to here, save the new feed
-        this.saveFeed();     
+        this.saveFeed();
     },
-    
+
     _disableControls : function(disable)
-	{
-        this.okButton.setDisabled(disable);  
-		this.resetButton.setDisabled(disable);
-		this.cancelButton.setDisabled(disable);
-		
+    {
+        this.okButton.setDisabled(disable);
+        this.resetButton.setDisabled(disable);
+        this.cancelButton.setDisabled(disable);
+
         if (disable) {
-            this.tools['close'].mask();           
+            this.tools['close'].mask();
         } else {
             this.tools['close'].unmask();
-        }		
-	},
-	
+        }
+    },
+
     /**
      * Listener for a beforeclose operation.
      * Will return false if there is currently an ajax-request being made, otherwise
      * true.
      *
      * @return {Boolean} true to allow close operation, otherwise false
-     */ 
+     */
     onBeforeClose : function()
     {
         if (this.requestId !== null) {
-            return false;   
+            return false;
         } else {
             return true;
         }
-        
-    },  	
-   
+
+    },
+
     /**
      * Saves the newly added feed.
      */
     saveFeed : function()
     {
         this.loadMask.msg = this.loadMaskConfigSaveFeed.msg;
-        
-        this.loadMask.show(); 
-        
+
+        this.loadMask.show();
+
         this._disableControls(true);
-        
+
         this.requestId = Ext.Ajax.request({
             url    : '/groupware/feeds/add.feed/format/json',
             params : {
-                name           : this.feedNameTextField.getValue().trim(), 
+                name           : this.feedNameTextField.getValue().trim(),
                 uri            : this.urlTrigger.getValue().trim(),
                 updateInterval : this.updateComboBox.getValue(),
                 deleteInterval : this.keepEntriesComboBox.getValue()
             },
-            success        : this.onFeedSaveSuccess, 
+            success        : this.onFeedSaveSuccess,
             failure        : this.onFeedFailure,
             scope          : this,
             disableCaching : true
-        });   
-        
-        
-        
+        });
+
+
+
     },
-    
+
     /**
      * Called when saveFeed finishs without a failure.
      * Fires the 'add' event if adding the feed was successfull.
-     */ 
+     */
     onFeedSaveSuccess : function(response, parameters)
     {
         var json = de.intrabuild.util.Json;
         var msg  = Ext.MessageBox;
-        
-        this.loadMask.hide();  
-        
+
+        this.loadMask.hide();
+
         var source = response.responseText;
-        
+
         this._disableControls(false);
-        
+
         if (json.isError(source)) {
             this.onFeedFailure(response, parameters);
             return;
-        }   
-        
-        var convertTo   = de.intrabuild.util.Record.convertTo; 
-        
+        }
+
+        var convertTo   = de.intrabuild.util.Record.convertTo;
+
         var responseValues = json.getResponseValues(source);
         var account = responseValues['account'];
         var items = responseValues['items'];
         var rec = convertTo(de.intrabuild.groupware.feeds.AccountRecord, account, account.id);
         de.intrabuild.groupware.feeds.AccountStore.getInstance().add(rec);
-        
+
         var store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
         var recs = [];
         var item = null;
@@ -515,14 +518,14 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             recs.push(convertTo(recordClass, item, item.id));
         }
         store.add(recs);
-       
-	    this.reset();
-		
+
+        this.reset();
+
         if (this.keepAddModeCheckbox.getValue() !== true) {
             this.close();
         }
     },
-    
+
     /**
      * Callback after requesting feedname check or saving feed data
      * failed due to networking problems or else.
@@ -532,13 +535,13 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      */
     onFeedFailure : function(response, parameters)
     {
-        this.loadMask.hide(); 
-        
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response);    
-        
-        this._disableControls(false);    
+        this.loadMask.hide();
+
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+
+        this._disableControls(false);
     },
-    
+
     /**
      * Callback for the "Reset"-Button.
      */
@@ -546,7 +549,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     {
         this.reset();
     },
-    
+
     /**
      * Callback for the "Cancel"-Button.
      */
@@ -554,42 +557,42 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     {
         this.close();
     },
-    
+
     /**
      * Listener for the urlTriggerField. Actions will only be started if the
      * value equals to a valid url.
      * If the value of the trigger field equals to a valid url, the body of the
      * body-panel will be masked with a loading indicator and <tt>checkValidFedd</tt>
-     * will be called, requesting the server to check if any feed is available 
+     * will be called, requesting the server to check if any feed is available
      * from the server.
-     * 
+     *
      */
     onTriggerClick : function()
     {
         if (this.urlTrigger.disabled) {
             return;
         }
-        
+
         var value = Ext.util.Format.stripTags(this.urlTrigger.getValue().trim());
-        
+
         if (value == "") {
             this.displayError(this.ERROR_NO_URL, value);
             return;
-        } else if (!this.urlTrigger.isValid()) {    
+        } else if (!this.urlTrigger.isValid()) {
             this.displayError(this.ERROR_NO_VALID_URL, value);
             return;
         }
-        
+
         this.checkValidFeed(value);
     },
-    
+
     /**
-     * Checks if the passed url represents a valid feed location. The window 
-     * will be masked with a loading indicator while the request is being 
+     * Checks if the passed url represents a valid feed location. The window
+     * will be masked with a loading indicator while the request is being
      * processed by the server.
      * If any successfull response is being retrieved from the server, the
      * method <tt>onSuccess</tt> is called. This method then will check the response
-     * and tell if the url was valid. 
+     * and tell if the url was valid.
      * If the server does not respond or any error occures in the scope of
      * communicating towards the server, the method <tt>onFailure</tt> will
      * be called.
@@ -604,28 +607,28 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
             // may have been reset by onOk (msg changed)
             this.loadMask.msg = this.loadMaskConfig.msg;
         }
-        
-		this.tools['close'].mask();
-		this.cancelButton.setDisabled(true);
-		
+
+        this.tools['close'].mask();
+        this.cancelButton.setDisabled(true);
+
         this.card.layout.setActiveItem(this.EMPTY_PANEL);
         this.loadMask.show();
-        
+
         this.requestId = Ext.Ajax.request({
             url            : '/groupware/feeds/is.feed.address.valid/format/json',
             params         : {uri : url},
-            success        : this.onSuccess, 
+            success        : this.onSuccess,
             failure        : this.onFailure,
             scope          : this,
             disableCaching : true
         });
-        
+
     },
-    
+
     /**
      * Called when the Ajax request started in <tt>checkValidFeed</tt> returns
      * a successfull response. A successfull response does not mean yet, that
-     * the passed url was a valid feed address, but the server processed the 
+     * the passed url was a valid feed address, but the server processed the
      * request.
      *
      * @param {XMLHttpRequest} The response
@@ -633,33 +636,33 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      */
     onSuccess : function(response, orgParameters)
     {
-        this.loadMask.hide();    
+        this.loadMask.hide();
         this.tools['close'].unmask();
         this.cancelButton.setDisabled(false);
-		
+
         // status, i.e. 200
         // statusText, i.e OK
         // responseText, ie JSON OR no JSON (then something ugly happend.
-        
+
         var json = de.intrabuild.util.Json;
         var msg  = Ext.MessageBox;
-        
+
         var responseValues = json.getResponseValues(response.responseText);
-        
+
         if (responseValues['success'] !== true) {
-            this.displayError(this.ERROR_FEED, orgParameters.params.uri);   
-            return;                      
+            this.displayError(this.ERROR_FEED, orgParameters.params.uri);
+            return;
         }
-        
+
         // no error, feed was valid
         this.urlTrigger.setDisabled(true);
-        
+
         this.card.layout.setActiveItem(this.FORM_PANEL);
-        
+
     },
 
     /**
-     * Called if communicating with the server failed in any way (network 
+     * Called if communicating with the server failed in any way (network
      * issues etc).
      *
      * @param {XMLHttpRequest} The response
@@ -667,13 +670,13 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
      */
     onFailure : function(response, orgParameters)
     {
-        this.loadMask.hide();  
+        this.loadMask.hide();
         this.tools['close'].unmask();
         this.cancelButton.setDisabled(false);
-		
-		de.intrabuild.groupware.ResponseInspector.handleFailure(response);
-    },    
-    
+
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+    },
+
     /**
      * Displays the error panel and shows the message associated with the
      * error.
@@ -682,43 +685,43 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
     {
         var message = "";
         var url = Ext.util.Format.htmlEncode(url);
-        
+
         switch (code) {
             case this.ERROR_NO_URL:
-                message = de.intrabuild.Gettext.gettext("Error:<br />Please enter a feed url.");        
+                message = de.intrabuild.Gettext.gettext("Error:<br />Please enter a feed url.");
             break;
-            
+
             case this.ERROR_NO_VALID_URL:
                 message = String.format(
-				    de.intrabuild.Gettext.gettext("Error:<br />The url \"{0}\" does not seem to be valid feed url."),
-					url
-				);
+                    de.intrabuild.Gettext.gettext("Error:<br />The url \"{0}\" does not seem to be valid feed url."),
+                    url
+                );
             break;
-            
+
             case this.ERROR_FEED:
-			    message = String.format(
+                message = String.format(
                     de.intrabuild.Gettext.gettext("Error:<br />The url \"{0}\" does not seem to contain a feed resource."),
                     url
                 );
             break;
-            
+
             case this.ERROR_SERVER:
                 message = String.format(
                     de.intrabuild.Gettext.gettext("Error:<br />An unexpected error occured. The response was:<br />{0}"),
                     addMessage
                 );
-            break;            
+            break;
         }
-        
+
         this.errorPanel.body.update(message);
         this.card.layout.setActiveItem(this.ERROR_PANEL);
     },
-    
+
     /**
      * Resets all fields to null values, hides error/form panel, aborts the
      * checkValidFeed server request (if any) and hides the loading mask (if any).
      *
-     * @return {Boolean} <tt>true</tt> to let the window close procedure continue, 
+     * @return {Boolean} <tt>true</tt> to let the window close procedure continue,
      *                   if used as callback
      */
     reset : function()
@@ -726,7 +729,7 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         if (this.loadMask) {
             this.loadMask.hide();
         }
-        
+
         if (this.requestId !== null) {
             Ext.Ajax.abort(this.requestId);
         }
@@ -734,16 +737,16 @@ Ext.extend(de.intrabuild.groupware.feeds.AddFeedDialog, Ext.Window, {
         this.feedNameTextField.reset();
         this.keepEntriesComboBox.reset();
         this.updateComboBox.reset();
-        
+
         this.urlTrigger.setDisabled(false);
         this.okButton.setDisabled(true);
-		this.tools['close'].unmask();
+        this.tools['close'].unmask();
         this.cancelButton.setDisabled(false);
-        
+
         this.card.layout.setActiveItem(this.EMPTY_PANEL);
         this.urlTrigger.reset();
-        
+
         this.requestId = null;
     }
-    
+
 });
