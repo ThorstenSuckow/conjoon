@@ -193,7 +193,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     setEmailItem : function(emailItem, suspendAutoLoad)
     {
         this.emailItem = emailItem;
-        this.setTitle(emailItem.data.subject);
+        this.setTitle((emailItem.data.subject || '&#160;'));
 
         if (suspendAutoLoad === true) {
             return;
