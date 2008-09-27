@@ -155,7 +155,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
             this.menu = new Ext.menu.Menu({
                 items : [
                     new Ext.menu.Item({
-                        text    : de.intrabuild.Gettext.gettext("For all accounts"),
+                        text    : de.intrabuild.Gettext.gettext("All accounts"),
                         handler : this._onRetrieveAllClick,
                         scope   : this
                     }),
