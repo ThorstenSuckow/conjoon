@@ -90,7 +90,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         );
 
         if (this.emailItem) {
-            this.title = this.emailItem.data.subject;
+            this.title = this.emailItem.data.subject || '&#160;';
         }
 
         if (this.refreshFrame === true && !Ext.isIE) {
@@ -276,7 +276,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         this.emailRecord = record;
 
-        this.setTitle(record.data.subject);
+        this.setTitle((record.data.subject || '&#160;'));
         this.renderView();
 
         this.fireEvent('emailload', record);
