@@ -1166,7 +1166,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         if (count > 1) {
             this.switchButtonState(count, record == null ? sm.getSelected() : record);
-            this.preview.clearView();//body.update("");
+            this.preview.clearView();
 
             this.loadingRecord = null;
             return;
@@ -1182,8 +1182,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         if (count == 0) {
             this.switchButtonState(0, null);
-
-            this.preview.clearView();//body.update("");
+            this.preview.setEmailItem(null);
             return;
         }
 
@@ -1202,10 +1201,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return;
         }
 
-        var rec   = this.preview.emailItem;
+        var rec = this.preview.emailItem;
 
         if ((rec && rec.id == record.id) || this.loadingRecord == record.id) {
-            this.preview.clearView();
+            this.preview.setEmailItem(null);
             this.loadingRecord = null;
         }
     },
@@ -1214,8 +1213,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     onGridStoreClear : function()
     {
         this.switchButtonState(0, null);
-
-        this.preview.clearView();
+        this.preview.setEmailItem(null);
         this.loadingRecord = null;
     },
 
@@ -1227,7 +1225,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     onGridStoreBeforeLoad : function(store, options)
     {
-        this.preview.clearView();
+        this.preview.setEmailItem(null);
 
         this.clearPending();
 
