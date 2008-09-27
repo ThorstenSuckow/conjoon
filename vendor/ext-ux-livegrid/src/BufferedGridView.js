@@ -692,16 +692,15 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
             if (viewIndex < this.rowIndex) {
                 this.rowIndex--;
+                this.lastRowIndex = this.rowIndex;
             }
 
             this.fireEvent("beforerowremoved", this, viewIndex, record);
             this.fireEvent("rowremoved",       this, viewIndex, record);
 
             if (currentBulkRecord == lastBulkRecord) {
+                this.adjustVisibleRows();
                 this.adjustBufferInset();
-                this.adjustScrollerPos((this.rowIndex-this.lastRowIndex)*this.rowHeight, true)
-                this.lastRowIndex = this.rowIndex;
-                this.updateLiveRows(this.rowIndex, true);
             }
             return;
         }
