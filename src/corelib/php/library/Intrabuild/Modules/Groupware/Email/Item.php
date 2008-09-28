@@ -58,12 +58,14 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     private $isSpam;
     private $isDraft;
     private $groupwareEmailFoldersId;
+    private $referencedAsTypes;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
+        $this->referencedAsTypes = array();
     }
 
 // -------- accessors
@@ -72,6 +74,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function getRecipients(){return $this->recipients;}
     public function getSender(){return $this->sender;}
     public function getSubject(){return $this->subject;}
+    public function getReferencedAsTypes(){return $this->referencedAsTypes;}
     public function getDate(){return $this->date;}
     public function isRead(){return $this->isRead;}
     public function isAttachment(){return $this->isAttachment;}
@@ -83,6 +86,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function setRecipients($recipients){$this->recipients = $recipients;}
     public function setSender($sender){$this->sender = $sender;}
     public function setSubject($subject){$this->subject = $subject;}
+    public function setReferencedAsTypes(Array $referencedAsTypes){$this->referencedAsTypes = $referencedAsTypes;}
     public function setDate($date){$this->date = $date;}
     public function setRead($isRead){$this->isRead = $isRead;}
     public function setAttachment($isAttachment){$this->isAttachment = $isAttachment;}
@@ -138,6 +142,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
+
             }
         }
 
@@ -153,15 +158,16 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function toArray()
     {
         return array(
-            'id'           => $this->id,
-            'recipients'   => $this->recipients,
-            'sender'       => $this->sender,
-            'subject'      => $this->subject,
-            'date'         => $this->date,
-            'isRead'       => $this->isRead,
-            'isAttachment' => $this->isAttachment,
-            'isSpam'       => $this->isSpam,
-            'isDraft'      => $this->isDraft,
+            'id'                => $this->id,
+            'recipients'        => $this->recipients,
+            'sender'            => $this->sender,
+            'subject'           => $this->subject,
+            'date'              => $this->date,
+            'isRead'            => $this->isRead,
+            'isAttachment'      => $this->isAttachment,
+            'isSpam'            => $this->isSpam,
+            'isDraft'           => $this->isDraft,
+            'referencedAsTypes' => $this->referencedAsTypes,
             'groupwareEmailFoldersId' => $this->groupwareEmailFoldersId
         );
     }
@@ -177,7 +183,11 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
 
         $strs = array();
         foreach ($data as $key => $value) {
-            $strs[] = $key.': '.$value;
+            if ($key == 'referencedAsTypes') {
+                $strs[] = 'referencedAsTypes: [' . implode(',', $value) . ']';
+            } else {
+                $strs[] = $key.': '.$value;
+            }
         }
         return get_class($this).'['.implode('; ', $strs).']';
     }

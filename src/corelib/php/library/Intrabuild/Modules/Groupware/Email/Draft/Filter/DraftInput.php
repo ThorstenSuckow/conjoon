@@ -60,12 +60,14 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             'message',
             'to',
             'cc',
-            'bcc'
+            'bcc',
+            'type'
         )
 
     );
 
     protected $_filters = array(
+        'type' => array(),
         'format' => array(),
          'id' => array(
             'Int'
@@ -107,6 +109,9 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
 
     protected $_validators = array(
         'format' => array(
+            'allowEmpty' => false
+         ),
+         'type' => array(
             'allowEmpty' => false
          ),
          'id' => array(
@@ -155,6 +160,13 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
     protected function _init()
     {
         $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_ReferenceType
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/ReferenceType.php';
+
+        $this->_filters['type'][] = new Intrabuild_Modules_Groupware_Email_Draft_Filter_ReferenceType();
 
         $this->_filters['format'] = array(
             new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftFormatFilter()

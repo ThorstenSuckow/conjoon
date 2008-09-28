@@ -251,7 +251,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             return onDraftLoadException(response, options);
         }
 
-        var draft   = data.draft;
+        var draft = data.draft;
+        var type  = data.type;
 
         var recRecs         = [];
         var recipientRecord = de.intrabuild.groupware.email.RecipientRecord;
@@ -302,6 +303,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         Ext.apply(formValues[options.panelId], {
             id         : draft.id,
+            type       : type,
             disabled   : false,
             subject    : draft.subject,
             message    : draft.contentTextPlain,
@@ -538,6 +540,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var params = {
             format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
             id      : formValues[panelId].id,
+            type    : formValues[panelId].type,
             panelId : panelId,
             date    : (new Date().getTime())/1000,
             subject : subjectField.getValue(),
@@ -674,6 +677,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      * groupwareEmailFoldersId - the id of the folder from which this email was originally
      * edited
      * id - the id of the draft that was opened to send this email
+     * type - the reference type of the email - either reply, reply_all, forward, edit or new.
      *
      * @publish de.intrabuild.groupware.email.Smtp.emailSent
      *
@@ -703,7 +707,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSent', {
             itemRecord              : itemRecord,
             id                      : params.id,
-            groupwareEmailFoldersId : params.groupwareEmailFoldersId
+            groupwareEmailFoldersId : params.groupwareEmailFoldersId,
+            type                    : params.type,
         });
 
         contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);

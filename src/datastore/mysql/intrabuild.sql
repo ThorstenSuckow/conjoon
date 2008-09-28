@@ -305,3 +305,15 @@ ALTER TABLE `groupware_email_items_outbox` CHANGE `sent_timestamp` `sent_timesta
 ALTER TABLE `groupware_email_items_outbox` ADD `groupware_email_accounts_id` INT UNSIGNED NOT NULL AFTER `groupware_email_items_id` ;
 
 ALTER TABLE `groupware_email_items` ADD `recipients` TEXT NOT NULL AFTER `content_text_html` , ADD `sender` TEXT NOT NULL AFTER `recipients` ;
+
+
+ CREATE TABLE IF NOT EXISTS `intrabuild`.`groupware_email_items_references` (
+`groupware_email_items_id` INT UNSIGNED NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`reference_items_id` INT UNSIGNED NOT NULL ,
+`reference_type` ENUM( '', 'reply', 'reply_all', 'forward' ) NOT NULL
+) ENGINE = MYISAM;
+
+ALTER TABLE `groupware_email_items_references` ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` ) ;
+
+ALTER TABLE `groupware_email_items_references` ADD INDEX `references` ( `groupware_email_items_id` , `user_id` , `reference_items_id` )

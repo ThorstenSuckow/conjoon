@@ -29,6 +29,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Dto extends Intrabuild_Dto {
     public $isAttachment;
     public $isSpam;
     public $isDraft;
+    public $referencedAsTypes;
     public $groupwareEmailFoldersId;
 
 }

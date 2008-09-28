@@ -1101,7 +1101,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
      *           "text/plain", "text/html" - or "multipart" if the email should
      *           be send both as html and plain-text.
      * - id: The id of the messge if this was loaded from an already existing
-     *       draft. Can default to 0 or -1 if the emil was created from the scratch
+     *       draft (i.e. a draft, an email that is being replied to which is being forwarded).
+     * -type: The type of teh action: if this equals to "reply", "reply_all" or "forward",
+     * this message references an existing one
+     * Can default to 0 or -1 if the emil was created from the scratch
      * - groupwareEmailAccountsId: An integer specifying the id of the email account of the
      *              user which will be used to send the message
      * - groupwareEmailFoldersId: The id of the folder from which this email was opened. Equals
@@ -1204,7 +1207,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $message = Intrabuild_BeanContext_Inspector::create(
                 'Intrabuild_Modules_Groupware_Email_Draft',
-                $data
+                $data,
+                true
         );
 
         require_once 'Intrabuild/Modules/Groupware/Email/Sender.php';
@@ -1241,7 +1245,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             false
         );
 
-        $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail);
+        $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail, $data['type']);
 
         if (!$item) {
             require_once 'Intrabuild/Error.php';
@@ -1368,6 +1372,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $this->view->success = true;
             $this->view->error   = null;
             $this->view->draft   = $draft->getDto();
+            $this->view->type    = $type;
 
             return;
         }
@@ -1463,6 +1468,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->success = true;
         $this->view->error   = null;
         $this->view->draft   = $draft->getDto();
+        $this->view->type    = $type;
     }
 
     /**

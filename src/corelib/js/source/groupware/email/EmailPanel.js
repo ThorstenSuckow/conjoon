@@ -928,11 +928,26 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var emailRecord = message.itemRecord;
         var oldId       = message.id;
         var oldFolderId = message.groupwareEmailFoldersId;
+        var type        = message.type;
 
         var tp           = this.treePanel;
         var currFolderId = this.clkNodeId;
         var store        = this.gridPanel.store;
         var pendingStore = tp.pendingItemStore;
+
+        // check if the grid with the record for old id is open. Update the specific record
+        // with the reference type, if message.type equals to forward, reply or reply_all
+        if (type.indexOf('reply') != -1 || type.indexOf('forward') != -1) {
+            var refRecord = store.getById(oldId);
+            if (refRecord) {
+                var references    = refRecord.get('referencedAsTypes').slice(0);
+                if (references.indexOf(type) == -1) {
+                    references.push(type);
+                    refRecord.set('referencedAsTypes', references);
+                }
+            }
+        }
+
 
         /**
          * @todo  it is possible that the tree is not fully loaded yet. Thus we

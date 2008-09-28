@@ -26,6 +26,24 @@
     background-position:0 50%;
 }
 
+.de-intrabuild-groupware-email-EmailGrid .hasReply {
+    background-image:url(../images/12x12/apps/groupware-email-itemhasreply.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.de-intrabuild-groupware-email-EmailGrid .hasForward {
+    background-image:url(../images/12x12/apps/groupware-email-itemhasforward.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.de-intrabuild-groupware-email-EmailGrid .hasReplyhasForward {
+    background-image:url(../images/16x16/apps/groupware-email-itemhasreplyandforward.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
 .de-intrabuild-groupware-email-EmailGrid .x-grid3-td-subject div {
     padding-left:16px;
 }

@@ -47,12 +47,22 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
             'isAttachment',
             'isSpam',
             'isDraft',
+            'referencedAsTypes',
             'groupwareEmailFoldersId'
         )
     );
 
     protected function _init()
     {
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ReferenceTypes
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ReferenceTypes.php';
+
+        $this->_filters['referencedAsTypes'] = array(
+            new Intrabuild_Modules_Groupware_Email_Item_Filter_ReferenceTypes()
+        );
+
         $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
     }
 

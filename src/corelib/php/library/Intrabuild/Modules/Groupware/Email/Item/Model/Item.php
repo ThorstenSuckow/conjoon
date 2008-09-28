@@ -38,6 +38,9 @@ require_once 'Intrabuild/BeanContext/Decoratable.php';
 class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable {
 
+    const REFERENCE_TYPE_REPLY     = 'reply';
+    const REFERENCE_TYPE_REPLY_ALL = 'reply_all';
+    const REFERENCE_TYPE_FORWARD   = 'forward';
 
     /**
      * The name of the table in the underlying datastore this
@@ -154,6 +157,13 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                     array('is_spam', 'is_read')
                 )
                 ->joinLeft(
+                        array('reference' => 'groupware_email_items_references'),
+                        'reference.reference_items_id=items.id '.
+                        'AND '.
+                        $adapter->quoteInto('reference.user_id=?', $userId, 'INTEGER'),
+                        array('referenced_as_types' => 'GROUP_CONCAT(DISTINCT reference.reference_type SEPARATOR \',\')' )
+                 )
+                ->joinLeft(
                     array('folders' => 'groupware_email_folders'),
                     '`folders`.`id` = `items`.`groupware_email_folders_id`',
                     array('is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'))
@@ -195,7 +205,6 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
 
         $select = self::getItemBaseQuery($userId, $sortInfo)
                   ->where('`items`.`groupware_email_folders_id` = ?', $folderId);
-
 
         $rows = $adapter->fetchAll($select);
 
@@ -309,6 +318,17 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
             return 0;
         }
 
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_References
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
+        $referenceModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
+        // delete all references for the items for the specified user
+        $referenceModel->delete('user_id = '.$userId.' AND reference_items_id IN ('.implode(',', $clearedItemIds).')');
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Flag
+         */
         require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
         $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
         $flagModel->flagItemsAsDeleted($clearedItemIds, $userId);
@@ -349,13 +369,14 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
      * @param Intrabuild_Modules_Groupware_Email_Account $account
      * @param integer $userId
      * @param Intrabuild_Mail_Sent $mailSent
+     * @param string $type
      *
      * @return array the data from groupware_email_item associated with
      * the newly saved entry
      */
     public function saveSentEmail(Intrabuild_Modules_Groupware_Email_Draft $message,
                                   Intrabuild_Modules_Groupware_Email_Account $account,
-                                  $userId, Intrabuild_Mail_Sent $mailSent)
+                                  $userId, Intrabuild_Mail_Sent $mailSent, $type = "")
     {
         $mail = $mailSent->getMailObject();
 
@@ -364,6 +385,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         $accountId = (int)$account->getId();
 
         $messageId = (int)$message->getId();
+
+        $referenceId = $messageId < 0 ? 0 : $messageId;
 
         if ($userId <= 0 || $accountId <= 0) {
             return array();
@@ -537,6 +560,40 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                     require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
 
                     $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
+
+                    $referenceType = '';
+
+                    if ($type != "" && $referenceId != 0) {
+                        /**
+                         * @see Intrabuild_Modules_Groupware_Email_Keys
+                         */
+                        require_once 'Intrabuild/Modules/Groupware/Email/Keys.php';
+                        switch ($type) {
+                            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY:
+                                $referenceType = self::REFERENCE_TYPE_REPLY;
+                            break;
+                            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY_ALL:
+                                $referenceType = self::REFERENCE_TYPE_REPLY_ALL;
+                            break;
+
+                            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_FORWARD:
+                                $referenceType = self::REFERENCE_TYPE_FORWARD;
+                            break;
+                        }
+
+                        $referenceUpdate = array(
+                            'groupware_email_items_id' => $messageId,
+                            'user_id'                  => $userId,
+                            'reference_items_id'       => $referenceId,
+                            'reference_type'           => $referenceType
+                        );
+                        /**
+                         * @see Intrabuild_Modules_Groupware_Email_Item_Model_References
+                         */
+                        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
+                        $referenceModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
+                        $referenceModel->insert($referenceUpdate);
+                    }
 
                     $flagUpdate = array(
                         'groupware_email_items_id' => $messageId,
