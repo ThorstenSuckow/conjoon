@@ -23,7 +23,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 
 // ------------------------- set up buffered grid ------------------------------
 
-    var reader = new Ext.ux.data.BufferedJsonReader({
+    var reader = new Ext.ux.grid.livegrid.JsonReader({
         root            : 'items',
         totalProperty   : 'totalCount',
         versionProperty : 'version',
@@ -47,7 +47,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 
     // we receive the pendingItems count through a property
     // in the response object. We store it in the options
-    var MyStore = Ext.extend(Ext.ux.grid.BufferedStore, {
+    var MyStore = Ext.extend(Ext.ux.grid.livegrid.Store, {
 
         loadRecords: function(o, options, success)
         {
@@ -86,7 +86,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     });
 
 
-    this.view = new Ext.ux.grid.BufferedGridView({
+    this.view = new Ext.ux.grid.livegrid.GridView({
         nearLimit   : 100,
         scrollDelay : 0,
         loadMask    : {
@@ -101,7 +101,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         }
     });
 
-    this.selModel = new Ext.ux.grid.BufferedRowSelectionModel();
+    this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel();
 
     /**
      * You can use an instance of BufferedGridToolbar for keeping track of the
@@ -109,7 +109,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
      * image that gets activated when the store buffers.
      * ...Yeah, I pretty much stole this one from the PagingToolbar!
      */
-    this.bbar = new Ext.ux.BufferedGridToolbar({
+    this.bbar = new Ext.ux.grid.livegrid.Toolbar({
         grid        : this,
         displayInfo : true,
         displayMsg  : de.intrabuild.Gettext.gettext("Emails {0} - {1} of {2}"),

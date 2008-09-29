@@ -466,7 +466,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
     {
         if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
-            $toDelete = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
+            $toDelete = Zend_Json::decode($_POST['itemsToDelete'], Zend_Json::TYPE_ARRAY);
         }
 
         require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/Item.php';
@@ -510,7 +510,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
     {
         if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
-            $toMove = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
+            $toMove = Zend_Json::decode($_POST['itemsToMove'], Zend_Json::TYPE_ARRAY);
         }
 
         require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/Item.php';

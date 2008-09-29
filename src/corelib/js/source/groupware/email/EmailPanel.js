@@ -316,15 +316,18 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (this.clkNodeId && this.treePanel.getNodeById(this.clkNodeId).getPath('type').indexOf('trash') != -1) {
             var unread = 0;
 
+            var max_i = records.length
+
+            if (max_i == 0) {
+                return;
+            }
 
             var gs = this.gridPanel.store;
             var requestArray = [];
-            for (var i = 0, max_i = records.length; i < max_i; i++) {
+            for (var i = 0; i < max_i; i++) {
                 unread += (records[i].data.isRead ? 0 : 1);
                 requestArray.push({ id : records[i].id });
             }
-
-            gs.bulkRemove(records);
 
             this.fireEvent('emailsdeleted', records);
 
@@ -334,14 +337,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 pendingRecord.set('pending', pendingRecord.data.pending-unread);
             }
 
-            if (requestArray.length > 0) {
-                Ext.Ajax.request({
-                    url: '/groupware/email/delete.items/format/json',
-                    params: {
-                        json : Ext.encode(requestArray)
-                    }
-                });
-            }
+            Ext.Ajax.request({
+                url: '/groupware/email/delete.items/format/json',
+                params: {
+                    itemsToDelete : Ext.encode(requestArray)
+                }
+            });
+
+            gs.bulkRemove(records);
+
         } else {
             this.moveEmails(records, this.treePanel.folderTrash.id);
         }
@@ -375,21 +379,23 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             });
         }
 
+        if (max_i == 0) {
+            return;
+        }
+
         var allowPendingUpdate = this.allowNodePendingUpdate(currFolderId);
         var updatePendingCount = allowPendingUpdate ? 0 : i;
 
         gs.commitChanges();
 
-        gs.bulkRemove(records);
+        Ext.Ajax.request({
+            url: '/groupware/email/move.items/format/json',
+            params: {
+                itemsToMove : Ext.encode(requestArray)
+            }
+        });
 
-        if (requestArray.length > 0) {
-            Ext.Ajax.request({
-                url: '/groupware/email/move.items/format/json',
-                params: {
-                    json : Ext.encode(requestArray)
-                }
-            });
-        }
+        gs.bulkRemove(records);
 
         var pendingStore  = this.treePanel.pendingItemStore;
         var pendingRecord = pendingStore.getById(folderId);
@@ -1133,7 +1139,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     onNodeDrop : function(dropEvent)
     {
         var source = dropEvent.source;
-        if (source instanceof Ext.ux.grid.BufferedGridDragZone) {
+        if (source instanceof Ext.ux.grid.livegrid.DragZone) {
             this.moveEmails(dropEvent.data.selections, dropEvent.target.id);
         }
     },

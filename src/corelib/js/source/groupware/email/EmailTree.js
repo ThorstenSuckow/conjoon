@@ -512,7 +512,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         }
 
         var source = dropEvent.source;
-        if (source instanceof Ext.ux.grid.BufferedGridDragZone) {
+        if (source instanceof Ext.ux.grid.livegrid.DragZone) {
             // Cancel the event and fire the nodedrop event
             // if the source was selections from the email grid
             this.fireEvent("nodedrop", dropEvent);
@@ -538,7 +538,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
 
         var source = dragOverEvent.source;
 
-        if (source instanceof Ext.ux.grid.BufferedGridDragZone) {
+        if (source instanceof Ext.ux.grid.livegrid.DragZone) {
             return source.isDropValid === true;
         }
 

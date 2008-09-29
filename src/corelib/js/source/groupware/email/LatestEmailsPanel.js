@@ -38,10 +38,10 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
 
 
 // ------------------------- set up buffered grid ------------------------------
-    this.store = new Ext.ux.grid.BufferedStore({
+    this.store = new Ext.ux.grid.livegrid.Store({
         bufferSize  : 100,
         autoLoad    : false,
-        reader      : new Ext.ux.data.BufferedJsonReader({
+        reader      : new Ext.ux.grid.livegrid.JsonReader({
                           root            : 'items',
                           totalProperty   : 'totalCount',
                           versionProperty : 'version',
@@ -56,7 +56,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         url : '/groupware/email/get.email.items/format/json'
     });
 
-    this.view = new Ext.ux.grid.BufferedGridView({
+    this.view = new Ext.ux.grid.livegrid.GridView({
         nearLimit : 25,
         loadMask  : {
             msg : de.intrabuild.Gettext.gettext("Please wait...")
@@ -70,7 +70,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         }
     });
 
-    this.selModel = new Ext.ux.grid.BufferedRowSelectionModel({singleSelect:true});
+    this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel({singleSelect:true});
 // ------------------------- ^^ EO set up buffered grid ------------------------
 
     this.columns = [{

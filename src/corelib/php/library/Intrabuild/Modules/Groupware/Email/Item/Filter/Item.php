@@ -184,6 +184,10 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
     {
         $data = parent::getProcessedData();
 
+        if ($this->_context == self::CONTEXT_DELETE || $this->_context == self::CONTEXT_MOVE) {
+            return $data;
+        }
+
         $recs = array(
             $data['to'],
             $data['cc'],
