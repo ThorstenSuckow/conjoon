@@ -1,4 +1,8 @@
-﻿Version 0.3a1 (GPL)
+﻿
+ - fixed: (GridView.js) missing call to "isBuffering = true" in "updateLiveRows()"
+made the component to ignore a previously set queue and request new data immediately
+
+Version 0.3a1 (GPL)
 29-September-2008
 
  - enhancement: added Ext 2.2 compatibility, refactored code, changed ui to match

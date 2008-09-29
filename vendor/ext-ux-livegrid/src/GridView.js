@@ -1406,6 +1406,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         // prepare for rebuffering
+        this.isBuffering = true;
+
         var bufferOffset = this.getPredictedBufferIndex(index, inRange, down);
 
         if (!inRange) {
