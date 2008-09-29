@@ -9,7 +9,8 @@ to small; set min height to two times of horizontalScrollOffset property
 should decide whether the horizontal scrollbar is shown
  - enhancement: added Ext 2.2 compatibility, refactored code, changed ui to match
 Ext style
- - enhancement: added "bulkRemove()" method to store
+ - enhancement: added "bulkRemove()" method and "bulkremove" event to store, added
+"bulkremove"-listener to BufferedGridView
  - fixed: (BufferedRowSelectionModel.js) added a property for mapping already
 selected records to their view index, so that the position of records, which are
 no longer in the store, can still be referenced. Added support for removing and

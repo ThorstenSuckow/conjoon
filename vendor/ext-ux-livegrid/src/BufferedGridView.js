@@ -354,10 +354,21 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         Ext.ux.grid.BufferedGridView.superclass.init.call(this, grid);
 
         grid.on('expand', this._onExpand, this);
+    },
 
-        this.ds.on('beforeload', this.onBeforeLoad, this);
-	},
+    initData : function(ds, cm)
+    {
+        if(this.ds){
+            this.ds.un('bulkremove', this.onBulkRemove, this);
+            this.ds.un('beforeload', this.onBeforeLoad, this);
+        }
+        if(ds){
+            ds.on('bulkremove', this.onBulkRemove, this);
+            ds.on('beforeload', this.onBeforeLoad, this);
+        }
 
+        Ext.ux.grid.BufferedGridView.superclass.initData.call(this, ds, cm);
+    },
 
     /**
      * Only render the viewable rect of the table. The number of rows visible to
@@ -672,129 +683,83 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         this.reset(false);
     },
 
+    /**
+     * Callback for the "bulkremove" event of the attached datastore.
+     *
+     * @param {Ext.ux.grid.livegrid.Store} store
+     * @param {Array} removedData
+     *
+     */
+    onBulkRemove : function(store, removedData)
+    {
+
+        var record    = null;
+        var index     = 0;
+        var viewIndex = 0;
+        var len       = removedData.length;
+
+        var removedInView    = false;
+        var removedAfterView = false;
+        var scrollerAdjust   = 0;
+
+        if (len == 0) {
+            return;
+        }
+
+        for (var i = 0; i < len; i++) {
+            record = removedData[i][0];
+            index  = removedData[i][1];
+
+            viewIndex = (index != Number.MIN_VALUE && index != Number.MAX_VALUE)
+                      ? index + this.ds.bufferRange[0]
+                      : index;
+
+            if (viewIndex < this.rowIndex) {
+                this.rowIndex--;
+                scrollerAdjust -= this.rowHeight;
+                this.lastRowIndex = this.rowIndex;
+            } else if (!removedAfterView && viewIndex > this.rowIndex+this.visibleRows) {
+                removedAfterView = true;
+            } else if (!removedInView && (viewIndex >= this.rowIndex && viewIndex <= this.rowIndex+this.visibleRows)) {
+                removedInView = true;
+            }
+
+            this.fireEvent("beforerowremoved", this, viewIndex, record);
+            this.fireEvent("rowremoved",       this, viewIndex, record);
+        }
+
+        if (this.ds.totalLength < this.visibleRows) {
+            this.rowIndex     = 0;
+            this.lastRowIndex = 0;
+        }
+
+        if (removedInView) {
+            this.updateLiveRows(this.rowIndex, true);
+            this.processRows(0, undefined, false);
+        }
+
+        if (scrollerAdjust != 0) {
+            this.adjustScrollerPos(scrollerAdjust, true);
+            if (!removedInView) {
+                this.processRows(0, undefined, false);
+            }
+        }
+
+        this.adjustBufferInset();
+    },
+
 
     /**
      * Callback for the underlying store's remove method. The current
      * implementation does only remove the selected row which record is in the
      * current store.
      *
-     * @param {Number} currentBulkRecord
-     * @param {Number lastBulkRecord
+     * @see onBulkRemove()
      */
     // private
-    onRemove : function(ds, record, index, currentBulkRecord, lastBulkRecord)
+    onRemove : function(ds, record, index)
     {
-        var viewIndex = (index != Number.MIN_VALUE && index != Number.MAX_VALUE)
-                      ? index + this.ds.bufferRange[0]
-                      : index;
-
-        if (currentBulkRecord != undefined) {
-
-            if (viewIndex < this.rowIndex) {
-                this.rowIndex--;
-                this.lastRowIndex = this.rowIndex;
-            }
-
-            this.fireEvent("beforerowremoved", this, viewIndex, record);
-            this.fireEvent("rowremoved",       this, viewIndex, record);
-
-            if (currentBulkRecord == lastBulkRecord) {
-                this.adjustVisibleRows();
-                this.adjustBufferInset();
-            }
-            return;
-        }
-
-        if (index == Number.MIN_VALUE || index == Number.MAX_VALUE) {
-            this.fireEvent("beforerowremoved", this, index, record);
-            this.fireEvent("rowremoved",       this, index, record);
-            if (index == Number.MIN_VALUE) {
-                this.rowIndex--;
-                this.lastRowIndex = this.rowIndex;
-                this.adjustScrollerPos(-this.rowHeight, true);
-                this.fireEvent('cursormove', this, this.rowIndex,
-                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                           this.ds.totalLength);
-            }
-            this.adjustBufferInset();
-            this.processRows(0, undefined, true);
-            return;
-        }
-        var viewIndex = index + this.ds.bufferRange[0];
-        this.fireEvent("beforerowremoved", this, viewIndex, record);
-
-        var domLength = this.getRows().length;
-
-        if (viewIndex < this.rowIndex) {
-            // if the according row is not displayed within the visible rect of
-            // the grid, just adjust the row index and the liveScroller
-            this.rowIndex--;
-            this.lastRowIndex = this.rowIndex;
-            this.adjustScrollerPos(-this.rowHeight, true);
-            this.fireEvent('cursormove', this, this.rowIndex,
-                           Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                           this.ds.totalLength);
-
-        } else if (viewIndex >= this.rowIndex && viewIndex < this.rowIndex+domLength) {
-            var lastPossibleRIndex = (this.rowIndex-this.ds.bufferRange[0])+(this.visibleRows-1);
-
-            var cInd = viewIndex-this.rowIndex;
-            var rec  = this.ds.getAt(this.rowIndex+this.visibleRows-1);
-
-            // did we reach the end of the buffer range?
-            if (rec == null) {
-                // are there more records we could use? send a buffer request
-                if (this.ds.totalLength > this.rowIndex+this.visibleRows) {
-                    this.fireEvent("rowremoved", this, viewIndex, record);
-
-                    this.updateLiveRows(this.rowIndex, true, true);
-
-                    return;
-                } else {
-                    // no more records, neither in the underlying data model
-                    // nor in the data store
-                    if (this.rowIndex == 0) {
-                        // simply remove the row from the end of the dom dom
-                        this.removeRows(cInd, cInd);
-
-                    } else {
-                        // scroll a new row in the rect so the whole rect is filled
-                        // with rows
-                        this.rowIndex--;
-                        this.lastRowIndex = this.rowIndex;
-
-                        if (this.rowIndex < this.ds.bufferRange[0]) {
-                            // buffer range is invalid! request new data
-                            this.fireEvent("rowremoved", this, viewIndex, record);
-                            this.updateLiveRows(this.rowIndex);
-
-                            return;
-                        } else {
-                            // still records in the store, simply update the dom,
-                            //but leave processing to this method after the event rowremoved
-                            // was fired so the selection store can update properly
-                            this.replaceLiveRows(this.rowIndex, true, false);
-                        }
-                    }
-                }
-            } else {
-                // the record is right within the visible rect of the grid.
-                // remove the row that represents the record and append another
-                // record from the store
-                this.removeRows(cInd, cInd);
-                var html = this.renderRows(lastPossibleRIndex, lastPossibleRIndex);
-                Ext.DomHelper.insertHtml('beforeEnd', this.mainBody.dom, html);
-            }
-        }
-
-        // a record within the bufferrange was removed, so adjust the buffer
-        // range
-        this.adjustBufferInset();
-
-        this.fireEvent("rowremoved", this, viewIndex, record);
-
-
-        this.processRows(0, undefined, true);
+        this.onBulkRemove(ds, [[record, index]]);
     },
 
     /**
@@ -1539,16 +1504,13 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         // we can skip checking for append or prepend if the spill is larger than
         // visibleRows. We can paint the whole rows new then-
         if (spill >= this.visibleRows || spill == 0) {
-
             this.mainBody.update(this.renderRows(cursorBuffer, lpIndex));
-
         } else {
             if (append) {
 
                 this.removeRows(0, spill-1);
 
                 if (cursorBuffer+this.visibleRows-spill <= bufferRange[1]-bufferRange[0]) {
-
                     var html = this.renderRows(
                         cursorBuffer+this.visibleRows-spill,
                         lpIndex
@@ -1558,7 +1520,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                 }
 
             } else {
-
                 this.removeRows(this.visibleRows-spill, this.visibleRows-1);
                 var html = this.renderRows(cursorBuffer, cursorBuffer+spill-1);
                 Ext.DomHelper.insertHtml('beforeBegin', this.mainBody.dom.firstChild, html);
@@ -1683,7 +1644,8 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             this.rowClipped = 1;
         }
 
-        if (this.visibleRows == visibleRows - this.rowsClipped) {
+        // if visibleRows   didn't change, simply void and return.
+        if (this.visibleRows == visibleRows) {
             return;
         }
 

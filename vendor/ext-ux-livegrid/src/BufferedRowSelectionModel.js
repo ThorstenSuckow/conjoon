@@ -277,7 +277,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
         if (typeof index == "number") {
             index = this.grid.store.getAt(index);
             if (!index) {
-                var ind = this.getPendingSelections().indexOf(tind);
+                var ind = this.getPendingSelections().indexOf(index);
                 if (ind != -1) {
                     return true;
                 }

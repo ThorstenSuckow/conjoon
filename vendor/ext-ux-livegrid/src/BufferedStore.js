@@ -82,7 +82,17 @@ Ext.ux.grid.BufferedStore = function(config) {
     // remoteSort will always be set to true.
     config.remoteSort = true;
 
-    this.addEvents({
+    this.addEvents(
+         /**
+          * @event bulkremove
+          * Fires when a bulk remove operation was finished.
+          * @param {Ext.ux.BufferedGridStore} this
+          * @param {Array} An array with the records that have been removed.
+          * The values for each array index are
+          * record - the record that was removed
+          * index - the index of the removed record in the store
+          */
+        'bulkremove',
          /**
           * @event versionchange
           * Fires when the version property has changed.
@@ -90,7 +100,7 @@ Ext.ux.grid.BufferedStore = function(config) {
           * @param {String} oldValue
           * @param {String} newValue
           */
-        'versionchange'        : true,
+        'versionchange',
          /**
           * @event beforeselectionsload
           * Fires before the store sends a request for ranges of records to
@@ -98,7 +108,7 @@ Ext.ux.grid.BufferedStore = function(config) {
           * @param {Ext.ux.BufferedGridStore} this
           * @param {Array} ranges
           */
-        'beforeselectionsload' : true,
+        'beforeselectionsload',
          /**
           * @event selectionsload
           * Fires when selections have been loaded.
@@ -108,9 +118,8 @@ Ext.ux.grid.BufferedStore = function(config) {
           * @param {Array} ranges An array containing the ranges of indexes this
           * records may represent.
           */
-        'selectionsload'       : true
-
-    });
+        'selectionsload'
+    );
 
     Ext.ux.grid.BufferedStore.superclass.constructor.call(this, config);
 
@@ -296,24 +305,24 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     },
 
     /**
-     * Removes a larger amount of records from the store and fires the "remove"
+     * Removes a larger amount of records from the store and fires the "bulkremove"
      * event.
      * This helps listeners to determine whether the remove operation of multiple
-     * records is still pending. Listeners for the remove event ill be called with
-     * two additional parameters - the number of the record currently removed, and
-     * the index of the last record which is about to be removed.
+     * records is still pending.
      *
      * @param {Array} records
      */
     bulkRemove : function(records)
     {
-        var ind = "";
-        var rec = null;
-        for (var i = 0, len = records.length, sus = len -1; i < len; i++) {
+        var rec  = null;
+        var recs = [];
+        var ind  = 0;
+        for (var i = 0, len = records.length; i < len; i++) {
             rec = records[i];
-            ind = this.remove(rec, true);
-            this.fireEvent("remove", this, rec, ind, i, sus);
+            recs.push([rec, this.remove(rec, true)]);
         }
+
+        this.fireEvent("bulkremove", this, recs);
     },
 
     /**
