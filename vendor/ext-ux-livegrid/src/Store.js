@@ -1,18 +1,34 @@
-/*
- * Ext.ux.grid.BufferedStore V0.9
- * Copyright(c) 2007, http://www.siteartwork.de
+/**
+ * Ext.ux.grid.livegrid.Store
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
- * Licensed under the terms of the Open Source LGPL 3.0
- * http://www.gnu.org/licenses/lgpl.html
+ * Ext.ux.grid.livegrid.Store is licensed under the terms of the
+ *                  GNU Open Source GPL 3.0
+ * license.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * Commercial use is prohibited. Contact "Thorsten Suckow-Homberg" <ts@siteartwork.de>
+ * if you need a commercial license.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *
+ * If you would like to support the development and support of the Ext.ux.Livegrid
+ * component, you can make a donation: <http://www.siteartwork.de/livegrid>
  */
 
-Ext.namespace('Ext.ux.grid');
-
+Ext.namespace('Ext.ux.grid.livegrid');
 
 /**
- * @class Ext.ux.grid.BufferedStore
+ * @class Ext.ux.grid.livegrid.Store
  * @extends Ext.data.Store
  *
  * The BufferedGridSore is a special implementation of a Ext.data.Store. It is used
@@ -74,8 +90,10 @@ Ext.namespace('Ext.ux.grid');
  * Creates a new Store.
  * @param {Object} config A config object containing the objects needed for the Store to access data,
  * and read the data into Records.
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-Ext.ux.grid.BufferedStore = function(config) {
+Ext.ux.grid.livegrid.Store = function(config) {
 
     config = config || {};
 
@@ -121,7 +139,7 @@ Ext.ux.grid.BufferedStore = function(config) {
         'selectionsload'
     );
 
-    Ext.ux.grid.BufferedStore.superclass.constructor.call(this, config);
+    Ext.ux.grid.livegrid.Store.superclass.constructor.call(this, config);
 
     this.totalLength = 0;
 
@@ -144,7 +162,7 @@ Ext.ux.grid.BufferedStore = function(config) {
 
 };
 
-Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
+Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
 
     /**
      * The version of the data in the store. This value is represented by the
@@ -261,34 +279,25 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
      */
     remove : function(record, suspendEvent)
     {
-        if(typeof currentBulkRecord != 'number') {
-            currentBulkRecord = 1;
-        }
-
-        if(typeof lastBulkRecord != 'number') {
-            lastBulkRecord = 1;
-        }
-
         // check wether the record.id can be found in this store
-        var index = this.indexOfId(record.id);
+        var index = this._getIndex(record);
 
         if (index < 0) {
-            var ind = this.findInsertIndex(record);
             this.totalLength -= 1;
             if(this.pruneModifiedRecords){
                 this.modified.remove(record);
             }
             // adjust the buffer range if a record was removed
             // in the range that is actually behind the bufferRange
-            if (ind == Number.MIN_VALUE) {
-                this.bufferRange[0] = Math.max(-1, this.bufferRange[0]-1);
-                this.bufferRange[1] = Math.max(-1, this.bufferRange[1]-1);
-            }
+            this.bufferRange[0] = Math.max(-1, this.bufferRange[0]-1);
+            this.bufferRange[1] = Math.max(-1, this.bufferRange[1]-1);
+
             if (suspendEvent !== true) {
-                this.fireEvent("remove", this, record, ind);
+                this.fireEvent("remove", this, record, index);
             }
-            return ind;
+            return index;
         }
+
         this.bufferRange[1] = Math.max(-1, this.bufferRange[1]-1);
         this.data.removeAt(index);
 
@@ -299,6 +308,17 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
         this.totalLength -= 1;
         if (suspendEvent !== true) {
             this.fireEvent("remove", this, record, index);
+        }
+
+        return index;
+    },
+
+    _getIndex : function(record)
+    {
+        var index = this.indexOfId(record.id);
+
+        if (index < 0) {
+            index = this.findInsertIndex(record);
         }
 
         return index;
@@ -317,9 +337,19 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
         var rec  = null;
         var recs = [];
         var ind  = 0;
-        for (var i = 0, len = records.length; i < len; i++) {
+        var len  = records.length;
+
+        var orgIndexes = [];
+        for (var i = 0; i < len; i++) {
             rec = records[i];
-            recs.push([rec, this.remove(rec, true)]);
+
+            orgIndexes[rec.id] = this._getIndex(rec);
+        }
+
+        for (var i = 0; i < len; i++) {
+            rec = records[i];
+            this.remove(rec, true);
+            recs.push([rec, orgIndexes[rec.id]]);
         }
 
         this.fireEvent("bulkremove", this, recs);
@@ -449,7 +479,7 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     findInsertIndex : function(record)
     {
         this.remoteSort = false;
-        var index = Ext.ux.grid.BufferedStore.superclass.findInsertIndex.call(this, record);
+        var index = Ext.ux.grid.livegrid.Store.superclass.findInsertIndex.call(this, record);
         this.remoteSort = true;
 
         // special case... index is 0 and we are at the very first record
@@ -500,7 +530,7 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
     onMetaChange : function(meta, rtype, o)
     {
         this.version = null;
-        Ext.ux.grid.BufferedStore.superclass.onMetaChange.call(this, meta, rtype, o);
+        Ext.ux.grid.livegrid.Store.superclass.onMetaChange.call(this, meta, rtype, o);
     },
 
 
@@ -524,7 +554,7 @@ Ext.extend(Ext.ux.grid.BufferedStore, Ext.data.Store, {
             ];
         }
 
-        Ext.ux.grid.BufferedStore.superclass.loadRecords.call(this, o, options, success);
+        Ext.ux.grid.livegrid.Store.superclass.loadRecords.call(this, o, options, success);
     },
 
     /**

@@ -1,23 +1,41 @@
-/*
- * Ext.ux.grid.BufferedGridView V0.1
- * Copyright(c) 2007, http://www.siteartwork.de
+/**
+ * Ext.ux.grid.livegrid.GridView
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
- * Licensed under the terms of the Open Source LGPL 3.0
- * http://www.gnu.org/licenses/lgpl.html
+ * Ext.ux.grid.livegrid.GridView is licensed under the terms of the
+ *                  GNU Open Source GPL 3.0
+ * license.
+ *
+ * Commercial use is prohibited. Contact "Thorsten Suckow-Homberg" <ts@siteartwork.de>
+ * if you need a commercial license.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *
+ * If you would like to support the development and support of the Ext.ux.Livegrid
+ * component, you can make a donation: <http://www.siteartwork.de/livegrid>
+ */
+
+Ext.namespace('Ext.ux.grid.livegrid');
+
+/**
+ * @class Ext.ux.grid.livegrid.GridView
+ * @extends Ext.grid.GridView
+ * @constructor
+ * @param {Object} config
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-
-/**
- * @class Ext.ux.grid.BufferedGridView
- * @extends Ext.grid.GridView
- *
- *
- * @constructor
- * @param {Object} config
- */
-Ext.namespace('Ext.ux.grid');
-Ext.ux.grid.BufferedGridView = function(config) {
+Ext.ux.grid.livegrid.GridView = function(config) {
 
     this.addEvents({
         /**
@@ -28,6 +46,7 @@ Ext.ux.grid.BufferedGridView = function(config) {
          * @param {Number} rowIndex
          * @param {Number} visibleRows
          * @param {Number} totalCount
+         * @param {Number} options The options with which the buffer request was called
          */
         'beforebuffer' : true,
         /**
@@ -119,11 +138,11 @@ Ext.ux.grid.BufferedGridView = function(config) {
         "</div>"
     );
 
-    Ext.ux.grid.BufferedGridView.superclass.constructor.call(this);
+    Ext.ux.grid.livegrid.GridView.superclass.constructor.call(this);
 };
 
 
-Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
+Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
 // {{{ --------------------------properties-------------------------------------
 
@@ -300,7 +319,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
 // {{{ ------------adjusted methods for applying custom behavior----------------
     /**
-     * Overwritten so the {@link Ext.ux.grid.BufferedGridDragZone} can be used
+     * Overwritten so the {@link Ext.ux.grid.livegrid.DragZone} can be used
      * with this view implementation.
      *
      * Since detaching a previously created DragZone from a grid panel seems to
@@ -316,7 +335,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         g.enableDragDrop = false;
         g.enableDrag     = false;
 
-        Ext.ux.grid.BufferedGridView.superclass.renderUI.call(this);
+        Ext.ux.grid.livegrid.GridView.superclass.renderUI.call(this);
 
         var g = this.grid;
 
@@ -324,7 +343,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         g.enableDrag     = dEnabled;
 
         if(dEnabled){
-            var dd = new Ext.ux.grid.BufferedGridDragZone(g, {
+            var dd = new Ext.ux.grid.livegrid.DragZone(g, {
                 ddGroup : g.ddGroup || 'GridDD'
             });
         }
@@ -351,7 +370,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      */
     init: function(grid)
     {
-        Ext.ux.grid.BufferedGridView.superclass.init.call(this, grid);
+        Ext.ux.grid.livegrid.GridView.superclass.init.call(this, grid);
 
         grid.on('expand', this._onExpand, this);
     },
@@ -367,7 +386,7 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             ds.on('beforeload', this.onBeforeLoad, this);
         }
 
-        Ext.ux.grid.BufferedGridView.superclass.initData.call(this, ds, cm);
+        Ext.ux.grid.livegrid.GridView.superclass.initData.call(this, ds, cm);
     },
 
     /**
@@ -692,7 +711,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      */
     onBulkRemove : function(store, removedData)
     {
-
         var record    = null;
         var index     = 0;
         var viewIndex = 0;
@@ -706,6 +724,11 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             return;
         }
 
+        var tmpRowIndex   = this.rowIndex;
+        var removedBefore = 0;
+        var removedAfter  = 0;
+        var removedIn     = 0;
+
         for (var i = 0; i < len; i++) {
             record = removedData[i][0];
             index  = removedData[i][1];
@@ -715,37 +738,27 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
                       : index;
 
             if (viewIndex < this.rowIndex) {
-                this.rowIndex--;
-                scrollerAdjust -= this.rowHeight;
-                this.lastRowIndex = this.rowIndex;
-            } else if (!removedAfterView && viewIndex > this.rowIndex+this.visibleRows) {
-                removedAfterView = true;
-            } else if (!removedInView && (viewIndex >= this.rowIndex && viewIndex <= this.rowIndex+this.visibleRows)) {
-                removedInView = true;
+                removedBefore++;
+            } else if (viewIndex >= this.rowIndex && viewIndex <= this.rowIndex+(this.visibleRows-1)) {
+                removedIn++;
+            } else if (viewIndex >= this.rowIndex+this.visibleRows) {
+                removedAfter++;
             }
 
             this.fireEvent("beforerowremoved", this, viewIndex, record);
             this.fireEvent("rowremoved",       this, viewIndex, record);
         }
 
-        if (this.ds.totalLength < this.visibleRows) {
-            this.rowIndex     = 0;
-            this.lastRowIndex = 0;
-        }
+        var totalLength = this.ds.totalLength;
+        this.rowIndex   = Math.max(0, Math.min(this.rowIndex - removedBefore, totalLength-(this.visibleRows-1)));
 
-        if (removedInView) {
-            this.updateLiveRows(this.rowIndex, true);
-            this.processRows(0, undefined, false);
-        }
+        this.lastRowIndex = this.rowIndex;
 
-        if (scrollerAdjust != 0) {
-            this.adjustScrollerPos(scrollerAdjust, true);
-            if (!removedInView) {
-                this.processRows(0, undefined, false);
-            }
-        }
-
+        this.adjustScrollerPos(-(removedBefore*this.rowHeight), true);
+        this.updateLiveRows(this.rowIndex, true);
         this.adjustBufferInset();
+        this.processRows(0, undefined, false);
+
     },
 
 
@@ -783,12 +796,12 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
      * not guaranteed that the computed indexes equal to the indexes of the
      * underlying data model.
      *
-     * @param {Ext.ux.grid.BufferedStore} ds The datastore that buffers records
+     * @param {Ext.ux.grid.livegrid.Store} ds The datastore that buffers records
      *                                       from the underlying data model
      * @param {Array} records An array containing the newly added
      *                        {@link Ext.data.Record}s
      * @param {Number} index The index of the position in the underlying
-     *                       {@link Ext.ux.grid.BufferedStore} where the rows
+     *                       {@link Ext.ux.grid.livegrid.Store} where the rows
      *                       were added.
      */
     // private
@@ -1393,18 +1406,11 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
         }
 
         // prepare for rebuffering
-        this.isBuffering = true
-
         var bufferOffset = this.getPredictedBufferIndex(index, inRange, down);
 
         if (!inRange) {
             this.showLoadMask(true);
         }
-
-        this.fireEvent('beforebuffer', this, this.ds, index,
-            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-            this.ds.totalLength
-        );
 
         this.ds.suspendEvents();
         var sInfo  = this.ds.sortInfo;
@@ -1422,12 +1428,19 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
             params.sort = sInfo.field;
         }
 
-        this.ds.load({
+        var opts = {
             forceRepaint : forceRepaint,
-            callback : this.liveBufferUpdate,
-            scope    : this,
-            params   : params
-        });
+            callback     : this.liveBufferUpdate,
+            scope        : this,
+            params       : params
+        };
+
+        this.fireEvent('beforebuffer', this, this.ds, index,
+            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
+            this.ds.totalLength, opts
+        );
+
+        this.ds.load(opts);
         this.ds.resumeEvents();
     },
 
@@ -1500,7 +1513,6 @@ Ext.extend(Ext.ux.grid.BufferedGridView, Ext.grid.GridView, {
 
         // compute the last possible renderindex
         var lpIndex = Math.min(cursorBuffer+this.visibleRows-1, bufferRange[1]-bufferRange[0]);
-
         // we can skip checking for append or prepend if the spill is larger than
         // visibleRows. We can paint the whole rows new then-
         if (spill >= this.visibleRows || spill == 0) {

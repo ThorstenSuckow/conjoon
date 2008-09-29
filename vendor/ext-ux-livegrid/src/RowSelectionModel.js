@@ -1,16 +1,41 @@
-/*
- * Ext.ux.grid.BufferedRowSelectionModel V0.1
- * Copyright(c) 2007, http://www.siteartwork.de
+/**
+ * Ext.ux.grid.livegrid.RowSelectionModel
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
- * Licensed under the terms of the Open Source LGPL 3.0
- * http://www.gnu.org/licenses/lgpl.html
+ * Ext.ux.grid.livegrid.RowSelectionModel is licensed under the terms of the
+ *                  GNU Open Source GPL 3.0
+ * license.
+ *
+ * Commercial use is prohibited. Contact "Thorsten Suckow-Homberg" <ts@siteartwork.de>
+ * if you need a commercial license.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *
+ * If you would like to support the development and support of the Ext.ux.Livegrid
+ * component, you can make a donation: <http://www.siteartwork.de/livegrid>
+ */
+
+Ext.namespace('Ext.ux.grid.livegrid');
+
+/**
+ * @class Ext.ux.grid.livegrid.RowSelectionModel
+ * @extends Ext.grid.RowSelectionModel
+ * @constructor
+ * @param {Object} config
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-
-Ext.namespace('Ext.ux.grid');
-
-Ext.ux.grid.BufferedRowSelectionModel = function(config) {
+Ext.ux.grid.livegrid.RowSelectionModel = function(config) {
 
 
     this.addEvents({
@@ -23,24 +48,21 @@ Ext.ux.grid.BufferedRowSelectionModel = function(config) {
         'selectiondirty' : true
     });
 
-
-
-
     Ext.apply(this, config);
 
     this.pendingSelections = {};
 
-    Ext.ux.grid.BufferedRowSelectionModel.superclass.constructor.call(this);
+    Ext.ux.grid.livegrid.RowSelectionModel.superclass.constructor.call(this);
 
 };
 
-Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
+Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
 
  // private
     initEvents : function()
     {
-        Ext.ux.grid.BufferedRowSelectionModel.superclass.initEvents.call(this);
+        Ext.ux.grid.livegrid.RowSelectionModel.superclass.initEvents.call(this);
 
         this.grid.view.on('rowsinserted',    this.onAdd,            this);
         this.grid.store.on('selectionsload', this.onSelectionsLoad, this);
@@ -295,7 +317,7 @@ Ext.extend(Ext.ux.grid.BufferedRowSelectionModel, Ext.grid.RowSelectionModel, {
      */
     deselectRow : function(index, preventViewNotify)
     {
-    	if(this.locked) return;
+        if(this.locked) return;
         if(this.last == index){
             this.last = false;
         }

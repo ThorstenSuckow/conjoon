@@ -1,26 +1,45 @@
-/*
- * Ext.ux.BufferedGridToolbar V1.0
- * Copyright(c) 2007, http://www.siteartwork.de
+/**
+ * Ext.ux.grid.livegrid.Toolbar
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
- * Licensed under the terms of the Open Source LGPL 3.0
- * http://www.gnu.org/licenses/lgpl.html
+ * Ext.ux.grid.livegrid.Toolbar is licensed under the terms of the
+ *                  GNU Open Source GPL 3.0
+ * license.
  *
+ * Commercial use is prohibited. Contact "Thorsten Suckow-Homberg" <ts@siteartwork.de>
+ * if you need a commercial license.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *
+ * If you would like to support the development and support of the Ext.ux.Livegrid
+ * component, you can make a donation: <http://www.siteartwork.de/livegrid>
+ */
+
+Ext.namespace('Ext.ux.grid.livegrid');
+
+/**
+ * toolbar that is bound to a {@link Ext.ux.grid.livegrid.GridView}
+ * and provides information about the indexes of the requested data and the buffer
+ * state.
+ *
+ * @class Ext.ux.grid.livegrid.Toolbar
+ * @extends Ext.Toolbar
+ * @constructor
+ * @param {Object} config
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-
-/**
- * @class Ext.ux.BufferedGridToolbar
- * @extends Ext.Toolbar
- * A specialized toolbar that is bound to a {@link Ext.ux.grid.BufferedGridView}
- * and provides information about the indexes of the requested data and the buffer
- * state.
- * @constructor
- * @param {Object} config
- */
-Ext.namespace('Ext.ux');
-
-Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
+Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     /**
      * @cfg {Boolean} displayInfo
      * True to display the displayMsg (defaults to false)
@@ -47,7 +66,7 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
 
     initComponent : function()
     {
-        Ext.ux.BufferedGridToolbar.superclass.initComponent.call(this);
+        Ext.ux.grid.livegrid.Toolbar.superclass.initComponent.call(this);
         this.bind(this.grid);
     },
 
@@ -136,7 +155,7 @@ Ext.ux.BufferedGridToolbar = Ext.extend(Ext.Toolbar, {
     },
 
     // private
-    beforeBuffer : function(view, store, rowIndex, visibleRows, totalCount)
+    beforeBuffer : function(view, store, rowIndex, visibleRows, totalCount, options)
     {
         this.loading.disable();
         this.updateInfo(rowIndex, visibleRows, totalCount);
