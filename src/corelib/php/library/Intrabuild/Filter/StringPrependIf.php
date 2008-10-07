@@ -27,41 +27,60 @@ require_once 'Zend/Filter/Interface.php';
  */
 class Intrabuild_Filter_StringPrependIf implements Zend_Filter_Interface
 {
-    private $_startsWith = "";
+    private $_startsWith = array();
+
+    private $_prependWith = "";
 
     /**
      * Constructor.
      *
-     * @param string $startsWith The string to prepend to the filtered value
-     * if and only if it does not start with this string already.
+     * @param array $startsWith An array with strings to check if they occur
+     * at the start of the string to filter.
+     * @param string $prependWith The string to prepend the filtered string with
+     * if none of the strings in $startsWith where found
+     *
      */
-    public function __construct($startsWith = "")
+    public function __construct($startsWith = array(), $prependWith = "")
     {
-        $this->_startsWith = $startsWith;
+        $this->_startsWith  = $startsWith;
+        $this->_prependWith = $prependWith;
     }
 
     /**
      * Defined by Zend_Filter_Interface
      *
-     * Prepends the string with the given value if and only if it does not start with it already .
+     * Prepends the string with the given value if and only if it does not start with any
+     * strings found in $startsWith.
      *
      * @param  mixed $value
      * @return string
      */
     public function filter($value)
     {
-        if ($this->_startsWith === "") {
-            return $value;
+        $orgValue = $value;
+
+        if ($this->_prependWith === "") {
+            return $orgValue;
         }
 
-        $value = ltrim((string)($value));
+        $value = ltrim((string)$value);
 
-        $index = strpos($value, $this->_startsWith);
-
-        if ($index === 0) {
-            return $value;
+        if (empty($this->_startsWith)) {
+            return $this->_prependWith . $value;
         }
 
-        return $this->_startsWith . $value;
+        $found = false;
+        foreach ($this->_startsWith as $sub) {
+            if (strpos($value, $sub) === 0) {
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            return $orgValue;
+        }
+
+        return $this->_prependWith . $value;
     }
 }

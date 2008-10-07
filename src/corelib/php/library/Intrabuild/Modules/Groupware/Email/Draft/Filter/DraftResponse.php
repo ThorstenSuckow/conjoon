@@ -34,6 +34,11 @@ require_once 'Zend/Filter/HtmlEntities.php';
 require_once 'Intrabuild/Filter/StringPrependIf.php';
 
 /**
+ * @see Intrabuild_Filter_StringWrap
+ */
+require_once 'Intrabuild/Filter/StringWrap.php';
+
+/**
  * An input-filter class defining all validators and filters needed when
  * processing input data for mutating or creating feed items.
  *
@@ -254,20 +259,18 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
 
         switch ($this->_context) {
             case self::CONTEXT_REPLY:
-                $context = "Re: ";
-            break;
-
             case self::CONTEXT_REPLY_ALL:
-                $context = "Re: ";
+                $this->_filters['subject'][] = new Intrabuild_Filter_StringPrependIf(array(
+                    'Re: ', 'RE: ', 'Aw: ', 'AW: '
+                ), 'Re: ');
             break;
 
             case self::CONTEXT_FORWARD:
-                $context = "Fwd: ";
+                $this->_filters['subject'][] = new Intrabuild_Filter_StringWrap('[Fwd: ', ']');
             break;
 
         }
 
-        $this->_filters['subject'][] = new Intrabuild_Filter_StringPrependIf($context);
     }
 
     public function getProcessedData()
