@@ -214,7 +214,8 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
                     array(
                         'p','div','span','ul','li','table','tr','td','blockquote',
                         'strong','b','i','u','sup','sub','tt','h1','h2','h3','h4',
-                        'h5','h6','small','big','br','nobr','center','ol', 'font'
+                        'h5','h6','small','big','br','nobr','center','ol', 'font',
+                        'pre'
                     ),
                     array(
                         'style', 'class','id', 'href', 'border', 'cellspacing', 'cellpadding'
@@ -241,7 +242,8 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
                         array(
                             'p','div','span','ul','li','table','tr','td','blockquote',
                             'strong','b','i','u','sup','sub','tt','h1','h2','h3','h4',
-                            'h5','h6','small','big','br','nobr','center','ol','a','font'
+                            'h5','h6','small','big','br','nobr','center','ol','a','font',
+                            'pre'
                         ),
                         array(
                             'style', 'class','id', 'href', 'border', 'cellspacing', 'cellpadding'
