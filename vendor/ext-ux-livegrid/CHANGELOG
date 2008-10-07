@@ -1,4 +1,6 @@
 ﻿
+ - fixed: (RowSelectionModel.js) method "isSelected()" would lose it's original argument
+while processing it, which could lead to erroneous behavior
  - fixed: (GridView.js) missing call to "isBuffering = true" in "updateLiveRows()"
 made the component to ignore a previously set queue and request new data immediately
 

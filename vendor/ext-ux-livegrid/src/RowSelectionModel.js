@@ -297,12 +297,15 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
     isSelected : function(index)
     {
         if (typeof index == "number") {
-            index = this.grid.store.getAt(index);
+            var orgInd = index;
+            index = this.grid.store.getAt(orgInd);
             if (!index) {
-                var ind = this.getPendingSelections().indexOf(index);
+                var ind = this.getPendingSelections().indexOf(orgInd);
                 if (ind != -1) {
                     return true;
                 }
+
+                return false;
             }
         }
 
