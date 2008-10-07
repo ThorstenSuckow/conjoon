@@ -53,6 +53,19 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         baseParams : {
             minDate : Math.round(new Date().getTime()/1000)
         },
+        listeners   : {
+            remove : function (store, record, index) {
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.remove', {
+                    item : record
+                });
+            },
+            update : function (store, record, operation) {
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.update', {
+                    item      : record,
+                    operation : operation
+                });
+            }
+        },
         url : '/groupware/email/get.email.items/format/json'
     });
 
