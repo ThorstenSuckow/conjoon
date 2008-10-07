@@ -16,7 +16,7 @@
  * @package    Zend_OpenId
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProviderTest.php 8725 2008-03-10 11:12:47Z alexander $
+ * @version    $Id: ProviderTest.php 8724 2008-03-10 11:04:53Z dmitry $
  */
 
 /**

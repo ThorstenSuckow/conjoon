@@ -26,7 +26,7 @@ require_once 'Zend/XmlRpc/Value/Struct.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: ValueTest.php 8957 2008-03-21 16:52:31Z matthew $
+ * @version $Id: ValueTest.php 8955 2008-03-21 16:48:43Z matthew $
  */
 class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase 
 {

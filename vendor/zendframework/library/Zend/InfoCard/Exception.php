@@ -17,7 +17,7 @@
  * @subpackage Zend_InfoCard
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Exception.php 9125 2008-04-03 21:22:31Z thomas $
+ * @version    $Id: Exception.php 9094 2008-03-30 18:36:55Z thomas $
  */
 
 if (class_exists("Zend_Exception")) {

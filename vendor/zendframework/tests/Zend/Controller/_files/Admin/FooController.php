@@ -16,7 +16,7 @@
  * @package   Zend_Controller
  * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: FooController.php 9372 2008-05-05 17:32:03Z thomas $
+ * @version   $Id: FooController.php 9353 2008-05-04 19:16:09Z thomas $
  */
 
 require_once 'PHPUnit/Util/Filter.php';

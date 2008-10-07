@@ -9,6 +9,7 @@ if (! defined('TESTS_ZEND_HTTP_CLIENT_BASEURI') &&
 
 require_once 'Zend/Http/Client.php';
 require_once 'PHPUnit/Framework/TestCase.php';
+require_once 'Zend/Uri/Http.php';
 
 /**
  * This Testsuite includes all Zend_Http_Client that require a working web 
@@ -26,8 +27,8 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @version    $Id: SocketTest.php 6398 2007-09-18 13:47:00Z darby $
- * @copyright 
+ * @version    $Id: SocketTest.php 9906 2008-07-02 21:20:10Z shahar $
+ * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Http_Client_SocketTest extends PHPUnit_Framework_TestCase 
@@ -692,7 +693,7 @@ class Zend_Http_Client_SocketTest extends PHPUnit_Framework_TestCase
 		$res = $this->client->request('POST');
 		
 		$body = 'uploadfile myfile.txt text/plain ' . strlen($rawdata) . "\n";
-		$this->assertEquals($res->getBody(), $body, 'Response body does not include expected upload parameters');
+		$this->assertEquals($body, $res->getBody(), 'Response body does not include expected upload parameters');
 	}
 	
 	/**
@@ -702,14 +703,41 @@ class Zend_Http_Client_SocketTest extends PHPUnit_Framework_TestCase
 	public function testUploadLocalFile() 
 	{
 		$this->client->setUri($this->baseuri. 'testUploads.php');
-		$this->client->setFileUpload(__FILE__, 'uploadfile');
-		
+		$this->client->setFileUpload(__FILE__, 'uploadfile', null, 'text/x-foo-bar');
 		$res = $this->client->request('POST');
-		$mtype = (function_exists('mime_content_type') ? 'text/plain' : 'application/octet-stream');
+		
 		$size = filesize(__FILE__);
 		
-		$body = "uploadfile " . basename(__FILE__) . " $mtype $size\n";
-		$this->assertEquals($res->getBody(), $body, 'Response body does not include expected upload parameters');
+		$body = "uploadfile " . basename(__FILE__) . " text/x-foo-bar $size\n";
+		$this->assertEquals($body, $res->getBody(), 'Response body does not include expected upload parameters');
+	}
+	
+	public function testUploadLocalDetectMime()
+	{
+		$detect = null;
+		if (function_exists('finfo_file')) {
+			$f = @finfo_open(FILEINFO_MIME);
+			if ($f) $detect = 'finfo';
+
+		} elseif (function_exists('mime_content_type')) {
+			if (mime_content_type(__FILE__)) {
+				$detect = 'mime_magic';
+			}
+		}
+		
+		if (! $detect) {
+			$this->markTestSkipped('No MIME type detection capability (fileinfo or mime_magic extensions) is available');
+		}
+		
+		$file = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'staticFile.jpg';
+		    
+		$this->client->setUri($this->baseuri. 'testUploads.php');
+		$this->client->setFileUpload($file, 'uploadfile');
+		$res = $this->client->request('POST');
+		
+		$size = filesize($file);
+		$body = "uploadfile " . basename($file) . " image/jpeg $size\n";
+		$this->assertEquals($body, $res->getBody(), 'Response body does not include expected upload parameters (detect: ' . $detect . ')');
 	}
 	
 	public function testUploadNameWithSpecialChars()
@@ -721,7 +749,7 @@ class Zend_Http_Client_SocketTest extends PHPUnit_Framework_TestCase
 		$res = $this->client->request('POST');
 		
 		$body = 'uploadfile myfile.txt text/plain ' . strlen($rawdata) . "\n";
-		$this->assertEquals($res->getBody(), $body, 'Response body does not include expected upload parameters');
+		$this->assertEquals($body, $res->getBody(), 'Response body does not include expected upload parameters');
 	}
 	
 	public function testStaticLargeFileDownload()

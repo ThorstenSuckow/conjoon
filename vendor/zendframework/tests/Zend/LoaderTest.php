@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LoaderTest.php 9302 2008-04-24 13:48:28Z doctorrock83 $
+ * @version    $Id: LoaderTest.php 9301 2008-04-24 13:21:59Z doctorrock83 $
  */
 
 // Call Zend_LoaderTest::main() if this source file is executed directly.

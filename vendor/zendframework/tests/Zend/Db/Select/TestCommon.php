@@ -62,6 +62,12 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
         $this->assertEquals(1, $row['product_id']); // correct data
     }
 
+    public function testSelectToString()
+    {
+        $select = $this->_select();
+        $this->assertEquals($select->__toString(), $select->assemble()); // correct data
+    }
+
     /**
      * Test basic use of the Zend_Db_Select class.
      */
@@ -261,12 +267,82 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     public function testSelectFromSelectObject()
     {
         $select = $this->_selectFromSelectObject();
-        $query = $select->__toString();
+        $query = $select->assemble();
         $cmp = 'SELECT ' . $this->_db->quoteIdentifier('t') . '.* FROM (SELECT '
                          . $this->_db->quoteIdentifier('subqueryTable') . '.* FROM '
                          . $this->_db->quoteIdentifier('subqueryTable') . ') AS '
                          . $this->_db->quoteIdentifier('t');
         $this->assertEquals($query, $cmp);
+    }
+
+    /**
+     * Test support for nested select in from()
+     */
+    protected function _selectColumnsReset()
+    {
+        $select = $this->_db->select()
+            ->from(array('p' => 'zfproducts'), array('product_id', 'product_name'));
+        return $select;
+    }
+
+    public function testSelectColumnsReset()
+    {
+        $select = $this->_selectColumnsReset()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns('product_name');
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertContains('product_name', array_keys($result[0]));
+        $this->assertNotContains('product_id', array_keys($result[0]));
+
+        $select = $this->_selectColumnsReset()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns('p.product_name');
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertContains('product_name', array_keys($result[0]));
+        $this->assertNotContains('product_id', array_keys($result[0]));
+
+        $select = $this->_selectColumnsReset()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns('product_name', 'p');
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertContains('product_name', array_keys($result[0]));
+        $this->assertNotContains('product_id', array_keys($result[0]));
+    }
+
+    public function testSelectColumnsResetBeforeFrom()
+    {
+        $select = $this->_selectColumnsReset();
+        try {
+            $select->reset(Zend_Db_Select::COLUMNS)
+                   ->reset(Zend_Db_Select::FROM)
+                   ->columns('product_id');
+            $this->fail('Expected exception of type "Zend_Db_Select_Exception"');
+        } catch (Zend_Exception $e) {
+            $this->assertType('Zend_Db_Select_Exception', $e,
+                              'Expected exception of type "Zend_Db_Select_Exception", got ' . get_class($e));
+            $this->assertEquals("No table has been specified for the FROM clause", $e->getMessage());
+        }
+    }
+
+    protected function _selectColumnWithColonQuotedParameter()
+    {
+        $product_id = $this->_db->quoteIdentifier('product_id');
+
+        $select = $this->_db->select()
+            ->from('zfproducts')
+            ->where($product_id . ' = ?', "as'as:x");
+        return $select;
+    }
+
+    public function testSelectColumnWithColonQuotedParameter()
+    {
+        $stmt = $select = $this->_selectColumnWithColonQuotedParameter()
+            ->query();
+        $result = $stmt->fetchAll();
+        $this->assertEquals(0, count($result));
     }
 
     /**
@@ -359,6 +435,33 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     }
 
     /**
+     * Test adding a JOIN to a Zend_Db_Select object.
+     */
+    protected function _selectJoinWithNocolumns()
+    {
+        $products = $this->_db->quoteIdentifier('zfproducts');
+        $bug_id = $this->_db->quoteIdentifier('bug_id');
+        $product_id = $this->_db->quoteIdentifier('product_id');
+        $bugs_products = $this->_db->quoteIdentifier('zfbugs_products');
+        $bugs = $this->_db->quoteIdentifier('zfbugs');
+
+        $select = $this->_db->select()
+            ->from('zfproducts')
+            ->join('zfbugs', "$bugs.$bug_id = 1", array())
+            ->join('zfbugs_products', "$products.$product_id = $bugs_products.$product_id AND $bugs_products.$bug_id = $bugs.$bug_id", null);
+        return $select;
+    }
+
+    public function testSelectJoinWithNocolumns()
+    {
+        $select = $this->_selectJoinWithNocolumns();
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertEquals(3, count($result));
+        $this->assertEquals(2, count($result[0]));
+    }
+
+    /**
      * Test adding an outer join to a Zend_Db_Select object.
      */
     protected function _selectJoinLeft()
@@ -411,7 +514,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     public function testJoinLeftTableAliasesColumnOrderPreserve()
     {
         $select = $this->_selectJoinLeftTableAliasesColumnOrderPreserve();
-        $this->assertRegExp('/^.*b.*bug_id.*,.*bp.*product_id.*,.*b.*bug_description.*$/s', $select->__toString());
+        $this->assertRegExp('/^.*b.*bug_id.*,.*bp.*product_id.*,.*b.*bug_description.*$/s', $select->assemble());
     }
 
     /**
@@ -515,7 +618,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     public function testSelectJoinUsing()
     {
         $select = $this->_selectJoinUsing();
-        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $sql = preg_replace('/\\s+/', ' ', $select->assemble());
         $stmt = $this->_db->query($select);
         $result = $stmt->fetchAll();
         $this->assertEquals(3, count($result));
@@ -538,7 +641,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     public function testSelectJoinInnerUsing()
     {
         $select = $this->_selectJoinInnerUsing();
-        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $sql = preg_replace('/\\s+/', ' ', $select->assemble());
         $stmt = $this->_db->query($select);
         $result = $stmt->fetchAll();
         $this->assertEquals(3, count($result));
@@ -623,7 +726,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     public function testSelectWhereSelectObject()
     {
         $select = $this->_selectWhereSelectObject();
-        $query = $select->__toString();
+        $query = $select->assemble();
         $cmp = 'SELECT ' . $this->_db->quoteIdentifier('table') . '.* FROM '
                          . $this->_db->quoteIdentifier('table') . ' WHERE (foo IN (SELECT '
                          . $this->_db->quoteIdentifier('subqueryTable') . '.* FROM '
@@ -716,6 +819,45 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
         $result = $stmt->fetchAll();
         $this->assertEquals(1, count($result));
         $this->assertEquals(2, $result[0]['product_id']);
+    }
+
+    /**
+     * Test support for where() with a specified type,
+     * e.g. where('id = ?', 1, 'int').
+     */
+    protected function _selectWhereWithTypeFloat()
+    {
+        $price_total = $this->_db->quoteIdentifier('price_total');
+
+        $select = $this->_db->select()
+            ->from('zfprice')
+            ->where("$price_total = ?", 200.45, Zend_Db::FLOAT_TYPE);
+        return $select;
+    }
+
+    public function testSelectWhereWithTypeFloat()
+    {
+        $locale = setlocale(LC_ALL, null);
+
+        $select = $this->_selectWhereWithTypeFloat();
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(200.45, $result[0]['price_total']);
+
+        try {
+            setlocale(LC_ALL, 'fr_BE.UTF-8');
+            $select = $this->_selectWhereWithTypeFloat();
+            $stmt = $this->_db->query($select);
+            $result = $stmt->fetchAll();
+            $this->assertEquals(1, count($result));
+            $this->assertEquals(200.45, $result[0]['price_total']);
+        } catch (Zend_Exception $e) {
+            setlocale(LC_ALL, $locale);
+            throw $e;
+        }
+
+        setlocale(LC_ALL, $locale);
     }
 
     /** 
@@ -1283,6 +1425,37 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
         $select->reset(); // reset the whole object
         $from = $select->getPart(Zend_Db_Select::FROM);
         $this->assertTrue(empty($from));
+    }
+
+    /**
+     * Test the UNION statement for a Zend_Db_Select object.
+     */
+    protected function _selectUnionString()
+    {
+        $bugs = $this->_db->quoteIdentifier('zfbugs');
+        $bug_id = $this->_db->quoteIdentifier('bug_id');
+        $bug_status = $this->_db->quoteIdentifier('bug_status');
+        $products = $this->_db->quoteIdentifier('zfproducts');
+        $product_id = $this->_db->quoteIdentifier('product_id');
+        $product_name = $this->_db->quoteIdentifier('product_name');
+        $id = $this->_db->quoteIdentifier('id');
+        $name = $this->_db->quoteIdentifier('name');
+        $sql1 = "SELECT $bug_id AS $id, $bug_status AS $name FROM $bugs";
+        $sql2 = "SELECT $product_id AS $id, $product_name AS $name FROM $products";
+
+        $select = $this->_db->select()
+            ->union(array($sql1, $sql2))
+            ->order('id');
+        return $select;
+    }
+
+    public function testSelectUnionString()
+    {
+        $select = $this->_selectUnionString();
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertEquals(7, count($result));
+        $this->assertEquals(1, $result[0]['id']);
     }
 
 }

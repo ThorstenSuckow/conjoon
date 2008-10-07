@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8217 2008-02-20 20:09:27Z darby $
+ * @version    $Id: AllTests.php 10116 2008-07-16 02:34:10Z matthew $
  */
 
 
@@ -40,6 +40,10 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  */
 ob_start();
 
+require_once 'SessionTest.php';
+
+/** Zend_Session_SaveHandler_AllTests */
+require_once 'Zend/Session/SaveHandler/AllTests.php';
 
 /**
  * @category   Zend
@@ -79,9 +83,9 @@ class Zend_Session_AllTests
 
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Session');
 
-        require_once 'SessionTest.php';
 
         $suite->addTestSuite('Zend_SessionTest');
+        $suite->addTest(Zend_Session_SaveHandler_AllTests::suite());
 
         return $suite;
     }

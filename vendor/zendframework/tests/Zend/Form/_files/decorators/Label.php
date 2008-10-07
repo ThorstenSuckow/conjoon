@@ -16,7 +16,7 @@
  * @package   Zend_Form
  * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: Label.php 9372 2008-05-05 17:32:03Z thomas $
+ * @version   $Id: Label.php 9354 2008-05-04 21:26:53Z thomas $
  */
 
 require_once 'PHPUnit/Util/Filter.php';

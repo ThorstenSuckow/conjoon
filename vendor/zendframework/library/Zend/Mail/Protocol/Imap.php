@@ -17,7 +17,7 @@
  * @subpackage Protocol
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Imap.php 9283 2008-04-22 18:24:54Z nico $
+ * @version    $Id: Imap.php 9282 2008-04-22 18:21:46Z nico $
  */
 
 
@@ -802,4 +802,30 @@ class Zend_Mail_Protocol_Imap
         // TODO: parse response
         return $this->requestAndResponse('NOOP');
     }
+
+    /**
+     * do a search request
+     *
+     * This method is currently marked as internal as the API might change and is not
+     * safe if you don't take precautions.
+     *
+     * @internal
+     * @return array message ids
+     */
+    public function search(array $params)
+    {
+        $response = $this->requestAndResponse('SEARCH', $params);
+        if (!$response) {
+        	return $response;
+        }
+        
+        foreach ($response as $ids) {
+        	if ($ids[0] == 'SEARCH') {
+        		array_shift($ids);
+        		return $ids;
+        	}
+        }
+        return array();
+    }
+
 }

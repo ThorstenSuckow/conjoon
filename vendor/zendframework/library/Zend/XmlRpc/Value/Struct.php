@@ -17,7 +17,7 @@
  * @subpackage Value
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Struct.php 9127 2008-04-04 07:13:48Z thomas $
+ * @version    $Id: Struct.php 9095 2008-03-30 18:52:31Z thomas $
  */
 
 

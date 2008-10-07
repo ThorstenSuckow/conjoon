@@ -27,8 +27,8 @@ require_once 'SocketTest.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @version    $Id: SocketKeepaliveTest.php 6398 2007-09-18 13:47:00Z darby $
- * @copyright 
+ * @version    $Id: SocketKeepaliveTest.php 9875 2008-07-02 11:01:46Z shahar $
+ * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Http_Client_SocketKeepaliveTest extends Zend_Http_Client_SocketTest

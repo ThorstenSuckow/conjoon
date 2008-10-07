@@ -16,9 +16,17 @@
  * @package    UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestHelper.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: TestHelper.php 11403 2008-09-14 17:21:52Z alexander $
  */
 
+/*
+ * Start output buffering
+ */
+ob_start();
+
+/*
+ * Include PHPUnit dependencies
+ */
 require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/Framework/IncompleteTestError.php';
 require_once 'PHPUnit/Framework/TestCase.php';
@@ -36,9 +44,16 @@ error_reporting( E_ALL | E_STRICT );
  * Determine the root, library, and tests directories of the framework
  * distribution.
  */
-$zfRoot        = dirname(dirname(__FILE__));
-$zfCoreLibrary = $zfRoot . DIRECTORY_SEPARATOR . 'library';
-$zfCoreTests   = $zfRoot . DIRECTORY_SEPARATOR . 'tests';
+$zfRoot        = dirname(__FILE__) . '/..';
+$zfCoreLibrary = "$zfRoot/library";
+$zfCoreTests   = "$zfRoot/tests";
+
+/*
+ * Omit from code coverage reports the contents of the tests directory
+ */
+foreach (array('php', 'phtml', 'csv') as $suffix) {
+    PHPUnit_Util_Filter::addDirectoryToFilter($zfCoreTests, ".$suffix");
+}
 
 /*
  * Prepend the Zend Framework library/ and tests/ directories to the

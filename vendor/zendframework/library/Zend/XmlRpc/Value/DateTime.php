@@ -17,7 +17,7 @@
  * @subpackage Value
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateTime.php 9128 2008-04-04 07:52:10Z thomas $
+ * @version    $Id: DateTime.php 9096 2008-03-30 19:04:05Z thomas $
  */
 
 

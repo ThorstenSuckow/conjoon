@@ -11,6 +11,7 @@ require_once 'Zend/Config.php';
 require_once 'Zend/Controller/Action/HelperBroker.php';
 require_once 'Zend/Form.php';
 require_once 'Zend/Form/Decorator/Form.php';
+require_once 'Zend/Form/Decorator/HtmlTag.php';
 require_once 'Zend/Form/Element.php';
 require_once 'Zend/Form/Element/Text.php';
 require_once 'Zend/Loader/PluginLoader.php';
@@ -224,10 +225,9 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($decorator instanceof Zend_Form_Decorator_ViewHelper);
     }
 
-    public function testCanRetrieveSingleDecoratorRegisteredAsStringUsingClassName()
+    public function testCanNotRetrieveSingleDecoratorRegisteredAsStringUsingClassName()
     {
-        $decorator = $this->group->getDecorator('Zend_Form_Decorator_FormElements');
-        $this->assertTrue($decorator instanceof Zend_Form_Decorator_FormElements);
+        $this->assertFalse($this->group->getDecorator('Zend_Form_Decorator_FormElements'));
     }
 
     public function testCanAddSingleDecoratorAsDecoratorObject()
@@ -330,6 +330,39 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('fieldset', $decorator->getOption('tag'));
     }
 
+    /**
+     * @see ZF-3494
+     */
+    public function testGetViewShouldNotReturnNullWhenViewRendererIsActive()
+    {
+        require_once 'Zend/Controller/Action/HelperBroker.php';
+        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');
+        $viewRenderer->initView();
+        $view = $this->group->getView();
+        $this->assertSame($viewRenderer->view, $view);
+    }
+
+    public function testRetrievingNamedDecoratorShouldNotReorderDecorators()
+    {
+        $this->group->setDecorators(array(
+            'FormElements',
+            array(array('dl' => 'HtmlTag'), array('tag' => 'dl')),
+            array(array('div' => 'HtmlTag'), array('tag' => 'div')),
+            array(array('fieldset' => 'HtmlTag'), array('tag' => 'fieldset')),
+        ));
+
+        $decorator  = $this->group->getDecorator('div');
+        $decorators = $this->group->getDecorators();
+        $i          = 0;
+        $order      = array();
+
+        foreach (array_keys($decorators) as $name) {
+            $order[$name] = $i;
+            ++$i;
+        }
+        $this->assertEquals(2, $order['div'], var_export($order, 1));
+    }
+
     public function testRenderingRendersAllElementsWithinFieldsetByDefault()
     {
         $foo  = new Zend_Form_Element_Text('foo');
@@ -394,7 +427,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
     public function testGetTranslatorRetrievesGlobalDefaultWhenAvailable()
     {
         $this->testNoTranslatorByDefault();
-        $translator = new Zend_Translate('array', array());
+        $translator = new Zend_Translate('array', array('foo' => 'bar'));
         Zend_Form::setDefaultTranslator($translator);
         $received = $this->group->getTranslator();
         $this->assertSame($translator->getAdapter(), $received);
@@ -402,7 +435,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
 
     public function testTranslatorAccessorsWorks()
     {
-        $translator = new Zend_Translate('array', array());
+        $translator = new Zend_Translate('array', array('foo' => 'bar'));
         $this->group->setTranslator($translator);
         $received = $this->group->getTranslator($translator);
         $this->assertSame($translator->getAdapter(), $received);
@@ -520,8 +553,9 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
     public function testSetOptionsOmitsAccessorsRequiringObjectsOrMultipleParams()
     {
         $options = $this->getOptions();
-        $options['config']       = new Zend_Config($options);
-        $options['options']      = $options;
+        $config  = new Zend_Config($options);
+        $options['config']       = $config;
+        $options['options']      = $config->toArray();
         $options['pluginLoader'] = true;
         $options['view']         = true;
         $options['translator']   = true;
@@ -667,6 +701,38 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         );
         $decorators = $group->getDecorators();
         $this->assertTrue(empty($decorators));
+    }
+
+    /**
+     * @group ZF-3217
+     */
+    public function testGroupShouldOverloadToRenderDecorators()
+    {
+        $foo  = new Zend_Form_Element_Text('foo');
+        $bar  = new Zend_Form_Element_Text('bar');
+        $this->group->addElements(array($foo, $bar));
+
+        $this->group->setView($this->getView());
+        $html = $this->group->renderFormElements();
+        foreach ($this->group->getElements() as $element) {
+            $this->assertContains('id="' . $element->getFullyQualifiedName() . '"', $html, 'Received: ' . $html);
+        }
+        $this->assertNotContains('<dl', $html);
+        $this->assertNotContains('<form', $html);
+
+        $html = $this->group->renderFieldset('this is the content');
+        $this->assertContains('<fieldset', $html);
+        $this->assertContains('</fieldset>', $html);
+        $this->assertContains('this is the content', $html);
+    }
+
+    /**
+     * @group ZF-3217
+     * @expectedException Zend_Form_Exception
+     */
+    public function testOverloadingToInvalidMethodsShouldThrowAnException()
+    {
+        $html = $this->group->bogusMethodCall();
     }
 
     /**

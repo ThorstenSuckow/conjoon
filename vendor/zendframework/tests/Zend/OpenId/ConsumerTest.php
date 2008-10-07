@@ -16,7 +16,7 @@
  * @package    Zend_OpenId
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConsumerTest.php 9399 2008-05-07 14:16:06Z dmitry $
+ * @version    $Id: ConsumerTest.php 9607 2008-06-04 16:45:07Z shahar $
  */
 
 /**
@@ -330,7 +330,8 @@ class Zend_OpenId_ConsumerTest extends PHPUnit_Framework_TestCase
                            "Connection: close\r\n" .
                            "Accept-encoding: gzip, deflate\r\n" .
                            "Content-type: application/x-www-form-urlencoded\r\n" .
-                           "User-agent: Zend_OpenId\r\n\r\n",
+                           "User-agent: Zend_OpenId\r\n" . 
+                           "Content-length: 0\r\n\r\n",
                            $http->getLastRequest() );
 
         // Test GET request with parameters

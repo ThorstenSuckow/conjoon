@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateTest.php 8572 2008-03-06 15:22:05Z darby $
+ * @version    $Id: DateTest.php 11179 2008-09-01 09:25:19Z alexander $
  */
 
 
@@ -144,12 +144,12 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->_validator->setFormat('dd/MM/yyyy')->isValid('2008/10/22'));
         set_error_handler(array($this, 'errorHandlerIgnore'));
         $result = $this->_validator->setFormat('s')->isValid(0);
+        restore_error_handler();
         if (!$this->_errorOccurred) {
             $this->assertTrue($result);
         } else {
             $this->markTestSkipped('Affected by bug described in ZF-2789');
         }
-        restore_error_handler();
         $this->_errorOccurred = false;
     }
 

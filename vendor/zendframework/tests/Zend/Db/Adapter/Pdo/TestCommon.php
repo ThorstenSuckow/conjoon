@@ -40,4 +40,10 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  */
 abstract class Zend_Db_Adapter_Pdo_TestCommon extends Zend_Db_Adapter_TestCommon
 {
+
+    public function testAdapterAlternateStatement()
+    {
+        $this->_testAdapterAlternateStatement('Test_PdoStatement');
+    }
+
 }

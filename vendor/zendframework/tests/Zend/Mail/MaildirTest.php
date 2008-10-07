@@ -390,4 +390,27 @@ class Zend_Mail_MaildirTest extends PHPUnit_Framework_TestCase
     {
         $this->notReadableTest('new');
     }
+
+    public function testCountFlags()
+    {
+        $mail = new Zend_Mail_Storage_Maildir(array('dirname' => $this->_maildir));
+		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_DELETED), 0);
+		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_RECENT), 1);
+		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_FLAGGED), 1);
+		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_SEEN), 4);
+		$this->assertEquals($mail->countMessages(array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_FLAGGED)), 1);
+		$this->assertEquals($mail->countMessages(array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_RECENT)), 0);
+    }
+
+	public function testFetchPart()
+	{
+        $mail = new Zend_Mail_Storage_Maildir(array('dirname' => $this->_maildir));
+        $this->assertEquals($mail->getMessage(4)->getPart(2)->contentType, 'text/x-vertical');
+	}
+
+	public function testPartSize()
+	{
+        $mail = new Zend_Mail_Storage_Maildir(array('dirname' => $this->_maildir));
+        $this->assertEquals($mail->getMessage(4)->getPart(2)->getSize(), 88);
+	}
 }

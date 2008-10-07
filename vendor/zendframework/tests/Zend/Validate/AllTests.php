@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8211 2008-02-20 14:29:24Z darby $
+ * @version    $Id: AllTests.php 10656 2008-08-05 02:16:02Z matthew $
  */
 
 
@@ -76,6 +76,11 @@ require_once 'Zend/Validate/DigitsTest.php';
  * @see Zend_Validate_EmailAddressTest
  */
 require_once 'Zend/Validate/EmailAddressTest.php';
+
+/**
+ * @see Zend_Validate_File_AllTests
+ */
+require_once 'Zend/Validate/File/AllTests.php';
 
 /**
  * @see Zend_Validate_FloatTest
@@ -180,6 +185,7 @@ class Zend_Validate_AllTests
         $suite->addTestSuite('Zend_Validate_DateTest');
         $suite->addTestSuite('Zend_Validate_DigitsTest');
         $suite->addTestSuite('Zend_Validate_EmailAddressTest');
+        $suite->addTest(Zend_Validate_File_AllTests::suite());
         $suite->addTestSuite('Zend_Validate_FloatTest');
         $suite->addTestSuite('Zend_Validate_GreaterThanTest');
         $suite->addTestSuite('Zend_Validate_HexTest');

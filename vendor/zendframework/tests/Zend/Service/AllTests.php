@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8562 2008-03-05 22:17:16Z matthew $
+ * @version    $Id: AllTests.php 10743 2008-08-07 02:24:43Z matthew $
  */
 
 
@@ -61,10 +61,15 @@ require_once 'Zend/Service/Delicious/AllTests.php';
  */
 require_once 'Zend/Service/Flickr/AllTests.php';
 
-/**;
+/**
  * @see Zend_Service_Nirvanix_AllTests
  */
 require_once 'Zend/Service/Nirvanix/AllTests.php';
+
+/**
+ * @see Zend_Service_ReCaptcha_AllTests
+ */
+require_once 'Zend/Service/ReCaptcha/AllTests.php';
 
 /**
  * @see Zend_Service_SimpyTest
@@ -126,6 +131,7 @@ class Zend_Service_AllTests
         $suite->addTest(Zend_Service_Delicious_AllTests::suite());
         $suite->addTest(Zend_Service_Flickr_AllTests::suite());
         $suite->addTest(Zend_Service_Nirvanix_AllTests::suite());
+        $suite->addTest(Zend_Service_ReCaptcha_AllTests::suite());
         if (defined('TESTS_ZEND_SERVICE_SIMPY_ENABLED') && constant('TESTS_ZEND_SERVICE_SIMPY_ENABLED')) {
             $suite->addTestSuite('Zend_Service_SimpyTest');
         } else {

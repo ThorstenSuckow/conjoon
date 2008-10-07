@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Ibm.php 9136 2008-04-04 13:58:29Z thomas $
+ * @version    $Id: Ibm.php 9577 2008-05-31 01:50:27Z peptolab $
  */
 
 
@@ -193,7 +193,8 @@ class Zend_Db_Adapter_Pdo_Ibm extends Zend_Db_Adapter_Pdo_Abstract
     public function prepare($sql)
     {
         $this->_connect();
-        $stmt = new Zend_Db_Statement_Pdo_Ibm($this, $sql);
+        $stmtClass = $this->_defaultStmtClass;
+        $stmt = new $stmtClass($this, $sql);
         $stmt->setFetchMode($this->_fetchMode);
         return $stmt;
     }

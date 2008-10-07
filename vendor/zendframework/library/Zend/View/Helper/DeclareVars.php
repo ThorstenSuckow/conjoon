@@ -16,9 +16,12 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: DeclareVars.php 9131 2008-04-04 11:42:43Z thomas $
+ * @version    $Id: DeclareVars.php 10665 2008-08-05 10:57:18Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+
+/** Zend_View_Helper_Abstract.php */
+require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for declaring default values of template variables
@@ -28,7 +31,7 @@
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_View_Helper_DeclareVars
+class Zend_View_Helper_DeclareVars extends Zend_View_Helper_Abstract
 {
     /**
      * The view object that created this helper object.
@@ -88,17 +91,5 @@ class Zend_View_Helper_DeclareVars
         if (!isset($this->view->$key)) {
             $this->view->$key = $value;
         }
-    }
-
-    /**
-     * Set view object
-     *
-     * @param  Zend_View_Interface $view
-     * @return Zend_View_Helper_DeclareVars
-     */
-    public function setView(Zend_View_Interface $view)
-    {
-        $this->view = $view;
-        return $this;
     }
 }

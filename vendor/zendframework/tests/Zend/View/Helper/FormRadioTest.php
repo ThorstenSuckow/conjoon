@@ -85,6 +85,25 @@ class Zend_View_Helper_FormRadioTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @see ZF-3206
+     */
+    public function testSpecifyingLabelPlacementShouldNotOverwriteValue()
+    {
+        $options = array(
+            'bar' => 'Bar',
+        );
+        $html = $this->helper->formRadio(array(
+            'name'    => 'foo',
+            'value'   => 'bar',
+            'options' => $options,
+            'attribs' => array(
+                'labelPlacement' => 'append',
+            )
+        ));
+        $this->assertRegexp('#<input[^>]*(checked="checked")#', $html, $html);
+    }
+
     public function testCanSpecifyRadioLabelAttribs()
     {
         $options = array(
@@ -276,6 +295,49 @@ class Zend_View_Helper_FormRadioTest extends PHPUnit_Framework_TestCase
                 $this->fail('Radio for a given option was not found?');
             }
             $this->assertContains('checked="checked"', $matches[1], var_export($matches, 1));
+        }
+    }
+
+    public function testEachRadioShouldHaveIdCreatedByAppendingFilteredValue()
+    {
+        $options = array(
+            'foo bar' => 'Foo',
+            'bar baz' => 'Bar',
+            'baz' => 'Baz'
+        );
+        $html = $this->helper->formRadio(array(
+            'name'    => 'foo[]',
+            'value'   => 'bar',
+            'options' => $options,
+        ));
+
+        require_once 'Zend/Filter/Alnum.php';
+        $filter = new Zend_Filter_Alnum();
+        foreach ($options as $key => $value) {
+            $id = 'foo-' . $filter->filter($key);
+            $this->assertRegexp('/<input([^>]*)(id="' . $id . '")/', $html);
+        }
+    }
+
+    public function testEachRadioShouldUseAttributeIdWhenSpecified()
+    {
+        $options = array(
+            'foo bar' => 'Foo',
+            'bar baz' => 'Bar',
+            'baz' => 'Baz'
+        );
+        $html = $this->helper->formRadio(array(
+            'name'    => 'foo[bar]',
+            'value'   => 'bar',
+            'attribs' => array('id' => 'foo-bar'),
+            'options' => $options,
+        ));
+
+        require_once 'Zend/Filter/Alnum.php';
+        $filter = new Zend_Filter_Alnum();
+        foreach ($options as $key => $value) {
+            $id = 'foo-bar-' . $filter->filter($key);
+            $this->assertRegexp('/<input([^>]*)(id="' . $id . '")/', $html);
         }
     }
 }

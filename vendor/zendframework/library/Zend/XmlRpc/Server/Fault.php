@@ -17,7 +17,7 @@
  * @subpackage Server
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Fault.php 9132 2008-04-04 11:59:57Z thomas $
+ * @version    $Id: Fault.php 9102 2008-03-30 20:27:03Z thomas $
  */
 
 /**

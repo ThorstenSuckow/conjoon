@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: JsonTest.php 8676 2008-03-07 21:48:58Z darby $
+ * @version    $Id: JsonTest.php 11037 2008-08-25 04:00:06Z matthew $
  */
 
 /**
@@ -367,6 +367,29 @@ class Zend_JsonTest extends PHPUnit_Framework_TestCase
         } catch (Exception $e) {
             // success
         }
+    }
+    
+    /**
+     * Test for ZF-4053
+     * 
+     * Check to see that cyclical exceptions are silenced when
+     * $option['silenceCyclicalExceptions'] = true is used
+     */
+    public function testZf4053()
+    {
+        $item1 = new Zend_JsonTest_Item() ;
+        $item2 = new Zend_JsonTest_Item() ;
+        $everything = array() ;
+        $everything['allItems'] = array($item1, $item2) ;
+        $everything['currentItem'] = $item1 ;
+
+        $options = array('silenceCyclicalExceptions'=>true);
+
+        Zend_Json::$useBuiltinEncoderDecoder = true;
+        $encoded = Zend_Json::encode($everything, true, $options);
+        $json = '{"allItems":[{"__className":"Zend_JsonTest_Item"},{"__className":"Zend_JsonTest_Item"}],"currentItem":"* RECURSION (Zend_JsonTest_Item) *"}';
+
+        $this->assertEquals($encoded,$json);
     }
 
     public function testEncodeObject()

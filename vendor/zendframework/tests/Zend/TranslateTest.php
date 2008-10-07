@@ -189,9 +189,25 @@ class Zend_TranslateTest extends PHPUnit_Framework_TestCase
 
     public function testWithOption()
     {
-        $lang = new Zend_Translate(Zend_Translate::AN_CSV , dirname(__FILE__) . '/Translate/_files/translation_en2.csv', 'en', array('separator' => ','));
+        $lang = new Zend_Translate(Zend_Translate::AN_CSV , dirname(__FILE__) . '/Translate/_files/translation_en2.csv', 'en', array('delimiter' => ','));
         $this->assertEquals('Message 1 (en)',  $lang->translate('Message 1' ));
         $this->assertEquals('Message 4 (en)',  $lang->translate('Message 4,'));
         $this->assertEquals('Message 5, (en)', $lang->translate('Message 5' ));
+    }
+
+    public function testDirectorySearch()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_CSV, dirname(__FILE__) . '/Translate/_files/test', null, array('scan' => Zend_Translate::LOCALE_DIRECTORY));
+        $this->assertEquals(2, count($lang->getList()));
+        $this->assertTrue(in_array('de_AT', $lang->getList()));
+        $this->assertTrue(in_array('en_GB', $lang->getList()));
+    }
+
+    public function testFileSearch()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_CSV, dirname(__FILE__) . '/Translate/_files/test2', null, array('scan' => Zend_Translate::LOCALE_FILENAME));
+        $this->assertEquals(2, count($lang->getList()));
+        $this->assertTrue(in_array('de_AT', $lang->getList()));
+        $this->assertTrue(in_array('de_DE', $lang->getList()));
     }
 }

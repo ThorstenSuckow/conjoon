@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AbstractTest.php 8113 2008-02-18 13:15:27Z matthew $
+ * @version    $Id: AbstractTest.php 10649 2008-08-04 20:58:45Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -141,6 +141,21 @@ class Zend_Validate_AbstractTest extends PHPUnit_Framework_TestCase
         $translator = new Zend_Translate(
             'array', 
             array('fooMessage' => 'This is the translated message for %value%'), 
+            'en'
+        );
+        $this->validator->setTranslator($translator);
+        $this->assertFalse($this->validator->isValid('bar'));
+        $messages = $this->validator->getMessages();
+        $this->assertTrue(array_key_exists('fooMessage', $messages));
+        $this->assertContains('bar', $messages['fooMessage']);
+        $this->assertContains('This is the translated message for ', $messages['fooMessage']);
+    }
+
+    public function testCanTranslateMessagesInsteadOfKeys()
+    {
+        $translator = new Zend_Translate(
+            'array', 
+            array('%value% was passed' => 'This is the translated message for %value%'), 
             'en'
         );
         $this->validator->setTranslator($translator);

@@ -16,9 +16,12 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Url.php 9131 2008-04-04 11:42:43Z thomas $
+ * @version    $Id: Url.php 10665 2008-08-05 10:57:18Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+
+/** Zend_View_Helper_Abstract.php */
+require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Helper for making easy links and getting urls that depend on the routes and router
@@ -28,13 +31,8 @@
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_View_Helper_Url {
-
-    /**
-     * @var Zend_View Instance
-     */
-    public $view;
-
+class Zend_View_Helper_Url extends Zend_View_Helper_Abstract
+{
     /**
      * Generates an url given the name of a route.
      *
@@ -47,42 +45,7 @@ class Zend_View_Helper_Url {
      */
     public function url(array $urlOptions = array(), $name = null, $reset = false, $encode = true)
     {
-
-        $front = Zend_Controller_Front::getInstance();
-
-        $router = $front->getRouter();
-
-        if (empty($name)) {
-            try {
-                $name = $router->getCurrentRouteName();
-            } catch (Zend_Controller_Router_Exception $e) {
-                $name = 'default';
-            }
-        }
-        
-        if ($encode) {
-            foreach ($urlOptions as $key => $option) {
-                $urlOptions[$key] = ($option !== null) ? urlencode($option) : $option;
-            }
-        }
-
-        $route = $router->getRoute($name);
-
-        $url = rtrim($front->getBaseUrl(), '/') . '/';
-        $url .= $route->assemble($urlOptions, $reset);
-
-        return $url;
-
-    }
-
-    /**
-     * Set the view object
-     *
-     * @param Zend_View_Interface $view
-     * @return void
-     */
-    public function setView(Zend_View_Interface $view)
-    {
-        $this->view = $view;
+        $router = Zend_Controller_Front::getInstance()->getRouter();
+        return $router->assemble($urlOptions, $name, $reset, $encode);
     }
 }

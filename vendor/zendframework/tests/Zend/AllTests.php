@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8403 2008-02-25 19:43:31Z darby $
+ * @version    $Id: AllTests.php 10743 2008-08-07 02:24:43Z matthew $
  */
 
 /**
@@ -33,7 +33,9 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'Zend/AclTest.php';
 require_once 'Zend/Auth/AllTests.php';
 require_once 'Zend/Cache/AllTests.php';
+require_once 'Zend/Captcha/AllTests.php';
 require_once 'Zend/Db/AllTests.php';
+require_once 'Zend/Dom/AllTests.php';
 require_once 'Zend/ConfigTest.php';
 require_once 'Zend/Config/AllTests.php';
 require_once 'Zend/Console/GetoptTest.php';
@@ -43,6 +45,7 @@ require_once 'Zend/DateTest.php';
 require_once 'Zend/Date/AllTests.php';
 require_once 'Zend/DebugTest.php';
 require_once 'Zend/Feed/AllTests.php';
+require_once 'Zend/File/AllTests.php';
 require_once 'Zend/FilterTest.php';
 require_once 'Zend/Filter/AllTests.php';
 require_once 'Zend/Form/AllTests.php';
@@ -66,6 +69,7 @@ require_once 'Zend/MimeTest.php';
 require_once 'Zend/Mime/AllTests.php';
 require_once 'Zend/OpenIdTest.php';
 require_once 'Zend/OpenId/AllTests.php';
+require_once 'Zend/Paginator/AllTests.php';
 require_once 'Zend/Pdf/AllTests.php';
 require_once 'Zend/RegistryTest.php';
 require_once 'Zend/Rest/AllTests.php';
@@ -73,6 +77,9 @@ require_once 'Zend/Search/Lucene/AllTests.php';
 require_once 'Zend/Server/AllTests.php';
 require_once 'Zend/Service/AllTests.php';
 require_once 'Zend/Session/AllTests.php';
+require_once 'Zend/Soap/AllTests.php';
+require_once 'Zend/Test/AllTests.php';
+require_once 'Zend/Text/AllTests.php';
 require_once 'Zend/TimeSyncTest.php';
 require_once 'Zend/TranslateTest.php';
 require_once 'Zend/Translate/AllTests.php';
@@ -82,6 +89,7 @@ require_once 'Zend/ValidateTest.php';
 require_once 'Zend/Validate/AllTests.php';
 require_once 'Zend/VersionTest.php';
 require_once 'Zend/ViewTest.php';
+require_once 'Zend/Wildfire/AllTests.php';
 require_once 'Zend/XmlRpc/AllTests.php';
 
 /**
@@ -105,6 +113,7 @@ class Zend_AllTests
         $suite->addTestSuite('Zend_AclTest');
         $suite->addTest(Zend_Auth_AllTests::suite());
         $suite->addTest(Zend_Cache_AllTests::suite());
+        $suite->addTest(Zend_Captcha_AllTests::suite());
         $suite->addTestSuite('Zend_ConfigTest');
         $suite->addTest(Zend_Config_AllTests::suite());
         $suite->addTestSuite('Zend_Console_GetoptTest');
@@ -114,7 +123,9 @@ class Zend_AllTests
         $suite->addTest(Zend_Date_AllTests::suite());
         $suite->addTest(Zend_Db_AllTests::suite());
         $suite->addTestSuite('Zend_DebugTest');
+        $suite->addTest(Zend_Dom_AllTests::suite());
         $suite->addTest(Zend_Feed_AllTests::suite());
+        $suite->addTest(Zend_File_AllTests::suite());
         $suite->addTestSuite('Zend_FilterTest');
         $suite->addTest(Zend_Filter_AllTests::suite());
         $suite->addTest(Zend_Form_AllTests::suite());
@@ -138,6 +149,7 @@ class Zend_AllTests
         $suite->addTest(Zend_Mime_AllTests::suite());
         $suite->addTestSuite('Zend_OpenIdTest');
         $suite->addTest(Zend_OpenId_AllTests::suite());
+        $suite->addTest(Zend_Paginator_AllTests::suite());
         $suite->addTest(Zend_Pdf_AllTests::suite());
         $suite->addTestSuite('Zend_RegistryTest');
         $suite->addTest(Zend_Rest_AllTests::suite());
@@ -145,6 +157,9 @@ class Zend_AllTests
         $suite->addTest(Zend_Server_AllTests::suite());
         $suite->addTest(Zend_Service_AllTests::suite());
         $suite->addTest(Zend_Session_AllTests::suite());
+        $suite->addTest(Zend_Soap_AllTests::suite());
+        $suite->addTest(Zend_Test_AllTests::suite());
+        $suite->addTest(Zend_Text_AllTests::suite());
         $suite->addTestSuite('Zend_TimeSyncTest');
         $suite->addTestSuite('Zend_TranslateTest');
         $suite->addTest(Zend_Translate_AllTests::suite());
@@ -154,6 +169,7 @@ class Zend_AllTests
         $suite->addTest(Zend_Validate_AllTests::suite());
         $suite->addTestSuite('Zend_ViewTest');
         $suite->addTestSuite('Zend_VersionTest');
+        $suite->addTest(Zend_Wildfire_AllTests::suite());
         $suite->addTest(Zend_XmlRpc_AllTests::suite());
 
         return $suite;

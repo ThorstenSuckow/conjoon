@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 2883 2007-01-18 05:56:31Z gavin $
+ * @version    $Id: AllTests.php 9848 2008-06-30 21:41:35Z thomas $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -58,6 +57,7 @@ require_once 'Zend/Measure/PowerTest.php';
 require_once 'Zend/Measure/PressureTest.php';
 require_once 'Zend/Measure/SpeedTest.php';
 require_once 'Zend/Measure/TemperatureTest.php';
+require_once 'Zend/Measure/TimeTest.php';
 require_once 'Zend/Measure/TorqueTest.php';
 require_once 'Zend/Measure/VolumeTest.php';
 require_once 'Zend/Measure/WeightTest.php';
@@ -103,6 +103,7 @@ class Zend_Measure_AllTests
         $suite->addTestSuite('Zend_Measure_PressureTest');
         $suite->addTestSuite('Zend_Measure_SpeedTest');
         $suite->addTestSuite('Zend_Measure_TemperatureTest');
+        $suite->addTestSuite('Zend_Measure_TimeTest');
         $suite->addTestSuite('Zend_Measure_TorqueTest');
         $suite->addTestSuite('Zend_Measure_VolumeTest');
         $suite->addTestSuite('Zend_Measure_WeightTest');

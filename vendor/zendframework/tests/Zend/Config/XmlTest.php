@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: XmlTest.php 10262 2008-07-21 16:31:27Z matthew $
  */
 
 /**
@@ -42,6 +42,7 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
     protected $_xmlFileConfig;
     protected $_xmlFileAllSectionsConfig;
     protected $_xmlFileCircularConfig;
+    protected $_xmlFileInvalid;
 
     public function setUp()
     {
@@ -52,6 +53,9 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
         $this->_xmlFileOneTopLevelStringConfig = dirname(__FILE__) . '/_files/onetoplevelstring.xml';
         $this->_nonReadableConfig = dirname(__FILE__) . '/_files/nonreadable.xml';
         $this->_xmlFileSameNameKeysConfig = dirname(__FILE__) . '/_files/array.xml';
+        $this->_xmlFileShortParamsOneConfig = dirname(__FILE__) . '/_files/shortparamsone.xml';
+        $this->_xmlFileShortParamsTwoConfig = dirname(__FILE__) . '/_files/shortparamstwo.xml';
+        $this->_xmlFileInvalid = dirname(__FILE__) . '/_files/invalid.xml';
     }
 
     public function testLoadSingleSection()
@@ -170,12 +174,12 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('three', $config->two->three);
         $this->assertEquals('five', $config->two->four->five);
         $this->assertEquals('three', $config->six->three);
-        
+
         $config = new Zend_Config_Xml($this->_xmlFileOneTopLevelStringConfig);
         $this->assertEquals('one', $config->one);
         $config = new Zend_Config_Xml($this->_xmlFileOneTopLevelStringConfig, 'one');
         $this->assertEquals('one', $config->one);
-        
+
     }
 
     public function testZF2285_MultipleKeysOfTheSameName()
@@ -186,7 +190,7 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('4', $config->three->four->{1});
         $this->assertEquals('5', $config->three->four->{0}->five);
     }
-    
+
     public function testZF2437_ArraysWithMultipleChildren()
     {
         $config = new Zend_Config_Xml($this->_xmlFileSameNameKeysConfig, null);
@@ -198,4 +202,39 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('3', $config->six->seven->{2}->nine);
     }
 
+    public function testZF3578_InvalidOrMissingfXmlFile()
+    {
+        try {
+            $config = new Zend_Config_Xml($this->_xmlFileInvalid);
+            $this->fail('An expected Zend_Config_Exception has not been raised');
+        } catch (Zend_Config_Exception $expected) {
+            $this->assertContains('parser error', $expected->getMessage());
+        }
+        try {
+            $config = new Zend_Config_Xml('I/dont/exist');
+            $this->fail('An expected Zend_Config_Exception has not been raised');
+        } catch (Zend_Config_Exception $expected) {
+            $this->assertContains('failed to load', $expected->getMessage());
+        }
+    }
+
+    public function testShortParamsOne()
+    {
+        $config = new Zend_Config_Xml($this->_xmlFileShortParamsOneConfig, 'all');
+        $this->assertEquals('all', $config->hostname);
+        $this->assertEquals('thisname', $config->name);
+        $this->assertEquals('username', $config->db->user);
+        $this->assertEquals('live', $config->db->name);
+        $this->assertEquals('multi', $config->one->two->three);
+    }
+
+    public function testShortParamsTwo()
+    {
+        $config = new Zend_Config_Xml($this->_xmlFileShortParamsTwoConfig, 'all');
+        $this->assertEquals('all', $config->hostname);
+        $this->assertEquals('thisname', $config->name);
+        $this->assertEquals('username', $config->db->user);
+        $this->assertEquals('live', $config->db->name);
+        $this->assertEquals('multi', $config->one->two->three);
+    }
 }

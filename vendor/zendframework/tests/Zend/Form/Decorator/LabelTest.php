@@ -5,12 +5,11 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
 }
 
 require_once dirname(__FILE__) . '/../../../TestHelper.php';
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 require_once 'Zend/Form/Decorator/Label.php';
 
 require_once 'Zend/Form/Element.php';
+require_once 'Zend/Form/Element/Text.php';
 require_once 'Zend/View.php';
 
 /**
@@ -105,7 +104,7 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
         $element->class = "bar";
         $this->decorator->setOption('class', 'foo');
         $test = $this->decorator->render($content);
-        $this->assertRegexp('/<label[^>]*?class="[^"]*bar/', $test, $test);
+        $this->assertNotRegexp('/<label[^>]*?class="[^"]*bar/', $test, $test);
         $this->assertRegexp('/<label[^>]*?class="[^"]*foo/', $test, $test);
         $this->assertRegexp('/<label[^>]*?class="[^"]*optional/', $test, $test);
     }
@@ -124,7 +123,7 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
         $element->class = "bar";
         $this->decorator->setOption('class', 'foo');
         $test = $this->decorator->render($content);
-        $this->assertRegexp('/<label[^>]*?class="[^"]*bar/', $test, $test);
+        $this->assertNotRegexp('/<label[^>]*?class="[^"]*bar/', $test, $test);
         $this->assertRegexp('/<label[^>]*?class="[^"]*foo/', $test, $test);
         $this->assertRegexp('/<label[^>]*?class="[^"]*required/', $test, $test);
     }
@@ -140,7 +139,7 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
         $content = 'test content';
         $test = $this->decorator->render($content);
         $this->assertRegexp('/<label[^>]*?class="[^"]*required/', $test, $test);
-        $this->assertRegexp('/<label[^>]*?class="[^"]*bazbat/', $test, $test);
+        $this->assertNotRegexp('/<label[^>]*?class="[^"]*bazbat/', $test, $test);
     }
 
     public function testRenderUtilizesOptionalSuffixesAndPrefixesWhenRequested()
@@ -184,6 +183,21 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
         $this->assertContains('-req-prefix-', $test, $test);
         $this->assertContains('-req-suffix-', $test, $test);
         $this->assertRegexp('/-req-prefix-[^-]*?My Label[^-]*-req-suffix-/s', $test, $test);
+    }
+
+    /**
+     * @see ZF-3538
+     */
+    public function testRenderShouldNotUtilizeElementClass()
+    {
+        $element = new Zend_Form_Element('foo');
+        $element->setView($this->getView())
+                ->setLabel('My Label')
+                ->setAttrib('class', 'foobar');
+        $this->decorator->setElement($element);
+        $content = 'test content';
+        $test = $this->decorator->render($content);
+        $this->assertNotRegexp('#<label[^>]*(class="[^"]*foobar)[^"]*"#', $test, $test);
     }
 
     public function testRenderRendersLabel()
@@ -246,6 +260,15 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
         $element->setRequired(true);
         $label = $this->decorator->getLabel();
         $this->assertEquals('! Translation*:', $label);
+    }
+
+    public function testSettingTagToEmptyValueShouldDisableTag()
+    {
+        $element = new Zend_Form_Element_Text('foo', array('label' => 'Foo'));
+        $this->decorator->setElement($element)
+                        ->setTag('');
+        $content = $this->decorator->render('');
+        $this->assertTrue(empty($content), $content);
     }
 }
 

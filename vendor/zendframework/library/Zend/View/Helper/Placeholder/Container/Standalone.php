@@ -15,12 +15,15 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Standalone.php 9131 2008-04-04 11:42:43Z thomas $
+ * @version    $Id: Standalone.php 11374 2008-09-12 17:06:22Z ralph $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /** Zend_View_Helper_Placeholder_Registry */
 require_once 'Zend/View/Helper/Placeholder/Registry.php';
+
+/** Zend_View_Helper_Abstract.php */
+require_once 'Zend/View/Helper/Abstract.php';
 
 /**
  * Base class for targetted placeholder helpers
@@ -30,7 +33,7 @@ require_once 'Zend/View/Helper/Placeholder/Registry.php';
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */ 
-abstract class Zend_View_Helper_Placeholder_Container_Standalone implements IteratorAggregate, Countable, ArrayAccess
+abstract class Zend_View_Helper_Placeholder_Container_Standalone extends Zend_View_Helper_Abstract implements IteratorAggregate, Countable, ArrayAccess
 {  
     /**
      * @var Zend_View_Helper_Placeholder_Container_Abstract
@@ -49,9 +52,11 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone implements Iter
     protected $_regKey;
 
     /**
-     * @var Zend_View_Interface
+     * Flag wheter to automatically escape output, must also be
+     * enforced in the child class if __toString/toString is overriden
+     * @var book
      */
-    public $view;
+    protected $_autoEscape = true;
 
     /**
      * Constructor
@@ -88,15 +93,25 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone implements Iter
     }
 
     /**
-     * Set viewobject
+     * Set whether or not auto escaping should be used
      * 
-     * @param  Zend_View_Interface $view 
+     * @param  bool $autoEscape whether or not to auto escape output
      * @return Zend_View_Helper_Placeholder_Container_Standalone
      */
-    public function setView(Zend_View_Interface $view)
+    public function setAutoEscape($autoEscape = true)
     {
-        $this->view = $view;
+        $this->_autoEscape = ($autoEscape) ? true : false;
         return $this;
+    }
+    
+    /**
+     * Return whether autoEscaping is enabled or disabled
+     *
+     * return bool
+     */
+    public function getAutoEscape()
+    {
+        return $this->_autoEscape;
     }
 
     /**

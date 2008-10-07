@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CanonTest.php 8403 2008-02-25 19:43:31Z darby $
+ * @version    $Id: CanonTest.php 8565 2008-03-06 04:08:06Z miallen $
  */
 
 /**
@@ -109,6 +109,15 @@ class Zend_Ldap_CanonTest extends PHPUnit_Framework_TestCase
     {
 		$ldap = new Zend_Ldap($this->_options);
 		$name = $ldap->getCanonicalAccountName(TESTS_ZEND_LDAP_ALT_DN, Zend_Ldap::ACCTNAME_FORM_DN);
+    }
+    public function testMismatchDomainBind()
+    {
+        $ldap = new Zend_Ldap($this->_options);
+		try {
+			$ldap->bind('BOGUS\\doesntmatter', 'doesntmatter');
+		} catch (Zend_Ldap_Exception $zle) {
+			$this->assertTrue($zle->getCode() == Zend_Ldap_Exception::LDAP_X_DOMAIN_MISMATCH);
+		}
     }
     public function testBindCanon()
     {

@@ -16,7 +16,7 @@
  * @package    Zend_Acl
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Acl.php 9419 2008-05-08 16:30:53Z darby $
+ * @version    $Id: Acl.php 9417 2008-05-08 16:28:31Z darby $
  */
 
 

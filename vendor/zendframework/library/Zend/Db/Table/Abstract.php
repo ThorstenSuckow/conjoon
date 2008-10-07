@@ -981,6 +981,9 @@ abstract class Zend_Db_Table_Abstract
                 throw new Zend_Db_Table_Exception("Missing value(s) for the primary key");
             }
             for ($i = 0; $i < count($keyValues); ++$i) {
+                if (!isset($whereList[$i])) {
+                    $whereList[$i] = array();
+                }
                 $whereList[$i][$keyPosition] = $keyValues[$i];
             }
         }
@@ -992,8 +995,10 @@ abstract class Zend_Db_Table_Abstract
                 $whereAndTerms = array();
                 foreach ($keyValueSets as $keyPosition => $keyValue) {
                     $type = $this->_metadata[$keyNames[$keyPosition]]['DATA_TYPE'];
+                    $tableName = $this->_db->quoteTableAs($this->_name);
+                    $columnName = $this->_db->quoteIdentifier($keyNames[$keyPosition], true);
                     $whereAndTerms[] = $this->_db->quoteInto(
-                        $this->_db->quoteIdentifier($keyNames[$keyPosition], true) . ' = ?',
+                        $tableName . '.' . $columnName . ' = ?',
                         $keyValue, $type);
                 }
                 $whereOrTerms[] = '(' . implode(' AND ', $whereAndTerms) . ')';

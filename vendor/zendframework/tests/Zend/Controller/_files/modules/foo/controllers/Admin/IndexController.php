@@ -16,7 +16,7 @@
  * @package   Zend_Controller
  * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: IndexController.php 9372 2008-05-05 17:32:03Z thomas $
+ * @version   $Id: IndexController.php 10524 2008-07-29 01:10:15Z matthew $
  */
 
 require_once 'PHPUnit/Util/Filter.php';
@@ -47,4 +47,7 @@ class Foo_Admin_IndexController extends Zend_Controller_Action
         $this->_response->appendBody("Foo_Admin_IndexController::indexAction() called\n");
     }
 
+    public function useHelperAction()
+    {
+    }
 }

@@ -17,7 +17,7 @@
  * @package    UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestConfiguration.php.dist 8403 2008-02-25 19:43:31Z darby $
+ * @version    $Id: TestConfiguration.php.dist 11403 2008-09-14 17:21:52Z alexander $
  */
 
 /**
@@ -52,9 +52,13 @@ define('TESTS_ZEND_AUTH_ADAPTER_LDAP_ONLINE_ENABLED', false);
  * TESTS_ZEND_CACHE_APC_ENABLED       => apc extension has to be enabled
  * TESTS_ZEND_CACHE_MEMCACHED_ENABLED => memcache extension has to be enabled and
  *                                       a memcached server has to be available
+ * TESTS_ZEND_CACHE_XCACHE_ENABLED    => xcache extension has to be enabled
  */
 define('TESTS_ZEND_CACHE_SQLITE_ENABLED', false);
 define('TESTS_ZEND_CACHE_APC_ENABLED', false);
+define('TESTS_ZEND_CACHE_XCACHE_ENABLED', true);
+define('TESTS_ZEND_CACHE_XCACHE_USER', null);
+define('TESTS_ZEND_CACHE_XCACHE_PASSWORD', null);
 define('TESTS_ZEND_CACHE_PLATFORM_ENABLED', false);
 define('TESTS_ZEND_CACHE_MEMCACHED_ENABLED', false);
 define('TESTS_ZEND_CACHE_MEMCACHED_HOST', '127.0.0.1');
@@ -285,7 +289,8 @@ define('TESTS_ZEND_LDAP_ONLINE_ENABLED', false);
  *
  * Example Configuration for Active Directory:
  *                      HOST: dc1.w.net
- *                   USE_SSL: true
+ *             USE_START_TLS: true
+ *                   USE_SSL: false
  *                  USERNAME: CN=User 1,CN=Users,DC=w,DC=net
  *            PRINCIPAL_NAME: user1@w.net
  *             LDAP_PASSWORD: pass1
@@ -311,6 +316,7 @@ define('TESTS_ZEND_LDAP_ONLINE_ENABLED', false);
  */
 define('TESTS_ZEND_LDAP_HOST', 'localhost');
 //define('TESTS_ZEND_LDAP_PORT', 389);
+define('TESTS_ZEND_LDAP_USE_START_TLS', true);
 //define('TESTS_ZEND_LDAP_USE_SSL', false);
 define('TESTS_ZEND_LDAP_USERNAME', 'CN=someUser,DC=example,DC=com');
 define('TESTS_ZEND_LDAP_PRINCIPAL_NAME', 'someUser@example.com');
@@ -461,6 +467,16 @@ define('TESTS_ZEND_SERVICE_SLIDESHARE_GROUP', '');
  */
 define('TESTS_ZEND_SERVICE_YAHOO_ONLINE_ENABLED', false);
 define('TESTS_ZEND_SERVICE_YAHOO_ONLINE_APPID', 'Enter APPID here');
+
+/**
+ * Zend_Service_ReCaptcha tests
+ */
+define('TESTS_ZEND_SERVICE_RECAPTCHA_ENABLED', false);
+define('TESTS_ZEND_SERVICE_RECAPTCHA_ONLINE_ENABLED', false);
+define('TESTS_ZEND_SERVICE_RECAPTCHA_PUBLIC_KEY', 'public key');
+define('TESTS_ZEND_SERVICE_RECAPTCHA_PRIVATE_KEY', 'private key');
+define('TESTS_ZEND_SERVICE_RECAPTCHA_MAILHIDE_PUBLIC_KEY', 'public mailhide key');
+define('TESTS_ZEND_SERVICE_RECAPTCHA_MAILHIDE_PRIVATE_KEY', 'private mailhide key');
 
 /**
  * PHPUnit Code Coverage / Test Report

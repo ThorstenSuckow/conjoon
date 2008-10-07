@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IniTest.php 8988 2008-03-21 22:55:57Z rob $
+ * @version    $Id: IniTest.php 9636 2008-06-08 15:04:42Z rob $
  */
 
 /**
@@ -52,6 +52,7 @@ class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
         $this->_iniFileSeparatorConfig = dirname(__FILE__) . '/_files/separator.ini';
         $this->_nonReadableConfig = dirname(__FILE__) . '/_files/nonreadable.ini';
         $this->_iniFileNoSectionsConfig = dirname(__FILE__) . '/_files/nosections.ini';
+        $this->_iniFileInvalid = dirname(__FILE__) . '/_files/invalid.ini';
     }
 
     public function testLoadSingleSection()
@@ -251,5 +252,15 @@ class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('123', $config->abc);
         $this->assertEquals('jkl', $config->ghi);
     }
-    
+
+    public function testZF3196_InvalidIniFile()
+    {
+        try {
+            $config = new Zend_Config_Ini($this->_iniFileInvalid);
+            $this->fail('An expected Zend_Config_Exception has not been raised');
+        } catch (Zend_Config_Exception $expected) {
+            $this->assertContains('Error parsing', $expected->getMessage());
+        }
+        
+    }
 }

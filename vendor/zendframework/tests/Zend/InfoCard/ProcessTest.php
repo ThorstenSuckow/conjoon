@@ -16,7 +16,7 @@
  * @package    Zend_InfoCard
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProcessTest.php 9187 2008-04-09 15:42:34Z darby $
+ * @version    $Id: ProcessTest.php 8789 2008-03-12 20:07:42Z darby $
  */
 
 // Call Zend_InfoCard_ProcessTest::main() if this source file is executed directly.

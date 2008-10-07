@@ -12,7 +12,7 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @version    $Id: StaticTest.php 6648 2007-10-16 17:05:17Z shahar $
+ * @version    $Id: StaticTest.php 9765 2008-06-23 19:03:24Z shahar $
  * @copyright 
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -315,7 +315,8 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
 			'POST',
 			'DOSOMETHING',
 			'PROPFIND',
-			'Some_Characters'
+			'Some_Characters',
+			'X-MS-ENUMATTS'
 		);
 		
 		foreach ($goodMethods as $method) {

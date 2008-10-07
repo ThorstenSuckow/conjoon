@@ -162,6 +162,15 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
     }
      */
 
+    public function testSelectColumnsReset()
+    {
+        $select = $this->_selectColumnsReset()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns('product_name');
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "p"."product_name" FROM "zfproducts" AS "p"', $sql);
+    }
+
     /**
      * Test support for schema-qualified table names in from()
      * e.g. from('schema.table').
@@ -285,6 +294,13 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $this->assertEquals('SELECT "zfproducts".*, "zfbugs_products".* FROM "zfproducts" INNER JOIN "zfbugs_products" ON "zfbugs_products"."product_id" = "zfproducts"."product_id" WHERE ("zfbugs_products"."product_id" < 3)', $sql);
     }
 
+    public function testSelectJoinWithNocolumns()
+    {
+        $select = $this->_selectJoinWithNocolumns();
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" INNER JOIN "zfbugs" ON "zfbugs"."bug_id" = 1 INNER JOIN "zfbugs_products" ON "zfproducts"."product_id" = "zfbugs_products"."product_id" AND "zfbugs_products"."bug_id" = "zfbugs"."bug_id"', $sql);
+    }
+
     /**
      * Test adding a WHERE clause to a Zend_Db_Select object.
      */
@@ -341,6 +357,18 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $select = $this->_selectWhereWithType();
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" WHERE ("product_id" = 2)', $sql);
+    }
+
+    /**
+     * Test support for where() with a float parameter,
+     * e.g. where('id = ?', 1).
+     */
+
+    public function testSelectWhereWithTypeFloat()
+    {
+        $select = $this->_selectWhereWithTypeFloat();
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfprice".* FROM "zfprice" WHERE ("price_total" = 200.450000)', $sql);
     }
 
     /** 
@@ -602,6 +630,13 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $select = $this->_selectLimitPageTwo();
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY "product_id" ASC LIMIT 1 OFFSET 1', $sql);
+    }
+
+    public function testSelectUnionString()
+    {
+        $select = $this->_selectUnionString();
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "bug_id" AS "id", "bug_status" AS "name" FROM "zfbugs" UNION SELECT "product_id" AS "id", "product_name" AS "name" FROM "zfproducts" ORDER BY "id" ASC', $sql);
     }
 
     public function getDriver()

@@ -16,7 +16,7 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Fieldset.php 9340 2008-04-28 18:44:28Z matthew $
+ * @version    $Id: Fieldset.php 11302 2008-09-08 20:10:39Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -33,23 +33,6 @@ require_once 'Zend/View/Helper/FormElement.php';
  */
 class Zend_View_Helper_Fieldset extends Zend_View_Helper_FormElement
 {
-    /**
-     * @var Zend_View_Instance
-     */
-    public $view;
-
-    /**
-     * Set view object
-     * 
-     * @param  Zend_View_Interface $view 
-     * @return Zend_View_Helper_Form
-     */
-    public function setView(Zend_View_Interface $view)
-    {
-        $this->view = $view;
-        return $this;
-    }
-
     /**
      * Render HTML form
      *
@@ -69,15 +52,22 @@ class Zend_View_Helper_Fieldset extends Zend_View_Helper_FormElement
             $legendString = trim($attribs['legend']);
             if (!empty($legendString)) {
                 $legend = '<legend>' 
-                        . $this->view->escape($legendString) 
+                        . (($escape) ? $this->view->escape($legendString) : $legendString)
                         . '</legend>' . PHP_EOL;
             }
             unset($attribs['legend']);
         }
 
+        // get id
+        if (!empty($id)) {
+            $id = ' id="' . $this->view->escape($id) . '"';
+        } else {
+            $id = '';
+        }
+
         // render fieldset
         $xhtml = '<fieldset'
-               . ' id="'   . $this->view->escape($id)   . '"'
+               . $id
                . $this->_htmlAttribs($attribs)
                . '>'
                . $legend

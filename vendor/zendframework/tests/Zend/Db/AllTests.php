@@ -52,6 +52,10 @@ require_once 'Zend/Loader.php';
  */
 require_once 'Zend/Db/SkipTests.php';
 
+/**
+ * @see Zend_Db_Profiler_AllTests
+ */
+require_once 'Zend/Db/Profiler/AllTests.php';
 
 /**
  * @category   Zend
@@ -81,8 +85,8 @@ class Zend_Db_AllTests
         if (!defined('TESTS_ZEND_DB_ADAPTER_STATIC_ENABLED')) {
             define('TESTS_ZEND_DB_ADAPTER_STATIC_ENABLED', true);
         }
-		
-        self::_addDbTestSuites($suite, 'Static');       
+
+        self::_addDbTestSuites($suite, 'Static');
         self::_addDbTestSuites($suite, 'Db2');
         self::_addDbTestSuites($suite, 'Mysqli');
         self::_addDbTestSuites($suite, 'Oracle');
@@ -102,6 +106,8 @@ class Zend_Db_AllTests
         if (self::$_skipTestSuite !== null) {
             $suite->addTest(self::$_skipTestSuite);
         }
+
+        $suite->addTest(Zend_Db_Profiler_AllTests::suite());
 
         return $suite;
     }

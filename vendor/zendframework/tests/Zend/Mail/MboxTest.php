@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MboxTest.php 9277 2008-04-22 16:02:09Z nico $
+ * @version    $Id: MboxTest.php 9276 2008-04-22 15:39:06Z nico $
  */
 
 

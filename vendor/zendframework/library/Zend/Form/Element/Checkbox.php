@@ -30,7 +30,7 @@ require_once 'Zend/Form/Element/Xhtml.php';
  * @subpackage Element
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Checkbox.php 9324 2008-04-25 21:14:51Z matthew $
+ * @version    $Id: Checkbox.php 9323 2008-04-25 21:13:17Z matthew $
  */
 class Zend_Form_Element_Checkbox extends Zend_Form_Element_Xhtml
 {

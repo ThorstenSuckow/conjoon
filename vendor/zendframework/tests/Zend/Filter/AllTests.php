@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: AllTests.php 10637 2008-08-04 16:20:40Z ralph $
  */
 
 
@@ -98,6 +98,11 @@ require_once 'Zend/Filter/StringToUpperTest.php';
 require_once 'Zend/Filter/StringTrimTest.php';
 
 /**
+ * @see Zend_Filter_StripNewlinesTest
+ */
+require_once 'Zend/Filter/StripNewlinesTest.php';
+
+/**
  * @see Zend_Filter_StripTagsTest
  */
 require_once 'Zend/Filter/StripTagsTest.php';
@@ -160,6 +165,7 @@ class Zend_Filter_AllTests
         $suite->addTestSuite('Zend_Filter_StringToLowerTest');
         $suite->addTestSuite('Zend_Filter_StringToUpperTest');
         $suite->addTestSuite('Zend_Filter_StringTrimTest');
+        $suite->addTestSuite('Zend_Filter_StripNewlinesTest');
         $suite->addTestSuite('Zend_Filter_StripTagsTest');
         $suite->addTestSuite('Zend_Filter_InputTest');
         $suite->addTestSuite('Zend_Filter_Word_CamelCaseToDashTest');

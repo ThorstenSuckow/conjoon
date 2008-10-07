@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 9136 2008-04-04 13:58:29Z thomas $
+ * @version    $Id: Abstract.php 9577 2008-05-31 01:50:27Z peptolab $
  */
 
 
@@ -25,6 +25,12 @@
  * @see Zend_Db_Adapter_Abstract
  */
 require_once 'Zend/Db/Adapter/Abstract.php';
+
+
+/**
+ * @see Zend_Loader
+ */
+require_once 'Zend/Loader.php';
 
 
 /**
@@ -44,6 +50,13 @@ require_once 'Zend/Db/Statement/Pdo.php';
  */
 abstract class Zend_Db_Adapter_Pdo_Abstract extends Zend_Db_Adapter_Abstract
 {
+
+    /**
+     * Default class name for a DB statement.
+     *
+     * @var string
+     */
+    protected $_defaultStmtClass = 'Zend_Db_Statement_Pdo';
 
     /**
      * Creates a PDO DSN for the adapter from $this->_config settings.
@@ -152,7 +165,9 @@ abstract class Zend_Db_Adapter_Pdo_Abstract extends Zend_Db_Adapter_Abstract
     public function prepare($sql)
     {
         $this->_connect();
-        $stmt = new Zend_Db_Statement_Pdo($this, $sql);
+        $stmtClass = $this->_defaultStmtClass;
+        Zend_Loader::loadClass($stmtClass);
+        $stmt = new $stmtClass($this, $sql);
         $stmt->setFetchMode($this->_fetchMode);
         return $stmt;
     }

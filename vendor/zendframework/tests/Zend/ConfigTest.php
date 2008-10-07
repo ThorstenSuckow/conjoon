@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConfigTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: ConfigTest.php 11119 2008-08-29 12:42:59Z rob $
  */
 
 /**
@@ -386,6 +386,30 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
             return;
         }        
         $this->fail('Expected read only exception has not been raised.');
+    }
+    
+    public function testZF3408_countNotDecreasingOnUnset()
+    {
+        $configData = array(
+            'a' => 'a',
+            'b' => 'b',
+            'c' => 'c',
+            );
+        $config = new Zend_Config($configData, true);
+        $this->assertEquals(count($config), 3);
+        unset($config->b);
+        $this->assertEquals(count($config), 2);
+    }
+    
+    public function testZF4107_ensureCloneDoesNotKeepNestedReferences() 
+    {
+        $parent = new Zend_Config(array('key' => array('nested' => 'parent')), true);
+        $newConfig = clone $parent;
+        $newConfig->merge(new Zend_Config(array('key' => array('nested' => 'override')), true));
+
+        $this->assertEquals('override', $newConfig->key->nested, '$newConfig is not overridden');
+        $this->assertEquals('parent', $parent->key->nested, '$parent has been overridden');
+        
     }
 }
 

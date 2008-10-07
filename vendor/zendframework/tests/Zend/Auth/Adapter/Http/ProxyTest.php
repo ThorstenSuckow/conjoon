@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProxyTest.php 8550 2008-03-05 15:54:13Z darby $
+ * @version    $Id: ProxyTest.php 8549 2008-03-05 15:37:20Z darby $
  */
 
 

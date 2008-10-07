@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StripTagsTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: StripTagsTest.php 10752 2008-08-07 13:20:50Z alexander $
  */
 
 
@@ -451,5 +451,42 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
         $expected = ' <!-- <b> --  > ';
         $this->_filter->commentsAllowed = true;
         $this->assertEquals($expected, $this->_filter->filter($input));
+    }
+
+    /**
+     * Ensures that a closing angle bracket in an allowed attribute does not break the parser
+     *
+     * @return void
+     * @link   http://framework.zend.com/issues/browse/ZF-3278
+     */
+    public function testClosingAngleBracketInAllowedAttributeValue()
+    {
+        $tagsAllowed = array(
+            'a' => 'href'
+            );
+        $this->_filter->setTagsAllowed($tagsAllowed);
+        $input    = '<a href="Some &gt; Text">';
+        $expected = '<a href="Some &gt; Text">';
+        $this->assertEquals($expected, $this->_filter->filter($input));
+    }
+
+    /**
+     * Ensures that an allowed attribute's value may end with an equals sign '='
+     *
+     * @return void
+     * @link   http://framework.zend.com/issues/browse/ZF-3293
+     */
+    public function testAllowedAttributeValueMayEndWithEquals()
+    {
+        $this->markTestSkipped();
+        return;
+        /*
+        $tagsAllowed = array(
+            'element' => 'attribute'
+        );
+        $this->_filter->setTagsAllowed($tagsAllowed);
+        $input = '<element attribute="a=">contents</element>';
+        $this->assertEquals($input, $this->_filter->filter($input));
+        */
     }
 }

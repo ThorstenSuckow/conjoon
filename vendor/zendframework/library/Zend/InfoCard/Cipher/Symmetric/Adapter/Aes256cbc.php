@@ -17,7 +17,7 @@
  * @subpackage Zend_InfoCard_Cipher
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Aes256cbc.php 9125 2008-04-03 21:22:31Z thomas $
+ * @version    $Id: Aes256cbc.php 9094 2008-03-30 18:36:55Z thomas $
  */
 
 /**

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MathTest.php 8761 2008-03-12 02:16:53Z alexander $
+ * @version    $Id: MathTest.php 8760 2008-03-12 02:10:04Z alexander $
  */
 
 

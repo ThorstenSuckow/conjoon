@@ -6,12 +6,10 @@
 
 // Call Zend_Rest_ServerTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
-    require_once dirname(__FILE__) . '/../../TestHelper.php';
     define("PHPUnit_MAIN_METHOD", "Zend_Rest_ServerTest::main");
 }
 
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
+require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Rest_Server
@@ -24,7 +22,7 @@ require_once 'Zend/Rest/Server.php';
  * @package Zend_Rest
  * @subpackage UnitTests
  */
-class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase 
+class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -55,7 +53,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $funcs = $server->getFunctions();
         $this->assertTrue(isset($funcs['Zend_Rest_Server_TestFunc']), "Function not registered.");
     }
-    
+
     public function testSetClass()
     {
         $server = new Zend_Rest_Server();
@@ -65,7 +63,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(isset($funcs['testFunc2']), "Class Not Registered. testFunc2 not found");
         $this->assertTrue(isset($funcs['testFunc3']), "Class Not Registered. testFunc3 not found");
     }
-    
+
     public function testHandleNamedArgFunction()
     {
         $server = new Zend_Rest_Server();
@@ -75,7 +73,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc generator="zend" version="1.0"><response>Hello Davey</response><status>success</status></Zend_Rest_Server_TestFunc>', $result, "Bad Result");
     }
-    
+
     public function testHandleFunctionNoArgs()
     {
         $server = new Zend_Rest_Server();
@@ -85,17 +83,14 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc2 generator="zend" version="1.0"><response>Hello World</response><status>success</status></Zend_Rest_Server_TestFunc2>', $result, "Bad Result");
     }
-    
-    public function testHandleFunctionNoArgsThrowsExceptionWithFewerArgs()
+
+    public function testHandleFunctionNoArgsRaisesFaultResponse()
     {
         $server = new Zend_Rest_Server();
+        $server->returnResponse(true);
         $server->addFunction('Zend_Rest_Server_TestFunc');
-        try {
-            $server->handle(array('method' => 'Zend_Rest_Server_TestFunc'));
-            $this->fail('Call should fail if missing args');
-        } catch (Exception $e) {
-            // success
-        }
+        $result = $server->handle(array('method' => 'Zend_Rest_Server_TestFunc'));
+        $this->assertContains('failed', $result);
     }
 
   	public function testHandleFunctionNoArgsUsingRequest()
@@ -120,10 +115,10 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc generator="zend" version="1.0"><response>Hello Davey</response><status>success</status></Zend_Rest_Server_TestFunc>', $result, "Bad Result");
     }
-    
+
     public function testHandleMultipleFunction()
     {
-        
+
         $server = new Zend_Rest_Server();
         $server->addFunction('Zend_Rest_Server_TestFunc2');
         $server->addFunction('Zend_Rest_Server_TestFunc');
@@ -136,7 +131,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc generator="zend" version="1.0"><response>Hello Davey</response><status>success</status></Zend_Rest_Server_TestFunc>', $result, "Bad Result");
     }
-    
+
     public function testHandleMethodNoArgs()
     {
         $server = new Zend_Rest_Server();
@@ -146,7 +141,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc><response>Hello World</response><status>success</status></testFunc></Zend_Rest_Server_Test>', $result, 'Bad Result');
     }
-    
+
     public function testHandleMethodOfClassWithConstructor()
     {
         $server = new Zend_Rest_Server();
@@ -166,7 +161,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc2><response>Hello Davey</response><status>success</status></testFunc2></Zend_Rest_Server_Test>', $result, 'Bad Result');
     }
-    
+
     public function testHandleNamedArgMethod()
     {
         $server = new Zend_Rest_Server();
@@ -176,7 +171,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc3><response>Hello Davey, How are you today</response><status>success</status></testFunc3></Zend_Rest_Server_Test>', $result, 'Bad Result');
     }
-    
+
     public function testHandleStaticNoArgs()
     {
         $server = new Zend_Rest_Server();
@@ -184,9 +179,9 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         ob_start();
         $server->handle(array('method' => 'testFunc4'));
         $result = ob_get_clean();
-        $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc4><response>Hello World</response><status>success</status></testFunc4></Zend_Rest_Server_Test>', $result, 'Bad Result');
+        $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc4><response>Hello World</response><status>success</status></testFunc4></Zend_Rest_Server_Test>', $result, var_export($result, 1));
     }
-    
+
     public function testHandleAnonymousArgStatic()
     {
         $server = new Zend_Rest_Server();
@@ -196,7 +191,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc5><response>Hello Davey</response><status>success</status></testFunc5></Zend_Rest_Server_Test>', $result, 'Bad Result');
     }
-    
+
     public function testHandleNamedArgStatic()
     {
         $server = new Zend_Rest_Server();
@@ -206,7 +201,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc6><response>Hello Davey, How are you today</response><status>success</status></testFunc6></Zend_Rest_Server_Test>', $result, 'Bad Result');
     }
-    
+
     public function testHandleMultipleAnonymousArgs()
     {
         $server = new Zend_Rest_Server();
@@ -216,7 +211,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc9 generator="zend" version="1.0"><response>Hello Davey</response><status>success</status></Zend_Rest_Server_TestFunc9>', $result, "Bad Result");
     }
-    
+
     public function testHandleReturnFalse()
     {
         $server = new Zend_Rest_Server();
@@ -226,7 +221,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc3 generator="zend" version="1.0"><response>0</response><status>success</status></Zend_Rest_Server_TestFunc3>', $result, 'Bas Response');
     }
-    
+
     public function testHandleReturnTrue()
     {
         $server = new Zend_Rest_Server();
@@ -236,8 +231,8 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc4 generator="zend" version="1.0"><response>1</response><status>success</status></Zend_Rest_Server_TestFunc4>', $result, 'Bas Response');
     }
-    
-        
+
+
     public function testHandleReturnInteger()
     {
         $server = new Zend_Rest_Server();
@@ -247,7 +242,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc5 generator="zend" version="1.0"><response>123</response><status>success</status></Zend_Rest_Server_TestFunc5>', $result, 'Bas Response');
     }
-    
+
     public function testHandleReturnString()
     {
         $server = new Zend_Rest_Server();
@@ -257,7 +252,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc6 generator="zend" version="1.0"><response>string</response><status>success</status></Zend_Rest_Server_TestFunc6>', $result, 'Bas Response');
     }
-    
+
     public function testHandleReturnArray()
     {
         $server = new Zend_Rest_Server();
@@ -267,7 +262,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains('<Zend_Rest_Server_TestFunc7 generator="zend" version="1.0"><foo>bar</foo><baz>1</baz><key_1>0</key_1><bat>123</bat><status>success</status></Zend_Rest_Server_TestFunc7>', $result, $result);
     }
-    
+
     public function testHandleReturnNestedArray()
     {
         $server = new Zend_Rest_Server();
@@ -314,7 +309,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $result = ob_get_clean();
         $this->assertContains("<foo>bar</foo>", $result, "Bad Result");
     }
-    
+
     public function testHandleReturnDomDocument()
     {
         $server = new Zend_Rest_Server();
@@ -377,7 +372,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertContains("<Zend_Rest_Server_TestFunc11", $result);
         $this->assertContains("<message>testing rest server faults</message>", $result);
     }
-    
+
     public function testHandleClassMethodException()
     {
         $server = new Zend_Rest_Server();
@@ -486,6 +481,47 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $server->setEncoding('ISO-8859-1');
         $this->assertEquals('ISO-8859-1', $server->getEncoding());
     }
+
+    /**
+     * @see ZF-2279
+     */
+    public function testNamesOfArgumentsShouldDetermineArgumentOrder()
+    {
+        $server = new Zend_Rest_Server();
+        $server->setClass('Zend_Rest_Server_Test');
+        ob_start();
+        $server->handle(array('method' => 'testFunc6', 'arg2' => 'today', 'arg1' => "Davey"));
+        $result = ob_get_clean();
+        $this->assertContains('<Zend_Rest_Server_Test generator="zend" version="1.0"><testFunc6><response>Hello Davey, How are you today</response><status>success</status></testFunc6></Zend_Rest_Server_Test>', $result, var_export($result, 1));
+    }
+
+    /**
+     * @see ZF-1949
+     */
+    public function testMissingArgumentsShouldResultInFaultResponse()
+    {
+        $server = new Zend_Rest_Server();
+        $server->setClass('Zend_Rest_Server_Test');
+        ob_start();
+        $server->handle(array('method' => 'testFunc6', 'arg1' => "Davey"));
+        $result = ob_get_clean();
+        $this->assertRegexp('#<message>Invalid Method Call to(.*?)(Requires).*?(given).*?(</message>)#', $result);
+        $this->assertContains('<status>failed</status>', $result);
+    }
+
+    /**
+     * @see ZF-1949
+     */
+    public function testMissingArgumentsWithDefaultsShouldNotResultInFaultResponse()
+    {
+        $server = new Zend_Rest_Server();
+        $server->setClass('Zend_Rest_Server_Test');
+        ob_start();
+        $server->handle(array('method' => 'testFunc7', 'arg1' => "Davey"));
+        $result = ob_get_clean();
+        $this->assertContains('<status>success</status>', $result, var_export($result, 1));
+        $this->assertContains('<response>Hello today, How are you Davey</response>', $result, var_export($result, 1));
+    }
 }
 
 /* Test Functions */
@@ -496,7 +532,7 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
  * @param string $arg
  * @return string
  */
-function Zend_Rest_Server_TestFunc($who) 
+function Zend_Rest_Server_TestFunc($who)
 {
     return "Hello $who";
 }
@@ -572,7 +608,7 @@ function Zend_Rest_Server_TestFunc8()
 
 /**
  * Multiple Args
- * 
+ *
  * @param string $foo
  * @param string $bar
  * @return string
@@ -584,7 +620,7 @@ function Zend_Rest_Server_TestFunc9($foo, $bar)
 
 /**
  * Void arguments
- * 
+ *
  * @return void
  */
 function Zend_Rest_Server_TestFunc10()
@@ -594,7 +630,7 @@ function Zend_Rest_Server_TestFunc10()
 
 /**
  * throws exception
- * 
+ *
  * @return void
  * @throws Exception
  */
@@ -617,7 +653,7 @@ function Zend_Rest_Server_TestFunc12()
 /**
  * Test Class
  */
-class Zend_Rest_Server_Test 
+class Zend_Rest_Server_Test
 {
     /**
      * Test Function
@@ -626,20 +662,20 @@ class Zend_Rest_Server_Test
     {
         return "Hello World";
     }
-    
+
     /**
      * Test Function 2
-     * 
+     *
      * @param string $who Some Arg
      */
     public function testFunc2($who)
     {
         return "Hello $who";
     }
-    
+
     /**
      * Test Function 3
-     * 
+     *
      * @param string $who Some Arg
      * @param int $when Some Arg2
      */
@@ -647,7 +683,7 @@ class Zend_Rest_Server_Test
     {
         return "Hello $who, How are you $when";
     }
-    
+
     /**
      * Test Function 4
      */
@@ -655,20 +691,20 @@ class Zend_Rest_Server_Test
     {
         return "Hello World";
     }
-    
+
     /**
      * Test Function 5
-     * 
+     *
      * @param string $who Some Arg
      */
     public static function testFunc5($who)
     {
         return "Hello $who";
     }
-    
+
     /**
      * Test Function 6
-     * 
+     *
      * @param string $who Some Arg
      * @param int $when Some Arg2
      */
@@ -678,8 +714,19 @@ class Zend_Rest_Server_Test
     }
 
     /**
+     * Test Function 7
+     *
+     * @param string $who Some Arg
+     * @param int $when Some Arg2
+     */
+    public static function testFunc7($who, $when = 'today')
+    {
+        return "Hello $who, How are you $when";
+    }
+
+    /**
      * Test scalar encoding
-     * 
+     *
      * @return string
      */
     public function testScalarEncoding()
@@ -689,7 +736,7 @@ class Zend_Rest_Server_Test
 
     /**
      * Test structs encode correctly
-     * 
+     *
      * @return struct
      */
     public function testStructEncoding()

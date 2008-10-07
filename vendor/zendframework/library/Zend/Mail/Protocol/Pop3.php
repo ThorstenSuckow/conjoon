@@ -11,13 +11,13 @@
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
- *
+ * 
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Protocol
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Pop3.php 9130 2008-04-04 08:30:24Z thomas $
+ * @version    $Id: Pop3.php 9098 2008-03-30 19:29:10Z thomas $
  */
 
 
@@ -185,7 +185,7 @@ class Zend_Mail_Protocol_Pop3
         if ($multiline) {
             $message = '';
             $line = fgets($this->_socket);
-            while ($line && $line != ".\r\n") {
+            while ($line && trim($line) != '.') {
                 $message .= $line;
                 $line = fgets($this->_socket);
             };

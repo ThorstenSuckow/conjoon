@@ -18,7 +18,7 @@
  * @subpackage Zend_OpenId_Provider
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Provider.php 9356 2008-05-05 06:28:54Z dmitry $
+ * @version    $Id: Provider.php 10105 2008-07-15 16:56:48Z dmitry $
  */
 
 /**
@@ -508,7 +508,7 @@ class Zend_OpenId_Provider
 
         if (isset($params['openid_identity']) &&
             !$this->_storage->hasUser($params['openid_identity'])) {
-            $ret['openid.mode'] = 'cancel';
+            $ret['openid.mode'] = ($immediate && $version >= 2.0) ? 'setup_needed': 'cancel';
             return $ret;
         }
 
@@ -541,7 +541,7 @@ class Zend_OpenId_Provider
         }
 
         if (!Zend_OpenId_Extension::forAll($extensions, 'parseRequest', $params)) {
-            $ret['openid.mode'] = 'cancel';
+            $ret['openid.mode'] = ($immediate && $version >= 2.0) ? 'setup_needed': 'cancel';
             return $ret;
         }
 

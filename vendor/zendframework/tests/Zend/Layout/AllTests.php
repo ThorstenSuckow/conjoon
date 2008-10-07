@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: AllTests.php 10746 2008-08-07 05:35:31Z ralph $
  */
 
 
@@ -32,6 +32,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once 'Zend/Layout/LayoutTest.php';
 require_once 'Zend/Layout/HelperTest.php';
 require_once 'Zend/Layout/PluginTest.php';
+require_once 'Zend/Layout/FunctionalTest.php';
 
 /**
  * @category   Zend
@@ -54,6 +55,7 @@ class Zend_Layout_AllTests
         $suite->addTestSuite('Zend_Layout_LayoutTest');
         $suite->addTestSuite('Zend_Layout_HelperTest');
         $suite->addTestSuite('Zend_Layout_PluginTest');
+        $suite->addTestSuite('Zend_Layout_FunctionalTest');
 
         return $suite;
     }

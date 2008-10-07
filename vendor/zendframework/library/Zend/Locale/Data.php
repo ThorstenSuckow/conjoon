@@ -16,18 +16,18 @@
  * @package    Zend_Locale
  * @subpackage Data
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Data.php 9255 2008-04-19 11:19:22Z thomas $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Data.php 9753 2008-06-21 19:31:25Z thomas $
  */
-
 
 /**
  * include needed classes
  */
 require_once 'Zend/Locale.php';
 
-
 /**
+ * Locale data reader, handles the CLDR
+ *
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage Data
@@ -37,31 +37,28 @@ require_once 'Zend/Locale.php';
 class Zend_Locale_Data
 {
     /**
-     * locale files
+     * Locale files
      *
      * @var ressource
      * @access private
      */
     private static $_ldml = array();
 
-
     /**
-     * list of values which are collected
+     * List of values which are collected
      *
      * @var array
      * @access private
      */
     private static $_list = array();
 
-
     /**
-     * internal cache for ldml values
+     * Internal cache for ldml values
      * 
      * @var Zend_Cache_Core
      * @access private
      */
     private static $_cache = null;
-
 
     /**
      * Read the content from locale
@@ -1158,14 +1155,23 @@ class Zend_Locale_Data
         return $temp;
     }
 
-
     /**
      * Set a cache for Zend_Locale_Data
      * 
-     * @param Zend_Cache_Core $cache a cache frontend
+     * @param Zend_Cache_Core $cache A cache frontend
      */
     public static function setCache(Zend_Cache_Core $cache)
     {
         self::$_cache = $cache;
+    }
+
+    /**
+     * Returns the set cache
+     * 
+     * @return Zend_Cache_Core The set cache
+     */
+    public static function getCache()
+    {
+        return self::$_cache;
     }
 }

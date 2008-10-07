@@ -150,8 +150,8 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $helperPaths = $this->helper->view->getHelperPaths();
         $test        = ucfirst($module) . '_View_Helper_';
         $found       = false;
-        foreach ($helperPaths as $info) {
-            if ($test == $info['prefix']) {
+        foreach ($helperPaths as $prefix => $paths) {
+            if ($test == $prefix) {
                 $found = true;
             }
         }
@@ -160,8 +160,8 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $filterPaths = $this->helper->view->getFilterPaths();
         $test        = ucfirst($module) . '_View_Filter_';
         $found = false;
-        foreach ($filterPaths as $info) {
-            if ($test == $info['prefix']) {
+        foreach ($filterPaths as $prefix => $paths) {
+            if ($test == $prefix) {
                 $found = true;
             }
         }
@@ -252,8 +252,8 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
 
         $helperPaths = $this->helper->view->getHelperPaths();
         $found       = false;
-        foreach ($helperPaths as $path) {
-            if ('Baz_Bat_Helper_' == $path['prefix']) {
+        foreach ($helperPaths as $prefix => $paths) {
+            if ('Baz_Bat_Helper_' == $prefix) {
                 $found = true;
             }
         }
@@ -261,8 +261,8 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
 
         $filterPaths = $this->helper->view->getFilterPaths();
         $found       = false;
-        foreach ($filterPaths as $path) {
-            if ('Baz_Bat_Filter_' == $path['prefix']) {
+        foreach ($filterPaths as $prefix => $paths) {
+            if ('Baz_Bat_Filter_' == $prefix) {
                 $found = true;
             }
         }
@@ -741,7 +741,7 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
     }
 
     /**
-     * @issue ZF-2443
+     * @see ZF-2443
      */
     public function testStockInflectorWorksWithViewBaseSpec()
     {
@@ -763,7 +763,7 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
     }
     
     /**
-     * @issue ZF-2738
+     * @see ZF-2738
      */
     public function testStockInflectorWorksWithDottedRequestParts()
     {
@@ -779,6 +779,30 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $this->assertEquals($this->helper->getViewScript(), 'car-bar/baz.phtml');
     }
     
+    public function testCorrectViewHelperPathShouldBePropagatedWhenSubControllerInvoked()
+    {
+        require_once $this->basePath . '/_files/modules/foo/controllers/Admin/IndexController.php';
+        $this->request->setModuleName('foo')
+                      ->setControllerName('admin_index')
+                      ->setActionName('use-helper');
+        $controller = new Foo_Admin_IndexController($this->request, $this->response, array());
+
+        $this->helper->render();
+        $body = $this->response->getBody();
+        $this->assertContains('fooUseHelper invoked', $body, 'Received ' . $body);
+    }
+    
+    public function testCorrectViewHelperPathShouldBePropagatedWhenSubControllerInvokedInDefaultModule()
+    {
+        require_once $this->basePath . '/_files/modules/default/controllers/Admin/HelperController.php';
+        $this->request->setControllerName('admin_helper')
+                      ->setActionName('render');
+        $controller = new Admin_HelperController($this->request, $this->response, array());
+
+        $this->helper->render();
+        $body = $this->response->getBody();
+        $this->assertContains('SampleZfHelper invoked', $body, 'Received ' . $body);
+    }
 }
 
 // Call Zend_Controller_Action_Helper_ViewRendererTest::main() if this source file is executed directly.

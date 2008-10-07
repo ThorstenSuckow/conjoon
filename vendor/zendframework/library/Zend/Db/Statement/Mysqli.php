@@ -17,7 +17,7 @@
  * @subpackage Statement
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysqli.php 9146 2008-04-04 19:53:48Z kgbfernando $
+ * @version    $Id: Mysqli.php 9738 2008-06-19 23:06:36Z peptolab $
  */
 
 
@@ -26,7 +26,7 @@
  */
 require_once 'Zend/Db/Statement.php';
 
-
+    
 /**
  * Extends for Mysqli
  *
@@ -124,7 +124,9 @@ class Zend_Db_Statement_Mysqli extends Zend_Db_Statement
     public function closeCursor()
     {
         if ($stmt = $this->_stmt) {
-        $this->_stmt->free_result();
+            $mysqli = $this->_adapter->getConnection();
+            while ($mysqli->next_result()) {}
+            $this->_stmt->free_result();
             return $this->_stmt->reset();
         }
         return false;
