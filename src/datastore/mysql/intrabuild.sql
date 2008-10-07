@@ -317,3 +317,6 @@ ALTER TABLE `groupware_email_items` ADD `recipients` TEXT NOT NULL AFTER `conten
 ALTER TABLE `groupware_email_items_references` ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` ) ;
 
 ALTER TABLE `groupware_email_items_references` ADD INDEX `references` ( `groupware_email_items_id` , `user_id` , `reference_items_id` )
+
+ ALTER TABLE `groupware_email_items` DROP INDEX `groupware_email_folders_id` ,
+ADD INDEX `groupware_email_folders_id` ( `groupware_email_folders_id` , `date` );
