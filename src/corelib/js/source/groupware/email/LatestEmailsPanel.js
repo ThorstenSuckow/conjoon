@@ -56,7 +56,17 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         listeners   : {
             remove : function (store, record, index) {
                 Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.remove', {
-                    item : record
+                    items : [record]
+                });
+            },
+            bulkremove : function (store, items) {
+                var records = [];
+                for (var i = 0, len = items.length; i < len; i++) {
+                    records.push(items[i][0]);
+                }
+
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.remove', {
+                    items : records
                 });
             },
             update : function (store, record, operation) {

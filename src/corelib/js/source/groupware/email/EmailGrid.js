@@ -72,7 +72,17 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         listeners   : {
             remove : function (store, record, index) {
                 Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.remove', {
-                    item : record
+                    items : [record]
+                });
+            },
+            bulkremove : function (store, items) {
+                var records = [];
+                for (var i = 0, len = items.length; i < len; i++) {
+                    records.push(items[i][0]);
+                }
+
+                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.remove', {
+                    items : records
                 });
             },
             update : function (store, record, operation) {
