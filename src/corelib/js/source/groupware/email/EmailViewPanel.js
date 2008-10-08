@@ -108,7 +108,8 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         });
 
-        this.on('render', de.intrabuild.groupware.util.LinkInterceptor.getListener().render);
+        this.on('render',  de.intrabuild.groupware.util.LinkInterceptor.getListener().render);
+        this.on('destroy', this.abortRequest, this);
 
         de.intrabuild.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
     },
