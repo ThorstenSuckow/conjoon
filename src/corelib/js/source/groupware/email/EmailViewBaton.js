@@ -109,6 +109,43 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
         EmailEditorManager.createEditor(emailItem.id, type);
     };
 
+    /**
+     * Called when the message with the subject "de.intrabuild.groupware.email.EmailGrid.store.remove"
+     * or "de.intrabuild.groupware.email.EmailGrid.store.bulkremove"
+     * is published over Ext.ux.util.MessageBus.
+     * Will remove any tab that displays the removed record.
+     *
+     * @param {String} subject
+     * @param {Object} message
+     *
+     */
+    var _onEmailRemove = function(subject, message)
+    {
+        var items  = message.items;
+        var opened = null;
+
+        for (var i = 0, len = items.length; i < len; i++) {
+            opened = openedEmails[items[i].id];
+
+            if (opened) {
+                contentPanel.remove(opened);
+            }
+        }
+    };
+
+    /**
+     * Subscribes to the EmailGrid store's remove message to close any tab that might
+     * show the removed message
+     */
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.EmailGrid.store.remove',
+        _onEmailRemove
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.LatestEmailsPanel.store.remove',
+        _onEmailRemove
+    );
+
     return {
 
         /**
