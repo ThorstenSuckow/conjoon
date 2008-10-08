@@ -154,15 +154,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     _maskIndex : 20001,
 
     /**
-     * Needed to indicate that IE has rendered the scrollbar properly. Used in
-     * adjustBufferInset to tell whether IE has to activate the scrollbar
-     * programmatically, otherwise it would be rendered as disabled.
-     * @type {Boolean} _scrollInit
-     * @private
-     */
-    _scrollInit : false,
-
-    /**
      * Stores the height of the header. Needed for recalculating scroller inset height.
      * @param {Number}
      */
@@ -1594,15 +1585,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         this.liveScrollerInset.style.height = (hiddenRows == 0 ? 0 : contHeight+(hiddenRows*this.rowHeight))+"px";
-
-        // do action with the scrolling! IE would otherwise render the scrollbar as
-        // disabled when the scrollbar is shown for the first time and there are
-        // more records in the grid than displayable
-        if (Ext.isIE && !this._scrollInit) {
-            this._scrollInit = true;
-            this.adjustScrollerPos(1, true);
-            this.adjustScrollerPos(-1, true);
-        }
     },
 
     /**
