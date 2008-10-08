@@ -354,7 +354,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
         unset($data['from']);
         unset($data['replyTo']);
 
-
         /**
          * @see Intrabuild_Filter_QuoteToBlockquote
          */
@@ -380,6 +379,19 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
         $lineFeedFilter     = new Intrabuild_Filter_NormalizeLineFeeds();
         $plainToHtmlFilter  = new Intrabuild_Filter_PlainToHtml();
 
+
+        $data['contentTextPlain'] = $signatureStripper->filter(
+            $lineFeedFilter->filter(
+                $data['contentTextPlain']
+            )
+        );
+
+        // if signature stripper returned empty messagem, return the data
+        if (trim($data['contentTextPlain']) == "") {
+            $data['contentTextPlain'] = trim($data['contentTextPlain']);
+            return $data;
+        }
+
         $startTag = "<pre>";
         $endTag   = "</pre>";
 
@@ -395,18 +407,13 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
 
         $data['contentTextPlain'] = $startTag.
             $quoteFilter->filter(
-                 $plainToHtmlFilter->filter(
-                    $signatureStripper->filter(
-                        $lineFeedFilter->filter(
-                            $data['contentTextPlain']
-                        )
-                    )
-
+                $plainToHtmlFilter->filter(
+                    $data['contentTextPlain']
                 )
             )
          . $endTag;
 
-         $data['contentTextPlain'] = str_replace("\n", "<br />",  $data['contentTextPlain']);
+        $data['contentTextPlain'] = str_replace("\n", "<br />",  $data['contentTextPlain']);
 
         return $data;
     }
