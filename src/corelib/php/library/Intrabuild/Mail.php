@@ -73,5 +73,36 @@ class Intrabuild_Mail extends Zend_Mail {
         return $headers['Reply-To'];
     }
 
+    /**
+     * Fix for ZF1688
+     * Encode header fields
+     *
+     * Encodes header content according to RFC1522 if it contains non-printable
+     * characters.
+     *
+     * @param  string $value
+     * @return string
+     */
+    protected function _encodeHeader($value)
+    {
+        if (Zend_Mime::isPrintable($value)) {
+            return $value;
+        } else {
+
+            $imePrefs = array();
+            $imePrefs['scheme'] = 'Q';
+
+            $imePrefs['input-charset']  = $this->_charset;
+            $imePrefs['output-charset'] = $this->_charset;
+            $imePrefs['line-length']    = 74;
+            $imePrefs['line-break-chars'] = "\n";
+
+            $value = iconv_mime_encode('DUMMY', $value, $imePrefs);
+            $value = preg_replace("#^DUMMY\:\ #", "", $value);
+
+            return $value;
+        }
+    }
+
 
 }
