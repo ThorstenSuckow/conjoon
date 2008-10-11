@@ -28,7 +28,7 @@ de.intrabuild.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 
         this.cards = [
             new Ext.ux.Wiz.Card({
-                title        : de.intrabuild.Gettext.gettext("Willkommen"),
+                title        : de.intrabuild.Gettext.gettext("Welcome"),
                 header       : false,
                 border       : false,
                 monitorValid : false,
