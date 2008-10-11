@@ -89,15 +89,15 @@ class Intrabuild_Mail extends Zend_Mail {
             return $value;
         } else {
 
-            $imePrefs = array();
-            $imePrefs['scheme'] = 'Q';
+            $mimePrefs = array(
+                'scheme'           => 'Q',
+                'input-charset'    => $this->_charset,
+                'output-charset'   => $this->_charset,
+                'line-length'      => 74,
+                'line-break-chars' => "\n"
+            );
 
-            $imePrefs['input-charset']  = $this->_charset;
-            $imePrefs['output-charset'] = $this->_charset;
-            $imePrefs['line-length']    = 74;
-            $imePrefs['line-break-chars'] = "\n";
-
-            $value = iconv_mime_encode('DUMMY', $value, $imePrefs);
+            $value = iconv_mime_encode('DUMMY', $value, $mimePrefs);
             $value = preg_replace("#^DUMMY\:\ #", "", $value);
 
             return $value;
