@@ -156,6 +156,41 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
         return true;
     }
+    
+    /**
+     * Returns the id of the folder with the the sppecified name for the specified 
+     * parent folder. Returns 0 if no wolder was found.
+     *
+     * @param string $name
+     * @param integer $parentId
+     * 
+     * @return integer
+     */
+    public function getFolderIdForName($name, $parentId) 
+    {
+        $parentId = (int)$parentId;
+        
+        if ($parentId <= 0) {
+            return 0;    
+        }
+        
+        $where1 = $this->getAdapter()->quoteInto('parent_id = ?', $parentId, 'INTEGER');
+        $where2 = $this->getAdapter()->quoteInto('name = ?', $name);
+
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from($this, array('id'))
+                  ->where($where1)
+                  ->where($where2);
+
+        $row = $this->fetchRow($select);
+
+        if ($row) {
+            return $row->id;
+        } 
+
+        return 0;
+    }
 
     /**
      * Returns true if the folder may be deleted, otherwise false.
@@ -514,6 +549,13 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
             return 0;
         }
 
+        // check now if a folder with the same name already exists
+        $folder       = $this->getFolderBaseData($id);
+        $nameFolderId = $this->getFolderIdForName($folder->name, $parentId);
+        if ($nameFolderId != 0 && $nameFolderId != $id) {
+            return 0;
+        }
+
         $data = array('parent_id' => $parentId);
         $adapter = $this->getAdapter();
         return $this->update($data, array(
@@ -539,6 +581,13 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         }
 
         if (!$this->isFolderNameEditable($id)) {
+            return 0;
+        }
+        
+        // check now if a folder with the same name already exists
+        $folder       = $this->getFolderBaseData($id);
+        $nameFolderId = $this->getFolderIdForName($name, $folder->parent_id);
+        if ($nameFolderId != 0 && $nameFolderId != $id) {
             return 0;
         }
 
@@ -568,6 +617,11 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         }
 
         if (!$this->doesFolderAllowChildren($parentId)) {
+            return -1;
+        }
+        
+        // check now if a folder with the same name already exists
+        if ($this->getFolderIdForName($name, $parentId) != 0) {
             return -1;
         }
 
@@ -738,7 +792,9 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                    )
                    ->join(
                        array('accounts' => 'groupware_email_accounts'),
-                       'accounts.id=foldersaccounts.groupware_email_accounts_id',
+                       'accounts.id=foldersaccounts.groupware_email_accounts_id' 
+                       . ' AND '
+                       . $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
                        array()
                    )
                    ->where('folders.type=?', 'root')
@@ -841,6 +897,35 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
         return $row;
     }
+    
+    /**
+     * Returns a single folder entry.
+     *
+     * @param integer $folderId The id of the folder to fetch
+     * @param integer $userId The user id for reading the additional data out, such
+     * as unread items.
+     *
+     * @return Zend_Db_Table_Row
+     */
+    public function getFolderBaseData($folderId)
+    {
+        $folderId = (int)$folderId;
+        
+        if ($folderId <= 0) {
+            return null;    
+        }
+        
+        $where = $this->getAdapter()->quoteInto('id = ?', $folderId, 'INTEGER');
+        
+        // check first if the folder may get deleted
+        $select = $this->select()
+                  ->from($this)
+                  ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        return $row;
+    }    
 
 // -------- interface Intrabuild_BeanContext_Decoratable
 

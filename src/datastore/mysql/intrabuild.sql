@@ -320,3 +320,5 @@ ALTER TABLE `groupware_email_items_references` ADD INDEX `references` ( `groupwa
 
  ALTER TABLE `groupware_email_items` DROP INDEX `groupware_email_folders_id` ,
 ADD INDEX `groupware_email_folders_id` ( `groupware_email_folders_id` , `date` );
+
+ALTER TABLE `groupware_email_folders` DROP INDEX `name`;
