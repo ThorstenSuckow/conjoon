@@ -77,14 +77,21 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         $adapter = self::getDefaultAdapter();
 
         $select = $adapter->select()
-                  ->from('groupware_email_folders', array('id'))
+                  ->from('groupware_email_folders', array('folder_id' => 'id'))
+                  ->join(
+                        array('accounts' => 'groupware_email_accounts'),
+                        $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
+                        ' AND ' .
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                        array())
                   ->join(
                         array('folders_accounts' => 'groupware_email_folders_accounts'),
-                        'folders_accounts.groupware_email_folders_id=id '.
+                        'folders_accounts.groupware_email_folders_id=groupware_email_folders.id '.
                         ' AND ' .
                         $adapter->quoteInto('folders_accounts.groupware_email_accounts_id=?', $accountId, 'INTEGER'),
                         array())
                   ->where('type = ? ', 'sent');
+                  echo "<pre>";
 
         $row = $adapter->fetchRow($select);
 
@@ -92,7 +99,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
             return 0;
         }
 
-        return $row['id'];
+        return $row['folder_id'];
     }
 
 
@@ -156,24 +163,24 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
         return true;
     }
-    
+
     /**
-     * Returns the id of the folder with the the sppecified name for the specified 
+     * Returns the id of the folder with the the sppecified name for the specified
      * parent folder. Returns 0 if no wolder was found.
      *
      * @param string $name
      * @param integer $parentId
-     * 
+     *
      * @return integer
      */
-    public function getFolderIdForName($name, $parentId) 
+    public function getFolderIdForName($name, $parentId)
     {
         $parentId = (int)$parentId;
-        
+
         if ($parentId <= 0) {
-            return 0;    
+            return 0;
         }
-        
+
         $where1 = $this->getAdapter()->quoteInto('parent_id = ?', $parentId, 'INTEGER');
         $where2 = $this->getAdapter()->quoteInto('name = ?', $name);
 
@@ -187,7 +194,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
         if ($row) {
             return $row->id;
-        } 
+        }
 
         return 0;
     }
@@ -583,7 +590,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         if (!$this->isFolderNameEditable($id)) {
             return 0;
         }
-        
+
         // check now if a folder with the same name already exists
         $folder       = $this->getFolderBaseData($id);
         $nameFolderId = $this->getFolderIdForName($name, $folder->parent_id);
@@ -619,7 +626,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         if (!$this->doesFolderAllowChildren($parentId)) {
             return -1;
         }
-        
+
         // check now if a folder with the same name already exists
         if ($this->getFolderIdForName($name, $parentId) != 0) {
             return -1;
@@ -792,7 +799,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
                    )
                    ->join(
                        array('accounts' => 'groupware_email_accounts'),
-                       'accounts.id=foldersaccounts.groupware_email_accounts_id' 
+                       'accounts.id=foldersaccounts.groupware_email_accounts_id'
                        . ' AND '
                        . $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
                        array()
@@ -897,7 +904,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
         return $row;
     }
-    
+
     /**
      * Returns a single folder entry.
      *
@@ -910,13 +917,13 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
     public function getFolderBaseData($folderId)
     {
         $folderId = (int)$folderId;
-        
+
         if ($folderId <= 0) {
-            return null;    
+            return null;
         }
-        
+
         $where = $this->getAdapter()->quoteInto('id = ?', $folderId, 'INTEGER');
-        
+
         // check first if the folder may get deleted
         $select = $this->select()
                   ->from($this)
@@ -925,7 +932,7 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
         $row = $this->fetchRow($select);
 
         return $row;
-    }    
+    }
 
 // -------- interface Intrabuild_BeanContext_Decoratable
 
