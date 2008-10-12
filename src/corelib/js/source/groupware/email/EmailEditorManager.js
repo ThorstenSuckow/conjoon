@@ -55,8 +55,28 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var activePanelMasks = [];
 
-    var createPanel = function(draftId, type, recipient)
+    var createPanel = function(emailItemRecord, type, recipient)
     {
+        var draftId = -1;
+
+        if (emailItemRecord instanceof de.intrabuild.groupware.email.EmailItemRecord) {
+            draftId = emailItemRecord.id;
+        } else {
+            draftId = emailItemRecord;
+            emailItemRecord = null;
+        }
+
+        // check here if we need to edit a draft. If an editor with the specified draft
+        // is already opened, change to this tab
+        if (type == 'edit' && draftId > 0) {
+            for (var i in formValues) {
+                if (formValues[i].draftId == draftId) {
+                    contentPanel.setActiveTab(i);
+                    return;
+                }
+            };
+        }
+
         if (form == null) {
 
             form = new de.intrabuild.groupware.email.EmailForm({
@@ -123,8 +143,10 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         });
 
         formValues[panel.id] = {
+            emailItemRecord   : emailItemRecord,
             signatureAttached : false,
             dirty             : false,
+            draftId           : (type != 'edit' ? -1 : draftId),
             pending           : false,
             disabled          : true,
             subject           : "",
@@ -470,13 +492,18 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     };
 
 
-    var onSend = function()
+    /**
+     * Prepares the data from the email form to be send to the server.
+     * Returns an object with all needed properties.
+     *
+     *
+     * @return {Object}
+     */
+    var _prepareDataToSend = function(panelId)
     {
         var to  = [];
         var cc  = [];
         var bcc = [];
-        var validRecipients = false;
-        recipientsGrid.stopEditing();
 
         var receiveType = null;
         var address     = null;
@@ -487,25 +514,51 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 receiveType = recipients[i].get('receiveType');
                 switch (receiveType) {
                     case 'to':
-                        validRecipients = true;
                         to.push(address);
                     break;
 
                     case 'cc':
-                        validRecipients = true;
                         cc.push(address);
                     break;
 
                     case 'bcc':
-                        validRecipients = true;
                         bcc.push(address);
                     break;
                 }
             }
         }
 
+        htmlEditor.syncValue();
+
+        var fValues = formValues[panelId];
+
+        var params = {
+            format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
+            id      : fValues.id,
+            type    : fValues.type,
+            panelId : panelId,
+            date    : (new Date().getTime())/1000,
+            subject : subjectField.getValue(),
+            message : htmlEditor.getValue(),
+            to      : to.length  > 0 ? Ext.encode(to)  : '',
+            cc      : cc.length  > 0 ? Ext.encode(cc)  : '',
+            bcc     : bcc.length > 0 ? Ext.encode(bcc) : '',
+            groupwareEmailFoldersId  : fValues.folderId,
+            groupwareEmailAccountsId : accountField.getValue()
+        };
+
+        cacheFormValues(panelId);
+
+        return params;
+    };
+
+    var onSend = function()
+    {
+        recipientsGrid.stopEditing();
+        var params = _prepareDataToSend(activePanel.id);
+
         // check if any valid email-addresses have been submitted
-        if (!validRecipients) {
+        if (params.to == '' && params.cc == '' && params.bcc == '') {
             var msg  = Ext.MessageBox;
 
             msg.show({
@@ -536,23 +589,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         controlBar.setDisabled(true);
 
         var url = '/groupware/email/send/format/json';
-        htmlEditor.syncValue();
-        var params = {
-            format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
-            id      : formValues[panelId].id,
-            type    : formValues[panelId].type,
-            panelId : panelId,
-            date    : (new Date().getTime())/1000,
-            subject : subjectField.getValue(),
-            message : htmlEditor.getValue(),
-            to      : to.length > 0  ? Ext.encode(to)  : '',
-            cc      : cc.length > 0  ? Ext.encode(cc)  : '',
-            bcc     : bcc.length > 0 ? Ext.encode(bcc) : '',
-            groupwareEmailFoldersId  : formValues[panelId].folderId,
-            groupwareEmailAccountsId : accountField.getValue()
-        };
-
-        cacheFormValues(panelId);
 
         Ext.Ajax.request({
             url            : url,
@@ -570,42 +606,29 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      */
     var onSaveDraft = function()
     {
+        recipientsGrid.stopEditing();
+
         var panelId = activePanel.id;
+        var params  = _prepareDataToSend(panelId);
+
+        Ext.apply(params, {
+            id : formValues[panelId].draftId
+        });
+
         formValues[panelId].disabled = true;
         formValues[panelId].pending  = true;
 
         // will throw an error in ext2.0, so catch it
-       /* try {
-            activePanel.setTitle(activePanel.getTitle(), 'de-intrabuild-groupware-pending-icon');
+        try {
+            activePanel.setIconClass('de-intrabuild-groupware-pending-icon');
         } catch (e) {
             // ignore
-        }*/
+        }
 
         showLoadMask('saving');
         controlBar.setDisabled(true);
 
-        recipientsGrid.stopEditing();
-
         var url = '/groupware/email/save.draft/format/json';
-
-        var recipients =[];
-        var rec = null;
-        for (var i = 0, max_i = recipientStore.getCount(); i < max_i; i++) {
-            rec = recipientStore.getAt(i).copy();
-            recipients.push([rec.data.receiveType, rec.data.address]);
-        }
-        htmlEditor.syncValue();
-        var params = {
-            id         : formValues[panelId].id,
-            panelId    : panelId,
-            folderId   : formValues[panelId].folderId,
-            subject    : subjectField.getValue(),
-            message    : htmlEditor.getValue(),
-            accountId  : accountField.getValue(),
-            recipients : recipients
-        };
-
-        cacheFormValues(panelId);
 
         Ext.Ajax.request({
             url            : url,
@@ -633,28 +656,60 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         completeForm(id);
     };
 
+    /**
+     * Callback for successfully saving a draft.
+     * The response will have a property "item" which holds the data for a
+     * de.intrabuild.groupware.email.EmailItemRecord.
+     * The method will publish this event using Ext.ux.util.MessageBus
+     * sending the item along with another object holding the following properties:
+     * groupwareEmailFoldersId - the id of the folder from which this email was originally
+     * edited
+     * id - the id of the draft that was opened to send this email. If the opened draft has not
+     * already been a draft, the id will equal to -1
+     *
+     * @publish de.intrabuild.groupware.email.Editor.draftSaved
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object}          parameters
+     *
+     */
     var onSaveDraftSuccess = function(response, parameters)
     {
-        var data  = parameters.params;
-        var messageId = data.id;
-        var panelId = data.panelId;
-        clearPendingState(panelId);
+        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
 
-        var json = de.intrabuild.util.Json;
-
-        if (!json.isResponseType('integer', response.responseText)) {
-            onSaveDraftFailure(response, parameters, true);
+        if (data == null) {
+            onSaveDraftFailure(response, parameters);
             return;
         }
 
-        var savedId = json.getResponseValue(response.responseText);
+        var params = parameters.params;
+        var panelId = params.panelId;
+        clearPendingState(panelId);
 
-        Ext.apply(data, {
-            from : accountField.store.getById(data.accountId).data.address
+        var itemRecord = de.intrabuild.util.Record.convertTo(
+            de.intrabuild.groupware.email.EmailItemRecord,
+            data.item,
+            data.item.id
+        );
+
+        // allow changing some properties if and only if this draft was created from
+        // scratch
+        var oldDraftId = formValues[panelId].draftId;
+
+        formValues[panelId].draftId = itemRecord.id;
+        formValues[panelId].type    = 'edit';
+        formValues[panelId].groupwareEmailFoldersId = itemRecord.get('groupwareEmailFoldersId');
+
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Editor.draftSaved', {
+            editedEmailItem         : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            itemRecord              : itemRecord,
+            id                      : oldDraftId,
+            groupwareEmailFoldersId : params.groupwareEmailFoldersId
         });
 
+        formValues[panelId].emailItemRecord = itemRecord.copy()
+
         formValues[panelId].dirty = false;
-        form.fireEvent('savedraft', data, savedId);
     };
 
     var onSaveDraftFailure = function(response, parameters, called)
@@ -705,11 +760,14 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         );
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSent', {
+            editedEmailItem         : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
             itemRecord              : itemRecord,
             id                      : params.id,
             groupwareEmailFoldersId : params.groupwareEmailFoldersId,
             type                    : params.type,
         });
+
+        formValues[panelId].emailItemRecord = itemRecord.copy();
 
         contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
         contentPanel.remove(Ext.getCmp(panelId));
@@ -1116,7 +1174,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 type = 'new';
             }
 
-            if (id == undefined) {
+            if (id == undefined || id == null || !id) {
                 id = -1;
             }
 

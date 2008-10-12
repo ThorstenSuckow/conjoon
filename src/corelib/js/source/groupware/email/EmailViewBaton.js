@@ -106,7 +106,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
             return;
         }
 
-        EmailEditorManager.createEditor(emailItem.id, type);
+        EmailEditorManager.createEditor(emailItem.copy(), type);
     };
 
     /**

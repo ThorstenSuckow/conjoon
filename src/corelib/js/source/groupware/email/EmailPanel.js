@@ -282,6 +282,16 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         this
     );
 
+    // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.editor.draftSaved'
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Editor.draftSaved',
+        this.onSaveDraft,
+        this
+    );
+
+    // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.LatestEmailCache.clear'
     Ext.ux.util.MessageBus.subscribe(
         'de.intrabuild.groupware.email.LatestEmailCache.clear',
         this._onLatestCacheClear,
@@ -758,7 +768,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     		if (c != 1 || !record) {
     			return;
     		}
-    		de.intrabuild.groupware.email.EmailEditorManager.createEditor(record.id, type);
+    		de.intrabuild.groupware.email.EmailEditorManager.createEditor(record.copy(), type);
     	}
     },
 
@@ -927,10 +937,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
 	 * id - the id of the message before it was saved
 	 * groupwareEmailFoldersId - id of the folder before it was saved.
-	 *
+	 * type - the type of the email. Can be new, edit, draft
      */
     onSendEmail : function(subject, message)
     {
+        var referencedRecord = message.editedEmailItem;
+
         var emailRecord = message.itemRecord;
         var oldId       = message.id;
         var oldFolderId = message.groupwareEmailFoldersId;
@@ -954,7 +966,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             }
         }
 
-
         /**
          * @todo  it is possible that the tree is not fully loaded yet. Thus we
          * check if the folderOutbox.id is available and exit if that is not the
@@ -970,9 +981,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (oldFolderId == tp.folderOutbox.id) {
             // if grid is visible, remove the record with the specified id!
             if (currFolderId == oldFolderId) {
-                var record = store.getById(oldId);
-			    if (record) {
-				    store.remove(record);
+                if (referencedRecord) {
+				    store.remove(referencedRecord);
 			    }
             } else {
                 // grid for outbox is not visible, simply update pending count
@@ -989,106 +999,83 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // if the visible grid is the grid for sent items, add the recod to the store
         if (emailRecord.get('groupwareEmailFoldersId') == currFolderId) {
             var index = store.findInsertIndex(emailRecord);
-			store.insert(index, emailRecord);
+			store.insert(index, emailRecord.copy());
         }
 
 
     },
 
-	/**
-	 * Callback for a successfull save of an email draft.
+    /**
+     * Callback if a draft was successfully saved. Listens to messages with the subject
+     * "de.intrabuild.groupware.email.editor.draftSaved" as published by Ext.ux.util.MessageBus.
+     *
+     * @param {String} subject The subject of the message
+	 * @param {Object} data The message's data. For the event this listener observes, the
+	 * object will provide the following properties:
+	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
+	 * id - the id of the message before it was saved
+	 * groupwareEmailFoldersId - id of the folder before it was saved.
 	 *
-	 * @param {Object} data An object containing all needed information as
-	 * available in EmailItemRecord
-	 * @param {Number} savedId The id of the draft that was generated while
-	 * being saved as a unique identifer for this draft
-	 */
-	onSaveDraft : function(data, savedId)
+     */
+	onSaveDraft : function(subject, message)
 	{
-		var messageId = data.id;
+	    var tp = this.treePanel;
 
-		var store = this.gridPanel.store;
-
-        // means that the email we were working on was already saved before.
-        // do not update the pending records of the folder then, but update the
-        // record data.
-        if (savedId == messageId) {
-
-        	// update the record with the edited values.
-			// fetch the record with the id out of the store if the actual viewed
-			// folder is the "drafts" folder.
-			if (this.clkNodeId && this.treePanel.folderDraft.id == this.clkNodeId) {
-
-				var rec = store.getById(messageId);
-
-				if (rec) {
-					rec.set('subject', data.subject);
-					rec.set('date', (new Date()).format('m/d/Y H:i:s'));
-					rec.set('from', Ext.util.Format.htmlEncode(data.from));
-					var recips = data.recipients;
-					var parts = null;
-					var cleared = [];
-					for (var i = 0, len = recips.length; i < len; i++) {
-						if (recips[i][0] == 'to') {
-							parts = recips[i][1].split(',').concat(recips[i][1].split(';'));
-
-							for (var a = 0, lena = parts.length; a < lena; a++) {
-								if (parts[a].trim() != "") {
-									cleared.push(Ext.util.Format.htmlEncode(parts[a]));
-								}
-							}
-						}
-					}
-					rec.set('recipients', cleared.join(', '));
-					store.commitChanges();
-					this.gridPanel.selModel.clearSelections();
-				} else {
-					// if we are in here, the record was not found. This could be
-					// because the record was opened for editing but deleted in the meantime.
-					// simply append a new record then (the id was updated serverside, too)
-					var nRecord = new de.intrabuild.groupware.email.EmailItemRecord({
-						'id'		              : savedId,
-						'isAttachment'              : data.isAttachment,
-					    'isRead'                    : false,
-					    'subject'                 : Ext.util.Format.htmlEncode(data.subject),
-					    'from'                    : Ext.util.Format.htmlEncode(data.from),
-					    'date'                    : (new Date()).format('m/d/Y H:i:s'),
-					    'isSpam'                    : false,
-					    'groupwareEmailFoldersId' : this.treePanel.folderDraft.id
-					});
-
-					var index = store.findInsertIndex(nRecord);
-					store.insert(index, nRecord);
-				}
-
-			}
-
+        /**
+         * @todo check if the tree is visible. Return if that is not the case.
+         * This needs to be enhanced
+         */
+        if (!tp.folderDraft) {
             return;
-        } else {
-			// update pending records and add a new record to the grid if the folder
-			// currently being watched equals to the drafts folder!
-			// this basically means that a new record was created so we have to insert that record
-			// into the store, too
-			var tp = this.treePanel;
-            var pendingStore  = tp.pendingItemStore;
-            var pendingRecord = pendingStore.getById(tp.folderDraft.id);
+        }
+
+        var referencedRecord = message.editedEmailItem;
+
+	    var oldDraftId   = message.id;
+	    var oldFolderId  = message.groupwareEmailFoldersId;
+	    var itemRecord   = message.itemRecord;
+	    var newFolderId  = itemRecord.get('groupwareEmailFoldersId');
+	    var currFolderId = this.clkNodeId;
+	    var store        = this.gridPanel.getStore();
+	    var pendingStore  = tp.pendingItemStore;
+
+        // the draft was moved while saving from one draft folder to another
+        // if and only if the oldDraftId does not equal to anything but -1
+ 	    // first off, check whether the folders are the same or not.
+	    // if they differ, try to remove the record out of oldFolderId
+	    // and add the new record to the new folder, but only if the oldDraftId
+	    // was anything but <= 0
+        if (oldFolderId != newFolderId && oldDraftId > 0) {
+            // check if visible
+            // remove the record and update pending nodes
+            if (currFolderId == oldFolderId) {
+                if (referencedRecord) {
+                    store.remove(referencedRecord);
+                }
+            }
+
+            var pendingRecord = pendingStore.getById(oldFolderId);
+            if (pendingRecord) {
+                pendingRecord.set('pending', pendingRecord.data.pending-1);
+            }
+        }
+
+        // if the oldDraftId is equal to the new draft id, we do not need to update
+        // the pending count
+        if (oldDraftId != itemRecord.id) {
+            var pendingRecord = pendingStore.getById(newFolderId);
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
             }
-            var nRecord = new de.intrabuild.groupware.email.EmailItemRecord({
-				'id'		              : savedId,
-				'isAttachment'              : data.isAttachment,
-			    'isRead'                    : false,
-			    'subject'                 : Ext.util.Format.htmlEncode(data.subject),
-			    'from'                    : Ext.util.Format.htmlEncode(data.from),
-			    'date'                    : (new Date()).format('m/d/Y H:i:s'),
-			    'isSpam'                    : false,
-			    'groupwareEmailFoldersId' : this.treePanel.folderDraft.id
-			});
+        }
 
-			var index = store.findInsertIndex(nRecord);
+        if (currFolderId == newFolderId) {
+            if (oldDraftId > 0) {
+                store.remove(referencedRecord);
+            }
 
-			store.insert(index, nRecord);
+            var index = store.findInsertIndex(itemRecord);
+            store.insert(index, itemRecord.copy());
         }
 	},
 
@@ -1096,8 +1083,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     {
     	if (name == 'de.intrabuild.groupware.email.EmailForm') {
     		var form = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.EmailForm')
-    		form.un('savedraft', this.onSaveDraft, this);
-    		form.on('savedraft', this.onSaveDraft, this);
 
     		form.un('movedtooutbox', this.onMoveOutbox, this);
     		form.on('movedtooutbox', this.onMoveOutbox, this);

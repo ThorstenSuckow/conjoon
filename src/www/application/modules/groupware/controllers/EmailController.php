@@ -59,6 +59,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                       // editing emails
                       ->addActionContext('get.recipient', self::CONTEXT_JSON)
                       ->addActionContext('get.draft', self::CONTEXT_JSON)
+                      ->addActionContext('save.draft', self::CONTEXT_JSON)
                       // send emails
                       ->addActionContext('send', self::CONTEXT_JSON)
                       ->initContext();
@@ -1472,6 +1473,159 @@ class Groupware_EmailController extends Zend_Controller_Action {
     }
 
     /**
+     * Saves a draft into the database for later editing /sending.
+     *
+     * Incoming data will be filtered and then saved into the database.
+     *
+     *
+     *
+     */
+    public function saveDraftAction()
+    {
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+
+        $data = array();
+        try {
+            // the filter will transform the "message" into bodyHtml and bodyText, depending
+            // on the passed format. both will only be filled if format equals to "multipart"
+            $filter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+                $_POST,
+                Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput::CONTEXT_DRAFT
+            );
+            $data = $filter->getProcessedData();
+        } catch (Exception $e) {
+             require_once 'Intrabuild/Error.php';
+             $error = Intrabuild_Error::fromFilter($filter, $e);
+             $this->view->success = false;
+             $this->view->error   = $error->getDto();
+             $this->view->item    = null;
+             return;
+        }
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+
+        /**
+         * @see Intrabuild_BeanContext_Inspector
+         */
+        require_once 'Intrabuild/BeanContext/Inspector.php';
+
+        // create the message object here
+        $to  = array();
+        $cc  = array();
+        $bcc = array();
+
+        $toString  = array();
+        $ccString  = array();
+
+        foreach ($data['cc'] as $dcc) {
+            $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+            $cc[]       = $add;
+            $toString[] = $add->__toString();
+        }
+        foreach ($data['bcc'] as $dbcc) {
+            $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+            $bcc[]       = $add;
+        }
+        foreach ($data['to'] as $dto) {
+            $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+            $to[]       = $add;
+            $toString[] = $add->__toString();
+        }
+
+        $toString  = implode(', ', $toString);
+        $ccString  = implode(', ', $ccString);
+
+        $data['cc']  = $cc;
+        $data['to']  = $to;
+        $data['bcc'] = $bcc;
+
+        // get the specified account for the user
+        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Intrabuild/Keys.php';
+
+        $accountDecorator = new Intrabuild_BeanContext_Decorator(
+            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        );
+
+        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        $account = $accountDecorator->getAccountAsEntity($data['groupwareEmailAccountsId'], $userId);
+
+        // no account found?
+        if (!$account) {
+            require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while saving email';
+            $error->message = 'Could not find specified account.';
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $this->view->error   = $error;
+            $this->view->success = false;
+            $this->view->item    = null;
+            return;
+        }
+
+        $draft = Intrabuild_BeanContext_Inspector::create(
+                'Intrabuild_Modules_Groupware_Email_Draft',
+                $data,
+                true
+        );
+
+        /**
+         * @see Intrabuild_BeanContext_Decorator
+         */
+        require_once 'Intrabuild/BeanContext/Decorator.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+
+        $itemDecorator = new Intrabuild_BeanContext_Decorator(
+            'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
+            new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+                array(),
+                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+            ),
+            false
+        );
+
+        $item = $itemDecorator->saveDraftAsDto($draft, $account, $userId);
+
+        if (!$item) {
+            require_once 'Intrabuild/Error.php';
+            $error = new Intrabuild_Error();
+            $error = $error->getDto();;
+            $error->title = 'Error while saving email';
+            $error->message = 'The email could not be stored into the database.';
+            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $this->view->error   = $error;
+            $this->view->success = false;
+            $this->view->item    = null;
+            return;
+        }
+
+
+        $this->view->error   = null;
+        $this->view->success = true;
+        $this->view->item    = $item;
+    }
+
+
+
+    /**
      *
      */
     public function moveToOutboxAction()
@@ -1481,32 +1635,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $response = array('response'  => array(
                               'type'  => 'integer',
                               'value' =>  rand(1, 100000)
-                        ));
-
-        $json = Zend_Json::encode($response, Zend_Json::TYPE_ARRAY);
-
-        echo $json;
-        die();
-
-    }
-
-
-
-
-    /**
-     *
-     */
-    public function saveDraftAction()
-    {
-        require_once 'Zend/Json.php';
-
-        $id = $_POST['id'];
-
-        $id = $id == -1 ? rand(1, 1000000) : $id;
-
-        $response = array('response'  => array(
-                              'type'  => 'integer',
-                              'value' => $id
                         ));
 
         $json = Zend_Json::encode($response, Zend_Json::TYPE_ARRAY);

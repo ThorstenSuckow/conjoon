@@ -361,6 +361,183 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         return $deleted;
     }
 
+    /**
+     * Saves a draft into the database. The draft can either already be existing -
+     * in case the passed id id available in groupware_email_items_outbox - or new, in
+     * which case a whole new record will be created.
+     *
+     * @param Intrabuild_Modules_Groupware_Email_Draft $draft The draft object to save
+     * @param Intrabuild_Modules_Groupware_Email_Account $account The account which was used writing
+     * the draft
+     * @param integer $userId The id of the user for whom the draft gets saved.
+     *
+     * @return array the data from groupware_email_item associated with
+     * the newly saved entry
+     */
+    public function saveDraft(Intrabuild_Modules_Groupware_Email_Draft $draft,
+                              Intrabuild_Modules_Groupware_Email_Account $account,
+                              $userId)
+    {
+        /**
+         * @see Zend_Date
+         */
+        require_once 'Zend/Date.php';
+
+        /**
+         * @see Intrabuild_Util_Array
+         */
+        require_once 'Intrabuild/Util/Array.php';
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipients
+         */
+        require_once 'Intrabuild/Filter/EmailRecipients.php';
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipientsToString
+         */
+        require_once 'Intrabuild/Filter/EmailRecipientsToString.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Outbox
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
+
+        $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
+        $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
+
+        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+        $outboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
+
+        // prepare data to insert or update
+        $outboxUpdate = array(
+            'sent_timestamp'              => '',
+            'raw_header'                  => '',
+            'raw_body'                    => '',
+            'groupware_email_accounts_id' => $account->getId()
+        );
+
+        // get the draft folder. If the folder's meta info is already of type "draft",
+        // no changes will be made to it, otherwise the id of the default sent folder
+        // will be used
+        $draftFolderId = $draft->getGroupwareEmailFoldersId();
+        $info = $folderModel->getMetaInfo($draftFolderId);
+        if ($info != Intrabuild_Modules_Groupware_Email_Folder_Model_Folder::META_INFO_DRAFT) {
+            $draftFolderId = $folderModel->getDraftFolderId($account->getId(), $userId);
+            if ($draftFolderId == 0) {
+                return null;
+            }
+        }
+
+        $date = new Zend_Date($draft->getDate());
+
+        $to           = $draft->getTo();
+        $cc           = $draft->getCc();
+        $bcc          = $draft->getBcc();
+        $fromAddress  = new Intrabuild_Modules_Groupware_Email_Address(
+            array($account->getAddress(), $account->getUserName())
+        );
+
+        $toString     = array();
+        foreach ($to as $recipient) {
+            $toString[] = $recipient->__toString();
+        }
+        $toString = implode(', ', $toString);
+
+        $ccString     = array();
+        foreach ($cc as $recipient) {
+            $ccString[] = $recipient->__toString();
+        }
+        $ccString = implode(', ', $ccString);
+
+        $bccString = array();
+        foreach ($bcc as $recipient) {
+            $bccString[] = $recipient->__toString();
+        }
+        $bccString = implode(', ', $bccString);
+
+        $itemUpdate = array(
+            'date'                       => $date->get(Zend_Date::ISO_8601),
+            'subject'                    => $draft->getSubject(),
+            'from'                       => $fromAddress->__toString(),
+            'reply_to'                   => $account->getReplyAddress(),
+            'to'                         => $toString,
+            'cc'                         => $ccString,
+            'bcc'                        => $bccString,
+            'sender'                     => $emailRecipientsToStringFilter->filter(
+                $emailRecipientsFilter->filter(array(
+                    $fromAddress->__toString()
+                ))
+            ),
+            'recipients'                 => $emailRecipientsToStringFilter->filter(
+                $emailRecipientsFilter->filter(array(
+                    $toString,
+                    $ccString,
+                    $bccString
+                ))
+            ),
+            'references'                 => $draft->getReferences(),
+            'in_reply_to'                => $draft->getInReplyTo(),
+            'content_text_html'          => $draft->getContentTextHtml(),
+            'content_text_plain'         => $draft->getContentTextPlain(),
+            'groupware_email_folders_id' => $draftFolderId
+        );
+
+        // check if we have to update a record or insert a record.
+        $id = $draft->getId();
+
+        $adapter = $this->getAdapter();
+        $adapter->beginTransaction();
+
+        try {
+            if ($id > 0) {
+                // simply update
+                $itemWhere = $this->getAdapter()->quoteInto('id = ?', $id);
+                $this->update($itemUpdate, $itemWhere);
+
+                $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $id);
+                $outboxModel->update($outboxUpdate, $outboxWhere);
+            } else {
+                // insert!
+                $id = $this->insert($itemUpdate);
+                Intrabuild_Util_Array::apply($outboxUpdate, array(
+                    'groupware_email_items_id' => $id
+                ));
+                $outboxModel->insert($outboxUpdate);
+                $flagUpdate = array(
+                    'groupware_email_items_id' => $id,
+                    'user_id'                  => $userId,
+                    'is_read'                  => 1,
+                    'is_spam'                  => 0,
+                    'is_deleted'               => 0
+                );
+
+                /**
+                 * @see Intrabuild_Modules_Groupware_Email_Item_Model_Flag
+                 */
+                require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
+
+                $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
+
+                $flagModel->insert($flagUpdate);
+            }
+        } catch (Exception $e) {
+            $adapter->rollBack();
+            return null;
+        }
+
+        return $this->getItemForUser($id, $userId);
+    }
 
     /**
      * Saves a sent email into the database.
@@ -632,7 +809,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     {
         return array(
             'getEmailItemsFor',
-            'saveSentEmail'
+            'saveSentEmail',
+            'saveDraft'
         );
     }
 

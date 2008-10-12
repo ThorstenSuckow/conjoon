@@ -63,43 +63,43 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      * @param integer $accountId
      * @param integer $userId
      *
-     * @return intger
+     * @return integer
+     *
+     * @deprecated use getSentFolderId() instead
      */
     public function getSentFolder($accountId, $userId)
     {
-        $accountId = (int)$accountId;
-        $userId    = (int)$userId;
+        return $this->_getDefaultFolderIdForType($accountId, $userId, 'sent');
+    }
 
-        if ($accountId == 0 || $userId == 0) {
-            return 0;
-        }
+    /**
+     * Returns the base sent folder id for the specified account and the specified
+     * user, i.e. the folder with type "sent".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     */
+    public function getSentFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType($accountId, $userId, 'sent');
+    }
 
-        $adapter = self::getDefaultAdapter();
-
-        $select = $adapter->select()
-                  ->from('groupware_email_folders', array('folder_id' => 'id'))
-                  ->join(
-                        array('accounts' => 'groupware_email_accounts'),
-                        $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
-                        ' AND ' .
-                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
-                        array())
-                  ->join(
-                        array('folders_accounts' => 'groupware_email_folders_accounts'),
-                        'folders_accounts.groupware_email_folders_id=groupware_email_folders.id '.
-                        ' AND ' .
-                        $adapter->quoteInto('folders_accounts.groupware_email_accounts_id=?', $accountId, 'INTEGER'),
-                        array())
-                  ->where('type = ? ', 'sent');
-                  echo "<pre>";
-
-        $row = $adapter->fetchRow($select);
-
-        if (!$row || empty($row)) {
-            return 0;
-        }
-
-        return $row['folder_id'];
+    /**
+     * Returns the base draft folder id for the specified account and the specified
+     * user, i.e. the folder with type "draft".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     */
+    public function getDraftFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType($accountId, $userId, 'draft');
     }
 
 
@@ -933,6 +933,46 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
 
         return $row;
     }
+
+    /**
+     * @return intger
+     */
+    protected function _getDefaultFolderIdForType($accountId, $userId, $type)
+    {
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($accountId == 0 || $userId == 0) {
+            return 0;
+        }
+
+        $adapter = self::getDefaultAdapter();
+
+        $select = $adapter->select()
+                  ->from('groupware_email_folders', array('folder_id' => 'id'))
+                  ->join(
+                        array('accounts' => 'groupware_email_accounts'),
+                        $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
+                        ' AND ' .
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                        array())
+                  ->join(
+                        array('folders_accounts' => 'groupware_email_folders_accounts'),
+                        'folders_accounts.groupware_email_folders_id=groupware_email_folders.id '.
+                        ' AND ' .
+                        $adapter->quoteInto('folders_accounts.groupware_email_accounts_id=?', $accountId, 'INTEGER'),
+                        array())
+                  ->where('type = ? ', $type);
+
+        $row = $adapter->fetchRow($select);
+
+        if (!$row || empty($row)) {
+            return 0;
+        }
+
+        return $row['folder_id'];
+    }
+
 
 // -------- interface Intrabuild_BeanContext_Decoratable
 

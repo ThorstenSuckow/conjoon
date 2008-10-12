@@ -36,7 +36,7 @@ require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftFormatFilter.
 
 /**
  * An input-filter class defining all validators and filters needed when
- * processing input data for mutating or creating feed items.
+ * processing input data for mutating or creating email drafts.
  *
  * @uses Intrabuild_Filter_Input
  * @package    Intrabuild_Filter_Input
@@ -45,6 +45,11 @@ require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftFormatFilter.
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabuild_Filter_Input {
+
+    /**
+     * Minor strict context which allows for leaving to, cc, bcc empty
+     */
+    const CONTEXT_DRAFT = 'draft';
 
     protected $_presence = array(
 
@@ -62,7 +67,22 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             'cc',
             'bcc',
             'type'
-        )
+        ),
+        self::CONTEXT_DRAFT => array(
+            'format',
+            'id',
+            'date',
+            'groupwareEmailAccountsId',
+            'groupwareEmailFoldersId',
+            'subject',
+            'inReplyTo',
+            'references',
+            'message',
+            'to',
+            'cc',
+            'bcc',
+            'type'
+        )        
 
     );
 
@@ -172,7 +192,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftFormatFilter()
         );
 
-        if ($this->_data['to'] == "" && $this->_data['cc'] == "" && $this->_data['bcc'] == "") {
+        if ($this->_context == self::CONTEXT_CREATE && $this->_data['to'] == "" && $this->_data['cc'] == "" && $this->_data['bcc'] == "") {
             $this->_validators['to']['allowEmpty'] = false;
         }
 
