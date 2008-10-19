@@ -322,3 +322,5 @@ ALTER TABLE `groupware_email_items_references` ADD INDEX `references` ( `groupwa
 ADD INDEX `groupware_email_folders_id` ( `groupware_email_folders_id` , `date` );
 
 ALTER TABLE `groupware_email_folders` DROP INDEX `name`;
+
+ALTER TABLE `groupware_email_items_references` ADD `is_pending` BOOL NOT NULL DEFAULT '0';

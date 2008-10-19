@@ -159,7 +159,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 ->joinLeft(
                         array('reference' => 'groupware_email_items_references'),
                         'reference.reference_items_id=items.id '.
-                        'AND '.
+                        ' AND ' .
+                        $adapter->quoteInto('reference.is_pending=?', 0, 'INTEGER') .
+                        ' AND '.
                         $adapter->quoteInto('reference.user_id=?', $userId, 'INTEGER'),
                         array('referenced_as_types' => 'GROUP_CONCAT(DISTINCT reference.reference_type SEPARATOR \',\')' )
                  )
@@ -347,11 +349,14 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
             require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
             require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
             require_once 'Intrabuild/Modules/Groupware/Email/Attachment/Model/Attachment.php';
+            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
 
+            $referencesModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
             $inboxModel      = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
             $outboxModel     = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
             $attachmentModel = new Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment();
 
+            $referencesModel->delete('is_pending=1 AND user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $flagModel->delete('user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $attachmentModel->delete('groupware_email_items_id IN ('.$idString.')');
             $inboxModel->delete('groupware_email_items_id IN ('.$idString.')');
@@ -540,6 +545,201 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     }
 
     /**
+     * Saves a draft and moves it into the outbox folder. The draft can either
+     * already be existing - in case the passed id id available in
+     * groupware_email_items_outbox - or new, in which case a whole new record
+     * will be created.
+     * If the type is anything but new or an empty string, the referenced message
+     * will be saved in the reference-table, but still with the flag is_pending
+     * set to true, which will be set to false once the email is sent.
+     *
+     * @param Intrabuild_Modules_Groupware_Email_Draft $draft The draft object to save
+     * @param Intrabuild_Modules_Groupware_Email_Account $account The account which was used writing
+     * the draft
+     * @param integer $userId The id of the user for whom the draft gets saved.
+     * @param string $type The context in which the draft was moved to the outbox,
+     * either 'reply', 'reply_all', 'forward' or 'new' (or empty string)
+     *
+     * @return array the data from groupware_email_item associated with
+     * the newly saved entry
+     */
+    public function moveDraftToOutbox(Intrabuild_Modules_Groupware_Email_Draft $draft,
+                              Intrabuild_Modules_Groupware_Email_Account $account,
+                              $userId, $type)
+    {
+        /**
+         * @see Zend_Date
+         */
+        require_once 'Zend/Date.php';
+
+        /**
+         * @see Intrabuild_Util_Array
+         */
+        require_once 'Intrabuild/Util/Array.php';
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipients
+         */
+        require_once 'Intrabuild/Filter/EmailRecipients.php';
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipientsToString
+         */
+        require_once 'Intrabuild/Filter/EmailRecipientsToString.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Outbox
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_References
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
+
+
+        $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
+        $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
+
+        $folderModel     = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+        $outboxModel     = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
+        $referencesModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
+
+        $referenceId = $draft->getId() < 0 ? 0 : $draft->getId();
+
+        // prepare data to insert or update
+        $outboxUpdate = array(
+            'sent_timestamp'              => '',
+            'raw_header'                  => '',
+            'raw_body'                    => '',
+            'groupware_email_accounts_id' => $account->getId()
+        );
+
+        // get the outbox folder.
+        $outboxId = $folderModel->getOutboxFolderId($account->getId(), $userId);
+        if ($outboxId == 0) {
+            return null;
+        }
+
+        $date = new Zend_Date($draft->getDate());
+
+        $to           = $draft->getTo();
+        $cc           = $draft->getCc();
+        $bcc          = $draft->getBcc();
+        $fromAddress  = new Intrabuild_Modules_Groupware_Email_Address(
+            array($account->getAddress(), $account->getUserName())
+        );
+
+        $toString     = array();
+        foreach ($to as $recipient) {
+            $toString[] = $recipient->__toString();
+        }
+        $toString = implode(', ', $toString);
+
+        $ccString     = array();
+        foreach ($cc as $recipient) {
+            $ccString[] = $recipient->__toString();
+        }
+        $ccString = implode(', ', $ccString);
+
+        $bccString = array();
+        foreach ($bcc as $recipient) {
+            $bccString[] = $recipient->__toString();
+        }
+        $bccString = implode(', ', $bccString);
+
+        $itemUpdate = array(
+            'date'                       => $date->get(Zend_Date::ISO_8601),
+            'subject'                    => $draft->getSubject(),
+            'from'                       => $fromAddress->__toString(),
+            'reply_to'                   => $account->getReplyAddress(),
+            'to'                         => $toString,
+            'cc'                         => $ccString,
+            'bcc'                        => $bccString,
+            'sender'                     => $emailRecipientsToStringFilter->filter(
+                $emailRecipientsFilter->filter(array(
+                    $fromAddress->__toString()
+                ))
+            ),
+            'recipients'                 => $emailRecipientsToStringFilter->filter(
+                $emailRecipientsFilter->filter(array(
+                    $toString,
+                    $ccString,
+                    $bccString
+                ))
+            ),
+            'references'                 => $draft->getReferences(),
+            'in_reply_to'                => $draft->getInReplyTo(),
+            'content_text_html'          => $draft->getContentTextHtml(),
+            'content_text_plain'         => $draft->getContentTextPlain(),
+            'groupware_email_folders_id' => $outboxId
+        );
+
+        $adapter = $this->getAdapter();
+        $adapter->beginTransaction();
+
+        try {
+            // insert!
+            $id = $this->insert($itemUpdate);
+            Intrabuild_Util_Array::apply($outboxUpdate, array(
+                'groupware_email_items_id' => $id
+            ));
+            $outboxModel->insert($outboxUpdate);
+            $flagUpdate = array(
+                'groupware_email_items_id' => $id,
+                'user_id'                  => $userId,
+                'is_read'                  => 1,
+                'is_spam'                  => 0,
+                'is_deleted'               => 0
+            );
+
+            switch ($type) {
+                case self::REFERENCE_TYPE_REPLY:
+                case self::REFERENCE_TYPE_REPLY_ALL:
+                case self::REFERENCE_TYPE_FORWARD:
+                    if ($referenceId != 0) {
+                        $referencesUpdate = array(
+                            'groupware_email_items_id' => $id,
+                            'user_id'                  => $userId,
+                            'reference_items_id'       => $referenceId,
+                            'reference_type'           => $type,
+                            'is_pending'               => 1
+                        );
+
+                        $referencesModel->insert($referencesUpdate);
+                    }
+                break;
+            }
+
+            /**
+             * @see Intrabuild_Modules_Groupware_Email_Item_Model_Flag
+             */
+            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
+
+            $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
+
+            $flagModel->insert($flagUpdate);
+
+        } catch (Exception $e) {
+            $adapter->rollBack();
+            return null;
+        }
+
+        return $this->getItemForUser($id, $userId);
+    }
+
+
+    /**
      * Saves a sent email into the database.
      *
      * @param Intrabuild_Modules_Groupware_Email_Draft $message
@@ -693,6 +893,20 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                     return array();
                 }
 
+                // the message might have referenced an item when it was created.
+                // look up entry in reference table and set this to is_pending = false
+                $referencesWhere = $referencesModel->getAdapter()->quoteInto(
+                                       'groupware_email_items_id = ?',
+                                       $messageId
+                                   ) . ' AND '
+                                   . $referencesModel->getAdapter()->quoteInto(
+                                         'user_id = ?',
+                                         $userId
+                                   );
+                $referenceModel->update(array(
+                    'is_pending' => 0
+                ), $referencesWhere);
+
                 $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $messageId);
                 $outboxModel->update($outboxUpdate, $where);
 
@@ -809,6 +1023,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     {
         return array(
             'getEmailItemsFor',
+            'moveDraftToOutbox',
             'saveSentEmail',
             'saveDraft'
         );

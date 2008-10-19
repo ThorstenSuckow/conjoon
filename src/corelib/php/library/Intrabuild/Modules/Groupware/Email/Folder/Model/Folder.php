@@ -99,9 +99,23 @@ class Intrabuild_Modules_Groupware_Email_Folder_Model_Folder
      */
     public function getDraftFolderId($accountId, $userId)
     {
-        return $this->_getDefaultFolderIdForType($accountId, $userId, 'draft');
+        return $this->_getDefaultFolderIdForType($accountId, $userId, self::META_INFO_DRAFT);
     }
 
+    /**
+     * Returns the base outbox folder id for the specified account and the specified
+     * user, i.e. the folder with type "outbox".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     */
+    public function getOutboxFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType($accountId, $userId, self::META_INFO_OUTBOX);
+    }
 
     /**
      * Returns the meta info for the folder with the specified id.

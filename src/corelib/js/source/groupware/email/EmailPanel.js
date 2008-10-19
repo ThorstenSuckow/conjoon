@@ -297,6 +297,14 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         this._onLatestCacheClear,
         this
     );
+
+    // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.outbox.emailMoved'
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.outbox.emailMoved',
+        this.onMoveOutbox,
+        this
+    );
 };
 
 
@@ -863,67 +871,50 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * draft.
      * In either way, the pending record count from the outbox-folder has to be
      * updated.
-     * Secondly, the pending record count has to be updated from the draft folder,
-     * if the moved email was loaded from there.
-     * Additionally, the view of the grid has to be updated, depending on the currently
-     * opened folder.
-     * If the currently opened folder is the drafts folder and the email has been opened
-     * from it, search for the according record and remove it from there.
      * If the currently opened folder is the outbox folder, create a new record based
      * on the passed data and add it to the store.
      *
+     * @param {String} subject The subject of the message
+	 * @param {Object} data The message's data. For the event this listener observes, the
+	 * object will provide the following properties:
+	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
+	 * id - the id of the message before it was saved
+	 * groupwareEmailFoldersId - id of the folder before it was saved.
+	 * type - the type of the email. Can be new, edit, draft
+	 * referencedItem - the email itenm that was referenced creating the email
+	 * that was moved to the outbox
      *
      */
-    onMoveOutbox : function(data, savedId)
+    onMoveOutbox : function(subject, message)
     {
-    	var currFolderId = this.clkNodeId;
-    	var tp = this.treePanel;
-    	var draftId = tp.folderDraft.id;
-    	var outboxId  = tp.folderOutbox.id;
-    	var messageId = data.id;
-    	var folderId = data.folderId;
+	    var tp = this.treePanel;
 
-    	// first off, update the pending records of the outbox,
-    	// which has to be done in any case
-    	var pendingStore  = tp.pendingItemStore;
-        var pendingRecord = pendingStore.getById(outboxId);
+        /**
+         * @todo check if the tree is visible. Return if that is not the case.
+         * This needs to be enhanced
+         */
+        if (!tp.folderDraft) {
+            return;
+        }
+
+        var itemRecord   = message.itemRecord;
+        var folderId     = itemRecord.get('groupwareEmailFoldersId');
+        var currFolderId = this.clkNodeId;
+        var store        = this.gridPanel.getStore();
+	    var pendingStore = tp.pendingItemStore;
+
+	    // pending count will be updated in every case
+        var pendingRecord = pendingStore.getById(folderId);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+1);
         }
 
-        // check if the drafts folder is open. If the email was opened from
-        // drafts, remove the record from the grid.
-        if (folderId == draftId) {
-
-        	var pendingRecord = pendingStore.getById(draftId);
-	        if (pendingRecord) {
-	            pendingRecord.set('pending', pendingRecord.data.pending-1);
-	        }
-
-        	// remove the record
-        	if (currFolderId == draftId) {
-        		var record = store.getById(messageId);
-				if (record) {
-					store.remove(record);
-				}
-        	}
-
-    	} else if (currFolderId == outboxId) {
-        	// add a new record
-        	var store = this.gridPanel.store;
-			var nRecord = new de.intrabuild.groupware.email.EmailItemRecord({
-				'id'		               : savedId,
-				'isAttachment'               : data.isAttachment,
-			    'isRead'                     : true,
-			    'subject'                  : Ext.util.Format.htmlEncode(data.subject),
-			    'from'                     : Ext.util.Format.htmlEncode(data.from),
-			    'date'                     : (new Date()).format('m/d/Y H:i:s'),
-			    'isSpam'                     : false,
-			    'groupwareEmailFoldersId'  : outboxId
-			});
-
-			var index = store.findInsertIndex(nRecord);
-			store.insert(index, nRecord);
+        // create a record for the current grid if and only if
+        // the currently opened folder equals to the folder the email
+        // was moved to
+        if (folderId == currFolderId) {
+            var index = store.findInsertIndex(itemRecord);
+            store.insert(index, itemRecord.copy());
         }
     },
 
@@ -941,7 +932,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     onSendEmail : function(subject, message)
     {
-        var referencedRecord = message.editedEmailItem;
+        var referencedRecord = message.referencedItem;
 
         var emailRecord = message.itemRecord;
         var oldId       = message.id;
@@ -1029,7 +1020,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return;
         }
 
-        var referencedRecord = message.editedEmailItem;
+        var referencedRecord = message.referencedItem;
 
 	    var oldDraftId   = message.id;
 	    var oldFolderId  = message.groupwareEmailFoldersId;
@@ -1078,26 +1069,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             store.insert(index, itemRecord.copy());
         }
 	},
-
-    onRegister : function(name, object)
-    {
-    	if (name == 'de.intrabuild.groupware.email.EmailForm') {
-    		var form = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.EmailForm')
-
-    		form.un('movedtooutbox', this.onMoveOutbox, this);
-    		form.on('movedtooutbox', this.onMoveOutbox, this);
-    	}
-        /*
-        listener gets added in onPanelRender, so we might not need this
-        if (name != 'de.intrabuild.groupware.email.QuickPanel') {
-            return;
-        }
-
-        var sub = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.QuickPanel');
-
-        sub.store.un('update', this.onQuickPanelUpdate, this);
-        sub.store.on('update', this.onQuickPanelUpdate, this);*/
-    },
 
     onPanelRender : function()
     {

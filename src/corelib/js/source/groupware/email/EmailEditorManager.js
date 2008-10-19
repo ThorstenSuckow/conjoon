@@ -425,21 +425,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var onOutbox = function()
     {
-        var recipients = [];
-
-        var validRecipients = false;
-
         recipientsGrid.stopEditing();
-
-        for (var i = 0, max_i = recipientStore.getCount(); i < max_i; i++) {
-            recipients.push(recipientStore.getAt(i).copy());
-            if (recipients[i].data.address.trim() != "") {
-                validRecipients = true;
-            }
-        }
+        var params = _prepareDataToSend(activePanel.id);
 
         // check if any valid email-addresses have been submitted
-        if (!validRecipients) {
+        if (params.to == '' && params.cc == '' && params.bcc == '') {
             var msg  = Ext.MessageBox;
 
             msg.show({
@@ -470,17 +460,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         controlBar.setDisabled(true);
 
         var url = '/groupware/email/move.to.outbox/format/json';
-        htmlEditor.syncValue();
-        var params = {
-            panelId    : panelId,
-            folderId   : formValues[panelId].folderId,
-            subject    : subjectField.getValue(),
-            message    : htmlEditor.getValue(),
-            accountId  : accountField.getValue(),
-            recipients : recipients
-        };
-
-        cacheFormValues(panelId);
 
         Ext.Ajax.request({
             url            : url,
@@ -701,7 +680,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         formValues[panelId].groupwareEmailFoldersId = itemRecord.get('groupwareEmailFoldersId');
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Editor.draftSaved', {
-            editedEmailItem         : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
             itemRecord              : itemRecord,
             id                      : oldDraftId,
             groupwareEmailFoldersId : params.groupwareEmailFoldersId
@@ -760,7 +739,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         );
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSent', {
-            editedEmailItem         : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
             itemRecord              : itemRecord,
             id                      : params.id,
             groupwareEmailFoldersId : params.groupwareEmailFoldersId,
@@ -795,23 +774,32 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var onOutboxSuccess = function(response, parameters)
     {
-        var data = parameters.params;
-        var panelId = data.panelId;
-        clearPendingState(panelId);
+        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
 
-        var json = de.intrabuild.util.Json;
-
-        if (!json.isResponseType('integer', response.responseText)) {
-            onSendFailure(response, parameters, true);
+        if (data == null) {
+            onSendFailure(response, parameters);
             return;
         }
-        var savedId = json.getResponseValue(response.responseText);
 
-        Ext.apply(data, {
-            from : accountField.store.getById(data.accountId).data.address
+        var params = parameters.params;
+        var panelId = params.panelId;
+        clearPendingState(panelId);
+
+        var itemRecord = de.intrabuild.util.Record.convertTo(
+            de.intrabuild.groupware.email.EmailItemRecord,
+            data.item,
+            data.item.id
+        );
+
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.outbox.emailMoved', {
+            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            itemRecord              : itemRecord,
+            id                      : params.id,
+            groupwareEmailFoldersId : params.groupwareEmailFoldersId,
+            type                    : params.type,
         });
 
-        form.fireEvent('movedtooutbox', data, savedId);
+        formValues[panelId].emailItemRecord = itemRecord.copy();
 
         contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
         contentPanel.remove(Ext.getCmp(panelId));
