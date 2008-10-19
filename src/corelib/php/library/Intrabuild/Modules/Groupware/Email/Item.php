@@ -57,6 +57,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     private $isAttachment;
     private $isSpam;
     private $isDraft;
+    private $isOutboxPending;
     private $groupwareEmailFoldersId;
     private $referencedAsTypes;
 
@@ -80,6 +81,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function isAttachment(){return $this->isAttachment;}
     public function isSpam(){return $this->isSpam;}
     public function isDraft(){return $this->isDraft;}
+    public function isOutboxPending(){return $this->isOutboxPending;}
     public function getGroupwareEmailFoldersId(){return $this->groupwareEmailFoldersId;}
 
     public function setId($id){$this->id = $id;}
@@ -92,6 +94,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
     public function setAttachment($isAttachment){$this->isAttachment = $isAttachment;}
     public function setSpam($isSpam){$this->isSpam = $isSpam;}
     public function setDraft($isDraft){$this->isDraft = $isDraft;}
+    public function setOutboxPending($isOutboxPending){$this->isOutboxPending = $isOutboxPending;}
     public function setGroupwareEmailFoldersId($groupwareEmailFoldersId){$this->groupwareEmailFoldersId = $groupwareEmailFoldersId;}
 
 
@@ -167,6 +170,7 @@ class Intrabuild_Modules_Groupware_Email_Item implements Intrabuild_BeanContext,
             'isAttachment'      => $this->isAttachment,
             'isSpam'            => $this->isSpam,
             'isDraft'           => $this->isDraft,
+            'isOutboxPending'   => $this->isOutboxPending,
             'referencedAsTypes' => $this->referencedAsTypes,
             'groupwareEmailFoldersId' => $this->groupwareEmailFoldersId
         );

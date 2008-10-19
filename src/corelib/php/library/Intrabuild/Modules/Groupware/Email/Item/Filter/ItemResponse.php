@@ -47,6 +47,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse extends Intrab
             'isAttachment',
             'isSpam',
             'isDraft',
+            'isOutboxPending',
             'referencedAsTypes',
             'groupwareEmailFoldersId'
         )

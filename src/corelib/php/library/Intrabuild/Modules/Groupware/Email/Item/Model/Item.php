@@ -168,7 +168,10 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 ->joinLeft(
                     array('folders' => 'groupware_email_folders'),
                     '`folders`.`id` = `items`.`groupware_email_folders_id`',
-                    array('is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'))
+                    array(
+                        'is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'),
+                        'is_outbox_pending' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'outbox', 'STRING')
+                    )
                 )
                 ->joinLeft(
                     array('attachments' => 'groupware_email_items_attachments'),

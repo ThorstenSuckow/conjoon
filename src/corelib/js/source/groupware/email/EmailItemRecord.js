@@ -12,5 +12,6 @@ de.intrabuild.groupware.email.EmailItemRecord = Ext.data.Record.create([
     {name : 'date',               type : 'date', dateFormat : 'Y-m-d H:i:s'},
     {name : 'isSpam',             type : 'boolean'},
     {name : 'isDraft',            type : 'boolean'},
+    {name : 'isOutboxPending',    type : 'boolean'},
     {name : 'groupwareEmailFoldersId',  type : 'int'}
 ]);
