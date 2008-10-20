@@ -1264,6 +1264,23 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             [c.scrollLeft+this.el.getX(), Ext.fly(rowEl).getY()];
     },
 
+    /**
+     * Return strue if the passed record is in the visible rect of this view.
+     *
+     * @param {Ext.data.Record} record
+     *
+     * @return {Boolean} true if the record is rendered in the view, otherwise false.
+     */
+    isRecordRendered : function(record)
+    {
+        var ind = this.ds.indexOf(record);
+
+        if (ind >= this.rowIndex && ind < this.rowIndex+this.visibleRows) {
+            return true;
+        }
+
+        return false;
+    },
 
     /**
      * Checks if the passed argument <tt>cursor</tt> lays within a renderable

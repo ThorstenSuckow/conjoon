@@ -1,4 +1,6 @@
-﻿ - enhancement: removed programmatically invoking scroll in IE when the grid is rendered,
+﻿ - enhancement: (GridView.js) added method "isRecordRendered()" to check whether the passed
+record is currently within the visible rect of the grid's view
+ - enhancement: removed programmatically invoking scroll in IE when the grid is rendered,
 since this was fixed due to the css changes in a previously version
  - fixed: (RowSelectionModel.js) method "isSelected()" would lose it's original argument
 while processing it, which could lead to erroneous behavior
