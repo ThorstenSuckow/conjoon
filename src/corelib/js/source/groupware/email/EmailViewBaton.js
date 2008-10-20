@@ -239,7 +239,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
                     var toolbar = tbarManager.get('de.intrabuild.groupware.email.EmailView.toolbar');
 
-                    if (panel.emailItem.data.is_draft) {
+                    if (panel.emailItem.get('isDraft')) {
                         toolbar.items.get(3).show();
                         toolbar.items.get(4).show();
                     } else {
