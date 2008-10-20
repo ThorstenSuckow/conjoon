@@ -554,6 +554,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
 
         var panelId = activePanel.id;
+
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.beforeEmailSent', {
+            itemRecord : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null)
+        });
+
         formValues[panelId].disabled = true;
         formValues[panelId].pending  = true;
 
@@ -765,6 +770,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (called !== true) {
             clearPendingState(parameters.params.panelId);
         }
+
+        var panelId = parameters.params.panelId;
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSentFailure', {
+            itemRecord : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null)
+        });
 
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
             title : de.intrabuild.Gettext.gettext("Error - Could not send message")
