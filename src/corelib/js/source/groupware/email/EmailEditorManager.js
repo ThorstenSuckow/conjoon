@@ -680,7 +680,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         formValues[panelId].groupwareEmailFoldersId = itemRecord.get('groupwareEmailFoldersId');
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Editor.draftSaved', {
-            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
             itemRecord              : itemRecord,
             id                      : oldDraftId,
             groupwareEmailFoldersId : params.groupwareEmailFoldersId
@@ -739,7 +739,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         );
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSent', {
-            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
             itemRecord              : itemRecord,
             id                      : params.id,
             groupwareEmailFoldersId : params.groupwareEmailFoldersId,
@@ -792,7 +792,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         );
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.outbox.emailMoved', {
-            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord.copy() : null),
+            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
             itemRecord              : itemRecord,
             id                      : params.id,
             groupwareEmailFoldersId : params.groupwareEmailFoldersId,

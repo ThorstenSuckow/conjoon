@@ -776,7 +776,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     		if (c != 1 || !record) {
     			return;
     		}
-    		de.intrabuild.groupware.email.EmailEditorManager.createEditor(record.copy(), type);
+    		de.intrabuild.groupware.email.EmailEditorManager.createEditor(record, type);
     	}
     },
 
@@ -1061,12 +1061,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         if (currFolderId == newFolderId) {
-            if (oldDraftId > 0) {
-                store.remove(referencedRecord);
-            }
-
-            var index = store.findInsertIndex(itemRecord);
-            store.insert(index, itemRecord.copy());
+            this._replaceAndRefreshIfNeeded(referencedRecord, itemRecord);
         }
 	},
 
@@ -1412,6 +1407,41 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         this.processQueue();
+    },
+
+    /**
+     * Helper function for the varios editor-messages published by the MessageBus.
+     * The method will basically change an old record from th grid with a new one,
+     * such as after a draft has been edited and changed again. The Grid's view will
+     * only be refreshed if one of the records is in the visible rect.
+     *
+     * @param {Ext.data.Record} referencedRecord The record thazt was used for editing
+     * and is not up to date anymore due to changes made.
+     * @param {Ext.data.Record} itemRecord The new version of referencedRecord, after
+     * editing
+     *
+     * @private
+     */
+    _replaceAndRefreshIfNeeded : function(referencedRecord, itemRecord)
+    {
+        var store = this.gridPanel.getStore();
+        // silently remove the old record, then insert the new one.
+        // Afterwards, refresh the grid
+        // we need to repaint the visible rect of the grid if the
+        // referencedRecord is currently in the visible rect
+        var view    = this.gridPanel.getView();
+        var refresh = view.isRecordRendered(referencedRecord);
+        store.suspendEvents();
+        store.remove(referencedRecord);
+        // calling this method will the store force to resume the event firing
+        var ind = store.findInsertIndex(itemRecord);
+        store.suspendEvents();
+        var itemCopy = itemRecord.copy();
+        store.insert(ind, itemCopy);
+        store.resumeEvents();
+        if (refresh || view.isRecordRendered(itemCopy)) {
+            view.refresh(false);
+        }
     }
 
 

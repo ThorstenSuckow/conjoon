@@ -84,13 +84,13 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 editDraftButton
             ]));
 
-            separator.render = function(td){
+            var func = function(td){
                 this.td = td;
                 td.appendChild(this.el);
                 td.style.display = "none";
             };
 
-
+            separator.render = func;
 
             tbarManager.register('de.intrabuild.groupware.email.EmailView.toolbar', toolbar);
         }
@@ -106,7 +106,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
             return;
         }
 
-        EmailEditorManager.createEditor(emailItem.copy(), type);
+        EmailEditorManager.createEditor(emailItem, type);
     };
 
     /**
@@ -239,12 +239,15 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
                     var toolbar = tbarManager.get('de.intrabuild.groupware.email.EmailView.toolbar');
 
-                    if (panel.emailItem.get('isDraft')) {
-                        toolbar.items.get(3).show();
-                        toolbar.items.get(4).show();
+                    var tItems = toolbar.items;
+                    var eItem = panel.emailItem;
+
+                    if (eItem.get('isDraft')) {
+                        tItems.get(3).show();
+                        tItems.get(4).show();
                     } else {
-                        toolbar.items.get(3).hide();
-                        toolbar.items.get(4).hide();
+                        tItems.get(3).hide();
+                        tItems.get(4).hide();
                     }
                 });
 
