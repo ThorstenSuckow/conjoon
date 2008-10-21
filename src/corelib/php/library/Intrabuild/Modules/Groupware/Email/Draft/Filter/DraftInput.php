@@ -82,7 +82,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             'cc',
             'bcc',
             'type'
-        )        
+        )
 
     );
 
@@ -192,7 +192,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftFormatFilter()
         );
 
-        if ($this->_context == self::CONTEXT_CREATE && $this->_data['to'] == "" && $this->_data['cc'] == "" && $this->_data['bcc'] == "") {
+        if ($this->_context == self::CONTEXT_CREATE && !empty($this->_data) && $this->_data['to'] == "" && $this->_data['cc'] == "" && $this->_data['bcc'] == "") {
             $this->_validators['to']['allowEmpty'] = false;
         }
 

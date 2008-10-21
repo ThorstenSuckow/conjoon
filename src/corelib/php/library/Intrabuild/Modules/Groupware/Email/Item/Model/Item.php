@@ -802,6 +802,13 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
          */
         require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
 
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_References
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
+
+        $referencesModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
+
         $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
         $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
 
@@ -833,6 +840,11 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 break;
 
             }
+        }
+
+        // adjust the message type depending on the type
+        if ($type == 'reply' || $type == 'reply_all' || $type == 'forward') {
+            $messageType = 'scratch';
         }
 
         // prefill update/insert arrays
@@ -906,12 +918,12 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                                          'user_id = ?',
                                          $userId
                                    );
-                $referenceModel->update(array(
+                $referencesModel->update(array(
                     'is_pending' => 0
                 ), $referencesWhere);
 
                 $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $messageId);
-                $outboxModel->update($outboxUpdate, $where);
+                $outboxModel->update($outboxUpdate, $outboxWhere);
 
                 $itemWhere = $this->getAdapter()->quoteInto('id = ?', $messageId);
                 $this->update($itemUpdate, $itemWhere);
@@ -981,12 +993,8 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                             'reference_items_id'       => $referenceId,
                             'reference_type'           => $referenceType
                         );
-                        /**
-                         * @see Intrabuild_Modules_Groupware_Email_Item_Model_References
-                         */
-                        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
-                        $referenceModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
-                        $referenceModel->insert($referenceUpdate);
+
+                        $referencesModel->insert($referenceUpdate);
                     }
 
                     $flagUpdate = array(

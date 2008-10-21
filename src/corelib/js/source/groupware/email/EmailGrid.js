@@ -237,18 +237,22 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
     {
         this.createContextMenu();
 
-        this.menu.items.get(9).setDisabled(true);
-        this.menu.items.get(9).setIconClass('de-intrabuild-groupware-selectionsLoading');
+        this.menu.items.get(10).setDisabled(true);
+        this.menu.items.get(10).setIconClass('de-intrabuild-groupware-selectionsLoading');
 
-        var subItems  = this.menu.items.get(7).menu.items;
+        var subItems  = this.menu.items.get(8).menu.items;
         subItems.get(0).setDisabled(true);
         subItems.get(0).setIconClass('de-intrabuild-groupware-selectionsLoading');
         subItems.get(1).setDisabled(true);
         subItems.get(1).setIconClass('de-intrabuild-groupware-selectionsLoading');
+
+
         subItems.get(3).setDisabled(true);
         subItems.get(3).setIconClass('de-intrabuild-groupware-selectionsLoading');
         subItems.get(4).setDisabled(true);
         subItems.get(4).setIconClass('de-intrabuild-groupware-selectionsLoading');
+
+
 
     },
 
@@ -256,10 +260,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
     {
         this.createContextMenu();
 
-        this.menu.items.get(9).setDisabled(false);
-        this.menu.items.get(9).setIconClass('');
+        this.menu.items.get(10).setDisabled(false);
+        this.menu.items.get(10).setIconClass('');
 
-        var subItems  = this.menu.items.get(7).menu.items;
+        var subItems  = this.menu.items.get(8).menu.items;
         subItems.get(0).setDisabled(false);
         subItems.get(0).setIconClass('');
         subItems.get(1).setDisabled(false);
@@ -300,22 +304,34 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
         }
 
         var menuItems = this.menu.items;
-        var subItems  = menuItems.get(7).menu.items;
+        var subItems  = menuItems.get(8).menu.items;
 
         // mark as spam has to be disabled in outbox, drafts and sent
         var tp = this.controller.treePanel;
         var clkNodeId = this.controller.clkNodeId;
         var isDrafts = clkNodeId == tp.folderDraft.id;
+        var isOutbox = clkNodeId == tp.folderOutbox.id;
         var disableSpamItems = isDrafts || clkNodeId == tp.folderOutbox.id  ||
                                 clkNodeId == tp.folderSent.id;
-        var editDraft = menuItems.get(1);
-        var openView = menuItems.get(0);
+        var sendNowItem = menuItems.get(1);
+        var editDraft   = menuItems.get(2);
+        var openView    = menuItems.get(0);
+
+        var replyItem    = menuItems.get(4);
+        var replyAllItem = menuItems.get(5);
+        var forwardItem  = menuItems.get(6);
+
         editDraft.setVisible(isDrafts);
+        sendNowItem.setVisible(isOutbox);
 
         if (selModel.getCount() == 1) {
             var ctxRecord = selModel.getSelected().data;
             openView.setDisabled(false);
             editDraft.setDisabled(false);
+            sendNowItem.setDisabled(false);
+            replyItem.setDisabled(false);
+            replyAllItem.setDisabled(false);
+            forwardItem.setDisabled(false);
             subItems.get(0).setDisabled((ctxRecord.isRead == true));
             subItems.get(1).setDisabled(!(ctxRecord.isRead == true));
             if (nodeType === 'spam') {
@@ -329,6 +345,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
         } else {
             openView.setDisabled(true);
             editDraft.setDisabled(true);
+            sendNowItem.setDisabled(true);
+            replyItem.setDisabled(true);
+            replyAllItem.setDisabled(true);
+            forwardItem.setDisabled(true);
             var pendingRanges = this.selModel.getPendingSelections(true);
 
             if (pendingRanges.length == 0) {
@@ -353,7 +373,11 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
                     handler : this.controller.openEmailView,
                     scope : this.controller
                   },
-
+                    decorateAccountRelatedClk(new Ext.menu.Item({
+                    text    : de.intrabuild.Gettext.gettext("Send now"),
+                    handler : function(){this.sendPendingItems();},
+                    scope   : this.controller
+                  })),
                   decorateAccountRelatedClk(new Ext.menu.Item({
                     text    : de.intrabuild.Gettext.gettext("Edit draft"),
                     handler : function(){this.openEmailEditPanel(true, 'edit');},

@@ -389,17 +389,23 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 cls     : 'x-btn-text-icon',
                 iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonSend-icon',
                 text    : '&#160;'+de.intrabuild.Gettext.gettext("Send now"),
-                handler : onSend
-              },{
+                handler : function() {
+                    _manageDraft('send');
+                }
+            },{
                 cls     : 'x-btn-text-icon',
                 iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonOutbox-icon',
                 text    : '&#160;'+de.intrabuild.Gettext.gettext("Move to outbox"),
-                handler : onOutbox
-              } ,'-', {
+                handler : function() {
+                    _manageDraft('outbox');
+                }
+            } ,'-', {
                 cls     : 'x-btn-text-icon',
                 iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonDraft-icon',
                 text    : '&#160;'+de.intrabuild.Gettext.gettext("Save as draft"),
-                handler : onSaveDraft
+                handler : function() {
+                    _manageDraft('edit');
+                }
             }]);
 
             tbarManager.register('de.intrabuild.groupware.email.EmailForm.toolbar', controlBar);
@@ -423,31 +429,82 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
 // -----------------------------Toolbar listeners----------------------------------
 
-    var onOutbox = function()
+    /**
+     * Tells the dispatcher to either move or send the draft currently
+     * being edited in the editor or to save it.
+     *
+     * @param {String} type
+     */
+    var _manageDraft = function(type)
     {
-        recipientsGrid.stopEditing();
-        var params = _prepareDataToSend(activePanel.id);
-
-        // check if any valid email-addresses have been submitted
-        if (params.to == '' && params.cc == '' && params.bcc == '') {
-            var msg  = Ext.MessageBox;
-
-            msg.show({
-                title   : de.intrabuild.Gettext.gettext("Error - specify recipient(s)"),
-                msg     : de.intrabuild.Gettext.gettext("Please specify one or more recipients for this message."),
-                buttons : msg.OK,
-                icon    : msg.WARNING,
-                scope   : this,
-                cls     :'de-intrabuild-msgbox-warning',
-                width   : 400
-            });
-
+        if (!type) {
             return;
         }
 
+        recipientsGrid.stopEditing();
+
         var panelId = activePanel.id;
+
+        var draftRecord = _prepareDataToSend(panelId);
+
+        switch (type) {
+            case 'send':
+                de.intrabuild.groupware.email.Dispatcher.sendEmail(
+                    draftRecord,
+                    (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
+                    {panelId : panelId}
+                );
+            break;
+
+            case 'outbox':
+                de.intrabuild.groupware.email.Dispatcher.moveDraftToOutbox(
+                    draftRecord,
+                    (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
+                    {panelId : panelId}
+                );
+            break;
+
+            case 'edit':
+                draftRecord.set('id', formValues[panelId].draftId);
+                draftRecord.id = formValues[panelId].draftId;
+                de.intrabuild.groupware.email.Dispatcher.saveDraft(
+                    draftRecord,
+                    (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
+                    {panelId : panelId}
+                );
+            break;
+        }
+    };
+
+    /**
+     * Callback before an email is moved to the outbox or send or a draft is saved.
+     *
+     * This implementation will both handle the messages
+     * de.intrabuild.groupware.email.Smtp.beforeEmailSent
+     * and
+     * de.intrabuild.groupware.email.outbox.beforeEmailMove
+     * and
+     * de.intrabuild.groupware.email.editor.beforeDraftSave
+     *
+     * @param {String} subject
+     * @param {Object} message
+     */
+    var _onBeforeDraftHandle = function(subject, message)
+    {
+        var options = message.options;
+
+        if (!options) {
+            throw ('expected panelId in message\'s options but was not available.');
+        }
+
+        var panelId = options.panelId;
+
         formValues[panelId].disabled = true;
         formValues[panelId].pending  = true;
+
+        if (panelId != activePanel.id) {
+            return;
+        }
 
         // will throw an error in ext2.0, so catch it
         try {
@@ -456,20 +513,92 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             // ignore
         }
 
-        showLoadMask('outbox');
+        switch (subject) {
+            case 'de.intrabuild.groupware.email.Smtp.beforeEmailSent':
+                showLoadMask('sending');
+            break;
+
+            case 'de.intrabuild.groupware.email.outbox.beforeEmailMove':
+                showLoadMask('outbox');
+            break;
+
+            case 'de.intrabuild.groupware.email.editor.beforeDraftSave':
+                showLoadMask('saving');
+            break;
+        }
+
         controlBar.setDisabled(true);
-
-        var url = '/groupware/email/move.to.outbox/format/json';
-
-        Ext.Ajax.request({
-            url            : url,
-            params         : params,
-            success        : onOutboxSuccess,
-            failure        : onOutboxFailure,
-            disableCaching : true
-        });
     };
 
+    /**
+     * Callback for successfully saving/sending an email/ moving an email to the outbox.
+     *
+     * This implementation will both handle the messages
+     * de.intrabuild.groupware.email.Smtp.emailSent
+     * and
+     * de.intrabuild.groupware.email.outbox.emailMove
+     * and
+     * de.intrabuild.groupware.email.editor.draftSave
+     *
+     * @param {String} subject
+     * @param {Object} message
+     */
+    var _onDraftHandleSuccess = function(subject, message)
+    {
+        // check if a panelId is available in the options.
+        // if that is not the case, the EditorManager did not trigger this message
+        // and we can exit here
+        if (!message.options || (message.options && !message.options.panelId)) {
+            return;
+        }
+
+        var panelId = message.options.panelId;
+        clearPendingState(panelId);
+
+        formValues[panelId].emailItemRecord = message.itemRecord.copy();
+
+        if (subject == 'de.intrabuild.groupware.email.editor.draftSave') {
+
+            // allow changing some properties if and only if this draft was created from
+            // scratch
+            var oldDraftId = formValues[panelId].draftId;
+
+            formValues[panelId].draftId = message.itemRecord.id;
+            formValues[panelId].type    = 'edit';
+            formValues[panelId].groupwareEmailFoldersId = message.itemRecord.get('groupwareEmailFoldersId');
+
+            formValues[panelId].dirty = false;
+        } else {
+            contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+            contentPanel.remove(Ext.getCmp(panelId));
+            contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+        }
+    };
+
+    /**
+     * Callback for an unsuccessfull attempt to save/send an email/ move an email
+     * to the outbox.
+     * This implementation will both handle the messages
+     * de.intrabuild.groupware.email.Smtp.emailSentFailure
+     * and
+     * de.intrabuild.groupware.email.outbox.emailMoveFailure
+     * and
+     * de.intrabuild.groupware.email.editor.draftSaveFailure
+     *
+     * @param {String} subject
+     * @param {Object} message
+     */
+    var _onDraftHandleFailure = function(subject, message)
+    {
+        // check if a panelId is available in the options.
+        // if that is not the case, the EditorManager did not trigger this message
+        // and we can exit here
+        if (!message.options || (message.options && !message.options.panelId)) {
+            return;
+        }
+
+        clearPendingState(message.options.panelId);
+    };
 
     /**
      * Prepares the data from the email form to be send to the server.
@@ -515,7 +644,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
             id      : fValues.id,
             type    : fValues.type,
-            panelId : panelId,
+            //panelId : panelId,
             date    : (new Date().getTime())/1000,
             subject : subjectField.getValue(),
             message : htmlEditor.getValue(),
@@ -526,102 +655,15 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             groupwareEmailAccountsId : accountField.getValue()
         };
 
+        var rec = new de.intrabuild.groupware.email.data.Draft(
+            params, params.id
+        );
+
         cacheFormValues(panelId);
 
-        return params;
+        return rec;
     };
 
-    var onSend = function()
-    {
-        recipientsGrid.stopEditing();
-        var params = _prepareDataToSend(activePanel.id);
-
-        // check if any valid email-addresses have been submitted
-        if (params.to == '' && params.cc == '' && params.bcc == '') {
-            var msg  = Ext.MessageBox;
-
-            msg.show({
-                title   : de.intrabuild.Gettext.gettext("Error - specify recipient(s)"),
-                msg     : de.intrabuild.Gettext.gettext("Please specify one or more recipients for this message."),
-                buttons : msg.OK,
-                icon    : msg.WARNING,
-                scope   : this,
-                cls     :'de-intrabuild-msgbox-warning',
-                width   : 400
-            });
-
-            return;
-        }
-
-        var panelId = activePanel.id;
-
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.beforeEmailSent', {
-            itemRecord : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null)
-        });
-
-        formValues[panelId].disabled = true;
-        formValues[panelId].pending  = true;
-
-        // will throw an error in ext2.0, so catch it
-        try {
-            activePanel.setIconClass('de-intrabuild-groupware-pending-icon');
-        } catch (e) {
-            // ignore
-        }
-
-        showLoadMask('sending');
-        controlBar.setDisabled(true);
-
-        var url = '/groupware/email/send/format/json';
-
-        Ext.Ajax.request({
-            url            : url,
-            params         : params,
-            success        : onSendSuccess,
-            failure        : onSendFailure,
-            disableCaching : true
-        });
-    };
-
-    /**
-     * Sets the current panel as deactive and inits a XHttpRequest. As soon as the
-     * request finishs, the callback will reset the panel to active.
-     *
-     */
-    var onSaveDraft = function()
-    {
-        recipientsGrid.stopEditing();
-
-        var panelId = activePanel.id;
-        var params  = _prepareDataToSend(panelId);
-
-        Ext.apply(params, {
-            id : formValues[panelId].draftId
-        });
-
-        formValues[panelId].disabled = true;
-        formValues[panelId].pending  = true;
-
-        // will throw an error in ext2.0, so catch it
-        try {
-            activePanel.setIconClass('de-intrabuild-groupware-pending-icon');
-        } catch (e) {
-            // ignore
-        }
-
-        showLoadMask('saving');
-        controlBar.setDisabled(true);
-
-        var url = '/groupware/email/save.draft/format/json';
-
-        Ext.Ajax.request({
-            url            : url,
-            params         : params,
-            success        : onSaveDraftSuccess,
-            failure        : onSaveDraftFailure,
-            disableCaching : true
-        });
-    };
 
     var clearPendingState = function(id)
     {
@@ -638,194 +680,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         formValues[id].pending  = false;
 
         completeForm(id);
-    };
-
-    /**
-     * Callback for successfully saving a draft.
-     * The response will have a property "item" which holds the data for a
-     * de.intrabuild.groupware.email.EmailItemRecord.
-     * The method will publish this event using Ext.ux.util.MessageBus
-     * sending the item along with another object holding the following properties:
-     * groupwareEmailFoldersId - the id of the folder from which this email was originally
-     * edited
-     * id - the id of the draft that was opened to send this email. If the opened draft has not
-     * already been a draft, the id will equal to -1
-     *
-     * @publish de.intrabuild.groupware.email.Editor.draftSaved
-     *
-     * @param {XmlHttpResponse} response
-     * @param {Object}          parameters
-     *
-     */
-    var onSaveDraftSuccess = function(response, parameters)
-    {
-        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
-
-        if (data == null) {
-            onSaveDraftFailure(response, parameters);
-            return;
-        }
-
-        var params = parameters.params;
-        var panelId = params.panelId;
-        clearPendingState(panelId);
-
-        var itemRecord = de.intrabuild.util.Record.convertTo(
-            de.intrabuild.groupware.email.EmailItemRecord,
-            data.item,
-            data.item.id
-        );
-
-        // allow changing some properties if and only if this draft was created from
-        // scratch
-        var oldDraftId = formValues[panelId].draftId;
-
-        formValues[panelId].draftId = itemRecord.id;
-        formValues[panelId].type    = 'edit';
-        formValues[panelId].groupwareEmailFoldersId = itemRecord.get('groupwareEmailFoldersId');
-
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Editor.draftSaved', {
-            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
-            itemRecord              : itemRecord,
-            id                      : oldDraftId,
-            groupwareEmailFoldersId : params.groupwareEmailFoldersId
-        });
-
-        formValues[panelId].emailItemRecord = itemRecord.copy()
-
-        formValues[panelId].dirty = false;
-    };
-
-    var onSaveDraftFailure = function(response, parameters, called)
-    {
-        if (called !== true) {
-            clearPendingState(parameters.params.panelId);
-        }
-
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            title : de.intrabuild.Gettext.gettext("Error - Could not save draft")
-        });
-    };
-
-    /**
-     * Callback for successfully sending an email.
-     * The response will have a property "item" which holds the data for a
-     * de.intrabuild.groupware.email.EmailItemRecord.
-     * The methow will publish this event using Ext.ux.util.MessageBus
-     * sending the item along with another object holding the following properties:
-     * groupwareEmailFoldersId - the id of the folder from which this email was originally
-     * edited
-     * id - the id of the draft that was opened to send this email
-     * type - the reference type of the email - either reply, reply_all, forward, edit or new.
-     *
-     * @publish de.intrabuild.groupware.email.Smtp.emailSent
-     *
-     * @param {XmlHttpResponse} response
-     * @param {Object}          parameters
-     *
-     */
-    var onSendSuccess = function(response, parameters)
-    {
-        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
-
-        if (data == null) {
-            onSendFailure(response, parameters);
-            return;
-        }
-
-        var params = parameters.params;
-        var panelId = params.panelId;
-        clearPendingState(panelId);
-
-        var itemRecord = de.intrabuild.util.Record.convertTo(
-            de.intrabuild.groupware.email.EmailItemRecord,
-            data.item,
-            data.item.id
-        );
-
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSent', {
-            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
-            itemRecord              : itemRecord,
-            id                      : params.id,
-            groupwareEmailFoldersId : params.groupwareEmailFoldersId,
-            type                    : params.type,
-        });
-
-        formValues[panelId].emailItemRecord = itemRecord.copy();
-
-        contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
-        contentPanel.remove(Ext.getCmp(panelId));
-        contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
-    };
-
-    /**
-     * Callback for an unsuccessfull attempt to send an email.
-     *
-     * @param {XmlHttpResponse} response
-     * @param {Object}          parameters
-     * @param {Boolean}         called
-     */
-    var onSendFailure = function(response, parameters, called)
-    {
-        if (called !== true) {
-            clearPendingState(parameters.params.panelId);
-        }
-
-        var panelId = parameters.params.panelId;
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.emailSentFailure', {
-            itemRecord : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null)
-        });
-
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            title : de.intrabuild.Gettext.gettext("Error - Could not send message")
-        });
-
-    };
-
-    var onOutboxSuccess = function(response, parameters)
-    {
-        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
-
-        if (data == null) {
-            onSendFailure(response, parameters);
-            return;
-        }
-
-        var params = parameters.params;
-        var panelId = params.panelId;
-        clearPendingState(panelId);
-
-        var itemRecord = de.intrabuild.util.Record.convertTo(
-            de.intrabuild.groupware.email.EmailItemRecord,
-            data.item,
-            data.item.id
-        );
-
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.outbox.emailMoved', {
-            referencedItem          : (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
-            itemRecord              : itemRecord,
-            id                      : params.id,
-            groupwareEmailFoldersId : params.groupwareEmailFoldersId,
-            type                    : params.type,
-        });
-
-        formValues[panelId].emailItemRecord = itemRecord.copy();
-
-        contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
-        contentPanel.remove(Ext.getCmp(panelId));
-        contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
-    };
-
-    var onOutboxFailure = function(response, parameters, called)
-    {
-        if (called !== true) {
-            clearPendingState(parameters.params.panelId);
-        }
-
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            title : de.intrabuild.Gettext.gettext("Error - Could not move message to outbox")
-        });
-
     };
 
 // -----------------------------Form listeners----------------------------------
@@ -1146,6 +1000,53 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         form.loadMask.show();
     };
+
+    /**
+     * Subscribe to the message de.intrabuild.groupware.email.Smtp.*
+     */
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.beforeEmailSent',
+        _onBeforeDraftHandle
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.emailSent',
+        _onDraftHandleSuccess
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.emailSentFailure',
+        _onDraftHandleFailure
+    );
+    /**
+     * Subscribe to the message de.intrabuild.groupware.email.outbox.*
+     */
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.outbox.beforeEmailMove',
+        _onBeforeDraftHandle
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.outbox.emailMove',
+        _onDraftHandleSuccess
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.outbox.emailMoveFailure',
+        _onDraftHandleFailure
+    );
+    /**
+     * Subscribe to the message de.intrabuild.groupware.email.editor.*
+     */
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.editor.beforeDraftSave',
+        _onBeforeDraftHandle
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.editor.draftSave',
+        _onDraftHandleSuccess
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.editor.draftSaveFailure',
+        _onDraftHandleFailure
+    );
+
 
     return {
 

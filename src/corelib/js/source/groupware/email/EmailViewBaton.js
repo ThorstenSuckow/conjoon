@@ -32,12 +32,28 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
     var loadedViews = [];
 
+    var tbarManager = de.intrabuild.groupware.ToolbarManager;
+
     var registerToolbar = function()
     {
         if (toolbar == null) {
-            var tbarManager = de.intrabuild.groupware.ToolbarManager;
+            tbarManager = de.intrabuild.groupware.ToolbarManager;
 
             var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+
+            var sendNowButton = new Ext.Toolbar.Button({
+                cls     : 'x-btn-text-icon',
+                hidden  : true,
+                iconCls : 'de-intrabuild-groupware-email-EmailView-toolbar-sendNowButton-icon',
+                text    : '&#160;'+de.intrabuild.Gettext.gettext("Send now"),
+                handler : function() {
+                    _sendEmail();
+                },
+                scope   : de.intrabuild.groupware.email.EmailViewBaton
+            });
+            var sendNowSeparator = new Ext.Toolbar.Separator({
+                hidden : true
+            });
 
             var forwardButton = new Ext.Toolbar.Button({
                 id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ForwardButton',
@@ -77,6 +93,8 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
 
             toolbar = decorateAccountRelatedClk(new Ext.Toolbar([
+                sendNowButton,
+                sendNowSeparator,
                 replyButton,
                 replyAllButton,
                 forwardButton,
@@ -90,7 +108,8 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 td.style.display = "none";
             };
 
-            separator.render = func;
+            sendNowSeparator.render = func;
+            separator.render        = func;
 
             tbarManager.register('de.intrabuild.groupware.email.EmailView.toolbar', toolbar);
         }
@@ -131,6 +150,27 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 contentPanel.remove(opened);
             }
         }
+    };
+
+    /**
+     * Sends a request to the server to send the currently viewed email item,
+     * if, and only if the email item's property "isOutboxPending" is set to true.
+     *
+     */
+    var _sendEmail = function()
+    {
+        var emailPanel = contentPanel.getActiveTab();
+        var emailItem  = emailPanel.emailItem;
+
+        // should be instance of de.intrabuild.groupware.email.EmailViewPanel
+        if (!emailItem || !emailItem.get('isOutboxPending')) {
+            return;
+        }
+
+        de.intrabuild.groupware.email.Dispatcher.sendPendingEmails(
+            [emailItem],
+            ((new Date()).getTime()/1000)
+        );
     };
 
     /**
@@ -210,8 +250,6 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
                 var view = new de.intrabuild.groupware.email.EmailViewPanel(config);
 
-                var tbarManager = de.intrabuild.groupware.ToolbarManager;
-
                 if (autoRender) {
                     view.emailRecord = emailItem;
                     view.on('render', function(){
@@ -231,7 +269,10 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
                 view.on('activate', function(panel) {
                     tbarManager.show('de.intrabuild.groupware.email.EmailView.toolbar');
-                    if (loadedViews[panel.emailItem.id]) {
+
+                    var eItem = panel.emailItem;
+
+                    if (loadedViews[eItem.id]) {
                         tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);
                     } else {
                         tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', true);
@@ -240,14 +281,21 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                     var toolbar = tbarManager.get('de.intrabuild.groupware.email.EmailView.toolbar');
 
                     var tItems = toolbar.items;
-                    var eItem = panel.emailItem;
 
                     if (eItem.get('isDraft')) {
-                        tItems.get(3).show();
-                        tItems.get(4).show();
+                        tItems.get(5).show();
+                        tItems.get(6).show();
                     } else {
-                        tItems.get(3).hide();
-                        tItems.get(4).hide();
+                        tItems.get(5).hide();
+                        tItems.get(6).hide();
+                    }
+
+                    if (eItem.get('isOutboxPending')) {
+                        tItems.get(0).show();
+                        tItems.get(1).show();
+                    } else {
+                        tItems.get(0).hide();
+                        tItems.get(1).hide();
                     }
                 });
 
@@ -278,7 +326,6 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
                 view.on('beforeemailload', function() {
                     loadedViews[emailItem.id] = false;
-                    var tbarManager = de.intrabuild.groupware.ToolbarManager;
                     tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', true);
                 });
 

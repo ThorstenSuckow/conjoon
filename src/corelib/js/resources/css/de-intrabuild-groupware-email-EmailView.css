@@ -20,6 +20,10 @@
     background-repeat:repeat-x
 }
 
+.de-intrabuild-groupware-email-EmailView-toolbar-sendNowButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-send.png) !important;
+}
+
 .de-intrabuild-groupware-email-EmailView-toolbar-forwardButton-icon {
     background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;
 }

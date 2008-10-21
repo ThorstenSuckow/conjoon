@@ -63,6 +63,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                       ->addActionContext('move.to.outbox', self::CONTEXT_JSON)
                       // send emails
                       ->addActionContext('send', self::CONTEXT_JSON)
+                      ->addActionContext('bulk.send', self::CONTEXT_JSON)
                       ->initContext();
     }
 
@@ -1771,4 +1772,193 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->item    = $item;
     }
 
+    /**
+     * Bulk sends emails. Awaits the parameter ids as a numeric array with the ids of
+     * the emails which should get send.
+     *
+     */
+    public function bulkSendAction()
+    {
+        $toSend = $_POST['ids'];
+
+        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+            require_once 'Zend/Json.php';
+            $toSend = Zend_Json::decode($toSend, Zend_Json::TYPE_ARRAY);
+        }
+
+        $date = null;
+        if (isset($_POST['date'])) {
+            require_once 'Intrabuild/Filter/DateIso8601.php';
+            $dateFilter = new Intrabuild_Filter_DateIso8601();
+            $date = $dateFilter->filter((int)$_POST['date']);
+        }
+
+        /**
+         * @see Intrabuild_Filter_EmailRecipients
+         */
+        require_once 'Intrabuild/Filter/EmailRecipients.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Address
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+
+        /**
+         * @see Intrabuild_BeanContext_Inspector
+         */
+        require_once 'Intrabuild/BeanContext/Inspector.php';
+
+        /**
+         * @see Intrabuild_BeanContext_Decorator
+         */
+        require_once 'Intrabuild/BeanContext/Decorator.php';
+
+        /**
+         * @see Intrabuild_Util_Array
+         */
+        require_once 'Intrabuild/Util/Array.php';
+
+        /**
+         * @see Intrabuild_Keys
+         */
+        require_once 'Intrabuild/Keys.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Model_Draft
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Model/Draft.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Sender
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Sender.php';
+
+        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $userId = $auth->getIdentity()->getId();
+
+        $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+            array(),
+            Intrabuild_Filter_Input::CONTEXT_CREATE
+        );
+
+        $draftModel = new Intrabuild_Modules_Groupware_Email_Draft_Model_Draft();
+
+        $accountDecorator = new Intrabuild_BeanContext_Decorator(
+            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        );
+
+        $recipientsFilter = new Intrabuild_Filter_EmailRecipients();
+
+        $sendItems = array();
+
+        foreach ($toSend as $id) {
+
+            $id = (int)$id;
+
+            if ($id <= 0) {
+                continue;
+            }
+
+            $rawDraft = $draftModel->getDraft($id, $userId);
+
+            if (empty($rawDraft)) {
+                continue;
+            }
+
+            Intrabuild_Util_Array::camelizeKeys($rawDraft);
+
+
+            $account = $accountDecorator->getAccountAsEntity(
+                $rawDraft['groupwareEmailAccountsId'],
+                $userId
+            );
+
+            // no account found?
+            if (!$account) {
+                continue;
+            }
+
+            $rawDraft['to']  = $recipientsFilter->filter($rawDraft['to']);
+            $rawDraft['cc']  = $recipientsFilter->filter($rawDraft['cc']);
+            $rawDraft['bcc'] = $recipientsFilter->filter($rawDraft['bcc']);
+
+            // create the message object here
+            $to  = array();
+            $cc  = array();
+            $bcc = array();
+
+            foreach ($rawDraft['cc'] as $dcc) {
+                $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+                $cc[]       = $add;
+            }
+            foreach ($rawDraft['bcc'] as $dbcc) {
+                $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+                $bcc[]       = $add;
+            }
+            foreach ($rawDraft['to'] as $dto) {
+                $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+                $to[]       = $add;
+            }
+
+            $rawDraft['to']  = $to;
+            $rawDraft['cc']  = $cc;
+            $rawDraft['bcc'] = $bcc;
+
+            $message = Intrabuild_BeanContext_Inspector::create(
+                'Intrabuild_Modules_Groupware_Email_Draft',
+                $rawDraft,
+                true
+            );
+
+            if ($date !== null) {
+                $message->setDate($date);
+            }
+
+            try {
+                $mail = Intrabuild_Modules_Groupware_Email_Sender::send($message, $account);
+            } catch (Exception $e) {
+                continue;
+            }
+
+            // if the email was send successfully, save it into the db and
+            // return the params savedId (id of the newly saved email)
+            // and savedFolderId (id of the folder where the email was saved in)
+            $itemDecorator = new Intrabuild_BeanContext_Decorator(
+                'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
+                new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+                    array(),
+                    Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                ),
+                false
+            );
+
+            $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail, '');
+
+            if (!$item) {
+                continue;
+            }
+
+            $sendItems[] = $item;
+        }
+
+        $this->view->success   = true;
+        $this->view->sentItems = $sendItems;
+        $this->view->error     = null;
+
+    }
 }

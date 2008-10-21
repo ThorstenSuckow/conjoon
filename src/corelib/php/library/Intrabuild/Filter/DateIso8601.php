@@ -21,6 +21,7 @@ require_once 'Zend/Filter/Interface.php';
 /**
  * @see Zend_Date
  */
+require_once 'Zend/Date.php';
 
 /**
  * @category   Filter

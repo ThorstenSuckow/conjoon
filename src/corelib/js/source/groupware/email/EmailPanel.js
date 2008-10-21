@@ -87,6 +87,15 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      */
     var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
 
+    this.sendNowButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
+        id      : 'de.intrabuild.groupware.email.toolbar.SendButton',
+        iconCls : 'de-intrabuild-groupware-email-EmailPanel-toolbar-sendNowButton-icon',
+        cls     : 'x-btn-text-icon',
+        text    : de.intrabuild.Gettext.gettext("Send now"),
+        hidden  : true,
+        handler : function(){this.sendPendingItems();},
+        scope   : this
+    }));
     this.forwardButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
         id       : 'de.intrabuild.groupware.email.toolbar.ForwardButton',
         cls      : 'x-btn-text-icon',
@@ -164,6 +173,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         new de.intrabuild.groupware.email.FetchMenuButton(),
       	this.newButton ,
       	'-',
+      	this.sendNowButton,
         this.replyButton,
         this.replyAllButton,
         this.forwardButton,
@@ -283,10 +293,34 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     );
 
     // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.Smtp.beforeBulkSent'
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.beforeBulkSent',
+        this._onBeforeBulkSent,
+        this
+    );
+
+    // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.Smtp.bulkSent'
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.bulkSentFailure',
+        this._onBulkSentFailure,
+        this
+    );
+
+    // register listener for MessageBus message
+    // 'de.intrabuild.groupware.email.Smtp.bulkSent'
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.Smtp.bulkSent',
+        this._onBulkSent,
+        this
+    );
+
+    // register listener for MessageBus message
     // 'de.intrabuild.groupware.email.editor.draftSaved'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Editor.draftSaved',
-        this.onSaveDraft,
+        'de.intrabuild.groupware.email.editor.draftSave',
+        this._onSaveDraft,
         this
     );
 
@@ -301,8 +335,8 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     // register listener for MessageBus message
     // 'de.intrabuild.groupware.email.outbox.emailMoved'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.outbox.emailMoved',
-        this.onMoveOutbox,
+        'de.intrabuild.groupware.email.outbox.emailMove',
+        this._onMoveOutbox,
         this
     );
 };
@@ -596,6 +630,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         if (count == 0 || record == null) {
+            this.sendNowButton.setDisabled(true);
         	this.forwardButton.setDisabled(true);
             this.replyButton.setDisabled(true);
             this.replyAllButton.setDisabled(true);
@@ -607,11 +642,13 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             this.editDraftButton.setDisabled(true);
             return;
         }  else if (count == 1) {
+            this.sendNowButton.setDisabled(false);
             this.forwardButton.setDisabled(false);
             this.replyButton.setDisabled(false);
             this.replyAllButton.setDisabled(false);
             this.editDraftButton.setDisabled(false);
         } else if (count > 1) {
+            this.sendNowButton.setDisabled(true);
             this.forwardButton.setDisabled(true);
             this.replyButton.setDisabled(true);
             this.replyAllButton.setDisabled(true);
@@ -625,14 +662,18 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var isSpam = record.data.isSpam;
 
+        var isSendable = (this.clkNodeId == tp.folderOutbox.id);
+
         var isNotSpammable = (isDrafts) ||
         				  	 (this.clkNodeId == tp.folderSent.id) ||
-        				  	 (this.clkNodeId == tp.folderOutbox.id);
+        				  	 (isSendable);
 
         this.spamButton.setDisabled(isNotSpammable || isSpam);
         this.noSpamButton.setDisabled(isNotSpammable || !isSpam);
         this.spamButton.setVisible(!isSpam);
         this.noSpamButton.setVisible(isSpam);
+
+        this.sendNowButton.setVisible(isSendable);
 
         this.deleteButton.setDisabled(false);
     },
@@ -749,6 +790,27 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     	de.intrabuild.groupware.email.EmailViewBaton.showEmail(record);
     },
 
+    /**
+     * Calls to this function are being made from the toolbar buttons, the contextmenu
+     * or any other control when an email has to be send that is currently pending
+     * in the outbox folder
+     *
+     */
+    sendPendingItems : function()
+    {
+    	var sm = this.gridPanel.selModel;
+        var c  = sm.getCount();
+
+    	var record = sm.getSelected();
+    	if (c != 1 || !record) {
+    	    return;
+        }
+
+    	de.intrabuild.groupware.email.Dispatcher.sendPendingEmails(
+    	    [record],
+    	    ((new Date()).getTime()/1000)
+    	);
+    },
 
     /**
      * Calls to this function are being made from the toolbar buttons, the contextmenu
@@ -875,17 +937,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * on the passed data and add it to the store.
      *
      * @param {String} subject The subject of the message
-	 * @param {Object} data The message's data. For the event this listener observes, the
-	 * object will provide the following properties:
-	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
-	 * id - the id of the message before it was saved
-	 * groupwareEmailFoldersId - id of the folder before it was saved.
-	 * type - the type of the email. Can be new, edit, draft
-	 * referencedItem - the email itenm that was referenced creating the email
-	 * that was moved to the outbox
-     *
+	 * @param {Object} data The message's data.
      */
-    onMoveOutbox : function(subject, message)
+    _onMoveOutbox : function(subject, message)
     {
 	    var tp = this.treePanel;
 
@@ -898,13 +952,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         var itemRecord   = message.itemRecord;
-        var folderId     = itemRecord.get('groupwareEmailFoldersId');
         var currFolderId = this.clkNodeId;
         var store        = this.gridPanel.getStore();
 	    var pendingStore = tp.pendingItemStore;
 
 	    // pending count will be updated in every case
-        var pendingRecord = pendingStore.getById(folderId);
+        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+1);
         }
@@ -912,9 +965,121 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // create a record for the current grid if and only if
         // the currently opened folder equals to the folder the email
         // was moved to
-        if (folderId == currFolderId) {
+        if (tp.folderOutbox.id == currFolderId) {
             var index = store.findInsertIndex(itemRecord);
             store.insert(index, itemRecord.copy());
+        }
+    },
+
+    /**
+     * Observer for the message de.intrabuild.groupware.email.Smtp.bulkSent.
+     *
+     * @param {String} Subject
+     * @param {Object} message
+     */
+    _onBulkSent : function(subject, message)
+    {
+        var emailItems   = message.emailItems;
+        var sentItems    = message.sentItems;
+        var currFolderId = this.clkNodeId;
+        var tp           = this.treePanel;
+        var pendingStore = tp.pendingItemStore;
+        var store        = this.gridPanel.getStore();
+
+        var notSent = [];
+
+        var found = false;
+        for (var a = 0, lena = emailItems.length; a < lena; a++) {
+            found = false;
+            for (var i = 0, len = sentItems.length; i < len; i++) {
+                if (sentItems[i].get('id') == emailItems[a].get('id')) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                notSent.push(emailItems[a]);
+            }
+        }
+
+        // update pending count in any case
+        // outbox
+        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        if (pendingRecord) {
+            pendingRecord.set('pending', pendingRecord.data.pending+notSent.length);
+        }
+
+        // check which folder is currently visible and insert records
+        var ind = 0;
+        if (currFolderId == tp.folderSent.id) {
+            for (var i = 0, len = sentItems.length; i < len; i++) {
+                ind = store.findInsertIndex(sentItems[i]);
+                store.insert(ind, sentItems[i].copy());
+            }
+        } else if (currFolderId == tp.folderOutbox.id) {
+            for (var i = 0, len = notSent.length; i < len; i++) {
+                ind = store.findInsertIndex(notSent[i]);
+                store.insert(ind, notSent[i].copy());
+            }
+        }
+
+    },
+
+    /**
+     * Observer for the message de.intrabuild.groupware.email.Smtp.bulkSentFailure.
+     *
+     * @param {String} Subject
+     * @param {Object} message
+     */
+    _onBulkSentFailure : function(subject, message)
+    {
+        var currFolderId = this.clkNodeId;
+        var tp           = this.treePanel;
+        var pendingStore = tp.pendingItemStore;
+        var store        = this.gridPanel.getStore();
+
+        var emailItems = message.emailItems;
+        var length     = emailItems.length;
+
+        if (currFolderId == tp.folderOutbox.id) {
+            var ind = 0;
+            for (var i = 0; i < length; i++) {
+                ind = store.findInsertIndex(emailItems[i]);
+                store.insert(ind, emailItems[i].copy());
+            }
+        }
+
+        // update pending count in any case
+        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        if (pendingRecord) {
+            pendingRecord.set('pending', pendingRecord.data.pending+length);
+        }
+    },
+
+    /**
+     * Observer for the message de.intrabuild.groupware.email.Smtp.beforeBulkSent.
+     *
+     * @param {String} Subject
+     * @param {Object} message
+     */
+    _onBeforeBulkSent : function(subject, message)
+    {
+        var currFolderId = this.clkNodeId;
+        var tp           = this.treePanel;
+        var pendingStore = tp.pendingItemStore;
+        var store        = this.gridPanel.getStore();
+
+        var emailItems = message.emailItems;
+        var length     = emailItems.length;
+
+        if (currFolderId == tp.folderOutbox.id) {
+            store.bulkRemove(emailItems);
+        }
+
+        // update pending count in any case
+        var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
+        if (pendingRecord) {
+            pendingRecord.set('pending', pendingRecord.data.pending-length);
         }
     },
 
@@ -925,19 +1090,20 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * @param {String} subject The subject of the message
 	 * @param {Object} data The message's data. For the event this listener observes, the
 	 * object will provide the following properties:
+	 * draft - de.intrabuild.groupware.email.data.Draft
 	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
-	 * id - the id of the message before it was saved
-	 * groupwareEmailFoldersId - id of the folder before it was saved.
-	 * type - the type of the email. Can be new, edit, draft
+	 * referencedItem - de.intrabuild.groupware.email.EmailItemRecord
+	 * options - Object
      */
     onSendEmail : function(subject, message)
     {
         var referencedRecord = message.referencedItem;
 
         var emailRecord = message.itemRecord;
-        var oldId       = message.id;
-        var oldFolderId = message.groupwareEmailFoldersId;
-        var type        = message.type;
+        var draft       = message.draft;
+        var oldId       = draft.get('id');
+        var oldFolderId = draft.get('groupwareEmailFoldersId');
+        var type        = draft.get('type');
 
         var tp           = this.treePanel;
         var currFolderId = this.clkNodeId;
@@ -949,7 +1115,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (type.indexOf('reply') != -1 || type.indexOf('forward') != -1) {
             var refRecord = store.getById(oldId);
             if (refRecord) {
-                var references    = refRecord.get('referencedAsTypes').slice(0);
+                var references = refRecord.get('referencedAsTypes').slice(0);
                 if (references.indexOf(type) == -1) {
                     references.push(type);
                     refRecord.set('referencedAsTypes', references);
@@ -968,19 +1134,19 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         // if the email was loaded from outbox and sent, update pending nodes
-        // minus 1
-        if (oldFolderId == tp.folderOutbox.id) {
+        // minus 1, but only if the id of the itemRecord equals to the id of the draft,
+        // which will basically tell that an email pending in the outbox folder was sent
+        if (oldFolderId == tp.folderOutbox.id && emailRecord.get('id') == draft.get('id')) {
             // if grid is visible, remove the record with the specified id!
             if (currFolderId == oldFolderId) {
                 if (referencedRecord) {
 				    store.remove(referencedRecord);
 			    }
-            } else {
-                // grid for outbox is not visible, simply update pending count
-                var pendingRecord = pendingStore.getById(oldFolderId);
-                if (pendingRecord) {
-                    pendingRecord.set('pending', pendingRecord.data.pending-1);
-                }
+            }
+            // update pending count in any case
+            var pendingRecord = pendingStore.getById(oldFolderId);
+            if (pendingRecord) {
+                pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
         }
 
@@ -1001,14 +1167,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * "de.intrabuild.groupware.email.editor.draftSaved" as published by Ext.ux.util.MessageBus.
      *
      * @param {String} subject The subject of the message
-	 * @param {Object} data The message's data. For the event this listener observes, the
-	 * object will provide the following properties:
-	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
-	 * id - the id of the message before it was saved
-	 * groupwareEmailFoldersId - id of the folder before it was saved.
-	 *
+	 * @param {Object} data The message's data.
      */
-	onSaveDraft : function(subject, message)
+	_onSaveDraft : function(subject, message)
 	{
 	    var tp = this.treePanel;
 
@@ -1022,7 +1183,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var referencedRecord = message.referencedItem;
 
-	    var oldDraftId   = message.id;
+	    var oldDraftId   = message.draft.get('id');
 	    var oldFolderId  = message.groupwareEmailFoldersId;
 	    var itemRecord   = message.itemRecord;
 	    var newFolderId  = itemRecord.get('groupwareEmailFoldersId');
@@ -1424,23 +1585,27 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     _replaceAndRefreshIfNeeded : function(referencedRecord, itemRecord)
     {
-        var store = this.gridPanel.getStore();
+        var store    = this.gridPanel.getStore();
+        var ind      = store.findInsertIndex(itemRecord);
+        var itemCopy = itemRecord.copy();
+
         // silently remove the old record, then insert the new one.
         // Afterwards, refresh the grid
         // we need to repaint the visible rect of the grid if the
         // referencedRecord is currently in the visible rect
-        var view    = this.gridPanel.getView();
-        var refresh = view.isRecordRendered(referencedRecord);
-        store.suspendEvents();
-        store.remove(referencedRecord);
-        // calling this method will the store force to resume the event firing
-        var ind = store.findInsertIndex(itemRecord);
-        store.suspendEvents();
-        var itemCopy = itemRecord.copy();
-        store.insert(ind, itemCopy);
-        store.resumeEvents();
-        if (refresh || view.isRecordRendered(itemCopy)) {
-            view.refresh(false);
+        if (referencedRecord) {
+            var view    = this.gridPanel.getView();
+            var refresh = view.isRecordRendered(referencedRecord);
+            store.suspendEvents();
+            store.remove(referencedRecord);
+
+            store.insert(ind, itemCopy);
+            store.resumeEvents();
+            if (refresh || view.isRecordRendered(itemCopy)) {
+                view.refresh(false);
+            }
+        } else {
+            store.insert(ind, itemCopy);
         }
     }
 
