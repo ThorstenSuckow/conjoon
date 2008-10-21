@@ -969,23 +969,11 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
 
                     $referenceType = '';
 
-                    if ($type != "" && $referenceId != 0) {
-                        /**
-                         * @see Intrabuild_Modules_Groupware_Email_Keys
-                         */
-                        require_once 'Intrabuild/Modules/Groupware/Email/Keys.php';
-                        switch ($type) {
-                            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY:
-                                $referenceType = self::REFERENCE_TYPE_REPLY;
-                            break;
-                            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY_ALL:
-                                $referenceType = self::REFERENCE_TYPE_REPLY_ALL;
-                            break;
+                    if (($type == self::REFERENCE_TYPE_REPLY
+                        || $type == self::REFERENCE_TYPE_REPLY_ALL
+                        || $type == self::REFERENCE_TYPE_FORWARD)  && $referenceId != 0) {
 
-                            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_FORWARD:
-                                $referenceType = self::REFERENCE_TYPE_FORWARD;
-                            break;
-                        }
+                        $referenceType = $type;
 
                         $referenceUpdate = array(
                             'groupware_email_items_id' => $messageId,
