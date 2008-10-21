@@ -419,12 +419,11 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var unread = 0;
 
-        var gs = this.gridPanel.store;
+        var gs = this.gridPanel.getStore();
         var requestArray = [];
 
         for (var i = 0, max_i = records.length; i < max_i; i++) {
-            unread += (records[i].data.isRead ? 0 : 1);
-            records[i].set('groupwareEmailFoldersId', folderId);
+            unread += (records[i].get('isRead') ? 0 : 1);
             requestArray.push({
                 id                      : records[i].id,
                 groupwareEmailFoldersId : folderId
@@ -437,8 +436,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var allowPendingUpdate = this.allowNodePendingUpdate(currFolderId);
         var updatePendingCount = allowPendingUpdate ? 0 : i;
-
-        gs.commitChanges();
 
         Ext.Ajax.request({
             url: '/groupware/email/move.items/format/json',
@@ -469,8 +466,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     setItemsAsRead : function(records, read)
     {
         var currFolderId  = this.clkNodeId;
+        var store         = this.gridPanel.getStore();
+        var unread        = 0;
 
-        var unread     = 0;
+        store.suspendEvents();
 
         var requestArray = new Array();
 
@@ -508,7 +507,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             });
         }
 
-        this.gridPanel.store.commitChanges();
+        store.resumeEvents();
+
+        store.commitChanges();
     },
 
     /**
@@ -545,6 +546,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     setItemsAsSpam : function(records, spam)
     {
         var requestArray = [];
+        var store = this.gridPanel.getStore();
+
+        store.suspendEvents();
 
         for (var i = 0, max_i = records.length; i < max_i; i++) {
             records[i].set('isSpam', spam);
@@ -562,7 +566,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             }
         });
 
-        this.gridPanel.store.commitChanges();
+        store.resumeEvents();
+
+        store.commitChanges();
         this.switchButtonState(max_i, records[0]);
     },
 
@@ -845,7 +851,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     onQuickPanelUpdate : function(store, record, operation)
     {
     	if (operation == 'commit') {
-            var myStore = this.gridPanel.store;
+            var myStore = this.gridPanel.getStore();
+            myStore.suspendEvents();
             var rec     = myStore.getById(record.id);
             var read    = record.data.isRead;
             var up      = read ? -1 : 1;
@@ -861,7 +868,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+up);
             }
-
+            myStore.resumeEvents();
             myStore.commitChanges();
         }
     },
@@ -1107,7 +1114,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var tp           = this.treePanel;
         var currFolderId = this.clkNodeId;
-        var store        = this.gridPanel.store;
+        var store        = this.gridPanel.getStore();
         var pendingStore = tp.pendingItemStore;
 
         // check if the grid with the record for old id is open. Update the specific record
@@ -1118,7 +1125,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 var references = refRecord.get('referencedAsTypes').slice(0);
                 if (references.indexOf(type) == -1) {
                     references.push(type);
+                    store.suspendEvents();
                     refRecord.set('referencedAsTypes', references);
+                    store.resumeEvents();
+                    store.commitChanges();
                 }
             }
         }
