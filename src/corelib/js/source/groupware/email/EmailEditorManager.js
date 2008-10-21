@@ -25,6 +25,11 @@ Ext.namespace('de.intrabuild.groupware.email');
 
 de.intrabuild.groupware.email.EmailEditorManager = function(){
 
+    var STATE_LOADING = 1;
+    var STATE_SAVING  = 2;
+    var STATE_SENDING = 3;
+    var STATE_MOVING  = 4;
+
     var contentPanel = null;
 
     var utilDom = de.intrabuild.util.Dom;
@@ -143,6 +148,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         });
 
         formValues[panel.id] = {
+            state             : STATE_LOADING,
             emailItemRecord   : emailItemRecord,
             signatureAttached : false,
             dirty             : false,
@@ -324,6 +330,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
 
         Ext.apply(formValues[options.panelId], {
+            state      : null,
             id         : draft.id,
             type       : type,
             disabled   : false,
@@ -339,12 +346,34 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         Ext.getCmp(options.panelId).setTitle(getTitle(draft.subject));
     };
 
+    /**
+     * Fills the editor with the values for the currently active tab.
+     *
+     * @param {String} panelId The id of the tab for which the editor should
+     * be filled with the according values
+     */
     var completeForm = function(panelId)
     {
         if (formValues[panelId].disabled == true) {
-            showLoadMask('loading');
+
             controlBar.setDisabled(true);
-            return;
+
+            switch (formValues[panelId].state) {
+                case STATE_SAVING:
+                    showLoadMask('saving');
+                break;
+                case STATE_SENDING:
+                    showLoadMask('sending');
+                break;
+                case STATE_MOVING:
+                    showLoadMask('moving');
+                break;
+                default:
+                    // return if the message is still loading
+                    showLoadMask('loading');
+                    return;
+
+            }
         } else {
             controlBar.setDisabled(false);
             form.loadMask.hide();
@@ -367,10 +396,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             _attachSignature(panelId, formValues[panelId].accountId);
         }
 
-
         recipientStore.removeAll();
         recipientStore.add(formValues[panelId].recipients);
-
     };
 
     var init = function()
@@ -515,14 +542,17 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         switch (subject) {
             case 'de.intrabuild.groupware.email.Smtp.beforeEmailSent':
+                formValues[panelId].state = STATE_SENDING;
                 showLoadMask('sending');
             break;
 
             case 'de.intrabuild.groupware.email.outbox.beforeEmailMove':
+                formValues[panelId].state = STATE_MOVING;
                 showLoadMask('outbox');
             break;
 
             case 'de.intrabuild.groupware.email.editor.beforeDraftSave':
+                formValues[panelId].state = STATE_SAVING;
                 showLoadMask('saving');
             break;
         }
@@ -556,6 +586,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         clearPendingState(panelId);
 
         formValues[panelId].emailItemRecord = message.itemRecord.copy();
+        formValues[panelId].state = null;
 
         if (subject == 'de.intrabuild.groupware.email.editor.draftSave') {
 
@@ -676,6 +707,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             // ignore, buggy in ext 2.0
         }
 
+        formValues[id].state    = null;
         formValues[id].disabled = false;
         formValues[id].pending  = false;
 
