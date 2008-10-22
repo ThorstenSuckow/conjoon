@@ -465,16 +465,24 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
      */
     proxyAppend : function(tree, node, oldParent, parentNode)
     {
-
-        if (this.fireEvent('beforemove', tree, node, oldParent, parentNode) !== false) {
-            this.suspendEvents();
-            parentNode.appendChild(node);
-            if (!parentNode.isExpanded()){
-                parentNode.expand();
-            }
-            node.getUI().highlight();
-            this.resumeEvents();
-            this.fireEvent('movenode', this, node, oldParent, parentNode);
+        if (!parentNode.isExpanded()) {
+            node.disable();
+            node.getUI().showProcessing(true);
+            parentNode.expand(
+                false,
+                false,
+                (function(tree, node, oldParent, parentNode){
+                    node.enable();
+                    node.getUI().showProcessing(false);
+                    this.proxyAppend(tree, node, oldParent, parentNode);
+                }).createDelegate(this, [tree, node, oldParent, parentNode])
+            );
+        } else if (this.fireEvent('beforemovenode', tree, node, oldParent, parentNode) !== false) {
+                this.suspendEvents();
+                parentNode.appendChild(node);
+                node.getUI().highlight();
+                this.resumeEvents();
+                this.fireEvent('movenode', this, node, oldParent, parentNode);
         }
     },
 
@@ -583,7 +591,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
             var msg   = Ext.MessageBox;
             msg.show({
                 title   : de.intrabuild.Gettext.gettext("Warning - Move folder"),
-                msg     : de.intrabuild.Gettext.gettext("A folder with the same name does already exist. Please specify another name"),
+                msg     : de.intrabuild.Gettext.gettext("A folder with the same name does already exist in the target folder. Please specify another name"),
                 buttons : msg.OK,
                 icon    : msg.WARNING,
                 scope   : this,
