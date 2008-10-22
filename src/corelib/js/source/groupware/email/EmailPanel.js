@@ -646,7 +646,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             this.spamButton.setVisible(true);
             this.noSpamButton.setVisible(false);
             this.editDraftButton.setDisabled(true);
-            return;
         }  else if (count == 1) {
             this.sendNowButton.setDisabled(false);
             this.forwardButton.setDisabled(false);
@@ -662,15 +661,23 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
 
         var tp = this.treePanel;
+
+        /**
+         * @todo better check if folders are loaded
+         */
+        if (!tp.folderDraft) {
+            return;
+        }
+
         var isDrafts = this.clkNodeId == tp.folderDraft.id;
 
         this.editDraftButton.setVisible(isDrafts);
 
-        var isSpam = record.data.isSpam;
+        var isSpam = record ? record.data.isSpam : false;
 
         var isSendable = (this.clkNodeId == tp.folderOutbox.id);
 
-        var isNotSpammable = (isDrafts) ||
+        var isNotSpammable = (!record) || (isDrafts) ||
         				  	 (this.clkNodeId == tp.folderSent.id) ||
         				  	 (isSendable);
 
@@ -681,7 +688,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         this.sendNowButton.setVisible(isSendable);
 
-        this.deleteButton.setDisabled(false);
+        this.deleteButton.setDisabled((record == null));
     },
 
 
@@ -1383,6 +1390,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     onNodeSelectionChange : function(selModel, node)
     {
+        this.switchButtonState(0, null);
+
         if (node && node.attributes.type && (node.attributes.type != 'root' && node.attributes.type != 'accounts_root')) {
             this.clkNodeId = node.id;
             this.gridPanel.store.removeAll();
