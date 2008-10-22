@@ -82,6 +82,13 @@ de.intrabuild.groupware.email.Dispatcher = function() {
 
         var subject = '';
 
+        var pubObject = {
+            referencedItem : options.referencedItem,
+            draft          : options.draft,
+            options        : options.additionalOptions,
+            itemRecord     : itemRecord
+        };
+
         switch (type) {
             case 'send':
                 subject = 'de.intrabuild.groupware.email.Smtp.emailSent';
@@ -93,15 +100,18 @@ de.intrabuild.groupware.email.Dispatcher = function() {
 
             case 'edit':
                 subject = 'de.intrabuild.groupware.email.editor.draftSave';
+                var emailRecord = de.intrabuild.util.Record.convertTo(
+                    de.intrabuild.groupware.email.EmailRecord,
+                    data.emailRecord,
+                    data.emailRecord.id
+                );
+                Ext.apply(pubObject, {
+                    emailRecord : emailRecord
+                });
             break;
         }
 
-        Ext.ux.util.MessageBus.publish(subject, {
-            referencedItem : options.referencedItem,
-            draft          : options.draft,
-            options        : options.additionalOptions,
-            itemRecord     : itemRecord
-        });
+        Ext.ux.util.MessageBus.publish(subject, pubObject);
     };
 
     var _onManageDraftFailure = function(response, options, type)

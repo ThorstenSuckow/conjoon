@@ -775,6 +775,25 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function getEmailAction()
     {
+        $message = $this->_getEmail((int)$_POST['id']);
+
+        if (!$message) {
+            $this->view->success    = true;
+            $this->view->error      = null;
+            $this->view->item       = array();
+            return;
+        }
+
+        $this->view->success     = true;
+        $this->view->error       = null;
+        $this->view->item        = $message;
+    }
+
+    /**
+     * @todo Move to model
+     */
+    private function _getEmail($groupwareEmailItemsId)
+    {
         require_once 'Intrabuild/BeanContext/Decorator.php';
         require_once 'Intrabuild/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
         require_once 'Intrabuild/Keys.php';
@@ -791,15 +810,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
             )
         );
 
-        $groupwareEmailItemsId = (int)$_POST['id'];
-
         $message = $messageDecorator->getEmailMessageAsDto($groupwareEmailItemsId, $userId);
 
         if (!$message) {
-            $this->view->success    = true;
-            $this->view->error      = null;
-            $this->view->item       = array();
-            return;
+            return null;
         }
 
         require_once 'Intrabuild/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
@@ -816,11 +830,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $message->attachments = $attachments;
 
-        $this->view->success    = true;
-        $this->view->error      = null;
-        $this->view->item       = $message;
+        return $message;
     }
-
 
 // -------- email accounts
 
@@ -1619,10 +1630,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
             return;
         }
 
+        $emailRecord = $this->_getEmail($item->id);
 
-        $this->view->error   = null;
-        $this->view->success = true;
-        $this->view->item    = $item;
+        $this->view->error       = null;
+        $this->view->success     = true;
+        $this->view->item        = $item;
+        $this->view->emailRecord = $emailRecord;
     }
 
 

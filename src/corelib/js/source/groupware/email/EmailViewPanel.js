@@ -108,6 +108,12 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         });
 
+        Ext.ux.util.MessageBus.subscribe(
+            'de.intrabuild.groupware.email.editor.draftSave',
+            this._onDraftSave,
+            this
+        );
+
         this.on('render',  de.intrabuild.groupware.util.LinkInterceptor.getListener().render);
         this.on('destroy', this.abortRequest, this);
 
@@ -299,6 +305,19 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         this.fireEvent('emailloadfailure', response, parameters);
 
         this.requestId = null;
+    },
+
+    _onDraftSave : function(subject, message)
+    {
+        var emailItem = message.itemRecord;
+
+        if (emailItem.get('id') != this.emailItem.get('id')) {
+            return;
+        }
+
+        this.setEmailItem(emailItem.copy(), true);
+        this.emailRecord = message.emailRecord.copy();
+        this.renderView();
     },
 
     _onHide : function()
