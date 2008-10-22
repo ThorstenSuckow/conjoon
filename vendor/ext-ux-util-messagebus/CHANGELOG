@@ -1,2 +1,5 @@
-﻿Version 0.1
+﻿ - fixed: call to missing function in "_unsubscribe()" caused an error; corrected
+method name
+
+Version 0.1
 16-June-2007
