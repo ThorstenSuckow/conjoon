@@ -311,7 +311,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     {
         var emailItem = message.itemRecord;
 
-        if (emailItem.get('id') != this.emailItem.get('id')) {
+        if (!this.emailItem || emailItem.get('id') != this.emailItem.get('id')) {
             return;
         }
 
