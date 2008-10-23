@@ -353,8 +353,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     queue : null,
 
-    loadingRecord : null,
-
     clkNodeId : null,
 
 // ------------------------------- Methods -------------------------------------
@@ -705,11 +703,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      		return;
      	}
 
-        if (this.loadingRecord && this.loadingRecord.id == record.id) {
-        	return;
-        }
-
-     	this.loadingRecord = record;
         this.preview.abortRequest();
         this.preview.setEmailItem(record);
 
@@ -1317,8 +1310,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (count > 1) {
             this.switchButtonState(count, record == null ? sm.getSelected() : record);
             this.preview.clearView();
-
-            this.loadingRecord = null;
             return;
         }
 
@@ -1353,9 +1344,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var rec = this.preview.emailItem;
 
-        if ((rec && rec.id == record.id) || this.loadingRecord == record.id) {
+        if (rec && rec.id == record.id) {
             this.preview.setEmailItem(null);
-            this.loadingRecord = null;
         }
     },
 
@@ -1364,7 +1354,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     {
         this.switchButtonState(0, null);
         this.preview.setEmailItem(null);
-        this.loadingRecord = null;
     },
 
     onBeforeBuffer : function()
@@ -1424,8 +1413,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (this.loadingMask) {
             this.loadingMask.hide();
         }
-
-        this.loadingRecord = null;
 
         this.preview.clearView();
     },
@@ -1613,15 +1600,35 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // we need to repaint the visible rect of the grid if the
         // referencedRecord is currently in the visible rect
         if (referencedRecord) {
-            var view    = this.gridPanel.getView();
-            var refresh = view.isRecordRendered(referencedRecord);
+            var wasSelected = false;
+            var view        = this.gridPanel.getView();
+            var refresh     = view.isRecordRendered(referencedRecord);
+            var selModel    = this.gridPanel.getSelectionModel();
+
+            // programmatic call to switchButtonState since the store's event are
+            // suspended
+            if (selModel.isSelected(referencedRecord)) {
+                selModel.suspendEvents();
+                selModel.deselectRecord(referencedRecord);
+                selModel.resumeEvents();
+                wasSelected = true;
+            }
+
             store.suspendEvents();
             store.remove(referencedRecord);
-
             store.insert(ind, itemCopy);
             store.resumeEvents();
+
             if (refresh || view.isRecordRendered(itemCopy)) {
                 view.refresh(false);
+            }
+
+            if (wasSelected) {
+                if (ind != Number.MIN_VALUE && ind != Number.MAX_VALUE) {
+                    selModel.selectRow(ind+store.bufferRange[0], false);
+                } else {
+                    this.switchButtonState(0, null);
+                }
             }
         } else {
             store.insert(ind, itemCopy);
