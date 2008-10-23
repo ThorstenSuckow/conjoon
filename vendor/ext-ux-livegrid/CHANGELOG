@@ -1,4 +1,8 @@
-﻿ - enhancement: (GridView.js) added method "isRecordRendered()" to check whether the passed
+﻿ - enhancement: (GridView.js) changed behavior of "processRows()" to paint the selections
+if the third argument does not equal to "false"
+ - enhancement: (RowSelectionModel.js) added method "deselectRecord()" to deselect a record
+that is already selected in the model
+ - enhancement: (GridView.js) added method "isRecordRendered()" to check whether the passed
 record is currently within the visible rect of the grid's view
  - enhancement: removed programmatically invoking scroll in IE when the grid is rendered,
 since this was fixed due to the css changes in a previously version

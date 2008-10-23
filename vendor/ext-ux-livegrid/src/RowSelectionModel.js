@@ -315,6 +315,55 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
 
 
     /**
+     * Deselects a record.
+     * The emthod assumes that the record is physically available, i.e.
+     * pendingSelections will not be taken into account
+     */
+    deselectRecord : function(record, preventViewNotify)
+    {
+        if(this.locked) {
+            return;
+        }
+
+        var isSelected = this.selections.key(record.id);
+
+        if (!isSelected) {
+            return;
+        }
+
+        var store = this.grid.store;
+        var index = store.indexOfId(record.id);
+
+        if (index == -1) {
+            index = store.findInsertIndex(record);
+            if (index != Number.MIN_VALUE && index != Number.MAX_VALUE) {
+                index += store.bufferRange[0];
+            }
+        } else {
+            // just to make sure, though this should not be
+            // set if the record was availablein the selections
+            delete this.pendingSelections[index];
+        }
+
+        if (this.last == index) {
+            this.last = false;
+        }
+
+        if (this.lastActive == index) {
+            this.lastActive = false;
+        }
+
+        this.selections.remove(record);
+
+        if(!preventViewNotify){
+            this.grid.getView().onRowDeselect(index);
+        }
+
+        this.fireEvent("rowdeselect", this, index, record);
+        this.fireEvent("selectionchange", this);
+    },
+
+    /**
      * Deselects a row.
      * @param {Number} row The index of the row to deselect
      */
@@ -377,6 +426,7 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
             if(!preventViewNotify){
                 this.grid.getView().onRowSelect(index);
             }
+
             this.fireEvent("rowselect", this, index, r);
             this.fireEvent("selectionchange", this);
         }

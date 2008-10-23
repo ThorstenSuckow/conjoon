@@ -817,7 +817,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                 this.adjustScrollerPos(this.rowHeight*recordLen, true);
 
                 this.fireEvent("rowsinserted", this, index, index, recordLen);
-                this.processRows();
+                this.processRows(0, undefined, false);
                 // the cursor did virtually move
                 this.fireEvent('cursormove', this, this.rowIndex,
                                Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
@@ -1114,7 +1114,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             // changed!
             row.rowIndex = index;
 
-            if (paintSelections == true) {
+            if (paintSelections !== false) {
                 if (this.grid.selModel.isSelected(this.ds.getAt(index)) === true) {
                     this.addRowClass(i, "x-grid3-row-selected");
                 } else {
