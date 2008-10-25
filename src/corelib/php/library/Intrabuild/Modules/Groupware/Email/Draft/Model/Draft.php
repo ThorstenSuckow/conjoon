@@ -24,6 +24,31 @@ require_once 'Zend/Db/Table/Abstract.php';
 require_once 'Intrabuild/BeanContext/Decoratable.php';
 
 /**
+ * @see Intrabuild_Modules_Groupware_Email_Item_Model_Item
+ */
+require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
+
+/**
+ * @see Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
+ */
+require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
+
+/**
+ * @see Intrabuild_Modules_Groupware_Email_Item_Model_Outbox
+ */
+require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
+
+/**
+ * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
+ */
+require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
+
+/**
+ * @see Intrabuild_Modules_Groupware_Email_Keys
+ */
+require_once 'Intrabuild/Modules/Groupware/Email/Keys.php';
+
+/**
  *
  * @package Intrabuild_Groupware_Email
  * @subpackage Model
@@ -32,7 +57,6 @@ require_once 'Intrabuild/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
-
 
     /**
      * Returns an assoc array with the data of an draft. The returned array
@@ -43,18 +67,13 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
      *
      * @return array
      */
-    public function getDraft($itemId, $userId)
+    public function getDraft($itemId, $userId, $context)
     {
         $itemId = (int)$itemId;
 
         if ($itemId <= 0) {
             return array();
         }
-
-        /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Item
-         */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
 
         $itemModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
 
@@ -87,10 +106,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
         unset($row);
 
         if ($draft['in_reply_to'] == "") {
-            /**
-             * @see Intrabuild_Modules_Groupware_Email_Item_Model_Inbox
-             */
-            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
 
             $inboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
             $messageId  = $inboxModel->getMessageIdForItem($draft['id']);
@@ -99,11 +114,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
 
         // check if the item is available in outbox and get the id of it under which it was
         // created. Otherwise, get the standard account out of the accounts-table
-        /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Model_Outbox
-         */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Outbox.php';
-
         $outboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
 
         $accIdRow = $outboxModel->fetchRow(
@@ -112,11 +122,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
         );
 
         if (!$accIdRow) {
-            /**
-             * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
-             */
-            require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
-
             $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
             $accId   = $accountModel->getStandardAccountIdForUser($userId);
         } else {
