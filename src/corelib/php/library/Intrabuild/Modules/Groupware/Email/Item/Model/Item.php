@@ -148,6 +148,45 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     }
 
     /**
+     * Looks up if the specified id for the specified user has an entry in
+     * groupware_email_items_references has an entry and returns the item
+     * with the corresponding id
+     *
+     * @param integer $itemId
+     * @param integer $userId
+     *
+     * @return array
+     */
+    public function getReferencedItem($itemId, $userId)
+    {
+        $itemId = (int)$itemId;
+        $userId = (int)$userId;
+
+        if ($itemId <= 0 || $userId <= 0) {
+            return array();
+        }
+
+        /**
+         * @see Intrabuild_Modules_Groupware_Email_Item_Model_References
+         */
+        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/References.php';
+
+        $refModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
+
+        $row = $refModel->fetchRow(
+            $refModel->select()->from($refModel, array('reference_items_id'))
+                        ->where('groupware_email_items_id = ? ', $itemId)
+                        ->where('user_id = ? ', $userId)
+        );
+
+        if (!$row || empty($row)) {
+            return array();
+        }
+
+        return $this->getItemForUser($row->reference_items_id, $userId);
+    }
+
+    /**
      * Returns a single item with the specified id for the specified user.
      * Returns an empty array if entry was not found.
      *
@@ -977,7 +1016,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
     public function getDecoratableMethods()
     {
         return array(
+            'getReferencedItem',
             'getEmailItemsFor',
+            'getItemForUser',
             'moveDraftToOutbox',
             'saveSentEmail',
             'saveDraft'

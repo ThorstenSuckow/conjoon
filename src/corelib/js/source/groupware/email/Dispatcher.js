@@ -47,9 +47,20 @@ de.intrabuild.groupware.email.Dispatcher = function() {
             ));
         }
 
+        var cris = [];
+        var contextReferencedItems = data.contextReferencedItems;
+        for (var i = 0, len = contextReferencedItems.length; i < len; i++) {
+            cris.push(de.intrabuild.util.Record.convertTo(
+                de.intrabuild.groupware.email.EmailItemRecord,
+                contextReferencedItems[i],
+                contextReferencedItems[i].id
+            ));
+        }
+
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Smtp.bulkSent', {
-           emailItems : options.emailItems,
-           sentItems  : sentData
+           emailItems             : options.emailItems,
+           sentItems              : sentData,
+           contextReferencedItems : cris
         });
 
     };
@@ -92,6 +103,17 @@ de.intrabuild.groupware.email.Dispatcher = function() {
         switch (type) {
             case 'send':
                 subject = 'de.intrabuild.groupware.email.Smtp.emailSent';
+                var cri = null;
+                if (data.contextReferencedItem) {
+                    cri = de.intrabuild.util.Record.convertTo(
+                        de.intrabuild.groupware.email.EmailItemRecord,
+                        data.contextReferencedItem,
+                        data.contextReferencedItem.id
+                    );
+                    Ext.apply(pubObject, {
+                        contextReferencedItem : cri
+                    });
+                }
             break;
 
             case 'outbox':

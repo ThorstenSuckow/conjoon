@@ -1007,6 +1007,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     _onBulkSent : function(subject, message)
     {
         var emailItems   = message.emailItems;
+        var contextReferencedItems = message.contextReferencedItems;
         var sentItems    = message.sentItems;
         var currFolderId = this.clkNodeId;
         var tp           = this.treePanel;
@@ -1048,6 +1049,22 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 ind = store.findInsertIndex(notSent[i]);
                 store.insert(ind, notSent[i].copy());
             }
+        }
+
+        // update the context referenced items
+        if (contextReferencedItems) {
+            store.suspendEvents();
+            var contextReferencedItem = null;
+            for (var i = 0, len = contextReferencedItems.length; i < len; i++) {
+                contextReferencedItem = contextReferencedItems[i];
+                var refRecord = store.getById(contextReferencedItem.id);
+                if (refRecord) {
+                    refRecord.set('referencedAsTypes', '');
+                    refRecord.set('referencedAsTypes', contextReferencedItem.get('referencedAsTypes'));
+                }
+            }
+            store.resumeEvents();
+            store.commitChanges();
         }
 
     },
@@ -1124,7 +1141,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     _onSendEmail : function(subject, message)
     {
-        var referencedRecord = message.referencedItem;
+        var referencedRecord      = message.referencedItem;
+        var contextReferencedItem = message.contextReferencedItem;
 
         var emailRecord = message.itemRecord;
         var draft       = message.draft;
@@ -1145,17 +1163,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         // check if the grid with the record for old id is open. Update the specific record
         // with the reference type, if message.type equals to forward, reply or reply_all
-        if (referencedRecord && (type.indexOf('reply') != -1 || type.indexOf('forward') != -1)) {
-            var refRecord = store.getById(oldId);
+        if (contextReferencedItem) {
+            var refRecord = store.getById(contextReferencedItem.id);
             if (refRecord) {
-                var references = refRecord.get('referencedAsTypes').slice(0);
-                if (references.indexOf(type) == -1) {
-                    references.push(type);
-                    store.suspendEvents();
-                    refRecord.set('referencedAsTypes', references);
-                    store.resumeEvents();
-                    store.commitChanges();
-                }
+                store.suspendEvents();
+                refRecord.set('referencedAsTypes', '');
+                refRecord.set('referencedAsTypes', contextReferencedItem.get('referencedAsTypes'));
+                store.resumeEvents();
+                store.commitChanges();
             }
         }
 

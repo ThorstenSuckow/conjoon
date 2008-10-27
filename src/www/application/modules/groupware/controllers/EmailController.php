@@ -1276,10 +1276,21 @@ class Groupware_EmailController extends Zend_Controller_Action {
             return;
         }
 
+        // if the sent email referenced an existing message, tr to fetch this message
+        // and send it along as context-referenced item
+
+        $contextReferencedItem = $itemDecorator->getReferencedItemAsDto(
+            $item->id,
+            $userId
+        );
+
 
         $this->view->error   = null;
         $this->view->success = true;
         $this->view->item    = $item;
+        $this->view->contextReferencedItem  = empty($contextReferencedItem)
+                                            ? null
+                                            : $contextReferencedItem;
     }
 
     /**
@@ -1879,7 +1890,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $recipientsFilter = new Intrabuild_Filter_EmailRecipients();
 
-        $sendItems = array();
+        $sendItems              = array();
+        $contextReferencedItems = array();
 
         foreach ($toSend as $id) {
 
@@ -1969,11 +1981,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
             }
 
             $sendItems[] = $item;
+            $cri = $itemDecorator->getReferencedItemAsDto($item->id, $userId);
+            if (!empty($cri)) {
+                $contextReferencedItems[]= $cri;
+            }
         }
 
         $this->view->success   = true;
         $this->view->sentItems = $sendItems;
         $this->view->error     = null;
+        $this->view->contextReferencedItems = $contextReferencedItems;
 
     }
 }
