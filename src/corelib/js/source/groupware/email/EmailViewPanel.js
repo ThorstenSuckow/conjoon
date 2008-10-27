@@ -199,6 +199,11 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      */
     setEmailItem : function(emailItem, suspendAutoLoad)
     {
+        // check first if the requested email item is already being loaded
+        if (emailItem && this.emailItem && this.requestId != null && emailItem.id == this.emailItem.id) {
+            return;
+        }
+
         this.emailItem = emailItem;
 
         if (emailItem != null)  {
@@ -232,6 +237,8 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             }
         }
 
+        this.abortRequest();
+
         this.view.clear();
 
         if (this.fireEvent('beforeemailload', id) === false) {
@@ -262,6 +269,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         if (this.requestId) {
             Ext.Ajax.abort(this.requestId);
         }
+        this.requestId = null;
     },
 
     // private

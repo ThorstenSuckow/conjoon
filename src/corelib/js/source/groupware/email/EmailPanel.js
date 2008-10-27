@@ -703,9 +703,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      		return;
      	}
 
-        this.preview.abortRequest();
         this.preview.setEmailItem(record);
-
     },
 
     hidePreview : function(btn, evt)
