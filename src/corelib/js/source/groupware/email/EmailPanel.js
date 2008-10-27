@@ -40,8 +40,9 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
 		refreshFrame : true
 	});
 
-    this.preview.on('emailload', this.onEmailLoad, this);
+    this.preview.on('emailload',        this.onEmailLoad, this);
 	this.preview.on('emailloadfailure', this.onEmailLoadFailure, this);
+	this.preview.on('show',             this._onPreviewShow, this);
 
     /**
      * The grid that shows the email items.
@@ -692,8 +693,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     requestEmailRecord : function(record)
     {
-        if (!record) {
+        if (!this.preview.isVisible()) {
             return;
+        }
+
+        if (!record) {
+            this.preview.setEmailItem(null);
         }
 
         var emailRecord = this.preview.emailRecord;
@@ -1316,6 +1321,31 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     },
 
     /**
+     * Callback for the "show" event of the preview panel.
+     * Will load the current selected record into the Panel if it gets shown,
+     *
+     * @param {Ext.Panel} panel
+     *
+     */
+    _onPreviewShow : function(panel)
+    {
+        var sm = this.gridPanel.getSelectionModel();
+
+        var count = sm.getCount();
+
+        if (count == 0 || count > 1) {
+            this.requestEmailRecord(null);
+            return;
+        }
+
+        var rec = sm.getSelected();
+
+        if (rec) {
+            this.requestEmailRecord(rec);
+        }
+    },
+
+    /**
      * Callback when a record in the grid panel is selected. Will update the
      * email view accordingly and the grid's toolbar.
      *
@@ -1340,7 +1370,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         if (count == 0) {
             this.switchButtonState(0, null);
-            this.preview.setEmailItem(null);
+            this.requestEmailRecord(null);
             return;
         }
 
@@ -1362,7 +1392,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var rec = this.preview.emailItem;
 
         if (rec && rec.id == record.id) {
-            this.preview.setEmailItem(null);
+            this.requestEmailRecord(null);
         }
     },
 
@@ -1370,7 +1400,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     onGridStoreClear : function()
     {
         this.switchButtonState(0, null);
-        this.preview.setEmailItem(null);
+        this.requestEmailRecord(null);
     },
 
     onBeforeBuffer : function()
@@ -1381,7 +1411,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     onGridStoreBeforeLoad : function(store, options)
     {
-        this.preview.setEmailItem(null);
+        this.requestEmailRecord(null);
 
         this.clearPending();
 
