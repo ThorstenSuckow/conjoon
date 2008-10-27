@@ -421,13 +421,16 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
      * @param Intrabuild_Modules_Groupware_Email_Account $account The account which was used writing
      * the draft
      * @param integer $userId The id of the user for whom the draft gets saved.
+     * @param string $type The context the draft was created in. If this is reply or reply_all,
+     * the id stored in referencesId will be stored in the references-table
+     * @param integer $referencesId The id of the message that was referenced creating the draft
      *
      * @return array the data from groupware_email_item associated with
      * the newly saved entry
      */
     public function saveDraft(Intrabuild_Modules_Groupware_Email_Draft $draft,
                               Intrabuild_Modules_Groupware_Email_Account $account,
-                              $userId)
+                              $userId, $type = '', $referencesId = -1)
     {
         $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
         $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
@@ -541,6 +544,28 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
 
                 $flagModel->insert($flagUpdate);
+
+                // check if the draft references an existing email and if it is in context
+                // reply or reply_all
+                switch ($type) {
+                    case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY:
+                    case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_FORWARD:
+                    case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY_ALL:
+                        if ($referencesId > 0) {
+                            $referencesUpdate = array(
+                                'groupware_email_items_id' => $id,
+                                'user_id'                  => $userId,
+                                'reference_items_id'       => $referencesId,
+                                'reference_type'           => $type,
+                                'is_pending'               => 1
+                            );
+                            $referencesModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
+                            $referencesModel->insert($referencesUpdate);
+                        }
+                    break;
+                }
+
+
             }
         } catch (Exception $e) {
             $adapter->rollBack();
@@ -571,7 +596,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
      */
     public function moveDraftToOutbox(Intrabuild_Modules_Groupware_Email_Draft $draft,
                               Intrabuild_Modules_Groupware_Email_Account $account,
-                              $userId, $type)
+                              $userId, $type = '', $referencesId = -1)
     {
 
         $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
@@ -581,7 +606,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         $outboxModel     = new Intrabuild_Modules_Groupware_Email_Item_Model_Outbox();
         $referencesModel = new Intrabuild_Modules_Groupware_Email_Item_Model_References();
 
-        $referenceId = $draft->getId() < 0 ? 0 : $draft->getId();
+        $referenceId = $referencesId < 0 ? 0 : $referencesId;
 
         // prepare data to insert or update
         $outboxUpdate = array(
@@ -654,20 +679,37 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         $adapter = $this->getAdapter();
         $adapter->beginTransaction();
 
+        $id = $draft->getId();
         try {
-            // insert!
-            $id = $this->insert($itemUpdate);
-            Intrabuild_Util_Array::apply($outboxUpdate, array(
-                'groupware_email_items_id' => $id
-            ));
-            $outboxModel->insert($outboxUpdate);
-            $flagUpdate = array(
-                'groupware_email_items_id' => $id,
-                'user_id'                  => $userId,
-                'is_read'                  => 1,
-                'is_spam'                  => 0,
-                'is_deleted'               => 0
-            );
+            if ($id > 0) {
+                // update! move from drafts to outbox
+
+                $itemWhere = $this->getAdapter()->quoteInto('id = ?', $id);
+                $this->update($itemUpdate, $itemWhere);
+
+                Intrabuild_Util_Array::apply($outboxUpdate, array(
+                    'groupware_email_items_id' => $id
+                ));
+                $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $id);
+                $outboxModel->update($outboxUpdate, $outboxWhere);
+            } else {
+                // insert!
+                $id = $this->insert($itemUpdate);
+                Intrabuild_Util_Array::apply($outboxUpdate, array(
+                    'groupware_email_items_id' => $id
+                ));
+                $outboxModel->insert($outboxUpdate);
+                $flagUpdate = array(
+                    'groupware_email_items_id' => $id,
+                    'user_id'                  => $userId,
+                    'is_read'                  => 1,
+                    'is_spam'                  => 0,
+                    'is_deleted'               => 0
+                );
+
+                $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
+                $flagModel->insert($flagUpdate);
+            }
 
             switch ($type) {
                 case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY:
@@ -687,10 +729,6 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 break;
             }
 
-            $flagModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
-
-            $flagModel->insert($flagUpdate);
-
         } catch (Exception $e) {
             $adapter->rollBack();
             return null;
@@ -708,13 +746,17 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
      * @param integer $userId
      * @param Intrabuild_Mail_Sent $mailSent
      * @param string $type
+     * @param integer $referencesId The id of the email that was refernced sending this
+     * message. This argument will only be taken into account if $type euqals to
+     * reply or reply_all
      *
      * @return array the data from groupware_email_item associated with
      * the newly saved entry
      */
     public function saveSentEmail(Intrabuild_Modules_Groupware_Email_Draft $message,
                                   Intrabuild_Modules_Groupware_Email_Account $account,
-                                  $userId, Intrabuild_Mail_Sent $mailSent, $type = "")
+                                  $userId, Intrabuild_Mail_Sent $mailSent, $type = "",
+                                  $referencesId = -1)
     {
         $mail = $mailSent->getMailObject();
 
@@ -724,7 +766,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
 
         $messageId = (int)$message->getId();
 
-        $referenceId = $messageId < 0 ? 0 : $messageId;
+        $referenceId = $referencesId <= 0 ? 0 : $referencesId;
 
         if ($userId <= 0 || $accountId <= 0) {
             return array();
@@ -825,6 +867,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
         );
 
         switch ($messageType) {
+            // if the message was sent from an opened draft or from the outbox,, we simply can create a new entry in the tables,
+            // as if it was created from scratch
+            case 'draft':
             // most simple: mesageType is outbox which means we have simply to update a few fields
             case 'outbox':
                 if ($messageId <= 0 || $sentFolderId == 0) {
@@ -854,9 +899,6 @@ class Intrabuild_Modules_Groupware_Email_Item_Model_Item
                 return $this->getItemForUser($messageId, $userId);
             break;
 
-            // if the message was sent from an opened draft, we simply can create a new entry in the tables,
-            // as if it was created from scratch
-            case 'draft':
             // if the message was created from scratch, i.e. has no id and no folderId,
             // save a fresh row into the tables groupware_email_items_id, groupware_email_items_flags,
             // groupware_email_items_outbox

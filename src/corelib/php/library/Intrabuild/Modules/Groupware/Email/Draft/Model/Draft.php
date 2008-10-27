@@ -64,10 +64,16 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
      *
      * @param integer $itemId
      * @param integer $userId
+     * @param string $context The context used to fetch the draft. Important
+     * when dealign with contexts "reply", "reply_all" and "forward".
+     * - context "forward": fields "references" and "in_reply_to" will be set
+     * to an empty string
+     * - context "reply", "reply_all": "in_reply_to" will be set to the message-id
+     * of the email, references will be concatenated with the message-id
      *
      * @return array
      */
-    public function getDraft($itemId, $userId, $context)
+    public function getDraft($itemId, $userId, $context = '')
     {
         $itemId = (int)$itemId;
 
@@ -105,11 +111,28 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
         // clear memory
         unset($row);
 
-        if ($draft['in_reply_to'] == "") {
+        // set in_reply_to, references according to the context
 
-            $inboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
-            $messageId  = $inboxModel->getMessageIdForItem($draft['id']);
-            $draft['in_reply_to'] = $messageId;
+        switch ($context) {
+            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY:
+            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY_ALL:
+                $inboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
+                $messageId  = $inboxModel->getMessageIdForItem($draft['id']);
+                if ($messageId != "") {
+                    $draft['in_reply_to'] = $messageId;
+                    $draft['references']  = $draft['references'] != ''
+                                          ? $draft['references'] . ' ' . $messageId
+                                          : $messageId;
+                } else {
+                    $draft['in_reply_to'] = '';
+                    $draft['references']  = '';
+                }
+            break;
+
+            case Intrabuild_Modules_Groupware_Email_Keys::REFERENCE_TYPE_FORWARD:
+                $draft['in_reply_to'] = '';
+                $draft['references']  = '';
+            break;
         }
 
         // check if the item is available in outbox and get the id of it under which it was
@@ -129,11 +152,6 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
         }
 
         $draft['groupware_email_accounts_id'] = $accId;
-
-        /**
-         * @todo figure out what to do with references!
-         */
-        $draft['references'] = "";
 
         return $draft;
     }

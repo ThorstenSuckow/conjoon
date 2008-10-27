@@ -97,6 +97,16 @@ class Intrabuild_Modules_Groupware_Email_Sender {
             $mail->setReplyTo($account->getReplyAddress());
         }
 
+        // set in-reply-to
+        if ($draft->getInReplyTo() != "") {
+            $mail->setInReplyTo($draft->getInReplyTo());
+        }
+
+        // set references
+        if ($draft->getReferences() != "") {
+            $mail->setReferences($draft->getReferences());
+        }
+
         // set date
         $mail->setDate($draft->getDate());
 

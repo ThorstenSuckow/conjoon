@@ -288,7 +288,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     // 'de.intrabuild.groupware.email.Smtp.emailSent'
     Ext.ux.util.MessageBus.subscribe(
         'de.intrabuild.groupware.email.Smtp.emailSent',
-        this.onSendEmail,
+        this._onSendEmail,
         this
     );
 
@@ -958,10 +958,27 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return;
         }
 
+        var draft        = message.draft;
         var itemRecord   = message.itemRecord;
         var currFolderId = this.clkNodeId;
         var store        = this.gridPanel.getStore();
 	    var pendingStore = tp.pendingItemStore;
+
+        // update pending count of drafts if the message was in the draft folder
+        if (draft.get('groupwareEmailFoldersId') == tp.folderDraft.id) {
+            var pendingRecord = pendingStore.getById(tp.folderDraft.id);
+            if (pendingRecord) {
+                pendingRecord.set('pending', pendingRecord.data.pending-1);
+            }
+
+            // remove record if draft was currently visible
+            // the referenced item will be in any case the itemrecord from
+            // the draft folder, since the draft itself was from the
+            // draftFolder
+            if (tp.folderDraft.id == currFolderId) {
+                store.remove(message.referencedItem);
+            }
+        }
 
 	    // pending count will be updated in every case
         var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
@@ -1102,14 +1119,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 	 * referencedItem - de.intrabuild.groupware.email.EmailItemRecord
 	 * options - Object
      */
-    onSendEmail : function(subject, message)
+    _onSendEmail : function(subject, message)
     {
         var referencedRecord = message.referencedItem;
 
         var emailRecord = message.itemRecord;
         var draft       = message.draft;
-        var oldId       = draft.get('id');
-        var oldFolderId = draft.get('groupwareEmailFoldersId');
+        var oldId       = -1;
+        var oldFolderId = -1;
         var type        = draft.get('type');
 
         var tp           = this.treePanel;
@@ -1117,9 +1134,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var store        = this.gridPanel.getStore();
         var pendingStore = tp.pendingItemStore;
 
+        if (referencedRecord) {
+            oldId       = referencedRecord.get('id');
+            oldFolderId = referencedRecord.get('groupwareEmailFoldersId');
+
+        }
+
         // check if the grid with the record for old id is open. Update the specific record
         // with the reference type, if message.type equals to forward, reply or reply_all
-        if (type.indexOf('reply') != -1 || type.indexOf('forward') != -1) {
+        if (referencedRecord && (type.indexOf('reply') != -1 || type.indexOf('forward') != -1)) {
             var refRecord = store.getById(oldId);
             if (refRecord) {
                 var references = refRecord.get('referencedAsTypes').slice(0);
@@ -1143,15 +1166,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return;
         }
 
-        // if the email was loaded from outbox and sent, update pending nodes
+        // if the email was loaded from outbox/draft and sent, update pending nodes
         // minus 1, but only if the id of the itemRecord equals to the id of the draft,
         // which will basically tell that an email pending in the outbox folder was sent
-        if (oldFolderId == tp.folderOutbox.id && emailRecord.get('id') == draft.get('id')) {
+        if (referencedRecord && ((oldFolderId == tp.folderOutbox.id || oldFolderId == tp.folderDraft.id)
+            && emailRecord.get('id') == referencedRecord.get('id'))) {
             // if grid is visible, remove the record with the specified id!
             if (currFolderId == oldFolderId) {
-                if (referencedRecord) {
-				    store.remove(referencedRecord);
-			    }
+                store.remove(referencedRecord);
             }
             // update pending count in any case
             var pendingRecord = pendingStore.getById(oldFolderId);
@@ -1159,9 +1181,6 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 pendingRecord.set('pending', pendingRecord.data.pending-1);
             }
         }
-
-        // if the email was loaded from drafts, nothing will happen, as a draft
-        // will not be deleted, thus can be reused after an email was sent from it
 
         // if the visible grid is the grid for sent items, add the recod to the store
         if (emailRecord.get('groupwareEmailFoldersId') == currFolderId) {

@@ -26,6 +26,23 @@ de.intrabuild.groupware.email.data.Draft = Ext.data.Record.create([
     {name : 'id', type : 'int' },
 
     /**
+     * If this draft references any other email when replying to it, this will store the id.
+     * It will default to 0 or -1 if the draft does not reference any existing email item.
+     */
+    {name : 'referencesId', type : 'int' },
+
+    /**
+     * @type string
+     */
+    {name : 'inReplyTo', type : 'inReplyTo' },
+
+    /**
+     * @type string
+     */
+    {name : 'references', type : 'string' },
+
+
+    /**
      * The format of the draft. can be 'text/plain', 'text/html' or 'multipart'
      */
     {name : 'format', type : 'string' },

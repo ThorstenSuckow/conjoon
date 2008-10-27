@@ -27,6 +27,10 @@ class Intrabuild_Mail extends Zend_Mail {
 
     protected $_replyTo = null;
 
+    protected $_references = null;
+
+    protected $_inReplyTo = null;
+
     /**
      * Sets the Reply-to header for an email
      *
@@ -50,6 +54,7 @@ class Intrabuild_Mail extends Zend_Mail {
         return $this;
     }
 
+
     /**
      * Returns the reply-to header field.
      *
@@ -71,6 +76,100 @@ class Intrabuild_Mail extends Zend_Mail {
         $headers = $this->getHeaders();
 
         return $headers['Reply-To'];
+    }
+
+    /**
+     * Sets the references header for an email
+     *
+     * @param  string    $references
+     * @return Zend_Mail Provides fluent interface
+     * @throws Zend_Mail_Exception if set multiple times
+     */
+    public function setReferences($references)
+    {
+        if ($this->_references === null) {
+            $references = strtr($references, "\r\n\t", '???');
+            $this->_references = $references;
+            $this->_storeHeader('References', $references, false);
+        } else {
+            /**
+             * @see Zend_Mail_Exception
+             */
+            require_once 'Zend/Mail/Exception.php';
+            throw new Zend_Mail_Exception('References Header set twice');
+        }
+        return $this;
+    }
+
+
+    /**
+     * Returns the references header field.
+     *
+     * @param  boolean $plain true to return the value as stored in
+     * the $_references-property, otherwise the encoded value
+     *
+     * @return string
+     */
+    public function getReferences($plain = true)
+    {
+        if ($this->_references === null) {
+            return null;
+        }
+
+        if ($plain) {
+            return $this->_references;
+        }
+
+        $headers = $this->getHeaders();
+
+        return $headers['References'];
+    }
+
+    /**
+     * Sets the in-reply-to header for an email
+     *
+     * @param  string    $inReplyTo
+     * @return Zend_Mail Provides fluent interface
+     * @throws Zend_Mail_Exception if set multiple times
+     */
+    public function setInReplyTo($inReplyTo)
+    {
+        if ($this->_inReplyTo === null) {
+            $inReplyTo = strtr($inReplyTo, "\r\n\t", '???');
+            $this->_inReplyTo = $inReplyTo;
+            $this->_storeHeader('In-Reply-To', $inReplyTo, false);
+        } else {
+            /**
+             * @see Zend_Mail_Exception
+             */
+            require_once 'Zend/Mail/Exception.php';
+            throw new Zend_Mail_Exception('In-Reply-To Header set twice');
+        }
+        return $this;
+    }
+
+
+    /**
+     * Returns the references header field.
+     *
+     * @param  boolean $plain true to return the value as stored in
+     * the $_references-property, otherwise the encoded value
+     *
+     * @return string
+     */
+    public function getInReplyTo($plain = true)
+    {
+        if ($this->_inReplyTo === null) {
+            return null;
+        }
+
+        if ($plain) {
+            return $this->_inReplyTo;
+        }
+
+        $headers = $this->getHeaders();
+
+        return $headers['In-Reply-To'];
     }
 
     /**

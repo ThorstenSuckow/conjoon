@@ -1259,7 +1259,9 @@ class Groupware_EmailController extends Zend_Controller_Action {
             false
         );
 
-        $item = $itemDecorator->saveSentEmailAsDto($message, $account, $userId, $mail, $data['type']);
+        $item = $itemDecorator->saveSentEmailAsDto(
+            $message, $account, $userId, $mail, $data['type'], $data['referencesId']
+        );
 
         if (!$item) {
             require_once 'Intrabuild/Error.php';
@@ -1398,7 +1400,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
         require_once 'Intrabuild/Modules/Groupware/Email/Draft/Model/Draft.php';
 
         $draftModel = new Intrabuild_Modules_Groupware_Email_Draft_Model_Draft();
-        $draftData = $draftModel->getDraft($id, $userId);
+        $draftData = $draftModel->getDraft($id, $userId, $type);
 
         if (empty($draftData)) {
             require_once 'Intrabuild/Error.php';
@@ -1615,7 +1617,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             false
         );
 
-        $item = $itemDecorator->saveDraftAsDto($draft, $account, $userId);
+        $item = $itemDecorator->saveDraftAsDto($draft, $account, $userId, $data['type'], $data['referencesId']);
 
         if (!$item) {
             require_once 'Intrabuild/Error.php';
@@ -1764,7 +1766,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             false
         );
 
-        $item = $itemDecorator->moveDraftToOutboxAsDto($draft, $account, $userId, $data['type']);
+        $item = $itemDecorator->moveDraftToOutboxAsDto($draft, $account, $userId, $data['type'], $data['referencesId']);
 
         if (!$item) {
             require_once 'Intrabuild/Error.php';

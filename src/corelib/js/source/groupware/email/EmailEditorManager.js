@@ -12,6 +12,8 @@
  * $URL$
  */
 
+Ext.namespace('de.intrabuild.groupware.email');
+
 /**
  * The EmailEditorManager Singleton allows for creating an instance of EmailForm
  * that will be reused for every email that will be written once the object was
@@ -21,8 +23,6 @@
  *
  *
  */
-Ext.namespace('de.intrabuild.groupware.email');
-
 de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var STATE_LOADING = 1;
@@ -75,7 +75,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         // is already opened, change to this tab
         if (type == 'edit' && draftId > 0) {
             for (var i in formValues) {
-                if (formValues[i].draftId == draftId) {
+                if (formValues[i].id == draftId) {
                     contentPanel.setActiveTab(i);
                     return;
                 }
@@ -152,7 +152,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             emailItemRecord   : emailItemRecord,
             signatureAttached : false,
             dirty             : false,
-            draftId           : (type != 'edit' ? -1 : draftId),
             pending           : false,
             disabled          : true,
             subject           : "",
@@ -188,11 +187,14 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         registerToolbar();
 
-        panel.on('deactivate', onDeactivatePanel, de.intrabuild.groupware.email.EmailEditorManager);
-        panel.on('render',     onActivatePanel,   de.intrabuild.groupware.email.EmailEditorManager);
-        panel.on('activate',   onActivatePanel,   de.intrabuild.groupware.email.EmailEditorManager);
-        panel.on('destroy',    onDestroyPanel,    de.intrabuild.groupware.email.EmailEditorManager);
-        contentPanel.on('beforeremove',  onBeforeClose,    de.intrabuild.groupware.email.EmailEditorManager);
+        var emailEditor = de.intrabuild.groupware.email.EmailEditorManager;
+
+        panel.on('deactivate', onDeactivatePanel, emailEditor);
+        panel.on('render',     onActivatePanel,   emailEditor);
+        panel.on('activate',   onActivatePanel,   emailEditor);
+        panel.on('destroy',    onDestroyPanel,    emailEditor);
+
+        contentPanel.on('beforeremove',  onBeforeClose, emailEditor);
 
         contentPanel.add(panel);
         contentPanel.setActiveTab(panel);
@@ -331,14 +333,16 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         Ext.apply(formValues[options.panelId], {
             state      : null,
-            id         : draft.id,
-            type       : type,
+            id         : (data.type != 'edit' ? -1 : draft.id),
+            type       : data.type,
             disabled   : false,
+            references : draft.references,
+            inReplyTo  : draft.inReplyTo,
             subject    : draft.subject,
             message    : draft.contentTextPlain,
             accountId  : draft.groupwareEmailAccountsId,
             recipients : recRecs,
-            folderId   : draft.groupwareEmailFoldersId
+            folderId   : (data.type != 'edit' ? -1 : draft.groupwareEmailFoldersId)
         });
 
         completeForm(options.panelId);
@@ -472,7 +476,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         var panelId = activePanel.id;
 
-        var draftRecord = _prepareDataToSend(panelId);
+        var draftRecord = _prepareDataToSend(panelId, type);
 
         switch (type) {
             case 'send':
@@ -492,8 +496,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             break;
 
             case 'edit':
-                draftRecord.set('id', formValues[panelId].draftId);
-                draftRecord.id = formValues[panelId].draftId;
                 de.intrabuild.groupware.email.Dispatcher.saveDraft(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
@@ -592,11 +594,9 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
             // allow changing some properties if and only if this draft was created from
             // scratch
-            var oldDraftId = formValues[panelId].draftId;
-
-            formValues[panelId].draftId = message.itemRecord.id;
-            formValues[panelId].type    = 'edit';
-            formValues[panelId].groupwareEmailFoldersId = message.itemRecord.get('groupwareEmailFoldersId');
+            formValues[panelId].id   = message.itemRecord.id;
+            formValues[panelId].type = 'edit';
+            formValues[panelId].folderId = message.itemRecord.get('groupwareEmailFoldersId');
 
             formValues[panelId].dirty = false;
         } else {
@@ -635,10 +635,14 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      * Prepares the data from the email form to be send to the server.
      * Returns an object with all needed properties.
      *
+     * @param {String} panelId The id of the panel that holds the email to be worked
+     * on
+     * @param {String} type The context the data should be prepared for.
+     * Can be 'send', 'outbox' or 'edit'
      *
      * @return {Object}
      */
-    var _prepareDataToSend = function(panelId)
+    var _prepareDataToSend = function(panelId, type)
     {
         var to  = [];
         var cc  = [];
@@ -672,17 +676,31 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var fValues = formValues[panelId];
 
         var params = {
-            format  : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
-            id      : fValues.id,
-            type    : fValues.type,
-            //panelId : panelId,
-            date    : (new Date().getTime())/1000,
-            subject : subjectField.getValue(),
-            message : htmlEditor.getValue(),
-            to      : to.length  > 0 ? Ext.encode(to)  : '',
-            cc      : cc.length  > 0 ? Ext.encode(cc)  : '',
-            bcc     : bcc.length > 0 ? Ext.encode(bcc) : '',
-            groupwareEmailFoldersId  : fValues.folderId,
+            format       : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
+            id           : (
+                (fValues.type == 'edit' || type == 'edit')
+                ? fValues.id
+                : -1
+            ),
+            referencesId : (fValues.type == 'edit'
+                            ? -1
+                            : (fValues.emailItemRecord ? fValues.emailItemRecord.id : -1)),
+            // this differs from the passed argument as this is the context of the email
+            // being written, i.e. reply, reply_all, forward, new or edit
+            type         : fValues.type,
+            inReplyTo    : fValues.inReplyTo,
+            references   : fValues.references,
+            date         : (new Date().getTime())/1000,
+            subject      : subjectField.getValue(),
+            message      : htmlEditor.getValue(),
+            to           : to.length  > 0 ? Ext.encode(to)  : '',
+            cc           : cc.length  > 0 ? Ext.encode(cc)  : '',
+            bcc          : bcc.length > 0 ? Ext.encode(bcc) : '',
+            groupwareEmailFoldersId : (
+                (fValues.type == 'edit' || type == 'edit')
+                ? fValues.folderId
+                : -1
+            ),
             groupwareEmailAccountsId : accountField.getValue()
         };
 

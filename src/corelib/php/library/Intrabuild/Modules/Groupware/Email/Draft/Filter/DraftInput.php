@@ -57,6 +57,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             'format',
             'id',
             'date',
+            'referencesId',
             'groupwareEmailAccountsId',
             'groupwareEmailFoldersId',
             'subject',
@@ -72,6 +73,7 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             'format',
             'id',
             'date',
+            'referencesId',
             'groupwareEmailAccountsId',
             'groupwareEmailFoldersId',
             'subject',
@@ -96,6 +98,9 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
             'Int'
          ),
          'date' => array(
+            'Int'
+         ),
+         'referencesId' => array(
             'Int'
          ),
          'groupwareEmailFoldersId' => array(
@@ -141,6 +146,10 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
          'date' => array(
             'allowEmpty' => false,
             array('GreaterThan', 0)
+         ),
+         'referencesId' => array(
+            'allowEmpty' => true,
+            array('GreaterThan', -2)
          ),
         'groupwareEmailAccountsId' => array(
             'allowEmpty' => false,
