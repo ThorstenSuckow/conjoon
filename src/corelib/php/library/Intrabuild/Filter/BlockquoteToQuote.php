@@ -49,14 +49,13 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
             $value = " ". $value;
         }
 
-        $value = str_replace(
+
+       $value = str_replace(
             array("\n&gt;", ">&gt;"),
             array("\n &gt;", "> &gt;"),
             $value
         );
 
-       // var_dump($value);
-        //die();
 
         // normalize blockquote
         $value = preg_replace("/(<\/?)(blockquote)[^>]*>/i",
@@ -64,11 +63,6 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
              $value
         );
 
-        $value = str_replace(
-            array('<blockquote>', '</blockquote>'),
-            array("\n<blockquote>", "</blockquote>\n"),
-            $value
-        );
         $lines = explode("\n", $value);
 
         $quotes = array();
@@ -81,11 +75,7 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
             };
 
             if (trim($line) != '<blockquote>' && trim($line) != '</blockquote>') {
-                if (!empty($quotes)) {
-                    $final[] = implode("", $quotes). ' ' . $line;
-                } else {
-                    $final[] = $line;
-                }
+                $final[] = implode("", $quotes) . preg_replace("/(<\/?)(blockquote)[^>]*>/i", "", $line);
             }
 
             if (strpos($line, '</blockquote>') !== false) {
