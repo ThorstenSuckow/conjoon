@@ -250,14 +250,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var onDraftLoadException = function(response, options)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-            onLogin: {
-                fn : function(){
-                    Ext.Ajax.request(options);
-                },
-                scope : de.intrabuild.groupware.email.EmailEditorManager
-            }
-        });
+        contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+        contentPanel.remove(Ext.getCmp(options.panelId));
+        contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
     };
 
     /**

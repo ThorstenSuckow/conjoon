@@ -1917,6 +1917,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
             // no account found?
             if (!$account) {
+                /**
+                 * @todo think about using the standard account as a fallback or use at last
+                 * an error message to inform the user that the account used to write this email
+                 * is not available anymore
+                 */
                 continue;
             }
 

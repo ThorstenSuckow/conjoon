@@ -144,11 +144,22 @@ class Intrabuild_Modules_Groupware_Email_Draft_Model_Draft {
                         ->where('groupware_email_items_id = ? ', $draft['id'])
         );
 
+        $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+
         if (!$accIdRow) {
-            $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
-            $accId   = $accountModel->getStandardAccountIdForUser($userId);
+            $accId = $accountModel->getStandardAccountIdForUser($userId);
         } else {
             $accId = $accIdRow->groupware_email_accounts_id;
+
+            // check if the account still exists
+            $account = $accountModel->getAccount($accId, $userId);
+            if (empty($account)) {
+                $accId = $accountModel->getStandardAccountIdForUser($userId);
+                if ($accId == 0) {
+                    return array();
+                }
+            }
+
         }
 
         $draft['groupware_email_accounts_id'] = $accId;
