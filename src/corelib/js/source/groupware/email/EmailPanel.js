@@ -1654,14 +1654,16 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     _replaceAndRefreshIfNeeded : function(referencedRecord, itemRecord)
     {
         var store    = this.gridPanel.getStore();
-        var ind      = store.findInsertIndex(itemRecord);
         var itemCopy = itemRecord.copy();
+        var ind      = store.findInsertIndex(itemCopy);
 
         // silently remove the old record, then insert the new one.
         // Afterwards, refresh the grid
         // we need to repaint the visible rect of the grid if the
         // referencedRecord is currently in the visible rect
-        if (referencedRecord) {
+        // only use the referenced record if the referencedRecord id equals to the
+        // id of the itemRecord. Then the method has to update an existing item in the grid
+        if (referencedRecord && referencedRecord.id == itemCopy.id) {
             var wasSelected = false;
             var view        = this.gridPanel.getView();
             var refresh     = view.isRecordRendered(referencedRecord);
