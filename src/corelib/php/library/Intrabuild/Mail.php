@@ -31,6 +31,8 @@ class Intrabuild_Mail extends Zend_Mail {
 
     protected $_inReplyTo = null;
 
+    protected $_messageId = null;
+
     /**
      * Sets the Reply-to header for an email
      *
@@ -123,6 +125,45 @@ class Intrabuild_Mail extends Zend_Mail {
         $headers = $this->getHeaders();
 
         return $headers['References'];
+    }
+
+    /**
+     * Sets the Message-id header for an email
+     *
+     * @param  string    $messageId
+     * @return Zend_Mail Provides fluent interface
+     * @throws Zend_Mail_Exception if set multiple times
+     */
+    public function setMessageId($messageId)
+    {
+        if ($this->_messageId === null) {
+            $this->_messageId = $messageId;
+            $this->_storeHeader('Message-ID', $messageId, false);
+        } else {
+            /**
+             * @see Zend_Mail_Exception
+             */
+            require_once 'Zend/Mail/Exception.php';
+            throw new Zend_Mail_Exception('Message-ID Header set twice');
+        }
+        return $this;
+    }
+
+
+    /**
+     * Returns the Message-ID header field.
+     *
+     * @return string
+     */
+    public function getMessageId()
+    {
+        if ($this->_messageId === null) {
+            return null;
+        }
+
+        $headers = $this->getHeaders();
+
+        return $headers['Message-ID'];
     }
 
     /**

@@ -39,6 +39,11 @@ require_once 'Intrabuild/Version.php';
 require_once 'Intrabuild/Mail/Sent.php';
 
 /**
+ * @see Intrabuild_Mail_Util
+ */
+require_once 'Intrabuild/Mail/Util.php';
+
+/**
  * A utility class for sending emails.
  *
  * @category   Email
@@ -89,6 +94,12 @@ class Intrabuild_Modules_Groupware_Email_Sender {
         foreach ($bcc as $address) {
             $mail->addBcc($address->getAddress(), $address->getName());
         }
+
+        $mail->setMessageId(
+            Intrabuild_Mail_Util::generateMessageId(
+                Intrabuild_Mail_Util::getHostFromAddress($account->getAddress())
+            )
+        );
 
         // set sender
         $mail->setFrom($account->getAddress(), $account->getUserName());
