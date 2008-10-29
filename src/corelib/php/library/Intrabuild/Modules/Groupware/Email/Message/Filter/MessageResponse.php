@@ -177,10 +177,10 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
             ));
 
             $data['body'] = "<pre>".
-                $signatureFilter->filter(
-                    $quoteFilter->filter(
-                        $urlFilter->filter(
-                            $plainToHtmlFilter->filter(
+                $plainToHtmlFilter->filter(
+                    $signatureFilter->filter(
+                        $quoteFilter->filter(
+                            $urlFilter->filter(
                                 $emoticonFilter->filter(
                                     $lineFeedFilter->filter(
                                         $data['body']

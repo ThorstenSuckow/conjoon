@@ -406,14 +406,12 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
         }
 
         $data['contentTextPlain'] = $startTag.
-            $quoteFilter->filter(
-                $plainToHtmlFilter->filter(
+            $plainToHtmlFilter->filter(
+                $quoteFilter->filter(
                     $data['contentTextPlain']
                 )
             )
          . $endTag;
-
-        $data['contentTextPlain'] = str_replace("\n", "<br />",  $data['contentTextPlain']);
 
         return $data;
     }

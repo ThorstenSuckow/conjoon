@@ -49,19 +49,23 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
             $value = " ". $value;
         }
 
-
        $value = str_replace(
             array("\n&gt;", ">&gt;"),
             array("\n &gt;", "> &gt;"),
             $value
         );
 
-
         // normalize blockquote
         $value = preg_replace("/(<\/?)(blockquote)[^>]*>/i",
              "$1blockquote>",
              $value
         );
+
+        /*$value = str_replace(
+            '</blockquote>',
+            "</blockquote>\n",
+            $value
+        );*/
 
         $lines = explode("\n", $value);
 
@@ -70,17 +74,40 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
         for ($nr = 0, $len = count($lines); $nr < $len; $nr++) {
             $line = $lines[$nr];
 
-            if (strpos($line, '<blockquote>') !== false) {
+            if (trim($line) == "") {
+                $final[] = implode("", $quotes) . $line;
+                continue;
+            } else if (trim($line) == "<blockquote>") {
                 $quotes[] = '&gt;';
-            };
-
-            if (trim($line) != '<blockquote>' && trim($line) != '</blockquote>') {
                 $final[] = implode("", $quotes) . preg_replace("/(<\/?)(blockquote)[^>]*>/i", "", $line);
+                continue;
+            } else if (trim($line) == "</blockquote>") {
+                $final[] = implode("", $quotes) . preg_replace("/(<\/?)(blockquote)[^>]*>/i", "", $line);
+                array_pop($quotes);
+                continue;
             }
 
-            if (strpos($line, '</blockquote>') !== false) {
-                array_pop($quotes);
-            };
+            $vLine = str_replace(
+                array('<blockquote>', '</blockquote>'),
+                array("\n<blockquote>\n", "\n</blockquote>\n"),
+                $line
+            );
+
+            $vLines = explode("\n", $vLine);
+
+            for ($a = 0, $lena = count($vLines); $a < $lena; $a++) {
+                $tline = $vLines[$a];
+
+                if ($tline == '<blockquote>') {
+                    $quotes[] = '&gt;';
+                } else if ($tline == '</blockquote>') {
+                    array_pop($quotes);
+                } else if ($tline == "") {
+                    continue;
+                } else {
+                    $final[] = implode("", $quotes) . $tline;
+                }
+            }
         }
 
         return implode("\n", $final);

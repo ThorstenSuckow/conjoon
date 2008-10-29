@@ -99,22 +99,22 @@ class Intrabuild_Filter_QuoteToBlockquote implements Zend_Filter_Interface
 
             while ($intendation > $currentIntend) {
                 $currentIntend++;
-                $quoted .= '<blockquote>';
+                $quoted .= "<blockquote>";
             }
 
             while ($currentIntend > $intendation) {
                 $currentIntend--;
-                $quoted .= '</blockquote>';
+                $quoted .= "</blockquote>";
             }
 
             $quoted .= $match[3]."\n";
         }
 
-        $quoted = trim($quoted);
+        //$quoted = trim($quoted);
 
         while ($currentIntend > 0) {
             $currentIntend--;
-            $quoted .= '</blockquote>';
+            $quoted .= "</blockquote>";
         }
 
         return $quoted;
