@@ -40,6 +40,8 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 
 	var activeRecord = null;
 
+    var _requestIds = {};
+
 	var registerToolbar = function()
     {
         if (toolbar == null) {
@@ -87,7 +89,11 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 	 */
 	var loadFeedContents = function(id, panelId)
 	{
-	    Ext.Ajax.request({
+	    if (_requestIds[panelId]) {
+	        return;
+	    }
+
+	    _requestIds[panelId] = Ext.Ajax.request({
 	        url    : '/groupware/feeds/get.feed.content/format/json',
 	        params : {
 	            id : id
@@ -121,6 +127,9 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 			item.id
 		);
 
+        _requestIds[options.panelId] = null;
+        delete _requestIds[options.panelId];
+
 		Ext.ux.util.MessageBus.publish(
 			'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess', {
 			id : item.id
@@ -137,6 +146,9 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
      */
     var onFeedLoadFailure = function(response, options)
     {
+        _requestIds[options.panelId] = null;
+        delete _requestIds[options.panelId];
+
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
 			onLogin : {
 				fn : function(){
@@ -195,8 +207,14 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         view.on('destroy', function(panel){
 			tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar');
             openedFeeds[panel.id] = null;
-            delete openedFeeds[panel.id];}
-        );
+            delete openedFeeds[panel.id];
+
+            if (_requestIds[panel.id]) {
+                Ext.Ajax.abort(_requestIds[panel.id]);
+                _requestIds[panel.id] = null;
+                delete _requestIds[panel.id];
+            }
+        });
 
 
         view.on('activate', function(panel) {
