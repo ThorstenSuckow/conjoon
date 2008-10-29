@@ -120,7 +120,7 @@ class Intrabuild_Filter_MimeDecodeHeader implements Zend_Filter_Interface
         }
 
         $s = preg_replace(
-            "/=(\d[a-f]|[[:xdigit:]])/e",
+            "/=(\d[a-f]|[a-f]{0,2}|[[:xdigit:]])/e",
             "strtoupper('\\0')",
             $ms
         );
