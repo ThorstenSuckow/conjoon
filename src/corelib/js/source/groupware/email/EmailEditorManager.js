@@ -750,9 +750,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (Ext.isIE) {
             splitRange.pasteHTML('<span id="'+id+'"></span>');
         } else {
-            var span = doc.createElement('span');
-            span.id = id;
-            splitRange.surroundContents(span);
+            htmlEditor.execCmd('insertHTML', '<span id="'+id+'"></span>');
         }
 
         var splitter = doc.getElementById(id);
@@ -1280,6 +1278,32 @@ de.intrabuild.groupware.email.EmailForm = function(config){
             autocomplete: "off"
         }
     });
+
+    this.htmlEditor.fixKeys = function() {
+        if(Ext.isSafari){
+            return function(e){
+                var k = e.getKey();
+                if(k == e.TAB){
+                    e.stopEvent();
+                    this.execCmd('InsertText','\t');
+                    this.deferFocus();
+                } else if (k == e.ENTER) {
+                    // adjust behavior of webkit based browsers.
+                    // we need a simple br tag inserted for linebreaks
+                    // overrides the standard behavior of inserting
+                    // div elements
+                    e.stopEvent();
+                    var r = this.win.getSelection().getRangeAt(0);
+                    var br = this.doc.createElement('br');
+                    r.insertNode(br);
+                    this.win.getSelection().collapse(br, 2);
+                    this.deferFocus();
+                }
+            };
+        }
+
+        return Ext.form.HtmlEditor.prototype.fixKeys;
+    }();
 
     this.htmlEditor.getDocMarkup = function(){
 
