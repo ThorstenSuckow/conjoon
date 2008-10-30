@@ -329,17 +329,18 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
 
         Ext.apply(formValues[options.panelId], {
-            state      : null,
-            id         : (data.type != 'edit' ? -1 : draft.id),
-            type       : data.type,
-            disabled   : false,
-            references : draft.references,
-            inReplyTo  : draft.inReplyTo,
-            subject    : draft.subject,
-            message    : draft.contentTextPlain,
-            accountId  : draft.groupwareEmailAccountsId,
-            recipients : recRecs,
-            folderId   : (data.type != 'edit' ? -1 : draft.groupwareEmailFoldersId)
+            initialized : true,
+            state       : null,
+            id          : (data.type != 'edit' ? -1 : draft.id),
+            type        : data.type,
+            disabled    : false,
+            references  : draft.references,
+            inReplyTo   : draft.inReplyTo,
+            subject     : draft.subject,
+            message     : draft.contentTextPlain,
+            accountId   : draft.groupwareEmailAccountsId,
+            recipients  : recRecs,
+            folderId    : (data.type != 'edit' ? -1 : draft.groupwareEmailFoldersId)
         });
 
         completeForm(options.panelId);
@@ -386,11 +387,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         subjectField.setValue(formValues[panelId].subject);
         htmlEditor.setValue(formValues[panelId].message);
-
-        //htmlEditor.tb.items.get('sourceedit').pressed = formValues[panelId].sourceEditMode;
-        //htmlEditor.toggleSourceEdit(formValues[panelId].sourceEditMode);
-        //htmlEditor.toggleSourceEdit(formValues[panelId].sourceEditMode);
-        //htmlEditor.tb.items.get('sourceedit').toggle(formValues[panelId].sourceEditMode);
 
         if (formValues[panelId].accountId) {
             accountField.setValue(formValues[panelId].accountId);
@@ -927,7 +923,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                     formValues[panelId]['signatureAttached']
                 );
                 htmlEditor.setValue(htmlEditor.getValue()+sig);
-            } else if (sigDiv) {
+            } else if (sigDiv && refresh === true) {
                 sigDiv.innerHTML = _prepareSignature(rec.get('signature'));
                 htmlEditor.syncValue();
             }
