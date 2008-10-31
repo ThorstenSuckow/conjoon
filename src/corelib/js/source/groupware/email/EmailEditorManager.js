@@ -798,6 +798,16 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 dividedNode.removeChild(fc);
             }
 
+            var cq = quoteEl.innerHTML.replace(/<br>/g, "").replace(/&nbsp;/g, "").trim();
+            if (cq == "") {
+                quoteEl.parentNode.removeChild(quoteEl);
+            }
+
+            cq = dividedNode.innerHTML.replace(/<br>/g, "").replace(/&nbsp;/g, "").trim();
+            if (cq == "") {
+                dividedNode.parentNode.removeChild(dividedNode);
+            }
+
         } else {
             splitter.parentNode.removeChild(splitter);
         }
