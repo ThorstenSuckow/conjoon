@@ -111,9 +111,9 @@ de.intrabuild.groupware.feeds.AddFeedDialog = function(config) {
             data   : [
                 [172800, de.intrabuild.Gettext.gettext("every 2 days")],
                 [86400,  de.intrabuild.Gettext.gettext("every day")],
-                [43200,  de.intrabuild.Gettext.gettext("evey 12 hours")],
+                [43200,  de.intrabuild.Gettext.gettext("every 12 hours")],
                 [21600,  de.intrabuild.Gettext.gettext("every 6 hours")],
-                [7200,   de.intrabuild.Gettext.gettext("evey 2 hours")],
+                [7200,   de.intrabuild.Gettext.gettext("every 2 hours")],
                 [3600,   de.intrabuild.Gettext.gettext("every hour")],
                 [1800,   de.intrabuild.Gettext.gettext("every 30 minutes")],
                 [900,    de.intrabuild.Gettext.gettext("every 15 minutes")]

@@ -5,22 +5,22 @@
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
  * The dialog uses a tree panel for showing all feeds.
- * 
+ *
  * @todo Store loading could fail. This should be intercepted in any way.
  */
 de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
-    
-    Ext.apply(this, config); 
-    
+
+    Ext.apply(this, config);
+
     this.store = new Ext.data.Store({
             storeId	    : Ext.id(),
             autoLoad    : false,
@@ -28,7 +28,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                               id : 'id'
                           }, de.intrabuild.groupware.feeds.AccountRecord)
         });
-    
+
 
     /**
      * The panel that holds the tree nodes. Rendered like a combo box.
@@ -41,24 +41,24 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         enableColumnMove : false,
         enableHdMenu : false,
         store  : this.store,
-        sortInfo   : {field: 'name', direction: "DESC"},            
+        sortInfo   : {field: 'name', direction: "DESC"},
         selModel   : new Ext.grid.RowSelectionModel({singleSelect:true}),
         columns    : [{
-            id        : 'feed_name', 
-            header    : '<b>'+de.intrabuild.Gettext.gettext("Feeds")+'</b>', 
-            width     : 148, 
-            sortable  : true, 
+            id        : 'feed_name',
+            header    : '<b>'+de.intrabuild.Gettext.gettext("Feeds")+'</b>',
+            width     : 148,
+            sortable  : true,
             dataIndex : 'name'
         }]
-    });    
-    
+    });
+
     var tmpStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
     var records = tmpStore.getRange();
     tmpStore.on('add', this.addRecordsFromStore, this);
     for (var i = 0, len = records.length; i < len; i++) {
-        this.store.add(records[i].copy());    
+        this.store.add(records[i].copy());
     }
-    
+
     /**
      * Button for adding a feed
      */
@@ -72,18 +72,18 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
             dialog.show();
         }
     });
-    
+
     /**
      * Button for removing a feed
      */
     this.removeFeedButton = new Ext.Button({
         text     : de.intrabuild.Gettext.gettext("Remove feed"),
-        minWidth : 150,    
+        minWidth : 150,
         disabled : true,
         handler  : this.removeSelected,
         scope    : this
     });
-    
+
     /**
      * Textfield for the feeds url. This is immutable.
      */
@@ -92,7 +92,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         disabled   : true,
         disabledClass : ''
     });
-    
+
     /**
      * Textfield for the feeds name.
      */
@@ -133,7 +133,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
             fields : ['id', 'text']
         })
     });
-    
+
     /**
      * Combobox to store update/refresh behavior.
      *
@@ -154,18 +154,18 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
             data   : [
                 [172800, de.intrabuild.Gettext.gettext("every 2 days")],
                 [86400,  de.intrabuild.Gettext.gettext("every day")],
-                [43200,  de.intrabuild.Gettext.gettext("evey 12 hours")],
+                [43200,  de.intrabuild.Gettext.gettext("every 12 hours")],
                 [21600,  de.intrabuild.Gettext.gettext("every 6 hours")],
-                [7200,   de.intrabuild.Gettext.gettext("evey 2 hours")],
+                [7200,   de.intrabuild.Gettext.gettext("every 2 hours")],
                 [3600,   de.intrabuild.Gettext.gettext("every hour")],
                 [1800,   de.intrabuild.Gettext.gettext("every 30 minutes")],
                 [900,    de.intrabuild.Gettext.gettext("every 15 minutes")]
             ],
             fields : ['id', 'text']
-        }) 
-      
-    });        
-    
+        })
+
+    });
+
     /**
     * Items
     */
@@ -193,8 +193,8 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         items : [
             new de.intrabuild.groupware.util.FormIntro({
                   label : de.intrabuild.Gettext.gettext("Informations"),
-                  text  : ''        
-            }),  
+                  text  : ''
+            }),
             new Ext.form.FormPanel({
                 bodyStyle  : 'margin:10px 0 20px 20px;background:none',
                 baseCls    : 'x-small-editor',
@@ -208,11 +208,11 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                     this.feedUrl,
                     this.feedName
                 ]
-          }), 
+          }),
 		  new de.intrabuild.groupware.util.FormIntro({
 			      label : de.intrabuild.Gettext.gettext("Options"),
-				  text  : ''	
-		  }),       
+				  text  : ''
+		  }),
             new Ext.form.FormPanel({
                 bodyStyle  : 'margin:10px 0 20px 0px;padding-left:20px;background:none',
                 baseCls    : 'x-small-editor',
@@ -222,33 +222,33 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                     anchor: '100%'
                 },
                 items : [
-                    this.updateAfter,    
+                    this.updateAfter,
                     this.removeAfter
                 ]
-          })                
+          })
         ]
     }];
-    
+
     this.buttons = [{
         text    : 'OK',
         handler : function(){this.saveConfiguration(true);},
         scope   : this
-      },{    
+      },{
         text    : de.intrabuild.Gettext.gettext("Cancel"),
         handler : this.close,
-        scope   : this              
-      },{    
+        scope   : this
+      },{
         text     : de.intrabuild.Gettext.gettext("Apply"),
         handler  : this.saveConfiguration,
         scope    : this,
-        disabled : true  
+        disabled : true
     }];
-    
+
     /**
     * Constructor call.
     */
     de.intrabuild.groupware.feeds.FeedOptionsDialog.superclass.constructor.call(this,  {
-        iconCls   : 'de-intrabuild-groupware-feeds-Icon', 
+        iconCls   : 'de-intrabuild-groupware-feeds-Icon',
         title     : de.intrabuild.Gettext.gettext("Feed settings"),
         bodyStyle : 'background-color:#F6F6F6',
         height    : 325,
@@ -256,31 +256,31 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         modal     : true,
         resizable : false,
         layout    : 'border'
-    });    
-    
+    });
+
     this.formPanel = this.getComponent('de.intrabuild.groupware.feeds.FeedOptionsDialog.formPanel');
-    
+
     // add listener
     this.on('render', this.onDialogRendered, this);
     this.feedPanel.selModel.on('beforerowselect', this.onBeforeRowSelect, this);
     this.feedPanel.selModel.on('rowselect',       this.onRowSelect, this);
     this.feedPanel.selModel.on('rowdeselect',     this.onRowDeselect, this);
-    
+
     this.removeAfter.on('select', this.configChanged, this);
     this.updateAfter.on('select', this.configChanged, this);
-    
+
     this.feedName.on('render', function() {
             this.feedName.el.on('keyup',    this.configChanged, this);
             this.feedName.el.on('keydown',  this.configChanged, this);
             this.feedName.el.on('keypress', this.configChanged, this);
     }, this);
-        
+
     this.on ('destroy', function() {
         de.intrabuild.groupware.feeds.AccountStore.getInstance().un('add', this.addRecordsFromStore, this);
-    }, this);    
-    
-  
-    
+    }, this);
+
+
+
 };
 
 
@@ -288,29 +288,29 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
 
     LOADING         : 0,
     SAVING          : 1,
-    
+
     msgLoading  : de.intrabuild.Gettext.gettext("Loading feed configurations..."),
     msgSaving   : de.intrabuild.Gettext.gettext("Saving configurationen..."),
-    
+
     /**
-     * This array holds all records that where marked as deleted. Instead of 
+     * This array holds all records that where marked as deleted. Instead of
      * deleting them directly on request, feeds will be stored here and merged with
      * the modified recordset right before saving the configuration. Deleted records
      * will have set their property <tt>deleted</tt> to <tt>1</tt>.
      */
     deletedRecords : null,
-    
+
     /**
      * Auto generated id from the Ajax request that saves the configuration.
      */
     requestId : null,
-    
+
     /**
      * Tells wether to close the dialog after saving the feed configuration or
-     * not. 
+     * not.
      */
     closeAfterSave : false,
-    
+
     /**
      * Stores the last selected row.
      */
@@ -320,56 +320,56 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
      * Stores the last selected record.
      */
     clkRecord : null,
-    
+
     /**
      * Stores the number of deleted records during this dialog lifetime
      */
     deletedRecordCount : 0,
-    
+
     /**
      * Stores the number of modified records during this dialog lifetime
      */
     modifiedRecordCount : 0,
-    
+
 
     /**
      * LoadMask configuration
      */
     loadMaskConfig : {
-        msg : de.intrabuild.Gettext.gettext("Processing...")    
+        msg : de.intrabuild.Gettext.gettext("Processing...")
     },
-    
+
     /**
-     * The load mask for this dialog. Used for showing process of saving and 
+     * The load mask for this dialog. Used for showing process of saving and
      * reading data.
      */
     loadMask : null,
-    
+
     /**
-     * Gets called when a feed was added via the AddFeedDialog and this dialog 
+     * Gets called when a feed was added via the AddFeedDialog and this dialog
      * was closed
      * @param {e.intrabuild.groupware.feeds-FeedRecord} The newly added feed
      */
     addRecordsFromStore : function(store, records, index)
     {
-        this.feedPanel.store.add(records);      
+        this.feedPanel.store.add(records);
     },
-    
-    
+
+
     /**
      * Removes the selected feed configuration
      */
     removeSelected : function()
     {
         var record = this.clkRecord;
-        
-        //just in case    
+
+        //just in case
         if (record == null) {
             return;
         }
-        
+
         var msg  = Ext.MessageBox;
-        
+
         msg.show({
             title   : de.intrabuild.Gettext.gettext("Remove feed"),
             msg     : String.format(
@@ -386,69 +386,69 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             icon    : msg.QUESTION,
             cls     :'de-intrabuild-msgbox-question',
             width   :400
-        });        
+        });
     },
-    
+
     /**
      * Removes a record from teh datastore and puts it into <tt>deltedRecords</tt>.
      */
     removeRecord : function()
     {
         var record = this.clkRecord;
-        
-        //just in case    
+
+        //just in case
         if (record == null) {
             return;
         }
         this.feedPanel.selModel.suspendEvents();
-        
+
         var store = this.feedPanel.store;
-        
+
         // revert all changes to this record since the last commit, so they
         // don't get accidently written into the database
         record.reject(true);
-        
+
         var rData  = record.data;
-        var delRecord = record.copy(); 
-        
-        
+        var delRecord = record.copy();
+
+
         if (this.deletedRecords  == null) {
             this.deletedRecords = new Array();
         }
-        
+
         this.deletedRecordCount++;
-        
+
         this.deletedRecords.push(delRecord);
-        
+
         store.remove(record);
         this.clkRecord   = null;
         this.clkRowIndex = -1;
-        
+
         this.removeFeedButton.setDisabled(true);
         this.formPanel.setVisible(false);
-        
+
         this.buttons[2].setDisabled(false);
         this.feedPanel.selModel.resumeEvents();
     },
-    
+
     /**
-     * Handler for saving the configuration. Reads out all modified records 
+     * Handler for saving the configuration. Reads out all modified records
      * and sends a request to the server to save them.
      *
-     * @param {Boolean} <tt>true</tt> to close the dialog when saving the 
+     * @param {Boolean} <tt>true</tt> to close the dialog when saving the
      *                  configuration finishes, otherwise <tt>false</tt>
      */
     saveConfiguration : function(closeAfterwards)
     {
         this.showLoadMask(this.SAVING);
         this.closeAfterSave = closeAfterwards === true ? true : false;
-        
+
         // make sure the last selected record gets saved
         this.saveRecord();
-            
+
         var records = this.feedPanel.store.getModifiedRecords();
         var recordset = new Array();
-        
+
         var a     = 0;
         var max_i = 0;
         var deleted = [];
@@ -459,7 +459,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
                 deleted.push(this.deletedRecords[a].id);
             }
         }
-         
+
         for (var i = 0, max_i = records.length; i < max_i; i++) {
             updated.push(records[i].data);
         }
@@ -469,21 +469,21 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             this.saved();
             return;
         }
-        
+
         this.requestId = Ext.Ajax.request({
             url            : '/groupware/feeds/update.accounts/format/json',
             params         : {
                 deleted : Ext.encode(deleted),
                 updated : Ext.encode(updated)
             },
-            success        : this.onSuccess, 
+            success        : this.onSuccess,
             failure        : this.onFailure,
             scope          : this,
             disableCaching : true
         });
 
     },
-    
+
     /**
     * Method gets executed when records have been successfully saved.
     * @access private
@@ -491,17 +491,17 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     saved : function()
     {
         this.deletedRecords = null;
-        
-        this.feedPanel.store.commitChanges(); 
-        
+
+        this.feedPanel.store.commitChanges();
+
         if (this.closeAfterSave == true) {
             this.close();
-            return;    
+            return;
         }
-        
+
         this.resetState();
     },
-    
+
     /**
      * Callback for the request that was send savong the feed configurations.
      */
@@ -514,17 +514,17 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         if (json.isError(response.responseText)) {
             this.onFailure(response, parameters);
             return;
-        }     
-        
+        }
+
         var values = json.getResponseValues(response.responseText);
-        
+
         if (values.success != true) {
-            // Fallback. Usually, the returntype should be boolean, always 
+            // Fallback. Usually, the returntype should be boolean, always
             // set to true. If that fails, this message will be shown
             // with no further indication of what the error caused.
             // This should never been evaluated by runtime, since the
             // server will send an error back if updating the record fails.
-            // If you take this to the code-wtf, I'll suspend your account ;) 
+            // If you take this to the code-wtf, I'll suspend your account ;)
             msg.show({
                 title   : de.intrabuild.Gettext.gettext("Error"),
                 msg     : de.intrabuild.Gettext.gettext("Could not update the feed configurations."),
@@ -532,11 +532,11 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
                 icon    : msg.ERROR,
                 cls     :'de-intrabuild-msgbox-error',
                 width   : 400
-            });   
+            });
             this.loadMask.hide();
             return;
         }
-        
+
         var accountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
         var store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
         var updatedFailed = values.updatedFailed;
@@ -551,58 +551,58 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
                 up.set('deleteInterval', records[i].get('deleteInterval'));
                 for (var a = 0, lena = items.length; a < lena; a++) {
                     if (items[a].get('groupwareFeedsAccountsId') == records[i].id) {
-                        items[a].set('name', records[i].get('name'));        
-                    }    
-                } 
-            }        
-        } 
+                        items[a].set('name', records[i].get('name'));
+                    }
+                }
+            }
+        }
         store.commitChanges();
-        
+
         if (len > 0) {
             if (store.groupField !== false) {
                 store.groupBy(store.groupField, true);
-            }        
+            }
         }
-        
+
         accountStore.commitChanges();
-        
+
         var deletedFailed = values.deletedFailed;
         var feedRecords = store.getRange();
         if (this.deletedRecords && this.deletedRecords.length) {
             for (var i = 0, len = this.deletedRecords.length; i < len; i++) {
                 if (deletedFailed.indexOf(this.deletedRecords[i].id) == -1) {
                     // remove accounts
-                    accountStore.remove(accountStore.getById(this.deletedRecords[i].id));    
+                    accountStore.remove(accountStore.getById(this.deletedRecords[i].id));
                     // remove feed items
                     for (var a = 0, lena = feedRecords.length; a < lena; a++) {
                         if (feedRecords[a].get('groupwareFeedsAccountsId') == this.deletedRecords[i].id) {
                             store.remove(feedRecords[a]);
                         }
-                    }         
+                    }
                 } else {
-                    this.feedPanel.store.add(this.deletedRecords[i]);    
+                    this.feedPanel.store.add(this.deletedRecords[i]);
                 }
             }
         }
-        
-        
-        
-        this.saved();       
+
+
+
+        this.saved();
 
     },
-    
+
     /**
-     * Callback if saving the configuration fails due to network problems or 
+     * Callback if saving the configuration fails due to network problems or
      * else.
      */
     onFailure : function(response, parameters)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response);       
-           
-        this.feedPanel.store.rejectChanges(); 
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+
+        this.feedPanel.store.rejectChanges();
         this.resetState();
     },
-    
+
     /**
      * Resets listeners and compoenents to their initial state.
      */
@@ -611,26 +611,26 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         this.loadMask.hide();
         this.requestId = null;
         this.buttons[2].disable();
-        
+
         this.removeAfter.on('select',   this.configChanged, this);
         this.updateAfter.on('select',   this.configChanged, this);
         this.feedName.el.on('keyup',    this.configChanged, this);
         this.feedName.el.on('keydown',  this.configChanged, this);
-        this.feedName.el.on('keypress', this.configChanged, this);         
-        
+        this.feedName.el.on('keypress', this.configChanged, this);
+
         this.deletedRecordCount  = 0;
         this.modifiedRecordCount = 0;
     },
-    
-    
+
+
     /**
-     * Called when any value in any of the form field changes. This is usually 
+     * Called when any value in any of the form field changes. This is usually
      * here to render the "apply" button enabled for the first time.
      */
     configChanged : function(box, record, index)
     {
         this.buttons[2].setDisabled(false);
-       
+
         // detacht listeners, don't need them anymore
         this.removeAfter.un('select',   this.configChanged, this);
         this.updateAfter.un('select',   this.configChanged, this);
@@ -638,30 +638,30 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         this.feedName.el.un('keydown',  this.configChanged, this);
         this.feedName.el.un('keypress', this.configChanged, this);
     },
-    
+
     /**
      * Validates the current value of the feed name text field.
      *
-     * A valid feedname must not equal to an empty string and may only 
+     * A valid feedname must not equal to an empty string and may only
      * contain literals, numbers and " ", ".", ":", and "-".
-     * 
+     *
      */
     isFeedNameValid : function(value)
     {
         value = value.toLowerCase().trim();
-        
+
         var collection = this.feedPanel.store.getRange();
-        
+
         var selRecord = this.feedPanel.selModel.getSelected();
-        
+
         // in case the user switches to another record and the function already
         // validated an entry.
         if (selRecord == null) {
             return true;
         }
-        
+
         var record = null;
-        
+
         for (var i = 0, max_i = collection.length; i < max_i; i++) {
             record = collection[i];
             if (selRecord.id == record.id) {
@@ -671,26 +671,26 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
                 return false;
             }
         }
-        
+
         var alphanum = /^[a-zA-Z0-9_()\/ :.-]+$/;
         return value != "" && alphanum.test(value);
     },
-    
+
     /**
      * Callback before a row is about to be selected
      *
-     * @param {Ext.grid.RowSelectionModel} The current row selection model of the 
+     * @param {Ext.grid.RowSelectionModel} The current row selection model of the
      *                                     grid.
      * @param {Number} The rowIndex that represents the record that is about to
      *                 be selected in the grid.
      * @param {Boolean}
-     * @param {Ext.data.Record} The record that is mapped to the selection 
+     * @param {Ext.data.Record} The record that is mapped to the selection
      *                          that is about to be made in the grid.
      */
-    onBeforeRowSelect : function(selModel, rowIndex, keepExisting, record) 
+    onBeforeRowSelect : function(selModel, rowIndex, keepExisting, record)
     {
         // check current selection. We can bubble the event and allow selection
-        // without additional checks if no record is currently selected 
+        // without additional checks if no record is currently selected
         if (this.clkRowIndex == -1) {
             return true;
         }
@@ -700,15 +700,15 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             * @ext-bug we have to defer the displaying of the window, or else it will
             *          be painted in the background and not shown as modal
             */
-            this.feedInvalidMessage.defer(0.001, this);   
+            this.feedInvalidMessage.defer(0.001, this);
             return false;
-        } 
-        
-        // before we switch to another panel, set the last selected record fields 
+        }
+
+        // before we switch to another panel, set the last selected record fields
         // and update the grid's row according to the new field name.
         this.saveRecord();
     },
-    
+
     /**
      * Saves the configuration for the last selected record.
      */
@@ -722,7 +722,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         this.clkRecord.set('updateInterval', this.updateAfter.getValue());
         this.modifiedRecordCount = this.feedPanel.store.getModifiedRecords().length;
     },
-    
+
     /**
      * Simple helper for showing a message that the selected feed name is invalid.
      *
@@ -730,7 +730,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     feedInvalidMessage : function()
     {
         var msg = Ext.MessageBox;
-        
+
         /**
         * @ext-bug we have to defer the displaying of the window, or else it will
         *          be painted in the background and not shown as modal
@@ -744,20 +744,20 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             animateTarget : at,
             cls           :'de-intrabuild-msgbox-warning',
             width         : 400
-        });           
+        });
     },
-    
+
     /**
      * Callback for row deselection.
      * If the current data has no valid feed-name, the row won't be deselected
      * an the user will be informed that he has to input valid data.
      * The current deselected record will be passed to the onBeforeRowSelect
-     * method and the current selected rowIndex will be reselected again, 
+     * method and the current selected rowIndex will be reselected again,
      * surpressing all events. Thus, as long as the user did not enter a valid feed
      * name, the application focus on the record that is currently selected/wants to
      * be deselected and takes care of the data integrity.
      */
-    onRowDeselect : function(selModel, rowIndex, record) 
+    onRowDeselect : function(selModel, rowIndex, record)
     {
         if (!this.feedName.isValid()) {
             this.feedPanel.selModel.suspendEvents();
@@ -767,20 +767,20 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
              * @ext-bug we have to defer the displaying of the window, or else it will
              *          be painted in the background and not shown as modal
              */
-            this.feedInvalidMessage.defer(0.001, this);   
+            this.feedInvalidMessage.defer(0.001, this);
             return false;
         }
-        
+
         // save the last selected record before it gets deselected
         this.saveRecord();
-        
+
         this.clkRowIndex = -1;
         this.clkRecord   = null;
         this.removeFeedButton.setDisabled(true);
         this.formPanel.setVisible(false);
         return true;
     },
-    
+
     /**
      * Callback for the selectionmodel of the grid.
      */
@@ -789,30 +789,30 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         if (this.clkRowIndex == rowIndex) {
             return;
         }
-        
+
         this.clkRowIndex = rowIndex;
         this.clkRecord   = record;
-        
+
         var msg   = Ext.MessageBox;
         var record = selModel.getSelected();
-        
+
         if (record == null) {
-            this.formPanel.setVisible(false);    
+            this.formPanel.setVisible(false);
             return;
-        } 
-        
+        }
+
         if (this.formPanel.hidden) {
             this.formPanel.setVisible(true);
         }
-        
+
         this.feedUrl.setValue(record.get('uri'));
         this.feedName.setValue(record.get('name'));
         this.updateAfter.setValue(record.get('updateInterval'));
         this.removeAfter.setValue(record.get('deleteInterval'));
-        
+
         this.removeFeedButton.setDisabled(false);
     },
-    
+
     /**
      * Callback when the dialog was rendered.
      * Loads all datastores and selects the first row after this, if available.
@@ -822,8 +822,8 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     {
         this.formPanel.setVisible(false);
     },
-    
-    
+
+
     /**
      * Shows the load mask and configures it's message text based on the passed
      * userland request type that intiated the load mask.
@@ -832,8 +832,8 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     {
         if (this.loadMask == null) {
             this.loadMask = new Ext.LoadMask(this.body, this.loadMaskConfig);
-        } 
-        
+        }
+
         switch (requestType) {
             case this.LOADING:
                 this.loadMask.msg = this.msgLoading;
@@ -842,10 +842,10 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
                 this.loadMask.msg = this.msgSaving;
             break;
         }
-    
+
         this.loadMask.show();
-        
+
     }
-    
-    
+
+
 });
