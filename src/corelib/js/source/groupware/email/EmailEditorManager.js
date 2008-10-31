@@ -1275,15 +1275,12 @@ de.intrabuild.groupware.email.EmailForm = function(config){
         }
     });
 
-    this.htmlEditor.fixKeys = function() {
-        if(Ext.isSafari){
-            return function(e){
-                var k = e.getKey();
-                if(k == e.TAB){
-                    e.stopEvent();
-                    this.execCmd('InsertText','\t');
-                    this.deferFocus();
-                } else if (k == e.ENTER) {
+    if (Ext.isSafari) {
+        this.htmlEditor.initEditor = function() {
+            Ext.form.HtmlEditor.prototype.initEditor.call(this);
+
+            Ext.EventManager.on(this.doc, 'keydown', function(e){
+                if (e.getKey() == e.ENTER) {
                     // adjust behavior of webkit based browsers.
                     // we need a simple br tag inserted for linebreaks
                     // overrides the standard behavior of inserting
@@ -1295,11 +1292,10 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                     this.win.getSelection().collapse(br, 2);
                     this.deferFocus();
                 }
-            };
-        }
+            }, this);
+        };
+    }
 
-        return Ext.form.HtmlEditor.prototype.fixKeys;
-    }();
 
     this.htmlEditor.getDocMarkup = function(){
 
