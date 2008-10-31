@@ -380,7 +380,7 @@ Ext.onReady(function(){
 
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.email.AccountStore.getInstance());
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.AccountStore.getInstance());
-        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.FeedStore.getInstance());
+        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.FeedStore.getInstance(), true);
 
         de.intrabuild.util.PreLoader.on('load', function() {
         	de.intrabuild.groupware.email.Letterman.wakeup();
