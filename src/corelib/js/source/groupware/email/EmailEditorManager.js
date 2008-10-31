@@ -798,12 +798,12 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 dividedNode.removeChild(fc);
             }
 
-            var cq = quoteEl.innerHTML.replace(/<br>/g, "").replace(/&nbsp;/g, "").trim();
+            var cq = quoteEl.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|&nbsp;/g, "").trim();
             if (cq == "") {
                 quoteEl.parentNode.removeChild(quoteEl);
             }
 
-            cq = dividedNode.innerHTML.replace(/<br>/g, "").replace(/&nbsp;/g, "").trim();
+            cq = dividedNode.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|&nbsp;/g, "").trim();
             if (cq == "") {
                 dividedNode.parentNode.removeChild(dividedNode);
             }
