@@ -6,8 +6,8 @@
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Contact "Thorsten Suckow-Homberg" <ts@siteartwork.de>
- * if you need a commercial license.
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
+ * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
- * If you would like to support the development and support of the Ext.ux.Livegrid
- * component, you can make a donation: <http://www.siteartwork.de/livegrid>
  */
 
 Ext.namespace('Ext.ux.grid.livegrid');
