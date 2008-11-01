@@ -1,4 +1,13 @@
-﻿Version 0.3a3 (GPL)
+﻿Version 0.3a4 (GPL)
+1-November-2008
+
+ - fixed: (EditorGridPanel.js) call to "startEditing()" would throw error if the
+requested index in the view is not currently representing a record; overrode
+method for checking if record to edit is available
+ - enhancement: (GridView.js) adjusted behavior of "ensureVisible()" to scroll a
+requested cell horizontally into view
+
+Version 0.3a3 (GPL)
 1-November-2008
 
  - fixed: (Toolbar.js) when passing the grid as config parameter, the immediate

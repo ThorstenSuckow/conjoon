@@ -49,6 +49,28 @@ Ext.ux.grid.livegrid.EditorGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
     },
 
     /**
+     * Starts editing the specified for the specified row/column
+     * Will be cancelled if the requested row index to edit is not
+     * represented by data due to out of range regarding the view's
+     * store buffer.
+     *
+     * @param {Number} rowIndex
+     * @param {Number} colIndex
+     */
+    startEditing : function(row, col)
+    {
+        this.stopEditing();
+        if(this.colModel.isCellEditable(col, row)){
+            this.view.ensureVisible(row, col, true);
+            if (!this.store.getAt(row)) {
+                return;
+            }
+        }
+
+        return Ext.ux.grid.livegrid.EditorGridPanel.superclass.startEditing.call(this, row, col);
+    },
+
+    /**
      * Since we do not have multiple inheritance, we need to override the
      * same methods in this class we have overriden for
      * Ext.ux.grid.livegrid.GridPanel

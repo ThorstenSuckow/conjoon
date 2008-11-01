@@ -1157,9 +1157,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     focusCell : function(row, col, hscroll)
     {
         var xy = this.ensureVisible(row, col, hscroll);
+
         if (!xy) {
         	return;
 		}
+
 		this.focusEl.setXY(xy);
 
         if(Ext.isGecko){
@@ -1201,6 +1203,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         var rowEl = this.getRow(row), cellEl;
 
+        if(!rowEl){
+            return;
+        }
+
         if(!(hscroll === false && col === 0)){
             while(this.cm.isHidden(col)){
                 col++;
@@ -1208,11 +1214,21 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             cellEl = this.getCell(row, col);
         }
 
-        if(!rowEl){
-            return;
+        var c = this.scroller.dom;
+
+        if(hscroll !== false){
+            var cleft = parseInt(cellEl.offsetLeft, 10);
+            var cright = cleft + cellEl.offsetWidth;
+
+            var sleft = parseInt(c.scrollLeft, 10);
+            var sright = sleft + c.clientWidth;
+            if(cleft < sleft){
+                c.scrollLeft = cleft;
+            }else if(cright > sright){
+                c.scrollLeft = cright-c.clientWidth;
+            }
         }
 
-        var c = this.scroller.dom;
 
         return cellEl ?
             Ext.fly(cellEl).getXY() :
