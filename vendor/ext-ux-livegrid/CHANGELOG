@@ -1,4 +1,12 @@
-﻿Version 0.3a2 (GPL)
+﻿Version 0.3a3 (GPL)
+1-November-2008
+
+ - fixed: (Toolbar.js) when passing the grid as config parameter, the immediate
+call to "bind" would throw an error since the views's "ds" property is not available
+yet
+
+
+Version 0.3a2 (GPL)
 1-November-2008
 
  - enhancement: (Toolbar.js) config object allows now to specify either the grid

@@ -78,15 +78,13 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
         Ext.ux.grid.livegrid.Toolbar.superclass.initComponent.call(this);
 
         if (this.grid) {
-            this.bind(this.grid.getView());
-        } else if (this.view) {
-            var me = this;
-            this.view.init = this.view.init.createSequence(function(){
-                me.bind(this);
-            }, this.view);
-        } else {
-            throw("Ext.ux.grid.livegrid.Toolbar - cfg property view or grid is not available");
+            this.view = this.grid.getView();
         }
+
+        var me = this;
+        this.view.init = this.view.init.createSequence(function(){
+            me.bind(this);
+        }, this.view);
     },
 
     // private
