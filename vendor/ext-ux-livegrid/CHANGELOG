@@ -1,4 +1,10 @@
-﻿ - enhancement: (GridView.js) changed behavior of "processRows()" to paint the selections
+﻿ - enhancement: (GridView.js) added method "getRow()", removed overriden method
+"onCellSelect()", "onCellDeselect()", "onRowOver()", "onRowOut()" and changed
+arguments for call of methods that operate on Html-elements in the view to pass
+the model index as specified in the elements "rowIndex"-property, which will get
+translated internally to the html-element's index in the view, for broadening
+compatibility to other plugins/exension, such as the EditorGridPanel
+ - enhancement: (GridView.js) changed behavior of "processRows()" to paint the selections
 if the third argument does not equal to "false"
  - enhancement: (RowSelectionModel.js) added method "deselectRecord()" to deselect a record
 that is already selected in the model

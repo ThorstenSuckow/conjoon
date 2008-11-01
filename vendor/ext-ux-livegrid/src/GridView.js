@@ -504,8 +504,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
     /**
      * Overriden for Ext 2.2 to prevent call to focus Row.
-     * This method i s here for dom operations only - the passed argument is the
-     * index of the node in the dom, not in the model.
      *
      */
     removeRow : function(row)
@@ -577,8 +575,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
     /**
      * Callback for selecting a row. The index of the row is the absolute index
-     * in the datamodel and gets translated to the index in the view.
-     * Overwrites the parent's implementation.
+     * in the datamodel. If the row is not rendered, this method will do nothing.
      */
     // private
     onRowSelect : function(row)
@@ -587,15 +584,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
-        var viewIndex = row-this.rowIndex;
-
-        this.addRowClass(viewIndex, "x-grid3-row-selected");
+        this.addRowClass(row, "x-grid3-row-selected");
     },
 
     /**
      * Callback for deselecting a row. The index of the row is the absolute index
-     * in the datamodel and gets translated to the index in the view.
-     * Overwrites the parent's implementation.
+     * in the datamodel. If the row is not currently rendered in the view, this method
+     * will do nothing.
      */
     // private
     onRowDeselect : function(row)
@@ -604,81 +599,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
-        var viewIndex = row-this.rowIndex;
-
-        this.removeRowClass(viewIndex, "x-grid3-row-selected");
-    },
-
-    /**
-     * Callback for selecting a cell. The index of the row is the absolute index
-     * in the datamodel and gets translated to the index in the view.
-     * Overwrites the parent's implementation.
-     */
-    // private
-    onCellSelect : function(row, col)
-    {
-        if (row < this.rowIndex || row > this.rowIndex+this.visibleRows) {
-            return;
-        }
-
-        var viewIndex = row-this.rowIndex;
-
-        var cell = this.getCell(viewIndex, col);
-        if(cell){
-            this.fly(cell).addClass("x-grid3-cell-selected");
-        }
-    },
-
-    /**
-     * Callback for deselecting a cell. The index of the row is the absolute index
-     * in the datamodel and gets translated to the index in the view.
-     * Overwrites the parent's implementation.
-     */
-    // private
-    onCellDeselect : function(row, col)
-    {
-        if (row < this.rowIndex || row > this.rowIndex+this.visibleRows) {
-            return;
-        }
-
-        var viewIndex = row-this.rowIndex;
-
-        var cell = this.getCell(viewIndex, col);
-        if(cell){
-            this.fly(cell).removeClass("x-grid3-cell-selected");
-        }
-    },
-
-    /**
-     * Callback for onmouseover event of the grid's rows. The index of the row is
-     * the absolute index in the datamodel and gets translated to the index in the
-     * view.
-     * Overwrites the parent's implementation.
-     */
-    // private
-    onRowOver : function(e, t)
-    {
-        var row;
-        if((row = this.findRowIndex(t)) !== false){
-            var viewIndex = row-this.rowIndex;
-            this.addRowClass(viewIndex, "x-grid3-row-over");
-        }
-    },
-
-    /**
-     * Callback for onmouseout event of the grid's rows. The index of the row is
-     * the absolute index in the datamodel and gets translated to the index in the
-     * view.
-     * Overwrites the parent's implementation.
-     */
-    // private
-    onRowOut : function(e, t)
-    {
-        var row;
-        if((row = this.findRowIndex(t)) !== false && row !== this.findRowIndex(e.getRelatedTarget())){
-            var viewIndex = row-this.rowIndex;
-            this.removeRowClass(viewIndex, "x-grid3-row-over");
-        }
+        this.removeRowClass(row, "x-grid3-row-selected");
     },
 
 
@@ -1050,6 +971,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var scrollTop = this.liveScroller.dom.scrollTop;
 
         var cursor = Math.floor((scrollTop)/this.rowHeight);
+
         this.rowIndex = cursor;
         // the lastRowIndex will be set when refreshing the view has finished
         if (cursor == this.lastRowIndex) {
@@ -1057,6 +979,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         this.updateLiveRows(cursor);
+
         this.lastScrollPos = this.liveScroller.dom.scrollTop;
     },
 
@@ -1083,8 +1006,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         this.insertRows(ds, index, index, true);
-        //this.getRow(index).rowIndex = index;
-        //this.onRemove(ds, record, index+1, true);
         this.fireEvent("rowupdated", this, viewIndex, record);
     },
 
@@ -1116,9 +1037,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             if (paintSelections !== false) {
                 if (this.grid.selModel.isSelected(this.ds.getAt(index)) === true) {
-                    this.addRowClass(i, "x-grid3-row-selected");
+                    this.addRowClass(index, "x-grid3-row-selected");
                 } else {
-                    this.removeRowClass(i, "x-grid3-row-selected");
+                    this.removeRowClass(index, "x-grid3-row-selected");
                 }
                 this.fly(row).removeClass("x-grid3-row-over");
             }
@@ -1170,7 +1091,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         var html = this.renderRows(firstRow, lastRenderRow);
 
-        var before = this.getRow(firstRow-(this.rowIndex-this.ds.bufferRange[0]));
+        var before = this.getRow(firstRow);
 
         if (before) {
             Ext.DomHelper.insertHtml('beforeBegin', before, html);
@@ -1192,6 +1113,25 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             this.fireEvent("rowsinserted", this, viewIndexFirst, viewIndexLast, (viewIndexLast-viewIndexFirst)+1);
             this.processRows(0, undefined, true);
         }
+    },
+
+    /**
+     * Return the <TR> HtmlElement which represents a Grid row for the specified index.
+     * The passed argument is assumed to be the absolute index and will get translated
+     * to the index of the row that represents the data in the view.
+     *
+     * @param {Number} index The row index
+     *
+     * @return {null|HtmlElement} The <TR> element, or null if the row is not rendered
+     * in the view.
+     */
+    getRow : function(row)
+    {
+        if (row-this.rowIndex < 0) {
+            return null;
+        }
+
+        return this.getRows()[row-this.rowIndex];
     },
 
     /**
@@ -1243,14 +1183,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         } else if (row <= this.rowIndex) {
             this.adjustScrollerPos((rowInd)*this.rowHeight);
         }
-        var rowInd = rowInd < 0 ? row : rowInd;
-        var rowEl = this.getRow(rowInd), cellEl;
+
+        var rowEl = this.getRow(row), cellEl;
 
         if(!(hscroll === false && col === 0)){
             while(this.cm.isHidden(col)){
                 col++;
             }
-            cellEl = this.getCell(row-this.rowIndex, col);
+            cellEl = this.getCell(row, col);
         }
 
         if(!rowEl){
