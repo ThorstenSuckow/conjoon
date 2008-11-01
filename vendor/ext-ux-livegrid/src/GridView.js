@@ -1089,7 +1089,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         var html = this.renderRows(firstRow, lastRenderRow);
 
-        var before = this.getRow(firstRow);
+        var before = this.getRow(viewIndexFirst);
 
         if (before) {
             Ext.DomHelper.insertHtml('beforeBegin', before, html);
@@ -1130,6 +1130,23 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         return this.getRows()[row-this.rowIndex];
+    },
+
+    /**
+     * Returns the grid's <TD> HtmlElement at the specified coordinates.
+     * Returns null if the specified row is not currently rendered.
+     *
+     * @param {Number} row The row index in which to find the cell.
+     * @param {Number} col The column index of the cell.
+     * @return {HtmlElement} The &lt;TD> at the specified coordinates.
+     */
+    getCell : function(row, col)
+    {
+        var row = this.getRow(row);
+
+        return row
+               ? row.getElementsByTagName('td')[col]
+               : null;
     },
 
     /**
@@ -1281,20 +1298,22 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      */
     updateLiveRows: function(index, forceRepaint, forceReload)
     {
-        this.fireEvent('cursormove', this, index,
-                       Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
-                       this.ds.totalLength);
-
         var inRange = this.isInRange(index);
 
-        if (this.isBuffering && this.isPrebuffering) {
-            if (inRange) {
-                this.replaceLiveRows(index);
-            } else {
-                this.showLoadMask(true);
-            }
-        }
         if (this.isBuffering) {
+            if (this.isPrebuffering) {
+                if (inRange) {
+                    this.replaceLiveRows(index);
+                } else {
+                    this.showLoadMask(true);
+                }
+            }
+
+            this.fireEvent('cursormove', this, index,
+                           Math.min(this.ds.totalLength,
+                           this.visibleRows-this.rowClipped),
+                           this.ds.totalLength);
+
             this.requestQueue = index;
             return;
         }
@@ -1309,7 +1328,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             // repaint the table's view
             this.replaceLiveRows(index, forceRepaint);
-
+            // has to be called AFTER the rowIndex was recalculated
+            this.fireEvent('cursormove', this, index,
+                       Math.min(this.ds.totalLength,
+                       this.visibleRows-this.rowClipped),
+                       this.ds.totalLength);
             // lets decide if we can void this method or stay in here for
             // requesting a buffer update
             if (index > lastIndex) { // scrolling down

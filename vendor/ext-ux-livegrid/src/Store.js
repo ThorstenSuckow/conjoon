@@ -567,8 +567,9 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     {
         //anything buffered yet?
         if (this.bufferRange[0] == -1) {
-            return -1;
+            return undefined;
         }
+
         var modelIndex = index - this.bufferRange[0];
         return this.data.itemAt(modelIndex);
     },

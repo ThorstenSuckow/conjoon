@@ -1,4 +1,16 @@
-﻿ - enhancement: (ext-ux-livegrid.css, DragZone.js) minor code cleanups, changed
+﻿Version 0.3a2 (GPL)
+1-November-2008
+
+ - fixed: (Store.js) "getAt()" would return "-1" if the data at the passed index
+could not be found in some cases; changed to return type "undefined"
+ - fixed: (GridView.js) overrode method "getCell()" to return "null" if the row
+for the specified index could not be found
+ - fixed: firing of event "cursormove" would happen before "replaceLiveRows()"
+has taken care of re-assigning the rowIndex to the rows in the view which could
+lead to errors; adjusted method and made sure that "replaceLiveRows()" is called
+first
+ - enhancement: (EditorGridPanel.js, GridPanel.js) added basic support for using cell editors for the Livegrid (EditorGridPanel-support)
+ - enhancement: (ext-ux-livegrid.css, DragZone.js) minor code cleanups, changed
 css class "x-dd-drop-waiting" to "ext-ux-livegrid-drop-waiting"
  - enhancement: (GridView.js) added method "getRow()", removed overriden method
 "onCellSelect()", "onCellDeselect()", "onRowOver()", "onRowOut()" and changed
