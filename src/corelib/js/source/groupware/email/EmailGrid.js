@@ -120,7 +120,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
      * ...Yeah, I pretty much stole this one from the PagingToolbar!
      */
     this.bbar = new Ext.ux.grid.livegrid.Toolbar({
-        grid        : this,
+        view        : this.view,
         displayInfo : true,
         displayMsg  : de.intrabuild.Gettext.gettext("Emails {0} - {1} of {2}"),
         emptyMsg    : de.intrabuild.Gettext.gettext("No emails available")
@@ -219,7 +219,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 
 };
 
-Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.grid.GridPanel, {
+Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel, {
 
     onLoadException : function(proxy, options, response, jsError)
     {
