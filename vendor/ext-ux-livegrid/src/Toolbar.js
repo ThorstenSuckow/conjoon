@@ -38,6 +38,17 @@ Ext.namespace('Ext.ux.grid.livegrid');
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
+
+    /**
+     * @cfg {Ext.grid.GridPanel} grid
+     * The grid the toolbar is bound to. If ommited, use the cfg property "view"
+     */
+
+    /**
+     * @cfg {Ext.grid.GridView} view The view the toolbar is bound to
+     * The grid the toolbar is bound to. If ommited, use the cfg property "grid"
+     */
+
     /**
      * @cfg {Boolean} displayInfo
      * True to display the displayMsg (defaults to false)
@@ -65,7 +76,17 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     initComponent : function()
     {
         Ext.ux.grid.livegrid.Toolbar.superclass.initComponent.call(this);
-        this.bind(this.grid);
+
+        if (this.grid) {
+            this.bind(this.grid.getView());
+        } else if (this.view) {
+            var me = this;
+            this.view.init = this.view.init.createSequence(function(){
+                me.bind(this);
+            }, this.view);
+        } else {
+            throw("Ext.ux.grid.livegrid.Toolbar - cfg property view or grid is not available");
+        }
     },
 
     // private
@@ -81,13 +102,24 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     },
 
     /**
-     * Unbinds the toolbar from the specified {@link Ext.ux.grid.Livegrid}
-     * @param {@link Ext.ux.grid.Livegrid} view The view to unbind
+     * Unbinds the toolbar.
+     *
+     * @param {Ext.grid.GridView|Ext.gid.GridPanel} view Either The view to unbind
+     * or the grid
      */
-    unbind : function(grid)
+    unbind : function(view)
     {
-        var st = grid.getStore();
-        var vw = grid.view;
+        var st;
+        var vw;
+
+        if (view instanceof Ext.grid.GridView) {
+            vw = view;
+        } else {
+            // assuming parameter is of type Ext.grid.GridPanel
+            vw = view.getView();
+        }
+
+        st = view.ds;
 
         st.un('loadexception', this.enableLoading,  this);
         st.un('beforeload',    this.disableLoading, this);
@@ -98,28 +130,29 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
         vw.un('cursormove',    this.onCursorMove,   this);
         vw.un('buffer',        this.onBuffer,       this);
         vw.un('bufferfailure', this.enableLoading,  this);
-        this.grid = undefined;
+
+        this.view = undefined;
     },
 
     /**
      * Binds the toolbar to the specified {@link Ext.ux.grid.Livegrid}
-     * @param {Ext.ux.grid.Livegrid} view The view to bind
+     *
+     * @param {Ext.grird.GridView} view The view to bind
      */
-    bind : function(grid)
+    bind : function(view)
     {
-        var st = grid.getStore();
-        var vw = grid.view;
+        this.view = view;
+        var st = view.ds;
 
-        st.on('loadexception', this.enableLoading,  this);
-        st.on('beforeload',    this.disableLoading, this);
-        st.on('load',          this.enableLoading,  this);
-        vw.on('rowremoved',    this.onRowRemoved,   this);
-        vw.on('rowsinserted',  this.onRowsInserted, this);
-        vw.on('beforebuffer',  this.beforeBuffer,   this);
-        vw.on('cursormove',    this.onCursorMove,   this);
-        vw.on('buffer',        this.onBuffer,       this);
-        vw.on('bufferfailure', this.enableLoading,  this);
-        this.grid = grid;
+        st.on('loadexception',   this.enableLoading,  this);
+        st.on('beforeload',      this.disableLoading, this);
+        st.on('load',            this.enableLoading,  this);
+        view.on('rowremoved',    this.onRowRemoved,   this);
+        view.on('rowsinserted',  this.onRowsInserted, this);
+        view.on('beforebuffer',  this.beforeBuffer,   this);
+        view.on('cursormove',    this.onCursorMove,   this);
+        view.on('buffer',        this.onBuffer,       this);
+        view.on('bufferfailure', this.enableLoading,  this);
     },
 
 // ----------------------------------- Listeners -------------------------------
@@ -171,7 +204,7 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     {
         switch (type) {
             case 'refresh':
-                if (this.grid.view.reset(true)) {
+                if (this.view.reset(true)) {
                     this.loading.disable();
                 } else {
                     this.loading.enable();
