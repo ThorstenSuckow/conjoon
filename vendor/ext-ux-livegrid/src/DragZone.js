@@ -32,92 +32,52 @@ Ext.namespace('Ext.ux.grid.livegrid');
  */
 Ext.ux.grid.livegrid.DragZone = function(grid, config){
 
-    this.view = grid.getView();
-    Ext.ux.grid.livegrid.DragZone.superclass.constructor.call(this, this.view.mainBody.dom, config);
+    Ext.ux.grid.livegrid.DragZone.superclass.constructor.call(this, grid, config);
 
-    if(this.view.lockedBody){
-        this.setHandleElId(Ext.id(this.view.mainBody.dom));
-        this.setOuterHandleElId(Ext.id(this.view.lockedBody.dom));
-    }
-
-    this.scroll = false;
-    this.grid   = grid;
-    this.ddel   = document.createElement('div');
-
-    this.ddel.className = 'x-grid-dd-wrap';
-
-    this.view.ds.on('beforeselectionsload', this.onBeforeSelectionsLoad, this);
-    this.view.ds.on('selectionsload',       this.onSelectionsLoad,       this);
+    this.view.ds.on('beforeselectionsload', this._onBeforeSelectionsLoad, this);
+    this.view.ds.on('selectionsload',       this._onSelectionsLoad,       this);
 };
 
-Ext.extend(Ext.ux.grid.livegrid.DragZone, Ext.dd.DragZone, {
-    ddGroup : "GridDD",
+Ext.extend(Ext.ux.grid.livegrid.DragZone, Ext.grid.GridDragZone, {
 
+    /**
+     * Tells whether a drop is valid. Used inetrnally to determine if pending
+     * selections need to be loaded/ have been loaded.
+     * @type {Boolean}
+     */
     isDropValid : true,
 
-    getDragData : function(e)
-    {
-        var t = Ext.lib.Event.getTarget(e);
-        var rowIndex = this.view.findRowIndex(t);
-        if(rowIndex !== false){
-            var sm = this.grid.selModel;
-            if(!sm.isSelected(rowIndex) || e.hasModifier()){
-                sm.handleMouseDown(this.grid, rowIndex, e);
-            }
-
-            return {grid: this.grid, ddel: this.ddel, rowIndex: rowIndex, selections:sm.getSelections()};
-        }
-        return false;
-    },
-
+    /**
+     * Overriden for loading pending selections if needed.
+     */
     onInitDrag : function(e)
     {
         this.view.ds.loadSelections(this.grid.selModel.getPendingSelections(true));
 
-        var data = this.dragData;
-        this.ddel.innerHTML = this.grid.getDragDropText();
-        this.proxy.update(this.ddel);
+        Ext.ux.grid.livegrid.DragZone.superclass.onInitDrag.call(this, e);
     },
 
-    onBeforeSelectionsLoad : function()
+    /**
+     * Gets called before pending selections are loaded. Any drop
+     * operations are invalid/get paused if the component needs to
+     * wait for selections to load from the server.
+     *
+     */
+    _onBeforeSelectionsLoad : function()
     {
         this.isDropValid = false;
-        Ext.fly(this.proxy.el.dom.firstChild).addClass('x-dd-drop-waiting');
+        Ext.fly(this.proxy.el.dom.firstChild).addClass('ext-ux-livegrid-drop-waiting');
     },
 
-    onSelectionsLoad : function()
+    /**
+     * Gets called after pending selections have been loaded.
+     * Any paused drop operation will be resumed.
+     *
+     */
+    _onSelectionsLoad : function()
     {
         this.isDropValid = true;
         this.ddel.innerHTML = this.grid.getDragDropText();
-        Ext.fly(this.proxy.el.dom.firstChild).removeClass('x-dd-drop-waiting');
-    },
-
-    afterRepair : function()
-    {
-        this.dragging = false;
-    },
-
-    getRepairXY : function(e, data)
-    {
-        return false;
-    },
-
-    onStartDrag : function()
-    {
-
-    },
-
-    onEndDrag : function(data, e)
-    {
-    },
-
-    onValidDrop : function(dd, e, id)
-    {
-        this.hideProxy();
-    },
-
-    beforeInvalidDrop : function(e, id)
-    {
-
+        Ext.fly(this.proxy.el.dom.firstChild).removeClass('ext-ux-livegrid-drop-waiting');
     }
 });
