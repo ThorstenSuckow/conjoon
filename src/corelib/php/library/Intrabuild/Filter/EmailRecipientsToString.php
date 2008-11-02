@@ -71,8 +71,14 @@ class Intrabuild_Filter_EmailRecipientsToString implements Zend_Filter_Interface
             if (isset($address[1])) {
 
                 $hit = $this->_useQuoting ? preg_match($pattern, $address[1]) : 0;
+
                 if ($hit != 0) {
-                    $parts[] = '"' . $address[1] . '"';
+                    // quote only if the string is not already quoted
+                    if  (substr($address[1], 0, 1) != '"' || substr($address[1], -1) != '"') {
+                        $parts[] = '"' . $address[1] . '"';
+                    } else {
+                        $parts[] = $address[1];
+                    }
                 } else {
                     $parts[] = $address[1];
                 }

@@ -244,5 +244,66 @@ class Intrabuild_Mail extends Zend_Mail {
         }
     }
 
+    /**
+     * Helper function for adding a recipient and the corresponding header
+     * Overriden since ZF1.6.1 would add quotes to the name of the recipient
+     * no matter what. Since the intrabuild framework passes names to an
+     * instance of this class already quoted (even with escaped quotes if
+     * necessary, this implementation checks first if quotes need to be used
+     * and quotes after that accordingly.     *
+     *
+     * @param string $headerName
+     * @param string $name
+     * @param string $email
+     */
+    protected function _addRecipientAndHeader($headerName, $name, $email)
+    {
+        $email = strtr($email,"\r\n\t",'???');
+        $this->_addRecipient($email, ('To' == $headerName) ? true : false);
+        if ($name != '') {
+            $name = $this->_quoteIfNecessary($name) . ' ';
+        }
+
+        $this->_storeHeader($headerName, $name .'<'. $email . '>', true);
+    }
+
+    /**
+     * Sets From-header and sender of the message
+     * Overidden to check if the name of the sender is already quoted, so the name
+     * part would not accidently be quoted again.
+     *
+     *
+     * @param  string    $email
+     * @param  string    $name
+     * @return Zend_Mail Provides fluent interface
+     * @throws Zend_Mail_Exception if called subsequent times
+     */
+    public function setFrom($email, $name = '')
+    {
+        if ($this->_from === null) {
+            $email = strtr($email,"\r\n\t",'???');
+            $this->_from = $email;
+            if ($name != '') {
+                $name = $this->_quoteIfNecessary($name). ' ';
+            }
+            $this->_storeHeader('From', $name.'<'.$email.'>', true);
+        } else {
+            /**
+             * @see Zend_Mail_Exception
+             */
+            require_once 'Zend/Mail/Exception.php';
+            throw new Zend_Mail_Exception('From Header set twice');
+        }
+        return $this;
+    }
+
+    protected function _quoteIfNecessary($value)
+    {
+        if (substr($value, 0, 1) != '"' || substr($value, -1) != '"') {
+            $value = '"' . $this->_encodeHeader($value) . '"';
+        }
+
+        return $value;
+    }
 
 }
