@@ -297,9 +297,26 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
                      */
                     require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
 
-                    $data['to'] = array(
-                        new Intrabuild_Modules_Groupware_Email_Address(array($address, $name))
-                    );
+                    if ($name === $address) {
+
+                        $data['to'] = array(
+                            new Intrabuild_Modules_Groupware_Email_Address(array($address))
+                        );
+
+                    } else {
+                        /**
+                         * @see Intrabuild_Filter_EmailRecipientsToString
+                         */
+                        require_once 'Intrabuild/Filter/EmailRecipientsToString.php';
+
+                        $recipientToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
+
+                        $str = $recipientToStringFilter->filter(array(array($address, $name)));
+
+                        $data['to'] = array(
+                            new Intrabuild_Modules_Groupware_Email_Address(array($address, $str))
+                        );
+                    }
                 }
 
                 return $data;

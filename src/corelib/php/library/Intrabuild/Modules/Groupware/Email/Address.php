@@ -141,7 +141,7 @@ class Intrabuild_Modules_Groupware_Email_Address implements Intrabuild_BeanConte
         $data = $this->toArray();
 
         if ($data['name']) {
-            return "\"" . $data['name'] . "\" <".$data['address'].">";
+            return $data['name'] . "  <".$data['address'].">";
         }
         return $data['address'];
     }

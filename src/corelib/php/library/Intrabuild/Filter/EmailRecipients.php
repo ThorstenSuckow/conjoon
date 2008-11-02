@@ -118,9 +118,10 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
                 } else if ($this->_addSlashes === false && isset($addr[$a][1])) {
                     // asumme the string is quoted since escaped quotes are found
                     // the filter assumes that escaped quotes only occure if and only
-                    // if the whoile string is quoted
-                    if (strpos($addr[$a][1], "\\\"") !== false) {
+                    // if the whole string is quoted
+                    if (strpos($addr[$a][1], '\"') !== false) {
                         $temp = stripslashes($addr[$a][1]);
+
                         if (strpos($temp, '"') === 0) {
                             $temp = substr($temp, 1);
                         }
@@ -128,11 +129,24 @@ class Intrabuild_Filter_EmailRecipients implements Zend_Filter_Interface
                             $temp = substr($temp, 0, -1);
                         }
 
+                        // find the first quote, check if there is anything that definitely
+                        // needs to be quoted
+                        if ($this->_useQuoting !== false) {
+                            $t2 = substr($temp, 0, strpos($temp, '"'));
+                            $t3 = substr($temp, strrpos($temp, '"'));
+
+                            if (preg_match('/[,@\[\];]/', $t2) !== 0 || preg_match('/[,@\[\];]/', $t3) !== 0) {
+                                //leave anything as is
+                                $temp = $addr[$a][1];
+                            }
+                        }
+
                         $addr[$a][1] = $temp;
+
                     } else if (strpos($addr[$a][1], '"') !== false) {
                         // assume the string is quoted and can be unquoted safely
-                        // since not escaped quotes occure, except if any of the following strings
-                        // can be found: @,
+                        // since not escaped quotes occure, except if any of the following chars
+                        // can be found: [,@\[\];]
                         if ($this->_useQuoting === false || preg_match('/[,@\[\];]/', $addr[$a][1]) == 0) {
                             $addr[$a][1] = trim($addr[$a][1], '"');
                         }
