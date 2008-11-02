@@ -205,7 +205,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
         require_once 'Intrabuild/Filter/EmailRecipientsToString.php';
 
         $emailRecipientsFilter         = new Intrabuild_Filter_EmailRecipients();
+        $emailSenderFilter             = new Intrabuild_Filter_EmailRecipients(false, false);
         $emailRecipientsToStringFilter = new Intrabuild_Filter_EmailRecipientsToString();
+        $emailSenderToStringFilter     = new Intrabuild_Filter_EmailRecipientsToString(false);
 
         $data['recipients'] = $emailRecipientsToStringFilter->filter(
             $emailRecipientsFilter->filter(
@@ -213,8 +215,9 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Item extends Intrabuild_Fil
             )
         );
 
-        $data['sender'] = $emailRecipientsToStringFilter->filter(
-            $emailRecipientsFilter->filter(
+        // it should be safe to store the sender without additional slashes
+        $data['sender'] = $emailSenderToStringFilter->filter(
+            $emailSenderFilter->filter(
                 $data['from']
             )
         );

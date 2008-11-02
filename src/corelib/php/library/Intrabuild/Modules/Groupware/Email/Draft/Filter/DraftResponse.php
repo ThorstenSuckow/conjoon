@@ -232,19 +232,19 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
 
         ),
         'from' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'replyTo' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'to' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'cc' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'bcc' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         )
     );
 

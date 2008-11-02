@@ -27,6 +27,17 @@ require_once 'Zend/Filter/Interface.php';
  */
 class Intrabuild_Filter_EmailRecipientsToString implements Zend_Filter_Interface
 {
+    private $_useQuoting = true;
+
+    /**
+     * Constructor.
+     *
+     */
+    public function __construct($useQuoting = true)
+    {
+        $this->_useQuoting = $useQuoting;
+    }
+
     /**
      * Defined by Zend_Filter_Interface
      *
@@ -54,11 +65,12 @@ class Intrabuild_Filter_EmailRecipientsToString implements Zend_Filter_Interface
     {
         $parts = array();
 
-        $pattern = '/[,\[\];"]/';
+        $pattern = '/[,@\[\];"]/';
 
         foreach ($value as $address) {
             if (isset($address[1])) {
-                $hit = preg_match($pattern, $address[1]);
+
+                $hit = $this->_useQuoting ? preg_match($pattern, $address[1]) : 0;
                 if ($hit != 0) {
                     $parts[] = '"' . $address[1] . '"';
                 } else {

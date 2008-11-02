@@ -65,19 +65,19 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
             array('Htmlentities', ENT_COMPAT, 'UTF-8'),
         ),
         'from' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'replyTo' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'to' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'cc' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
         'bcc' => array(
-            'EmailRecipients'
+            array('EmailRecipients', false)
         ),
 
     );
