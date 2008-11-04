@@ -25,16 +25,11 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     Ext.apply(this, config);
 
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.EmailViewBaton.onEmailLoad',
+        'de.intrabuild.groupware.email.view.onEmailLoad',
         this.onEmailItemLoad,
         this
     );
 
-    Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.EmailPreview.onLoadSuccess',
-        this.onEmailItemLoad,
-        this
-    );
 
 
 // ------------------------- set up buffered grid ------------------------------
@@ -253,9 +248,18 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         }
     },
 
+    /**
+     * Subscribed to the message with the subject
+     * de.intrabuild.groupware.email.view.onEmailLoad.
+     *
+     * @param {String} subject
+     * @param {Object} message
+     */
     onEmailItemLoad : function(subject, message)
     {
-        var rec = this.store.getById(message.id);
+        var emailRecord = message.emailRecord;
+
+        var rec = this.store.getById(emailRecord.id);
 
         if (rec) {
             this.setItemsAsRead([rec], true);

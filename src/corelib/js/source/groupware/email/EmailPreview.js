@@ -167,11 +167,6 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 
         loadMask.hide();
         previewPanel.setTitle(lastRecord.get('subject'));
-
-        Ext.ux.util.MessageBus.publish(
-            'de.intrabuild.groupware.email.EmailPreview.onLoadSuccess', {
-            id : lastRecord.id
-        });
     };
 
     /**

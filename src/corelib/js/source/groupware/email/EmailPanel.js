@@ -40,7 +40,15 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
 		refreshFrame : true
 	});
 
-    this.preview.on('emailload',        this.onEmailLoad, this);
+    /**
+     * Subscribe to de.intrabuild.groupware.email.view.onEmailLoad
+     */
+    Ext.ux.util.MessageBus.subscribe(
+        'de.intrabuild.groupware.email.view.onEmailLoad',
+        this.onEmailLoad,
+        this
+    );
+
 	this.preview.on('emailloadfailure', this.onEmailLoadFailure, this);
 	this.preview.on('show',             this._onPreviewShow, this);
 
@@ -892,12 +900,18 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 	},
 
     /**
-     * Listener for the preview panel when an email message was fully loaded.
-     * Sets the according email message to read = true.
+     * Listener for the message with the subject
+     * 'de.intrabuild.groupware.email.view.onEmailLoad'
+     *
+     * @param {String} subject
+     * @param {Object} message
+     *
      */
-    onEmailLoad : function(record)
+    onEmailLoad : function(subject, message)
     {
-    	var id = record.id;
+        var emailRecord = message.emailRecord;
+
+    	var id = emailRecord.id;
 
     	var store = this.gridPanel.store;
 

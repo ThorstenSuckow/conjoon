@@ -302,15 +302,26 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         this.fireEvent('emailload', record);
 
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.view.onEmailLoad', {
+            emailRecord : record,
+            panelId     : this.id
+        });
+
         this.requestId = null;
     },
 
     /**
      * Callback for any error that occured during loading an email
      */
-    onEmailLoadFailure : function(response, parameters)
+    onEmailLoadFailure : function(response, options)
     {
-        this.fireEvent('emailloadfailure', response, parameters);
+        this.fireEvent('emailloadfailure', response, options);
+
+        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.view.onEmailLoadFailure', {
+            response : record,
+            options  : this.id,
+            panelId  : id
+        });
 
         this.requestId = null;
     },

@@ -307,10 +307,6 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 view.on('emailload', function() {
                     loadedViews[emailItem.id] = true;
                     tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);
-                    Ext.ux.util.MessageBus.publish(
-                        'de.intrabuild.groupware.email.EmailViewBaton.onEmailLoad', {
-                        id : emailItem.id
-                    });
                 });
 
                 view.on('emailloadfailure', function(response, options) {
