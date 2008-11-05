@@ -65,6 +65,11 @@ class Intrabuild_Filter_StringPrependIf implements Zend_Filter_Interface
 
         $value = ltrim((string)$value);
 
+        // special case: trimmed strings are equal
+        if (trim($orgValue) == trim($this->_prependWith)) {
+            return $orgValue;
+        }
+
         if (empty($this->_startsWith)) {
             return $this->_prependWith . $value;
         }
