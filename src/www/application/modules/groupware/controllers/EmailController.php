@@ -1242,7 +1242,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
             if ($error->message == "") {
                 $error->message = "The message with the subject \""
                                   . $message->getSubject()."\" could not be sent. "
-                                  . "Please check yor internet connection.";
+                                  . "Please check the internet connection of "
+                                  . "the server this software runs on.";
             }
             $error->level = Intrabuild_Error::LEVEL_ERROR;
             $this->view->error   = $error;
