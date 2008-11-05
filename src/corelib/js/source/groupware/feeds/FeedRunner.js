@@ -28,10 +28,14 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
                           root: 'items',
                           id : 'id'
                       }, de.intrabuild.groupware.feeds.ItemRecord),
-        url        : '/groupware/feeds/get.feed.items/format/json',
-        baseParams : {
-            removeold : false
-        }
+        baseParams  : {
+            removeold : false,
+            timeout   : de.intrabuild.groupware.feeds.FeedStore.getDefaultTimeOut()
+        },
+        proxy : new Ext.data.HttpProxy({
+            url      : '/groupware/feeds/get.feed.items/format/json',
+            timeout  : de.intrabuild.groupware.feeds.FeedStore.getDefaultTimeOut()
+        })
     });
 
     var firstTimeLoaded = false;
@@ -42,12 +46,12 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
 
     var updateInterval = Number.MAX_VALUE;
 
-	var defaultUpdateInterval = 3600;
+    var defaultUpdateInterval = 3600;
 
-	var onStoreLoadException = function(proxy, options, response, jsError)
-	{
+    var onStoreLoadException = function(proxy, options, response, jsError)
+    {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response);
-	};
+    };
 
     var onStoreLoad = function(store, records, options)
     {
@@ -79,7 +83,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
             updateInterval = Math.min(recs[i].get('updateInterval'), updateInterval);
         }
 
-		run();
+        run();
     };
 
     var stopRunning = function()
@@ -96,7 +100,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
             run      : updateFeeds,
             interval : (updateInterval <= 0 ?
                         defaultUpdateInterval :
-						updateInterval)*1000
+                        updateInterval)*1000
         }
         Ext.TaskMgr.start(task);
     };
@@ -121,13 +125,13 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
 
     };
 
-	/**
-	 *
-	 * @param {Number} feedCount any value > 0
-	 */
+    /**
+     *
+     * @param {Number} feedCount any value > 0
+     */
     var notifyUser = function(feedCount)
     {
-		var text = String.format(
+        var text = String.format(
             de.intrabuild.Gettext.ngettext("There is one new feed entry available", "There are {0} new feed entries available", feedCount),
             feedCount
         );
@@ -144,7 +148,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     var feedStore = de.intrabuild.groupware.feeds.FeedStore.getInstance();
     feedStore.on('beforeload', stopRunning, de.intrabuild.groupware.feeds.FeedRunner);
     store.on('load', onStoreLoad, de.intrabuild.groupware.feeds.FeedRunner);
-	store.on('loadexception', onStoreLoadException, de.intrabuild.groupware.feeds.FeedRunner);
+    store.on('loadexception', onStoreLoadException, de.intrabuild.groupware.feeds.FeedRunner);
 
     var _reception = de.intrabuild.groupware.Reception;
 

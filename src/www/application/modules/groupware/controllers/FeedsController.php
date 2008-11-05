@@ -18,6 +18,10 @@
  */
 require_once 'Zend/Controller/Action.php';
 
+/**
+ * @see Zend_Http_Client
+ */
+require_once 'Zend/Http/Client.php';
 
 
 class Groupware_FeedsController extends Zend_Controller_Action {
@@ -79,6 +83,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         );
         $filteredData = $filter->getProcessedData();
         $removeOld = $filteredData['removeold'];
+        $timeout   = $filteredData['timeout'];
 
         $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
@@ -89,7 +94,33 @@ class Groupware_FeedsController extends Zend_Controller_Action {
 
         $updatedAccounts = array();
         $insertedItems   = array();
-        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
+        $len             = count($accounts);
+
+        // compute the timeout for the connections. Filter should have set the default
+        // timeout to 30000 ms if the timeout param was not submitted
+        if ($len > 0) {
+            $defTimeout = (int)round(($timeout/1000)/$len);
+            // $defTimeout holds the time in seconds that is available for each connection
+            // adjust it by 5 sec to give enough time to send to the client, if possible
+            $defTimeout = $defTimeout - 5;
+
+            // if $defTimeout is less than 1, we will not try to load any feeds, or else
+            // no response will ge through to the client
+            if ($defTimeout < 1) {
+                $len = 0;
+            } else {
+                Zend_Feed::setHttpClient(
+                    new Zend_Http_Client(
+                        null,
+                        array(
+                            'timeout' => $defTimeout
+                        )
+                    )
+                );
+            }
+        }
+
+        for ($i = 0; $i < $len; $i++) {
             try {
                 $import = Zend_Feed::import($accounts[$i]->uri);
                 $items = $this->_importFeedItems($import, $accounts[$i]->id);
@@ -106,7 +137,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                     $updatedAccounts[$accounts[$i]->id] = true;
                 }
             } catch (Exception $e) {
-                //inore all
+                // ignore
             }
         }
 

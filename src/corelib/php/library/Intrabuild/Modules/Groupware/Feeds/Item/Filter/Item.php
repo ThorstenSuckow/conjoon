@@ -72,7 +72,8 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
             ),
         'update' =>
             array(
-                'removeold'
+                'removeold',
+                'timeout'
             ),
         self::CONTEXT_RESPONSE => array(
             'id',
@@ -148,7 +149,8 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
         'isRead' => array(
             'Int'
         ),
-        'removeold' =>array()
+        'removeold' => array(),
+        'timeout'   => 'Int',
     );
 
     protected $_validators = array(
@@ -199,6 +201,11 @@ class Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item extends Intrabuild_Fil
         'removeold' => array(
             'allowEmpty' => true,
             'default'    => 0
+        ),
+        'timeout' => array(
+            'allowEmpty' => true,
+            array('GreaterThan', 0),
+            'default'    => 30000
         )
     );
 
