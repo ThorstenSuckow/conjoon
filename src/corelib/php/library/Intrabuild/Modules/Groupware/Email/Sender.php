@@ -154,7 +154,14 @@ class Intrabuild_Modules_Groupware_Email_Sender {
 
         $transport = new Zend_Mail_Transport_Smtp($account->getServerOutbox(), $config);
 
-        $mail->send($transport);
+        // Zend_Mail_Protocol_Abstract would not supress errors thrown by the native
+        // stream_socket_client function, thus - depending on the setting of error_reporting -
+        // a warning will bubble up if no internet conn is available while sending emails.
+        // supress this error here.
+        // An excpetion will be thrown right at this point if the message could not
+        // be sent
+        @$mail->send($transport);
+
 
         return new Intrabuild_Mail_Sent($mail, $transport->header, $transport->body);
     }

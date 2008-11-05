@@ -1235,6 +1235,15 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $error = $error->getDto();;
             $error->title = 'Error while sending email';
             $error->message = $e->getMessage();
+            // check here if a message is set. We rely heavily on stream_socket_client
+            // in Zend_Mail_Protocol_Abstract which may not set the error message all
+            // the time. If no internet conn is available, the message will be missing
+            // on windows systems, for example
+            if ($error->message == "") {
+                $error->message = "The message with the subject \""
+                                  . $message->getSubject()."\" could not be sent. "
+                                  . "Please check yor internet connection.";
+            }
             $error->level = Intrabuild_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
