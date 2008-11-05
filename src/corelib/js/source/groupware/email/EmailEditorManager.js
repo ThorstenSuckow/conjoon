@@ -289,7 +289,6 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var len = Math.max(draft.to.length, draft.cc.length, draft.bcc.length);
 
         for (var i = 0; i < len; i++) {
-            alert(i+" "+1);
             add = draft.to[i];
             if (add) {
                 recRecs.push(new recipientRecord({
@@ -299,7 +298,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                                 : add['address']
                 }));
             }
-            alert(i+" "+2);
+
             add = draft.cc[i];
             if (add) {
                 recRecs.push(new recipientRecord({
@@ -309,7 +308,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                                 : add['address']
                 }));
             }
-            alert(i+" "+3);
+
             add = draft.bcc[i];
             if (add) {
                 recRecs.push(new recipientRecord({
@@ -320,7 +319,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
                 }));
             }
         }
-        alert(i+" "+4);
+
         // Add an empty line so the user is able to submit another recipient
         recRecs.push(new recipientRecord({
                 receiveType : 'to',
