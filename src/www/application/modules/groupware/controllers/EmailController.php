@@ -142,10 +142,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
 
         } catch (Zend_Mail_Protocol_Exception $e) {
-            $errorMessages[] = $e->getMessage()."<br /> - host: ".
+            $errorMessages[] = $e->getMessage()."\n - host: ".
                                $currentAccount->getServerInbox().':'.
-                               $currentAccount->getPortInbox().'<br /> user: '.
-                               $currentAccount->getUsernameInbox().' (using password: '.
+                               $currentAccount->getPortInbox()."\n user: ".
+                               $currentAccount->getUsernameInbox()." (using password: ".
                                (strlen($currentAccount->getPasswordInbox()) > 0 ? 'yes' : 'no').')';
         }
 
