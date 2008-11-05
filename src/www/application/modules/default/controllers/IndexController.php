@@ -28,28 +28,32 @@ class IndexController extends Zend_Controller_Action {
 
     public function sandboxAction()
     {
-       // throw new Exception("YO");
-       // header('Content-Type: text/html; charset=utf-8');
-        /*
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
+        var_dump(md5(uniqid(rand(), true)));
+        die();
 
-        $itemModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
+        require_once 'Intrabuild/Filter/MimeDecodeHeader.php';
 
-        $res = $itemModel->getLatestItemCount(1, 0);
+        $filter = new Intrabuild_Filter_MimeDecodeHeader();
 
-        echo "<pre>";
-        var_dump($res);
-        */
+        $subjects = array(
+            "=?UTF-8?Q?Xing:_Jennifer_Suckow_m=c3=b6cht?= =?UTF-8?Q?e_Sie_als_Kontakt_hinzuf=c3=bcgen?=",
+            "Xing: Steffen Hiller hat\r\n=?UTF-8?Q?Sie_als_Kontakt_best=c3=a4tigt?=",
+            "=?UTF-8?Q?[GUI_0000741]:_OBELIXgui2_-_l=C3=A4sst_sich_im_IE_7.0_nicht_=C3?=\r\n=?UTF-8?Q?=B6ffnen?=",
+            "=?utf-8?Q?iPersonic_News=3a_Mach_mehr_aus_deinem_Pers=c3=b6nlichkeitstyp=21?="
+        );
 
 
-        /*require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Letterman.php';
+        for ($i = 0, $len = count($subjects); $i < $len; $i++) {
+            $filtered = $filter->filter($subjects[$i]);
+            echo "<pre>";
+            var_dump($filtered);
+        }
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
-        $userId = $auth->getIdentity()->getId();
-        Intrabuild_Modules_Groupware_Email_Letterman::fetchEmails($userId);
 
-        die();   */
+
+
+
+        die();
     }
 
     public function indexAction()

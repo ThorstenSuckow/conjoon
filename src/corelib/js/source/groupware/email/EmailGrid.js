@@ -128,79 +128,14 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 
 // ------------------------- ^^ EO set up buffered grid ------------------------
 
-    this.columns = [{
-        header: '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
-                + 'de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground">&#160;</div>',
-        width: 25,
-        //align:'center',
-        sortable: true,
-        resizable : false,
-        dataIndex: 'isAttachment',
-        renderer : function(value, p, record){
-               if (!value) {
-                   return '&#160';
-               }
-               return '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
-                      + 'de-intrabuild-groupware-email-EmailGrid-attachmentColumn-cellBackground">&#160;</div>';
-           }
-      },{
-        header : '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
-                 + 'de-intrabuild-groupware-email-EmailGrid-readColumn-headerBackground">&#160;</div>',
-        width: 25,
-        //align:'center',
-        sortable: true,
-        resizable : false,
-        dataIndex: 'isRead',
-        renderer : function(value, p, record){
-                      return '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
-                             + 'de-intrabuild-groupware-email-EmailGrid-readColumn-cellBackground '
-                             + (value ? 'itemread' : 'itemunread')
-                             + '">&#160;</div>';
-                   }
-      },{
-        id : 'subject',
-        header: de.intrabuild.Gettext.gettext("Subject"),
-        width     : 315,
-        sortable  : true,
-        dataIndex : 'subject',
-        renderer  : de.intrabuild.groupware.email.view.EmailGridRowRenderer.renderSubjectColumn
-      },{
-        header: de.intrabuild.Gettext.gettext("Sender"),
-        width: 160,
-        sortable: true,
-        dataIndex: 'sender'
-      },{
-        header: de.intrabuild.Gettext.gettext("Recipients"),
-        width: 160,
-        sortable: true,
-        dataIndex: 'recipients'
-      },{
-        header : '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
-                 + 'de-intrabuild-groupware-email-EmailGrid-spamColumn-headerBackground">&#160;</div>',
-        width: 25,
-        //align:'center',
-        resizable : false,
-        sortable: true,
-        dataIndex: 'isSpam',
-        renderer : function(value, p, record){
-                       return '<div class="de-intrabuild-groupware-email-EmailGrid-backgroundContainer '
-                                 + 'de-intrabuild-groupware-email-EmailGrid-spamColumn-cellBackground '
-                                 + (value ? 'itemspam' : 'itemnospam')
-                                 + '">&#160;</div>';
-           }
-      },{
-        header: de.intrabuild.Gettext.gettext("Date"),
-        width: 100,
-        sortable: true,
-        dataIndex: 'date',
-        renderer: de.intrabuild.groupware.email.view.EmailGridRowRenderer.renderDateColumn
-      }
-    ];
-
+    this.colModel = new de.intrabuild.groupware.email.data.DefaultColumnModel();
 
     de.intrabuild.groupware.email.EmailGrid.superclass.constructor.call(this, {
         loadMask       : {msg: de.intrabuild.Gettext.gettext("Loading...")},
         autoScroll     : true,
+        plugins     : [
+            new de.intrabuild.groupware.email.view.GridViewMenuPlugin()
+        ],
         stripeRows     : true,
         cls            : 'de-intrabuild-groupware-email-EmailGrid',
         trackMouseOver : false,
