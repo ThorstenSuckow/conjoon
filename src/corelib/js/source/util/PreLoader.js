@@ -23,7 +23,9 @@ de.intrabuild.util.PreLoader = function() {
 
 	var storeLoaded = function(store)
 	{
-	    store.un('load', storeLoaded, de.intrabuild.util.PreLoader);
+	    store.un('load',          storeLoaded, de.intrabuild.util.PreLoader);
+	    store.un('loadexception', storeLoaded, de.intrabuild.util.PreLoader);
+
 		storeCount--;
 		if (storeCount == 0) {
 			kernel.fireEvent('load');
