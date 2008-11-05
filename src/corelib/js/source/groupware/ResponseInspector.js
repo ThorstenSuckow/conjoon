@@ -294,11 +294,28 @@ de.intrabuild.groupware.ResponseInspector = function() {
             var json = de.intrabuild.util.Json;
             var msg  = Ext.MessageBox;
 
-            var error = json.forceErrorDecode(resp);
+
+            var error = null;
+
+            var opt = {};
+
+            if (!resp.error) {
+                error = json.forceErrorDecode(resp);
+                opt = {
+                    title   : error.title,
+                    message : error.message
+                };
+            } else {
+                error = resp.error;
+                opt = {
+                    title   : Ext.util.Format.htmlEncode(error.title),
+                    message : Ext.util.Format.htmlEncode(error.message)
+                };
+            }
 
             msg.show({
-                title   : error.title || de.intrabuild.Gettext.gettext("Error"),
-                msg     : error.message,
+                title   : opt.title || de.intrabuild.Gettext.gettext("Error"),
+                msg     : opt.message,
                 buttons : msg.OK,
                 icon    : msg[error.level.toUpperCase()],
                 cls     :'de-intrabuild-msgbox-'+error.level,
