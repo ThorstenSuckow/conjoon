@@ -72,9 +72,9 @@ de.intrabuild.util.PreLoader = function() {
 			store.on('load', storeLoaded, de.intrabuild.util.PreLoader);
 
 			if (continueOnLoadException === true) {
-			    store.on('loadexception', storeLoaded, de.intrabuild.util.PreLoader);
+			    store.on('loadexception', storeLoaded, de.intrabuild.util.PreLoader, {single : true});
 			} else if (typeof continueOnLoadException == "function") {
-			    store.on('loadexception', continueOnLoadException, (scope ? scope : window));
+			    store.on('loadexception', continueOnLoadException, (scope ? scope : window), {single : true});
 			}
 
 			store.on('destroy', storeDestroyed, de.intrabuild.util.PreLoader);
