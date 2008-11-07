@@ -409,16 +409,15 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Intr
             return $data;
         }
 
-        $startTag = "<pre>";
-        $endTag   = "</pre>";
+        $startTag = "";
+        $endTag   = "";
 
         switch ($this->_context) {
             case self::CONTEXT_REPLY:
-
             case self::CONTEXT_REPLY_ALL:
             case self::CONTEXT_FORWARD:
-                $startTag .= "<blockquote>";
-                $endTag   = "</blockquote>" . $endTag;
+                $startTag = "<blockquote>";
+                $endTag   = "</blockquote>";
             break;
         }
 

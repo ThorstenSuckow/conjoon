@@ -124,7 +124,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             htmlEditor.on('initialize' , function(){
                 var fly = Ext.fly(this.doc);
                 fly.addKeyListener([10, 13], onHtmlEditorEdit,
-                    de.intrabuild.groupware.email.EmailEditorManager);
+                    de.intrabuild.groupware.email.EmailEditorManager, {stopEvent:true});
             }, htmlEditor);
 
             recipientStore = form.gridStore;
@@ -336,7 +336,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             references  : draft.references,
             inReplyTo   : draft.inReplyTo,
             subject     : draft.subject,
-            message     : draft.contentTextPlain,
+            message     : _decorateDraftText(draft.contentTextPlain),
             accountId   : draft.groupwareEmailAccountsId,
             recipients  : recRecs,
             folderId    : (data.type != 'edit' ? -1 : draft.groupwareEmailFoldersId)
@@ -345,6 +345,47 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         completeForm(options.panelId);
 
         Ext.getCmp(options.panelId).setTitle(getTitle(draft.subject));
+    };
+
+
+    /**
+     * Helps IE to stay in sync with midas. If not used when changes in the dom
+     * occur (inital setting value of editor, quoting) the html gets rendered
+     * wrong.
+     *
+     */
+    var _layoutEditor = function()
+    {
+        if (Ext.isIE) {
+            var els = htmlEditor.doc.body.getElementsByTagName('blockquote');
+
+            for (var i = 0; i < els.length; i++) {
+
+                var m = els[i].innerHTML;
+                els[i].innerHTML = "";
+                els[i].innerHTML = m;
+            }
+        }
+    }
+
+    /**
+     * Wraps the message text after loading with a tag if needed.
+     * While wrapping a pre tag around the text works in mozilla and safari,
+     * IE won't, thus all whitespaces get additionaly replaced with "&nbsp;"
+     *
+     * @param {String} text
+     *
+     * @return {String}
+     */
+    var _decorateDraftText = function(text)
+    {
+        if (!text) {
+            return text;
+        }
+
+        return Ext.isIE
+               ? '<div class="editorBodyWrap">'+text+'</div>'
+               : '<pre>'+text.replace(/&nbsp;/g, " ")+'</pre>';
     };
 
     /**
@@ -391,6 +432,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             accountField.setValue(formValues[panelId].accountId);
             _attachSignature(panelId, formValues[panelId].accountId);
         }
+
+        _layoutEditor();
 
         recipientStore.removeAll();
         recipientStore.add(formValues[panelId].recipients);
@@ -744,6 +787,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         if (Ext.isIE) {
             splitRange.pasteHTML('<span id="'+id+'"></span>');
+            splitRange.collapse(false);
+            splitRange.select();
         } else {
             htmlEditor.execCmd('insertHTML', '<span id="'+id+'"></span>');
         }
@@ -753,11 +798,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var parent = splitter.parentNode;
         var quoteEl = null;
         var tagName = "";
-        while (parent) {
+        while (parent && parent.tagName) {
             tagName = parent.tagName.toLowerCase();
             if (tagName == 'blockquote') {
                 quoteEl = parent;
-            } else if (tagName == 'body') {
+            } else if (quoteEl) {
                 break;
             }
             parent = parent.parentNode;
@@ -766,25 +811,27 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         if (quoteEl) {
             eventObject.stopEvent();
+
             var splitterClone = splitter.cloneNode(false);
             var dividedNode   = utilDom.divideNode(splitter , splitterClone, quoteEl);
 
+            var div = doc.createElement('div');
+            div.className = 'text';
+            div.innerHTML="&nbsp;";
+
             if(!quoteEl.nextSibling){
+                quoteEl.parentNode.appendChild(div);
                 quoteEl.parentNode.appendChild(dividedNode);
             } else {
                 quoteEl.parentNode.insertBefore(dividedNode, quoteEl.nextSibling);
+                quoteEl.parentNode.insertBefore(div, dividedNode);
             }
 
-            var br  = doc.createElement('br');
-            var div = doc.createElement('div');
-            div.className = 'text';
-            quoteEl.parentNode.insertBefore(div, dividedNode);
-            div.innerHTML="&nbsp;";
-
             if (Ext.isIE && splitRange) {
-                splitRange.move("character",2);
+                splitRange.move("character", 2);
+                splitRange.collapse(false);
                 splitRange.select();
-                div.innerHTML="";
+                div.innerHTML = "";
             } else {
                 htmlEditor.win.getSelection().collapse(div, 0);
             }
@@ -792,21 +839,39 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             splitterClone.parentNode.removeChild(splitterClone);
             splitter.parentNode.removeChild(splitter);
 
-            var fc = dividedNode.firstChild;
-            if (fc && fc.tagName && fc.tagName.toLowerCase() == 'br') {
-                dividedNode.removeChild(fc);
-            }
+            // remove all br, nbps that are the first childs in a blockquote,
+            // and all resulting blockquotes that have no child
+            // IE seems to add a nbsp to an empty tag, i.e. <b></b> becomes
+            // <b>&nbsp;</b> when setting this tag as innerHTML
+            dividedNode.innerHTML = dividedNode.innerHTML.replace(
+                                        /<blockquote>?((<br>|&nbsp;|\s)*)/ig,
+                                        "<blockquote>"
+                                    ).replace(
+                                        /<blockquote><\/blockquote>/ig,
+                                        ""
+                                    );
 
-            var cq = quoteEl.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|&nbsp;/g, "").trim();
+            // remove all trailing brs and nbsps of the quoted element
+            quoteEl.innerHTML = quoteEl.innerHTML.replace(
+                                    /((<br>|&nbsp;|\s)*)<\/blockquote>?/ig,
+                                    "</blockquote>"
+                                ).replace(
+                                    /<blockquote><\/blockquote>/ig,
+                                    ""
+                                );
+
+            _layoutEditor();
+
+
+            var cq = quoteEl.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|\s|&nbsp;/ig, "").trim();
             if (cq == "") {
                 quoteEl.parentNode.removeChild(quoteEl);
             }
 
-            cq = dividedNode.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|&nbsp;/g, "").trim();
+            cq = dividedNode.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|\s|&nbsp;/ig, "").trim();
             if (cq == "") {
                 dividedNode.parentNode.removeChild(dividedNode);
             }
-
         } else {
             splitter.parentNode.removeChild(splitter);
         }
@@ -1284,10 +1349,10 @@ de.intrabuild.groupware.email.EmailForm = function(config){
         }
     });
 
-    if (Ext.isSafari) {
-        this.htmlEditor.initEditor = function() {
-            Ext.form.HtmlEditor.prototype.initEditor.call(this);
+    this.htmlEditor.initEditor = function() {
+        Ext.form.HtmlEditor.prototype.initEditor.call(this);
 
+        if (Ext.isSafari) {
             Ext.EventManager.on(this.doc, 'keydown', function(e){
                 if (e.getKey() == e.ENTER) {
                     // adjust behavior of webkit based browsers.
@@ -1302,8 +1367,42 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                     this.deferFocus();
                 }
             }, this);
-        };
-    }
+        }
+
+        // unbind the Ext default fixKeeys implementation and use custom one so that
+        // blockqouotes will be quoted properly
+        if (Ext.isIE) {
+            Ext.EventManager.un(this.doc, 'keydown', this.fixKeys, this);
+
+            Ext.EventManager.on(this.doc, 'keydown', function(e){
+                var k = e.getKey(), r;
+                if(k == e.TAB){
+                    e.stopEvent();
+                    r = this.doc.selection.createRange();
+                    if(r){
+                        r.collapse(true);
+                        r.pasteHTML('&nbsp;&nbsp;&nbsp;&nbsp;');
+                        this.deferFocus();
+                    }
+                }else if(k == e.ENTER){
+                    r = this.doc.selection.createRange();
+                    if(r){
+                        var target = r.parentElement();
+                        var targetName = target
+                                         ? target.tagName.toLowerCase()
+                                         : '';
+                        if(!target || (targetName != 'li' && targetName != 'blockquote')){
+                            e.stopEvent();
+                            r.pasteHTML('<br />');
+                            r.collapse(false);
+                            r.select();
+                        }
+                    }
+                }
+            }, this);
+
+        }
+    };
 
 
     this.htmlEditor.getDocMarkup = function(){
@@ -1334,7 +1433,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
             var blockquote = "";
 
             var abs = [];
-            for (var i = 0; i < 10; i++) {
+            for (var i = 0; i <10; i++) {
                 abs.push('blockquote');
                 blockquote += getCssTextFromStyleSheet(
                      '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body '+abs.join(' '),
@@ -1342,7 +1441,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                 );
             }
 
-            this.__doc_markup__ =  '<html>'
+            this.__doc_markup__ = '<html>'
                                   + '<head>'
                                   + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
                                   + '<title></title>'
@@ -1352,7 +1451,8 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                                   + blockquote
                                   + ' '
                                   + getCssTextFromStyleSheet(
-                                       '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body pre',
+                                       '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body '
+                                       + (Ext.isIE ? 'div.editorBodyWrap' : 'pre'),
                                        excludeMask
                                    )
                                   + ' '
@@ -1364,7 +1464,8 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                                   + insertDiv
                                   + ' '
                                   + signature
-                                  + '</style></head>'
+                                  + '</style>'
+                                  + '</head>'
                                   + '<body class="de-intrabuild-groupware-email-EmailForm-htmlEditor-body">'
                                   + '</body></html>';
         }

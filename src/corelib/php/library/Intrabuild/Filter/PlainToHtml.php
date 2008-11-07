@@ -58,6 +58,10 @@ class Intrabuild_Filter_PlainToHtml implements Zend_Filter_Interface {
             $value
         );
 
-        return str_replace("\n", "<br />", rtrim($value));
+        return str_replace(
+            array(" ", "\t", "\n"),
+            array("&nbsp;", "&nbsp;&nbsp;&nbsp;&nbsp;", "<br />"),
+            rtrim($value)
+        );
     }
 }
