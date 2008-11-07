@@ -61,11 +61,12 @@ class Intrabuild_Filter_BlockquoteToQuote implements Zend_Filter_Interface
              $value
         );
 
-        /*$value = str_replace(
-            '</blockquote>',
-            "</blockquote>\n",
+        // some browsers (IE) add linefeeds in between tags... remove them
+        $value = str_replace(
+            array("<blockquote>\n<blockquote>", "</blockquote>\n</blockquote>"),
+            array("<blockquote><blockquote>", "</blockquote></blockquote>"),
             $value
-        );*/
+        );
 
         $lines = explode("\n", $value);
 
