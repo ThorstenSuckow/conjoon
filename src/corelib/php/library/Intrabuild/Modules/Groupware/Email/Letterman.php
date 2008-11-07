@@ -779,7 +779,7 @@ class Intrabuild_Modules_Groupware_Email_Letterman {
     {
         if ($emailItem['contentTextHtml'] != "" && $emailItem['contentTextPlain'] === "") {
             $html = $emailItem['contentTextHtml'];
-            $html = str_replace(array('<br>', '<br />', '<br/>'), "\r\n", $html);
+            $html = str_replace(array('<br>', '<br />', '<br/>', "<BR>", "<BR/>", "<BR />"), "\r\n", $html);
             $html = str_replace('&nbsp;', ' ', $html);
             $html = strip_tags($html);
             $html = htmlspecialchars_decode($html);

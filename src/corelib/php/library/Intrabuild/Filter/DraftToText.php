@@ -39,7 +39,7 @@ class Intrabuild_Filter_DraftToText implements Zend_Filter_Interface
     {
         // first off, replace all <br> with line breaks
         $value = str_replace(
-            array('<br>', '<br/>', '<br />'),
+            array('<br>', '<br/>', '<br />', '<BR>', '<BR/>', '<BR />'),
             "\n",
             $value
         );

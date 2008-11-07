@@ -256,8 +256,8 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
                         $blockquoteToQuoteFilter->filter(
                             $normalizeLineFeedsFilter->filter(
                                 str_replace(
-                                    array("&nbsp;", "<br>", "<br/>", "<br />"),
-                                    array(" ", "\n"),
+                                    array("&nbsp;", "<br>", "<br/>", "<br />", "<BR>", "<BR/>", "<BR />"),
+                                    array(" ", "\n", "\n", "\n", "\n", "\n", "\n"),
                                     $message
                                 )
                             )
@@ -273,8 +273,8 @@ class Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput extends Intrabu
                         $blockquoteToQuoteFilter->filter(
                             $normalizeLineFeedsFilter->filter(
                                 str_replace(
-                                    array("&nbsp;", "<br>", "<br/>", "<br />"),
-                                    array(" ", "\n"),
+                                    array("&nbsp;", "<br>", "<br/>", "<br />", "<BR>", "<BR/>", "<BR />"),
+                                    array(" ", "\n", "\n", "\n", "\n", "\n", "\n"),
                                     $message
                                 )
                             )
