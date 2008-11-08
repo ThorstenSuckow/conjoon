@@ -38,6 +38,10 @@ class Intrabuild_Filter_PlainToHtml implements Zend_Filter_Interface {
      * /text/ will be replaced with <i>/text/</i>
      * *text* will be replaced with <b>*text*</b>
      *
+     * Whitespaces will not be replaced with &nbsp;, as this would blow up
+     * traffic by a factor of 6. Instead, if you are looking to replace
+     * whitespaces properly, use Intrabuild_Filter_WhitespaceToHtml.
+     *
      * @param  mixed $value
      * @return string
      */
@@ -59,8 +63,8 @@ class Intrabuild_Filter_PlainToHtml implements Zend_Filter_Interface {
         );
 
         return str_replace(
-            array(" ", "\t", "\n"),
-            array("&nbsp;", "&nbsp;&nbsp;&nbsp;&nbsp;", "<br />"),
+            array("\t", "\n"),
+            array("    ", "<br />"),
             rtrim($value)
         );
     }

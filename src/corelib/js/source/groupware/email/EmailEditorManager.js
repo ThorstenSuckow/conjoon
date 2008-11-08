@@ -371,7 +371,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     /**
      * Wraps the message text after loading with a tag if needed.
      * While wrapping a pre tag around the text works in mozilla and safari,
-     * IE won't, thus all whitespaces get additionaly replaced with "&nbsp;"
+     * IE won't, thus all whitespace-pairs get replaced with " &nbsp;" if
+     * IE is detected.
      *
      * @param {String} text
      *
@@ -384,8 +385,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
 
         return Ext.isIE
-               ? '<div class="editorBodyWrap">'+text+'</div>'
-               : '<pre>'+text.replace(/&nbsp;/g, " ")+'</pre>';
+               ? '<div class="editorBodyWrap">'+text.replace(/  /g, " &nbsp;")+'</div>'
+               : '<pre>'+text+'</pre>';
     };
 
     /**
