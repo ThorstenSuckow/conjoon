@@ -120,7 +120,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
      * @return {String}
      */
     getDocMarkup : function()
-	{
+    {
         var excludeMask = {
             href : '*/ext-all.css'
         };
@@ -204,7 +204,8 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
                 )
                + ' '
                + getCssTextFromStyleSheet(
-                    '.de-intrabuild-groupware-email-EmailView-body pre',
+                    '.de-intrabuild-groupware-email-EmailView-body '
+                    +(Ext.isIE ? 'div.viewBodyWrap' : 'pre'),
                     excludeMask
                 )
                + ' '
@@ -224,7 +225,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
                + '</style></head>'
                + '<body class="de-intrabuild-groupware-email-EmailView-body">'
                + '</body></html>';
-	},
+    },
 
     // private
     init: function(panel)
@@ -233,9 +234,9 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
             this.viewId = Ext.id();
         }
 
-		if (!this.emptyMarkup) {
+        if (!this.emptyMarkup) {
             this.emptyMarkup = this.getDocMarkup();
-		}
+        }
 
         this.initTemplates();
         this.initData(panel);
@@ -332,15 +333,15 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         this.clear();
 
         var subject     = data.subject;
-		var from        = data.from;
-		var to          = data.to;
-		var cc          = data.cc;
-		var bcc         = data.bcc;
-		var replyTo     = data.replyTo;
-		var date        = data.date;
-		var body        = data.body;
-		var attachments = data.attachments;
-		var isPlainText = data.isPlainText;
+        var from        = data.from;
+        var to          = data.to;
+        var cc          = data.cc;
+        var bcc         = data.bcc;
+        var replyTo     = data.replyTo;
+        var date        = data.date;
+        var body        = data.body;
+        var attachments = data.attachments;
+        var isPlainText = data.isPlainText;
 
         var ts = this.templates;
 
@@ -421,10 +422,33 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
             doc.write(body)
             doc.close();
         } else {
-			doc.body.innerHTML = body;
+            doc.body.innerHTML = this.decoratePlainText(body);
         }
 
         this.cleared = false;
+    },
+
+    /**
+     * Decorates a message text if needed.
+     * Depending on the browser, the text will be either wrapped in pre tags
+     * (mozilla/ webkit based browsers) or in a div tag for IE with special css
+     * rules, as IE has problems displaying blockquotes within a pre-tag.
+     * Additionally, all whitespace-pairs get replaced with " &nbsp; "pairs in IE,
+     * so automatic word wrapping is possible.
+     *
+     * @param {String} text
+     *
+     * @return {String}
+     */
+    decoratePlainText : function(text)
+    {
+        if (!text) {
+            return text;
+        }
+
+        return Ext.isIE
+               ? '<div class="viewBodyWrap">'+de.intrabuild.util.Format.replaceWhitespacePairs(text)+'</div>'
+               : '<pre>'+text+'</pre>';
     },
 
     clear : function()
@@ -629,7 +653,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
     onEmailLoad : function(record)
     {
-		var data = record.data;
+        var data = record.data;
 
         var subject     = data.subject     || '';
         var from        = data.from        || '';
@@ -643,17 +667,17 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         var isPlainText = data.isPlainText || false;
 
         this.doRender({
-			subject     : subject,
-			from        : from,
-			to          : to,
-			cc          : cc,
-			bcc         : bcc,
-			replyTo     : replyTo,
-			date        : date,
-			body        : body,
-			attachments : attachments,
-			isPlainText : isPlainText
-		});
+            subject     : subject,
+            from        : from,
+            to          : to,
+            cc          : cc,
+            bcc         : bcc,
+            replyTo     : replyTo,
+            date        : date,
+            body        : body,
+            attachments : attachments,
+            isPlainText : isPlainText
+        });
         this.layout();
         this.isPlainTextView = isPlainText;
     }

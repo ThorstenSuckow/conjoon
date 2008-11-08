@@ -176,21 +176,19 @@ class Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse extends 
                     ':-X'     => '<span class="emoticon sealed"></span>'
             ));
 
-            $data['body'] = "<pre>".
-                $plainToHtmlFilter->filter(
-                    $signatureFilter->filter(
-                        $quoteFilter->filter(
-                            $urlFilter->filter(
-                                $emoticonFilter->filter(
-                                    $lineFeedFilter->filter(
-                                        $data['body']
-                                    )
+            $data['body'] = $plainToHtmlFilter->filter(
+                $signatureFilter->filter(
+                    $quoteFilter->filter(
+                        $urlFilter->filter(
+                            $emoticonFilter->filter(
+                                $lineFeedFilter->filter(
+                                    $data['body']
                                 )
                             )
                         )
                     )
                 )
-             . "</pre>";
+            );
         }
 
 

@@ -132,6 +132,16 @@ a.de-intrabuild-grupware-email-EmailView-attachmentItem:active {
     word-wrap:break-word;
 }
 
+.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.viewBodyWrap {
+    white-space:pre-wrap;
+    white-space:-moz-pre-wrap !important;
+    white-space:-pre-wrap;
+    white-space:-o-pre-wrap;
+    word-wrap:break-word;
+    padding:0px!important;
+    margin:0px!important;
+}
+
 .de-intrabuild-groupware-email-EmailView-body a {
     white-space:nowrap!important;
     word-wrap:normal!important;
@@ -144,8 +154,11 @@ a.de-intrabuild-grupware-email-EmailView-attachmentItem:active {
 }
 
 .de-intrabuild-groupware-email-EmailView-body blockquote {
-    margin:0px 0px 0px 6px;
-    padding:4px 0px 4px 10px;
+    margin:4px 0px 4px 0px;
+    padding-left:16px;
+    position:relative;
+    padding-top:10px;
+    padding-bottom:4px;
     border-left:2px solid #15428B;
 }
 

@@ -385,7 +385,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
 
         return Ext.isIE
-               ? '<div class="editorBodyWrap">'+text.replace(/  /g, " &nbsp;")+'</div>'
+               ? '<div class="editorBodyWrap">'+de.intrabuild.util.Format.replaceWhitespacePairs(text)+'</div>'
                : '<pre>'+text+'</pre>';
     };
 
