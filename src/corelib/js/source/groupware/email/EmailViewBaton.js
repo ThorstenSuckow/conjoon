@@ -30,7 +30,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
     var activeRecord = null;
 
-    var loadedViews = [];
+    var loadedViews = {};
 
     var tbarManager = de.intrabuild.groupware.ToolbarManager;
 
@@ -259,11 +259,19 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 }
 
                 view.on('destroy', function(panel){
-                    openedEmails[panel.emailItem.id] = null;
-                    loadedViews[panel.emailItem.id] = null;
                     delete loadedViews[panel.emailItem.id];
                     delete openedEmails[panel.emailItem.id];
-                    tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');
+                    // hide this only if there are no more email tabs to display
+                    // this is needed if there is no tab which could be activated
+                    // which shows a toolbar upon activate
+                    var hide = true;
+                    for (var i in loadedViews) {
+                        hide = false;
+                        break;
+                    }
+                    if (hide) {
+                        tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');
+                    }
                 });
 
 

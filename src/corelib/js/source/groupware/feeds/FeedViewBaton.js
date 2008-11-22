@@ -205,14 +205,22 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 		var tbarManager = de.intrabuild.groupware.ToolbarManager;
 
         view.on('destroy', function(panel){
-			tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar');
-            openedFeeds[panel.id] = null;
-            delete openedFeeds[panel.id];
-
-            if (_requestIds[panel.id]) {
+			delete openedFeeds[panel.id];
+			if (_requestIds[panel.id]) {
                 Ext.Ajax.abort(_requestIds[panel.id]);
-                _requestIds[panel.id] = null;
                 delete _requestIds[panel.id];
+            }
+
+			// hide this only if there are no more feed tabs to display
+            // this is needed if there is no tab which could be activated
+            // which shows a toolbar upon activate
+            var hide = true;
+            for (var i in openedFeeds) {
+                hide = false;
+                break;
+            }
+            if (hide) {
+                tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar');
             }
         });
 
