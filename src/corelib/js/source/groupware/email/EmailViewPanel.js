@@ -318,8 +318,8 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         this.fireEvent('emailloadfailure', response, options);
 
         Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.view.onEmailLoadFailure', {
-            response : record,
-            options  : this.id,
+            response : response,
+            options  : options,
             panelId  : id
         });
 
