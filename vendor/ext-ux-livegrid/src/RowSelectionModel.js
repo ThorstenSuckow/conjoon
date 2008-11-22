@@ -66,16 +66,6 @@ Ext.extend(Ext.ux.grid.livegrid.RowSelectionModel, Ext.grid.RowSelectionModel, {
         this.grid.store.on('selectionsload', this.onSelectionsLoad, this);
     },
 
-
-
-    // private
-    onRefresh : function()
-    {
-        this.clearSelections(true);
-    },
-
-
-
     /**
      * Callback is called when a row gets removed in the view. The process to
      * invoke this method is as follows:

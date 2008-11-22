@@ -98,6 +98,13 @@ Ext.ux.grid.livegrid.Store = function(config) {
     // remoteSort will always be set to true.
     config.remoteSort = true;
 
+    // we will intercept the autoLoad property and set it to false so we do not
+    // load any contents of the store before the View has not fully initialized
+    // itself. if autoLoad was set to true, the Ext.ux.grid.livegrid.GridPanel
+    // will take care of loading the store once it has been rendered
+    this._autoLoad  = config.autoLoad ? true : false;
+    config.autoLoad = false;
+
     this.addEvents(
          /**
           * @event bulkremove

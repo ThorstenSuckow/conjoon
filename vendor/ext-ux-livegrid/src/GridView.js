@@ -275,7 +275,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     {
         if (forceReload === false) {
             this.ds.modified = [];
-            this.grid.selModel.clearSelections(true);
+            //this.grid.selModel.clearSelections(true);
             this.rowIndex      = 0;
             this.lastScrollPos = 0;
             this.lastRowIndex = 0;
@@ -1271,7 +1271,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     isInRange : function(rowIndex)
     {
         var lastRowIndex = Math.min(this.ds.totalLength-1,
-                                    rowIndex + this.visibleRows);
+                                    rowIndex + (this.visibleRows-1));
 
         return (rowIndex     >= this.ds.bufferRange[0]) &&
                (lastRowIndex <= this.ds.bufferRange[1]);
@@ -1287,8 +1287,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     getPredictedBufferIndex : function(index, inRange, down)
     {
         if (!inRange) {
-            var dNear = 2*this.nearLimit;
-            return Math.max(0, index-((dNear >= this.ds.bufferSize ? this.nearLimit : dNear)));
+            if (index + this.ds.bufferSize >= this.ds.totalLength) {
+                return this.ds.totalLength - this.ds.bufferSize;
+            }
+            // we need at last to render the index + the visible Rows
+            return Math.max(0, (index + this.visibleRows) - Math.round(this.ds.bufferSize/2));
         }
         if (!down) {
             return Math.max(0, (index-this.ds.bufferSize)+this.visibleRows);

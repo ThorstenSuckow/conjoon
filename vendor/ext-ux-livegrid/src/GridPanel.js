@@ -36,6 +36,24 @@ Ext.namespace('Ext.ux.grid.livegrid');
 Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
 
     /**
+     * Overriden to make sure the attached store loads only when the
+     * grid has been fully rendered if, and only if the store's
+     * "autoLoad" property is set to true.
+     *
+     */
+    onRender : function(ct, position)
+    {
+        Ext.ux.grid.livegrid.GridPanel.superclass.onRender.call(this, ct, position);
+
+        var ds = this.getStore();
+
+        if (ds._autoLoad === true) {
+            delete ds._autoLoad;
+            ds.load();
+        }
+    },
+
+    /**
      * Overriden since the original implementation checks for
      * getCount() of the store, not getTotalCount().
      *

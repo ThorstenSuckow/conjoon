@@ -70,15 +70,17 @@ Ext.ux.grid.livegrid.EditorGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
         return Ext.ux.grid.livegrid.EditorGridPanel.superclass.startEditing.call(this, row, col);
     },
 
-    /**
-     * Since we do not have multiple inheritance, we need to override the
-     * same methods in this class we have overriden for
-     * Ext.ux.grid.livegrid.GridPanel
-     *
-     */
+// Since we do not have multiple inheritance, we need to override the
+// same methods in this class we have overriden for
+// Ext.ux.grid.livegrid.GridPanel
     walkCells : function(row, col, step, fn, scope)
     {
         return Ext.ux.grid.livegrid.GridPanel.prototype.walkCells.call(this, row, col, step, fn, scope);
+    },
+
+    onRender : function(ct, position)
+    {
+        return Ext.ux.grid.livegrid.GridPanel.prototype.onRender.call(this, ct, position);
     }
 
 });
