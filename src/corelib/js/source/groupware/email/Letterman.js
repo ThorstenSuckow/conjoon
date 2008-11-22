@@ -150,6 +150,8 @@ de.intrabuild.groupware.email.Letterman = function(config) {
             return false;
         }
 
+        de.intrabuild.groupware.email.Letterman.rest();
+
         _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
     };
 
@@ -212,7 +214,8 @@ de.intrabuild.groupware.email.Letterman = function(config) {
             }
 
             letterman.stop(task);
-            task = null;
+            task   = null;
+            called = false;
         },
 
         /**
@@ -291,6 +294,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         */
         onLoad : function(store, records, options)
         {
+            this.wakeup();
             store.removeAll();
             var length = records.length;
             _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.load', {
@@ -308,7 +312,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         onRequestFailure : function(proxy, options, response)
         {
             _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.loadexception', {});
-
+            this.wakeup();
             de.intrabuild.groupware.ResponseInspector.handleFailure(response);
         }
 
