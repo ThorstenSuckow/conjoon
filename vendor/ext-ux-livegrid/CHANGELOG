@@ -1,6 +1,9 @@
 ﻿Version 0.3RC1 (GPL)
-22-November-2008
+23-November-2008
 
+ - enhancement: (GridView.js) the rowIndex argument of the column's renderer will
+now pass the value of the index of the row as available in the view, i.e. as defined
+in the row's rowIndex property, which adds support for Ext.grid.RowNumberer
  - fixed: (GridView.js) fixed a bug where "getPredictedBufferIndex()" would not
 compute the next rowIndex for a request properly, leading to an endless loop
  - enhancement: (GridView.js, RowSelectionModel.js) removed override of "onRefresh()"

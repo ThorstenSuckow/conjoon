@@ -136,7 +136,12 @@ Ext.ux.grid.livegrid.GridView = function(config) {
         "</div>"
     );
 
-    Ext.ux.grid.livegrid.GridView.superclass.constructor.call(this);
+    // shorthands for often used parent classes
+    this._gridViewSuperclass = Ext.ux.grid.livegrid.GridView.superclass;
+
+    this._gridViewSuperclass.constructor.call(this);
+
+
 };
 
 
@@ -324,7 +329,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         g.enableDragDrop = false;
         g.enableDrag     = false;
 
-        Ext.ux.grid.livegrid.GridView.superclass.renderUI.call(this);
+        this._gridViewSuperclass.renderUI.call(this);
 
         var g = this.grid;
 
@@ -359,7 +364,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      */
     init: function(grid)
     {
-        Ext.ux.grid.livegrid.GridView.superclass.init.call(this, grid);
+        this._gridViewSuperclass.init.call(this, grid);
 
         grid.on('expand', this._onExpand, this);
     },
@@ -375,7 +380,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             ds.on('beforeload', this.onBeforeLoad, this);
         }
 
-        Ext.ux.grid.livegrid.GridView.superclass.initData.call(this, ds, cm);
+        this._gridViewSuperclass.initData.call(this, ds, cm);
     },
 
     /**
@@ -388,6 +393,19 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     {
         var markup = this.renderRows(0, this.visibleRows-1);
         return this.templates.body.apply({rows: markup});
+    },
+
+    /**
+     * Overriden so the renderer of the specific cells gets the index of the
+     * row as available in the view passed (row's rowIndex property)-
+     *
+     */
+    doRender : function(cs, rs, ds, startRow, colCount, stripe)
+    {
+        return this._gridViewSuperclass.doRender.call(
+            this, cs, rs, ds, startRow + this.ds.bufferRange[0], colCount, stripe
+        );
+
     },
 
     /**
