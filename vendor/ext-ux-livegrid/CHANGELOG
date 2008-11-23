@@ -1,6 +1,8 @@
 ﻿Version 0.3RC1 (GPL)
 23-November-2008
 
+ - enhancement: added build tools for creating minified deployable versions of
+Ext.ux.Livegrid-scripts
  - enhancement: (GridView.js) the rowIndex argument of the column's renderer will
 now pass the value of the index of the row as available in the view, i.e. as defined
 in the row's rowIndex property, which adds support for Ext.grid.RowNumberer
