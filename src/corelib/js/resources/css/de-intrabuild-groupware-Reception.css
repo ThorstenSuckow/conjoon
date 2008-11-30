@@ -5,15 +5,15 @@
  *
  * $Author: T. Suckow $
  * $Id: de-intrabuild-groupware-email-EmailPanel.css 12 2008-06-28 00:43:33Z T. Suckow $
- * $Date: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $ 
+ * $Date: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $
  * $Revision: 12 $
  * $LastChangedDate: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $
  * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailPanel.css $ 
+ * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailPanel.css $
  */
 
 .de-intrabuild-groupware-Reception-body {
-	background:#355899 url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
+	background:#2e647f url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
 }
 
 .de-intrabuild-groupware-reception-LogoutWindow .x-window-body {
@@ -94,12 +94,12 @@
 
 .de-intrabuild-groupware-reception-LoginWindow-formPanel {
     width:300px;
-    margin:-10px 0 0 75px; 
+    margin:-10px 0 0 75px;
 }
 
 .de-intrabuild-groupware-reception-LoginWindow-stateIndicator {
     width:300px;
-    margin:10px 0 0 75px; 
+    margin:10px 0 0 75px;
 }
 
 .de-intrabuild-groupware-reception-LoginWindow-stateIndicator .de-intrabuild-groupware-reception-LoginWindow-stateIndicator-messageCont {
