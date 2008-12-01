@@ -524,7 +524,9 @@ de.intrabuild.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.W
             usernameInbox : values.usernameInbox,
             passwordInbox : "****",
             serverOutbox  : values.serverOutbox,
-            isOutboxAuth  : values.isOutboxAuth == 'on' ? "Ja" : "Nein",
+            isOutboxAuth  : values.isOutboxAuth == 'on'
+                            ? de.intrabuild.Gettext.gettext("Yes")
+                            : de.intrabuild.Gettext.gettext("No"),
             auth_template : authTemplate
         });
 
