@@ -83,6 +83,13 @@ class Intrabuild_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract 
             return;
         }
 
+        // the application needs to query the registry. That's okay since no secret data will
+        // be transported if the registry sees that there's no login
+        if ($request->action == 'get.entries' && $request->controller == 'registry' &&
+            $request->module == 'default') {
+            return;
+        }
+
         // anything other means the user is not logged in
         $request->setModuleName('default');
         $request->setControllerName('reception');

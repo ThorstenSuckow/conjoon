@@ -80,7 +80,7 @@ require_once 'Intrabuild/Modules/Default/User.php';
 // | Load up config and set up registry/ apply default configs to objects
 // +----------------------------------------------------------------------------
    // load config
-   $config = new Zend_Config_Ini('../application/config.ini', 'sandbox');
+   $config = new Zend_Config_Ini('../application/config.ini');
 
    Zend_Registry::set(Intrabuild_Keys::REGISTRY_CONFIG_OBJECT, $config);
 
@@ -107,7 +107,7 @@ require_once 'Intrabuild/Modules/Default/User.php';
    $controller = Zend_Controller_Front::getInstance();
    $controller->throwExceptions(false)
               ->addModuleDirectory('../application/modules')
-              ->setBaseUrl($config->domain->base_url);
+              ->setBaseUrl($config->environment->base_url);
 
    // add the plugins
    // authentication plugin, checks on each request if the user is logged in

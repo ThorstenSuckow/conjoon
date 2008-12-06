@@ -22,7 +22,14 @@ class IndexController extends Zend_Controller_Action {
 
     public function indexAction()
     {
+        /**
+         * @see Intrabuild_Modules_Default_Registry
+         */
+        require_once 'Intrabuild/Modules/Default/Registry.php';
 
+        $this->view->title = Intrabuild_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
     }
 
     /**

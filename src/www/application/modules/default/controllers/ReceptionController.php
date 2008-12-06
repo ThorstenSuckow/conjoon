@@ -195,6 +195,15 @@ class ReceptionController extends Zend_Controller_Action {
             $this->view->authorized = false;
         }
 
+        /**
+         * @see Intrabuild_Modules_Default_Registry
+         */
+        require_once 'Intrabuild/Modules/Default/Registry.php';
+
+        $this->view->title = Intrabuild_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
+
         $this->view->success    = false;
         $this->view->error      = $error->getDto();
 

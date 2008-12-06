@@ -24,6 +24,6 @@ final class Intrabuild_Version
     /**
      * Current version.
      */
-    const VERSION = '0.1a';
+    const VERSION = '0.1a1';
 
 }

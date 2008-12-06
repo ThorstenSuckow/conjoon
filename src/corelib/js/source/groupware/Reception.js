@@ -355,9 +355,9 @@ de.intrabuild.groupware.Reception = function() {
 		if (loginWindow === null) {
 			var options = {
 	            loginUrl      : '/default/reception/process/format/json',
-	            softwareLabel : 'intraBuild 2.0',
-	            editionLabel  : 'alpha dev branch',
-	            versionLabel  : 'V0.1a',
+	            softwareLabel : de.intrabuild.groupware.Registry.get('/base/conjoon/name'),
+	            editionLabel  : de.intrabuild.groupware.Registry.get('/base/conjoon/edition'),
+	            versionLabel  : de.intrabuild.groupware.Registry.get('/base/conjoon/version'),
 	            draggable     : false
 	        };
 

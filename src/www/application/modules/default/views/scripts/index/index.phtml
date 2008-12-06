@@ -19,7 +19,7 @@
 <html>
 <head>
     <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>intraBuild 2.0</title>
+    <title><?php echo $this->title; ?></title>
 
     <?php echo $this->render('index/_stylesheets.phtml'); ?>
 
@@ -53,7 +53,7 @@
                 <div class="x-window-bwrap">
                 	<div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">
                 	<div class="de-intrabuild-groupware-SplashScreen-body">
-                	<div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">intraBuild 2.0</div>
+                	<div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">conjoon</div>
                 	<div style="position:absolute;top:135px;left:145px;width:220px;height:50px;color:#2D5094">
                 		<div style="padding-left:10px;padding-bottom:10px;">Please wait...</div>
                 		<div class="de-intrabuild-groupware-SplashScreen-progressBar">&nbsp;</div>
@@ -380,6 +380,7 @@ Ext.onReady(function(){
 
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.email.AccountStore.getInstance());
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.AccountStore.getInstance());
+        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.Registry.getStore());
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.FeedStore.getInstance(), true);
 
         de.intrabuild.util.PreLoader.on('load', function() {

@@ -5,58 +5,77 @@
 ;
 ; $Author: T. Suckow $
 ; $Id: index.php 22 2008-04-25 22:36:07Z T. Suckow $
-; $Date: 2008-04-26 00:36:07 +0200 (Sa, 26 Apr 2008) $ 
+; $Date: 2008-04-26 00:36:07 +0200 (Sa, 26 Apr 2008) $
 ; $Revision: 22 $
 ; $LastChangedDate: 2008-04-26 00:36:07 +0200 (Sa, 26 Apr 2008) $
 ; $LastChangedBy: T. Suckow $
-; $URL: file:///E:/svn_repository/intrabuild/trunk/www/htdocs/index.php $ 
+; $URL: file:///E:/svn_repository/intrabuild/trunk/www/htdocs/index.php $
 ;
 
-; common configuration settings that gets processed before any of the 
-; subsequent sections get processed
-[common]
-; tells the application wether to use mobile, sandbox or production
-; configuration settings. If "use_section" is specified, this section will
-; be used. Leave values empty to ignore a configuration section. 
-; The settings get processed in the order they appear in this 
-; section, if "use_section" was empty or did not point to a valid section. 
-; If for example production.* and mobile.* have the same (none-empty) settings, 
-; but production.* is processed first, the production section will be used 
-; instead of the mobile section.
-use_section = sandbox
-production.when.domain.host =
-production.when.domain.port =
-mobile.when.domain.host     =
-mobile.when.domain.port     =
-sandbox.when.domain.host    =
-sandbox.when.domain.port    =
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;     README       ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; This is the template for the application configuration file for the conjoon
+; software.
+; You should set the variables to the values that suits your installation and
+; then rename this file to "config.ini".
 
-; Configuration settings for production (live environment).
-[production]
 
-; Configuration settings for running the app from USB-sticks or CD-ROMs.
-[mobile]
-domain.base_url          = /
-domain.host              = 127.0.0.1
-domain.port              = 4001
-database.adapter         = pdo_mysql
-database.params.host     = 127.0.0.1
-database.params.port     = 
-database.params.username = root
-database.params.password = 
-database.params.dbname   = intrabuild
-database.variables.max_allowed_packet =
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   ENVIRONMENT    ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+[environment]
 
-; Configuration settings for development
-[sandbox]
-domain.base_url          = /
-domain.host              = 127.0.0.1
-domain.port              = 80
-webhost                  = intrabuild
-database.adapter         = pdo_mysql
-database.params.host     = localhost
-database.params.port     = 3306
-database.params.username = root
-database.params.password = 
-database.params.dbname   = intrabuild
-database.variables.max_allowed_packet =
+; set this to the path under which conjoon is available on your host.
+; Example: If you configured your webserver so that conjoon is available
+; under http://my.domain.com/, the value must be set to "/". If you configured
+; your webserver so that the application is available under http://my.domain.com/app/,
+; the value must be set to "app".
+base_url = /
+
+; The value should be set to anything that provides more infomration about the
+; context conjoon is installed in. The value is not needed for any evaluation tasks,
+; bit will appear at some places in the software, such as the login screen.
+; If you are running the software from an USB stick, the value for this property could
+; be somewhat like "USB installation"
+edition = web edition
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   DATABASE       ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+[database]
+; set this value to the adapter conjoon should use for db connections.
+; There is currently only support for pdo_mysql, so you should not change
+; this value.
+adapter = pdo_mysql
+
+; database host
+params.host = 127.0.0.1
+
+; port where your database server listens to. For mysql, this should default to
+; "3306"
+params.port = 3306
+
+; username for db connections
+params.username = user
+
+; password for db connections
+params.password = password
+
+; the name of the database used
+params.dbname = conjoon_db
+
+; max_allowed_packet denotes the maximum site of a packet that can be stored
+; in a database using the configured connection. If you have worked with
+; MySQL before, this value should be familiar to you. However, it's used for
+; all db adapters: Provide a value that is less than or equal to the
+; "max_allowed_packet" variable of your MySQL server configuration (or any configuration
+; setting of the database server you are using, that corresponds to this variable's
+; functionality). The value has to be provided in bytes.
+; If left empty, conjoon will look up this value from the database configuration by itself.
+; Setting this value is mainly important for the email module of conjoon, as emails vary in
+; size and any email that is larger than max_allowed_packet cannot and wil not be stored
+; into the database
+variables.max_allowed_packet =

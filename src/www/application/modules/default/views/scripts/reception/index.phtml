@@ -19,7 +19,7 @@
 <html>
  <head>
   <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>intraBuild 2.0</title>
+  <title><?php echo $this->title; ?></title>
 
   <?php echo $this->render('reception/_stylesheets.phtml'); ?>
 
@@ -35,18 +35,22 @@
 
 Ext.onReady(function(){
 
-    var reception = de.intrabuild.groupware.Reception;
-    reception.init(false);
+    de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.Registry.getStore());
 
-    <?php if ($this->locked === true) { ?>
-        reception.onUserLoad(function(){
-            reception.showLogin(reception.TYPE_UNLOCK);
-        });
-    <?php } else { ?>
-        reception.showLogin(reception.TYPE_LOGIN);
-    <?php } ?>
+    de.intrabuild.util.PreLoader.on('load', function() {
+    	var reception = de.intrabuild.groupware.Reception;
+        reception.init(false);
 
+        <?php if ($this->locked === true) { ?>
+            reception.onUserLoad(function(){
+                reception.showLogin(reception.TYPE_UNLOCK);
+            });
+        <?php } else { ?>
+            reception.showLogin(reception.TYPE_LOGIN);
+        <?php } ?>
+    });
 
+    de.intrabuild.util.PreLoader.load();
 });
   </script>
  </body>

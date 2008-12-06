@@ -60,8 +60,14 @@ class Intrabuild_Controller_Plugin_Lock extends Zend_Controller_Plugin_Abstract 
 
         if ($isLocked === true) {
             // the following requests may still be processed when a user's
-            // session is logged
-            if ($request->controller == 'reception' && $request->module == 'default') {
+            // session is locked
+            if ($request->controller == 'registry' && $request->module == 'default') {
+                switch ($request->action) {
+                    // we need the registry, at least the basic entries
+                    case 'get.entries':
+                    return;
+                }
+            } else if ($request->controller == 'reception' && $request->module == 'default') {
                 switch ($request->action) {
                     // the user wants to unlock the session. Give him a try!
                     case 'unlock':
