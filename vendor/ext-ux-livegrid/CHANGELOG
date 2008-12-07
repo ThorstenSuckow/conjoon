@@ -1,4 +1,13 @@
-﻿Version 0.3RC1 (GPL)
+﻿Version 0.3RC2 (GPL)
+07-December-2008
+
+ - fixed: (GridView.js) "renderUI()" would not set "this.dragZone" properly if
+drag & drop is enabled for the GridView's grid
+- fixed: (make.bat, make.sh) naming issues for debug-build resolved; enhanced
+check if argument was submitted
+
+
+Version 0.3RC1 (GPL)
 23-November-2008
 
  - enhancement: added build tools for creating minified deployable versions of

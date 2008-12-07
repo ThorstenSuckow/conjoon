@@ -337,19 +337,16 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         g.enableDrag     = dEnabled;
 
         if(dEnabled){
-            var dd = new Ext.ux.grid.livegrid.DragZone(g, {
+            this.dragZone = new Ext.ux.grid.livegrid.DragZone(g, {
                 ddGroup : g.ddGroup || 'GridDD'
             });
         }
 
-
-	    if (this.loadMask) {
-
+        if (this.loadMask) {
             this.loadMask = new Ext.LoadMask(
-                                this.mainBody.dom.parentNode.parentNode,
-                                this.loadMask
-                            );
-
+                this.mainBody.dom.parentNode.parentNode,
+                this.loadMask
+            );
         }
     },
 

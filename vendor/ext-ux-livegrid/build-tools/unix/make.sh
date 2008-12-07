@@ -39,8 +39,8 @@ else
 	java -jar ${yuicompressor_path} -o ${TP}build/livegrid-all.js --charset UTF-8 ${TP}build/_tmp.js
 	echo "Done"
 
-	echo "...merging files for livegrid-debug-all.js..."
-	cp ${livegrid_file_list_all} ${TP}build/livegrid-debug-all.js.js
+	echo "...merging files for livegrid-all-debug.js..."
+	cp ${livegrid_file_list_all} ${TP}build/livegrid-all-debug.js
 	echo "Done"
 
 	echo "...building livegrid-debug-all.js file..."

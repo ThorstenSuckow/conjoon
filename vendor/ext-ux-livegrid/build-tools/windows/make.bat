@@ -9,7 +9,7 @@ echo  http://developer.yahoo.com/yui/compressor/
 echo -----------------------------------------------------
 echo.
 
-if %1=="" goto help
+if "%1"=="" goto help
 
 set yuicompressor_path=%1
 
@@ -37,7 +37,7 @@ java -jar %yuicompressor_path% -o %tp%build\livegrid-all.js --charset UTF-8 %tp%
 echo Done
 
 echo ...merging files for livegrid-all-debug.js...
-copy /B /Y %livegrid_file_list_all% %tp%build\livegrid-debug-all.js.js
+copy /B /Y %livegrid_file_list_all% %tp%build\livegrid-all-debug.js
 rem echo ...building livegrid-all-debug.js file...
 rem java -jar %yuicompressor_path% -o %tp%build\livegrid-all-debug.js --nomunge --disable-optimizations --charset UTF-8 %tp%build\_tmp.js
 echo Done
