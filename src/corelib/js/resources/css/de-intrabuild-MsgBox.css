@@ -1,15 +1,15 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: default-all.css 2 2008-06-21 10:38:49Z T. Suckow $
- * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
- * $Revision: 2 $
- * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/default-all.css $ 
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 .de-intrabuild-msgbox-critical .ext-mb-text {
@@ -30,7 +30,7 @@
 
 .de-intrabuild-msgbox-critical .x-window-header-text {
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-critical .x-window-mc {
     border:1px solid #99BBE8 !important;
@@ -59,13 +59,13 @@
 
 .de-intrabuild-msgbox-error .x-window-header-text {
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-error .x-window-mc {
     border:1px solid #99BBE8 !important;
     background-color:#F6F6F6 !important;
     padding:0px !important;
-}        
+}
 
 /**
  * Info dialog ""
@@ -87,13 +87,13 @@
 
 .de-intrabuild-msgbox-info .x-window-header-text {
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-info .x-window-mc {
     border:1px solid #99BBE8 !important;
     background-color:#F6F6F6 !important;
     padding:0px !important;
-}   
+}
 
 /**
  * Warning dialog ""
@@ -115,13 +115,13 @@
 
 .de-intrabuild-msgbox-warning .x-window-header-text {
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-warning .x-window-mc {
     border:1px solid #99BBE8 !important;
     background-color:#F6F6F6 !important;
     padding:0px !important;
-}            
+}
 
 /**
  * Prompt dialog ""
@@ -141,12 +141,12 @@
 
 .de-intrabuild-msgbox-prompt .x-window-header-text {
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-prompt .ext-mb-input {
     margin-left:40px !important;
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-prompt .ext-mb-fix-cursor {
     overflow:visible;
@@ -156,10 +156,10 @@
     border:1px solid #99BBE8 !important;
     background-color:#F6F6F6 !important;
     padding:0px !important;
-}           
+}
 
 /**
- * question dialog 
+ * question dialog
  */
 .de-intrabuild-msgbox-question .ext-mb-text {
     font-size:11px !important;
@@ -178,10 +178,10 @@
 
 .de-intrabuild-msgbox-question .x-window-header-text {
     font-size:11px !important;
-}        
+}
 
 .de-intrabuild-msgbox-question .x-window-mc {
     border:1px solid #99BBE8 !important;
     background-color:#F6F6F6 !important;
     padding:0px !important;
-}     
+}

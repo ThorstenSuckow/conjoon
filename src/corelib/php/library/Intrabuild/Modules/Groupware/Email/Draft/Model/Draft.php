@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: Item.php 153 2008-09-20 20:08:17Z T. Suckow $
- * $Date: 2008-09-20 22:08:17 +0200 (Sa, 20 Sep 2008) $
- * $Revision: 153 $
- * $LastChangedDate: 2008-09-20 22:08:17 +0200 (Sa, 20 Sep 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild_rep/trunk/src/corelib/php/library/Intrabuild/Modules/Groupware/Email/Item/Model/Item.php $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 /**

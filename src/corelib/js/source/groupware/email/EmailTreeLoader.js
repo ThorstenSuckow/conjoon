@@ -1,3 +1,17 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
 Ext.namespace('de.intrabuild.groupware.email');
 
 /**
@@ -211,14 +225,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
 
     onLoadException : function(treeLoader, node, response)
     {
-		de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-			onLogin: {
-				fn : function(){
-					this.load(node);
-				},
-				scope : this
-			}
-		});
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+            onLogin: {
+                fn : function(){
+                    this.load(node);
+                },
+                scope : this
+            }
+        });
 
         if (node.getUI().showProcessing) {
             node.getUI().showProcessing(false);

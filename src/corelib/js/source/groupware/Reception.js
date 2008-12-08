@@ -1,15 +1,15 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: _scripts.phtml 2 2008-06-21 10:38:49Z T. Suckow $
- * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
- * $Revision: 2 $
- * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild/trunk/src/www/application/modules/default/views/scripts/index/_scripts.phtml $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('de.intrabuild.groupware');
@@ -26,17 +26,17 @@ de.intrabuild.groupware.Reception = function() {
     /**
      * @param {Object}
      */
-	var _user = null;
+    var _user = null;
 
     /**
      * @param {Boolean}
      */
-	var _applicationStarted = false;
+    var _applicationStarted = false;
 
     /**
      * @param {Object}
      */
-	var _pingTask = null;
+    var _pingTask = null;
 
     /**
      * The recepion allows for one time listeners, that means, once the event
@@ -44,7 +44,7 @@ de.intrabuild.groupware.Reception = function() {
      *
      * @param {Object}
      */
-	var _listeners = [];
+    var _listeners = [];
 
     /**
      * Listeners for a successfull response for a user load.
@@ -77,20 +77,20 @@ de.intrabuild.groupware.Reception = function() {
      *
      */
     var _onUserLoad = function(response, options)
-	{
-		var inspector = de.intrabuild.groupware.ResponseInspector;
+    {
+        var inspector = de.intrabuild.groupware.ResponseInspector;
 
-		var data = inspector.isSuccess(response);
-		if (data === null) {
-			return inspector.handleFailure(response, options);
-		}
+        var data = inspector.isSuccess(response);
+        if (data === null) {
+            return inspector.handleFailure(response, options);
+        }
 
-		_user = data.user;
+        _user = data.user;
 
-		for (var i = 0, len = _userLoadListeners.length; i < len; i++) {
+        for (var i = 0, len = _userLoadListeners.length; i < len; i++) {
             _userLoadListeners[i]['fn'].call(_userLoadListeners[i]['scope'], _user);
         }
-	};
+    };
 
     /**
      * Callback for the login window's loginsuccess event.
@@ -101,20 +101,20 @@ de.intrabuild.groupware.Reception = function() {
      */
     var _onLoginSuccess = function(basicForm, formAction)
     {
-		for (var i = 0, len = _listeners.length; i < len; i++) {
-			_listeners[i]['fn'].call(_listeners[i]['scope']);
-		}
+        for (var i = 0, len = _listeners.length; i < len; i++) {
+            _listeners[i]['fn'].call(_listeners[i]['scope']);
+        }
 
-		_listeners = [];
+        _listeners = [];
 
-		var context = _context;
-		loginWindow.close();
+        var context = _context;
+        loginWindow.close();
 
-		if (context == this.TYPE_LOGIN || !_applicationStarted) {
+        if (context == this.TYPE_LOGIN || !_applicationStarted) {
             (function(){
-				this.location.href = '/';
-			}).defer(10, window);
-		}
+                this.location.href = '/';
+            }).defer(10, window);
+        }
     };
 
     /**
@@ -142,37 +142,37 @@ de.intrabuild.groupware.Reception = function() {
         loginWindow.setControlsDisabled(true);
     };
 
-	/**
-	 * Invoked when either the "Yes" or the "No" button of the logout dialog
-	 * is clicked.
-	 *
-	 * Sends a request to the server that tells the backend that the user wishes
-	 * to logout.
-	 *
-	 * @param {String} buttonType The type of the button that was clicked. Can be
-	 * either 'yes' or 'no'.
-	 *
-	 * @see #_onLogoutSuccess
-	 */
-	var _logout = function(buttonType)
-	{
-		if (buttonType == 'yes') {
+    /**
+     * Invoked when either the "Yes" or the "No" button of the logout dialog
+     * is clicked.
+     *
+     * Sends a request to the server that tells the backend that the user wishes
+     * to logout.
+     *
+     * @param {String} buttonType The type of the button that was clicked. Can be
+     * either 'yes' or 'no'.
+     *
+     * @see #_onLogoutSuccess
+     */
+    var _logout = function(buttonType)
+    {
+        if (buttonType == 'yes') {
             Ext.Ajax.request({
-	            url            : '/default/reception/logout/format/json',
-	            success        : _onLogoutSuccess,
-	            failure        : _onLogoutFailure,
-	            disableCaching : true
-	        });
-		}
-	};
+                url            : '/default/reception/logout/format/json',
+                success        : _onLogoutSuccess,
+                failure        : _onLogoutFailure,
+                disableCaching : true
+            });
+        }
+    };
 
-	/**
-	 * Listener for the login window's exit button.
-	 */
-	var _onExit = function()
-	{
-		_logout('yes');
-	};
+    /**
+     * Listener for the login window's exit button.
+     */
+    var _onExit = function()
+    {
+        _logout('yes');
+    };
 
     /**
      * Invoked when either the "Yes" or the "No" button of the logout dialog
@@ -190,15 +190,15 @@ de.intrabuild.groupware.Reception = function() {
         }
     };
 
-	/**
-	 * Listener for a successfull logout-request invoked by _logout.
-	 *
-	 * @param {Object} response The response object returned by the server.
+    /**
+     * Listener for a successfull logout-request invoked by _logout.
+     *
+     * @param {Object} response The response object returned by the server.
      * @param {Object} options The options used to initiate the request.
      *
-	 */
+     */
     var _onLogoutSuccess = function(response, options)
-	{
+    {
         var json = de.intrabuild.util.Json;
 
         if (json.isError(response.responseText)) {
@@ -206,8 +206,8 @@ de.intrabuild.groupware.Reception = function() {
             return;
         }
 
-		window.location.href = '/';
-	};
+        window.location.href = '/';
+    };
 
     /**
      * Listener for a erroneous logout-request invoked by _logout.
@@ -233,116 +233,116 @@ de.intrabuild.groupware.Reception = function() {
         });
     };
 
-	/**
-	 * Builds up the login window for authentication in an ongoing session.
-	 */
-	var _login = function()
-	{
+    /**
+     * Builds up the login window for authentication in an ongoing session.
+     */
+    var _login = function()
+    {
         _buildLoginWindow({
-			loginUrl : '/default/reception/process/format/json',
-			modal    : _applicationStarted
-		});
-		loginWindow.setFormIntroText(
+            loginUrl : '/default/reception/process/format/json',
+            modal    : _applicationStarted
+        });
+        loginWindow.setFormIntroText(
             de.intrabuild.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
-		);
-	};
+        );
+    };
 
-	/**
-	 * Builds up the login window for authentication when the app was started
-	 * but the user's session got lost.
-	 *
-	 */
-	var _authenticate = function()
-	{
+    /**
+     * Builds up the login window for authentication when the app was started
+     * but the user's session got lost.
+     *
+     */
+    var _authenticate = function()
+    {
         _buildLoginWindow({
-			loginUrl      : '/default/reception/process/format/json',
-			usernameValue : _user.emailAddress,
+            loginUrl      : '/default/reception/process/format/json',
+            usernameValue : _user.emailAddress,
             modal         : _applicationStarted,
             draggable     : true
-		});
+        });
         loginWindow.setFormIntroText(
             de.intrabuild.Gettext.gettext("Your request could not be processed. Most likely did your session expire. Please log in again and retry your last action.")
         );
-	};
+    };
 
-	/**
-	 * Builds up the login window for unlocking the workbench.
-	 *
-	 */
-	var _unlock = function()
-	{
-		_startPing();
+    /**
+     * Builds up the login window for unlocking the workbench.
+     *
+     */
+    var _unlock = function()
+    {
+        _startPing();
 
-		_buildLoginWindow({
-			loginUrl      : '/default/reception/unlock/format/json',
-			usernameValue : _user.emailAddress,
-			showExit      : !_applicationStarted,
+        _buildLoginWindow({
+            loginUrl      : '/default/reception/unlock/format/json',
+            usernameValue : _user.emailAddress,
+            showExit      : !_applicationStarted,
             modal         : _applicationStarted,
-			draggable     : true
+            draggable     : true
         });
 
         var msg = null;
         if (_applicationStarted) {
             msg = de.intrabuild.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again.");
-		} else {
-			msg = de.intrabuild.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
-		}
+        } else {
+            msg = de.intrabuild.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
+        }
         loginWindow.setFormIntroText(msg);
-	};
+    };
 
     /**
      * Listener for the login window's destroy event.
      * Will reset some variables and stop the task for pinging the server
      * in a frequent interval which keeps the user's session alive.
      */
-	var _onDestroy = function()
-	{
-		if (_context === this.TYPE_UNLOCK) {
-			_stopPing();
-		}
-		loginWindow = null;
+    var _onDestroy = function()
+    {
+        if (_context === this.TYPE_UNLOCK) {
+            _stopPing();
+        }
+        loginWindow = null;
         _context    = null;
 
-	};
+    };
 
-	/**
-	 * Calls the ping action from the reception's controller.
-	 */
-	var _pingServer = function()
-	{
+    /**
+     * Calls the ping action from the reception's controller.
+     */
+    var _pingServer = function()
+    {
         Ext.Ajax.request({
             url            : '/default/reception/ping/format/json',
-			disableCaching : true,
-			failure        : de.intrabuild.groupware.ResponseInspector.handleFailure
-		});
-	};
+            disableCaching : true,
+            failure        : de.intrabuild.groupware.ResponseInspector.handleFailure
+        });
+    };
 
-	/**
-	 * Starts pinging the server in a frequent interval to keep the user's session
-	 * alive.
-	 */
-	var _startPing = function()
-	{
-		if (_pingTask !== null) {
-			return;
-		}
+    /**
+     * Starts pinging the server in a frequent interval to keep the user's session
+     * alive.
+     */
+    var _startPing = function()
+    {
+        if (_pingTask !== null) {
+            return;
+        }
         _pingTask = {
             run      : _pingServer,
             interval : 60000 // 1 minute
         }
         Ext.TaskMgr.start(_pingTask);
-	};
+    };
 
-	/**
-	 * Stops pinging the server.
-	 */
-	var _stopPing = function()
+    /**
+     * Stops pinging the server.
+     */
+    var _stopPing = function()
     {
-		if (_pingTask === null) {
+        if (_pingTask === null) {
             return;
         }
         Ext.TaskMgr.stop(_pingTask);
-		_pingTask = null;
+        _pingTask = null;
     };
 
     /**
@@ -350,112 +350,112 @@ de.intrabuild.groupware.Reception = function() {
      *
      * @param {Object} config Additional config properties for the login window
      */
-	var _buildLoginWindow = function(config)
-	{
-		if (loginWindow === null) {
-			var options = {
-	            loginUrl      : '/default/reception/process/format/json',
-	            softwareLabel : de.intrabuild.groupware.Registry.get('/base/conjoon/name'),
-	            editionLabel  : de.intrabuild.groupware.Registry.get('/base/conjoon/edition'),
-	            versionLabel  : de.intrabuild.groupware.Registry.get('/base/conjoon/version'),
-	            draggable     : false
-	        };
+    var _buildLoginWindow = function(config)
+    {
+        if (loginWindow === null) {
+            var options = {
+                loginUrl      : '/default/reception/process/format/json',
+                softwareLabel : de.intrabuild.groupware.Registry.get('/base/conjoon/name'),
+                editionLabel  : de.intrabuild.groupware.Registry.get('/base/conjoon/edition'),
+                versionLabel  : de.intrabuild.groupware.Registry.get('/base/conjoon/version'),
+                draggable     : false
+            };
 
-			var config = config || {};
+            var config = config || {};
 
-			Ext.apply(options, config);
+            Ext.apply(options, config);
 
-			loginWindow = new de.intrabuild.groupware.reception.LoginWindow(options);
-			loginWindow.on('exit',         _onExit,          de.intrabuild.groupware.Reception);
-			loginWindow.on('loginsuccess', _onLoginSuccess, de.intrabuild.groupware.Reception);
-			loginWindow.on('loginfailure', _onLoginFailure, de.intrabuild.groupware.Reception);
-			loginWindow.on('beforelogin',  _onBeforeLogin, de.intrabuild.groupware.Reception);
-			loginWindow.on('destroy',      _onDestroy,     de.intrabuild.groupware.Reception);
-		}
+            loginWindow = new de.intrabuild.groupware.reception.LoginWindow(options);
+            loginWindow.on('exit',         _onExit,          de.intrabuild.groupware.Reception);
+            loginWindow.on('loginsuccess', _onLoginSuccess, de.intrabuild.groupware.Reception);
+            loginWindow.on('loginfailure', _onLoginFailure, de.intrabuild.groupware.Reception);
+            loginWindow.on('beforelogin',  _onBeforeLogin, de.intrabuild.groupware.Reception);
+            loginWindow.on('destroy',      _onDestroy,     de.intrabuild.groupware.Reception);
+        }
 
         if (!loginWindow.isVisible()) {
             loginWindow.show();
         }
-	};
+    };
 
-	/**
-	 * The listener for the {@see Ext.ux.util.MessageBus}' message
-	 * 'ext.lib.ajax.authorizationRequired'.
-	 * Will inspect the message and check which kind of autentication failure
-	 * is present: This can be either one of
-	 * de.intrabuild.groupware.ResponseInspector.FAILURE_AUTH or
-	 * de.intrabuild.groupware.ResponseInspector.FAILURE_LOCK
-	 * Either
-	 *
-	 * @throws Error if neither FAILURE_AUTH or FAILURE_LOCK is present in the
-	 * response; throws an error if the current context is AUTHENTICATE but a
-	 * locked failure was returned
-	 */
-	var _handleAuthFailure = function(subject, message)
-	{
-		var rawResponse = message.rawResponse;
+    /**
+     * The listener for the {@see Ext.ux.util.MessageBus}' message
+     * 'ext.lib.ajax.authorizationRequired'.
+     * Will inspect the message and check which kind of autentication failure
+     * is present: This can be either one of
+     * de.intrabuild.groupware.ResponseInspector.FAILURE_AUTH or
+     * de.intrabuild.groupware.ResponseInspector.FAILURE_LOCK
+     * Either
+     *
+     * @throws Error if neither FAILURE_AUTH or FAILURE_LOCK is present in the
+     * response; throws an error if the current context is AUTHENTICATE but a
+     * locked failure was returned
+     */
+    var _handleAuthFailure = function(subject, message)
+    {
+        var rawResponse = message.rawResponse;
 
-		var inspector = de.intrabuild.groupware.ResponseInspector;
-		var ft = inspector.getFailureType(rawResponse);
+        var inspector = de.intrabuild.groupware.ResponseInspector;
+        var ft = inspector.getFailureType(rawResponse);
 
-		switch (ft) {
-			case inspector.FAILURE_AUTH:
+        switch (ft) {
+            case inspector.FAILURE_AUTH:
                 if (_context === this.TYPE_UNLOCK) {
-					// session got lost somewhere
-					loginWindow.close();
-				}
+                    // session got lost somewhere
+                    loginWindow.close();
+                }
 
-				this.showLogin(this.TYPE_AUTHENTICATE);
-			break;
+                this.showLogin(this.TYPE_AUTHENTICATE);
+            break;
 
-			case inspector.FAILURE_LOCK:
+            case inspector.FAILURE_LOCK:
                 if (_context === this.TYPE_AUTHENTICATE) {
                     // session got lost somewhere
                     throw(
-					   'de.intrabuild.groupware.Reception._handleAuthFailure: '
-					   +'Current context is AUTHENTICATE but server returned LOCKED'
-					);
+                       'de.intrabuild.groupware.Reception._handleAuthFailure: '
+                       +'Current context is AUTHENTICATE but server returned LOCKED'
+                    );
                 }
 
-				this.lockWorkbench();
+                this.lockWorkbench();
             break;
 
-			default:
-				throw(
-		            'de.intrabuild.groupware.Reception._handleAuthFailure: '
-		            + 'Response did contain neither FAILURE_AUTH nor FAILURE_LOCK'
-		        );
-			break;
-		}
+            default:
+                throw(
+                    'de.intrabuild.groupware.Reception._handleAuthFailure: '
+                    + 'Response did contain neither FAILURE_AUTH nor FAILURE_LOCK'
+                );
+            break;
+        }
 
 
-	};
+    };
 
     /**
      * Shows the login dialog to unlock the workbench
      *
      */
-	var _lockWorkbench = function()
-	{
-		this.showLogin(this.TYPE_UNLOCK);
-	};
+    var _lockWorkbench = function()
+    {
+        this.showLogin(this.TYPE_UNLOCK);
+    };
 
-	/**
-	 * @param {Number}
-	 * The current context this component is in. Equals to null if there is no
-	 * context, otherwise it can equal to either TYPE_LOGIN, TYPE_AUTHENTICATE
-	 * or TYPE_UNLOCK.
-	 */
-	var _context = null;
+    /**
+     * @param {Number}
+     * The current context this component is in. Equals to null if there is no
+     * context, otherwise it can equal to either TYPE_LOGIN, TYPE_AUTHENTICATE
+     * or TYPE_UNLOCK.
+     */
+    var _context = null;
 
     return {
 
 
-		/**
-		 * @param {Number}
-		 * The type of context the login procedure is in. States that the app
-		 * is not started yet and that the login window is shown alone.
-		 */
+        /**
+         * @param {Number}
+         * The type of context the login procedure is in. States that the app
+         * is not started yet and that the login window is shown alone.
+         */
         TYPE_LOGIN : 2,
 
         /**
@@ -464,25 +464,25 @@ de.intrabuild.groupware.Reception = function() {
          * was started but the session got somehow lost, thus a re-login is
          * needed.
          */
-		TYPE_AUTHENTICATE : 4,
+        TYPE_AUTHENTICATE : 4,
 
         /**
          * @param {Number}
          * The type of context the login procedure is in. States that the app
          * was started and the user lcoked the workbench.
          */
-		TYPE_UNLOCK : 8,
+        TYPE_UNLOCK : 8,
 
         /**
          *
          */
-		onLogin : function(fn, scope)
-		{
-			_listeners.push({
-				fn    : fn,
-				scope : scope || window
-			});
-		},
+        onLogin : function(fn, scope)
+        {
+            _listeners.push({
+                fn    : fn,
+                scope : scope || window
+            });
+        },
 
         /**
          *
@@ -498,34 +498,34 @@ de.intrabuild.groupware.Reception = function() {
         /**
          *
          */
-		init : function(applicationStarted)
-		{
-			_applicationStarted = applicationStarted;
+        init : function(applicationStarted)
+        {
+            _applicationStarted = applicationStarted;
 
-			Ext.Ajax.request({
-				url            : '/default/reception/get.user/format/json',
-				disableCaching : true,
-				success        : _onUserLoad
-			});
+            Ext.Ajax.request({
+                url            : '/default/reception/get.user/format/json',
+                disableCaching : true,
+                success        : _onUserLoad
+            });
 
-			// subscribe to the message bus and listen to failed responses
+            // subscribe to the message bus and listen to failed responses
             // due to "401 - authorization required" status codes
             Ext.ux.util.MessageBus.subscribe(
                 'ext.lib.ajax.authorizationRequired',
                 _handleAuthFailure,
-				this
+                this
             );
-			return this;
-		},
+            return this;
+        },
 
         /**
          *
          * @return {Object}
          */
-		getUser : function()
-		{
-			return _user;
-		},
+        getUser : function()
+        {
+            return _user;
+        },
 
         /**
          * Sends a request to lock the workbench and shows the login dialog on
@@ -537,22 +537,22 @@ de.intrabuild.groupware.Reception = function() {
          */
         lockWorkbench : function()
         {
-			if (_context === this.TYPE_UNLOCK) {
-				return;
-			} else if (_context !== null) {
+            if (_context === this.TYPE_UNLOCK) {
+                return;
+            } else if (_context !== null) {
                 throw(
                     'de.intrabuild.groupware.Reception.lockWorkbench: '
                     +'Current context is AUTHENTICATE but server returned LOCKED'
                 );
-			}
+            }
 
-			Ext.Ajax.request({
-				url            : '/default/reception/lock/format/json',
-				disableCaching : true,
-				success        : _lockWorkbench,
-				failure        : de.intrabuild.groupware.ResponseInspector.handleFailure,
-				scope          : this
-			});
+            Ext.Ajax.request({
+                url            : '/default/reception/lock/format/json',
+                disableCaching : true,
+                success        : _lockWorkbench,
+                failure        : de.intrabuild.groupware.ResponseInspector.handleFailure,
+                scope          : this
+            });
         },
 
         /**
@@ -582,35 +582,35 @@ de.intrabuild.groupware.Reception = function() {
          *
          * @see _logout
          */
-		logout : function()
-		{
-			var msg = Ext.MessageBox;
+        logout : function()
+        {
+            var msg = Ext.MessageBox;
 
-	        msg.show({
-	            title   : de.intrabuild.Gettext.gettext("Logout"),
-	            msg     : de.intrabuild.Gettext.gettext("All unsaved data will be lost. Are you sure you want to log out and exit?"),
-	            buttons : msg.YESNO,
-				icon    : msg.QUESTION,
+            msg.show({
+                title   : de.intrabuild.Gettext.gettext("Logout"),
+                msg     : de.intrabuild.Gettext.gettext("All unsaved data will be lost. Are you sure you want to log out and exit?"),
+                buttons : msg.YESNO,
+                icon    : msg.QUESTION,
                 cls     : 'de-intrabuild-msgbox-question',
                 width   : 400,
-				fn      : _logout
-	        });
-		},
+                fn      : _logout
+            });
+        },
 
         /**
          * Display the logout window.
          */
-		showLogout : function()
-		{
-			if (_logoutWindow === null) {
+        showLogout : function()
+        {
+            if (_logoutWindow === null) {
                 _logoutWindow = new de.intrabuild.groupware.reception.LogoutWindow();
-				_logoutWindow.on('destroy', function() {
-					_logoutWindow = null;
-				});
-			}
+                _logoutWindow.on('destroy', function() {
+                    _logoutWindow = null;
+                });
+            }
 
-			_logoutWindow.show();
-		},
+            _logoutWindow.show();
+        },
 
         /**
          * Displays the login window.
@@ -622,30 +622,30 @@ de.intrabuild.groupware.Reception = function() {
          */
         showLogin : function(contextType)
         {
-			if (_context !== null){
-				return;
-			}
+            if (_context !== null){
+                return;
+            }
 
-			switch (contextType) {
+            switch (contextType) {
                 case this.TYPE_LOGIN:
-				    _context = contextType;
-				    _login();
-				break;
-				case this.TYPE_AUTHENTICATE:
-				    _context = contextType;
+                    _context = contextType;
+                    _login();
+                break;
+                case this.TYPE_AUTHENTICATE:
+                    _context = contextType;
                     _authenticate();
-				break;
-				case this.TYPE_UNLOCK:
-				    _context = contextType;
-				    _unlock();
-				break;
-				default:
-				    throw(
-					   'de.intrabuild.groupware.Reception: '
-					   + 'no valid login context provided.'
-					);
-			    break;
-			}
+                break;
+                case this.TYPE_UNLOCK:
+                    _context = contextType;
+                    _unlock();
+                break;
+                default:
+                    throw(
+                       'de.intrabuild.groupware.Reception: '
+                       + 'no valid login context provided.'
+                    );
+                break;
+            }
         },
 
         /**

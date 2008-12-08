@@ -1,22 +1,22 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 .de-intrabuild-groupware-feeds-AddFeedDialog-errorCard-imagePanel {
     margin-left:20px;
     height:24px;
     width:24px;
-    background-image:url(../images/24x24/actions/error.png);    
+    background-image:url(../images/24x24/actions/error.png);
     background-repeat:no-repeat;
 }
 
@@ -30,7 +30,7 @@
 
 .de-intrabuild-groupware-feeds-AddFeedDialog-introImage {
     background-image:url(../images/24x24/apps/groupware-feeds-addfeeddialog-intro.png);
-	background-position:10px 10px;
+    background-position:10px 10px;
     background-repeat:no-repeat;
     padding-left:58px !important;
 }

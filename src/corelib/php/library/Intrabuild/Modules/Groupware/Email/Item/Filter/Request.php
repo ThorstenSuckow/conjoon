@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -33,28 +33,28 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Request extends Intrabuild_
 
     const CONTEXT_REQUEST        = 'get_items';
     const CONTEXT_REQUEST_LATEST = 'get_latest_items';
-    
-    
+
+
     protected $_defaultEscapeFilter = 'StringTrim';
 
     protected $_presence = array(
-       
+
         self::CONTEXT_REQUEST => array(
-            'start', 
+            'start',
             'limit',
             'dir',
             'sort',
             'groupwareEmailFoldersId'
         ),
         self::CONTEXT_REQUEST_LATEST => array(
-            'start', 
+            'start',
             'limit',
             'dir',
             'sort',
             'minDate'
         )
     );
-    
+
     protected $_filters = array(
         'start' => array(
             'Int'
@@ -77,7 +77,7 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Request extends Intrabuild_
             'Int'
          )
     );
-    
+
     protected $_validators = array(
         'start' => array(
             'allowEmpty' => true,
@@ -102,19 +102,19 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Request extends Intrabuild_
             array('GreaterThan', 0)
          )
     );
-    
+
     protected function _init()
     {
         switch ($this->_context) {
-            case self::CONTEXT_REQUEST:  
+            case self::CONTEXT_REQUEST:
             case self::CONTEXT_REQUEST_LATEST:
-                require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/SortFieldToTableField.php'; 
-                require_once 'Intrabuild/Filter/SortDirection.php'; 
+                require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/SortFieldToTableField.php';
+                require_once 'Intrabuild/Filter/SortDirection.php';
                 $this->_filters['dir'][]  = new Intrabuild_Filter_SortDirection();
-                $this->_filters['sort'][] = new Intrabuild_Modules_Groupware_Email_Item_Filter_SortFieldToTableField();   
+                $this->_filters['sort'][] = new Intrabuild_Modules_Groupware_Email_Item_Filter_SortFieldToTableField();
             break;
         }
     }
-   
-   
+
+
 }

@@ -1,22 +1,22 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
- * Intrabuild_BeanContext 
- */ 
-require_once 'Intrabuild/BeanContext.php'; 
+ * Intrabuild_BeanContext
+ */
+require_once 'Intrabuild/BeanContext.php';
 
 
 /**
@@ -30,17 +30,17 @@ require_once 'Intrabuild/BeanContext.php';
  * @subpackage Email
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */  
- 
+ */
+
 class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanContext, Serializable {
-    
+
     const PROTOCOL_POP3 = 'POP3';
     const PROTOCOL_IMAP = 'IMAP';
-    
+
     const PORT_POP3 = 110;
     const PORT_IMAP = 110;
     const PORT_SMTP = 25;
-    
+
     private $id;
     private $userId;
     private $name;
@@ -62,10 +62,10 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
     private $portOutbox;
     private $isCopyLeftOnServer;
     private $_isDeleted;
-    
+
     /**
      * Constructor.
-     * 
+     *
      * Sets <tt>portInbox</tt>, <tt>portOutbox</tt> and <tt>protocol</tt>
      * to their appropriate default values.
      *
@@ -80,9 +80,9 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
         $this->setProtocol(self::PROTOCOL_POP3);
         $this->setCopyLeftonServer(true);
     }
-    
-// -------- accessors        
-    
+
+// -------- accessors
+
     public function getId(){return $this->id;}
     public function getUserId(){return $this->userId;}
     public function getName(){return $this->name;}
@@ -104,7 +104,7 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
     public function getPortOutbox(){return $this->portOutbox;}
     public function isCopyLeftOnServer(){return $this->isCopyLeftOnServer;}
     public function isDeleted(){return $this->_isDeleted;}
-    
+
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
     public function setName($name){$this->name = $name;}
@@ -122,42 +122,42 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
     public function setPasswordOutbox($passwordOutbox){$this->passwordOutbox = $passwordOutbox;}
     public function setSignature($signature){$this->signature = $signature;}
     public function setSignatureUsed($isSignatureUsed){$this->isSignatureUsed = $isSignatureUsed;}
-    
+
     public function setPortInbox($portInbox)
     {
         if ($portInbox < 0 || $portInbox > 65535) {
-            throw new OutOfRangeException("Port number for inbox server out of range: ".$portInbox);    
+            throw new OutOfRangeException("Port number for inbox server out of range: ".$portInbox);
         }
         $this->portInbox = $portInbox;
     }
-    
+
     public function setPortOutbox($portOutbox)
     {
         if ($portOutbox < 0 || $portOutbox > 65535) {
-            throw new OutOfRangeException("Port number for outbox server out of range: ".$portOutbox);    
+            throw new OutOfRangeException("Port number for outbox server out of range: ".$portOutbox);
         }
         $this->portOutbox = $portOutbox;
     }
-    
-    public function setCopyLeftOnServer($isCopyLeftOnServer){$this->isCopyLeftOnServer = $isCopyLeftOnServer;}    
+
+    public function setCopyLeftOnServer($isCopyLeftOnServer){$this->isCopyLeftOnServer = $isCopyLeftOnServer;}
     public function setDeleted($isDeleted){$this->_isDeleted = $isDeleted;}
-    
+
 // -------- interface Serializable
     /**
      * Serializes properties and returns them as a string which can later on
      * be unserialized.
-     * 
+     *
      * @return string
      */
     public function serialize()
     {
         $data = $this->toArray();
-        
+
         return serialize($data);
     }
-    
+
     /**
-     * Unserializes <tt>$serialized</tt> and assigns the specific 
+     * Unserializes <tt>$serialized</tt> and assigns the specific
      * values found to the members in this class.
      *
      * @param string $serialized The serialized representation of a former
@@ -166,32 +166,32 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
     public function unserialize($serialized)
     {
         $str = unserialize($serialized);
-        
-  	     foreach ($str as $member => $value) {
-            $this->$member = $value; 	
+
+         foreach ($str as $member => $value) {
+            $this->$member = $value;
         }
     }
 
-// -------- interface Intrabuild_BeanContext    
-    
+// -------- interface Intrabuild_BeanContext
+
     /**
      * Returns a Dto for an instance of this class.
-     * 
+     *
      * @return Intrabuild_Groupware_Email_AccountDto
-     */    
+     */
     public function getDto()
     {
         require_once 'Account/Dto.php';
-        
+
         $data = $this->toArray();
-        
+
         $dto = new Intrabuild_Modules_Groupware_Email_Account_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
             }
-        }    
-        
+        }
+
         return $dto;
     }
 
@@ -225,7 +225,7 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
             'portOutbox'         => $this->portOutbox,
             'isCopyLeftOnServer' => $this->isCopyLeftOnServer
         );
-    }   
+    }
 
     /**
      * Returns a textual representation of the current object.
@@ -235,7 +235,7 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
     public function __toString()
     {
         $data = $this->toArray();
-        return 
+        return
             'id: '.$data['id'].', '.
             'userId: '.$data['userId'].', '.
             'name: '.$data['name'].', '.
@@ -257,4 +257,4 @@ class Intrabuild_Modules_Groupware_Email_Account implements Intrabuild_BeanConte
             'portOutbox: '.$data['portOutbox'].', '.
             'isCopyLeftOnServer: '.$data['isCopyLeftOnServer'].';';
     }
-} 
+}

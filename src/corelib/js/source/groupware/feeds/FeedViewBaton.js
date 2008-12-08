@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -26,38 +26,38 @@ Ext.namespace('de.intrabuild.groupware.feeds');
  */
 de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 
-	var openedFeeds = {};
+    var openedFeeds = {};
 
-	var AccountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
+    var AccountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
 
-	var LinkInterceptor = de.intrabuild.groupware.util.LinkInterceptor;
+    var LinkInterceptor = de.intrabuild.groupware.util.LinkInterceptor;
 
-	var contentPanel = null;
+    var contentPanel = null;
 
-	var idPrefix = 'de.intrabuild.groupware.feeds.FeedItemView_';
+    var idPrefix = 'de.intrabuild.groupware.feeds.FeedItemView_';
 
-	var toolbar = null;
+    var toolbar = null;
 
-	var activeRecord = null;
+    var activeRecord = null;
 
     var _requestIds = {};
 
-	var registerToolbar = function()
+    var registerToolbar = function()
     {
         if (toolbar == null) {
             var tbarManager = de.intrabuild.groupware.ToolbarManager;
 
-			var linkButton = new Ext.Toolbar.Button({
-			    id       : 'de.intrabuild.groupware.feeds.FeedView.toolbar.LinkButton',
-			    cls      : 'x-btn-text-icon',
-			    iconCls  : 'de-intrabuild-groupware-feeds-FeedViewBaton-toolbar-visitEntryButton-icon',
-			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
-			    handler  : function(){visitFeedEntry();}
-			});
+            var linkButton = new Ext.Toolbar.Button({
+                id       : 'de.intrabuild.groupware.feeds.FeedView.toolbar.LinkButton',
+                cls      : 'x-btn-text-icon',
+                iconCls  : 'de-intrabuild-groupware-feeds-FeedViewBaton-toolbar-visitEntryButton-icon',
+                text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
+                handler  : function(){visitFeedEntry();}
+            });
 
 
             toolbar = new Ext.Toolbar([
-            	linkButton
+                linkButton
             ]);
 
 
@@ -65,80 +65,80 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         }
     };
 
-	var visitFeedEntry = function(type)
-	{
-		var tab = contentPanel.getActiveTab();
+    var visitFeedEntry = function(type)
+    {
+        var tab = contentPanel.getActiveTab();
 
-		var id = tab.id;
+        var id = tab.id;
 
-		if (!openedFeeds[id]) {
-			return;
-		}
-
-		(function() {
-            this.open(LinkInterceptor.getRedirectLink(openedFeeds[id]['link']));
-		}).defer(1, window);
-	};
-
-	/**
-	 * Loads the feed's contents for the specified id from the server.
-	 *
-	 * @param {Number} id
-	 * @param {String} panelId
-	 *
-	 */
-	var loadFeedContents = function(id, panelId)
-	{
-	    if (_requestIds[panelId]) {
-	        return;
-	    }
-
-	    _requestIds[panelId] = Ext.Ajax.request({
-	        url    : '/groupware/feeds/get.feed.content/format/json',
-	        params : {
-	            id : id
-	        },
-			panelId : panelId,
-	        success : onFeedLoadSuccess,
-	        failure : onFeedLoadFailure
-	    });
-	};
-
-	/**
-	 * Callback for the successfull loading of a feed's content.
-	 *
-	 * @param {XmlHttpResponse} response
-	 * @param {Object} options
-	 */
-	var onFeedLoadSuccess = function(response, options)
-	{
-		var inspector = de.intrabuild.groupware.ResponseInspector;
-
-		var data = inspector.isSuccess(response);
-
-		if (data === null) {
-			onFeedLoadFailure(response, options);
+        if (!openedFeeds[id]) {
             return;
-		}
-		var item = data.item;
-		var rec = de.intrabuild.util.Record.convertTo(
+        }
+
+        (function() {
+            this.open(LinkInterceptor.getRedirectLink(openedFeeds[id]['link']));
+        }).defer(1, window);
+    };
+
+    /**
+     * Loads the feed's contents for the specified id from the server.
+     *
+     * @param {Number} id
+     * @param {String} panelId
+     *
+     */
+    var loadFeedContents = function(id, panelId)
+    {
+        if (_requestIds[panelId]) {
+            return;
+        }
+
+        _requestIds[panelId] = Ext.Ajax.request({
+            url    : '/groupware/feeds/get.feed.content/format/json',
+            params : {
+                id : id
+            },
+            panelId : panelId,
+            success : onFeedLoadSuccess,
+            failure : onFeedLoadFailure
+        });
+    };
+
+    /**
+     * Callback for the successfull loading of a feed's content.
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     */
+    var onFeedLoadSuccess = function(response, options)
+    {
+        var inspector = de.intrabuild.groupware.ResponseInspector;
+
+        var data = inspector.isSuccess(response);
+
+        if (data === null) {
+            onFeedLoadFailure(response, options);
+            return;
+        }
+        var item = data.item;
+        var rec = de.intrabuild.util.Record.convertTo(
             de.intrabuild.groupware.feeds.ItemRecord,
-			item,
-			item.id
-		);
+            item,
+            item.id
+        );
 
         _requestIds[options.panelId] = null;
         delete _requestIds[options.panelId];
 
-		Ext.ux.util.MessageBus.publish(
-			'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess', {
-			id : item.id
-		});
+        Ext.ux.util.MessageBus.publish(
+            'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess', {
+            id : item.id
+        });
 
-		openedFeeds[options.panelId]['body'].update(rec.get('content'));
-	};
+        openedFeeds[options.panelId]['body'].update(rec.get('content'));
+    };
 
-	/**
+    /**
      * Callback for an erroneous loading of a feed's content.
      *
      * @param {XmlHttpResponse} response
@@ -150,32 +150,32 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         delete _requestIds[options.panelId];
 
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
-			onLogin : {
-				fn : function(){
-					loadFeedContents(options.params.id, options.panelId);
-				}
-			}
-		});
+            onLogin : {
+                fn : function(){
+                    loadFeedContents(options.params.id, options.panelId);
+                }
+            }
+        });
 
     };
 
-	/**
-	 *
-	 *
-	 * @param {de.intrabuild.groupware.feeds.FeedItemRecord}
-	 */
-	var buildPanel = function(feedItemRecord)
-	{
+    /**
+     *
+     *
+     * @param {de.intrabuild.groupware.feeds.FeedItemRecord}
+     */
+    var buildPanel = function(feedItemRecord)
+    {
         var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId'));
         var link   = accRec.get('link');
         var name   = feedItemRecord.get('name')+' - '+accRec.get('description');
 
-		var body = new Ext.Panel({
-			region     : 'center',
-			listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),
-			autoScroll : true,
-			cls        : 'de-intrabuild-groupware-feeds-FeedView-panel',
-			html       : ''
+        var body = new Ext.Panel({
+            region     : 'center',
+            listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),
+            autoScroll : true,
+            cls        : 'de-intrabuild-groupware-feeds-FeedView-panel',
+            html       : ''
         });
 
         var view = new Ext.Panel({
@@ -199,19 +199,19 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
                    '</div>'
 
             },body
-			]
+            ]
         });
 
-		var tbarManager = de.intrabuild.groupware.ToolbarManager;
+        var tbarManager = de.intrabuild.groupware.ToolbarManager;
 
         view.on('destroy', function(panel){
-			delete openedFeeds[panel.id];
-			if (_requestIds[panel.id]) {
+            delete openedFeeds[panel.id];
+            if (_requestIds[panel.id]) {
                 Ext.Ajax.abort(_requestIds[panel.id]);
                 delete _requestIds[panel.id];
             }
 
-			// hide this only if there are no more feed tabs to display
+            // hide this only if there are no more feed tabs to display
             // this is needed if there is no tab which could be activated
             // which shows a toolbar upon activate
             var hide = true;
@@ -237,14 +237,14 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         contentPanel.setActiveTab(view);
         openedFeeds[idPrefix+feedItemRecord.id] = {
             view : view,
-			body : body.body,
+            body : body.body,
             link : feedItemRecord.get('link')
         };
 
         return view;
-	};
+    };
 
-	return {
+    return {
 
         /**
          * Displays a feed item's content and it's details in a new tab.
@@ -256,35 +256,35 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
          * @param {Boolean} loadFromServer true if the record is not fully
          * configured and needs loading from the server, otherwise false
          */
-		showFeed : function(feedItemRecord, loadFromServer)
-		{
-			if (!contentPanel) {
-				contentPanel = de.intrabuild.util.Registry.get('de.intrabuild.groupware.ContentPanel');
-			}
+        showFeed : function(feedItemRecord, loadFromServer)
+        {
+            if (!contentPanel) {
+                contentPanel = de.intrabuild.util.Registry.get('de.intrabuild.groupware.ContentPanel');
+            }
 
-			if (toolbar == null) {
-				registerToolbar();
-			}
+            if (toolbar == null) {
+                registerToolbar();
+            }
 
-			var recordId = -1;
-			var isRecord = true;
+            var recordId = -1;
+            var isRecord = true;
 
-			var opened = openedFeeds[idPrefix+feedItemRecord.id];
+            var opened = openedFeeds[idPrefix+feedItemRecord.id];
 
-			if (opened) {
-				contentPanel.setActiveTab(opened['view']);
-				return opened;
-			} else {
-				buildPanel(feedItemRecord);
-				if (loadFromServer === true) {
-					loadFeedContents(
+            if (opened) {
+                contentPanel.setActiveTab(opened['view']);
+                return opened;
+            } else {
+                buildPanel(feedItemRecord);
+                if (loadFromServer === true) {
+                    loadFeedContents(
                         feedItemRecord.id,
-					    idPrefix+feedItemRecord.id
-					);
-				} else {
+                        idPrefix+feedItemRecord.id
+                    );
+                } else {
                     openedFeeds[idPrefix+feedItemRecord.id]['body'].update(feedItemRecord.get('content'));
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }();

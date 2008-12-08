@@ -1,22 +1,22 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 Ext.namespace('de.intrabuild.groupware.feeds');
 
 
 de.intrabuild.groupware.feeds.ItemRecord = Ext.data.Record.create([
-    
+
     {name: 'id', type : 'int'},
     {name: 'groupwareFeedsAccountsId', type : 'int'},
     {name: 'name', type : 'string'},
@@ -27,6 +27,6 @@ de.intrabuild.groupware.feeds.ItemRecord = Ext.data.Record.create([
     {name: 'pubDate', type: 'date', dateFormat: 'Y-m-d H:i:s'},
     {name: 'isRead', type : 'boolean'},
     {name: 'link', type : 'string'}
-    
-    
+
+
 ]);

@@ -1,22 +1,22 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
-/** 
- * @see Intrabuild_Dto 
+
+/**
+ * @see Intrabuild_Dto
  */
-require_once 'Intrabuild/Dto.php'; 
+require_once 'Intrabuild/Dto.php';
 
 class Intrabuild_Modules_Groupware_Email_Folder_Dto extends Intrabuild_Dto {
 
@@ -28,4 +28,4 @@ class Intrabuild_Modules_Groupware_Email_Folder_Dto extends Intrabuild_Dto {
     public $childCount;
     public $pendingCount;
 
-} 
+}

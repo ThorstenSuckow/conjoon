@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -11,7 +11,6 @@
  * $LastChangedBy$
  * $URL$
  */
-
 
 /**
  * EmailGrid
@@ -69,7 +68,7 @@
  * Attachment column
  */
 .de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground {
-	float:left;
+    float:left;
 }
 
 .de-intrabuild-groupware-email-EmailGrid-attachmentColumn-headerBackground,
@@ -81,7 +80,7 @@
  * Read column
  */
 .de-intrabuild-groupware-email-EmailGrid-readColumn-headerBackground {
-	float:left;
+    float:left;
     background-image:url(../images/12x12/apps/groupware-email-read.png);
 }
 
@@ -98,7 +97,7 @@
  */
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-headerBackground {
     background-image:url(../images/12x12/apps/groupware-email-spam.png);
-	float:left;
+    float:left;
 }
 
 .de-intrabuild-groupware-email-EmailGrid-spamColumn-cellBackground.itemspam {

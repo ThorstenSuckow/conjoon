@@ -1,8 +1,8 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -188,7 +188,7 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         'usernameOutbox' => array(
             'allowEmpty' => false
          ),
-        'userName'  	     => array(
+        'userName'           => array(
             'allowEmpty' => false
          ),
         'isOutboxAuth' => array(
@@ -201,7 +201,7 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
         'passwordOutbox'     => array(
             'allowEmpty' => false
         ),
-        'signature' 	     => array(
+        'signature'          => array(
             'allowEmpty' => true,
             array('StringLength', 0, 255)
         ),
@@ -209,12 +209,12 @@ class Intrabuild_Modules_Groupware_Email_Account_Filter_Account extends Intrabui
             'allowEmpty' => true,
             'default'    => 0
          ),
-        'portInbox'  	     => array(
+        'portInbox'          => array(
             'allowEmpty' => true,
             'default'    => 110,
             array('Between', 0, 65535)
         ),
-        'portOutbox'	     => array(
+        'portOutbox'         => array(
             'allowEmpty' => true,
             'default'    => 25,
             array('Between', 0, 65535)

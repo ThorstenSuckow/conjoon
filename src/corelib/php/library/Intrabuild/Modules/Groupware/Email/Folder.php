@@ -1,22 +1,22 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
- * Intrabuild_BeanContext 
- */ 
-require_once 'Intrabuild/BeanContext.php'; 
+ * Intrabuild_BeanContext
+ */
+require_once 'Intrabuild/BeanContext.php';
 
 
 /**
@@ -30,9 +30,9 @@ require_once 'Intrabuild/BeanContext.php';
  *  type : the storage type the folder represents. This can be any of "inbox
  *  "outbox, "draft", "spam", "sent", "folder"
  *  childCount : The number of child folders this folder has, if any
- *  pendingCount : Depending on the folder type, "pending" denotes either the 
+ *  pendingCount : Depending on the folder type, "pending" denotes either the
  *  number of unread emails, or the total number of emails in this folder
- *  
+ *
  *
  * @uses       Intrabuild_BeanContext
  * @category   Intrabuild_Groupware
@@ -40,10 +40,10 @@ require_once 'Intrabuild/BeanContext.php';
  * @subpackage Email
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */  
- 
+ */
+
 class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContext, Serializable {
-    
+
     private $id;
     private $name;
     private $isChildAllowed;
@@ -51,16 +51,16 @@ class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContex
     private $type;
     private $childCount;
     private $pendingCount;
-    
+
     /**
      * Constructor.
      */
     public function __construct()
     {
     }
-    
-// -------- accessors        
-    
+
+// -------- accessors
+
     public function getId(){return $this->id;}
     public function getName(){return $this->name;}
     public function isChildAllowed(){return $this->isChildAllowed;}
@@ -68,8 +68,8 @@ class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContex
     public function getType(){return $this->type;}
     public function getChildCount(){return $this->childCount;}
     public function getPendingCount(){return $this->pendingCount;}
-    
-    
+
+
     public function setId($id){$this->id = $id;}
     public function setName($name){$this->name = $name;}
     public function setChildAllowed($isChildAllowed){$this->isChildAllowed = $isChildAllowed;}
@@ -77,25 +77,25 @@ class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContex
     public function setType($type){$this->type = $type;}
     public function setChildCount($childCount){$this->childCount = $childCount;}
     public function setPendingCount($pendingCount){$this->pendingCount = $pendingCount;}
-    
-    
-    
+
+
+
 // -------- interface Serializable
     /**
      * Serializes properties and returns them as a string which can later on
      * be unserialized.
-     * 
+     *
      * @return string
      */
     public function serialize()
     {
         $data = $this->toArray();
-        
+
         return serialize($data);
     }
-    
+
     /**
-     * Unserializes <tt>$serialized</tt> and assigns the specific 
+     * Unserializes <tt>$serialized</tt> and assigns the specific
      * values found to the members in this class.
      *
      * @param string $serialized The serialized representation of a former
@@ -104,32 +104,32 @@ class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContex
     public function unserialize($serialized)
     {
         $str = unserialize($serialized);
-        
-  	     foreach ($str as $member => $value) {
-            $this->$member = $value; 	
+
+         foreach ($str as $member => $value) {
+            $this->$member = $value;
         }
     }
 
-// -------- interface Intrabuild_BeanContext    
-    
+// -------- interface Intrabuild_BeanContext
+
     /**
      * Returns a Dto for an instance of this class.
-     * 
+     *
      * @return Intrabuild_Groupware_Email_AccountDto
-     */    
+     */
     public function getDto()
     {
         require_once 'Folder/Dto.php';
-        
+
         $data = $this->toArray();
-        
+
         $dto = new Intrabuild_Modules_Groupware_Email_Folder_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
             }
-        }    
-        
+        }
+
         return $dto;
     }
 
@@ -150,7 +150,7 @@ class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContex
             'childCount'     => $this->childCount,
             'pendingCount'   => $this->pendingCount
         );
-    }   
+    }
 
     /**
      * Returns a textual representation of the current object.
@@ -160,11 +160,11 @@ class Intrabuild_Modules_Groupware_Email_Folder implements Intrabuild_BeanContex
     public function __toString()
     {
         $data = $this->toArray();
-        
+
         $strs = array();
         foreach ($data as $key => $value) {
             $strs[] = $key.': '.$value;
         }
         return get_class($this).'['.implode('; ', $strs).']';
     }
-} 
+}

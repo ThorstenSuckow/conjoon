@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -46,7 +46,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      * The y position of the last clicked cell.
      * @param {Number} clkCellY
      */
-	var clkCellY = 0;
+    var clkCellY = 0;
 
     /**
      * Initial width of the preview panel.
@@ -179,7 +179,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         container = Ext.DomHelper.append(document.body, {
             id    : 'DOM:de.intrabuild.groupware.feeds.FeedPreview.container',
             style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
-		}, true);
+        }, true);
 
     };
 
@@ -192,9 +192,9 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         previewPanel.getUpdater().abort();
         previewPanel.setTitle(de.intrabuild.Gettext.gettext("Loading..."));
         previewPanel.body.update("");
-		if (!skipAlign) {
-			container.alignTo(clkCell, 'tr-tl');
-		}
+        if (!skipAlign) {
+            container.alignTo(clkCell, 'tr-tl');
+        }
     };
 
     /**
@@ -207,9 +207,9 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         var panelHeight = previewPanel.el.getHeight();
 
         if (clkCellY + panelHeight > viewHeight) {
-			container.shift({
-			    y : container.getY() - (((clkCellY + panelHeight) - viewHeight) + 4)
-			});
+            container.shift({
+                y : container.getY() - (((clkCellY + panelHeight) - viewHeight) + 4)
+            });
         }
     };
 
@@ -258,8 +258,8 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 
         lastRecord = de.intrabuild.util.Record.convertTo(
             de.intrabuild.groupware.feeds.ItemRecord,
-			item,
-			item.id
+            item,
+            item.id
         );
 
         Ext.ux.util.MessageBus.publish(
@@ -282,7 +282,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 }
             }
         });
-		previewPanel.close();
+        previewPanel.close();
         loadMask.hide();
     };
 
@@ -296,14 +296,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
      */
     var onMove = function()
     {
-		if (!lastRecord) {
-			previewPanel.close();
-			return;
-		}
+        if (!lastRecord) {
+            previewPanel.close();
+            return;
+        }
 
         var feedItem = lastRecord.copy();
-    	previewPanel.close();
-    	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);
+        previewPanel.close();
+        de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);
     };
 
     var visitFeedEntry = function()
@@ -326,8 +326,8 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
         }
 
         var feedItem = lastRecord.copy();
-    	previewPanel.close();
-    	de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);
+        previewPanel.close();
+        de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem);
     };
 
     /**
@@ -349,14 +349,14 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),
             bbar       : [{
                 cls      : 'x-btn-text-icon',
-			    iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-visitEntryButton-icon',
-			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
-			    handler  : visitFeedEntry
+                iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-visitEntryButton-icon',
+                text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
+                handler  : visitFeedEntry
             }, {
                 cls      : 'x-btn-text-icon',
-			    iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-openFeedButton-icon',
-			    text     : '&#160;'+de.intrabuild.Gettext.gettext("Open in new tab"),
-			    handler  : openEntryInNewTab
+                iconCls  : 'de-intrabuild-groupware-feeds-FeedPreview-openFeedButton-icon',
+                text     : '&#160;'+de.intrabuild.Gettext.gettext("Open in new tab"),
+                handler  : openEntryInNewTab
             }]
         });
 
@@ -381,7 +381,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             };
         }
 
-		return win;
+        return win;
     };
 
 // }}}
@@ -424,7 +424,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
 
             clkRowIndex = rowIndex;
             clkCell     = grid.view.getCell(rowIndex, _getColumnIndex(grid, columnIndex));
-			clkCellY    = Ext.fly(clkCell).getY();
+            clkCellY    = Ext.fly(clkCell).getY();
 
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
@@ -447,7 +447,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
                 } else {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
-					container.setDisplayed(true);
+                    container.setDisplayed(true);
                     container.alignTo(clkCell, 'tr-tl');
                     decoratePreviewPanel();
                     previewPanel.el.slideIn('r', {callback: onShow});
@@ -486,7 +486,7 @@ de.intrabuild.groupware.feeds.FeedPreview = function() {
             if (!skipAnimation) {
                 previewPanel.el.slideOut("r", {duration : .4,  callback : onHide});
             } else {
-				container.setDisplayed(false);
+                container.setDisplayed(false);
                 previewPanel.el.slideOut("r", {useDisplay : false, duration : .1});
                 onHide(true);
             }

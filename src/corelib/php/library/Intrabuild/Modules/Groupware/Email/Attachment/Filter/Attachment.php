@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -20,7 +20,7 @@ require_once 'Intrabuild/Filter/Input.php';
 
 /**
  * @see Intrabuild_Filter_Raw
- */ 
+ */
 require_once 'Intrabuild/Filter/Raw.php';
 
 
@@ -41,61 +41,61 @@ class Intrabuild_Modules_Groupware_Email_Attachment_Filter_Attachment extends In
             'groupwareEmailItemsId',
             'fileName',
             'mimeType',
-            'encoding',        
-            'content',    
+            'encoding',
+            'content',
             'contentId'
         )
     );
-    
+
     protected $_filters = array(
         'groupwareEmailItemsId' => array(
             'Int'
-         ), 
+         ),
          'fileName' => array(
             'StringTrim'
-         ), 
+         ),
          'mimeType' => array(
             'StringTrim'
-         ), 
+         ),
          'encoding' => array(
             'StringTrim'
-         ), 
-         'content' => array(), 
+         ),
+         'content' => array(),
          'contentId' => array(
             'StringTrim'
          )
     );
-    
+
     protected $_validators = array(
         'groupwareEmailItemsId' => array(
             'allowEmpty' => false
-         ), 
+         ),
          'fileName' => array(
             'allowEmpty' => false
          ),
          'mimeType' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'encoding' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'content' => array(
             'allowEmpty' => true,
             'default' => ''
-         ), 
+         ),
          'contentId' => array(
             'allowEmpty' => true,
             'default' => ''
          )
     );
-   
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();  
-    }  
-   
-   
+        $this->_defaultEscapeFilter = new Intrabuild_Filter_Raw();
+    }
+
+
 
 }

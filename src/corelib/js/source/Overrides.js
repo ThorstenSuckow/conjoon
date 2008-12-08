@@ -1,3 +1,16 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
 
 /**
  * Provides common overwrite functionality for Ext components to match
@@ -193,10 +206,10 @@ Ext.lib.Ajax.handleTransactionResponse = function(o, callback, isAbort) {
                     }
                 }
             break;
-			case 401:
+            case 401:
                 Ext.ux.util.MessageBus.publish('ext.lib.ajax.authorizationRequired', {
                     requestObject : o,
-					rawResponse   : o.conn
+                    rawResponse   : o.conn
                 });
             default:
                 responseObject = this.createResponseObject(o, callback.argument);
@@ -207,7 +220,7 @@ Ext.lib.Ajax.handleTransactionResponse = function(o, callback, isAbort) {
                         callback.failure.apply(callback.scope, [responseObject]);
                     }
                 }
-			break;	
+            break;
         }
     }
 

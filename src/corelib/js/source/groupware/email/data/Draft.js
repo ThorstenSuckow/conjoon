@@ -1,15 +1,15 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: EmailEditorManager.js 237 2008-10-20 12:24:12Z T. Suckow $
- * $Date: 2008-10-20 14:24:12 +0200 (Mo, 20 Okt 2008) $
- * $Revision: 237 $
- * $LastChangedDate: 2008-10-20 14:24:12 +0200 (Mo, 20 Okt 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild_rep/trunk/src/corelib/js/source/groupware/email/EmailEditorManager.js $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('de.intrabuild.groupware.email.data');

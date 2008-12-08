@@ -1,15 +1,15 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: AccountStore.js 50 2008-07-29 22:16:55Z T. Suckow $
- * $Date: 2008-07-30 00:16:55 +0200 (Mi, 30 Jul 2008) $
- * $Revision: 50 $
- * $LastChangedDate: 2008-07-30 00:16:55 +0200 (Mi, 30 Jul 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild_rep/trunk/src/corelib/js/source/groupware/feeds/AccountStore.js $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('de.intrabuild.groupware');

@@ -1,3 +1,17 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
 Ext.namespace('de.intrabuild.groupware.email');
 
 /**
@@ -23,7 +37,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      */
     this.treePanel = new de.intrabuild.groupware.email.EmailTree({
         region            : 'west',
-		anonymousNodeText : de.intrabuild.Gettext.gettext("New folder"),
+        anonymousNodeText : de.intrabuild.Gettext.gettext("New folder"),
         width             : 200,
         split             : true
     }, this);
@@ -34,11 +48,11 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      */
 
     this.preview = new de.intrabuild.groupware.email.EmailViewPanel({
-		autoLoad     : false,
-		border	     : false,
-		hideMode     : 'offsets',
-		refreshFrame : true
-	});
+        autoLoad     : false,
+        border       : false,
+        hideMode     : 'offsets',
+        refreshFrame : true
+    });
 
     /**
      * Subscribe to de.intrabuild.groupware.email.view.onEmailLoad
@@ -49,8 +63,8 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         this
     );
 
-	this.preview.on('emailloadfailure', this.onEmailLoadFailure, this);
-	this.preview.on('show',             this._onPreviewShow, this);
+    this.preview.on('emailloadfailure', this.onEmailLoadFailure, this);
+    this.preview.on('show',             this._onPreviewShow, this);
 
     /**
      * The grid that shows the email items.
@@ -74,7 +88,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
             ,{
             id:'de.intrabuild.groupware.email.rightPreview',
             layout:'fit',
-			hideMode : 'offsets',
+            hideMode : 'offsets',
             region:'east',
             width:350,
             split: true,
@@ -83,7 +97,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
             id:'de.intrabuild.groupware.email.bottomPreview',
             layout:'fit',
             items:this.preview,
-			hideMode : 'offsets',
+            hideMode : 'offsets',
             height: 250,
             split: true,
             region:'south'
@@ -171,18 +185,18 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         scope    : this
     });
     this.newButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        cls  	 : 'x-btn-text-icon',
+        cls      : 'x-btn-text-icon',
         iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-newButton-icon',
-        text 	 : '&#160;'+de.intrabuild.Gettext.gettext("New email"),
+        text     : '&#160;'+de.intrabuild.Gettext.gettext("New email"),
         handler  : function(){this.openEmailEditPanel(false, 'new');},
-        scope 	 : this
+        scope    : this
     }));
 
     this.controlBar = new Ext.Toolbar([
         new de.intrabuild.groupware.email.FetchMenuButton(),
-      	this.newButton ,
-      	'-',
-      	this.sendNowButton,
+        this.newButton ,
+        '-',
+        this.sendNowButton,
         this.replyButton,
         this.replyAllButton,
         this.forwardButton,
@@ -259,7 +273,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     gs.on('clear',                   this.onGridStoreClear,       this);
     gs.on('beforeselectionsload',    this.onBeforeSelectionsLoad, this);
     gs.on('selectionsload',          this.onSelectionsLoad,       this);
-	gs.on('load',                    this.onStoreLoad,            this);
+    gs.on('load',                    this.onStoreLoad,            this);
     this.gridPanel.view.on('buffer', this.onStoreBuffer,          this);
 
 
@@ -276,7 +290,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     tp.on('render', function(){this.treePanel.getSelectionModel().on('selectionchange', this.onNodeSelectionChange, this);}, this);
     tp.on('nodedrop', this.onNodeDrop, this);
     tp.on('remove', this.onNodeRemove, this);
-	tp.pendingItemStore.on('add', this.onPendingStoreAdd, this);
+    tp.pendingItemStore.on('add', this.onPendingStoreAdd, this);
 
     this.on('render',  this.onPanelRender, this);
     this.on('hide',    function(){tbarManager.hide('de.intrabuild.groupware.email.Toolbar');}, this);
@@ -358,7 +372,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     pendingRecords : null,
 
-	pendingRecordsDate : {},
+    pendingRecordsDate : {},
 
     queue : null,
 
@@ -410,12 +424,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
     },
 
-	/**
-	 * Moves the number of specified records virtually into the folder with
-	 * the specified fodler-id. If allowNodePendingUpdate returns false, the total
-	 * number of records will be subtracted from the specified pending node, not just
-	 * the records that were unread.
-	 */
+    /**
+     * Moves the number of specified records virtually into the folder with
+     * the specified fodler-id. If allowNodePendingUpdate returns false, the total
+     * number of records will be subtracted from the specified pending node, not just
+     * the records that were unread.
+     */
     moveEmails : function(records, folderId)
     {
         var currFolderId  = this.clkNodeId;
@@ -529,15 +543,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     allowNodePendingUpdate : function(nodeId)
     {
-    	var tp = this.treePanel;
-    	switch (nodeId) {
-    		case tp.folderDraft.id:
-    			return false;
-    		case tp.folderOutbox.id:
-    			return false;
-    		default:
-    			return true;
-    	}
+        var tp = this.treePanel;
+        switch (nodeId) {
+            case tp.folderDraft.id:
+                return false;
+            case tp.folderOutbox.id:
+                return false;
+            default:
+                return true;
+        }
     },
 
     /**
@@ -586,7 +600,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     clearPending : function()
     {
-		this.queue = null;
+        this.queue = null;
         this.gridPanel.view.un('rowsinserted', this.processQueue, this);
 
         var pendingStore  = this.treePanel.pendingItemStore;
@@ -594,7 +608,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         for (var i in this.pendingRecords) {
             var pendingRecord = pendingStore.getById(i);
-			if (pendingRecord) {
+            if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+this.pendingRecords[i]);
             }
         }
@@ -644,7 +658,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         if (count == 0 || record == null) {
             this.sendNowButton.setDisabled(true);
-        	this.forwardButton.setDisabled(true);
+            this.forwardButton.setDisabled(true);
             this.replyButton.setDisabled(true);
             this.replyAllButton.setDisabled(true);
             this.deleteButton.setDisabled(true);
@@ -685,8 +699,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var isSendable = (this.clkNodeId == tp.folderOutbox.id);
 
         var isNotSpammable = (!record) || (isDrafts) ||
-        				  	 (this.clkNodeId == tp.folderSent.id) ||
-        				  	 (isSendable);
+                             (this.clkNodeId == tp.folderSent.id) ||
+                             (isSendable);
 
         this.spamButton.setDisabled(isNotSpammable || isSpam);
         this.noSpamButton.setDisabled(isNotSpammable || !isSpam);
@@ -711,10 +725,10 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var emailRecord = this.preview.emailRecord;
 
-     	if (emailRecord && record.id == emailRecord.id) {
-     		this.preview.renderView();
-     		return;
-     	}
+        if (emailRecord && record.id == emailRecord.id) {
+            this.preview.renderView();
+            return;
+        }
 
         this.preview.setEmailItem(record);
     },
@@ -746,7 +760,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             } else {
                 bot.hide();
                 right.hide();
-				this.preview.hide();
+                this.preview.hide();
                 this.ownerCt.doLayout();
                 return;
             }
@@ -759,26 +773,26 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             if (b.checked) {
                 button.toggle(true);
                 right.hide();
-				this.preview.hide();
+                this.preview.hide();
                 bot.add(this.preview);
                 bot.show();
                 this.ownerCt.doLayout();
-				this.preview.show();
+                this.preview.show();
                 return;
             } else if (r.checked) {
                 button.toggle(true);
                 bot.hide();
-				this.preview.hide();
+                this.preview.hide();
                 right.add(this.preview);
                 right.show();
                 this.ownerCt.doLayout();
-				this.preview.show();
+                this.preview.show();
                 return;
             } else if (h.checked) {
                 button.toggle(false);
                 bot.hide();
                 right.hide();
-				this.preview.hide();
+                this.preview.hide();
                 this.ownerCt.doLayout();
                 return;
             }
@@ -793,18 +807,18 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     openEmailView : function()
     {
-    	var sm = this.gridPanel.selModel;
+        var sm = this.gridPanel.selModel;
         var c  = sm.getCount();
 
         if (c != 1) {
-        	return;
+            return;
         }
 
         var record = sm.getSelected();
 
         //var id = record.id;
 
-    	de.intrabuild.groupware.email.EmailViewBaton.showEmail(record);
+        de.intrabuild.groupware.email.EmailViewBaton.showEmail(record);
     },
 
     /**
@@ -815,18 +829,18 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     sendPendingItems : function()
     {
-    	var sm = this.gridPanel.selModel;
+        var sm = this.gridPanel.selModel;
         var c  = sm.getCount();
 
-    	var record = sm.getSelected();
-    	if (c != 1 || !record) {
-    	    return;
+        var record = sm.getSelected();
+        if (c != 1 || !record) {
+            return;
         }
 
-    	de.intrabuild.groupware.email.Dispatcher.sendPendingEmails(
-    	    [record],
-    	    ((new Date()).getTime()/1000)
-    	);
+        de.intrabuild.groupware.email.Dispatcher.sendPendingEmails(
+            [record],
+            ((new Date()).getTime()/1000)
+        );
     },
 
     /**
@@ -845,23 +859,23 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     openEmailEditPanel : function(loadDraft, type)
     {
-    	var sm = this.gridPanel.selModel;
+        var sm = this.gridPanel.selModel;
         var c  = sm.getCount();
 
-    	if (!loadDraft) {
-    		de.intrabuild.groupware.email.EmailEditorManager.createEditor();
-    	} else {
-    		var record = sm.getSelected();
-    		if (c != 1 || !record) {
-    			return;
-    		}
-    		de.intrabuild.groupware.email.EmailEditorManager.createEditor(record, type);
-    	}
+        if (!loadDraft) {
+            de.intrabuild.groupware.email.EmailEditorManager.createEditor();
+        } else {
+            var record = sm.getSelected();
+            if (c != 1 || !record) {
+                return;
+            }
+            de.intrabuild.groupware.email.EmailEditorManager.createEditor(record, type);
+        }
     },
 
     onQuickPanelUpdate : function(store, record, operation)
     {
-    	if (operation == 'commit') {
+        if (operation == 'commit') {
             var myStore = this.gridPanel.getStore();
             myStore.suspendEvents();
             var rec     = myStore.getById(record.id);
@@ -884,11 +898,11 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         }
     },
 
-	/**
-	 * Listener for a load failure of the email panel
-	 */
-	onEmailLoadFailure : function(response, options)
-	{
+    /**
+     * Listener for a load failure of the email panel
+     */
+    onEmailLoadFailure : function(response, options)
+    {
         de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
@@ -897,7 +911,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 scope : this
             }
         });
-	},
+    },
 
     /**
      * Listener for the message with the subject
@@ -911,15 +925,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     {
         var emailRecord = message.emailRecord;
 
-    	var id = emailRecord.id;
+        var id = emailRecord.id;
 
-    	var store = this.gridPanel.store;
+        var store = this.gridPanel.store;
 
-    	var rec = store.getById(id);
+        var rec = store.getById(id);
 
-    	if (rec) {
-			this.setItemsAsRead([rec], true);
-    	}
+        if (rec) {
+            this.setItemsAsRead([rec], true);
+        }
     },
 
     /**
@@ -961,11 +975,11 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * on the passed data and add it to the store.
      *
      * @param {String} subject The subject of the message
-	 * @param {Object} data The message's data.
+     * @param {Object} data The message's data.
      */
     _onMoveOutbox : function(subject, message)
     {
-	    var tp = this.treePanel;
+        var tp = this.treePanel;
 
         /**
          * @todo check if the tree is visible. Return if that is not the case.
@@ -979,7 +993,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var itemRecord   = message.itemRecord;
         var currFolderId = this.clkNodeId;
         var store        = this.gridPanel.getStore();
-	    var pendingStore = tp.pendingItemStore;
+        var pendingStore = tp.pendingItemStore;
 
         // update pending count of drafts if the message was in the draft folder
         if (draft.get('groupwareEmailFoldersId') == tp.folderDraft.id) {
@@ -997,7 +1011,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             }
         }
 
-	    // pending count will be updated in every case
+        // pending count will be updated in every case
         var pendingRecord = pendingStore.getById(tp.folderOutbox.id);
         if (pendingRecord) {
             pendingRecord.set('pending', pendingRecord.data.pending+1);
@@ -1146,12 +1160,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * "de.intrabuild.groupware.email.Smtp.emailSent" as published by Ext.ux.util.MessageBus.
      *
      * @param {String} subject The subject of the message
-	 * @param {Object} data The message's data. For the event this listener observes, the
-	 * object will provide the following properties:
-	 * draft - de.intrabuild.groupware.email.data.Draft
-	 * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
-	 * referencedItem - de.intrabuild.groupware.email.EmailItemRecord
-	 * options - Object
+     * @param {Object} data The message's data. For the event this listener observes, the
+     * object will provide the following properties:
+     * draft - de.intrabuild.groupware.email.data.Draft
+     * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
+     * referencedItem - de.intrabuild.groupware.email.EmailItemRecord
+     * options - Object
      */
     _onSendEmail : function(subject, message)
     {
@@ -1217,7 +1231,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // if the visible grid is the grid for sent items, add the recod to the store
         if (emailRecord.get('groupwareEmailFoldersId') == currFolderId) {
             var index = store.findInsertIndex(emailRecord);
-			store.insert(index, emailRecord.copy());
+            store.insert(index, emailRecord.copy());
         }
 
 
@@ -1228,11 +1242,11 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * "de.intrabuild.groupware.email.editor.draftSaved" as published by Ext.ux.util.MessageBus.
      *
      * @param {String} subject The subject of the message
-	 * @param {Object} data The message's data.
+     * @param {Object} data The message's data.
      */
-	_onSaveDraft : function(subject, message)
-	{
-	    var tp = this.treePanel;
+    _onSaveDraft : function(subject, message)
+    {
+        var tp = this.treePanel;
 
         /**
          * @todo check if the tree is visible. Return if that is not the case.
@@ -1244,20 +1258,20 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         var referencedRecord = message.referencedItem;
 
-	    var oldDraftId   = message.draft.get('id');
-	    var oldFolderId  = message.groupwareEmailFoldersId;
-	    var itemRecord   = message.itemRecord;
-	    var newFolderId  = itemRecord.get('groupwareEmailFoldersId');
-	    var currFolderId = this.clkNodeId;
-	    var store        = this.gridPanel.getStore();
-	    var pendingStore  = tp.pendingItemStore;
+        var oldDraftId   = message.draft.get('id');
+        var oldFolderId  = message.groupwareEmailFoldersId;
+        var itemRecord   = message.itemRecord;
+        var newFolderId  = itemRecord.get('groupwareEmailFoldersId');
+        var currFolderId = this.clkNodeId;
+        var store        = this.gridPanel.getStore();
+        var pendingStore  = tp.pendingItemStore;
 
         // the draft was moved while saving from one draft folder to another
         // if and only if the oldDraftId does not equal to anything but -1
- 	    // first off, check whether the folders are the same or not.
-	    // if they differ, try to remove the record out of oldFolderId
-	    // and add the new record to the new folder, but only if the oldDraftId
-	    // was anything but <= 0
+        // first off, check whether the folders are the same or not.
+        // if they differ, try to remove the record out of oldFolderId
+        // and add the new record to the new folder, but only if the oldDraftId
+        // was anything but <= 0
         if (oldFolderId != newFolderId && oldDraftId > 0) {
             // check if visible
             // remove the record and update pending nodes
@@ -1285,7 +1299,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (currFolderId == newFolderId) {
             this._replaceAndRefreshIfNeeded(referencedRecord, itemRecord);
         }
-	},
+    },
 
     onPanelRender : function()
     {
@@ -1538,16 +1552,16 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     },
 
-	/**
-	 * Updates the pendning node of a folder only if the current timestamp is
-	 * greater than the timestamp stored within the according record of the
-	 * pending store.
-	 *
-	 * @param {Ext.data.Store} store
-	 * @param {Object} options
-	 */
-	_updatePendingFromLoad : function(store, options)
-	{
+    /**
+     * Updates the pendning node of a folder only if the current timestamp is
+     * greater than the timestamp stored within the according record of the
+     * pending store.
+     *
+     * @param {Ext.data.Store} store
+     * @param {Object} options
+     */
+    _updatePendingFromLoad : function(store, options)
+    {
         var pendingItems = store.pendingItems;
 
         if (pendingItems == -1) {
@@ -1556,12 +1570,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         // only update pending records if the last updated timestamp is less than
         // the actual timestamp
         var ts = (new Date()).getTime();
-		var folderId = options.params.groupwareEmailFoldersId;
+        var folderId = options.params.groupwareEmailFoldersId;
         if (this.pendingRecordsDate[folderId] > ts) {
             return;
         }
 
-		this.pendingRecordsDate[folderId] = ts;
+        this.pendingRecordsDate[folderId] = ts;
 
         var pendingStore  = this.treePanel.pendingItemStore;
         var pendingRecord = pendingStore.getById(folderId);
@@ -1569,14 +1583,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         if (pendingRecord) {
             pendingRecord.set('pending', pendingItems);
         }
-	},
+    },
 
-	onStoreLoad : function(store, records, options)
-	{
-		this._updatePendingFromLoad(store, options);
-	},
+    onStoreLoad : function(store, records, options)
+    {
+        this._updatePendingFromLoad(store, options);
+    },
 
-	onStoreBuffer : function(view, store, rowIndex, visibleRows, totalCount, options)
+    onStoreBuffer : function(view, store, rowIndex, visibleRows, totalCount, options)
     {
         this._updatePendingFromLoad(store, options);
     },
@@ -1591,12 +1605,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      * @param {number} index
      */
     onPendingStoreAdd : function(store, records, index)
-	{
-		for (var i = 0, len = records.length; i < len; i++) {
+    {
+        for (var i = 0, len = records.length; i < len; i++) {
             this.pendingRecordsDate[records[i].id] = records[i].get('date');
-		}
+        }
 
-	},
+    },
 
     /**
      * Called by the letterman when new emails have arrived.
@@ -1619,13 +1633,13 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var ts = (new Date()).getTime();
         for (var i = 0, max_i = records.length; i < max_i; i++) {
             folderId = records[i].data.groupwareEmailFoldersId;
-			if (this.pendingRecordsDate[folderId] < store.lastLoadingDate) {
-				if (!this.pendingRecords[folderId]) {
-					this.pendingRecords[folderId] = 1;
-				} else {
-					this.pendingRecords[folderId]++;
-				}
-			}
+            if (this.pendingRecordsDate[folderId] < store.lastLoadingDate) {
+                if (!this.pendingRecords[folderId]) {
+                    this.pendingRecords[folderId] = 1;
+                } else {
+                    this.pendingRecords[folderId]++;
+                }
+            }
 
             this.queue.push(records[i].copy());
         }

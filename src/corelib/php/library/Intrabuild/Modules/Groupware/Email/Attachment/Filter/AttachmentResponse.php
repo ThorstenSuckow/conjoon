@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -20,7 +20,7 @@ require_once 'Intrabuild/Filter/Input.php';
 
 /**
  * @see Zend_Filter_Htmlentities
- */ 
+ */
 require_once 'Zend/Filter/Htmlentities.php';
 
 
@@ -43,14 +43,14 @@ class Intrabuild_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse ex
             'fileName'
          )
     );
-    
 
-   
+
+
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');  
-    }  
-   
-   
+        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
+    }
+
+
 
 }

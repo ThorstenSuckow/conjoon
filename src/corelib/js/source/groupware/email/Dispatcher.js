@@ -1,15 +1,15 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: EmailViewBaton.js 231 2008-10-12 17:44:31Z T. Suckow $
- * $Date: 2008-10-12 19:44:31 +0200 (So, 12 Okt 2008) $
- * $Revision: 231 $
- * $LastChangedDate: 2008-10-12 19:44:31 +0200 (So, 12 Okt 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild_rep/trunk/src/corelib/js/source/groupware/email/EmailViewBaton.js $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('de.intrabuild.groupware.email');

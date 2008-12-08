@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: IndexController.php 312 2008-11-28 21:59:26Z T. Suckow $
- * $Date: 2008-11-28 22:59:26 +0100 (Fr, 28 Nov 2008) $
- * $Revision: 312 $
- * $LastChangedDate: 2008-11-28 22:59:26 +0100 (Fr, 28 Nov 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild_rep/trunk/src/www/application/modules/default/controllers/IndexController.php $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 /**

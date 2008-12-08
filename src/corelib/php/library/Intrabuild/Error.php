@@ -1,8 +1,8 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -118,7 +118,7 @@ class Intrabuild_Error implements Intrabuild_BeanContext, Serializable {
     {
         $str = unserialize($serialized);
 
-  	     foreach ($str as $member => $value) {
+         foreach ($str as $member => $value) {
             $this->$member = $value;
         }
     }

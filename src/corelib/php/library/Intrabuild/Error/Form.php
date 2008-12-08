@@ -1,22 +1,22 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
- * Intrabuild_BeanContext 
- */ 
-require_once 'Intrabuild/Error.php'; 
+ * Intrabuild_BeanContext
+ */
+require_once 'Intrabuild/Error.php';
 
 
 /**
@@ -29,17 +29,17 @@ require_once 'Intrabuild/Error.php';
  * @category   Error
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */  
+ */
 class Intrabuild_Error_Form extends Intrabuild_Error {
-    
+
     private $fields;
-    
-// -------- accessors        
-    
+
+// -------- accessors
+
     public function getFields(){return $this->fields;}
     public function setFields(Array $fields){$this->fields = $fields;}
-    
-        
+
+
 // -------- helper
     /**
      * Returns an associative array, which key/value pairs represent
@@ -52,9 +52,9 @@ class Intrabuild_Error_Form extends Intrabuild_Error {
         $array = parent::toArray();
         $array['fields'] = $this->fields;
         return $array;
-    }   
-    
-// -------- interface Intrabuild_BeanContext    
+    }
+
+// -------- interface Intrabuild_BeanContext
     /**
      * Returns a textual representation of the current object.
      *
@@ -63,33 +63,33 @@ class Intrabuild_Error_Form extends Intrabuild_Error {
     public function __toString()
     {
         $parts = array();
-        
+
         foreach($this->fields as $field => $messages) {
-            $parts[] = '"'.$field.'" - ['.implode(';', $messages).']';        
+            $parts[] = '"'.$field.'" - ['.implode(';', $messages).']';
         }
-        
+
         return  'fields: '.implode(' - ', $parts).', '.
                  parent::__toString();
     }
-    
+
     /**
      * Returns a Dto for an instance of this class.
-     * 
+     *
      * @return Intrabuild_Groupware_Email_AccountDto
-     */    
+     */
     public function getDto()
     {
         require_once 'FormDto.php';
-        
+
         $data = $this->toArray();
-        
+
         $dto = new Intrabuild_Error_FormDto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;
             }
-        }    
-        
+        }
+
         return $dto;
-    }        
-} 
+    }
+}

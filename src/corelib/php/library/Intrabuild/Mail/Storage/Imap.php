@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -31,11 +31,11 @@ require_once 'Intrabuild/Mail/Message.php';
  * bug gets released.
  */
 class Intrabuild_Mail_Storage_Imap extends Zend_Mail_Storage_Imap {
- 
+
     /**
      * used message class, change it in an extened class to extend the returned message class
      * @var string
      */
-    protected $_messageClass = 'Intrabuild_Mail_Message';    
-    
+    protected $_messageClass = 'Intrabuild_Mail_Message';
+
 }

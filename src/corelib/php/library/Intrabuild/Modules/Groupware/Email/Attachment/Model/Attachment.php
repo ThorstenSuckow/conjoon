@@ -1,20 +1,20 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
-/** 
- * Zend_Db_Table 
+/**
+ * Zend_Db_Table
  */
 require_once 'Zend/Db/Table/Abstract.php';
 
@@ -27,9 +27,9 @@ require_once 'Zend/Db/Table/Abstract.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
-class Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment 
-    extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable {   
+ */
+class Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment
+    extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable {
 
     /**
      * The name of the table in the underlying datastore this
@@ -43,36 +43,36 @@ class Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment
      * @var string
      */
     protected $_primary = 'id';
-    
+
     /**
      * Returns all the attachments for the specified item.
      */
     public function getAttachmentsForItem($groupwareEmailItemsId)
     {
         if ((int)$groupwareEmailItemsId <= 0) {
-            return array();    
-        }    
-        
+            return array();
+        }
+
         $select = $this->select()
                   ->from($this)
                   ->where('groupware_email_items_id=?', $groupwareEmailItemsId)
                   ->order('id ASC');
-                  
-        return $this->fetchAll($select);          
+
+        return $this->fetchAll($select);
     }
-    
-// -------- interface Intrabuild_BeanContext_Decoratable       
+
+// -------- interface Intrabuild_BeanContext_Decoratable
 
     public function getRepresentedEntity()
     {
-        return 'Intrabuild_Modules_Groupware_Email_Attachment';    
+        return 'Intrabuild_Modules_Groupware_Email_Attachment';
     }
-    
+
     public function getDecoratableMethods()
     {
         return array(
             'getAttachmentsForItem'
         );
-    }    
+    }
 
 }

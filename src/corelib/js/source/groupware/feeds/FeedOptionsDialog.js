@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -22,7 +22,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
     Ext.apply(this, config);
 
     this.store = new Ext.data.Store({
-            storeId	    : Ext.id(),
+            storeId     : Ext.id(),
             autoLoad    : false,
             reader      : new Ext.data.JsonReader({
                               id : 'id'
@@ -37,7 +37,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         cls        : 'de-intrabuild-groupware-feeds-FeedOptionsDialog-feedPanel',
         autoScroll : true,
         height     : 195,
-		hideHeaders : true,
+        hideHeaders : true,
         enableColumnMove : false,
         enableHdMenu : false,
         store  : this.store,
@@ -209,10 +209,10 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                     this.feedName
                 ]
           }),
-		  new de.intrabuild.groupware.util.FormIntro({
-			      label : de.intrabuild.Gettext.gettext("Options"),
-				  text  : ''
-		  }),
+          new de.intrabuild.groupware.util.FormIntro({
+                  label : de.intrabuild.Gettext.gettext("Options"),
+                  text  : ''
+          }),
             new Ext.form.FormPanel({
                 bodyStyle  : 'margin:10px 0 20px 0px;padding-left:20px;background:none',
                 baseCls    : 'x-small-editor',
@@ -373,9 +373,9 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         msg.show({
             title   : de.intrabuild.Gettext.gettext("Remove feed"),
             msg     : String.format(
-			    de.intrabuild.Gettext.gettext("Do you really want to remove \"{0}\"?"),
+                de.intrabuild.Gettext.gettext("Do you really want to remove \"{0}\"?"),
                 record.get('name')
-			),
+            ),
             buttons : msg.YESNO,
             fn      : function(b) {
                         if (b == 'yes') {

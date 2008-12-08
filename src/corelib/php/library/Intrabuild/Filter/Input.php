@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -28,17 +28,17 @@ require_once 'Zend/Filter/Input.php';
  * @category   Filter
  */
 class Intrabuild_Filter_Input extends Zend_Filter_Input {
-    
+
     /**
      * @var string
      */
     const CONTEXT_CREATE =  'create';
-    
+
     /**
      * @var string
      */
     const CONTEXT_UPDATE =  'update';
-    
+
     /**
      * @var string
      */
@@ -47,23 +47,23 @@ class Intrabuild_Filter_Input extends Zend_Filter_Input {
     /**
      * @var string
      */
-    const CONTEXT_RESPONSE =  'response';    
-    
+    const CONTEXT_RESPONSE =  'response';
+
     /**
-     * @var string 
+     * @var string
      */
     protected $_context = '';
-    
+
     /**
      * @var array
      */
-    protected $_validators = array(); 
-    
+    protected $_validators = array();
+
     /**
      * @var array
      */
-    protected $_filters = array(); 
-    
+    protected $_filters = array();
+
     /**
      * An associative array containing all fields which need to be available
      * for each operation. Override this to adjust your filter bahavior.
@@ -74,14 +74,14 @@ class Intrabuild_Filter_Input extends Zend_Filter_Input {
      *      'create' => array('field4')
      * );
      *
-     * The above array would tell the filter that field1, field2 and field3 have to 
+     * The above array would tell the filter that field1, field2 and field3 have to
      * be available (Meta command PRESENCE) when data is updated (i.e. edited),
      * while only field4 has to be present when data is created.
      *
      * @var array
      */
-    protected $_presence = array();     
-    
+    protected $_presence = array();
+
     /**
      * Constructor.
      *
@@ -93,12 +93,12 @@ class Intrabuild_Filter_Input extends Zend_Filter_Input {
     public function __construct(array $data, $context, array $options = null)
     {
         if ($this->_defaultEscapeFilter != null) {
-            $options[self::ESCAPE_FILTER] = $this->_defaultEscapeFilter;    
+            $options[self::ESCAPE_FILTER] = $this->_defaultEscapeFilter;
             $this->_defaultEscapeFilter = null;
         }
-        
+
         $this->_context = $context;
-        
+
         if ($options) {
             $this->setOptions($options);
         }
@@ -109,20 +109,20 @@ class Intrabuild_Filter_Input extends Zend_Filter_Input {
         if ($data) {
             $this->setData($data);
         }
-        
+
         $this->_init();
-        
+
         $this->_preProcess();
-    }    
-    
+    }
+
     protected function _init()
     {
-        
+
     }
-    
+
     /**
      * Overrides parent implementation by adding a call to _preProcess
-     * before the data gets processed. 
+     * before the data gets processed.
      *
      * @return Zend_Filter_Input
      * @throws Zend_Filter_Exception
@@ -132,7 +132,7 @@ class Intrabuild_Filter_Input extends Zend_Filter_Input {
         if ($this->_processed === true) {
             return;
         }
-        
+
         $this->_preProcess();
         return parent::process();
     }
@@ -147,56 +147,56 @@ class Intrabuild_Filter_Input extends Zend_Filter_Input {
         $presence =& $this->_presence[$this->_context];
         $this->_validatorRules = (array)$this->_validators;
         $this->_filterRules    = (array)$this->_filters;
-        
+
         $not = array();
         foreach ($this->_filterRules as $key => $rule) {
             if (!in_array($key, $presence)) {
                 $not[] = $key;
-            }    
+            }
         }
         for ($i = 0, $len = count($not); $i < $len; $i++) {
-            unset($this->_filterRules[$not[$i]]);    
+            unset($this->_filterRules[$not[$i]]);
         }
-        
+
         $not = array();
         foreach ($this->_validatorRules as $key => $rule) {
             if (!in_array($key, $presence)) {
                 $not[] = $key;
             } else {
                 $this->_validatorRules[$key]['presence'] = 'required';
-            }      
+            }
         }
         for ($i = 0, $len = count($not); $i < $len; $i++) {
-            unset($this->_validatorRules[$not[$i]]);    
+            unset($this->_validatorRules[$not[$i]]);
         }
     }
-    
+
     protected function _adjustValidators()
     {
-        
+
     }
 
-    
+
     protected function _filter()
     {
         parent::_filter();
-        $this->_adjustValidators();    
+        $this->_adjustValidators();
     }
 
     public function getProcessedData()
     {
         $this->process();
-        
+
         $data = array();
-        
+
         $presence =& $this->_presence[$this->_context];
-        
+
         for ($i = 0, $len = count($presence); $i < $len; $i++) {
-            $data[$presence[$i]] = $this->$presence[$i];    
+            $data[$presence[$i]] = $this->$presence[$i];
         }
-        
+
         return $data;
     }
-    
-    
+
+
 }

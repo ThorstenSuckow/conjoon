@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -40,13 +40,13 @@ class Intrabuild_Filter_Base64Decode implements Zend_Filter_Interface
     {
         $str = trim((string)$value);
         if ($str == "") {
-            return $value;    
+            return $value;
         }
-        
+
         $str = str_replace("\r\n", "", $str);
         $str = str_replace("\r", "", $str);
         $str = str_replace("\n", "", $str);
-        
+
         if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $str)) {
             return base64_decode($str);
         } else {

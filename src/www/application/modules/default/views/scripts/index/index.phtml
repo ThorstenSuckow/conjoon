@@ -1,8 +1,8 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -30,37 +30,37 @@
 <div id="DOM:de.intrabuild.groupware.Startup" class="de-intrabuild-groupware-SplashScreen-wrap">
 
 
-	<div class="x-shadow" style="margin-top:-150px;margin-left:-248px;z-index: 9002; left: 50%; top: 50%; height:330px;width:502px; display: block;">
-		<div class="xst">
-		<div class="xstl"></div>
-		<div class="xstc" style="width: 490px;"></div>
-		<div class="xstr"></div>
-		</div>
-		<div class="xsc" style="height: 322px;">
-		<div class="xsml"></div>
-		<div class="xsmc" style="width: 490px;"></div>
-		<div class="xsmr"></div>
-		</div>
-		<div class="xsb">
-		<div class="xsbl"></div>
-		<div class="xsbc" style="width: 490px;"></div>
-		<div class="xsbr"></div>
-		</div>
-	</div>
+    <div class="x-shadow" style="margin-top:-150px;margin-left:-248px;z-index: 9002; left: 50%; top: 50%; height:330px;width:502px; display: block;">
+        <div class="xst">
+        <div class="xstl"></div>
+        <div class="xstc" style="width: 490px;"></div>
+        <div class="xstr"></div>
+        </div>
+        <div class="xsc" style="height: 322px;">
+        <div class="xsml"></div>
+        <div class="xsmc" style="width: 490px;"></div>
+        <div class="xsmr"></div>
+        </div>
+        <div class="xsb">
+        <div class="xsbl"></div>
+        <div class="xsbc" style="width: 490px;"></div>
+        <div class="xsbr"></div>
+        </div>
+    </div>
 
-				<div class="x-window" style="z-index: 9003;position:absolute;left:50%;top:50%;margin-top:-157px;margin-left:-248px;height:315px;width:494px;">
+                <div class="x-window" style="z-index: 9003;position:absolute;left:50%;top:50%;margin-top:-157px;margin-left:-248px;height:315px;width:494px;">
                 <div class="x-window-tl x-panel-noheader"><div class="x-window-tr"><div class="x-window-tc" style="height:8px;"></div></div></div>
                 <div class="x-window-bwrap">
-                	<div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">
-                	<div class="de-intrabuild-groupware-SplashScreen-body">
-                	<div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">conjoon</div>
-                	<div style="position:absolute;top:135px;left:145px;width:220px;height:50px;color:#2D5094">
-                		<div style="padding-left:10px;padding-bottom:10px;">Please wait...</div>
-                		<div class="de-intrabuild-groupware-SplashScreen-progressBar">&nbsp;</div>
-                	</div>
+                    <div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">
+                    <div class="de-intrabuild-groupware-SplashScreen-body">
+                    <div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">conjoon</div>
+                    <div style="position:absolute;top:135px;left:145px;width:220px;height:50px;color:#2D5094">
+                        <div style="padding-left:10px;padding-bottom:10px;">Please wait...</div>
+                        <div class="de-intrabuild-groupware-SplashScreen-progressBar">&nbsp;</div>
+                    </div>
 
-                	</div>
-                	</div></div></div>
+                    </div>
+                    </div></div></div>
                 </div>
                 <div class="x-window-bl x-panel-nofooter"><div class="x-window-br"><div class="x-window-bc"></div></div></div>
                 </div>
@@ -121,15 +121,15 @@ Ext.onReady(function(){
                 iconCls : 'de-intrabuild-groupware-Bookmark-toolbar-bookmarkButton-icon',
                 menu    : [
                         {text: de.intrabuild.Gettext.gettext("Home"),
-                        	handler : function(){
+                            handler : function(){
                             var reg = de.intrabuild.util.Registry;
                             var homePanel = reg.get('de.intrabuild.groupware.HomePanel');
                             contentPanel.setActiveTab(homePanel);}
                         }, '-', {
-                        	text:de.intrabuild.Gettext.gettext("Contacts")
+                            text:de.intrabuild.Gettext.gettext("Contacts")
                         },{
-                        	text: de.intrabuild.Gettext.gettext("Emails"),
-                        	handler : function(){
+                            text: de.intrabuild.Gettext.gettext("Emails"),
+                            handler : function(){
                             var reg = de.intrabuild.util.Registry;
                             var emailPanel = reg.get('de.intrabuild.groupware.email.EmailPanel');
                             if (!emailPanel) {
@@ -138,9 +138,9 @@ Ext.onReady(function(){
                             }
                             contentPanel.setActiveTab(emailPanel);}
                         }, {
-                        	text:de.intrabuild.Gettext.gettext("Calendar")
+                            text:de.intrabuild.Gettext.gettext("Calendar")
                         }, {
-                        	text:de.intrabuild.Gettext.gettext("Todos")
+                            text:de.intrabuild.Gettext.gettext("Todos")
                         }, '-'
 
                      ]
@@ -154,22 +154,22 @@ Ext.onReady(function(){
             mainMenubar.render('DOM:de.intrabuild.groupware.Menubar.container');
 
         mainMenubar.add({
-		    text:'File',
-		    menu: [{
-				text:'New',
-				menu : [de.intrabuild.groupware.email.decorator.AccountActionComp.decorate(new Ext.menu.Item({
-					text : 'Email...',
-					handler : function() {
-					   de.intrabuild.groupware.email.EmailEditorManager.createEditor();
-					}
-				}))]
-			}, '-', {
+            text:'File',
+            menu: [{
+                text:'New',
+                menu : [de.intrabuild.groupware.email.decorator.AccountActionComp.decorate(new Ext.menu.Item({
+                    text : 'Email...',
+                    handler : function() {
+                       de.intrabuild.groupware.email.EmailEditorManager.createEditor();
+                    }
+                }))]
+            }, '-', {
                 text    : "Logout...",
                 handler : function() {
                     de.intrabuild.groupware.Reception.showLogout();
                 }
             }]
-		},
+        },
             {
                 text:'Extras',
                 menu: [{
@@ -181,8 +181,8 @@ Ext.onReady(function(){
                       }, '-', {
                       text:de.intrabuild.Gettext.gettext("Email accounts..."),
                       handler : function() {
-						var dialog = new de.intrabuild.groupware.email.EmailAccountDialog();
-						dialog.show();
+                        var dialog = new de.intrabuild.groupware.email.EmailAccountDialog();
+                        dialog.show();
                       }
                      }]
             },
@@ -276,33 +276,33 @@ Ext.onReady(function(){
 
     contentPanel.on('add', function(container, component, index){
 
-    	var id = component.id;
-    	var add = true;
-    	switch (id) {
-    		case 'DOM:de.intrabuild.groupware.HomePanel':
-    		case 'DOM:de.intrabuild.groupware.EmailPanel':
-    		case 'DOM:de.intrabuild.groupware.ContactsPanel':
-    		case 'DOM:de.intrabuild.groupware.TodoPanel':
-    		case 'DOM:de.intrabuild.groupware.CalendarPanel':
-    			add = false;
-    		break;
-    	}
+        var id = component.id;
+        var add = true;
+        switch (id) {
+            case 'DOM:de.intrabuild.groupware.HomePanel':
+            case 'DOM:de.intrabuild.groupware.EmailPanel':
+            case 'DOM:de.intrabuild.groupware.ContactsPanel':
+            case 'DOM:de.intrabuild.groupware.TodoPanel':
+            case 'DOM:de.intrabuild.groupware.CalendarPanel':
+                add = false;
+            break;
+        }
 
-    	var title = component.title;
-    	var iconCls = component.iconCls;
+        var title = component.title;
+        var iconCls = component.iconCls;
 
-    	if (add && title) {
-    		var item = bookmarkButton.menu.add({iconCls : iconCls, text : title});
-    		item.on('click', function() {
-    			this.setActiveTab(component);
-    		}, contentPanel)
-    		component.on('titlechange', function(){
-    			item.setText(this.title);
-    		}, component);
-    		component.on('destroy', function() {
-    			bookmarkButton.menu.remove(item);
-    		});
-    	}
+        if (add && title) {
+            var item = bookmarkButton.menu.add({iconCls : iconCls, text : title});
+            item.on('click', function() {
+                this.setActiveTab(component);
+            }, contentPanel)
+            component.on('titlechange', function(){
+                item.setText(this.title);
+            }, component);
+            component.on('destroy', function() {
+                bookmarkButton.menu.remove(item);
+            });
+        }
     });
 
     var editPanel = new Ext.Panel({
@@ -384,10 +384,10 @@ Ext.onReady(function(){
         de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.FeedStore.getInstance(), true);
 
         de.intrabuild.util.PreLoader.on('load', function() {
-        	de.intrabuild.groupware.email.Letterman.wakeup();
-	        var splash = document.getElementById('DOM:de.intrabuild.groupware.Startup');
-	        splash.style.display = "none";
-	        document.body.removeChild(splash);
+            de.intrabuild.groupware.email.Letterman.wakeup();
+            var splash = document.getElementById('DOM:de.intrabuild.groupware.Startup');
+            splash.style.display = "none";
+            document.body.removeChild(splash);
         });
 
         de.intrabuild.groupware.Reception.init(true);

@@ -1,27 +1,27 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
-/** 
- * Zend_Db_Table 
+/**
+ * Zend_Db_Table
  */
 require_once 'Zend/Db/Table/Abstract.php';
 
 /**
  * @see Intrabuild_BeanContext_Decoratable
  */
-require_once 'Intrabuild/BeanContext/Decoratable.php'; 
+require_once 'Intrabuild/BeanContext/Decoratable.php';
 
 /**
  * Table data gateway. Models the table <tt>users</tt>.
@@ -32,10 +32,10 @@ require_once 'Intrabuild/BeanContext/Decoratable.php';
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */    
+ */
 class Intrabuild_Modules_Default_User_Model_User
-    extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable {    
-        
+    extends Zend_Db_Table_Abstract implements Intrabuild_BeanContext_Decoratable {
+
     /**
      * The name of the table in the underlying datastore this
      * class represents.
@@ -52,7 +52,7 @@ class Intrabuild_Modules_Default_User_Model_User
     /**
      * Returs the row that matches both the email address and the password.
      *
-     * @param string $emailAddress 
+     * @param string $emailAddress
      * @param string $password
      *
      * @return Zend_Db_Table_Row
@@ -61,11 +61,11 @@ class Intrabuild_Modules_Default_User_Model_User
     {
         $emailAddress = strtolower(trim((string)$emailAddress));
         $password     = trim((string)$password);
-        
+
         if ($emailAddress == "" || $password == "") {
-            return null;    
+            return null;
         }
-        
+
         /**
          * @todo make sure email and username is a unique index
          */
@@ -73,15 +73,15 @@ class Intrabuild_Modules_Default_User_Model_User
                        ->from($this)
                        ->where('email_address = ?', $emailAddress)
                        ->where('password=?', $password);
-        
+
         $row = $this->fetchRow($select);
-        
+
         return $row;
     }
 
     /**
      * Returns the number of users that share the same email-address.
-     * 
+     *
      * @param string $emailAddress
      *
      * @return integer
@@ -89,11 +89,11 @@ class Intrabuild_Modules_Default_User_Model_User
     public function getEmailAddressCount($emailAddress)
     {
         $emailAddress = strtolower(trim((string)$emailAddress));
-        
+
         if ($emailAddress == "") {
-            return 0;    
-        }   
-        
+            return 0;
+        }
+
         /**
          * @todo make sure comparison uses lowercase even in db field
          */
@@ -102,9 +102,9 @@ class Intrabuild_Modules_Default_User_Model_User
                     'COUNT(id) as count_id'
                   ))
                   ->where('email_address = ?', $emailAddress);
-        
+
         $row = $this->fetchRow($select);
-            
+
         return ($row !== null) ? $row->count_id : 0;
     }
 
@@ -114,7 +114,7 @@ class Intrabuild_Modules_Default_User_Model_User
      * as fetched from the table.
      *
      * @param integer $id
-     *  
+     *
      *
      * @return Intrabuild_User or null if no data with the primary key $id exists.
      *
@@ -125,29 +125,29 @@ class Intrabuild_Modules_Default_User_Model_User
     public function getUser($id)
     {
         $id = (int)$id;
-        
+
         if ($id <= 0) {
-            return null;    
+            return null;
         }
-        
+
         $row = $this->fetchRow($this->select()->where('id=?', $id));
 
         return $row;
     }
-    
-// -------- interface Intrabuild_BeanContext_Decoratable 
-    
+
+// -------- interface Intrabuild_BeanContext_Decoratable
+
     public function getRepresentedEntity()
     {
-        return 'Intrabuild_Modules_Default_User';    
+        return 'Intrabuild_Modules_Default_User';
     }
-    
+
     public function getDecoratableMethods()
     {
         return array(
             'getUser',
             'getUserForEmailCredentials'
         );
-    }       
+    }
 
 }

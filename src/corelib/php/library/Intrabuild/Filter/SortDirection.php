@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -38,7 +38,7 @@ class Intrabuild_Filter_SortDirection implements Zend_Filter_Interface
     public function filter($value)
     {
         $str = trim(strtolower((string)$value));
-        
+
         switch ($str) {
             case 'asc':
                 return 'ASC';
@@ -46,7 +46,7 @@ class Intrabuild_Filter_SortDirection implements Zend_Filter_Interface
                 return 'DESC';
             default:
                 return 'ASC';
-            
+
         }
     }
 }

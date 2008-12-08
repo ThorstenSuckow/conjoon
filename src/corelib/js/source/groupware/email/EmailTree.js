@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -683,7 +683,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
 
         this.resetState(parameters.params.id, true);
 
-		de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
     },
 
     /**

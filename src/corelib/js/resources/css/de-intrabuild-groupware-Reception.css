@@ -1,36 +1,36 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: de-intrabuild-groupware-email-EmailPanel.css 12 2008-06-28 00:43:33Z T. Suckow $
- * $Date: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $
- * $Revision: 12 $
- * $LastChangedDate: 2008-06-28 02:43:33 +0200 (Sa, 28 Jun 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailPanel.css $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 .de-intrabuild-groupware-Reception-body {
-	background:#2e647f url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
+    background:#2e647f url(../images/startup-bg.png) repeat-x scroll 0% 0% !important;
 }
 
 .de-intrabuild-groupware-reception-LogoutWindow .x-window-body {
     background-color:#ffffff;
-	padding:10px 25px;
+    padding:10px 25px;
 }
 
 .de-intrabuild-groupware-reception-LogoutWindow-button {
     height:100px;
-	width:64px;
+    width:64px;
 }
 
 .de-intrabuild-groupware-reception-LogoutWindow-button .button {
     height:64px;
-	cursor:pointer;
+    cursor:pointer;
     width:64px;
-	background-position:0px 0px;
+    background-position:0px 0px;
 }
 
 .de-intrabuild-groupware-reception-LogoutWindow-button.over .button {
@@ -40,10 +40,10 @@
 .de-intrabuild-groupware-reception-LogoutWindow-button .text {
     height:23px;
     width:64px;
-	line-height:23px;
-	color:black;
-	font-weight:bold;
-	text-align:center;
+    line-height:23px;
+    color:black;
+    font-weight:bold;
+    text-align:center;
 }
 
 .de-intrabuild-groupware-reception-LogoutWindow-button.de-intrabuild-groupware-reception-LogoutWindow-logoutButton .button {

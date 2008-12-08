@@ -1,40 +1,40 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 .de-intrabuild-groupware-email-EmailTree-toolbar-expandButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-tree-expand.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-tree-expand.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailTree-toolbar-collapseButton-icon {
-    background-image:url(../images/16x16/actions/groupware-email-tree-collapse.png)!important;    
+    background-image:url(../images/16x16/actions/groupware-email-tree-collapse.png)!important;
 }
 
 .de-intrabuild-groupware-email-EmailTree .x-panel-body {
     background-color:white;
     position:relative;
     padding:3px;
-} 
-        
+}
+
 .de-intrabuild-groupware-email-EmailTree a span {
     margin-left:5px !important;
-}        
+}
 
 .de-intrabuild-groupware-email-EmailTree .de-intrabuild-groupware-email-EmailTree-itemPending {
     margin-left:0px !important;
     background:none !important;
     border:none !important;
-}        
+}
 
 .de-intrabuild-groupware-email-EmailTree .x-tree-node {
     padding-top:1px;
@@ -52,7 +52,7 @@
     border-left:none;
     border-right:none;
     /*font-weight:bold;*/
-}        
+}
 
 .de-intrabuild-groupware-email-EmailTree-rootIcon {
     background-image:url(../images/16x16/apps/groupware-email-tree-root.png) !important;

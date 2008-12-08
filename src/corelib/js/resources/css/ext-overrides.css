@@ -1,19 +1,19 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: de-intrabuild-groupware-email-EmailGrid.css 2 2008-06-21 10:38:49Z T. Suckow $
- * $Date: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $ 
- * $Revision: 2 $
- * $LastChangedDate: 2008-06-21 12:38:49 +0200 (Sa, 21 Jun 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/svn_repository/intrabuild/trunk/src/corelib/js/resources/css/de-intrabuild-groupware-email-EmailGrid.css $ 
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 html {
-	background:none!important;
+    background:none!important;
 }
 
 .x-layout-split {
@@ -26,7 +26,7 @@ html {
 .x-panel-btn-td .x-btn-center{
     background: url(../images/qp-btn-sprite.gif) repeat-x 0 -126px;
     padding:0 0;
-}    
+}
 .x-panel-btn-td .x-btn-right{
     background: url(../images/qp-btn-sprite.gif) no-repeat 0 -168px;
 }
@@ -37,12 +37,12 @@ html {
 .x-panel-btn-td .x-btn-focus .x-btn-center{
     background: url(../images/qp-btn-sprite.gif) repeat-x 0 -126px;
     padding:0 0;
-}    
+}
 .x-panel-btn-td .x-btn-focus .x-btn-right{
     background: url(../images/qp-btn-sprite.gif) no-repeat 0 -168px;
 }
-    
-    
+
+
 .x-panel-btn-td .x-btn-over .x-btn-left{
     background: url(../images/qp-btn-sprite.gif) no-repeat 0 0;
 }
@@ -62,11 +62,11 @@ html {
 
 .x-panel-btn-td .x-btn-click .x-btn-center, .x-panel-btn-td  .x-btn-pressed .x-btn-center {
     background: url(../images/qp-btn-sprite.gif) repeat-x 0 -105px;
-}        
+}
 
 .x-window-draggable, .x-window-draggable .x-window-header-text {
     display:block;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	white-space:nowrap;	
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }

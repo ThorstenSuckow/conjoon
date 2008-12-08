@@ -1,3 +1,17 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
 Ext.namespace('de.intrabuild.groupware');
 
 /**
@@ -6,106 +20,106 @@ Ext.namespace('de.intrabuild.groupware');
  *
  */
 de.intrabuild.groupware.QuickEditPanel = function(){
-    
+
     //var de.intrabuild.groupware.QuickContactForm;
     //var de.intrabuild.groupware.QuickEmailForm;
-    
-    
+
+
     // shorthands
     var _quickContactForm = de.intrabuild.groupware.forms.QuickContactForm;
     var _quickEmailForm   = de.intrabuild.groupware.forms.QuickEmailForm;
-    
-    
+
+
     var _panel = null;
 
-	var getYoutubePanel = function()
-	{
-	   	var playerPanel = Ext.ux.YoutubePlayer.createPanel({
-	   		developerKey : "AI39si7YwEMBcpCOO8JzYSjB3WtaS2ODhBN-A4XAqVADfGWyK8-Nr9XwZzr_sdCnsKirffyPDBsvC0z7MdR2u0xeM4zLIDWLIQ",	
-			playerId	 : 'myplayer',
-			border		 : false,
-			ratioMode    : 'strict',
-			autoScroll   : false,
-			bgColor 	 : "#000000",
-			bodyStyle 	 : 'background-color:#000000;'
-	   	});
-	   	
-	   	var tyt = Ext.extend(Ext.ux.YoutubePlayer.Control, {
-			_onEject : function() {
-			    var control = this;
-				var msg   = Ext.MessageBox;
-			        msg.show({
-			        	prompt : true,
-			            title   : de.intrabuild.Gettext.gettext("Load video"),
-			            msg     : de.intrabuild.Gettext.gettext("Please submit the id or the full url of the youtube video you want to load."),
-			            buttons : msg.OKCANCEL,
-			            fn      : function(btn, text){
-							        if (btn != 'ok') {
-									   return;
-									}
-									var id = control._parseVideoId(text);
-									if (id) {
-										control.player.stopVideo();
-										control.player.clearVideo();
-										control.player.cueVideoById(id);
-									}
-			                      },
-			            icon    : msg.QUESTION,
-			            cls     :'de-intrabuild-msgbox-prompt',
-			            width   : 375
-			        });       		        
-			}	   		
-	   	});
-	   	
-        pControl =  new tyt({
-        	player   : playerPanel,
-        	border	 : false,
-        	id 		 : 'control', 
-        	style	 : 'border:none;'
+    var getYoutubePanel = function()
+    {
+        var playerPanel = Ext.ux.YoutubePlayer.createPanel({
+            developerKey : "AI39si7YwEMBcpCOO8JzYSjB3WtaS2ODhBN-A4XAqVADfGWyK8-Nr9XwZzr_sdCnsKirffyPDBsvC0z7MdR2u0xeM4zLIDWLIQ",
+            playerId     : 'myplayer',
+            border       : false,
+            ratioMode    : 'strict',
+            autoScroll   : false,
+            bgColor      : "#000000",
+            bodyStyle    : 'background-color:#000000;'
         });
-        
-        ;	   	
-	   	
-		var w = new Ext.Panel({
-	        title        : 'Ytube',
-	        layout 		 : 'fit',
-			hideMode 	 : 'offsets',
-	        items        : [playerPanel], 
-	        bbar		 : pControl,
-	        listeners   : {
-	        	'resize'   		 : function(){this.bottomToolbar.fireEvent('resize')}
-	    	}});   	
-	    	
-	    return w;
-	};
-    
+
+        var tyt = Ext.extend(Ext.ux.YoutubePlayer.Control, {
+            _onEject : function() {
+                var control = this;
+                var msg   = Ext.MessageBox;
+                    msg.show({
+                        prompt : true,
+                        title   : de.intrabuild.Gettext.gettext("Load video"),
+                        msg     : de.intrabuild.Gettext.gettext("Please submit the id or the full url of the youtube video you want to load."),
+                        buttons : msg.OKCANCEL,
+                        fn      : function(btn, text){
+                                    if (btn != 'ok') {
+                                       return;
+                                    }
+                                    var id = control._parseVideoId(text);
+                                    if (id) {
+                                        control.player.stopVideo();
+                                        control.player.clearVideo();
+                                        control.player.cueVideoById(id);
+                                    }
+                                  },
+                        icon    : msg.QUESTION,
+                        cls     :'de-intrabuild-msgbox-prompt',
+                        width   : 375
+                    });
+            }
+        });
+
+        pControl =  new tyt({
+            player   : playerPanel,
+            border   : false,
+            id       : 'control',
+            style    : 'border:none;'
+        });
+
+        ;
+
+        var w = new Ext.Panel({
+            title        : 'Ytube',
+            layout       : 'fit',
+            hideMode     : 'offsets',
+            items        : [playerPanel],
+            bbar         : pControl,
+            listeners   : {
+                'resize'         : function(){this.bottomToolbar.fireEvent('resize')}
+            }});
+
+        return w;
+    };
+
     var _createLayout = function()
     {
-        _panel.add(_quickContactForm.getComponent());    
+        _panel.add(_quickContactForm.getComponent());
         _panel.add(_quickEmailForm.getComponent());
         _panel.add(getYoutubePanel());
     };
-    
+
     var _installListeners = function()
     {
-        _panel.on('beforerender', _createLayout, this);    
+        _panel.on('beforerender', _createLayout, this);
     };
-    
+
     var _initComponents = function()
     {
         _installListeners.call(this);
         _createLayout.call(this);
     };
-    
+
     return {
-        
-        
+
+
         getComponent : function()
         {
             if (_panel !== null) {
                 return _panel;
             }
-            
+
             _panel = new Ext.TabPanel({
                          tabPosition:'bottom',
                          activeTab:0, // NEEDS TO BE CALLED WHEN COMPONENT IS INITIALIZED
@@ -114,21 +128,21 @@ de.intrabuild.groupware.QuickEditPanel = function(){
                          height:180,
                          bodyStyle:'background:#DFE8F6;'
                      });
-            
-            _panel.on('beforerender', _initComponents, this);            
-                     
-            return _panel;   
+
+            _panel.on('beforerender', _initComponents, this);
+
+            return _panel;
         },
-        
+
         render : function()
         {
             if (_panel.rendered) {
                 return;
             }
-            
+
             _panel.render();
-            
-            
+
+
                        /* new Ext.TabPanel( {
                                         tabPosition:'bottom',
                                         activeTab:0,
@@ -224,9 +238,9 @@ de.intrabuild.groupware.QuickEditPanel = function(){
                                         ]
                                  });*/
         }
-        
+
     };
-    
+
     this.initComponent();
-    
+
 }();

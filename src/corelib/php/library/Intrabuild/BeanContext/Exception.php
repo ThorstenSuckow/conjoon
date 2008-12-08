@@ -1,18 +1,18 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
- 
+
 /**
  * Exception class for Intrabuild_BeanContext-package.
  *
@@ -20,7 +20,7 @@
  * @package    Intrabuild_BeanContext
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
- */ 
-class Intrabuild_BeanContext_Exception extends Exception { 
-    
+ */
+class Intrabuild_BeanContext_Exception extends Exception {
+
 }

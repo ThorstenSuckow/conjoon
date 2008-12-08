@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -16,11 +16,11 @@ Ext.namespace('de.intrabuild.groupware.feeds');
 
 de.intrabuild.groupware.feeds.FeedGrid = function(config) {
 
-	Ext.ux.util.MessageBus.subscribe(
-	   'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
-	   this.onFeedItemLoaded,
-	   this
-	);
+    Ext.ux.util.MessageBus.subscribe(
+       'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
+       this.onFeedItemLoaded,
+       this
+    );
 
     Ext.ux.util.MessageBus.subscribe(
        'de.intrabuild.groupware.feeds.FeedPreview.onLoadSuccess',
@@ -63,9 +63,9 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
       }
     ];
 
-	var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})';
-	this.groupTextTpl = new Ext.XTemplate(groupTextTpl);
-	this.groupTextTpl.compile();
+    var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})';
+    this.groupTextTpl = new Ext.XTemplate(groupTextTpl);
+    this.groupTextTpl.compile();
 
     this.view = new Ext.grid.GroupingView({
         forceFit      : false,
@@ -100,7 +100,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
         cls     : 'x-btn-icon',
         iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
         handler : function(){
-			var dialog = new de.intrabuild.groupware.feeds.AddFeedDialog({
+            var dialog = new de.intrabuild.groupware.feeds.AddFeedDialog({
                 animateTarget : this.getTopToolbar().items.get(0).el.dom.id
             });
             dialog.show();
@@ -225,80 +225,80 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
         });
 
         this.store.commitChanges();
-		this._updateGroupTemplates();
+        this._updateGroupTemplates();
     },
 
-	onFeedItemLoaded : function(subject, message)
-	{
-		if (message.id) {
-			this.markItemsRead(true, message.id)
-		}
-	},
+    onFeedItemLoaded : function(subject, message)
+    {
+        if (message.id) {
+            this.markItemsRead(true, message.id)
+        }
+    },
 
 
     _updateGroupTemplates : function()
-	{
-	    if (!this.store.groupField) {
-	        return;
-	    }
+    {
+        if (!this.store.groupField) {
+            return;
+        }
 
-		var view = this.view;
+        var view = this.view;
         var rs   = this.store.getRange();
         var len  = rs.length;
-		if (len < 1) {
-			return [];
-		}
+        if (len < 1) {
+            return [];
+        }
 
         var groupField = view.getGroupField();
 
-		var r;
+        var r;
         var gvalue;
-		var indexes = {};
-	    var groups = [];
+        var indexes = {};
+        var groups = [];
 
         for (var i = 0; i < len; i++) {
             r      = rs[i];
-			gvalue = r.data[groupField];
+            gvalue = r.data[groupField];
 
-			if (!indexes[gvalue]) {
-				indexes[gvalue] = [];
-			}
+            if (!indexes[gvalue]) {
+                indexes[gvalue] = [];
+            }
 
-			indexes[gvalue].push(r);
+            indexes[gvalue].push(r);
         }
 
-		var a  = 0;
-		var gr = view.getGroups();
-		for (var i in indexes) {
-			gr[a++].firstChild.firstChild.innerHTML = this.groupTextTpl.apply({
+        var a  = 0;
+        var gr = view.getGroups();
+        for (var i in indexes) {
+            gr[a++].firstChild.firstChild.innerHTML = this.groupTextTpl.apply({
                 text : i,
-				rs : indexes[i]
-			});
-		}
+                rs : indexes[i]
+            });
+        }
     },
 
     markItemsRead : function(bRead, id)
     {
         var feedIds = new Array();
 
-		if (!id) {
-			var selection = this.selModel.getSelections();
-			for (var i = 0; i < selection.length; i++) {
-				selection[i].set('isRead', bRead);
-			}
-		} else {
-			var rec = this.store.getById(id);
-			if (rec) {
-				rec.set('isRead', bRead);
-			}
-		}
+        if (!id) {
+            var selection = this.selModel.getSelections();
+            for (var i = 0; i < selection.length; i++) {
+                selection[i].set('isRead', bRead);
+            }
+        } else {
+            var rec = this.store.getById(id);
+            if (rec) {
+                rec.set('isRead', bRead);
+            }
+        }
 
         this.commitRecords();
     },
 
     onCellClick : function(grid, rowIndex, columnIndex, e)
     {
-		if (this.cellClickActive) {
+        if (this.cellClickActive) {
             this.cellClickActive = false;
             return;
         }
@@ -309,14 +309,14 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
 
         this.clkRow    = this.view.getRow(rowIndex);
         this.clkRecord = this.store.getAt(rowIndex);
-		de.intrabuild.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);
+        de.intrabuild.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);
     },
 
     onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
     {
-		this.cellClickActive = true;
-		var feedItem = grid.getStore().getAt(rowIndex);
-		de.intrabuild.groupware.feeds.FeedPreview.hide(true, false);
+        this.cellClickActive = true;
+        var feedItem = grid.getStore().getAt(rowIndex);
+        de.intrabuild.groupware.feeds.FeedPreview.hide(true, false);
         de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem, true);
     },
 

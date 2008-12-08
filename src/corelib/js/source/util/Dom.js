@@ -1,7 +1,7 @@
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
@@ -23,19 +23,19 @@ de.intrabuild.util.Dom = function() {
 
 
 
-	return {
+    return {
 
-	    /**
-	     * Returns the cssText property of a cssRule-object for the passed style-name.
-	     * The method will fetch the cssText-property if the cssText begins with
-	     * "styleName" efr the opening paranthesis. An object can be passed to the method
-	     * which will ignore each stylesheet which property matches the property defined
-	     * in "exclude". Wildcards can broaden the search so one does not have to specifiy
-	     * the excludevalues exactly, which is helpful in situations where for example one
-	     * wants to exclude all stylesheets from the search that where included using a specified
-	     * "href"-value, but where the domain-name path to the css file is unknown.
-	     * Example:
-	     * <code>
+        /**
+         * Returns the cssText property of a cssRule-object for the passed style-name.
+         * The method will fetch the cssText-property if the cssText begins with
+         * "styleName" efr the opening paranthesis. An object can be passed to the method
+         * which will ignore each stylesheet which property matches the property defined
+         * in "exclude". Wildcards can broaden the search so one does not have to specifiy
+         * the excludevalues exactly, which is helpful in situations where for example one
+         * wants to exclude all stylesheets from the search that where included using a specified
+         * "href"-value, but where the domain-name path to the css file is unknown.
+         * Example:
+         * <code>
 // search for the cssText which definition is ".bodyElement",
 // but ignore the ext-all.css stylesheet
 var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
@@ -43,20 +43,20 @@ var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
         href : '*ext-all.css';
     }
 );
-	     </code>
-	     *
-	     * Note: this method depends on the trim() function as defined by the ExtJs framework.
-	     *
-	     * @param {String} styleName The name the definition starts with.
-	     * @param {Object} excludes An optional object providing key/value pairs of attributes
-	     * used for excluding a stylesheet in the search-process
-	     *
-	     * @return {String} The cssText-property found, or an empty string if not
-	     * found
-	     */
-	    getCssTextFromStyleSheet : function(styleName, excludes)
-	    {
-			styleName = styleName.toLowerCase().trim();
+         </code>
+         *
+         * Note: this method depends on the trim() function as defined by the ExtJs framework.
+         *
+         * @param {String} styleName The name the definition starts with.
+         * @param {Object} excludes An optional object providing key/value pairs of attributes
+         * used for excluding a stylesheet in the search-process
+         *
+         * @return {String} The cssText-property found, or an empty string if not
+         * found
+         */
+        getCssTextFromStyleSheet : function(styleName, excludes)
+        {
+            styleName = styleName.toLowerCase().trim();
             var styleSheets   = document.styleSheets;
             var styleSheet    = null;
             var excludeValue  = "";
@@ -112,16 +112,16 @@ var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
                 for (var a = 0, lena = cssRules.length; a < lena; a++) {
                     cssText = cssRules[a].selectorText.toLowerCase();
                     if (cssText == styleName) {
-						return Ext.isIE
-						      ? cssText + '{' + cssRules[a].style.cssText + '}'
-							  : cssRules[a].cssText;
+                        return Ext.isIE
+                              ? cssText + '{' + cssRules[a].style.cssText + '}'
+                              : cssRules[a].cssText;
                     }
                 }
             }
 
             return "";
 
-	    },
+        },
 
 
         /**
@@ -151,29 +151,29 @@ var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
          *
          *
          */
-		divideNode : function(splitNode, copyNode, node)
-		{
-			while (splitNode != node) {
-				var parent = splitNode.parentNode;
-				if(!parent) {
-					return null;
-				}
-				var secondHalf = parent.cloneNode(false);
-				secondHalf.appendChild(copyNode);
-				var nextSibling=splitNode.nextSibling;
-				while(nextSibling!=null){
-					parent.removeChild(nextSibling);
-					secondHalf.appendChild(nextSibling);
-					nextSibling=splitNode.nextSibling
-				}
-				splitNode=parent;
-				copyNode=secondHalf;
-			}
+        divideNode : function(splitNode, copyNode, node)
+        {
+            while (splitNode != node) {
+                var parent = splitNode.parentNode;
+                if(!parent) {
+                    return null;
+                }
+                var secondHalf = parent.cloneNode(false);
+                secondHalf.appendChild(copyNode);
+                var nextSibling=splitNode.nextSibling;
+                while(nextSibling!=null){
+                    parent.removeChild(nextSibling);
+                    secondHalf.appendChild(nextSibling);
+                    nextSibling=splitNode.nextSibling
+                }
+                splitNode=parent;
+                copyNode=secondHalf;
+            }
 
-			return copyNode;
-		}
+            return copyNode;
+        }
 
-	};
+    };
 
 
 }();

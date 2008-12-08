@@ -1,47 +1,61 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
 Ext.namespace('de.intrabuild.groupware');
 
 de.intrabuild.groupware.StatusBar = function(){
-    
+
     var _messageBroadcaster = Ext.ux.util.MessageBus;
-    
+
     var _statusBar = null;
-    
+
     var _progressBar = null;
-    
+
     var _activeRequestCount = 0;
-    
+
     var _connectionInfo = null;
-    
+
     var _onBeforeRequest = function()
     {
         if (_activeRequestCount == 0) {
             _progressBar.show();
-            _progressBar.wait({interval : 250}); 
-            //_progressBar.updateText(_activeRequestCount); 
+            _progressBar.wait({interval : 250});
+            //_progressBar.updateText(_activeRequestCount);
         }
-        _activeRequestCount++;      
+        _activeRequestCount++;
     };
-    
+
     var _onRequestException = function()
     {
         _onRequestComplete();
     };
-    
+
     var _onRequestAbort = function()
     {
         _onRequestComplete();
     };
-    
+
     var _onRequestComplete = function()
     {
         _activeRequestCount = Math.max(0, --_activeRequestCount);
-        //_progressBar.updateText(_activeRequestCount); 
-        
+        //_progressBar.updateText(_activeRequestCount);
+
         if (_activeRequestCount <= 0) {
             _progressBar.reset(true);
         }
-    };      
-    
+    };
+
     var _transceive = function(subject, message)
     {
         switch (subject) {
@@ -49,48 +63,48 @@ de.intrabuild.groupware.StatusBar = function(){
                 _statusBar.setStatus({
                     text : de.intrabuild.Gettext.gettext("Checking for new emails...")
                 });
-            break; 
-            
+            break;
+
             case 'de.intrabuild.groupware.email.Letterman.load':
-			    var total = message.total;
-				var text  = de.intrabuild.Gettext.gettext("No new emails");
-				
-				if (total > 0) {
-					text = String.format(
+                var total = message.total;
+                var text  = de.intrabuild.Gettext.gettext("No new emails");
+
+                if (total > 0) {
+                    text = String.format(
                         de.intrabuild.Gettext.ngettext("One new email", "{0} new emails", total),
-						total
-					);
-				}
+                        total
+                    );
+                }
                 _statusBar.setStatus({
                     text  : text,
                     clear : true
                 });
             break;
-            
+
             case 'de.intrabuild.groupware.email.Letterman.loadexception':
                 _statusBar.setStatus({
                     text  : de.intrabuild.Gettext.gettext("Error while trying to receive new emails"),
                     clear : true
                 });
-            break;   
-            
+            break;
+
         }
-        
+
     };
-    
+
     var _subscribe = function()
     {
-        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.beforeload', _transceive);    
-        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.load', _transceive);    
-        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.loadexception', _transceive);    
+        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.beforeload', _transceive);
+        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.load', _transceive);
+        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.loadexception', _transceive);
     };
-    
+
     return {
-      
+
         getStatusBar : function()
         {
             if (_statusBar === null) {
-                
+
                 var pconf = {
                     cls   : 'de-intrabuild-groupware-ProgressBar',
                     width : 80
@@ -98,14 +112,14 @@ de.intrabuild.groupware.StatusBar = function(){
                 if (Ext.isIE) {
                     pconf.style = 'margin-top:1px;';
                 }
-                
+
                 _progressBar = new Ext.ProgressBar(pconf);
-                
+
                 var t = document.createElement('div');
                 t.innerHTML = '&#160;';
                 t.className = "de-intrabuild-groupware-statusbar-ConnectionInfo";
                 _connectionInfo = new Ext.Toolbar.Item(t);
-                
+
                 _statusBar = new Ext.StatusBar({
                     region:'south',
                     height : 21,
@@ -125,14 +139,14 @@ de.intrabuild.groupware.StatusBar = function(){
                         _connectionInfo,
                         new Ext.Toolbar.Spacer()
                     ]
-                }); 
-                
+                });
+
                 _statusBar.afterRender = _statusBar.afterRender.createSequence(
                     function() {
                         _connectionInfo.disable();
                     }
                 );
-            
+
                 var eao = Ext.Ajax;
                 eao.on('beforerequest',    _onBeforeRequest);
                 eao.on('requestcomplete',  _onRequestComplete);
@@ -141,16 +155,16 @@ de.intrabuild.groupware.StatusBar = function(){
                     'ext.lib.ajax.abort',
                     _onRequestAbort
                 );
-                
+
                 _subscribe();
-            }          
-            
-            
-            
-            return _statusBar;  
+            }
+
+
+
+            return _statusBar;
         }
-        
-        
-    };    
-    
+
+
+    };
+
 }();

@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -53,44 +53,44 @@ class Intrabuild_Modules_Groupware_Email_Item_Filter_Flag extends Intrabuild_Fil
             'isSpam'
         ),
     );
-    
+
     protected $_filters = array(
         'id' => array(
             'Int'
-         ), 
+         ),
         'groupwareEmailItemsId' => array(
             'Int'
-         ), 
+         ),
          'userId' => array(
             'Int'
-         ), 
+         ),
          'isRead' => array(
             'Int'
-         ), 
+         ),
          'isSpam' => array(
             'Int'
          )
     );
-    
+
     protected $_validators = array(
          'id' => array(
             'allowEmpty' => false
-         ), 
+         ),
         'groupwareEmailItemsId' => array(
             'allowEmpty' => false
-         ), 
+         ),
          'userId' => array(
             'allowEmpty' => false
-         ), 
+         ),
          'isRead' => array(
             'allowEmpty' => true,
             'default' => 0
-         ), 
+         ),
          'isSpam' => array(
             'allowEmpty' => true,
             'default' => 0
          )
     );
-   
+
 
 }

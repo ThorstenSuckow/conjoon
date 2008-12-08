@@ -1,16 +1,16 @@
 <?php
 /**
- * intrabuild
- * (c) 2002-2008 siteartwork.de/MindPatterns
- * license@siteartwork.de
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
  *
  * $Author$
  * $Id$
- * $Date$ 
+ * $Date$
  * $Revision$
  * $LastChangedDate$
  * $LastChangedBy$
- * $URL$ 
+ * $URL$
  */
 
 /**
@@ -26,7 +26,7 @@ require_once 'Zend/Date.php';
 class Intrabuild_Validate_Date extends Zend_Validate_Abstract
 {
     const NOT_DATE = 'notDate';
-    
+
     /**
      * @var array
      */
@@ -45,11 +45,11 @@ class Intrabuild_Validate_Date extends Zend_Validate_Abstract
     public function isValid($value)
     {
         try {
-            new Zend_Date($value);    
+            new Zend_Date($value);
         } catch (Zend_Date_Exception $e) {
             return false;
         }
-        
+
         return true;
     }
 
