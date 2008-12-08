@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 
-de.intrabuild.groupware.email.PendingNodeItemRecord = Ext.data.Record.create(
+com.conjoon.groupware.email.PendingNodeItemRecord = Ext.data.Record.create(
     {name : 'pending', type : 'int'}
 );

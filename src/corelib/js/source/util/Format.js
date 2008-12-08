@@ -12,15 +12,15 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util');
+Ext.namespace('com.conjoon.util');
 
 /**
- * @class de.intrabuild.util.Format
+ * @class com.conjoon.util.Format
  * @singleton
  *
  * Class provides convenient methods for formatting strings/numbers.
  */
-de.intrabuild.util.Format = function() {
+com.conjoon.util.Format = function() {
 
     return {
 

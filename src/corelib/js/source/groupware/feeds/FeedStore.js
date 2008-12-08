@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.feeds');
 
 /**
- * @class de.intrabuild.groupware.feeds.FeedStore
+ * @class com.conjoon.groupware.feeds.FeedStore
  * @singleton
  */
-de.intrabuild.groupware.feeds.FeedStore = function() {
+com.conjoon.groupware.feeds.FeedStore = function() {
 
     var _store = null;
 
@@ -30,16 +30,16 @@ de.intrabuild.groupware.feeds.FeedStore = function() {
             reader      : new Ext.data.JsonReader({
                               root: 'items',
                               id : 'id'
-                          }, de.intrabuild.groupware.feeds.ItemRecord),
+                          }, com.conjoon.groupware.feeds.ItemRecord),
             sortInfo    : {field: 'pubDate', direction: "DESC"},
             groupField  : 'name',
             baseParams  : {
                 removeold : true,
-                timeout   : de.intrabuild.groupware.feeds.FeedStore.getDefaultTimeOut()
+                timeout   : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
             },
             proxy : new Ext.data.HttpProxy({
                 url      : '/groupware/feeds/get.feed.items/format/json',
-                timeout  : de.intrabuild.groupware.feeds.FeedStore.getDefaultTimeOut()
+                timeout  : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
             })
         });
     };

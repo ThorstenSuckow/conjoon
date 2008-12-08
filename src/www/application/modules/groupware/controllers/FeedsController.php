@@ -60,32 +60,32 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function getFeedItemsAction()
     {
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
         require_once 'Zend/Feed.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Filter/Item.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        $model = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Account_Model_Account'
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $model = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
         );
-        $itemModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item'
+        $itemModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item'
         );
 
-        $itemResponseFilter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
             array(),
-            Intrabuild_Filter_Input::CONTEXT_RESPONSE
+            Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
-        $filter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+        $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
             $_POST,
-            Intrabuild_Filter_Input::CONTEXT_UPDATE
+            Conjoon_Filter_Input::CONTEXT_UPDATE
         );
         $filteredData = $filter->getProcessedData();
         $removeOld = $filteredData['removeold'];
         $timeout   = $filteredData['timeout'];
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $time = time();
@@ -130,7 +130,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                     if ($added !== 0 && !$removeOld) {
                         $items[$a]['name'] = $accounts[$i]->name;
                         $items[$a]['id']   = $added;
-                        Intrabuild_Util_Array::camelizeKeys($items[$a]);
+                        Conjoon_Util_Array::camelizeKeys($items[$a]);
                         $itemResponseFilter->setData($items[$a]);
                         $insertedItems[] = $itemResponseFilter->getProcessedData();
                     }
@@ -170,27 +170,27 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     public function addFeedAction()
     {
         require_once 'Zend/Feed.php';
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/BeanContext/Inspector.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Account/Model/Account.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Model/Item.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Account/Filter/Account.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Model/Account.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Item.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
 
-        $model  = new Intrabuild_Modules_Groupware_Feeds_Account_Model_Account();
+        $model  = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $classToCreate = 'Intrabuild_Modules_Groupware_Feeds_Account';
+        $classToCreate = 'Conjoon_Modules_Groupware_Feeds_Account';
 
         $this->view->success = true;
         $this->view->error = null;
 
         try {
-            $filter = new Intrabuild_Modules_Groupware_Feeds_Account_Filter_Account(
+            $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
                 $_POST,
-                Intrabuild_Filter_Input::CONTEXT_CREATE
+                Conjoon_Filter_Input::CONTEXT_CREATE
             );
             $filteredData = $filter->getProcessedData();
 
@@ -226,7 +226,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
 
             $filteredData['description'] = $import->description();
             $data = $filteredData;
-            Intrabuild_Util_Array::underscoreKeys($data);
+            Conjoon_Util_Array::underscoreKeys($data);
             $data['user_id'] = $userId;
             $data['last_updated'] = time();
 
@@ -236,12 +236,12 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 return;
             }
             $filteredData['id'] = $insertId;
-            $this->view->account = Intrabuild_BeanContext_Inspector::create(
+            $this->view->account = Conjoon_BeanContext_Inspector::create(
                 $classToCreate,
                 $filteredData
             )->getDto();
 
-            $itemModel = new Intrabuild_Modules_Groupware_Feeds_Item_Model_Item();
+            $itemModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Item();
 
             $data = $this->_importFeedItems($import, $filteredData['id']);
 
@@ -252,10 +252,10 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $this->view->items = $this->_getFeedItems($filteredData['id']);
 
         } catch (Zend_Filter_Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = Intrabuild_Error::fromFilter($filter, $e);
+            require_once 'Conjoon/Error.php';
+            $error = Conjoon_Error::fromFilter($filter, $e);
             $accountData = $_POST;
-            $this->view->account = Intrabuild_BeanContext_Inspector::create(
+            $this->view->account = Conjoon_BeanContext_Inspector::create(
                 $classToCreate,
                 $_POST
             )->getDto();
@@ -274,16 +274,16 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function updateAccountsAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Account/Filter/Account.php';
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Account/Model/Account.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Model/Account.php';
 
         $toDelete      = array();
         $toUpdate      = array();
         $deletedFailed = array();
         $updatedFailed = array();
 
-        $model   = new Intrabuild_Modules_Groupware_Feeds_Account_Model_Account();
+        $model   = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
 
         $data  = array();
         $error = null;
@@ -303,16 +303,16 @@ class Groupware_FeedsController extends Zend_Controller_Action {
 
         for ($i = 0, $len = count($toUpdate); $i < $len; $i++) {
             $_ = $toUpdate[$i];
-            $filter = new Intrabuild_Modules_Groupware_Feeds_Account_Filter_Account(
+            $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
                 $_,
-                Intrabuild_Filter_Input::CONTEXT_UPDATE
+                Conjoon_Filter_Input::CONTEXT_UPDATE
             );
             try {
                 $data[$i] = $filter->getProcessedData();
-                Intrabuild_Util_Array::underscoreKeys($data[$i]);
+                Conjoon_Util_Array::underscoreKeys($data[$i]);
             } catch (Zend_Filter_Exception $e) {
-                 require_once 'Intrabuild/Error.php';
-                 $error = Intrabuild_Error::fromFilter($filter, $e);
+                 require_once 'Conjoon/Error.php';
+                 $error = Conjoon_Error::fromFilter($filter, $e);
                  $this->view->success = false;
                  $this->view->updatedFailed = array($_['id']);
                  $this->view->deletedFailed = $deletedFailed;
@@ -344,12 +344,12 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function getFeedAccountsAction()
     {
-        require_once 'Intrabuild/Keys.php';
-        $user = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        require_once 'Conjoon/Keys.php';
+        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        $decoratedModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Account_Model_Account'
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
         );
 
         $data = $decoratedModel->getAccountsForUserAsDto($user->getId());
@@ -396,15 +396,15 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $toUpdate = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Filter/Item.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Model/Item.php';
-        require_once 'Intrabuild/Util/Array.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Item.php';
+        require_once 'Conjoon/Util/Array.php';
 
-        $model = new Intrabuild_Modules_Groupware_Feeds_Item_Model_Item();
+        $model = new Conjoon_Modules_Groupware_Feeds_Item_Model_Item();
 
-        $filter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+        $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
             array(),
-            Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_READ
+            Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_READ
         );
 
         $read   = array();
@@ -433,15 +433,15 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function getFeedContentAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Filter/Item.php';
-        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        $itemResponseFilter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
             array(),
-            Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE
+            Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE
         );
-        $itemModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item',
+        $itemModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',
             $itemResponseFilter
         );
 
@@ -474,8 +474,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     private function _importFeedItems($import, $accountId)
     {
         require_once 'Zend/Date.php';
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Modules/Groupware/Feeds/Item/Filter/Item.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
         $dateInputFormat = Zend_Date::TIMESTAMP;
 
@@ -549,12 +549,12 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             }
             $itemData['pubDate'] = $date->get(Zend_Date::ISO_8601);
             $itemData['savedTimestamp'] = time();
-            $filter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+            $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                 $itemData,
-                Intrabuild_Filter_Input::CONTEXT_CREATE
+                Conjoon_Filter_Input::CONTEXT_CREATE
             );
             $fillIn = $filter->getProcessedData();
-            Intrabuild_Util_Array::underscoreKeys($fillIn);
+            Conjoon_Util_Array::underscoreKeys($fillIn);
             $data[] = $fillIn;
         }
 
@@ -566,24 +566,24 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     private function _getFeedItems($accountId = null)
     {
-        require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
-        $itemResponseFilter = new Intrabuild_Modules_Groupware_Feeds_Item_Filter_Item(
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
             array(),
-            Intrabuild_Filter_Input::CONTEXT_RESPONSE
+            Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
-        $model = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Account_Model_Account'
+        $model = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
         );
-        $itemModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Feeds_Item_Model_Item',
+        $itemModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',
             $itemResponseFilter
         );
 
-        $user = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
         if ($accountId === null) {
             $data = $model->getAccountsForUserAsDto($user->getId());
         } else {
@@ -604,10 +604,10 @@ class Groupware_FeedsController extends Zend_Controller_Action {
 
     /**
      * Helper for stripping not needed information from an instance of
-     * Intrabuild_Modules_Groupware_Feeds_ItemDto for sending it to the client.
+     * Conjoon_Modules_Groupware_Feeds_ItemDto for sending it to the client.
      *
      */
-    private function _transformItemDto(Intrabuild_Modules_Groupware_Feeds_Item_Dto $item)
+    private function _transformItemDto(Conjoon_Modules_Groupware_Feeds_Item_Dto $item)
     {
         $item->content = null;
         unset($item->guid);

@@ -12,11 +12,11 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware');
+Ext.namespace('com.conjoon.groupware');
 
-de.intrabuild.groupware.ToolbarManager = function(){
+com.conjoon.groupware.ToolbarManager = function(){
 
-    var contId     = "DOM:de.intrabuild.groupware.Toolbar.controls";
+    var contId     = "DOM:com.conjoon.groupware.Toolbar.controls";
     var toolbars   = [];
     var actVisible = null;
 
@@ -33,7 +33,7 @@ de.intrabuild.groupware.ToolbarManager = function(){
 
         register : function(id, element)
         {
-            element.addClass('de-intrabuild-groupware-Toolbar');
+            element.addClass('com-conjoon-groupware-Toolbar');
             toolbars[id] = element;
         },
 

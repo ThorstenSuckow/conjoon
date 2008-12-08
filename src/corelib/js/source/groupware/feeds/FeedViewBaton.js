@@ -12,10 +12,10 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.feeds');
 
 /**
- * @class de.intrabuild.groupware.feeds.FeedViewBaton
+ * @class com.conjoon.groupware.feeds.FeedViewBaton
  * @singleton
  *
  * Manages the opening of feed items as new tabs. Will not open a new tab if the
@@ -24,17 +24,17 @@ Ext.namespace('de.intrabuild.groupware.feeds');
  * the fully configured feed item record was not submitted.
  *
  */
-de.intrabuild.groupware.feeds.FeedViewBaton = function() {
+com.conjoon.groupware.feeds.FeedViewBaton = function() {
 
     var openedFeeds = {};
 
-    var AccountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
+    var AccountStore = com.conjoon.groupware.feeds.AccountStore.getInstance();
 
-    var LinkInterceptor = de.intrabuild.groupware.util.LinkInterceptor;
+    var LinkInterceptor = com.conjoon.groupware.util.LinkInterceptor;
 
     var contentPanel = null;
 
-    var idPrefix = 'de.intrabuild.groupware.feeds.FeedItemView_';
+    var idPrefix = 'com.conjoon.groupware.feeds.FeedItemView_';
 
     var toolbar = null;
 
@@ -45,13 +45,13 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
     var registerToolbar = function()
     {
         if (toolbar == null) {
-            var tbarManager = de.intrabuild.groupware.ToolbarManager;
+            var tbarManager = com.conjoon.groupware.ToolbarManager;
 
             var linkButton = new Ext.Toolbar.Button({
-                id       : 'de.intrabuild.groupware.feeds.FeedView.toolbar.LinkButton',
+                id       : 'com.conjoon.groupware.feeds.FeedView.toolbar.LinkButton',
                 cls      : 'x-btn-text-icon',
-                iconCls  : 'de-intrabuild-groupware-feeds-FeedViewBaton-toolbar-visitEntryButton-icon',
-                text     : '&#160;'+de.intrabuild.Gettext.gettext("Visit entry"),
+                iconCls  : 'com-conjoon-groupware-feeds-FeedViewBaton-toolbar-visitEntryButton-icon',
+                text     : '&#160;'+com.conjoon.Gettext.gettext("Visit entry"),
                 handler  : function(){visitFeedEntry();}
             });
 
@@ -61,7 +61,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
             ]);
 
 
-            tbarManager.register('de.intrabuild.groupware.feeds.FeedView.toolbar', toolbar);
+            tbarManager.register('com.conjoon.groupware.feeds.FeedView.toolbar', toolbar);
         }
     };
 
@@ -112,7 +112,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
      */
     var onFeedLoadSuccess = function(response, options)
     {
-        var inspector = de.intrabuild.groupware.ResponseInspector;
+        var inspector = com.conjoon.groupware.ResponseInspector;
 
         var data = inspector.isSuccess(response);
 
@@ -121,8 +121,8 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
             return;
         }
         var item = data.item;
-        var rec = de.intrabuild.util.Record.convertTo(
-            de.intrabuild.groupware.feeds.ItemRecord,
+        var rec = com.conjoon.util.Record.convertTo(
+            com.conjoon.groupware.feeds.ItemRecord,
             item,
             item.id
         );
@@ -131,7 +131,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         delete _requestIds[options.panelId];
 
         Ext.ux.util.MessageBus.publish(
-            'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess', {
+            'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadSuccess', {
             id : item.id
         });
 
@@ -149,7 +149,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         _requestIds[options.panelId] = null;
         delete _requestIds[options.panelId];
 
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin : {
                 fn : function(){
                     loadFeedContents(options.params.id, options.panelId);
@@ -162,7 +162,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
     /**
      *
      *
-     * @param {de.intrabuild.groupware.feeds.FeedItemRecord}
+     * @param {com.conjoon.groupware.feeds.FeedItemRecord}
      */
     var buildPanel = function(feedItemRecord)
     {
@@ -172,9 +172,9 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
 
         var body = new Ext.Panel({
             region     : 'center',
-            listeners  : de.intrabuild.groupware.util.LinkInterceptor.getListener(),
+            listeners  : com.conjoon.groupware.util.LinkInterceptor.getListener(),
             autoScroll : true,
-            cls        : 'de-intrabuild-groupware-feeds-FeedView-panel',
+            cls        : 'com-conjoon-groupware-feeds-FeedView-panel',
             html       : ''
         });
 
@@ -183,26 +183,26 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
             id         : idPrefix+feedItemRecord.id,
             title      : feedItemRecord.get('title'),
             closable   : true,
-            iconCls    : 'de-intrabuild-groupware-feeds-FeedView-Icon',
+            iconCls    : 'com-conjoon-groupware-feeds-FeedView-Icon',
             hideMode   : 'offsets',
             items      : [{
                 region    : 'north',
                 bodyStyle : 'border-bottom:none',
-                cls       : 'de-intrabuild-groupware-feeds-FeedView-header',
+                cls       : 'com-conjoon-groupware-feeds-FeedView-header',
                 html      :
                    '<div class="header">'+
                    '<span class="date">'+Ext.util.Format.date(feedItemRecord.get('pubDate'), 'd.m.Y H:i')+'</span>'+
                    '<div class="subject">'+feedItemRecord.get('title')+'</div>'+
                    '<div class="name">'+name+'</div>'+
                    '<div class="link"><a href="'+LinkInterceptor.getRedirectLink(link)+'" target="_blank">'+link+'</a></div>'+
-                   '<div class="author">'+de.intrabuild.Gettext.gettext("Posted by")+': '+feedItemRecord.get('author')+'</div>'+
+                   '<div class="author">'+com.conjoon.Gettext.gettext("Posted by")+': '+feedItemRecord.get('author')+'</div>'+
                    '</div>'
 
             },body
             ]
         });
 
-        var tbarManager = de.intrabuild.groupware.ToolbarManager;
+        var tbarManager = com.conjoon.groupware.ToolbarManager;
 
         view.on('destroy', function(panel){
             delete openedFeeds[panel.id];
@@ -220,17 +220,17 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
                 break;
             }
             if (hide) {
-                tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar');
+                tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
             }
         });
 
 
         view.on('activate', function(panel) {
-            tbarManager.show('de.intrabuild.groupware.feeds.FeedView.toolbar');
+            tbarManager.show('com.conjoon.groupware.feeds.FeedView.toolbar');
         });
 
         view.on('deactivate', function(panel) {
-            tbarManager.hide('de.intrabuild.groupware.feeds.FeedView.toolbar');
+            tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
         });
 
         contentPanel.add(view);
@@ -251,7 +251,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
          * If the second argument is set to true, the baton will load additionally
          * feed's contents from the server.
          *
-         * @param {de.intrabuild.groupware.feeds.FeedItemRecord} feedItemRecord either the fully configured
+         * @param {com.conjoon.groupware.feeds.FeedItemRecord} feedItemRecord either the fully configured
          * feed item record or the id of the feed item lo load
          * @param {Boolean} loadFromServer true if the record is not fully
          * configured and needs loading from the server, otherwise false
@@ -259,7 +259,7 @@ de.intrabuild.groupware.feeds.FeedViewBaton = function() {
         showFeed : function(feedItemRecord, loadFromServer)
         {
             if (!contentPanel) {
-                contentPanel = de.intrabuild.util.Registry.get('de.intrabuild.groupware.ContentPanel');
+                contentPanel = com.conjoon.util.Registry.get('com.conjoon.groupware.ContentPanel');
             }
 
             if (toolbar == null) {

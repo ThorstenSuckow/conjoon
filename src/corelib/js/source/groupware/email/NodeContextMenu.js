@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  *
  */
 
-de.intrabuild.groupware.email.NodeContextMenu = function() {
+com.conjoon.groupware.email.NodeContextMenu = function() {
 
     /**
      * The menu represented by this singleton
@@ -46,14 +46,14 @@ de.intrabuild.groupware.email.NodeContextMenu = function() {
     {
         var menu = new Ext.menu.Menu({
             items: [{
-                id   : 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.newItem',
-                text : de.intrabuild.Gettext.gettext("New folder")
+                id   : 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.newItem',
+                text : com.conjoon.Gettext.gettext("New folder")
               },{
-                id   : 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.renameItem',
-                text : de.intrabuild.Gettext.gettext("Rename folder")
+                id   : 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.renameItem',
+                text : com.conjoon.Gettext.gettext("Rename folder")
               }, '-',{
-                id   : 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.deleteItem',
-                text : de.intrabuild.Gettext.gettext("Delete...")
+                id   : 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.deleteItem',
+                text : com.conjoon.Gettext.gettext("Delete...")
               }]
         });
 

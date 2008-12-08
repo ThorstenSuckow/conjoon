@@ -17,7 +17,7 @@
  *
  * @todo Store loading could fail. This should be intercepted in any way.
  */
-de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
+com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
 
     Ext.apply(this, config);
 
@@ -26,7 +26,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
             autoLoad    : false,
             reader      : new Ext.data.JsonReader({
                               id : 'id'
-                          }, de.intrabuild.groupware.feeds.AccountRecord)
+                          }, com.conjoon.groupware.feeds.AccountRecord)
         });
 
 
@@ -34,7 +34,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      * The panel that holds the tree nodes. Rendered like a combo box.
      */
     this.feedPanel = new Ext.grid.GridPanel({
-        cls        : 'de-intrabuild-groupware-feeds-FeedOptionsDialog-feedPanel',
+        cls        : 'com-conjoon-groupware-feeds-FeedOptionsDialog-feedPanel',
         autoScroll : true,
         height     : 195,
         hideHeaders : true,
@@ -45,14 +45,14 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         selModel   : new Ext.grid.RowSelectionModel({singleSelect:true}),
         columns    : [{
             id        : 'feed_name',
-            header    : '<b>'+de.intrabuild.Gettext.gettext("Feeds")+'</b>',
+            header    : '<b>'+com.conjoon.Gettext.gettext("Feeds")+'</b>',
             width     : 148,
             sortable  : true,
             dataIndex : 'name'
         }]
     });
 
-    var tmpStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
+    var tmpStore = com.conjoon.groupware.feeds.AccountStore.getInstance();
     var records = tmpStore.getRange();
     tmpStore.on('add', this.addRecordsFromStore, this);
     for (var i = 0, len = records.length; i < len; i++) {
@@ -63,12 +63,12 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      * Button for adding a feed
      */
     this.addFeedButton = new Ext.Button({
-        text     : de.intrabuild.Gettext.gettext("Add feed"),
-        cls      : 'de-intrabuild-margin-b-5',
+        text     : com.conjoon.Gettext.gettext("Add feed"),
+        cls      : 'com-conjoon-margin-b-5',
         minWidth : 150,
         scope    : this,
         handler  : function(){
-            var dialog = new de.intrabuild.groupware.feeds.AddFeedDialog({animateTarget : this.addFeedButton.el.dom.id});
+            var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({animateTarget : this.addFeedButton.el.dom.id});
             dialog.show();
         }
     });
@@ -77,7 +77,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      * Button for removing a feed
      */
     this.removeFeedButton = new Ext.Button({
-        text     : de.intrabuild.Gettext.gettext("Remove feed"),
+        text     : com.conjoon.Gettext.gettext("Remove feed"),
         minWidth : 150,
         disabled : true,
         handler  : this.removeSelected,
@@ -88,7 +88,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      * Textfield for the feeds url. This is immutable.
      */
     this.feedUrl = new Ext.form.TextField({
-        fieldLabel : de.intrabuild.Gettext.gettext("Address"),
+        fieldLabel : com.conjoon.Gettext.gettext("Address"),
         disabled   : true,
         disabledClass : ''
     });
@@ -97,7 +97,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      * Textfield for the feeds name.
      */
     this.feedName = new Ext.form.TextField({
-        fieldLabel : de.intrabuild.Gettext.gettext("Name"),
+        fieldLabel : com.conjoon.Gettext.gettext("Name"),
         allowBlank : false,
         validator  : this.isFeedNameValid.createDelegate(this)
     });
@@ -111,8 +111,8 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      */
     this.removeAfter = new Ext.form.ComboBox({
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : de.intrabuild.Gettext.gettext("Save entries"),
-        listClass     : 'de-intrabuild-smalleditor',
+        fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
+        listClass     : 'com-conjoon-smalleditor',
         displayField  : 'text',
         valueField    : 'id',
         mode          : 'local',
@@ -120,15 +120,15 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
             data   : [
-                [2419200, de.intrabuild.Gettext.gettext("for 2 weeks")],
-                [1209600, de.intrabuild.Gettext.gettext("for one week")],
-                [432000,  de.intrabuild.Gettext.gettext("for 5 days")],
-                [172800,  de.intrabuild.Gettext.gettext("for 2 days")],
-                [86400,   de.intrabuild.Gettext.gettext("for one day")],
-                [43200,   de.intrabuild.Gettext.gettext("for 12 hours")],
-                [21600,   de.intrabuild.Gettext.gettext("for 6 hours")],
-                [7200,    de.intrabuild.Gettext.gettext("for 2 hours")],
-                [3600,    de.intrabuild.Gettext.gettext("for one hour")]
+                [2419200, com.conjoon.Gettext.gettext("for 2 weeks")],
+                [1209600, com.conjoon.Gettext.gettext("for one week")],
+                [432000,  com.conjoon.Gettext.gettext("for 5 days")],
+                [172800,  com.conjoon.Gettext.gettext("for 2 days")],
+                [86400,   com.conjoon.Gettext.gettext("for one day")],
+                [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
+                [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
+                [7200,    com.conjoon.Gettext.gettext("for 2 hours")],
+                [3600,    com.conjoon.Gettext.gettext("for one hour")]
             ],
             fields : ['id', 'text']
         })
@@ -142,9 +142,9 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
      */
     this.updateAfter = new Ext.form.ComboBox({
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : de.intrabuild.Gettext.gettext("Check for new entries"),
-        itemCls       : 'de-intrabuild-margin-b-15',
-        listClass     : 'de-intrabuild-smalleditor',
+        fieldLabel    : com.conjoon.Gettext.gettext("Check for new entries"),
+        itemCls       : 'com-conjoon-margin-b-15',
+        listClass     : 'com-conjoon-smalleditor',
         displayField  : 'text',
         valueField    : 'id',
         mode          : 'local',
@@ -152,14 +152,14 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
             data   : [
-                [172800, de.intrabuild.Gettext.gettext("every 2 days")],
-                [86400,  de.intrabuild.Gettext.gettext("every day")],
-                [43200,  de.intrabuild.Gettext.gettext("every 12 hours")],
-                [21600,  de.intrabuild.Gettext.gettext("every 6 hours")],
-                [7200,   de.intrabuild.Gettext.gettext("every 2 hours")],
-                [3600,   de.intrabuild.Gettext.gettext("every hour")],
-                [1800,   de.intrabuild.Gettext.gettext("every 30 minutes")],
-                [900,    de.intrabuild.Gettext.gettext("every 15 minutes")]
+                [172800, com.conjoon.Gettext.gettext("every 2 days")],
+                [86400,  com.conjoon.Gettext.gettext("every day")],
+                [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
+                [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
+                [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
+                [3600,   com.conjoon.Gettext.gettext("every hour")],
+                [1800,   com.conjoon.Gettext.gettext("every 30 minutes")],
+                [900,    com.conjoon.Gettext.gettext("every 15 minutes")]
             ],
             fields : ['id', 'text']
         })
@@ -183,7 +183,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
       }, {
         margins  : '5 5 5 5',
         hideMode : 'visibility',
-        id       : 'de.intrabuild.groupware.feeds.FeedOptionsDialog.formPanel',
+        id       : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
         region   :'center',
         border    :false,
         bodyStyle :'background:none',
@@ -191,8 +191,8 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
             border : false
         },
         items : [
-            new de.intrabuild.groupware.util.FormIntro({
-                  label : de.intrabuild.Gettext.gettext("Informations"),
+            new com.conjoon.groupware.util.FormIntro({
+                  label : com.conjoon.Gettext.gettext("Informations"),
                   text  : ''
             }),
             new Ext.form.FormPanel({
@@ -209,8 +209,8 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
                     this.feedName
                 ]
           }),
-          new de.intrabuild.groupware.util.FormIntro({
-                  label : de.intrabuild.Gettext.gettext("Options"),
+          new com.conjoon.groupware.util.FormIntro({
+                  label : com.conjoon.Gettext.gettext("Options"),
                   text  : ''
           }),
             new Ext.form.FormPanel({
@@ -234,11 +234,11 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         handler : function(){this.saveConfiguration(true);},
         scope   : this
       },{
-        text    : de.intrabuild.Gettext.gettext("Cancel"),
+        text    : com.conjoon.Gettext.gettext("Cancel"),
         handler : this.close,
         scope   : this
       },{
-        text     : de.intrabuild.Gettext.gettext("Apply"),
+        text     : com.conjoon.Gettext.gettext("Apply"),
         handler  : this.saveConfiguration,
         scope    : this,
         disabled : true
@@ -247,9 +247,9 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
     /**
     * Constructor call.
     */
-    de.intrabuild.groupware.feeds.FeedOptionsDialog.superclass.constructor.call(this,  {
-        iconCls   : 'de-intrabuild-groupware-feeds-Icon',
-        title     : de.intrabuild.Gettext.gettext("Feed settings"),
+    com.conjoon.groupware.feeds.FeedOptionsDialog.superclass.constructor.call(this,  {
+        iconCls   : 'com-conjoon-groupware-feeds-Icon',
+        title     : com.conjoon.Gettext.gettext("Feed settings"),
         bodyStyle : 'background-color:#F6F6F6',
         height    : 325,
         width     : 450,
@@ -258,7 +258,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
         layout    : 'border'
     });
 
-    this.formPanel = this.getComponent('de.intrabuild.groupware.feeds.FeedOptionsDialog.formPanel');
+    this.formPanel = this.getComponent('com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel');
 
     // add listener
     this.on('render', this.onDialogRendered, this);
@@ -276,7 +276,7 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
     }, this);
 
     this.on ('destroy', function() {
-        de.intrabuild.groupware.feeds.AccountStore.getInstance().un('add', this.addRecordsFromStore, this);
+        com.conjoon.groupware.feeds.AccountStore.getInstance().un('add', this.addRecordsFromStore, this);
     }, this);
 
 
@@ -284,13 +284,13 @@ de.intrabuild.groupware.feeds.FeedOptionsDialog = function(config) {
 };
 
 
-Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
+Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
 
     LOADING         : 0,
     SAVING          : 1,
 
-    msgLoading  : de.intrabuild.Gettext.gettext("Loading feed configurations..."),
-    msgSaving   : de.intrabuild.Gettext.gettext("Saving configurationen..."),
+    msgLoading  : com.conjoon.Gettext.gettext("Loading feed configurations..."),
+    msgSaving   : com.conjoon.Gettext.gettext("Saving configurationen..."),
 
     /**
      * This array holds all records that where marked as deleted. Instead of
@@ -336,7 +336,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
      * LoadMask configuration
      */
     loadMaskConfig : {
-        msg : de.intrabuild.Gettext.gettext("Processing...")
+        msg : com.conjoon.Gettext.gettext("Processing...")
     },
 
     /**
@@ -348,7 +348,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     /**
      * Gets called when a feed was added via the AddFeedDialog and this dialog
      * was closed
-     * @param {e.intrabuild.groupware.feeds-FeedRecord} The newly added feed
+     * @param {e.conjoon.groupware.feeds-FeedRecord} The newly added feed
      */
     addRecordsFromStore : function(store, records, index)
     {
@@ -371,9 +371,9 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         var msg  = Ext.MessageBox;
 
         msg.show({
-            title   : de.intrabuild.Gettext.gettext("Remove feed"),
+            title   : com.conjoon.Gettext.gettext("Remove feed"),
             msg     : String.format(
-                de.intrabuild.Gettext.gettext("Do you really want to remove \"{0}\"?"),
+                com.conjoon.Gettext.gettext("Do you really want to remove \"{0}\"?"),
                 record.get('name')
             ),
             buttons : msg.YESNO,
@@ -384,7 +384,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             },
             scope   : this,
             icon    : msg.QUESTION,
-            cls     :'de-intrabuild-msgbox-question',
+            cls     :'com-conjoon-msgbox-question',
             width   :400
         });
     },
@@ -508,7 +508,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
     onSuccess : function(response, parameters)
     {
         // shorthands
-        var json = de.intrabuild.util.Json;
+        var json = com.conjoon.util.Json;
         var msg  = Ext.MessageBox;
 
         if (json.isError(response.responseText)) {
@@ -526,19 +526,19 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
             // server will send an error back if updating the record fails.
             // If you take this to the code-wtf, I'll suspend your account ;)
             msg.show({
-                title   : de.intrabuild.Gettext.gettext("Error"),
-                msg     : de.intrabuild.Gettext.gettext("Could not update the feed configurations."),
+                title   : com.conjoon.Gettext.gettext("Error"),
+                msg     : com.conjoon.Gettext.gettext("Could not update the feed configurations."),
                 buttons : msg.OK,
                 icon    : msg.ERROR,
-                cls     :'de-intrabuild-msgbox-error',
+                cls     :'com-conjoon-msgbox-error',
                 width   : 400
             });
             this.loadMask.hide();
             return;
         }
 
-        var accountStore = de.intrabuild.groupware.feeds.AccountStore.getInstance();
-        var store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
+        var accountStore = com.conjoon.groupware.feeds.AccountStore.getInstance();
+        var store = com.conjoon.groupware.feeds.FeedStore.getInstance();
         var updatedFailed = values.updatedFailed;
         var records = this.feedPanel.store.getModifiedRecords();
         var items = store.getRange();
@@ -597,7 +597,7 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
      */
     onFailure : function(response, parameters)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
 
         this.feedPanel.store.rejectChanges();
         this.resetState();
@@ -737,12 +737,12 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         */
         var at = this.feedName.el.dom.id;
         msg.show({
-            title         : de.intrabuild.Gettext.gettext("Invalid feed name"),
-            msg           : de.intrabuild.Gettext.gettext("Please provide a valid name for this feed. The name must be unique."),
+            title         : com.conjoon.Gettext.gettext("Invalid feed name"),
+            msg           : com.conjoon.Gettext.gettext("Please provide a valid name for this feed. The name must be unique."),
             buttons       : msg.OK,
             icon          : msg.WARNING,
             animateTarget : at,
-            cls           :'de-intrabuild-msgbox-warning',
+            cls           :'com-conjoon-msgbox-warning',
             width         : 400
         });
     },

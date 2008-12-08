@@ -1,0 +1,87 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-tree-expand.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-tree-collapse.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailTree .x-panel-body {
+    background-color:white;
+    position:relative;
+    padding:3px;
+}
+
+.com-conjoon-groupware-email-EmailTree a span {
+    margin-left:5px !important;
+}
+
+.com-conjoon-groupware-email-EmailTree .com-conjoon-groupware-email-EmailTree-itemPending {
+    margin-left:0px !important;
+    background:none !important;
+    border:none !important;
+}
+
+.com-conjoon-groupware-email-EmailTree .x-tree-node {
+    padding-top:1px;
+    padding-bottom:1px;
+}
+
+.com-conjoon-groupware-email-EmailTree .x-tree-selected {
+    background:#DFE8F6;
+}
+
+.com-conjoon-groupware-email-EmailTree .x-tree-node .x-tree-selected a span{
+    background:#DFE8F6;
+    color:#1E4176;
+    border:1px solid #DFE8F6;
+    border-left:none;
+    border-right:none;
+    /*font-weight:bold;*/
+}
+
+.com-conjoon-groupware-email-EmailTree-rootIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-root.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-inboxIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-inbox.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-spamIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-spam.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-outboxIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-outbox.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-draftIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-draft.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-sentIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-sent.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-trashIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-trash.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailTree-folderIcon {
+    background-image:url(../images/16x16/apps/groupware-email-tree-folder.png) !important;
+}

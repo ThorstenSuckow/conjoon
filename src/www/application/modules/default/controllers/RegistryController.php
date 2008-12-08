@@ -44,26 +44,26 @@ class RegistryController extends Zend_Controller_Action {
     public function getEntriesAction()
     {
         /**
-         * @see Intrabuild_Modules_Default_Registry
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Intrabuild/Modules/Default/Registry.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
         $this->view->entries = array(
             array(
                 'key'   => '/base/conjoon/name',
-                'value' => Intrabuild_Modules_Default_Registry::get(
+                'value' => Conjoon_Modules_Default_Registry::get(
                     '/base/conjoon/name'
                 )
             ),
             array(
                 'key'   => '/base/conjoon/version',
-                'value' => Intrabuild_Modules_Default_Registry::get(
+                'value' => Conjoon_Modules_Default_Registry::get(
                     '/base/conjoon/version'
                 )
             ),
             array(
                 'key'   => '/base/conjoon/edition',
-                'value' => Intrabuild_Modules_Default_Registry::get(
+                'value' => Conjoon_Modules_Default_Registry::get(
                     '/base/conjoon/edition'
                 )
             )

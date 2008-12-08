@@ -12,22 +12,22 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.reception');
+Ext.namespace('com.conjoon.groupware.reception');
 
 
 /**
- * @class de.intrabuild.groupware.reception.LogoutWindow
+ * @class com.conjoon.groupware.reception.LogoutWindow
  * @extends Ext.Window
  * A window showing buttons for logout/lock workbench functionality.
  * @constructor
  * @param {Object} config The configuration options.
  */
-de.intrabuild.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
+com.conjoon.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
 
     initComponent : function()
     {
         Ext.apply(this, {
-            cls        : 'de-intrabuild-groupware-reception-LogoutWindow',
+            cls        : 'com-conjoon-groupware-reception-LogoutWindow',
             height     : 160,
             modal      : true,
             width      : 260,
@@ -37,33 +37,33 @@ de.intrabuild.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
             resizable  : false,
             layout     : 'column',
             items      : [
-                new de.intrabuild.groupware.reception._LogoutWindowButton({
-                    cls         : 'de-intrabuild-groupware-reception-LogoutWindow-lockButton',
+                new com.conjoon.groupware.reception._LogoutWindowButton({
+                    cls         : 'com-conjoon-groupware-reception-LogoutWindow-lockButton',
                     overCls     : 'over',
                     columnWidth : .33,
-                    text        : de.intrabuild.Gettext.gettext("Standby"),
+                    text        : com.conjoon.Gettext.gettext("Standby"),
                     handler     : function () {
-                        de.intrabuild.groupware.Reception.lockWorkbench();
+                        com.conjoon.groupware.Reception.lockWorkbench();
                         this.close();
                     },
                     scope : this
                 }),
-                new de.intrabuild.groupware.reception._LogoutWindowButton({
-                    cls         : 'de-intrabuild-groupware-reception-LogoutWindow-logoutButton',
+                new com.conjoon.groupware.reception._LogoutWindowButton({
+                    cls         : 'com-conjoon-groupware-reception-LogoutWindow-logoutButton',
                     overCls     : 'over',
                     columnWidth : .33,
-                    text        : de.intrabuild.Gettext.gettext("Logout"),
+                    text        : com.conjoon.Gettext.gettext("Logout"),
                     handler     : function () {
-                        de.intrabuild.groupware.Reception.logout();
+                        com.conjoon.groupware.Reception.logout();
                     }
                 }),
-                new de.intrabuild.groupware.reception._LogoutWindowButton({
-                    cls         : 'de-intrabuild-groupware-reception-LogoutWindow-restartButton',
+                new com.conjoon.groupware.reception._LogoutWindowButton({
+                    cls         : 'com-conjoon-groupware-reception-LogoutWindow-restartButton',
                     overCls     : 'over',
                     columnWidth : .33,
-                    text        : de.intrabuild.Gettext.gettext("Restart"),
+                    text        : com.conjoon.Gettext.gettext("Restart"),
                     handler     : function () {
-                        de.intrabuild.groupware.Reception.restart();
+                        com.conjoon.groupware.Reception.restart();
                     }
                 })
             ],
@@ -76,12 +76,12 @@ de.intrabuild.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
             }]
         });
 
-        de.intrabuild.groupware.reception.LogoutWindow.superclass.initComponent.call(this);
+        com.conjoon.groupware.reception.LogoutWindow.superclass.initComponent.call(this);
     }
 });
 
 // private
-de.intrabuild.groupware.reception._LogoutWindowButton = Ext.extend(Ext.BoxComponent, {
+com.conjoon.groupware.reception._LogoutWindowButton = Ext.extend(Ext.BoxComponent, {
 
     /**
      * @cfg {String} text
@@ -108,7 +108,7 @@ de.intrabuild.groupware.reception._LogoutWindowButton = Ext.extend(Ext.BoxCompon
             scope   : this.scope   || window,
             autoEl : {
                 tag      : 'div',
-                cls      : 'de-intrabuild-groupware-reception-LogoutWindow-button',
+                cls      : 'com-conjoon-groupware-reception-LogoutWindow-button',
                 children : [{
                     tag : 'div',
                     cls : 'button'
@@ -122,7 +122,7 @@ de.intrabuild.groupware.reception._LogoutWindowButton = Ext.extend(Ext.BoxCompon
 
         this.on('render', this._onRender, this);
 
-        de.intrabuild.groupware.reception._LogoutWindowButton.superclass.initComponent.call(this);
+        com.conjoon.groupware.reception._LogoutWindowButton.superclass.initComponent.call(this);
     },
 
     _onRender : function()

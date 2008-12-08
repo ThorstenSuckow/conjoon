@@ -12,49 +12,49 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.feeds');
 
-de.intrabuild.groupware.feeds.FeedGrid = function(config) {
+com.conjoon.groupware.feeds.FeedGrid = function(config) {
 
     Ext.ux.util.MessageBus.subscribe(
-       'de.intrabuild.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
+       'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
        this.onFeedItemLoaded,
        this
     );
 
     Ext.ux.util.MessageBus.subscribe(
-       'de.intrabuild.groupware.feeds.FeedPreview.onLoadSuccess',
+       'com.conjoon.groupware.feeds.FeedPreview.onLoadSuccess',
        this.onFeedItemLoaded,
        this
     );
 
     Ext.apply(this, config);
 
-    this.store = de.intrabuild.groupware.feeds.FeedStore.getInstance();
+    this.store = com.conjoon.groupware.feeds.FeedStore.getInstance();
 
     this.store.setDefaultSort('pubDate', "DESC");
 
     this.columns = [{
         id:'name',
-        header: de.intrabuild.Gettext.gettext("Feed"),
+        header: com.conjoon.Gettext.gettext("Feed"),
         hidden:true,
         width: 120,
         sortable: true,
         dataIndex: 'name'
       },{
         id:'title',
-        header: de.intrabuild.Gettext.gettext("Title"),
+        header: com.conjoon.Gettext.gettext("Title"),
         width: 220,
         sortable: true,
         dataIndex: 'title'
       },{
-        header: de.intrabuild.Gettext.gettext("Description"),
+        header: com.conjoon.Gettext.gettext("Description"),
         hidden:true,
         width: 180,
         sortable: true,
         dataIndex: 'description'
       },{
-        header: de.intrabuild.Gettext.gettext("Date"),
+        header: com.conjoon.Gettext.gettext("Date"),
         width: 120,
         hidden:true,
         sortable: true,
@@ -77,18 +77,18 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     var displayOptionsMenu = new Ext.menu.Menu({
         items: [{
             id : 'groupFeeds',
-            text: de.intrabuild.Gettext.gettext("group after feeds"),
+            text: com.conjoon.Gettext.gettext("group after feeds"),
             checked: true,
-            //group: 'de.intrabuild.groupware.FeedGrid.display',
+            //group: 'com.conjoon.groupware.FeedGrid.display',
             checkHandler: this.toggleGroupView,
             scope: this
           },
           "-",{
-            iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon',
-            text    : de.intrabuild.Gettext.gettext("Settings..."),
+            iconCls : 'com-conjoon-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon',
+            text    : com.conjoon.Gettext.gettext("Settings..."),
             scope   : this,
             handler : function() {
-                var optDialog = new de.intrabuild.groupware.feeds.FeedOptionsDialog();
+                var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
                 optDialog.show();
             }
 
@@ -98,9 +98,9 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
 
     this.tbar = new Ext.Toolbar([{
         cls     : 'x-btn-icon',
-        iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
+        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
         handler : function(){
-            var dialog = new de.intrabuild.groupware.feeds.AddFeedDialog({
+            var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({
                 animateTarget : this.getTopToolbar().items.get(0).el.dom.id
             });
             dialog.show();
@@ -108,29 +108,29 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
         scope : this
       },{
         cls     : 'x-btn-icon',
-        iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon',
+        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon',
         handler : function(){
             this.clkRow    = null;
             this.clkRecord = null;
-            de.intrabuild.groupware.feeds.AccountStore.getInstance().reload();
+            com.conjoon.groupware.feeds.AccountStore.getInstance().reload();
             this.store.reload();},
         scope: this
       },{
         id      : 'displayOptions',
         cls     : 'x-btn-icon',
-        iconCls : 'de-intrabuild-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon',
+        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon',
         menu    : displayOptionsMenu
       }
     ]);
 
-    de.intrabuild.groupware.feeds.FeedGrid.superclass.constructor.call(this, {
+    com.conjoon.groupware.feeds.FeedGrid.superclass.constructor.call(this, {
 
-        loadMask : {msg: de.intrabuild.Gettext.gettext("Loading feeds...")},
+        loadMask : {msg: com.conjoon.Gettext.gettext("Loading feeds...")},
 
         autoScroll:true,
         style:'cursor:default',
-        title: de.intrabuild.Gettext.gettext("Feeds"),
-        iconCls: 'de-intrabuild-groupware-feeds-Icon',
+        title: com.conjoon.Gettext.gettext("Feeds"),
+        iconCls: 'com-conjoon-groupware-feeds-Icon',
         border:false,
         hideBorders:true
     });
@@ -139,7 +139,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     this.on('cellclick',    this.onCellClick, this, {buffer : 200});
     this.on('celldblclick', this.onCellDblClick, this);
 
-    var preview = de.intrabuild.groupware.feeds.FeedPreview;
+    var preview = com.conjoon.groupware.feeds.FeedPreview;
 
     this.on('resize',         preview.hide.createDelegate(preview, [true]));
     this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
@@ -161,7 +161,7 @@ de.intrabuild.groupware.feeds.FeedGrid = function(config) {
     }
 };
 
-Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
+Ext.extend(com.conjoon.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
 
     clkRow          : null,
     clkRecord       : null,
@@ -191,9 +191,9 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
     applyRowClass: function(record, rowIndex, p, ds)
     {
         if (record.data.isRead) {
-            return 'de-intrabuild-groupware-feeds-FeedGrid-itemRead';
+            return 'com-conjoon-groupware-feeds-FeedGrid-itemRead';
         } else {
-            return 'de-intrabuild-groupware-feeds-FeedGrid-itemUnread';
+            return 'com-conjoon-groupware-feeds-FeedGrid-itemUnread';
         }
     },
 
@@ -309,15 +309,15 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
 
         this.clkRow    = this.view.getRow(rowIndex);
         this.clkRecord = this.store.getAt(rowIndex);
-        de.intrabuild.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);
+        com.conjoon.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);
     },
 
     onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
     {
         this.cellClickActive = true;
         var feedItem = grid.getStore().getAt(rowIndex);
-        de.intrabuild.groupware.feeds.FeedPreview.hide(true, false);
-        de.intrabuild.groupware.feeds.FeedViewBaton.showFeed(feedItem, true);
+        com.conjoon.groupware.feeds.FeedPreview.hide(true, false);
+        com.conjoon.groupware.feeds.FeedViewBaton.showFeed(feedItem, true);
     },
 
     // private
@@ -330,30 +330,30 @@ Ext.extend(de.intrabuild.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
         if(!this.menu){ // create context menu on first right click
             this.menu = new Ext.menu.Menu({
                 items: [{
-                    text: de.intrabuild.Gettext.gettext("Refresh"),
+                    text: com.conjoon.Gettext.gettext("Refresh"),
                     scope:this,
                     handler: function(){
                         this.clkRow    = null;
                         this.clkRecord = null;
-                        de.intrabuild.groupware.feeds.AccountStore.getInstance().reload();
+                        com.conjoon.groupware.feeds.AccountStore.getInstance().reload();
                         this.store.reload();}
                   },
                  '-',{
-                    text: de.intrabuild.Gettext.gettext("mark as read"),
+                    text: com.conjoon.Gettext.gettext("mark as read"),
                     scope:this,
                     handler: function(){
                         this.markItemsRead(true);}
                   },{
-                    text: de.intrabuild.Gettext.gettext("mark as unread"),
+                    text: com.conjoon.Gettext.gettext("mark as unread"),
                     scope:this,
                     handler: function(){
                         this.markItemsRead(false);}
                   },
                   '-',{
-                    text : de.intrabuild.Gettext.gettext("Settings..."),
+                    text : com.conjoon.Gettext.gettext("Settings..."),
                     scope:this,
                     handler: function(){
-                        var dialog = new de.intrabuild.groupware.feeds.FeedOptionsDialog();
+                        var dialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
                         dialog.show();
                     }
                 }]

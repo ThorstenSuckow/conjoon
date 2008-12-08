@@ -12,16 +12,16 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.reception');
+Ext.namespace('com.conjoon.groupware.reception');
 
 /**
- * @class de.intrabuild.groupware.reception.LoginWindow
+ * @class com.conjoon.groupware.reception.LoginWindow
  * @extends Ext.Window
  * A window holding a username and password field for submitting password credentials.
  * @constructor
  * @param {Object} config The configuration options.
  */
-de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
+com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 
     /**
      * @cfg {String} usernameValue
@@ -86,7 +86,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _usernameField : null,
 
     /**
-     * @param {de.intrabuild.groupware.reception.StateIndicator} _stateIndicator
+     * @param {com.conjoon.groupware.reception.StateIndicator} _stateIndicator
      * A special component that's used for showing the current state of the login process
      * and displaying error messages of the login.
      * @private
@@ -102,7 +102,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _passwordField : null,
 
     /**
-     * @param {de.intrabuild.groupware.util.FormIntro} The form intro for the
+     * @param {com.conjoon.groupware.util.FormIntro} The form intro for the
      * form panel.
      */
     _formIntro : null,
@@ -140,20 +140,20 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
         );
 
         Ext.apply(this, {
-            cls       : 'de-intrabuild-groupware-reception-LoginWindow',
+            cls       : 'com-conjoon-groupware-reception-LoginWindow',
             closable  : false,
             resizable : false,
             width     : 490,
             height    : 335,
             items     : [{
                 xtype  :'box',
-                cls    : 'de-intrabuild-groupware-reception-LoginWindow-softwareLabel',
+                cls    : 'com-conjoon-groupware-reception-LoginWindow-softwareLabel',
                 autoEl : {
                     tag  : 'div',
                     html : this.softwareLabel
             }}, {
                 xtype  :'box',
-                cls    : 'de-intrabuild-groupware-reception-LoginWindow-editionLabel',
+                cls    : 'com-conjoon-groupware-reception-LoginWindow-editionLabel',
                 autoEl : {
                     tag  : 'div',
                     html : this.editionLabel
@@ -161,7 +161,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
                 this._formPanel,
                 this._stateIndicator, {
                 xtype  :'box',
-                cls    : 'de-intrabuild-groupware-reception-LoginWindow-versionLabel',
+                cls    : 'com-conjoon-groupware-reception-LoginWindow-versionLabel',
                 autoEl : {
                     tag  : 'div',
                     html : this.versionLabel
@@ -181,7 +181,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
              * Gets fired before the form data is send to the server.
              * Listeners should return false to cancel the form submit.
              *
-             * @param {de.intrabuild.goupware.reception.LoginWindow}
+             * @param {com.conjoon.goupware.reception.LoginWindow}
              * @param {String} username
              * @param {String} password
              */
@@ -191,7 +191,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
              * Gets fired when the request for a login succeeded.
              * The event does not indicate that a login attempt was valid.
              *
-             * @param {de.intrabuild.goupware.reception.LoginWindow}
+             * @param {com.conjoon.goupware.reception.LoginWindow}
              * @param {Ext.form.BasicForm}
              * @param {Ext.from.Action}
              */
@@ -201,14 +201,14 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
              * Gets fired when a request for the login did not succed, most likely
              * because of a server error.
              *
-             * @param {de.intrabuild.goupware.reception.LoginWindow}
+             * @param {com.conjoon.goupware.reception.LoginWindow}
              * @param {Ext.form.BasicForm}
              * @param {Ext.from.Action}
              */
             'loginfailure'
         );
 
-        de.intrabuild.groupware.reception.LoginWindow.superclass.initComponent.call(this);
+        com.conjoon.groupware.reception.LoginWindow.superclass.initComponent.call(this);
     },
 
     /**
@@ -218,7 +218,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
     initEvents : function()
     {
-        de.intrabuild.groupware.reception.LoginWindow.superclass.initEvents.call(this);
+        com.conjoon.groupware.reception.LoginWindow.superclass.initEvents.call(this);
         this.on('show' , function() {
             try {
                 if (this.defaultFocusField == 'password') {
@@ -260,7 +260,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     /**
      * Listener for the beforelogin event.
      *
-     * @param {de.intrabuild.goupware.reception.LoginWindow}
+     * @param {com.conjoon.goupware.reception.LoginWindow}
      * @param {String} username
      * @param {String} password
      *
@@ -268,7 +268,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
     _onBeforeLogin : function(basicForm, action)
     {
-        this._stateIndicator.setMessage(de.intrabuild.Gettext.gettext("Please wait, trying to login..."), "loading");
+        this._stateIndicator.setMessage(com.conjoon.Gettext.gettext("Please wait, trying to login..."), "loading");
     },
 
     /**
@@ -281,7 +281,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
     _onLoginSuccess : function(basicForm, action)
     {
-        this._stateIndicator.setMessage(de.intrabuild.Gettext.gettext("Login valid!"), 'ok');
+        this._stateIndicator.setMessage(com.conjoon.Gettext.gettext("Login valid!"), 'ok');
         this.fireEvent('loginsuccess', this, basicForm, action);
     },
 
@@ -299,13 +299,13 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
         if (action) {
             if (action.failureType == Ext.form.Action.CONNECT_FAILURE) {
                 this._stateIndicator.setErrorMessage(
-                    de.intrabuild.Gettext.gettext("Unexpected error: Connection to server lost.")
+                    com.conjoon.Gettext.gettext("Unexpected error: Connection to server lost.")
                  );
             } else if (action.result && action.result.error) {
                 this._stateIndicator.setErrorMessage(action.result.error);
             } else {
                 this._stateIndicator.setErrorMessage(
-                    de.intrabuild.Gettext.gettext("Unexpected error: An unknown error occured")
+                    com.conjoon.Gettext.gettext("Unexpected error: An unknown error occured")
                 );
             }
         }
@@ -371,15 +371,15 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 
 // -------- helper
     /**
-     * Returns a {de.intrabuild.groupware.reception.StateIndicator} for showing the
+     * Returns a {com.conjoon.groupware.reception.StateIndicator} for showing the
      * current login process and possible error messages that occured during login
      * attempts.
      *
-     * @return {de.intrabuild.groupware.reception.StateIndicator}
+     * @return {com.conjoon.groupware.reception.StateIndicator}
      */
     _createStateIndicator : function()
     {
-        return new de.intrabuild.groupware.reception.StateIndicator();
+        return new com.conjoon.groupware.reception.StateIndicator();
     },
 
     /**
@@ -459,7 +459,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createLoginButton : function()
     {
         var lbutton = new Ext.Button({
-            text     : de.intrabuild.Gettext.gettext("Login"),
+            text     : com.conjoon.Gettext.gettext("Login"),
             minWidth : 75,
             disabled : true,
             handler  : this._onLoginButtonClick,
@@ -480,7 +480,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createExitButton : function()
     {
         var ebutton = new Ext.Button({
-            text     : de.intrabuild.Gettext.gettext("Exit"),
+            text     : com.conjoon.Gettext.gettext("Exit"),
             minWidth : 75,
             handler  : this._onExitButtonClick,
             scope    : this
@@ -499,7 +499,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createUsernameField : function()
     {
         return new Ext.form.TextField({
-            fieldLabel  : de.intrabuild.Gettext.gettext("User name"),
+            fieldLabel  : com.conjoon.Gettext.gettext("User name"),
             name        : 'username',
             preventMark : true,
             allowBlank  : false,
@@ -526,7 +526,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             allowBlank  : false,
             preventMark : true,
             name        : 'password',
-            fieldLabel  : de.intrabuild.Gettext.gettext("Password"),
+            fieldLabel  : com.conjoon.Gettext.gettext("Password"),
             listeners   : {
                 specialkey  : {
                     fn    : this._onSpecialKey,
@@ -539,14 +539,14 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     /**
      * Creates and returns the form intro for use within the form panel.
      *
-     * @return {de.intrabuild.groupware.util.FormIntro}
+     * @return {com.conjoon.groupware.util.FormIntro}
      */
     _createFormIntro : function()
     {
-        return new de.intrabuild.groupware.util.FormIntro({
+        return new com.conjoon.groupware.util.FormIntro({
             style   : 'margin:0px 0 10px 0;',
-            label   : de.intrabuild.Gettext.gettext("Login"),
-            text    : de.intrabuild.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
+            label   : com.conjoon.Gettext.gettext("Login"),
+            text    : com.conjoon.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
         });
     },
 
@@ -555,7 +555,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      *
      * @param {Ext.form.TextField} usernameField The field for entering the username.
      * @param {Ext.form.TextField} passwordField The field for entering the password.
-     * @param {de.intrabuild.groupware.util.FormIntro} formIntro The form intro
+     * @param {com.conjoon.groupware.util.FormIntro} formIntro The form intro
      * with the label and introduction text.
      *
      * @return {Ext.form.FormPanel}
@@ -569,7 +569,7 @@ de.intrabuild.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             url          : this.loginUrl,
             method       : 'post',
             labelAlign   : 'right',
-            cls          : 'x-small-editor de-intrabuild-groupware-reception-LoginWindow-formPanel',
+            cls          : 'x-small-editor com-conjoon-groupware-reception-LoginWindow-formPanel',
             labelWidth   : 75,
             defaults     : {
                 anchor     : '100%',

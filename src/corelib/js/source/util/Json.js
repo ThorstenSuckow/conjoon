@@ -12,10 +12,10 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util');
+Ext.namespace('com.conjoon.util');
 
 /**
- * Convionient utility methods for working with AJAX-responses in the intrabuild
+ * Convionient utility methods for working with AJAX-responses in the conjoon
  * namespace.
  * Every called Action to the Zend Framework returns a Json encoded string, which
  * root is always 'response', followed by the fields 'type', which represents the
@@ -42,7 +42,7 @@ Ext.namespace('de.intrabuild.util');
  *
  */
 
-de.intrabuild.util.Json = function() {
+com.conjoon.util.Json = function() {
 
 
     return {
@@ -61,23 +61,23 @@ de.intrabuild.util.Json = function() {
             if (error === null) {
                 return {
                     message   : '<b>'
-                                +de.intrabuild.Gettext.gettext("An unexpected error occured. The server returned the following response:")
+                                +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned the following response:")
                                 +'</b><br />-----<br />'+
-                                  '<b>'+de.intrabuild.Gettext.gettext("Response Status:")+'</b> '+response.status+'<br />'+
-                                  '<b>'+de.intrabuild.Gettext.gettext("Response Text:")+'</b><br />'+
+                                  '<b>'+com.conjoon.Gettext.gettext("Response Status:")+'</b> '+response.status+'<br />'+
+                                  '<b>'+com.conjoon.Gettext.gettext("Response Text:")+'</b><br />'+
                                   Ext.util.Format.stripTags(response.responseText),
                     code      :  -1,
                     level     : 'critical',
-                    title     : de.intrabuild.Gettext.gettext("Unexpected Error")
+                    title     : com.conjoon.Gettext.gettext("Unexpected Error")
                 };
             } else {
                 if (error.level == 'critical') {
-                    error.title = error.title || de.intrabuild.Gettext.gettext("Unexpected Error");
+                    error.title = error.title || com.conjoon.Gettext.gettext("Unexpected Error");
                     error.message = '<b>'
-                                    +de.intrabuild.Gettext.gettext("An unexpected error occured. The server returned the following response:")
+                                    +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned the following response:")
                                     +'</b><br />-----<br />'+
-                                    '<b>'+de.intrabuild.Gettext.gettext("Response Status:")+'</b> '+response.status+'<br />'+
-                                    '<b>'+de.intrabuild.Gettext.gettext("Response Text:")+'</b><br />'+
+                                    '<b>'+com.conjoon.Gettext.gettext("Response Status:")+'</b> '+response.status+'<br />'+
+                                    '<b>'+com.conjoon.Gettext.gettext("Response Text:")+'</b><br />'+
                                     error.message || Ext.util.Format.stripTags(response.responseText);
                 } else if (error.fields) {
                     var str = [];

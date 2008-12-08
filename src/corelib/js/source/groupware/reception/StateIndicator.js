@@ -12,17 +12,17 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.reception');
+Ext.namespace('com.conjoon.groupware.reception');
 
 /**
- * @class de.intrabuild.groupware.reception.StateIndicator
+ * @class com.conjoon.groupware.reception.StateIndicator
  * @extends Ext.Component
  * A simple utility class representing a container for showing login processing states in a
- * {@see de.intrabuild.groupware.reception.LoginWindow}
+ * {@see com.conjoon.groupware.reception.LoginWindow}
  * @constructor
  * @param {Object} config The configuration options.
  */
-de.intrabuild.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
+com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
 
     /**
      * @cfg {String} errorCls
@@ -67,20 +67,20 @@ de.intrabuild.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, 
         Ext.apply(this, {
             autoEl : {
                 tag      : 'div',
-                cls      : 'de-intrabuild-groupware-reception-LoginWindow-stateIndicator',
+                cls      : 'com-conjoon-groupware-reception-LoginWindow-stateIndicator',
                 children : [{
                     tag : 'div',
-                    cls : 'de-intrabuild-groupware-reception-LoginWindow-stateIndicator-messageCont'
+                    cls : 'com-conjoon-groupware-reception-LoginWindow-stateIndicator-messageCont'
                 }, {
                     tag : 'div',
-                    cls : 'de-intrabuild-groupware-reception-LoginWindow-stateIndicator-imageCont'
+                    cls : 'com-conjoon-groupware-reception-LoginWindow-stateIndicator-imageCont'
                 }]
             }
         });
 
         this.on('render', this._onRender, this);
 
-        de.intrabuild.groupware.reception.StateIndicator.superclass.initComponent.call(this);
+        com.conjoon.groupware.reception.StateIndicator.superclass.initComponent.call(this);
     },
 
 // -------- API

@@ -1,0 +1,187 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-msgbox-critical .ext-mb-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-critical .ext-mb-error {
+    background-image:url(../images/32x32/actions/messagebox-critical.png);
+}
+
+.com-conjoon-msgbox-critical .ext-mb-content {
+    height:110px;
+    background:white;
+    padding:4px;
+    overflow:auto;
+    border:1px solid #99BBE8;
+}
+
+.com-conjoon-msgbox-critical .x-window-header-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-critical .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * Error dialog "error"
+ */
+.com-conjoon-msgbox-error .ext-mb-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-error .ext-mb-error {
+    background-image:url(../images/32x32/actions/messagebox-error.png);
+}
+
+.com-conjoon-msgbox-error .ext-mb-content {
+    height:60px;
+    /*background:white;*/
+    padding:4px;
+    overflow:auto;
+    /*border:1px solid #99BBE8;*/
+}
+
+.com-conjoon-msgbox-error .x-window-header-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-error .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * Info dialog ""
+ */
+.com-conjoon-msgbox-info .ext-mb-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-info .ext-mb-info {
+    background-image:url(../images/32x32/actions/messagebox-info.png);
+}
+
+.com-conjoon-msgbox-info .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.com-conjoon-msgbox-info .x-window-header-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-info .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * Warning dialog ""
+ */
+.com-conjoon-msgbox-warning .ext-mb-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-warning .ext-mb-warning {
+    background-image:url(../images/32x32/actions/messagebox-warning.png);
+}
+
+.com-conjoon-msgbox-warning .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.com-conjoon-msgbox-warning .x-window-header-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-warning .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * Prompt dialog ""
+ */
+.com-conjoon-msgbox-prompt .ext-mb-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-prompt .ext-mb-warning {
+    background-image:url(../images/32x32/actions/messagebox-warning.png);
+}
+
+.com-conjoon-msgbox-prompt .ext-mb-content {
+    background:#F6F6F6;
+    padding:4px;
+}
+
+.com-conjoon-msgbox-prompt .x-window-header-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-prompt .ext-mb-input {
+    margin-left:40px !important;
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-prompt .ext-mb-fix-cursor {
+    overflow:visible;
+}
+
+.com-conjoon-msgbox-prompt .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}
+
+/**
+ * question dialog
+ */
+.com-conjoon-msgbox-question .ext-mb-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-question .ext-mb-question {
+    background-image:url(../images/32x32/actions/messagebox-question.png);
+}
+
+.com-conjoon-msgbox-question .ext-mb-content {
+    height:60px;
+    background:#F6F6F6;
+    padding:4px;
+    overflow:auto;
+}
+
+.com-conjoon-msgbox-question .x-window-header-text {
+    font-size:11px !important;
+}
+
+.com-conjoon-msgbox-question .x-window-mc {
+    border:1px solid #99BBE8 !important;
+    background-color:#F6F6F6 !important;
+    padding:0px !important;
+}

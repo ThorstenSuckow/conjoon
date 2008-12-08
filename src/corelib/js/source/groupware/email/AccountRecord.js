@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
-de.intrabuild.groupware.email.AccountRecord = Ext.data.Record.create([
+com.conjoon.groupware.email.AccountRecord = Ext.data.Record.create([
     {name : 'id',                 type : 'int'},
     {name : 'name',               type : 'string'},
     {name : 'address',            type : 'string'},

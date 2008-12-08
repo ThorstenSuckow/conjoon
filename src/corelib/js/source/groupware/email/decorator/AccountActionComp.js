@@ -12,17 +12,17 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email.decorator');
+Ext.namespace('com.conjoon.groupware.email.decorator');
 
 /**
  * A singleton for changing the behaivor of items whos disable state is
- * dependend on the state of {@see de.intrabuild.groupware.email.AccountStore}.
+ * dependend on the state of {@see com.conjoon.groupware.email.AccountStore}.
  *
  *
- * @class de.intrabuild.groupware.email.decorator.AccountActionComp
+ * @class com.conjoon.groupware.email.decorator.AccountActionComp
  * @singleton
  */
-de.intrabuild.groupware.email.decorator.AccountActionComp = function() {
+com.conjoon.groupware.email.decorator.AccountActionComp = function() {
 
 
     var _store = null;
@@ -45,7 +45,7 @@ de.intrabuild.groupware.email.decorator.AccountActionComp = function() {
         decorate : function(comp)
         {
             if (_store === null) {
-                _store = de.intrabuild.groupware.email.AccountStore.getInstance();
+                _store = com.conjoon.groupware.email.AccountStore.getInstance();
             }
 
             comp.__setDisabled = comp.setDisabled;

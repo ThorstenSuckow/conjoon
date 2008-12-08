@@ -56,9 +56,9 @@ class ReceptionController extends Zend_Controller_Action {
     public function getUserAction()
     {
         require_once 'Zend/Registry.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
 
-        $auth = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $user = $auth->getIdentity();
 
         $this->view->success = true;
@@ -77,10 +77,10 @@ class ReceptionController extends Zend_Controller_Action {
     public function lockAction()
     {
         require_once 'Zend/Session/Namespace.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
 
         $receptionControllerNs = new Zend_Session_Namespace(
-            Intrabuild_Keys::SESSION_CONTROLLER_RECEPTION
+            Conjoon_Keys::SESSION_CONTROLLER_RECEPTION
         );
 
         $receptionControllerNs->locked = true;
@@ -99,11 +99,11 @@ class ReceptionController extends Zend_Controller_Action {
     public function unlockAction()
     {
         require_once 'Zend/Session/Namespace.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
         require_once 'Zend/Registry.php';
-        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        $auth = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $id = $auth->getIdentity()->getId();
 
         /**
@@ -112,8 +112,8 @@ class ReceptionController extends Zend_Controller_Action {
         $username = $this->_getParam('username');
         $password = $this->_getParam('password');
 
-        $decorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Default_User_Model_User'
+        $decorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Default_User_Model_User'
         );
 
         $user = $decorator->getUserForEmailCredentialsAsEntity(
@@ -130,7 +130,7 @@ class ReceptionController extends Zend_Controller_Action {
 
 
         $receptionControllerNs = new Zend_Session_Namespace(
-            Intrabuild_Keys::SESSION_CONTROLLER_RECEPTION
+            Conjoon_Keys::SESSION_CONTROLLER_RECEPTION
         );
 
         $receptionControllerNs->locked = false;
@@ -162,45 +162,45 @@ class ReceptionController extends Zend_Controller_Action {
      * In all cases, the status code "401" will be send to
      * indicate that authorization is required.
      *
-     * @see Intrabuild_Controller_Plugin_Auth
+     * @see Conjoon_Controller_Plugin_Auth
      */
     public function indexAction()
     {
         $this->_response->setHttpResponseCode(401);
 
         require_once 'Zend/Session/Namespace.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
 
         $receptionControllerNs = new Zend_Session_Namespace(
-            Intrabuild_Keys::SESSION_CONTROLLER_RECEPTION
+            Conjoon_Keys::SESSION_CONTROLLER_RECEPTION
         );
 
         $isLocked = $receptionControllerNs->locked;
 
-        require_once 'Intrabuild/Error.php';
-        $error = new Intrabuild_Error();
+        require_once 'Conjoon/Error.php';
+        $error = new Conjoon_Error();
 
         $error->setCode(-1);
-        $error->setLevel(Intrabuild_Error::LEVEL_ERROR);
+        $error->setLevel(Conjoon_Error::LEVEL_ERROR);
         $error->setFile(__FILE__);
         $error->setLine(__LINE__);
 
         if ($isLocked === true) {
             $error->setMessage("Workbench is locked. You need to log in again to access this resource.");
-            $error->setType(Intrabuild_Error::LOCKED);
+            $error->setType(Conjoon_Error::LOCKED);
             $this->view->locked = true;
         } else {
             $error->setMessage("Authorization required. You need to log in to access this resource.");
-            $error->setType(Intrabuild_Error::AUTHORIZATION);
+            $error->setType(Conjoon_Error::AUTHORIZATION);
             $this->view->authorized = false;
         }
 
         /**
-         * @see Intrabuild_Modules_Default_Registry
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Intrabuild/Modules/Default/Registry.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Intrabuild_Modules_Default_Registry::get(
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
             '/base/conjoon/name'
         );
 
@@ -224,7 +224,7 @@ class ReceptionController extends Zend_Controller_Action {
 
     public function processAction()
     {
-        require_once 'Intrabuild/Auth/Adapter/Db.php';
+        require_once 'Conjoon/Auth/Adapter/Db.php';
 
         /**
          * @todo Filter username and password!
@@ -232,8 +232,8 @@ class ReceptionController extends Zend_Controller_Action {
         $username = $this->_getParam('username');
         $password = $this->_getParam('password');
 
-        $auth        = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
-        $authAdapter = new Intrabuild_Auth_Adapter_Db($username, $password);
+        $auth        = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+        $authAdapter = new Conjoon_Auth_Adapter_Db($username, $password);
 
         // if the result is valid, the return value of the adapter will
         // be stored automatically in the supplied storage object

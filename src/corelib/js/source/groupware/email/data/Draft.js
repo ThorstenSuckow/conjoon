@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email.data');
+Ext.namespace('com.conjoon.groupware.email.data');
 
 /**
  *
  * @type {Ext.data.Record}
  */
-de.intrabuild.groupware.email.data.Draft = Ext.data.Record.create([
+com.conjoon.groupware.email.data.Draft = Ext.data.Record.create([
 
     /**
      * The id of the draft, if available

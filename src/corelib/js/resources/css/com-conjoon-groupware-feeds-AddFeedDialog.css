@@ -1,0 +1,36 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-feeds-AddFeedDialog-errorCard-imagePanel {
+    margin-left:20px;
+    height:24px;
+    width:24px;
+    background-image:url(../images/24x24/actions/error.png);
+    background-repeat:no-repeat;
+}
+
+.com-conjoon-groupware-feeds-AddFeedDialog-formCard .x-form {
+    background-image:url(../images/24x24/actions/ok.png);
+    background-position:20px 10px;
+    background-repeat:no-repeat;
+    background-color:#F6F6F6;
+    padding:10px 0 0 68px;
+}
+
+.com-conjoon-groupware-feeds-AddFeedDialog-introImage {
+    background-image:url(../images/24x24/apps/groupware-feeds-addfeeddialog-intro.png);
+    background-position:10px 10px;
+    background-repeat:no-repeat;
+    padding-left:58px !important;
+}

@@ -23,11 +23,11 @@ class IndexController extends Zend_Controller_Action {
     public function indexAction()
     {
         /**
-         * @see Intrabuild_Modules_Default_Registry
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Intrabuild/Modules/Default/Registry.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Intrabuild_Modules_Default_Registry::get(
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
             '/base/conjoon/name'
         );
     }
@@ -45,7 +45,7 @@ class IndexController extends Zend_Controller_Action {
     }
 
     /**
-     * Default action for redirecting to links not part of the intrabuild application.
+     * Default action for redirecting to links not part of the conjoon application.
      *
      */
     public function redirectAction()

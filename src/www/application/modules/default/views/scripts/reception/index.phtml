@@ -26,7 +26,7 @@
 
  </head>
 
- <body class="de-intrabuild-groupware-Reception-body">
+ <body class="com-conjoon-groupware-Reception-body">
 
 <?php echo $this->render('reception/_scripts.phtml'); ?>
 
@@ -35,10 +35,10 @@
 
 Ext.onReady(function(){
 
-    de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.Registry.getStore());
+    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
 
-    de.intrabuild.util.PreLoader.on('load', function() {
-        var reception = de.intrabuild.groupware.Reception;
+    com.conjoon.util.PreLoader.on('load', function() {
+        var reception = com.conjoon.groupware.Reception;
         reception.init(false);
 
         <?php if ($this->locked === true) { ?>
@@ -50,7 +50,7 @@ Ext.onReady(function(){
         <?php } ?>
     });
 
-    de.intrabuild.util.PreLoader.load();
+    com.conjoon.util.PreLoader.load();
 });
   </script>
  </body>

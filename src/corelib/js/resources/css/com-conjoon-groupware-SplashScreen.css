@@ -1,0 +1,38 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-SplashScreen-wrap {
+    position:absolute;
+    height:100%;
+    width:100%;
+    z-index:1000000;
+    top:0;
+    left:0;
+    background-image:url(../images/startup-bg.png);
+    background-position:top;
+    background-repeat:repeat-x;
+    background-color:#355899;
+}
+
+.com-conjoon-groupware-SplashScreen-body {
+    height:315px;
+    width:481px;
+    background-image:url(../images/splash.png);
+}
+
+.com-conjoon-groupware-SplashScreen-progressBar {
+    background-image:url(../images/splash-loading-bar.gif);
+    background-repeat:no-repeat;
+    height:20px;
+}

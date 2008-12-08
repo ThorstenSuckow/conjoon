@@ -12,14 +12,14 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util');
+Ext.namespace('com.conjoon.util');
 
 /**
  * Utility functions for DOM operations not provided by the ExtJs-framework.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-de.intrabuild.util.Dom = function() {
+com.conjoon.util.Dom = function() {
 
 
 
@@ -38,7 +38,7 @@ de.intrabuild.util.Dom = function() {
          * <code>
 // search for the cssText which definition is ".bodyElement",
 // but ignore the ext-all.css stylesheet
-var cssText = de.intrabuild.util.Dom.getCssTextFromStyleSheet(
+var cssText = com.conjoon.util.Dom.getCssTextFromStyleSheet(
     '.bodyElement', {
         href : '*ext-all.css';
     }

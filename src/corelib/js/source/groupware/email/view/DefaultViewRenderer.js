@@ -12,22 +12,22 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email.view');
+Ext.namespace('com.conjoon.groupware.email.view');
 
 /**
- * @class de.intrabuild.groupware.email.view.DefaultViewRenderer
+ * @class com.conjoon.groupware.email.view.DefaultViewRenderer
  *
- * A view implementation for the {@see de.intrabuild.groupware.email.EmailViewPanel}.
+ * A view implementation for the {@see com.conjoon.groupware.email.EmailViewPanel}.
  * Takes care of additional preparing the data received by the ViewPanel for
  * displaying, though it assumes that encoding etc. is already done server
  * side.
  */
-de.intrabuild.groupware.email.view.DefaultViewRenderer = function(config){
+com.conjoon.groupware.email.view.DefaultViewRenderer = function(config){
 
     Ext.apply(this, config);
 };
 
-de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
+com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
     /**
      * @cfg {String} toValue
@@ -60,7 +60,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
     fromValue : 'From',
 
     /**
-     * @cfg {de.intrabuild.groupware.email.EmailViewPanel} panel The panel
+     * @cfg {com.conjoon.groupware.email.EmailViewPanel} panel The panel
      * to which this view is bound
      */
 
@@ -125,14 +125,14 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
             href : '*/ext-all.css'
         };
 
-        var utilDom = de.intrabuild.util.Dom;
+        var utilDom = com.conjoon.util.Dom;
 
         var getCssTextFromStyleSheet = utilDom.getCssTextFromStyleSheet;
 
-        var cssBase = utilDom.getHrefFromStyleSheet('intrabuild-all.css');
+        var cssBase = utilDom.getHrefFromStyleSheet('conjoon-all.css');
 
         var cblockquote = getCssTextFromStyleSheet(
-             '.de-intrabuild-groupware-email-EmailView-body blockquote',
+             '.com-conjoon-groupware-email-EmailView-body blockquote',
             excludeMask
         );
 
@@ -156,14 +156,14 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         ];
 
         var emoticons = getCssTextFromStyleSheet(
-            '.de-intrabuild-groupware-email-EmailView-body .emoticon',
+            '.com-conjoon-groupware-email-EmailView-body .emoticon',
             excludeMask
         );
 
         var emo = "";
         for (var i = 0, len = smileys.length; i < len; i++) {
             emo = getCssTextFromStyleSheet(
-                        '.de-intrabuild-groupware-email-EmailView-body '
+                        '.com-conjoon-groupware-email-EmailView-body '
                         /**
                          * Strange behavior: IE delivers the styles in reverse order,
                          * but we need to query then aggain reverse, i.e. in css is
@@ -188,7 +188,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         for (var i = 0; i < 10; i++) {
             abs.push('blockquote');
             cblockquote += getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailView-body '+abs.join(' '),
+                '.com-conjoon-groupware-email-EmailView-body '+abs.join(' '),
                 excludeMask
             );
         }
@@ -199,31 +199,31 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
                + '<title></title>'
                + '<style type="text/css">'
                + getCssTextFromStyleSheet(
-                    '.de-intrabuild-groupware-email-EmailView-body',
+                    '.com-conjoon-groupware-email-EmailView-body',
                     excludeMask
                 )
                + ' '
                + getCssTextFromStyleSheet(
-                    '.de-intrabuild-groupware-email-EmailView-body '
+                    '.com-conjoon-groupware-email-EmailView-body '
                     +(Ext.isIE ? 'div.viewBodyWrap' : 'pre'),
                     excludeMask
                 )
                + ' '
                + getCssTextFromStyleSheet(
-                    '.de-intrabuild-groupware-email-EmailView-body a',
+                    '.com-conjoon-groupware-email-EmailView-body a',
                     excludeMask
                 )
                + ' '
                + cblockquote
                + ' '
                + getCssTextFromStyleSheet(
-                    '.de-intrabuild-groupware-email-EmailView-body div.signature',
+                    '.com-conjoon-groupware-email-EmailView-body div.signature',
                     excludeMask
                 )
                + ' '
                + emoticons
                + '</style></head>'
-               + '<body class="de-intrabuild-groupware-email-EmailView-body">'
+               + '<body class="com-conjoon-groupware-email-EmailView-body">'
                + '</body></html>';
     },
 
@@ -390,7 +390,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         for (var i = 0; i < len; i++) {
             attachItemsHtml += ts.attachmentItem.apply({
-                mimeIconCls : de.intrabuild.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
+                mimeIconCls : com.conjoon.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
                 name        : attachments[i].fileName
             });
         }
@@ -414,8 +414,8 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         var doc = this.doc;
         Ext.fly(doc.body).swallowEvent("click", true);
-        de.intrabuild.groupware.util.LinkInterceptor.removeListener(Ext.fly(doc.body));
-        de.intrabuild.groupware.util.LinkInterceptor.addListener(Ext.fly(doc.body));
+        com.conjoon.groupware.util.LinkInterceptor.removeListener(Ext.fly(doc.body));
+        com.conjoon.groupware.util.LinkInterceptor.addListener(Ext.fly(doc.body));
 
         if (isPlainText === false) {
             doc.open();
@@ -447,7 +447,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
         }
 
         return Ext.isIE
-               ? '<div class="viewBodyWrap">'+de.intrabuild.util.Format.replaceWhitespacePairs(text)+'</div>'
+               ? '<div class="viewBodyWrap">'+com.conjoon.util.Format.replaceWhitespacePairs(text)+'</div>'
                : '<pre>'+text+'</pre>';
     },
 
@@ -465,7 +465,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
             if (this.isPlainTextView) {
                 doc.body.innerHTML = "";
             } else {
-                de.intrabuild.groupware.util.LinkInterceptor.removeListener(Ext.fly(doc.body));
+                com.conjoon.groupware.util.LinkInterceptor.removeListener(Ext.fly(doc.body));
                 doc.open();
                 doc.write(this.emptyMarkup)
                 doc.close();
@@ -495,7 +495,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
     _removeIframe : function()
     {
         if (this.iframe) {
-            de.intrabuild.groupware.util.LinkInterceptor.removeListener(Ext.fly(this.doc.body));
+            com.conjoon.groupware.util.LinkInterceptor.removeListener(Ext.fly(this.doc.body));
             document.getElementById(this.viewId).removeChild(this.iframe.dom);
             this.doc = null;
             this.iframe = null;
@@ -544,11 +544,11 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.header) {
             ts.header = new Ext.Template(
-                    '<div class="de-intrabuild-groupware-email-EmailView-wrap">',
-                       '<div class="de-intrabuild-groupware-email-EmailView-dataInset">',
-                        '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
+                    '<div class="com-conjoon-groupware-email-EmailView-wrap">',
+                       '<div class="com-conjoon-groupware-email-EmailView-dataInset">',
+                        '<span class="com-conjoon-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
                         '{subject}',
-                        '<table border="0" cellspacing="0" cellpadding="0" class="de-intrabuild-groupware-email-EmailView-headerTable">',
+                        '<table border="0" cellspacing="0" cellpadding="0" class="com-conjoon-groupware-email-EmailView-headerTable">',
                         '{from}',
                         '{replyTo}',
                         '{to}',
@@ -568,7 +568,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.subject) {
             ts.subject = new Ext.Template(
-                '<div class="de-intrabuild-groupware-email-EmailView-subject">{subject}</div>'
+                '<div class="com-conjoon-groupware-email-EmailView-subject">{subject}</div>'
             );
         }
 
@@ -622,7 +622,7 @@ de.intrabuild.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.attachmentItem) {
             ts.attachmentItem = new Ext.Template(
-                '<a href="#" class="de-intrabuild-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</a>'
+                '<a href="#" class="com-conjoon-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</a>'
             );
         }
 

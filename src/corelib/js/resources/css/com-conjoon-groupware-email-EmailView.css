@@ -1,0 +1,279 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-email-EmailView-wrap {
+    border-bottom:1px solid #99BBE8;
+    padding:5px;
+    background-image:url(../images/email-preview-header-bg.png);
+    background-position:bottom left;
+    background-repeat:repeat-x
+}
+
+.com-conjoon-groupware-email-EmailView-toolbar-sendNowButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-send.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailView-toolbar-forwardButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailView-toolbar-replyButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailreply.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailView-toolbar-replyAllButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailreplyall.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailView-toolbar-editDraftButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailView-dataInset {
+    padding-left:62px;
+    min-height:60px;
+    background-image:url(../images/email-preview-header-icon.png);
+    background-repeat:no-repeat;
+    background-position:top left;
+}
+
+.com-conjoon-groupware-email-EmailView-date {
+    position:relative;
+    float:right;
+    font-size:11px;
+    font-weight:bold;
+    color:#15428B;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.com-conjoon-groupware-email-EmailView-subject {
+    position:relative;
+    margin-bottom:4px;
+    font-size:11px;
+    color:#15428B;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:bold;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.com-conjoon-groupware-email-EmailView-headerTable {
+    margin-top:5px;
+}
+
+.com-conjoon-groupware-email-EmailView-headerTable td {
+    font-size:11px;
+    padding-bottom:4px;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+    vertical-align:top;
+}
+
+.com-conjoon-groupware-email-EmailView-headerTable .headerField {
+    white-space:nowrap;
+    padding-right:8px;
+    font-weight:bold;
+    text-align:right;
+}
+
+.com-conjoon-groupware-email-EmailView-headerTable .headerValue {
+    width:100%;
+}
+
+.com-conjoon-groupware-email-EmailView-Icon {
+    background-image:url(../images/16x16/apps/groupware-email-emailview.png) !important;
+}
+
+/**
+ * email view attachment items
+ */
+a.com-conjoon-groupware-email-EmailView-attachmentItem {
+    background-repeat:no-repeat;
+    float:left;
+    font-family:Tahoma,Helvetica,Arial;
+    font-size:11px;
+    color:black;
+    text-decoration:none;
+    border:1px solid white;
+    margin-right:2px;
+    padding:2px 2px 2px 20px;
+}
+
+a.com-conjoon-grupware-email-EmailView-attachmentItem:active {
+    background-color:#DFE8F6;
+    border:1px dotted #99BBE8;
+}
+
+.com-conjoon-groupware-email-EmailView-body {
+    border:0;
+    margin:0;
+    padding:5px;
+    cursor:text;
+    font-size:13px;
+    font-family:Courier New, Times New Roman, Tahoma, Arial, Verdana;
+}
+
+.com-conjoon-groupware-email-EmailView-body pre {
+    white-space:pre-wrap;
+    white-space:-moz-pre-wrap !important;
+    white-space:-pre-wrap;
+    white-space:-o-pre-wrap;
+    word-wrap:break-word;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.viewBodyWrap {
+    white-space:pre-wrap;
+    white-space:-moz-pre-wrap !important;
+    white-space:-pre-wrap;
+    white-space:-o-pre-wrap;
+    word-wrap:break-word;
+    padding:0px!important;
+    margin:0px!important;
+}
+
+.com-conjoon-groupware-email-EmailView-body a {
+    white-space:nowrap!important;
+    word-wrap:normal!important;
+}
+
+
+.com-conjoon-groupware-email-EmailView-body div.signature {
+    font-family:Courier New,Tahoma,Times New Roman,Verdana;
+    color:#808080;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote {
+    margin:4px 0px 4px 0px;
+    padding-left:16px;
+    position:relative;
+    padding-top:10px;
+    padding-bottom:4px;
+    border-left:2px solid #15428B;
+}
+
+
+.com-conjoon-groupware-email-EmailView-body blockquote {
+    border-left:2px solid #990000;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote  blockquote {
+    border-left:2px solid #990099;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote {
+    border-left:2px solid #99CCCC;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote {
+    border-left:2px solid #99CC00;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #99FF00;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #990033;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #993333;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #996633;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #999933;
+}
+
+.com-conjoon-groupware-email-EmailView-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #99CC33;
+}
+
+/**
+* Smilies
+*/
+
+.com-conjoon-groupware-email-EmailView-body .emoticon {
+    width:20px;
+    height:20px;
+    margin-bottom:-4px;
+    display:inline-block;
+}
+
+.com-conjoon-groupware-email-EmailView-body .smile.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonsmile.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .laughing.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonlaughing.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .frown.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonfrown.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .embarassed.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonembarassed.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .wink.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonwink.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .undecided.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonundecided.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .tongue.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticontongue.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .surprise.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonsurprise.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .kiss.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonkiss.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .yell.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonyell.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .cool.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticoncool.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .money.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonmoney.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .foot.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonfoot.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .innocent.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticoninnocent.gif);
+}
+
+.com-conjoon-groupware-email-EmailView-body .cry.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticoncry.gif)!important;
+}
+
+.com-conjoon-groupware-email-EmailView-body .sealed.emoticon {
+    background-image:url(../images/20x20/apps/groupware-email-emoticonsealed.gif)!important;
+}

@@ -27,7 +27,7 @@
 
 <body>
 
-<div id="DOM:de.intrabuild.groupware.Startup" class="de-intrabuild-groupware-SplashScreen-wrap">
+<div id="DOM:com.conjoon.groupware.Startup" class="com-conjoon-groupware-SplashScreen-wrap">
 
 
     <div class="x-shadow" style="margin-top:-150px;margin-left:-248px;z-index: 9002; left: 50%; top: 50%; height:330px;width:502px; display: block;">
@@ -52,11 +52,11 @@
                 <div class="x-window-tl x-panel-noheader"><div class="x-window-tr"><div class="x-window-tc" style="height:8px;"></div></div></div>
                 <div class="x-window-bwrap">
                     <div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">
-                    <div class="de-intrabuild-groupware-SplashScreen-body">
+                    <div class="com-conjoon-groupware-SplashScreen-body">
                     <div style="padding:5px;font-size:12px;font-weight:bold;color:#2D5094">conjoon</div>
                     <div style="position:absolute;top:135px;left:145px;width:220px;height:50px;color:#2D5094">
                         <div style="padding-left:10px;padding-bottom:10px;">Please wait...</div>
-                        <div class="de-intrabuild-groupware-SplashScreen-progressBar">&nbsp;</div>
+                        <div class="com-conjoon-groupware-SplashScreen-progressBar">&nbsp;</div>
                     </div>
 
                     </div>
@@ -67,24 +67,24 @@
 
 </div>
 
-<div class="de-intrabuild-groupware-Bookmarks-container" id="DOM:de.intrabuild.groupware.Bookmarks.container"></div>
+<div class="com-conjoon-groupware-Bookmarks-container" id="DOM:com.conjoon.groupware.Bookmarks.container"></div>
 
-<div style="height:32px;"  id="DOM:de.intrabuild.groupware.Head.container">
-<div id="DOM:de.intrabuild.groupware.Menubar.container"></div>
-<div class="de-intrabuild-groupware-Header" id="DOM:de.intrabuild.groupware.Header.container"></div>
+<div style="height:32px;"  id="DOM:com.conjoon.groupware.Head.container">
+<div id="DOM:com.conjoon.groupware.Menubar.container"></div>
+<div class="com-conjoon-groupware-Header" id="DOM:com.conjoon.groupware.Header.container"></div>
 </div>
 
-<div class="de-intrabuild-groupware-Toolpanel" id="DOM:de.intrabuild.groupware.Toolpanel.container">
+<div class="com-conjoon-groupware-Toolpanel" id="DOM:com.conjoon.groupware.Toolpanel.container">
 <table border="0" style="width:100%;" cellspacing="0" cellpadding="0">
 <tr>
-<td style="padding-top:1px;" id="DOM:de.intrabuild.groupware.Toolbar.controls"></td><td id="DOM:de.intrabuild.groupware.Toolbar.permanent" style="padding-top:1px;width:250px;"></td>
+<td style="padding-top:1px;" id="DOM:com.conjoon.groupware.Toolbar.controls"></td><td id="DOM:com.conjoon.groupware.Toolbar.permanent" style="padding-top:1px;width:250px;"></td>
 </tr>
 </table>
 </div>
 
-<div id="DOM:de.intrabuild.groupware.Home.container" style="height:100%;width:100%;"></div>
+<div id="DOM:com.conjoon.groupware.Home.container" style="height:100%;width:100%;"></div>
 
-<div id="DOM:de.intrabuild.groupware.Email.container" style="height:100%;width:100%;"></div>
+<div id="DOM:com.conjoon.groupware.Email.container" style="height:100%;width:100%;"></div>
 
 
 
@@ -112,35 +112,35 @@ Ext.onReady(function(){
         var CP = Ext.ContentPanel;
 
         // {{{ Bookmark Menubar
-        var bookmarks = new Ext.Toolbar({cls:'de-intrabuild-groupware-Bookmarks'});
-            bookmarks.render('DOM:de.intrabuild.groupware.Bookmarks.container');
-        var emailPanel = new de.intrabuild.groupware.email.EmailPanel();
+        var bookmarks = new Ext.Toolbar({cls:'com-conjoon-groupware-Bookmarks'});
+            bookmarks.render('DOM:com.conjoon.groupware.Bookmarks.container');
+        var emailPanel = new com.conjoon.groupware.email.EmailPanel();
 
         var bookmarkButton = new Ext.Toolbar.Button({
                 cls     : 'x-btn-icon',
-                iconCls : 'de-intrabuild-groupware-Bookmark-toolbar-bookmarkButton-icon',
+                iconCls : 'com-conjoon-groupware-Bookmark-toolbar-bookmarkButton-icon',
                 menu    : [
-                        {text: de.intrabuild.Gettext.gettext("Home"),
+                        {text: com.conjoon.Gettext.gettext("Home"),
                             handler : function(){
-                            var reg = de.intrabuild.util.Registry;
-                            var homePanel = reg.get('de.intrabuild.groupware.HomePanel');
+                            var reg = com.conjoon.util.Registry;
+                            var homePanel = reg.get('com.conjoon.groupware.HomePanel');
                             contentPanel.setActiveTab(homePanel);}
                         }, '-', {
-                            text:de.intrabuild.Gettext.gettext("Contacts")
+                            text:com.conjoon.Gettext.gettext("Contacts")
                         },{
-                            text: de.intrabuild.Gettext.gettext("Emails"),
+                            text: com.conjoon.Gettext.gettext("Emails"),
                             handler : function(){
-                            var reg = de.intrabuild.util.Registry;
-                            var emailPanel = reg.get('de.intrabuild.groupware.email.EmailPanel');
+                            var reg = com.conjoon.util.Registry;
+                            var emailPanel = reg.get('com.conjoon.groupware.email.EmailPanel');
                             if (!emailPanel) {
-                                emailPanel = new de.intrabuild.groupware.email.EmailPanel();
+                                emailPanel = new com.conjoon.groupware.email.EmailPanel();
                                 contentPanel.add(emailPanel);
                             }
                             contentPanel.setActiveTab(emailPanel);}
                         }, {
-                            text:de.intrabuild.Gettext.gettext("Calendar")
+                            text:com.conjoon.Gettext.gettext("Calendar")
                         }, {
-                            text:de.intrabuild.Gettext.gettext("Todos")
+                            text:com.conjoon.Gettext.gettext("Todos")
                         }, '-'
 
                      ]
@@ -150,23 +150,23 @@ Ext.onReady(function(){
         // }}}
 
         // {{{ Main Menubar
-        var mainMenubar = new Ext.Toolbar({cls:'de-intrabuild-groupware-Menubar'});
-            mainMenubar.render('DOM:de.intrabuild.groupware.Menubar.container');
+        var mainMenubar = new Ext.Toolbar({cls:'com-conjoon-groupware-Menubar'});
+            mainMenubar.render('DOM:com.conjoon.groupware.Menubar.container');
 
         mainMenubar.add({
             text:'File',
             menu: [{
                 text:'New',
-                menu : [de.intrabuild.groupware.email.decorator.AccountActionComp.decorate(new Ext.menu.Item({
+                menu : [com.conjoon.groupware.email.decorator.AccountActionComp.decorate(new Ext.menu.Item({
                     text : 'Email...',
                     handler : function() {
-                       de.intrabuild.groupware.email.EmailEditorManager.createEditor();
+                       com.conjoon.groupware.email.EmailEditorManager.createEditor();
                     }
                 }))]
             }, '-', {
                 text    : "Logout...",
                 handler : function() {
-                    de.intrabuild.groupware.Reception.showLogout();
+                    com.conjoon.groupware.Reception.showLogout();
                 }
             }]
         },
@@ -175,13 +175,13 @@ Ext.onReady(function(){
                 menu: [{
                       text : "Feeds...",
                       handler : function() {
-                          var dialog = new de.intrabuild.groupware.feeds.FeedOptionsDialog();
+                          var dialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
                           dialog.show();
                       }
                       }, '-', {
-                      text:de.intrabuild.Gettext.gettext("Email accounts..."),
+                      text:com.conjoon.Gettext.gettext("Email accounts..."),
                       handler : function() {
-                        var dialog = new de.intrabuild.groupware.email.EmailAccountDialog();
+                        var dialog = new com.conjoon.groupware.email.EmailAccountDialog();
                         dialog.show();
                       }
                      }]
@@ -189,35 +189,35 @@ Ext.onReady(function(){
             {
                 text:'?',
                 menu: [{
-                      text:de.intrabuild.Gettext.gettext("About")
+                      text:com.conjoon.Gettext.gettext("About")
                      }]
             }
         );
         // ^^ EO Main Menubar }}}
 
         // {{{ Main Toolbar
-        var mainToolbar = new Ext.Toolbar({cls:'de-intrabuild-groupware-Toolbar'});
-            mainToolbar.render('DOM:de.intrabuild.groupware.Toolbar.permanent');
+        var mainToolbar = new Ext.Toolbar({cls:'com-conjoon-groupware-Toolbar'});
+            mainToolbar.render('DOM:com.conjoon.groupware.Toolbar.permanent');
 
         mainToolbar.add(
             "->",
             "-",
-            de.intrabuild.Gettext.gettext("Search"),
+            com.conjoon.Gettext.gettext("Search"),
             {
                 cls     : 'x-btn-icon',
-                iconCls : 'de-intrabuild-groupware-Toolbar-searchMenu-email-icon',
+                iconCls : 'com-conjoon-groupware-Toolbar-searchMenu-email-icon',
                 menu:[
-                        {text: de.intrabuild.Gettext.gettext("Contacts")},
-                        {text: de.intrabuild.Gettext.gettext("Emails")},
-                        {text: de.intrabuild.Gettext.gettext("Calendar")},
-                        {text: de.intrabuild.Gettext.gettext("Todos")}
+                        {text: com.conjoon.Gettext.gettext("Contacts")},
+                        {text: com.conjoon.Gettext.gettext("Emails")},
+                        {text: com.conjoon.Gettext.gettext("Calendar")},
+                        {text: com.conjoon.Gettext.gettext("Todos")}
                      ]
             },
-            new Ext.form.TextField({emptyText : de.intrabuild.Gettext.gettext("<search in Emails>")}),
+            new Ext.form.TextField({emptyText : com.conjoon.Gettext.gettext("<search in Emails>")}),
             {
 
                 cls     : 'x-btn-icon',
-                iconCls : 'de-intrabuild-groupware-Toolbar-startSearchButton-icon'
+                iconCls : 'com-conjoon-groupware-Toolbar-startSearchButton-icon'
             }
         );
 
@@ -225,17 +225,17 @@ Ext.onReady(function(){
 
 
         var homePanel = new Ext.Panel({
-            title      : de.intrabuild.Gettext.gettext("Welcome"),
-            cls        : 'de-intrabuild-groupware-HomePanel-body',
+            title      : com.conjoon.Gettext.gettext("Welcome"),
+            cls        : 'com-conjoon-groupware-HomePanel-body',
             closable   : false,
-            iconCls    : 'de-intrabuild-groupware-HomePanel-icon',
+            iconCls    : 'com-conjoon-groupware-HomePanel-icon',
             autoScroll : true
         });
 
-        de.intrabuild.util.Registry.register('de.intrabuild.groupware.HomePanel', homePanel, true);
+        com.conjoon.util.Registry.register('com.conjoon.groupware.HomePanel', homePanel, true);
 
         var contentPanel = new Ext.TabPanel({
-                    id : 'DOM:de.intrabuild.groupware.ContentPanel',
+                    id : 'DOM:com.conjoon.groupware.ContentPanel',
                     region:'center',
                     activeTab:0,
                     //Seems to be buggy in alpha, uncomment later and try behavior
@@ -253,7 +253,7 @@ Ext.onReady(function(){
                     //enableTabScroll:true,
                     margins:'0 0 0 0',
                     border:false,
-                    baseCls:'de-intrabuild-groupware-TabHeader',
+                    baseCls:'com-conjoon-groupware-TabHeader',
                     items:[
                        homePanel,
                        emailPanel
@@ -261,10 +261,10 @@ Ext.onReady(function(){
                        ]
                 });
 
-        de.intrabuild.util.Registry.register('de.intrabuild.groupware.ContentPanel', contentPanel);
+        com.conjoon.util.Registry.register('com.conjoon.groupware.ContentPanel', contentPanel);
 
     contentPanel.onResize = function(){
-        var td = document.getElementById('DOM:de.intrabuild.groupware.Toolbar.controls');
+        var td = document.getElementById('DOM:com.conjoon.groupware.Toolbar.controls');
         td.style.width = document.body.offsetWidth-250+"px";
         Ext.TabPanel.superclass.onResize.apply(this, arguments);
         //this.el.setWidth(document.body.offsetWidth);
@@ -279,11 +279,11 @@ Ext.onReady(function(){
         var id = component.id;
         var add = true;
         switch (id) {
-            case 'DOM:de.intrabuild.groupware.HomePanel':
-            case 'DOM:de.intrabuild.groupware.EmailPanel':
-            case 'DOM:de.intrabuild.groupware.ContactsPanel':
-            case 'DOM:de.intrabuild.groupware.TodoPanel':
-            case 'DOM:de.intrabuild.groupware.CalendarPanel':
+            case 'DOM:com.conjoon.groupware.HomePanel':
+            case 'DOM:com.conjoon.groupware.EmailPanel':
+            case 'DOM:com.conjoon.groupware.ContactsPanel':
+            case 'DOM:com.conjoon.groupware.TodoPanel':
+            case 'DOM:com.conjoon.groupware.CalendarPanel':
                 add = false;
             break;
         }
@@ -309,13 +309,13 @@ Ext.onReady(function(){
                         region:'north',
                         title:'Quickpanel',
                         height:205,
-                        cls:'de-intrabuild-groupware-QuickPanel-editPanel',
+                        cls:'com-conjoon-groupware-QuickPanel-editPanel',
                         collapsible:true,
                         layout:'fit',
-                        iconCls: 'de-intrabuild-groupware-quickpanel-NewIcon',
+                        iconCls: 'com-conjoon-groupware-quickpanel-NewIcon',
                         border:false,
                         autoLoad:false,
-                        items: de.intrabuild.groupware.QuickEditPanel.getComponent()
+                        items: com.conjoon.groupware.QuickEditPanel.getComponent()
     });
 
 
@@ -339,13 +339,13 @@ Ext.onReady(function(){
                         region:'center',
                         border:false,
                         layout:'accordion',
-                        cls:'de-intrabuild-groupware-QuickPanel-itemPanel',
+                        cls:'com-conjoon-groupware-QuickPanel-itemPanel',
                         layoutConfig:{
                             animate:true
                         },
                         items:[
-                        new de.intrabuild.groupware.email.LatestEmailsPanel({collapsed:true}),
-                        new de.intrabuild.groupware.feeds.FeedGrid()]
+                        new com.conjoon.groupware.email.LatestEmailsPanel({collapsed:true}),
+                        new com.conjoon.groupware.feeds.FeedGrid()]
                     }]
                  });
 
@@ -357,13 +357,13 @@ Ext.onReady(function(){
             order : false,
             items:[{
                     region:'north',
-                    el: 'DOM:de.intrabuild.groupware.Head.container',
+                    el: 'DOM:com.conjoon.groupware.Head.container',
                     border:false,
-                    cls:"de-intrabuild-groupware-Head-utilcls"
+                    cls:"com-conjoon-groupware-Head-utilcls"
                 },{
                     region : 'south',
                     html : '<div style=\'display:none\'></div>',
-                    bbar : de.intrabuild.groupware.StatusBar.getStatusBar(),
+                    bbar : com.conjoon.groupware.StatusBar.getStatusBar(),
                     border : false,
                     margins : '3 0 0 0'
                 },
@@ -378,21 +378,21 @@ Ext.onReady(function(){
         Ext.getBody().on('contextmenu', function(e){var t = e.getTarget().tagName; if (t != 'INPUT' && t != 'TEXTAREA'){e.stopEvent();}});
 
 
-        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.email.AccountStore.getInstance());
-        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.AccountStore.getInstance());
-        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.Registry.getStore());
-        de.intrabuild.util.PreLoader.addStore(de.intrabuild.groupware.feeds.FeedStore.getInstance(), true);
+        com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.email.AccountStore.getInstance());
+        com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.AccountStore.getInstance());
+        com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
+        com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.FeedStore.getInstance(), true);
 
-        de.intrabuild.util.PreLoader.on('load', function() {
-            de.intrabuild.groupware.email.Letterman.wakeup();
-            var splash = document.getElementById('DOM:de.intrabuild.groupware.Startup');
+        com.conjoon.util.PreLoader.on('load', function() {
+            com.conjoon.groupware.email.Letterman.wakeup();
+            var splash = document.getElementById('DOM:com.conjoon.groupware.Startup');
             splash.style.display = "none";
             document.body.removeChild(splash);
         });
 
-        de.intrabuild.groupware.Reception.init(true);
-        de.intrabuild.groupware.Reception.onUserLoad(function(){
-            de.intrabuild.util.PreLoader.load();
+        com.conjoon.groupware.Reception.init(true);
+        com.conjoon.groupware.Reception.onUserLoad(function(){
+            com.conjoon.util.PreLoader.load();
         });
 
 

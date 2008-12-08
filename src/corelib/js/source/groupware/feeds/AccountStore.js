@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.feeds');
 
 /**
- * @class de.intrabuild.groupware.feeds.AccountStore
+ * @class com.conjoon.groupware.feeds.AccountStore
  * @singleton
  */
-de.intrabuild.groupware.feeds.AccountStore = function() {
+com.conjoon.groupware.feeds.AccountStore = function() {
 
     var _store = null;
 
@@ -30,9 +30,9 @@ de.intrabuild.groupware.feeds.AccountStore = function() {
             reader      : new Ext.data.JsonReader({
                               root: 'accounts',
                               id : 'id'
-                          }, de.intrabuild.groupware.feeds.AccountRecord),
+                          }, com.conjoon.groupware.feeds.AccountRecord),
             url         : '/groupware/feeds/get.feed.accounts/format/json',
-            listeners   : de.intrabuild.groupware.feeds.FeedRunner.getListener()
+            listeners   : com.conjoon.groupware.feeds.FeedRunner.getListener()
         });
     };
 

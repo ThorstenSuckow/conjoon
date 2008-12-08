@@ -12,10 +12,10 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 
-de.intrabuild.groupware.email.NodeEditor = function(treePanel, config) {
+com.conjoon.groupware.email.NodeEditor = function(treePanel, config) {
 
     Ext.apply(this, config);
 
@@ -41,7 +41,7 @@ de.intrabuild.groupware.email.NodeEditor = function(treePanel, config) {
      * The beforeNodeClick method gets assigned to an empty function
      * so cliking on a node won'
      */
-    de.intrabuild.groupware.email.NodeEditor.superclass.constructor.call(this, treePanel, {
+    com.conjoon.groupware.email.NodeEditor.superclass.constructor.call(this, treePanel, {
         shadow        : false,
         validator     : this.isNodeNameValid.createDelegate(this),
         allowBlank    : false,
@@ -68,7 +68,7 @@ de.intrabuild.groupware.email.NodeEditor = function(treePanel, config) {
 };
 
 
-Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
+Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
 
 // ------------------------- Members -------------------------------------------
     /**
@@ -88,7 +88,7 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
 
     initEditor : function(tree)
     {
-        de.intrabuild.groupware.email.NodeEditor.superclass.initEditor.call(this, tree);
+        com.conjoon.groupware.email.NodeEditor.superclass.initEditor.call(this, tree);
         // needed to overwrite since the mousdwon wad not in the ext2.0rc1
         // this is needed since a node which is currently being edited must not be draggable,
         // but without this custom implementation the tree would allow a node being
@@ -140,7 +140,7 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
          */
         var as = this.tree.autoScroll;
         this.tree.autoScroll = false;
-        de.intrabuild.groupware.email.NodeEditor.superclass.triggerEdit.call(this, node);
+        com.conjoon.groupware.email.NodeEditor.superclass.triggerEdit.call(this, node);
         this.tree.autoScroll = as;
     },
 
@@ -158,7 +158,7 @@ Ext.extend(de.intrabuild.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     // private
     updateNode : function(ed, value)
     {
-        de.intrabuild.groupware.email.NodeEditor.superclass.updateNode.call(this, ed, value.trim());
+        com.conjoon.groupware.email.NodeEditor.superclass.updateNode.call(this, ed, value.trim());
     },
 
 // ------------------------------ Listeners ------------------------------------

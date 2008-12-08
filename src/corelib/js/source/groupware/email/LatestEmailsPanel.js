@@ -12,11 +12,11 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 
 
-de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
+com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
 
     config = config || {};
 
@@ -25,7 +25,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     Ext.apply(this, config);
 
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.view.onEmailLoad',
+        'com.conjoon.groupware.email.view.onEmailLoad',
         this.onEmailItemLoad,
         this
     );
@@ -42,7 +42,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
                           versionProperty : 'version',
                           id              : 'id'
                       },
-                      de.intrabuild.groupware.email.EmailItemRecord
+                      com.conjoon.groupware.email.EmailItemRecord
                       ),
         sortInfo   : {field: 'id', direction: 'DESC'},
         baseParams : {
@@ -50,7 +50,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
         },
         listeners   : {
             remove : function (store, record, index) {
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.remove', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.remove', {
                     items : [record]
                 });
             },
@@ -60,12 +60,12 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
                     records.push(items[i][0]);
                 }
 
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.remove', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.remove', {
                     items : records
                 });
             },
             update : function (store, record, operation) {
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.LatestEmailsPanel.store.update', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.update', {
                     item      : record,
                     operation : operation
                 });
@@ -77,13 +77,13 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
     this.view = new Ext.ux.grid.livegrid.GridView({
         nearLimit : 25,
         loadMask  : {
-            msg : de.intrabuild.Gettext.gettext("Please wait...")
+            msg : com.conjoon.Gettext.gettext("Please wait...")
         },
         getRowClass : function(record, rowIndex, p, ds){
             if (record.data.isRead) {
-                return 'de-intrabuild-groupware-email-LatestEmailsPanel-itemRead';
+                return 'com-conjoon-groupware-email-LatestEmailsPanel-itemRead';
             } else {
-                return 'de-intrabuild-groupware-email-LatestEmailsPanel-itemUnread';
+                return 'com-conjoon-groupware-email-LatestEmailsPanel-itemUnread';
             }
         }
     });
@@ -92,12 +92,12 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
 // ------------------------- ^^ EO set up buffered grid ------------------------
 
     this.columns = [{
-        header    : de.intrabuild.Gettext.gettext("Subject"),
+        header    : com.conjoon.Gettext.gettext("Subject"),
         width     : 160,
         sortable  : false,
         dataIndex : 'subject'
       },{
-        header    : de.intrabuild.Gettext.gettext("Sender"),
+        header    : com.conjoon.Gettext.gettext("Sender"),
         width     : 160,
         sortable  : false,
         dataIndex : 'sender'
@@ -110,22 +110,22 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
      * @param {Ext.Toolbar}
      */
     this.tbar = new Ext.Toolbar([
-        new de.intrabuild.groupware.email.FetchMenuButton()
+        new com.conjoon.groupware.email.FetchMenuButton()
     ]);
 
 
-    de.intrabuild.groupware.email.EmailGrid.superclass.constructor.call(this, {
-        title          : de.intrabuild.Gettext.gettext("Newest Emails"),
+    com.conjoon.groupware.email.EmailGrid.superclass.constructor.call(this, {
+        title          : com.conjoon.Gettext.gettext("Newest Emails"),
         border         : false,
-        iconCls        : 'de-intrabuild-groupware-quickpanel-EmailIcon',
+        iconCls        : 'com-conjoon-groupware-quickpanel-EmailIcon',
         loadMask       : {
-            msg : de.intrabuild.Gettext.gettext("Loading...")
+            msg : com.conjoon.Gettext.gettext("Loading...")
         },
         autoScroll     : true//,
-        //cls            : 'de-intrabuild-groupware-email-EmailGrid'
+        //cls            : 'com-conjoon-groupware-email-EmailGrid'
     });
 
-    de.intrabuild.groupware.email.Letterman.on('load', this.newEmailsAvailable, this);
+    com.conjoon.groupware.email.Letterman.on('load', this.newEmailsAvailable, this);
 
 
     this.on('contextmenu',    this.onContextClick, this);
@@ -134,11 +134,11 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
 
     this.on('render', this.onPanelRender, this);
 
-    de.intrabuild.util.Registry.on('register', this.onRegister, this);
+    com.conjoon.util.Registry.on('register', this.onRegister, this);
 
-    de.intrabuild.util.Registry.register('de.intrabuild.groupware.email.QuickPanel', this);
+    com.conjoon.util.Registry.register('com.conjoon.groupware.email.QuickPanel', this);
 
-    var preview       = de.intrabuild.groupware.email.EmailPreview;
+    var preview       = com.conjoon.groupware.email.EmailPreview;
     this.emailPreview = preview;
 
     this.on('celldblclick',   this.onCellDblClick, this);
@@ -149,7 +149,7 @@ de.intrabuild.groupware.email.LatestEmailsPanel = function(config) {
 
 };
 
-Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, {
+Ext.extend(com.conjoon.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, {
 
 // -------- listeners
     cellClickActive : false,
@@ -171,11 +171,11 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         var lr = this.emailPreview.getLastRecord();
 
         if (lr && lr.id === emailItem.id) {
-            de.intrabuild.groupware.email.EmailViewBaton.showEmail(lr, {
+            com.conjoon.groupware.email.EmailViewBaton.showEmail(lr, {
                 autoLoad : false
             }, true);
         } else {
-            de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem);
+            com.conjoon.groupware.email.EmailViewBaton.showEmail(emailItem);
         }
 
         this.emailPreview.hide(true, false);
@@ -188,7 +188,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         var st  = this.store;
         var rec;
 
-        var prev   = de.intrabuild.groupware.email.EmailPreview;
+        var prev   = com.conjoon.groupware.email.EmailPreview;
         var prevM  = prev.getActiveRecord;
         var prevId = null;
         for (var i = 0, max_i = records.length; i < max_i; i++) {
@@ -208,7 +208,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
 
     onBeforeCmpDestroy : function()
     {
-        de.intrabuild.util.Registry.unregister('de.intrabuild.groupware.email.QuickPanel');
+        com.conjoon.util.Registry.unregister('com.conjoon.groupware.email.QuickPanel');
     },
 
     onEmailGridUpdate : function(store, record, operation)
@@ -230,7 +230,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
 
     onRegister : function(name, object)
     {
-        if (name != 'de.intrabuild.groupware.email.EmailPanel') {
+        if (name != 'com.conjoon.groupware.email.EmailPanel') {
             return;
         }
 
@@ -239,7 +239,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
 
     onPanelRender : function()
     {
-        var sub = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.EmailPanel');
+        var sub = com.conjoon.util.Registry.get('com.conjoon.groupware.email.EmailPanel');
 
         if (sub) {
             sub.gridPanel.store.un('update', this.onEmailGridUpdate, this);
@@ -250,7 +250,7 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
 
     /**
      * Subscribed to the message with the subject
-     * de.intrabuild.groupware.email.view.onEmailLoad.
+     * com.conjoon.groupware.email.view.onEmailLoad.
      *
      * @param {String} subject
      * @param {Object} message
@@ -371,11 +371,11 @@ Ext.extend(de.intrabuild.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, 
         if(!this.menu){
             this.menu = new Ext.menu.Menu({
                 items: [{
-                    text    : de.intrabuild.Gettext.gettext("mark item as read"),
+                    text    : com.conjoon.Gettext.gettext("mark item as read"),
                     scope   : this,
                     handler : function(){this.setItemsAsRead(this.selModel.getSelections(), true);}
                   },{
-                    text    : de.intrabuild.Gettext.gettext("mark item as unread"),
+                    text    : com.conjoon.Gettext.gettext("mark item as unread"),
                     scope   : this,
                     handler : function(){this.setItemsAsRead(this.selModel.getSelections(), false);}
                   }]

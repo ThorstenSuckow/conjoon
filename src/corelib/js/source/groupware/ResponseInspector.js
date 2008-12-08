@@ -12,10 +12,10 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware');
+Ext.namespace('com.conjoon.groupware');
 
 /**
- * @class de.intrabuild.groupware.ReponseInspector
+ * @class com.conjoon.groupware.ReponseInspector
  *
  * A singleton for inpecting raw responses as returned by the server and taking
  * appropriate action.
@@ -24,7 +24,7 @@ Ext.namespace('de.intrabuild.groupware');
  * of application specific responses, such as error messages.
  * Some errors returned by the applicaton (e.g. the server) are recoverable, such
  * as an authentication failure. In this case, the server returns the 401 http status
- * code to which the {@see de.intrabuild.groupware.Reception} listens, and
+ * code to which the {@see com.conjoon.groupware.Reception} listens, and
  * automatically builds a login window. Since the 401 is treated as a response error,
  * the inspector's handleFailure should be called along with a callback for the
  * 'loginsuccessfull' event of the reception.
@@ -51,7 +51,7 @@ Ext.namespace('de.intrabuild.groupware');
  *
  * @singleton
  */
-de.intrabuild.groupware.ResponseInspector = function() {
+com.conjoon.groupware.ResponseInspector = function() {
 
     /**
      * Tries to json-decode the passed parameter and returns the result.
@@ -75,7 +75,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
                 v = Ext.decode(value);
             } catch (e) {
                 throw(
-                    'de.intrabuild.groupware.ResponseInspector._tryDecode: '
+                    'com.conjoon.groupware.ResponseInspector._tryDecode: '
                     + 'Argument does not seem to be json-encoded.'
                 );
             }
@@ -85,7 +85,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
         }
 
         throw(
-            'de.intrabuild.groupware.ResponseInspector._tryDecode: '
+            'com.conjoon.groupware.ResponseInspector._tryDecode: '
             + 'Argument is neither of type String nor Object.'
         );
     };
@@ -236,7 +236,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
          * be shown. In any other case, an "unexpected error" dialog will be
          * rendered, showing the raw responseText-property of the response.
          * Depending on the configuration of the parameter "options", callbacks
-         * may be attached to the {@see de.intrabuild.groupware.Reception._loginWindow},
+         * may be attached to the {@see com.conjoon.groupware.Reception._loginWindow},
          * if the error is recoverable. A recoverable error is for example an
          * authentication failure, when the user has to re-authenticate at the
          * application.
@@ -246,7 +246,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
          * Valid proerties of the options-object are:
          * <ul>
          *  <li>onLogin : an observable-valid callback for the 'loginsuccessfull'
-         *  event of the {@see de.intrabuild.groupware.Reception}, containing
+         *  event of the {@see com.conjoon.groupware.Reception}, containing
          *  the properties
          *   <ul>
          *    <li>fn : the function to call</li>
@@ -263,7 +263,7 @@ de.intrabuild.groupware.ResponseInspector = function() {
          *
          * @throws Error if decoding the argument fails
          *
-         * @see de.intrabuild.util.Json.forceErrorDecode
+         * @see com.conjoon.util.Json.forceErrorDecode
          */
         handleFailure : function(response, options)
         {
@@ -283,15 +283,15 @@ de.intrabuild.groupware.ResponseInspector = function() {
 
             // check if the response send an authentication failure
             if (options && options.onLogin) {
-                if (de.intrabuild.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
+                if (com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
                     var ol = options.onLogin;
-                    de.intrabuild.groupware.Reception.onLogin(
+                    com.conjoon.groupware.Reception.onLogin(
                         ol.fn, ol.scope
                     );
                 }
             }
 
-            var json = de.intrabuild.util.Json;
+            var json = com.conjoon.util.Json;
             var msg  = Ext.MessageBox;
 
 
@@ -314,11 +314,11 @@ de.intrabuild.groupware.ResponseInspector = function() {
             }
 
             msg.show({
-                title   : opt.title || de.intrabuild.Gettext.gettext("Error"),
+                title   : opt.title || com.conjoon.Gettext.gettext("Error"),
                 msg     : opt.message,
                 buttons : msg.OK,
                 icon    : msg[error.level.toUpperCase()],
-                cls     :'de-intrabuild-msgbox-'+error.level,
+                cls     :'com-conjoon-msgbox-'+error.level,
                 width   : 400
             });
         }

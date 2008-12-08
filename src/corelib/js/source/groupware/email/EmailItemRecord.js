@@ -12,10 +12,10 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 
-de.intrabuild.groupware.email.EmailItemRecord = Ext.data.Record.create([
+com.conjoon.groupware.email.EmailItemRecord = Ext.data.Record.create([
     {name : 'id', type : 'int'},
     {name : 'isAttachment',       type : 'boolean'},
     {name : 'isRead',             type : 'boolean'},

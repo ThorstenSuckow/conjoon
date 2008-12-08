@@ -1,0 +1,37 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-configure.png);
+}
+
+.com-conjoon-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-display.png)!important ;
+}
+
+.com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-add.png)!important ;
+}
+
+.com-conjoon-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-refresh.png)!important ;
+}
+
+.com-conjoon-groupware-feeds-FeedGrid-itemRead div{
+    font-weight:normal;
+}
+
+.com-conjoon-groupware-feeds-FeedGrid-itemUnread div {
+    font-weight:bold;
+}

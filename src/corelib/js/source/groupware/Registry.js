@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware');
+Ext.namespace('com.conjoon.groupware');
 
 /**
- * @class de.intrabuild.groupware.RegistryStore
+ * @class com.conjoon.groupware.RegistryStore
  * @singleton
  */
-de.intrabuild.groupware.Registry = function() {
+com.conjoon.groupware.Registry = function() {
 
     var _store = null;
 

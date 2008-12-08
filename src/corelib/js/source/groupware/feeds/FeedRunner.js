@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.feeds');
 
 /**
- * @class de.intrabuild.groupware.feeds.FeedRunner
+ * @class com.conjoon.groupware.feeds.FeedRunner
  *
  */
-de.intrabuild.groupware.feeds.FeedRunner = function(){
+com.conjoon.groupware.feeds.FeedRunner = function(){
 
     var commitId = Ext.data.Record.COMMIT;
 
@@ -27,14 +27,14 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
         reader     : new Ext.data.JsonReader({
                           root: 'items',
                           id : 'id'
-                      }, de.intrabuild.groupware.feeds.ItemRecord),
+                      }, com.conjoon.groupware.feeds.ItemRecord),
         baseParams  : {
             removeold : false,
-            timeout   : de.intrabuild.groupware.feeds.FeedStore.getDefaultTimeOut()
+            timeout   : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
         },
         proxy : new Ext.data.HttpProxy({
             url      : '/groupware/feeds/get.feed.items/format/json',
-            timeout  : de.intrabuild.groupware.feeds.FeedStore.getDefaultTimeOut()
+            timeout  : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
         })
     });
 
@@ -50,7 +50,7 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
 
     var onStoreLoadException = function(proxy, options, response, jsError)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
     };
 
     var onStoreLoad = function(store, records, options)
@@ -132,12 +132,12 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
     var notifyUser = function(feedCount)
     {
         var text = String.format(
-            de.intrabuild.Gettext.ngettext("There is one new feed entry available", "There are {0} new feed entries available", feedCount),
+            com.conjoon.Gettext.ngettext("There is one new feed entry available", "There are {0} new feed entries available", feedCount),
             feedCount
         );
 
         new Ext.ux.ToastWindow({
-            title   : de.intrabuild.Gettext.ngettext("New feed entry available", "New feed entries available", feedCount),
+            title   : com.conjoon.Gettext.ngettext("New feed entry available", "New feed entries available", feedCount),
             html    : text
         }).show(document);
 
@@ -145,12 +145,12 @@ de.intrabuild.groupware.feeds.FeedRunner = function(){
 
     // leave this here since listener only works if observer function gets defined before
     // (stopRunning, onStoreLoad)
-    var feedStore = de.intrabuild.groupware.feeds.FeedStore.getInstance();
-    feedStore.on('beforeload', stopRunning, de.intrabuild.groupware.feeds.FeedRunner);
-    store.on('load', onStoreLoad, de.intrabuild.groupware.feeds.FeedRunner);
-    store.on('loadexception', onStoreLoadException, de.intrabuild.groupware.feeds.FeedRunner);
+    var feedStore = com.conjoon.groupware.feeds.FeedStore.getInstance();
+    feedStore.on('beforeload', stopRunning, com.conjoon.groupware.feeds.FeedRunner);
+    store.on('load', onStoreLoad, com.conjoon.groupware.feeds.FeedRunner);
+    store.on('loadexception', onStoreLoadException, com.conjoon.groupware.feeds.FeedRunner);
 
-    var _reception = de.intrabuild.groupware.Reception;
+    var _reception = com.conjoon.groupware.Reception;
 
     return {
 

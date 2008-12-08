@@ -1,0 +1,109 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+/**
+ * EmailGrid
+ */
+.com-conjoon-groupware-email-EmailGrid .x-grid3-row {
+    border-style:none;
+}
+
+.com-conjoon-groupware-email-EmailGrid .newItem {
+    background-image:url(../images/12x12/apps/groupware-email-itemnew.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.com-conjoon-groupware-email-EmailGrid .hasReply {
+    background-image:url(../images/12x12/apps/groupware-email-itemhasreply.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.com-conjoon-groupware-email-EmailGrid .hasForward {
+    background-image:url(../images/12x12/apps/groupware-email-itemhasforward.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.com-conjoon-groupware-email-EmailGrid .hasReplyhasForward {
+    background-image:url(../images/16x16/apps/groupware-email-itemhasreplyandforward.png);
+    background-repeat:no-repeat;
+    background-position:0 50%;
+}
+
+.com-conjoon-groupware-email-EmailGrid .x-grid3-td-subject div {
+    padding-left:16px;
+}
+
+.com-conjoon-groupware-email-EmailGrid-itemRead div{
+    font-weight:normal;
+}
+
+.com-conjoon-groupware-email-EmailGrid-itemUnread div {
+    font-weight:bold;
+}
+
+/**
+ * Definition for all contaier elements that only hold a background image in either
+ * a header or a cell.
+ */
+.com-conjoon-groupware-email-EmailGrid-backgroundContainer {
+    height:12px;
+    width:12px;
+}
+
+/**
+ * Attachment column
+ */
+.com-conjoon-groupware-email-EmailGrid-attachmentColumn-headerBackground {
+    float:left;
+}
+
+.com-conjoon-groupware-email-EmailGrid-attachmentColumn-headerBackground,
+.com-conjoon-groupware-email-EmailGrid-attachmentColumn-cellBackground {
+    background-image:url(../images/12x12/apps/groupware-email-attachment.png);
+}
+
+/**
+ * Read column
+ */
+.com-conjoon-groupware-email-EmailGrid-readColumn-headerBackground {
+    float:left;
+    background-image:url(../images/12x12/apps/groupware-email-read.png);
+}
+
+.com-conjoon-groupware-email-EmailGrid-readColumn-cellBackground.itemread {
+    background-image:url(../images/12x12/apps/groupware-email-itemread.png);
+}
+
+.com-conjoon-groupware-email-EmailGrid-readColumn-cellBackground.itemunread {
+    background-image:url(../images/12x12/apps/groupware-email-itemunread.png);
+}
+
+/**
+ * Spam column
+ */
+.com-conjoon-groupware-email-EmailGrid-spamColumn-headerBackground {
+    background-image:url(../images/12x12/apps/groupware-email-spam.png);
+    float:left;
+}
+
+.com-conjoon-groupware-email-EmailGrid-spamColumn-cellBackground.itemspam {
+    background-image:url(../images/12x12/apps/groupware-email-itemspam.png);
+}
+
+.com-conjoon-groupware-email-EmailGrid-spamColumn-cellBackground.itemnospam {
+    background-image:url(../images/12x12/apps/groupware-email-itemnospam.png);
+}

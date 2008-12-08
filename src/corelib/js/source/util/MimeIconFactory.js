@@ -12,15 +12,15 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util');
+Ext.namespace('com.conjoon.util');
 
-de.intrabuild.util.MimeIconFactory = function() {
+com.conjoon.util.MimeIconFactory = function() {
 
     return {
 
         getIconCls : function(mime)
         {
-            return 'de-intrabuild-util-MimeIconFactory-mimeType-unknown';
+            return 'com-conjoon-util-MimeIconFactory-mimeType-unknown';
         }
 
 

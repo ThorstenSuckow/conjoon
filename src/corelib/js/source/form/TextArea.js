@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.form');
+Ext.namespace('com.conjoon.form');
 
-de.intrabuild.form.TextArea = Ext.extend(Ext.form.TextArea, {
+com.conjoon.form.TextArea = Ext.extend(Ext.form.TextArea, {
 
     initComponent : function()
     {

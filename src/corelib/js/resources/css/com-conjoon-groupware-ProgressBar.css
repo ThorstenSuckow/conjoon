@@ -1,0 +1,37 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.x-progress-wrap.com-conjoon-groupware-ProgressBar {
+    height:17px;
+    background-image:url(../images/progress-bar-container-right.gif);
+    background-repeat:no-repeat;
+    overflow:hidden;
+    border:none !important;
+    padding:0px 3px 0px 0px !important;
+    background-position:right top;
+}
+
+.com-conjoon-groupware-ProgressBar .x-progress-inner {
+    height:17px;
+    overflow:hidden;
+    background-image:url(../images/progress-bar-container-left.gif);
+    background-repeat:no-repeat;
+    background-position:left top;
+}
+.com-conjoon-groupware-ProgressBar .x-progress-bar {
+    height:13px !important;
+    background:#ffffff url(../images/progress-bar.gif) repeat-x 0 0;
+    border:none !important;
+    margin:2px 0px 0px 3px;
+}

@@ -12,7 +12,7 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * The Letterman is a singleton that's responsible for checking for new emails
@@ -23,7 +23,7 @@ Ext.namespace('de.intrabuild.groupware.email');
  * If you want to receive messages from this component, you can subscribe to the
  * Ext.ux.util.MessageBus and listen for the following messages:
  * <ul>
- * <li><strong>de.intrabuild.groupware.email.Letterman.beforeload</strong> - sent
+ * <li><strong>com.conjoon.groupware.email.Letterman.beforeload</strong> - sent
  * before this component's store sends a request to the server to receive new messages.
  * The subscriber is passed the following parameters:
  *     <ul>
@@ -31,7 +31,7 @@ Ext.namespace('de.intrabuild.groupware.email');
  *      <li>message - an empty object</li>
  *     </ul>
  * </li>
- * <li><strong>de.intrabuild.groupware.email.Letterman.loadexcepion</strong> - sent when
+ * <li><strong>com.conjoon.groupware.email.Letterman.loadexcepion</strong> - sent when
  * a request made by this component's store resulted in a failure.
  * The subscriber is passed the following parameters:
  *     <ul>
@@ -39,7 +39,7 @@ Ext.namespace('de.intrabuild.groupware.email');
  *      <li>message - an empty object</li>
  *     </ul>
  * </li>
- * <li><strong>de.intrabuild.groupware.email.Letterman.load</strong> - sent when a request made
+ * <li><strong>com.conjoon.groupware.email.Letterman.load</strong> - sent when a request made
  * by this component's store resulted in a successfull response.
  * The subscriber is passed the following parameters:
  *     <ul>
@@ -55,7 +55,7 @@ Ext.namespace('de.intrabuild.groupware.email');
  *
  *
  */
-de.intrabuild.groupware.email.Letterman = function(config) {
+com.conjoon.groupware.email.Letterman = function(config) {
 
     /**
      * A shorthand for the {@see Ext.ux.util.MessageBus} which is used
@@ -76,7 +76,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
                           successProperty : 'success',
                           id              : 'id'
                       },
-                      de.intrabuild.groupware.email.EmailItemRecord
+                      com.conjoon.groupware.email.EmailItemRecord
                       ),
         sortInfo   : {field: 'date', direction: 'ASC'},
         proxy      : new Ext.data.HttpProxy({
@@ -123,9 +123,9 @@ de.intrabuild.groupware.email.Letterman = function(config) {
      */
     var proxyResponse = function(o, success, response)
     {
-        var json = de.intrabuild.util.Json;
+        var json = com.conjoon.util.Json;
         if (json.isError(response.responseText)) {
-            de.intrabuild.groupware.email.Letterman.onRequestFailure(this, o, response);
+            com.conjoon.groupware.email.Letterman.onRequestFailure(this, o, response);
         }
 
         return Ext.data.HttpProxy.prototype.loadResponse.call(this, o, success, response);
@@ -133,10 +133,10 @@ de.intrabuild.groupware.email.Letterman = function(config) {
     };
 
     /**
-     * @param {de.intrabuild.groupware.email.AccountStore}
+     * @param {com.conjoon.groupware.email.AccountStore}
      * Shorthand for the store with the configured email accounts.
      */
-    var _accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
+    var _accountStore = com.conjoon.groupware.email.AccountStore.getInstance();
 
     /**
      * Listener for the store's beforeload event.
@@ -150,12 +150,12 @@ de.intrabuild.groupware.email.Letterman = function(config) {
             return false;
         }
 
-        de.intrabuild.groupware.email.Letterman.rest();
+        com.conjoon.groupware.email.Letterman.rest();
 
-        _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.beforeload', {});
+        _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.beforeload', {});
     };
 
-    var _reception = de.intrabuild.groupware.Reception;
+    var _reception = com.conjoon.groupware.Reception;
 
     return {
 
@@ -246,13 +246,13 @@ de.intrabuild.groupware.email.Letterman = function(config) {
          * emails for. If not specified, the server will query all configured
          * accounts for new emails.
          * @param {Boolean} publish When set to false, the method will not publish
-         * the 'de.intrabuild.groupware.email.Letterman.peekIntoInbox' message
+         * the 'com.conjoon.groupware.email.Letterman.peekIntoInbox' message
          *
          */
         peekIntoInbox : function(accountId, publish)
         {
             if (publish !== false) {
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.Letterman.peekIntoInbox', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.Letterman.peekIntoInbox', {
                     accountId : accountId
                 });
             }
@@ -274,17 +274,17 @@ de.intrabuild.groupware.email.Letterman = function(config) {
         callout : function(length)
         {
             var text = String.format(
-                de.intrabuild.Gettext.ngettext("You have one new email", "You have {0} new emails", length),
+                com.conjoon.Gettext.ngettext("You have one new email", "You have {0} new emails", length),
                 length
             );
 
             new Ext.ux.ToastWindow({
-                title   : de.intrabuild.Gettext.ngettext("New email", "New emails", length),
+                title   : com.conjoon.Gettext.ngettext("New email", "New emails", length),
                 html    : text
             }).show(document);
 
-            if (de.intrabuild.groupware.SoundManager) {
-                de.intrabuild.groupware.SoundManager.play('newemail');
+            if (com.conjoon.groupware.SoundManager) {
+                com.conjoon.groupware.SoundManager.play('newemail');
             }
         },
 
@@ -297,7 +297,7 @@ de.intrabuild.groupware.email.Letterman = function(config) {
             this.wakeup();
             store.removeAll();
             var length = records.length;
-            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.load', {
+            _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.load', {
                 items : records,
                 total : length
             });
@@ -311,9 +311,9 @@ de.intrabuild.groupware.email.Letterman = function(config) {
          */
         onRequestFailure : function(proxy, options, response)
         {
-            _messageBroadcaster.publish('de.intrabuild.groupware.email.Letterman.loadexception', {});
+            _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.loadexception', {});
             this.wakeup();
-            de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+            com.conjoon.groupware.ResponseInspector.handleFailure(response);
         }
 
 

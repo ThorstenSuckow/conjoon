@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util');
+Ext.namespace('com.conjoon.util');
 
-de.intrabuild.util.Record = function(){
+com.conjoon.util.Record = function(){
 
 
     return {

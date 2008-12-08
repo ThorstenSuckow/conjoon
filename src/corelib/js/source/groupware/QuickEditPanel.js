@@ -12,22 +12,22 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware');
+Ext.namespace('com.conjoon.groupware');
 
 /**
  * object - an object with configuration
  *              container string or object - the element to render this panel into
  *
  */
-de.intrabuild.groupware.QuickEditPanel = function(){
+com.conjoon.groupware.QuickEditPanel = function(){
 
-    //var de.intrabuild.groupware.QuickContactForm;
-    //var de.intrabuild.groupware.QuickEmailForm;
+    //var com.conjoon.groupware.QuickContactForm;
+    //var com.conjoon.groupware.QuickEmailForm;
 
 
     // shorthands
-    var _quickContactForm = de.intrabuild.groupware.forms.QuickContactForm;
-    var _quickEmailForm   = de.intrabuild.groupware.forms.QuickEmailForm;
+    var _quickContactForm = com.conjoon.groupware.forms.QuickContactForm;
+    var _quickEmailForm   = com.conjoon.groupware.forms.QuickEmailForm;
 
 
     var _panel = null;
@@ -50,8 +50,8 @@ de.intrabuild.groupware.QuickEditPanel = function(){
                 var msg   = Ext.MessageBox;
                     msg.show({
                         prompt : true,
-                        title   : de.intrabuild.Gettext.gettext("Load video"),
-                        msg     : de.intrabuild.Gettext.gettext("Please submit the id or the full url of the youtube video you want to load."),
+                        title   : com.conjoon.Gettext.gettext("Load video"),
+                        msg     : com.conjoon.Gettext.gettext("Please submit the id or the full url of the youtube video you want to load."),
                         buttons : msg.OKCANCEL,
                         fn      : function(btn, text){
                                     if (btn != 'ok') {
@@ -65,7 +65,7 @@ de.intrabuild.groupware.QuickEditPanel = function(){
                                     }
                                   },
                         icon    : msg.QUESTION,
-                        cls     :'de-intrabuild-msgbox-prompt',
+                        cls     :'com-conjoon-msgbox-prompt',
                         width   : 375
                     });
             }
@@ -184,7 +184,7 @@ de.intrabuild.groupware.QuickEditPanel = function(){
                                                         vtype:'email'
                                                     }, new Ext.form.Checkbox({
                                                         boxLabel: 'zum Bearbeiten wechseln',
-                                                        ctCls: 'de-intrabuild-groupware-quickpanel-SmallEditorFont'
+                                                        ctCls: 'com-conjoon-groupware-quickpanel-SmallEditorFont'
                                                     })
                                                 ],
                                                 buttons: [{

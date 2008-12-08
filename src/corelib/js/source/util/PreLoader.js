@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util.PreLoader');
+Ext.namespace('com.conjoon.util.PreLoader');
 
-de.intrabuild.util.PreLoader = function() {
+com.conjoon.util.PreLoader = function() {
 
     var _kernel = function(){
         this.addEvents(
@@ -37,20 +37,20 @@ de.intrabuild.util.PreLoader = function() {
 
     var storeLoaded = function(store)
     {
-        store.un('load',          storeLoaded, de.intrabuild.util.PreLoader);
-        store.un('loadexception', storeLoaded, de.intrabuild.util.PreLoader);
+        store.un('load',          storeLoaded, com.conjoon.util.PreLoader);
+        store.un('loadexception', storeLoaded, com.conjoon.util.PreLoader);
 
         storeCount--;
         if (storeCount == 0) {
             kernel.fireEvent('load');
         } else if (storeCount < 0 ) {
-            throw('de.intrabuild.util.PreLoader: storeCount is negative, but most not be.');
+            throw('com.conjoon.util.PreLoader: storeCount is negative, but most not be.');
         }
     };
 
     var storeDestroyed = function(store)
     {
-        store.un('load', storeLoaded, de.intrabuild.util.PreLoader);
+        store.un('load', storeLoaded, com.conjoon.util.PreLoader);
         storeCount--;
         delete stores[Ext.StoreMgr.getKey(store)];
     };
@@ -76,22 +76,22 @@ de.intrabuild.util.PreLoader = function() {
             var id = Ext.StoreMgr.getKey(store);
 
             if (!id) {
-                throw('de.intrabuild.util.PreLoader: store must have a property storeId or id.');
+                throw('com.conjoon.util.PreLoader: store must have a property storeId or id.');
             }
 
             if (stores[id]) {
-                throw('de.intrabuild.util.PreLoader: store with id '+id+' was already added.');
+                throw('com.conjoon.util.PreLoader: store with id '+id+' was already added.');
             }
 
-            store.on('load', storeLoaded, de.intrabuild.util.PreLoader);
+            store.on('load', storeLoaded, com.conjoon.util.PreLoader);
 
             if (continueOnLoadException === true) {
-                store.on('loadexception', storeLoaded, de.intrabuild.util.PreLoader, {single : true});
+                store.on('loadexception', storeLoaded, com.conjoon.util.PreLoader, {single : true});
             } else if (typeof continueOnLoadException == "function") {
                 store.on('loadexception', continueOnLoadException, (scope ? scope : window), {single : true});
             }
 
-            store.on('destroy', storeDestroyed, de.intrabuild.util.PreLoader);
+            store.on('destroy', storeDestroyed, com.conjoon.util.PreLoader);
             stores[id] = store;
             storeCount++;
         },

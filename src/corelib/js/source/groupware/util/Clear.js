@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.util');
+Ext.namespace('com.conjoon.groupware.util');
 
-de.intrabuild.groupware.util.Clear = Ext.extend(Ext.BoxComponent, {
+com.conjoon.groupware.util.Clear = Ext.extend(Ext.BoxComponent, {
 
     autoEl : {
         tag : 'div',

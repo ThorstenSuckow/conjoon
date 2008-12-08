@@ -1,0 +1,76 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+/**
+ * special main tab style
+ */
+.com-conjoon-groupware-TabHeader .x-tab-strip-top {
+    background:none !important;
+}
+
+.com-conjoon-groupware-TabHeader-body {
+    padding-top:33px;
+    padding-left:4px;
+    background-color:#C5D7EE !important;
+}
+
+
+/* BG images for inactive Tab */
+.com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-left {
+    background:transparent url(../images/tabs-sprite.png)  no-repeat scroll right -351px;
+}
+
+.com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-strip-inner {
+    background:transparent url(../images/tabs-sprite.png)  repeat-x scroll 0pt -201px;
+}
+
+.com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-right {
+    background:transparent url(../images/tabs-sprite.png) no-repeat scroll 0pt -51px;
+}
+
+/* BG images for active Tab */
+.com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-right {
+    background: transparent url(../images/tabs-sprite.png) no-repeat 0 -0px;
+}
+
+.com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-left {
+    background: transparent url(../images/tabs-sprite.png) no-repeat right -301px;
+}
+
+.com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner {
+    background: transparent url(../images/tabs-sprite.png) repeat-x 0 -151px;
+}
+
+/** closable image, inactive */
+.com-conjoon-groupware-TabHeader a.x-tab-strip-close {
+    background-image:url(../images/tab-close.png) !important;
+}
+
+/** closable image, active */
+.com-conjoon-groupware-TabHeader .x-tab-strip-active a.x-tab-strip-close {
+    background-image:url(../images/tab-close-active.png) !important;
+}
+
+/** font settings, inactive*/
+.com-conjoon-groupware-TabHeader span.x-tab-strip-text {
+    color:#D2D8E4;
+    font-weight:normal;
+}
+
+
+/** font settings, active*/
+.com-conjoon-groupware-TabHeader .x-tab-strip-active span.x-tab-strip-text {
+    color:#15428b;
+    font-weight:bold;
+}

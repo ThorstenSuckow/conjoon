@@ -1,0 +1,30 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+/**
+ * Toolbar style for groupware
+ */
+.com-conjoon-groupware-Toolbar {
+    padding:2px 2px;
+    background:none;
+    border:none;
+}
+
+.com-conjoon-groupware-Toolbar-searchMenu-email-icon {
+    background-image:url(../images/16x16/apps/groupware-email.png)!important;
+}
+
+.com-conjoon-groupware-Toolbar-startSearchButton-icon {
+    background-image:url(../images/16x16/actions/groupware-search.png)!important;
+}

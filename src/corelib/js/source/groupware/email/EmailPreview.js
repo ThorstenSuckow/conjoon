@@ -12,11 +12,11 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * Controller for previewing Feed contents.
- * This is a singleton-object and used byde.intrabuild.groupware.feeds.FeedGrid
+ * This is a singleton-object and used bycom.conjoon.groupware.feeds.FeedGrid
  * to enable previewing a feed in a panel sliding out left of the grid panel,
  * aligned to the current selected cell. The panel is closable and draggable.
  * Once a panel was created, it can not be closed such that the object gets
@@ -36,7 +36,7 @@ Ext.namespace('de.intrabuild.groupware.email');
  * @copyright 2007 MindPatterns Software Solutions
  *
  */
-de.intrabuild.groupware.email.EmailPreview = function() {
+com.conjoon.groupware.email.EmailPreview = function() {
 
 // {{{ private members
 
@@ -157,7 +157,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
 
     var onLoadFailure = function(response, options)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
                     decoratePreviewPanel();
@@ -184,7 +184,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     var initComponents = function()
     {
         container = Ext.DomHelper.append(document.body, {
-            id    : 'DOM:de.intrabuild.groupware.email.EmailPreview.container',
+            id    : 'DOM:com.conjoon.groupware.email.EmailPreview.container',
             style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
         }, true);
     };
@@ -195,7 +195,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
      */
     var onHide = function(skipAlign)
     {
-        previewPanel.setTitle(de.intrabuild.Gettext.gettext("Loading..."));
+        previewPanel.setTitle(com.conjoon.Gettext.gettext("Loading..."));
 
         if (skipAlign === true) {
             return;
@@ -215,7 +215,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         }
 
         var subject = clkRecord.get('subject');
-        var rec = de.intrabuild.groupware.email.EmailViewBaton.getRecord(clkRecord.id);
+        var rec = com.conjoon.groupware.email.EmailViewBaton.getRecord(clkRecord.id);
         if (rec) {
             lastRecord = rec;
             emailView.emailRecord = rec;
@@ -243,7 +243,7 @@ de.intrabuild.groupware.email.EmailPreview = function() {
         }
         var emailItem = lastRecord.copy();
         previewPanel.close();
-        var view = de.intrabuild.groupware.email.EmailViewBaton.showEmail(emailItem, {
+        var view = com.conjoon.groupware.email.EmailViewBaton.showEmail(emailItem, {
             autoLoad : false
         }, true);
 
@@ -258,11 +258,11 @@ de.intrabuild.groupware.email.EmailPreview = function() {
     {
         var templateConfig = {
             header : new Ext.Template(
-                '<div class="de-intrabuild-groupware-email-EmailView-wrap">',
-                   '<div class="de-intrabuild-groupware-email-EmailView-dataInset de-intrabuild-groupware-email-EmailPreview-inset">',
-                    '<span class="de-intrabuild-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
+                '<div class="com-conjoon-groupware-email-EmailView-wrap">',
+                   '<div class="com-conjoon-groupware-email-EmailView-dataInset com-conjoon-groupware-email-EmailPreview-inset">',
+                    '<span class="com-conjoon-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
                     '{subject}',
-                    '<table border="0" cellspacing="0" cellpadding="0" class="de-intrabuild-groupware-email-EmailView-headerTable">',
+                    '<table border="0" cellspacing="0" cellpadding="0" class="com-conjoon-groupware-email-EmailView-headerTable">',
                     '{from}',
                     '{replyTo}',
                     '{to}',
@@ -273,31 +273,31 @@ de.intrabuild.groupware.email.EmailPreview = function() {
                 '</div>'
         )};
 
-        emailView = new de.intrabuild.groupware.email.EmailViewPanel({
+        emailView = new com.conjoon.groupware.email.EmailViewPanel({
             autoLoad     : false,
             refreshFrame : true,
             border       :  false,
             hideMode     : 'visibility',
             viewConfig   : {
                 templates        : templateConfig,
-                fromValue        : de.intrabuild.Gettext.gettext("From"),
-                toValue          : de.intrabuild.Gettext.gettext("To"),
-                ccValue          : de.intrabuild.Gettext.gettext("CC"),
-                bccValue         : de.intrabuild.Gettext.gettext("BCC"),
-                attachmentValue  : de.intrabuild.Gettext.gettext("Attachments")
+                fromValue        : com.conjoon.Gettext.gettext("From"),
+                toValue          : com.conjoon.Gettext.gettext("To"),
+                ccValue          : com.conjoon.Gettext.gettext("CC"),
+                bccValue         : com.conjoon.Gettext.gettext("BCC"),
+                attachmentValue  : com.conjoon.Gettext.gettext("Attachments")
             }
         });
 
-        emailView.on('emailload', onLoadSuccess, de.intrabuild.groupware.email.EmailPreview);
-        emailView.on('beforeemailload', onBeforeLoad, de.intrabuild.groupware.email.EmailPreview);
-        emailView.on('emailloadfailure', onLoadFailure, de.intrabuild.groupware.email.EmailPreview);
+        emailView.on('emailload', onLoadSuccess, com.conjoon.groupware.email.EmailPreview);
+        emailView.on('beforeemailload', onBeforeLoad, com.conjoon.groupware.email.EmailPreview);
+        emailView.on('emailloadfailure', onLoadFailure, com.conjoon.groupware.email.EmailPreview);
 
         var win =  new Ext.Window({
             bodyStyle  : 'background:white;',
             autoScroll : false,
             layout     : 'fit',
             title      : ("Loading..."),
-            iconCls    : 'de-intrabuild-groupware-email-EmailPreview-Icon',
+            iconCls    : 'com-conjoon-groupware-email-EmailPreview-Icon',
             resizable  : false,
             shadow     : false,
             hideMode   : 'visibility',

@@ -12,17 +12,17 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.forms');
+Ext.namespace('com.conjoon.groupware.forms');
 
 /**
- * de.intrabuild.groupware.forms.QuickContactFormFieldConfigs
- * de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs
+ * com.conjoon.groupware.forms.QuickContactFormFieldConfigs
+ * com.conjoon.groupware.forms.QuickEmailFormFieldConfigs
  */
 
-de.intrabuild.groupware.forms.QuickContactForm = function() {
+com.conjoon.groupware.forms.QuickContactForm = function() {
 
     // shorthands
-    var _fieldConfigs    = de.intrabuild.groupware.forms.QuickContactFormFieldConfigs;
+    var _fieldConfigs    = com.conjoon.groupware.forms.QuickContactFormFieldConfigs;
     var _textFieldConfig = _fieldConfigs.textField;
     var _buttonConfig    = _fieldConfigs.button;
     var _checkboxConfig  = _fieldConfigs.checkbox;
@@ -63,7 +63,7 @@ de.intrabuild.groupware.forms.QuickContactForm = function() {
         _emailAddress = new Ext.form.TextField(_textFieldConfig.email);
 
         _switchToEdit = new Ext.form.Checkbox(_checkboxConfig.switchToEdit);
-        _switchToEdit.ctCls = 'de-intrabuild-groupware-quickpanel-SmallEditorFont';
+        _switchToEdit.ctCls = 'com-conjoon-groupware-quickpanel-SmallEditorFont';
 
         _saveButton   = new Ext.Button(_buttonConfig.save);
         _cancelButton = new Ext.Button(_buttonConfig.cancel);
@@ -84,7 +84,7 @@ de.intrabuild.groupware.forms.QuickContactForm = function() {
                 labelWidth: 0,
                 frame:false,
                 labelAlign:'left',
-                title: de.intrabuild.Gettext.gettext("Contact"),
+                title: com.conjoon.Gettext.gettext("Contact"),
                 //width: 220,
                 bodyStyle:'background:#DFE8F6;padding:5px;',
                 cls: 'x-small-editor',

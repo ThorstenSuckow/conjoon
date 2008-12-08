@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
-de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
+com.conjoon.groupware.email.EmailGrid = function(config, controller) {
 
     Ext.apply(this, config);
 
@@ -28,7 +28,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         totalProperty   : 'totalCount',
         versionProperty : 'version',
         id              : 'id'
-    }, de.intrabuild.groupware.email.EmailItemRecord);
+    }, com.conjoon.groupware.email.EmailItemRecord);
 
     reader.read = function(response){
         var json = response.responseText;
@@ -71,7 +71,7 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         remoteSort  : true,
         listeners   : {
             remove : function (store, record, index) {
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.remove', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.remove', {
                     items : [record]
                 });
             },
@@ -81,12 +81,12 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
                     records.push(items[i][0]);
                 }
 
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.remove', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.remove', {
                     items : records
                 });
             },
             update : function (store, record, operation) {
-                Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.EmailGrid.store.update', {
+                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.update', {
                     item      : record,
                     operation : operation
                 });
@@ -100,13 +100,13 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
         nearLimit   : 100,
         scrollDelay : 0,
         loadMask    : {
-            msg : de.intrabuild.Gettext.gettext("Please wait...")
+            msg : com.conjoon.Gettext.gettext("Please wait...")
         },
         getRowClass : function(record, rowIndex, p, ds){
             if (record.data.isRead) {
-                return 'de-intrabuild-groupware-email-EmailGrid-itemRead';
+                return 'com-conjoon-groupware-email-EmailGrid-itemRead';
             } else {
-                return 'de-intrabuild-groupware-email-EmailGrid-itemUnread';
+                return 'com-conjoon-groupware-email-EmailGrid-itemUnread';
             }
         }
     });
@@ -122,26 +122,26 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
     this.bbar = new Ext.ux.grid.livegrid.Toolbar({
         view        : this.view,
         displayInfo : true,
-        displayMsg  : de.intrabuild.Gettext.gettext("Emails {0} - {1} of {2}"),
-        emptyMsg    : de.intrabuild.Gettext.gettext("No emails available")
+        displayMsg  : com.conjoon.Gettext.gettext("Emails {0} - {1} of {2}"),
+        emptyMsg    : com.conjoon.Gettext.gettext("No emails available")
     });
 
 // ------------------------- ^^ EO set up buffered grid ------------------------
 
-    this.colModel = new de.intrabuild.groupware.email.data.DefaultColumnModel();
+    this.colModel = new com.conjoon.groupware.email.data.DefaultColumnModel();
 
-    de.intrabuild.groupware.email.EmailGrid.superclass.constructor.call(this, {
-        loadMask       : {msg: de.intrabuild.Gettext.gettext("Loading...")},
+    com.conjoon.groupware.email.EmailGrid.superclass.constructor.call(this, {
+        loadMask       : {msg: com.conjoon.Gettext.gettext("Loading...")},
         autoScroll     : true,
         plugins     : [
-            new de.intrabuild.groupware.email.view.GridViewMenuPlugin()
+            new com.conjoon.groupware.email.view.GridViewMenuPlugin()
         ],
         stripeRows     : true,
-        cls            : 'de-intrabuild-groupware-email-EmailGrid',
+        cls            : 'com-conjoon-groupware-email-EmailGrid',
         trackMouseOver : false,
         enableDragDrop : true,
-        ddGroup        : 'de.intrabuild.groupware-email-Email',
-        ddText         : de.intrabuild.Gettext.gettext("{0} selected email(s)")
+        ddGroup        : 'com.conjoon.groupware-email-Email',
+        ddText         : com.conjoon.Gettext.gettext("{0} selected email(s)")
     });
 
     this.on('contextmenu',    this.onContextClick, this);
@@ -154,11 +154,11 @@ de.intrabuild.groupware.email.EmailGrid = function(config, controller) {
 
 };
 
-Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel, {
+Ext.extend(com.conjoon.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel, {
 
     onLoadException : function(proxy, options, response, jsError)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
                     this.view.reset(true);
@@ -173,19 +173,19 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPan
         this.createContextMenu();
 
         this.menu.items.get(10).setDisabled(true);
-        this.menu.items.get(10).setIconClass('de-intrabuild-groupware-selectionsLoading');
+        this.menu.items.get(10).setIconClass('com-conjoon-groupware-selectionsLoading');
 
         var subItems  = this.menu.items.get(8).menu.items;
         subItems.get(0).setDisabled(true);
-        subItems.get(0).setIconClass('de-intrabuild-groupware-selectionsLoading');
+        subItems.get(0).setIconClass('com-conjoon-groupware-selectionsLoading');
         subItems.get(1).setDisabled(true);
-        subItems.get(1).setIconClass('de-intrabuild-groupware-selectionsLoading');
+        subItems.get(1).setIconClass('com-conjoon-groupware-selectionsLoading');
 
 
         subItems.get(3).setDisabled(true);
-        subItems.get(3).setIconClass('de-intrabuild-groupware-selectionsLoading');
+        subItems.get(3).setIconClass('com-conjoon-groupware-selectionsLoading');
         subItems.get(4).setDisabled(true);
-        subItems.get(4).setIconClass('de-intrabuild-groupware-selectionsLoading');
+        subItems.get(4).setIconClass('com-conjoon-groupware-selectionsLoading');
 
 
 
@@ -300,65 +300,65 @@ Ext.extend(de.intrabuild.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPan
     {
         if(!this.menu){
 
-            var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+            var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
 
             this.menu = new Ext.menu.Menu({
                 items: [{
-                    text  : de.intrabuild.Gettext.gettext("Open in new tab"),
+                    text  : com.conjoon.Gettext.gettext("Open in new tab"),
                     handler : this.controller.openEmailView,
                     scope : this.controller
                   },
                     decorateAccountRelatedClk(new Ext.menu.Item({
-                    text    : de.intrabuild.Gettext.gettext("Send now"),
+                    text    : com.conjoon.Gettext.gettext("Send now"),
                     handler : function(){this.sendPendingItems();},
                     scope   : this.controller
                   })),
                   decorateAccountRelatedClk(new Ext.menu.Item({
-                    text    : de.intrabuild.Gettext.gettext("Edit draft"),
+                    text    : com.conjoon.Gettext.gettext("Edit draft"),
                     handler : function(){this.openEmailEditPanel(true, 'edit');},
                     scope   : this.controller
                   })),
                   '-' ,
                   decorateAccountRelatedClk(new Ext.menu.Item({
-                    text  : de.intrabuild.Gettext.gettext("Reply"),
+                    text  : com.conjoon.Gettext.gettext("Reply"),
                     handler : function(){this.openEmailEditPanel(true, 'reply');},
                     scope : this.controller
                   })),
 
                   decorateAccountRelatedClk(new Ext.menu.Item({
-                    text  : de.intrabuild.Gettext.gettext("Reply all"),
+                    text  : com.conjoon.Gettext.gettext("Reply all"),
                     handler : function(){this.openEmailEditPanel(true, 'reply_all');},
                     scope : this.controller
                   })),
                   decorateAccountRelatedClk(new Ext.menu.Item({
-                    text  : de.intrabuild.Gettext.gettext("Forward"),
+                    text  : com.conjoon.Gettext.gettext("Forward"),
                     handler : function(){this.openEmailEditPanel(true, 'forward');},
                     scope : this.controller
                   })), '-', {
-                      text : de.intrabuild.Gettext.gettext("Mark email"),
+                      text : com.conjoon.Gettext.gettext("Mark email"),
                       menu : {
                           items : [{
-                                text    : de.intrabuild.Gettext.gettext("as read"),
+                                text    : com.conjoon.Gettext.gettext("as read"),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsRead(this.selModel.getSelections(), true);}
                               },{
-                                text    : de.intrabuild.Gettext.gettext("as unread"),
+                                text    : com.conjoon.Gettext.gettext("as unread"),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsRead(this.selModel.getSelections(), false);}
                               },
                               '-',{
-                                text    : de.intrabuild.Gettext.gettext("as spam"),
+                                text    : com.conjoon.Gettext.gettext("as spam"),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsSpam(this.selModel.getSelections(), true);}
                               },{
-                                text    : de.intrabuild.Gettext.gettext("as \"no spam\""),
+                                text    : com.conjoon.Gettext.gettext("as \"no spam\""),
                                 scope   : this,
                                 handler : function(){this.controller.setItemsAsSpam(this.selModel.getSelections(), false);}
                           }]
                       }
                   },
                   '-',{
-                    text    : de.intrabuild.Gettext.gettext("Delete"),
+                    text    : com.conjoon.Gettext.gettext("Delete"),
                     scope   : this,
                     handler : function(){this.controller.deleteEmails(this.selModel.getSelections());}
                 }]

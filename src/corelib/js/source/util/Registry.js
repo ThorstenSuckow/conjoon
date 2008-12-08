@@ -12,19 +12,19 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.util');
+Ext.namespace('com.conjoon.util');
 
-de.intrabuild.util._Registry = function()
+com.conjoon.util._Registry = function()
 {
     this.addEvents({
         'register'   : true,
         'unregister' : true
     });
 
-    de.intrabuild.util._Registry.superclass.constructor.call(this);
+    com.conjoon.util._Registry.superclass.constructor.call(this);
 };
 
-Ext.extend(de.intrabuild.util._Registry, Ext.util.Observable, {
+Ext.extend(com.conjoon.util._Registry, Ext.util.Observable, {
 
     map : {},
 
@@ -54,4 +54,4 @@ Ext.extend(de.intrabuild.util._Registry, Ext.util.Observable, {
 
 });
 
-de.intrabuild.util.Registry = new de.intrabuild.util._Registry();
+com.conjoon.util.Registry = new com.conjoon.util._Registry();

@@ -1,0 +1,74 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-empty {
+}
+
+.com-conjoon-attr-fontWeight-bold {
+    font-weight:bold !important;
+}
+
+.com-conjoon-attr-fontWeight-normal {
+    font-weight:normal !important;
+}
+
+
+.com-conjoon-smalleditor .x-combo-list-item {
+    font-size:11px !important;
+}
+
+.com-conjoon-smalleditor .x-form-cb-label /*label*/ {
+    font-size:11px !important;
+}
+
+.com-conjoon-go-trigger {
+    background-image: url(../images/trigger-go.png) !important;
+    cursor:pointer;
+}
+
+.com-conjoon-margin-t-5 {
+    margin-top:5px;
+}
+
+.com-conjoon-margin-b-5 {
+    margin-bottom:5px;
+}
+
+.com-conjoon-margin-l-15 {
+    margin-left:15px;
+}
+
+.com-conjoon-margin-l-25 {
+    margin-left:25px;
+}
+
+.com-conjoon-margin-b-10 {
+    margin-bottom:10px;
+}
+
+.com-conjoon-margin-b-15 {
+    margin-bottom:15px;
+}
+
+.com-conjoon-margin-b-20 {
+    margin-bottom:20px;
+}
+
+.com-conjoon-float-left {
+   float:left;
+}
+
+.com-conjoon-clear {
+   clear:both;
+}

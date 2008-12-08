@@ -12,16 +12,16 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.util');
+Ext.namespace('com.conjoon.groupware.util');
 
 /**
- * @class de.intrabuild.groupware.form.FormIntro
+ * @class com.conjoon.groupware.form.FormIntro
  * @extends Ext.BoxComponent
  * Utility Formintro class.
  * @constructor
  * @param {Number} height (optional) Spacer height in pixels (defaults to 22).
  */
-de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
+com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 
     /**
      * @cfg {String} imageClass
@@ -35,24 +35,24 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
         tag : 'div',
         children : [{
             tag      : 'div',
-            cls      : 'de-intrabuild-groupware-util-FormIntro-container',
+            cls      : 'com-conjoon-groupware-util-FormIntro-container',
             children : [{
                 tag  : 'div',
-                cls  :  'de-intrabuild-groupware-util-FormIntro-label',
+                cls  :  'com-conjoon-groupware-util-FormIntro-label',
                 html : ''
             }, {
                 tag      : 'div',
-                cls      : 'de-intrabuild-groupware-util-FormIntro-outersep',
+                cls      : 'com-conjoon-groupware-util-FormIntro-outersep',
                 children : [{
                     tag  : 'div',
-                    cls  : 'de-intrabuild-groupware-util-FormIntro-sepx',
+                    cls  : 'com-conjoon-groupware-util-FormIntro-sepx',
                     html : '&nbsp;'
                 }]
             }]
         }, {
             tag  : 'div',
             html : '',
-            cls  : 'de-intrabuild-groupware-util-FormIntro-description'
+            cls  : 'com-conjoon-groupware-util-FormIntro-description'
         }]
     },
 
@@ -81,7 +81,7 @@ de.intrabuild.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 
     onRender : function(ct, position)
     {
-        de.intrabuild.groupware.util.FormIntro.superclass.onRender.call(this, ct, position);
+        com.conjoon.groupware.util.FormIntro.superclass.onRender.call(this, ct, position);
 
         this._labelEl = new Ext.Element(this.el.dom.firstChild.firstChild);
         this._textEl  = new Ext.Element(this.el.dom.lastChild);

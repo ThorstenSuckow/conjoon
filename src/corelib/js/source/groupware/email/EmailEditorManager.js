@@ -12,7 +12,7 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * The EmailEditorManager Singleton allows for creating an instance of EmailForm
@@ -23,7 +23,7 @@ Ext.namespace('de.intrabuild.groupware.email');
  *
  *
  */
-de.intrabuild.groupware.email.EmailEditorManager = function(){
+com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var STATE_LOADING = 1;
     var STATE_SAVING  = 2;
@@ -32,7 +32,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var contentPanel = null;
 
-    var utilDom = de.intrabuild.util.Dom;
+    var utilDom = com.conjoon.util.Dom;
 
     var tabIdCount = 0;
     var tabCount   = 0;
@@ -49,10 +49,10 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     var recipientsGrid = null;
 
     var messages = {
-        loading : de.intrabuild.Gettext.gettext("Loading message..."),
-        saving  : de.intrabuild.Gettext.gettext("Saving draft..."),
-        sending : de.intrabuild.Gettext.gettext("Sending message..."),
-        outbox  : de.intrabuild.Gettext.gettext("Moving message...")
+        loading : com.conjoon.Gettext.gettext("Loading message..."),
+        saving  : com.conjoon.Gettext.gettext("Saving draft..."),
+        sending : com.conjoon.Gettext.gettext("Sending message..."),
+        outbox  : com.conjoon.Gettext.gettext("Moving message...")
     };
 
 
@@ -64,7 +64,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     {
         var draftId = -1;
 
-        if (emailItemRecord instanceof de.intrabuild.groupware.email.EmailItemRecord) {
+        if (emailItemRecord instanceof com.conjoon.groupware.email.EmailItemRecord) {
             draftId = emailItemRecord.id;
         } else {
             draftId = emailItemRecord;
@@ -84,8 +84,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         if (form == null) {
 
-            form = new de.intrabuild.groupware.email.EmailForm({
-                id                : 'DOM:de.intrabuild.groupware.email.EmailEditor.form',
+            form = new com.conjoon.groupware.email.EmailForm({
+                id                : 'DOM:com.conjoon.groupware.email.EmailEditor.form',
                 layout            : 'border',
                 region            : 'center',
                 border            : false,
@@ -99,7 +99,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
 
             masterPanel = new Ext.Panel({
-                id         : 'DOM:de.intrabuild.groupware.email.EmailEditor.masterTab',
+                id         : 'DOM:com.conjoon.groupware.email.EmailEditor.masterTab',
                 layout     : 'fit',
                 items      : [form],
                 hideMode   : 'offsets',
@@ -109,22 +109,22 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
             subjectField = form.subjectField;
             subjectField.on('render', function(){
-                subjectField.el.on('keyup',    onSubjectValueChange, de.intrabuild.groupware.email.EmailEditorManager);
-                subjectField.el.on('keydown',  onSubjectValueChange, de.intrabuild.groupware.email.EmailEditorManager);
-                subjectField.el.on('keypress', onSubjectValueChange, de.intrabuild.groupware.email.EmailEditorManager);
+                subjectField.el.on('keyup',    onSubjectValueChange, com.conjoon.groupware.email.EmailEditorManager);
+                subjectField.el.on('keydown',  onSubjectValueChange, com.conjoon.groupware.email.EmailEditorManager);
+                subjectField.el.on('keypress', onSubjectValueChange, com.conjoon.groupware.email.EmailEditorManager);
             }, this);
 
             recipientsGrid = form.grid;
-            recipientsGrid.on('afteredit', onAfterEdit, de.intrabuild.groupware.email.EmailEditorManager);
+            recipientsGrid.on('afteredit', onAfterEdit, com.conjoon.groupware.email.EmailEditorManager);
 
             accountField   = form.fromComboBox;
-            accountField.on('select', onAccountSelect, de.intrabuild.groupware.email.EmailEditorManager);
+            accountField.on('select', onAccountSelect, com.conjoon.groupware.email.EmailEditorManager);
 
             htmlEditor     = form.htmlEditor;
             htmlEditor.on('initialize' , function(){
                 var fly = Ext.fly(this.doc);
                 fly.addKeyListener([10, 13], onHtmlEditorEdit,
-                    de.intrabuild.groupware.email.EmailEditorManager, {stopEvent:true});
+                    com.conjoon.groupware.email.EmailEditorManager, {stopEvent:true});
             }, htmlEditor);
 
             recipientStore = form.gridStore;
@@ -137,13 +137,13 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
 
         var panel = new Ext.Panel({
-            id         : 'DOM:de.intrabuild.groupware.email.EmailEditor.tab_'+tabIdCount,
+            id         : 'DOM:com.conjoon.groupware.email.EmailEditor.tab_'+tabIdCount,
             bodyStyle  : 'display:none',
-            title      : de.intrabuild.Gettext.gettext("Loading..."),
+            title      : com.conjoon.Gettext.gettext("Loading..."),
             hideMode   : 'offsets',
             closable   : true,
             border     : false,
-            iconCls    : 'de-intrabuild-groupware-email-EmailForm-icon',
+            iconCls    : 'com-conjoon-groupware-email-EmailForm-icon',
             autoScroll : false
         });
 
@@ -173,7 +173,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             },
             success : onDraftLoad,
             failure : onDraftLoadException,
-            scope   : de.intrabuild.groupware.email.EmailEditorManager
+            scope   : com.conjoon.groupware.email.EmailEditorManager
         };
 
         if (recipient) {
@@ -187,7 +187,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         registerToolbar();
 
-        var emailEditor = de.intrabuild.groupware.email.EmailEditorManager;
+        var emailEditor = com.conjoon.groupware.email.EmailEditorManager;
 
         panel.on('deactivate', onDeactivatePanel, emailEditor);
         panel.on('render',     onActivatePanel,   emailEditor);
@@ -208,7 +208,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var id = component.el.dom.id;
         var grp = id.split('_');
 
-        if (grp[0] == 'DOM:de.intrabuild.groupware.email.EmailEditor.tab') {
+        if (grp[0] == 'DOM:com.conjoon.groupware.email.EmailEditor.tab') {
 
             if (!activePanel || activePanel.id != id) {
                 container.setActiveTab(component);
@@ -223,20 +223,20 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             if (formValues[id].dirty) {
                 var msg   = Ext.MessageBox;
                 msg.show({
-                    title   : de.intrabuild.Gettext.gettext("Confirm - close message"),
-                    msg     : de.intrabuild.Gettext.gettext("You did not send this message. Do you really want to close this message without saving?"),
+                    title   : com.conjoon.Gettext.gettext("Confirm - close message"),
+                    msg     : com.conjoon.Gettext.gettext("You did not send this message. Do you really want to close this message without saving?"),
                     buttons : msg.YESNO,
                     fn      : function(btn){
                                   if (btn == 'yes') {
-                                      contentPanel.un('beforeremove',  onBeforeClose,    de.intrabuild.groupware.email.EmailEditorManager);
+                                      contentPanel.un('beforeremove',  onBeforeClose,    com.conjoon.groupware.email.EmailEditorManager);
                                       container.remove(component);
                                       if (tabCount > 0) {
-                                        contentPanel.on('beforeremove',  onBeforeClose,    de.intrabuild.groupware.email.EmailEditorManager);
+                                        contentPanel.on('beforeremove',  onBeforeClose,    com.conjoon.groupware.email.EmailEditorManager);
                                       }
                                   }
                               },
                     icon    : msg.QUESTION,
-                    cls     :'de-intrabuild-msgbox-question',
+                    cls     :'com-conjoon-msgbox-question',
                     width   : 375
                 });
 
@@ -250,16 +250,16 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
     var onDraftLoadException = function(response, options)
     {
-        contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+        contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
         contentPanel.remove(Ext.getCmp(options.panelId));
-        contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+        contentPanel.on('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
 
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
     };
 
     /**
      * Callback for the successfull loading of a draft. This method awaits a fully
-     * configured Intrabuild_Modules_Groupware_Email_Draft in the response property
+     * configured Conjoon_Modules_Groupware_Email_Draft in the response property
      * "draft".
      *
      * @param {XmlHttpResponse} response
@@ -272,7 +272,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             return;
         }
 
-        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
+        var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
 
         if (data === null) {
             return onDraftLoadException(response, options);
@@ -282,7 +282,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var type  = data.type;
 
         var recRecs         = [];
-        var recipientRecord = de.intrabuild.groupware.email.RecipientRecord;
+        var recipientRecord = com.conjoon.groupware.email.RecipientRecord;
         var add = null;
 
         // get all the recipients
@@ -385,7 +385,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         }
 
         return Ext.isIE
-               ? '<div class="editorBodyWrap">'+de.intrabuild.util.Format.replaceWhitespacePairs(text)+'</div>'
+               ? '<div class="editorBodyWrap">'+com.conjoon.util.Format.replaceWhitespacePairs(text)+'</div>'
                : '<pre>'+text+'</pre>';
     };
 
@@ -443,39 +443,39 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     var init = function()
     {
         if (!contentPanel) {
-            contentPanel = de.intrabuild.util.Registry.get('de.intrabuild.groupware.ContentPanel');
+            contentPanel = com.conjoon.util.Registry.get('com.conjoon.groupware.ContentPanel');
         }
     };
 
     var registerToolbar = function(panel)
     {
         if (controlBar == null) {
-            var tbarManager = de.intrabuild.groupware.ToolbarManager;
+            var tbarManager = com.conjoon.groupware.ToolbarManager;
 
             controlBar = new Ext.Toolbar([{
                 cls     : 'x-btn-text-icon',
-                iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonSend-icon',
-                text    : '&#160;'+de.intrabuild.Gettext.gettext("Send now"),
+                iconCls : 'com-conjoon-groupware-email-EmailForm-toolbar-buttonSend-icon',
+                text    : '&#160;'+com.conjoon.Gettext.gettext("Send now"),
                 handler : function() {
                     _manageDraft('send');
                 }
             },{
                 cls     : 'x-btn-text-icon',
-                iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonOutbox-icon',
-                text    : '&#160;'+de.intrabuild.Gettext.gettext("Move to outbox"),
+                iconCls : 'com-conjoon-groupware-email-EmailForm-toolbar-buttonOutbox-icon',
+                text    : '&#160;'+com.conjoon.Gettext.gettext("Move to outbox"),
                 handler : function() {
                     _manageDraft('outbox');
                 }
             } ,'-', {
                 cls     : 'x-btn-text-icon',
-                iconCls : 'de-intrabuild-groupware-email-EmailForm-toolbar-buttonDraft-icon',
-                text    : '&#160;'+de.intrabuild.Gettext.gettext("Save as draft"),
+                iconCls : 'com-conjoon-groupware-email-EmailForm-toolbar-buttonDraft-icon',
+                text    : '&#160;'+com.conjoon.Gettext.gettext("Save as draft"),
                 handler : function() {
                     _manageDraft('edit');
                 }
             }]);
 
-            tbarManager.register('de.intrabuild.groupware.email.EmailForm.toolbar', controlBar);
+            tbarManager.register('com.conjoon.groupware.email.EmailForm.toolbar', controlBar);
         }
     };
 
@@ -516,7 +516,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         switch (type) {
             case 'send':
-                de.intrabuild.groupware.email.Dispatcher.sendEmail(
+                com.conjoon.groupware.email.Dispatcher.sendEmail(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
                     {panelId : panelId}
@@ -524,7 +524,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             break;
 
             case 'outbox':
-                de.intrabuild.groupware.email.Dispatcher.moveDraftToOutbox(
+                com.conjoon.groupware.email.Dispatcher.moveDraftToOutbox(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
                     {panelId : panelId}
@@ -532,7 +532,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             break;
 
             case 'edit':
-                de.intrabuild.groupware.email.Dispatcher.saveDraft(
+                com.conjoon.groupware.email.Dispatcher.saveDraft(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
                     {panelId : panelId}
@@ -545,11 +545,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      * Callback before an email is moved to the outbox or send or a draft is saved.
      *
      * This implementation will both handle the messages
-     * de.intrabuild.groupware.email.Smtp.beforeEmailSent
+     * com.conjoon.groupware.email.Smtp.beforeEmailSent
      * and
-     * de.intrabuild.groupware.email.outbox.beforeEmailMove
+     * com.conjoon.groupware.email.outbox.beforeEmailMove
      * and
-     * de.intrabuild.groupware.email.editor.beforeDraftSave
+     * com.conjoon.groupware.email.editor.beforeDraftSave
      *
      * @param {String} subject
      * @param {Object} message
@@ -573,23 +573,23 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         // will throw an error in ext2.0, so catch it
         try {
-            activePanel.setIconClass('de-intrabuild-groupware-pending-icon');
+            activePanel.setIconClass('com-conjoon-groupware-pending-icon');
         } catch (e) {
             // ignore
         }
 
         switch (subject) {
-            case 'de.intrabuild.groupware.email.Smtp.beforeEmailSent':
+            case 'com.conjoon.groupware.email.Smtp.beforeEmailSent':
                 formValues[panelId].state = STATE_SENDING;
                 showLoadMask('sending');
             break;
 
-            case 'de.intrabuild.groupware.email.outbox.beforeEmailMove':
+            case 'com.conjoon.groupware.email.outbox.beforeEmailMove':
                 formValues[panelId].state = STATE_MOVING;
                 showLoadMask('outbox');
             break;
 
-            case 'de.intrabuild.groupware.email.editor.beforeDraftSave':
+            case 'com.conjoon.groupware.email.editor.beforeDraftSave':
                 formValues[panelId].state = STATE_SAVING;
                 showLoadMask('saving');
             break;
@@ -602,11 +602,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      * Callback for successfully saving/sending an email/ moving an email to the outbox.
      *
      * This implementation will both handle the messages
-     * de.intrabuild.groupware.email.Smtp.emailSent
+     * com.conjoon.groupware.email.Smtp.emailSent
      * and
-     * de.intrabuild.groupware.email.outbox.emailMove
+     * com.conjoon.groupware.email.outbox.emailMove
      * and
-     * de.intrabuild.groupware.email.editor.draftSave
+     * com.conjoon.groupware.email.editor.draftSave
      *
      * @param {String} subject
      * @param {Object} message
@@ -626,7 +626,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         formValues[panelId].emailItemRecord = message.itemRecord.copy();
         formValues[panelId].state = null;
 
-        if (subject == 'de.intrabuild.groupware.email.editor.draftSave') {
+        if (subject == 'com.conjoon.groupware.email.editor.draftSave') {
 
             // allow changing some properties if and only if this draft was created from
             // scratch
@@ -636,9 +636,9 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
             formValues[panelId].dirty = false;
         } else {
-            contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+            contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
             contentPanel.remove(Ext.getCmp(panelId));
-            contentPanel.on('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+            contentPanel.on('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
         }
     };
 
@@ -646,11 +646,11 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      * Callback for an unsuccessfull attempt to save/send an email/ move an email
      * to the outbox.
      * This implementation will both handle the messages
-     * de.intrabuild.groupware.email.Smtp.emailSentFailure
+     * com.conjoon.groupware.email.Smtp.emailSentFailure
      * and
-     * de.intrabuild.groupware.email.outbox.emailMoveFailure
+     * com.conjoon.groupware.email.outbox.emailMoveFailure
      * and
-     * de.intrabuild.groupware.email.editor.draftSaveFailure
+     * com.conjoon.groupware.email.editor.draftSaveFailure
      *
      * @param {String} subject
      * @param {Object} message
@@ -740,7 +740,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
             groupwareEmailAccountsId : accountField.getValue()
         };
 
-        var rec = new de.intrabuild.groupware.email.data.Draft(
+        var rec = new com.conjoon.groupware.email.data.Draft(
             params, params.id
         );
 
@@ -755,7 +755,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         var panelId = activePanel ? activePanel.id : null;
 
         try {
-            Ext.getCmp(id).setIconClass('de-intrabuild-groupware-email-EmailForm-icon');
+            Ext.getCmp(id).setIconClass('com-conjoon-groupware-email-EmailForm-icon');
         } catch (e) {
             // @bug ext2.0
             // ignore, buggy in ext 2.0
@@ -888,7 +888,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         str = (str == "" && value != undefined) ? value : str;
 
         if (str == "") {
-            str = de.intrabuild.Gettext.gettext("(no subject)");
+            str = com.conjoon.Gettext.gettext("(no subject)");
         } else {
             str = Ext.util.Format.htmlEncode(str);
         }
@@ -925,7 +925,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         if (value.trim() != "" && store.getAt(row).data.address.trim() != "" &&
             store.getAt(row+1) == null) {
 
-            var tmpRecord = new de.intrabuild.groupware.email.RecipientRecord({
+            var tmpRecord = new com.conjoon.groupware.email.RecipientRecord({
                 receiveType : 'to',
                 address : ''
             });
@@ -959,7 +959,7 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
      */
     var _attachSignature = function(panelId, accountId, refresh)
     {
-        var store = de.intrabuild.groupware.email.AccountStore.getInstance();
+        var store = com.conjoon.groupware.email.AccountStore.getInstance();
         var rec   = store.getById(accountId);
 
         var sigId = formValues[panelId]['signatureAttached'];
@@ -1034,8 +1034,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 // ----------------------------Panel listeners----------------------------------
     var onDeactivatePanel = function(panel)
     {
-        //htmlEditor.un('push', onMessageEdit, de.intrabuild.groupware.email.EmailEditorManager);
-        htmlEditor.un('sync', onMessageEdit, de.intrabuild.groupware.email.EmailEditorManager);
+        //htmlEditor.un('push', onMessageEdit, com.conjoon.groupware.email.EmailEditorManager);
+        htmlEditor.un('sync', onMessageEdit, com.conjoon.groupware.email.EmailEditorManager);
 
         recipientsGrid.stopEditing();
         if (!formValues[panel.id].disabled) {
@@ -1052,8 +1052,8 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         //htmlEditor.tb.items.get('sourceedit').toggle(false);
 
         activePanel = null;
-        var tbarManager = de.intrabuild.groupware.ToolbarManager;
-        tbarManager.hide('de.intrabuild.groupware.email.EmailForm.toolbar');
+        var tbarManager = com.conjoon.groupware.ToolbarManager;
+        tbarManager.hide('com.conjoon.groupware.email.EmailForm.toolbar');
     }
 
     var onActivatePanel = function(panel)
@@ -1069,12 +1069,12 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
         contentPanel.layout.activeItem = masterPanel;
         contentPanel.layout.layout();
 
-        var tbarManager = de.intrabuild.groupware.ToolbarManager;
-        tbarManager.show('de.intrabuild.groupware.email.EmailForm.toolbar');
+        var tbarManager = com.conjoon.groupware.ToolbarManager;
+        tbarManager.show('com.conjoon.groupware.email.EmailForm.toolbar');
 
         completeForm(panel.id);
-        //htmlEditor.on('push', onMessageEdit, de.intrabuild.groupware.email.EmailEditorManager);
-        htmlEditor.on('sync', onMessageEdit, de.intrabuild.groupware.email.EmailEditorManager);
+        //htmlEditor.on('push', onMessageEdit, com.conjoon.groupware.email.EmailEditorManager);
+        htmlEditor.on('sync', onMessageEdit, com.conjoon.groupware.email.EmailEditorManager);
     };
 
     var onDestroyPanel = function(panel)
@@ -1084,12 +1084,12 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
         tabCount--;
         if (tabCount == 0) {
-            contentPanel.un('beforeremove',  onBeforeClose, de.intrabuild.groupware.email.EmailEditorManager);
+            contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
             contentPanel.remove(masterPanel, true);
             form = null;
             masterPanel = null;
-            var tbarManager = de.intrabuild.groupware.ToolbarManager;
-            tbarManager.destroy('de.intrabuild.groupware.email.EmailForm.toolbar');
+            var tbarManager = com.conjoon.groupware.ToolbarManager;
+            tbarManager.destroy('com.conjoon.groupware.email.EmailForm.toolbar');
             controlBar = null;
             formValues = [];
             subjectField = null;
@@ -1118,48 +1118,48 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
     };
 
     /**
-     * Subscribe to the message de.intrabuild.groupware.email.Smtp.*
+     * Subscribe to the message com.conjoon.groupware.email.Smtp.*
      */
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.beforeEmailSent',
+        'com.conjoon.groupware.email.Smtp.beforeEmailSent',
         _onBeforeDraftHandle
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.emailSent',
+        'com.conjoon.groupware.email.Smtp.emailSent',
         _onDraftHandleSuccess
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.emailSentFailure',
+        'com.conjoon.groupware.email.Smtp.emailSentFailure',
         _onDraftHandleFailure
     );
     /**
-     * Subscribe to the message de.intrabuild.groupware.email.outbox.*
+     * Subscribe to the message com.conjoon.groupware.email.outbox.*
      */
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.outbox.beforeEmailMove',
+        'com.conjoon.groupware.email.outbox.beforeEmailMove',
         _onBeforeDraftHandle
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.outbox.emailMove',
+        'com.conjoon.groupware.email.outbox.emailMove',
         _onDraftHandleSuccess
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.outbox.emailMoveFailure',
+        'com.conjoon.groupware.email.outbox.emailMoveFailure',
         _onDraftHandleFailure
     );
     /**
-     * Subscribe to the message de.intrabuild.groupware.email.editor.*
+     * Subscribe to the message com.conjoon.groupware.email.editor.*
      */
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.editor.beforeDraftSave',
+        'com.conjoon.groupware.email.editor.beforeDraftSave',
         _onBeforeDraftHandle
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.editor.draftSave',
+        'com.conjoon.groupware.email.editor.draftSave',
         _onDraftHandleSuccess
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.editor.draftSaveFailure',
+        'com.conjoon.groupware.email.editor.draftSaveFailure',
         _onDraftHandleFailure
     );
 
@@ -1224,15 +1224,15 @@ de.intrabuild.groupware.email.EmailEditorManager = function(){
 
 }();
 
-de.intrabuild.groupware.email.EmailForm = function(config){
+com.conjoon.groupware.email.EmailForm = function(config){
 
     Ext.apply(this, config);
 
-    var accountStore = de.intrabuild.groupware.email.AccountStore.getInstance();
+    var accountStore = com.conjoon.groupware.email.AccountStore.getInstance();
 
     var view = new Ext.grid.GridView({
         getRowClass : function(record, rowIndex, p, ds){
-            return 'de-intrabuild-groupware-email-EmailForm-gridrow';
+            return 'com-conjoon-groupware-email-EmailForm-gridrow';
         }
     });
 
@@ -1243,7 +1243,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
     this.fromComboBox = new Ext.form.ComboBox({
        name : 'from',
        tpl : '<tpl for="."><div class="x-combo-list-item">{address:htmlEncode} - {name:htmlEncode}</div></tpl>',
-       fieldLabel : de.intrabuild.Gettext.gettext("From"),
+       fieldLabel : com.conjoon.Gettext.gettext("From"),
        anchor     : '100%',
        typeAhead: false,
        triggerAction: 'all',
@@ -1257,7 +1257,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
        store : accountStore
     });
 
-    var addressQueryComboBox = new de.intrabuild.groupware.email.form.RecipientComboBox();
+    var addressQueryComboBox = new com.conjoon.groupware.email.form.RecipientComboBox();
 
     this.gridStore = new Ext.data.JsonStore({
         id       : 'id',
@@ -1273,9 +1273,9 @@ de.intrabuild.groupware.email.EmailForm = function(config){
         value         : 'gg',
         listClass     : 'x-combo-list-small',
         store         : [
-            ['to',  de.intrabuild.Gettext.gettext('To:')],
-            ['cc',  de.intrabuild.Gettext.gettext('CC:')],
-            ['bcc', de.intrabuild.Gettext.gettext('BCC:')]
+            ['to',  com.conjoon.Gettext.gettext('To:')],
+            ['cc',  com.conjoon.Gettext.gettext('CC:')],
+            ['bcc', com.conjoon.Gettext.gettext('BCC:')]
         ]
     });
 
@@ -1331,7 +1331,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
 
     this.subjectField = new Ext.form.TextField({
         name : 'subject',
-        fieldLabel : de.intrabuild.Gettext.gettext("Subject"),
+        fieldLabel : com.conjoon.Gettext.gettext("Subject"),
         anchor     : '100%'
     });
 
@@ -1414,20 +1414,20 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                 href : '*/ext-all.css'
             };
 
-            var getCssTextFromStyleSheet = de.intrabuild.util.Dom.getCssTextFromStyleSheet;
+            var getCssTextFromStyleSheet = com.conjoon.util.Dom.getCssTextFromStyleSheet;
 
             var body = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body',
+                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body',
                 excludeMask
             );
 
             var insertDiv = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.text',
+                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.text',
                 excludeMask
             );
 
             var signature = getCssTextFromStyleSheet(
-                '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body div.signature',
+                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.signature',
                 excludeMask
             );
 
@@ -1437,7 +1437,7 @@ de.intrabuild.groupware.email.EmailForm = function(config){
             for (var i = 0; i <10; i++) {
                 abs.push('blockquote');
                 blockquote += getCssTextFromStyleSheet(
-                     '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body '+abs.join(' '),
+                     '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '+abs.join(' '),
                     excludeMask
                 );
             }
@@ -1452,13 +1452,13 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                                   + blockquote
                                   + ' '
                                   + getCssTextFromStyleSheet(
-                                       '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body '
+                                       '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '
                                        + (Ext.isIE ? 'div.editorBodyWrap' : 'pre'),
                                        excludeMask
                                    )
                                   + ' '
                                   + getCssTextFromStyleSheet(
-                                       '.de-intrabuild-groupware-email-EmailForm-htmlEditor-body a',
+                                       '.com-conjoon-groupware-email-EmailForm-htmlEditor-body a',
                                        excludeMask
                                    )
                                   + ' '
@@ -1467,14 +1467,14 @@ de.intrabuild.groupware.email.EmailForm = function(config){
                                   + signature
                                   + '</style>'
                                   + '</head>'
-                                  + '<body class="de-intrabuild-groupware-email-EmailForm-htmlEditor-body">'
+                                  + '<body class="com-conjoon-groupware-email-EmailForm-htmlEditor-body">'
                                   + '</body></html>';
         }
 
         return this.__doc_markup__;
     };
 
-    de.intrabuild.groupware.email.EmailForm.superclass.constructor.call(this, {
+    com.conjoon.groupware.email.EmailForm.superclass.constructor.call(this, {
         items : [{
             layout : 'border',
             bodyStyle : 'background-color:#F6F6F6',
@@ -1534,13 +1534,13 @@ de.intrabuild.groupware.email.EmailForm = function(config){
 
     this.loadMask = null;
 
-    de.intrabuild.util.Registry.register('de.intrabuild.groupware.email.EmailForm', this, true);
+    com.conjoon.util.Registry.register('com.conjoon.groupware.email.EmailForm', this, true);
 };
 
 
-Ext.extend(de.intrabuild.groupware.email.EmailForm, Ext.Panel, {
+Ext.extend(com.conjoon.groupware.email.EmailForm, Ext.Panel, {
 
-    __is : 'de.intrabuild.groupware.email.EmailForm',
+    __is : 'com.conjoon.groupware.email.EmailForm',
 
 
     onUpdate : function(store, record, operation)
@@ -1550,7 +1550,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailForm, Ext.Panel, {
 });
 
 
-de.intrabuild.groupware.email.RecipientRecord = Ext.data.Record.create([
+com.conjoon.groupware.email.RecipientRecord = Ext.data.Record.create([
     {name: 'receiveType'},
     {name: 'address'}
 ]);

@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.util');
+Ext.namespace('com.conjoon.groupware.util');
 
-de.intrabuild.groupware.util.LinkInterceptor = function(){
+com.conjoon.groupware.util.LinkInterceptor = function(){
 
     var _listener = {
         'mousedown': function(e, t){
@@ -30,12 +30,12 @@ de.intrabuild.groupware.util.LinkInterceptor = function(){
             }
 
             if (href && (mInd = href.indexOf('mailto:')) == 0) {
-                de.intrabuild.groupware.email.EmailEditorManager.createEditor(-1, 'new', {
+                com.conjoon.groupware.email.EmailEditorManager.createEditor(-1, 'new', {
                     name    : t.firstChild.data,
                     address : href.substr(7)
                 });
             } else {
-                window.open(de.intrabuild.groupware.util.LinkInterceptor.getRedirectLink(href));
+                window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(href));
             }
 
         },

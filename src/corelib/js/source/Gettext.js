@@ -12,14 +12,14 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild');
+Ext.namespace('com.conjoon');
 
 /**
- * @class de.intrabuild.Gettext
+ * @class com.conjoon.Gettext
  * @singleton
  *
  */
-de.intrabuild.Gettext= function() {
+com.conjoon.Gettext= function() {
 
     return {
 

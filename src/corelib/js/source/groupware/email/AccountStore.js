@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
- * @class de.intrabuild.groupware.email.AccountStore
+ * @class com.conjoon.groupware.email.AccountStore
  * @singleton
  */
-de.intrabuild.groupware.email.AccountStore = function() {
+com.conjoon.groupware.email.AccountStore = function() {
 
     var _store = null;
 
@@ -32,7 +32,7 @@ de.intrabuild.groupware.email.AccountStore = function() {
             reader   : new Ext.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'
-            }, de.intrabuild.groupware.email.AccountRecord)
+            }, com.conjoon.groupware.email.AccountRecord)
         });
     };
 

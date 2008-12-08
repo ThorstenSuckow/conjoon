@@ -12,13 +12,13 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
 * Controller for the emailpanels tree, preview and grid.
 *
 */
-de.intrabuild.groupware.email.EmailPanel = function(config) {
+com.conjoon.groupware.email.EmailPanel = function(config) {
 
     Ext.apply(this, config);
 
@@ -35,9 +35,9 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      * The tree panel that holds the tree representing the folder structure
      * of the user.
      */
-    this.treePanel = new de.intrabuild.groupware.email.EmailTree({
+    this.treePanel = new com.conjoon.groupware.email.EmailTree({
         region            : 'west',
-        anonymousNodeText : de.intrabuild.Gettext.gettext("New folder"),
+        anonymousNodeText : com.conjoon.Gettext.gettext("New folder"),
         width             : 200,
         split             : true
     }, this);
@@ -47,7 +47,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      * Preview panel for the emails
      */
 
-    this.preview = new de.intrabuild.groupware.email.EmailViewPanel({
+    this.preview = new com.conjoon.groupware.email.EmailViewPanel({
         autoLoad     : false,
         border       : false,
         hideMode     : 'offsets',
@@ -55,10 +55,10 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     });
 
     /**
-     * Subscribe to de.intrabuild.groupware.email.view.onEmailLoad
+     * Subscribe to com.conjoon.groupware.email.view.onEmailLoad
      */
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.view.onEmailLoad',
+        'com.conjoon.groupware.email.view.onEmailLoad',
         this.onEmailLoad,
         this
     );
@@ -69,7 +69,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     /**
      * The grid that shows the email items.
      */
-    this.gridPanel = new de.intrabuild.groupware.email.EmailGrid({
+    this.gridPanel = new com.conjoon.groupware.email.EmailGrid({
         region : 'center',
         split: true
     }, this);
@@ -86,7 +86,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         items:[
             this.gridPanel
             ,{
-            id:'de.intrabuild.groupware.email.rightPreview',
+            id:'com.conjoon.groupware.email.rightPreview',
             layout:'fit',
             hideMode : 'offsets',
             region:'east',
@@ -94,7 +94,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
             split: true,
             hidden:true
           },{
-            id:'de.intrabuild.groupware.email.bottomPreview',
+            id:'com.conjoon.groupware.email.bottomPreview',
             layout:'fit',
             items:this.preview,
             hideMode : 'offsets',
@@ -108,77 +108,77 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
      * Top toolbar
      * @param {Ext.Toolbar}
      */
-    var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+    var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
 
     this.sendNowButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id      : 'de.intrabuild.groupware.email.toolbar.SendButton',
-        iconCls : 'de-intrabuild-groupware-email-EmailPanel-toolbar-sendNowButton-icon',
+        id      : 'com.conjoon.groupware.email.toolbar.SendButton',
+        iconCls : 'com-conjoon-groupware-email-EmailPanel-toolbar-sendNowButton-icon',
         cls     : 'x-btn-text-icon',
-        text    : de.intrabuild.Gettext.gettext("Send now"),
+        text    : com.conjoon.Gettext.gettext("Send now"),
         hidden  : true,
         handler : function(){this.sendPendingItems();},
         scope   : this
     }));
     this.forwardButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.ForwardButton',
+        id       : 'com.conjoon.groupware.email.toolbar.ForwardButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-forwardButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("Forward"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-forwardButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("Forward"),
         handler  : function(){this.openEmailEditPanel(true, 'forward');},
         disabled : true,
         scope    : this
     }));
     this.replyButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.ReplyButton',
+        id       : 'com.conjoon.groupware.email.toolbar.ReplyButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-replyButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-replyButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("Reply"),
         handler  : function(){this.openEmailEditPanel(true, 'reply');},
         disabled : true,
         scope    : this
     }));
     this.replyAllButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.ReplyAllButton',
+        id       : 'com.conjoon.groupware.email.toolbar.ReplyAllButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-replyAllButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply all"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-replyAllButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("Reply all"),
         handler  : function(){this.openEmailEditPanel(true, 'reply_all');},
         disabled : true,
         scope    : this
     }));
     this.deleteButton = new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.DeleteButton',
+        id       : 'com.conjoon.groupware.email.toolbar.DeleteButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-deleteButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("Delete"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-deleteButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("Delete"),
         disabled : true,
         handler  : function(){this.deleteEmails(this.gridPanel.selModel.getSelections());},
         scope    : this
     });
     this.spamButton = new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.SpamButton',
+        id       : 'com.conjoon.groupware.email.toolbar.SpamButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-spamButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("Spam"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-spamButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("Spam"),
         disabled : true,
         handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), true);},
         scope    : this
     });
     this.noSpamButton = new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.NoSpamButton',
+        id       : 'com.conjoon.groupware.email.toolbar.NoSpamButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-noSpamButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("No spam"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-noSpamButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("No spam"),
         disabled : true,
         hidden   : true,
         handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), false);},
         scope    : this
     });
     this.editDraftButton = new Ext.Toolbar.Button({
-        id       : 'de.intrabuild.groupware.email.toolbar.EditDraftButton',
+        id       : 'com.conjoon.groupware.email.toolbar.EditDraftButton',
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-editDraftButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("Edit draft"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-editDraftButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("Edit draft"),
         disabled : true,
         hidden   : true,
         handler  : function(){this.openEmailEditPanel(true, 'edit');},
@@ -186,14 +186,14 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     });
     this.newButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
         cls      : 'x-btn-text-icon',
-        iconCls  : 'de-intrabuild-groupware-email-EmailPanel-toolbar-newButton-icon',
-        text     : '&#160;'+de.intrabuild.Gettext.gettext("New email"),
+        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-newButton-icon',
+        text     : '&#160;'+com.conjoon.Gettext.gettext("New email"),
         handler  : function(){this.openEmailEditPanel(false, 'new');},
         scope    : this
     }));
 
     this.controlBar = new Ext.Toolbar([
-        new de.intrabuild.groupware.email.FetchMenuButton(),
+        new com.conjoon.groupware.email.FetchMenuButton(),
         this.newButton ,
         '-',
         this.sendNowButton,
@@ -206,37 +206,37 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
         this.noSpamButton,
         this.editDraftButton,
         '->', {
-        id           : 'de.intrabuild.groupware.email.previewButton',
+        id           : 'com.conjoon.groupware.email.previewButton',
         split        : true,
         enableToggle : true,
         pressed      : true,
         handler      : this.hidePreview,
         scope        : this,
         cls          : 'x-btn-text-icon',
-        iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewButton-icon',
-        text         : de.intrabuild.Gettext.gettext("Preview"),
+        iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewButton-icon',
+        text         : com.conjoon.Gettext.gettext("Preview"),
         menu         : {
-            id    : 'de.intrabuild.groupware.email.emailPreviewMenu',
-            cls   : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewMenu',
+            id    : 'com.conjoon.groupware.email.emailPreviewMenu',
+            cls   : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewMenu',
             items : [{
-            iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
-            text         : de.intrabuild.Gettext.gettext("bottom"),
+            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
+            text         : com.conjoon.Gettext.gettext("bottom"),
             checked      : true,
-            group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
+            group        : 'com.conjoon.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this
           },{
-            iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
-            text         : de.intrabuild.Gettext.gettext("right"),
+            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
+            text         : com.conjoon.Gettext.gettext("right"),
             checked      : false,
-            group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
+            group        : 'com.conjoon.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this
           },{
-            iconCls      : 'de-intrabuild-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
-            text         : de.intrabuild.Gettext.gettext("hide"),
+            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
+            text         : com.conjoon.Gettext.gettext("hide"),
             checked      : false,
-            group        : 'de.intrabuild.groupware.email.emailPreviewGroup',
+            group        : 'com.conjoon.groupware.email.emailPreviewGroup',
             checkHandler : this.hidePreview,
             scope        : this
         }]}
@@ -244,16 +244,16 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
 
     ]);
 
-    var tbarManager = de.intrabuild.groupware.ToolbarManager;
-    tbarManager.register('de.intrabuild.groupware.email.Toolbar', this.controlBar);
+    var tbarManager = com.conjoon.groupware.ToolbarManager;
+    tbarManager.register('com.conjoon.groupware.email.Toolbar', this.controlBar);
 
 
     /**
     * Constructor call.
     */
-    de.intrabuild.groupware.email.EmailPanel.superclass.constructor.call(this,  {
-        title          : de.intrabuild.Gettext.gettext("Emails"),
-        iconCls        : 'de-intrabuild-groupware-email-EmailPanel-icon',
+    com.conjoon.groupware.email.EmailPanel.superclass.constructor.call(this,  {
+        title          : com.conjoon.Gettext.gettext("Emails"),
+        iconCls        : 'com-conjoon-groupware-email-EmailPanel-icon',
         closable       : true,
         autoScroll     : false,
         deferredRender : true,
@@ -265,7 +265,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     // be responsible for listening to almost all events and delegating actions
     // to the various components.
 
-    var letterman = de.intrabuild.groupware.email.Letterman;
+    var letterman = com.conjoon.groupware.email.Letterman;
     letterman.on('load', this.newEmailsAvailable, this);
 
     var gs = this.gridPanel.store;
@@ -293,72 +293,72 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
     tp.pendingItemStore.on('add', this.onPendingStoreAdd, this);
 
     this.on('render',  this.onPanelRender, this);
-    this.on('hide',    function(){tbarManager.hide('de.intrabuild.groupware.email.Toolbar');}, this);
+    this.on('hide',    function(){tbarManager.hide('com.conjoon.groupware.email.Toolbar');}, this);
 
     this.on('destroy', function(){
-        var sub = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.QuickPanel');
+        var sub = com.conjoon.util.Registry.get('com.conjoon.groupware.email.QuickPanel');
         if (sub) {
             sub.store.un('update', this.onQuickPanelUpdate, this);
         }
         letterman.un('load', this.newEmailsAvailable, this);
-        tbarManager.destroy('de.intrabuild.groupware.email.Toolbar');
+        tbarManager.destroy('com.conjoon.groupware.email.Toolbar');
     }, this);
-    this.on('show',    function(){tbarManager.show('de.intrabuild.groupware.email.Toolbar');}, this);
+    this.on('show',    function(){tbarManager.show('com.conjoon.groupware.email.Toolbar');}, this);
 
-    de.intrabuild.util.Registry.register('de.intrabuild.groupware.email.EmailPanel', this, true);
+    com.conjoon.util.Registry.register('com.conjoon.groupware.email.EmailPanel', this, true);
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.Smtp.emailSent'
+    // 'com.conjoon.groupware.email.Smtp.emailSent'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.emailSent',
+        'com.conjoon.groupware.email.Smtp.emailSent',
         this._onSendEmail,
         this
     );
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.Smtp.beforeBulkSent'
+    // 'com.conjoon.groupware.email.Smtp.beforeBulkSent'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.beforeBulkSent',
+        'com.conjoon.groupware.email.Smtp.beforeBulkSent',
         this._onBeforeBulkSent,
         this
     );
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.Smtp.bulkSent'
+    // 'com.conjoon.groupware.email.Smtp.bulkSent'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.bulkSentFailure',
+        'com.conjoon.groupware.email.Smtp.bulkSentFailure',
         this._onBulkSentFailure,
         this
     );
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.Smtp.bulkSent'
+    // 'com.conjoon.groupware.email.Smtp.bulkSent'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.Smtp.bulkSent',
+        'com.conjoon.groupware.email.Smtp.bulkSent',
         this._onBulkSent,
         this
     );
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.editor.draftSaved'
+    // 'com.conjoon.groupware.email.editor.draftSaved'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.editor.draftSave',
+        'com.conjoon.groupware.email.editor.draftSave',
         this._onSaveDraft,
         this
     );
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.LatestEmailCache.clear'
+    // 'com.conjoon.groupware.email.LatestEmailCache.clear'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.LatestEmailCache.clear',
+        'com.conjoon.groupware.email.LatestEmailCache.clear',
         this._onLatestCacheClear,
         this
     );
 
     // register listener for MessageBus message
-    // 'de.intrabuild.groupware.email.outbox.emailMoved'
+    // 'com.conjoon.groupware.email.outbox.emailMoved'
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.outbox.emailMove',
+        'com.conjoon.groupware.email.outbox.emailMove',
         this._onMoveOutbox,
         this
     );
@@ -366,7 +366,7 @@ de.intrabuild.groupware.email.EmailPanel = function(config) {
 
 
 
-Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
+Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
     buttonsLocked : false,
 
@@ -735,12 +735,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     hidePreview : function(btn, evt)
     {
-        var right  = Ext.getCmp('de.intrabuild.groupware.email.rightPreview');
-        var bot    = Ext.getCmp('de.intrabuild.groupware.email.bottomPreview');
+        var right  = Ext.getCmp('com.conjoon.groupware.email.rightPreview');
+        var bot    = Ext.getCmp('com.conjoon.groupware.email.bottomPreview');
 
         if (btn instanceof Ext.Toolbar.SplitButton) {
             if (btn.pressed) {
-                var previewMenu = Ext.menu.MenuMgr.get('de.intrabuild.groupware.email.emailPreviewMenu');
+                var previewMenu = Ext.menu.MenuMgr.get('com.conjoon.groupware.email.emailPreviewMenu');
                 previewMenu.render();
                 var items = previewMenu.items.items;
                 var b = items[0], r = items[1], h = items[2];
@@ -765,8 +765,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
                 return;
             }
         } else {
-            var button      = Ext.getCmp('de.intrabuild.groupware.email.previewButton');
-            var previewMenu = Ext.menu.MenuMgr.get('de.intrabuild.groupware.email.emailPreviewMenu');
+            var button      = Ext.getCmp('com.conjoon.groupware.email.previewButton');
+            var previewMenu = Ext.menu.MenuMgr.get('com.conjoon.groupware.email.emailPreviewMenu');
             previewMenu.render();
             var items = previewMenu.items.items;
             var b = items[0], r = items[1], h = items[2];
@@ -818,7 +818,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
         //var id = record.id;
 
-        de.intrabuild.groupware.email.EmailViewBaton.showEmail(record);
+        com.conjoon.groupware.email.EmailViewBaton.showEmail(record);
     },
 
     /**
@@ -837,7 +837,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
             return;
         }
 
-        de.intrabuild.groupware.email.Dispatcher.sendPendingEmails(
+        com.conjoon.groupware.email.Dispatcher.sendPendingEmails(
             [record],
             ((new Date()).getTime()/1000)
         );
@@ -863,13 +863,13 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         var c  = sm.getCount();
 
         if (!loadDraft) {
-            de.intrabuild.groupware.email.EmailEditorManager.createEditor();
+            com.conjoon.groupware.email.EmailEditorManager.createEditor();
         } else {
             var record = sm.getSelected();
             if (c != 1 || !record) {
                 return;
             }
-            de.intrabuild.groupware.email.EmailEditorManager.createEditor(record, type);
+            com.conjoon.groupware.email.EmailEditorManager.createEditor(record, type);
         }
     },
 
@@ -903,7 +903,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
      */
     onEmailLoadFailure : function(response, options)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
                     this.preview.load();
@@ -915,7 +915,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     /**
      * Listener for the message with the subject
-     * 'de.intrabuild.groupware.email.view.onEmailLoad'
+     * 'com.conjoon.groupware.email.view.onEmailLoad'
      *
      * @param {String} subject
      * @param {Object} message
@@ -938,7 +938,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     /**
      * Called when the Ext.ux.util.MessageBus publishes the
-     * de.intrabuild.groupware.email.LatestEmailCache.clear message.
+     * com.conjoon.groupware.email.LatestEmailCache.clear message.
      *
      * @param {String} subject
      * @param {Object} message
@@ -1027,7 +1027,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     },
 
     /**
-     * Observer for the message de.intrabuild.groupware.email.Smtp.bulkSent.
+     * Observer for the message com.conjoon.groupware.email.Smtp.bulkSent.
      *
      * @param {String} Subject
      * @param {Object} message
@@ -1098,7 +1098,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     },
 
     /**
-     * Observer for the message de.intrabuild.groupware.email.Smtp.bulkSentFailure.
+     * Observer for the message com.conjoon.groupware.email.Smtp.bulkSentFailure.
      *
      * @param {String} Subject
      * @param {Object} message
@@ -1129,7 +1129,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     },
 
     /**
-     * Observer for the message de.intrabuild.groupware.email.Smtp.beforeBulkSent.
+     * Observer for the message com.conjoon.groupware.email.Smtp.beforeBulkSent.
      *
      * @param {String} Subject
      * @param {Object} message
@@ -1157,14 +1157,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     /**
      * Callback if an email was successfully send. Listens to messages with the subject
-     * "de.intrabuild.groupware.email.Smtp.emailSent" as published by Ext.ux.util.MessageBus.
+     * "com.conjoon.groupware.email.Smtp.emailSent" as published by Ext.ux.util.MessageBus.
      *
      * @param {String} subject The subject of the message
      * @param {Object} data The message's data. For the event this listener observes, the
      * object will provide the following properties:
-     * draft - de.intrabuild.groupware.email.data.Draft
-     * itemRecord - de.intrabuild.groupware.email.EmailItemRecord
-     * referencedItem - de.intrabuild.groupware.email.EmailItemRecord
+     * draft - com.conjoon.groupware.email.data.Draft
+     * itemRecord - com.conjoon.groupware.email.EmailItemRecord
+     * referencedItem - com.conjoon.groupware.email.EmailItemRecord
      * options - Object
      */
     _onSendEmail : function(subject, message)
@@ -1239,7 +1239,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     /**
      * Callback if a draft was successfully saved. Listens to messages with the subject
-     * "de.intrabuild.groupware.email.editor.draftSaved" as published by Ext.ux.util.MessageBus.
+     * "com.conjoon.groupware.email.editor.draftSaved" as published by Ext.ux.util.MessageBus.
      *
      * @param {String} subject The subject of the message
      * @param {Object} data The message's data.
@@ -1303,9 +1303,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
 
     onPanelRender : function()
     {
-        de.intrabuild.groupware.ToolbarManager.show('de.intrabuild.groupware.email.Toolbar');
+        com.conjoon.groupware.ToolbarManager.show('com.conjoon.groupware.email.Toolbar');
 
-        var sub = de.intrabuild.util.Registry.get('de.intrabuild.groupware.email.QuickPanel');
+        var sub = com.conjoon.util.Registry.get('com.conjoon.groupware.email.QuickPanel');
 
         if (sub) {
             sub.store.un('update', this.onQuickPanelUpdate, this);
@@ -1342,9 +1342,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
         this.spamButton.setDisabled(true);
         this.noSpamButton.setDisabled(true);
 
-        this.deleteButton.setIconClass('de-intrabuild-groupware-selectionsLoading');
-        this.spamButton.setIconClass('de-intrabuild-groupware-selectionsLoading');
-        this.noSpamButton.setIconClass('de-intrabuild-groupware-selectionsLoading');
+        this.deleteButton.setIconClass('com-conjoon-groupware-selectionsLoading');
+        this.spamButton.setIconClass('com-conjoon-groupware-selectionsLoading');
+        this.noSpamButton.setIconClass('com-conjoon-groupware-selectionsLoading');
     },
 
     /**
@@ -1354,9 +1354,9 @@ Ext.extend(de.intrabuild.groupware.email.EmailPanel, Ext.Panel, {
     {
         this.buttonsLocked = false;
 
-        this.deleteButton.setIconClass('de-intrabuild-groupware-email-EmailPanel-toolbar-deleteButton-icon');
-        this.spamButton.setIconClass('de-intrabuild-groupware-email-EmailPanel-toolbar-spamButton-icon');
-        this.noSpamButton.setIconClass('de-intrabuild-groupware-email-EmailPanel-toolbar-noSpamButton-icon');
+        this.deleteButton.setIconClass('com-conjoon-groupware-email-EmailPanel-toolbar-deleteButton-icon');
+        this.spamButton.setIconClass('com-conjoon-groupware-email-EmailPanel-toolbar-spamButton-icon');
+        this.noSpamButton.setIconClass('com-conjoon-groupware-email-EmailPanel-toolbar-noSpamButton-icon');
 
         var sm = this.gridPanel.selModel;
         var c  = sm.getCount();

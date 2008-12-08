@@ -12,16 +12,16 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email.view');
+Ext.namespace('com.conjoon.groupware.email.view');
 
 /**
  * Extends Ext.ux.grid.GridViewMenuPlugin for adding custom styles and to conform
  * with the column model of the email grid when showing column's header in the menu.
  *
- * @class de.intrabuild.groupware.email.view.GridViewMenuPlugin
+ * @class com.conjoon.groupware.email.view.GridViewMenuPlugin
  * @extends Ext.ux.grid.GridViewMenuPlugin
  */
-de.intrabuild.groupware.email.view.GridViewMenuPlugin = Ext.extend(Ext.ux.grid.GridViewMenuPlugin, {
+com.conjoon.groupware.email.view.GridViewMenuPlugin = Ext.extend(Ext.ux.grid.GridViewMenuPlugin, {
 
 
     _beforeColMenuShow : function()

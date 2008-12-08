@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware');
+Ext.namespace('com.conjoon.groupware');
 
-de.intrabuild.groupware.StatusBar = function(){
+com.conjoon.groupware.StatusBar = function(){
 
     var _messageBroadcaster = Ext.ux.util.MessageBus;
 
@@ -59,19 +59,19 @@ de.intrabuild.groupware.StatusBar = function(){
     var _transceive = function(subject, message)
     {
         switch (subject) {
-            case 'de.intrabuild.groupware.email.Letterman.beforeload':
+            case 'com.conjoon.groupware.email.Letterman.beforeload':
                 _statusBar.setStatus({
-                    text : de.intrabuild.Gettext.gettext("Checking for new emails...")
+                    text : com.conjoon.Gettext.gettext("Checking for new emails...")
                 });
             break;
 
-            case 'de.intrabuild.groupware.email.Letterman.load':
+            case 'com.conjoon.groupware.email.Letterman.load':
                 var total = message.total;
-                var text  = de.intrabuild.Gettext.gettext("No new emails");
+                var text  = com.conjoon.Gettext.gettext("No new emails");
 
                 if (total > 0) {
                     text = String.format(
-                        de.intrabuild.Gettext.ngettext("One new email", "{0} new emails", total),
+                        com.conjoon.Gettext.ngettext("One new email", "{0} new emails", total),
                         total
                     );
                 }
@@ -81,9 +81,9 @@ de.intrabuild.groupware.StatusBar = function(){
                 });
             break;
 
-            case 'de.intrabuild.groupware.email.Letterman.loadexception':
+            case 'com.conjoon.groupware.email.Letterman.loadexception':
                 _statusBar.setStatus({
-                    text  : de.intrabuild.Gettext.gettext("Error while trying to receive new emails"),
+                    text  : com.conjoon.Gettext.gettext("Error while trying to receive new emails"),
                     clear : true
                 });
             break;
@@ -94,9 +94,9 @@ de.intrabuild.groupware.StatusBar = function(){
 
     var _subscribe = function()
     {
-        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.beforeload', _transceive);
-        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.load', _transceive);
-        _messageBroadcaster.subscribe('de.intrabuild.groupware.email.Letterman.loadexception', _transceive);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.beforeload', _transceive);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.load', _transceive);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.loadexception', _transceive);
     };
 
     return {
@@ -106,7 +106,7 @@ de.intrabuild.groupware.StatusBar = function(){
             if (_statusBar === null) {
 
                 var pconf = {
-                    cls   : 'de-intrabuild-groupware-ProgressBar',
+                    cls   : 'com-conjoon-groupware-ProgressBar',
                     width : 80
                 };
                 if (Ext.isIE) {
@@ -117,16 +117,16 @@ de.intrabuild.groupware.StatusBar = function(){
 
                 var t = document.createElement('div');
                 t.innerHTML = '&#160;';
-                t.className = "de-intrabuild-groupware-statusbar-ConnectionInfo";
+                t.className = "com-conjoon-groupware-statusbar-ConnectionInfo";
                 _connectionInfo = new Ext.Toolbar.Item(t);
 
                 _statusBar = new Ext.StatusBar({
                     region:'south',
                     height : 21,
-                    defaultText : de.intrabuild.Gettext.gettext("Ready"),
+                    defaultText : com.conjoon.Gettext.gettext("Ready"),
                     border : false,
-                    id : 'de.intrabuild.groupware.StatusBar',
-                    cls: 'de-intrabuild-groupware-StatusBar',
+                    id : 'com.conjoon.groupware.StatusBar',
+                    cls: 'com-conjoon-groupware-StatusBar',
                     statusAlign: 'left',
                     margins:'3 0 0 0',
                     items : [

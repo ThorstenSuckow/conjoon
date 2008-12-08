@@ -12,15 +12,15 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * A button for fetching latest emails given the configured accounts from
- * de.intrabuild.groupware.email.AccountStore
+ * com.conjoon.groupware.email.AccountStore
  *
- * @class de.intrabuild.groupware.email.FetchMenuButton
+ * @class com.conjoon.groupware.email.FetchMenuButton
  */
-de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButton, {
+com.conjoon.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButton, {
 
 
     _accountItemMap : null,
@@ -32,28 +32,28 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
         this._accountItemMap = {};
 
         Ext.apply(this, {
-            text     : de.intrabuild.Gettext.gettext("Get email"),
+            text     : com.conjoon.Gettext.gettext("Get email"),
             cls      : 'x-btn-text-icon',
-            iconCls  : 'de-intrabuild-groupware-email-FetchMenuButton-icon',
+            iconCls  : 'com-conjoon-groupware-email-FetchMenuButton-icon',
             menu     : this._getMenu(),
             handler  : this._onRetrieveAllClick,
             scope    : this,
             disabled : true
         });
 
-        var l = de.intrabuild.groupware.email.Letterman;
+        var l = com.conjoon.groupware.email.Letterman;
         l.on('load',          this._onLettermanLoad, this);
         l.on('beforeload',    this._onLettermanBeforeLoad, this);
         l.on('loadexception', this._onLettermanLoadException, this);
 
-        var store = de.intrabuild.groupware.email.AccountStore.getInstance();
+        var store = com.conjoon.groupware.email.AccountStore.getInstance();
 
         store.on('load',   this._onAccountStoreAdd,    this);
         store.on('remove', this._onAccountStoreRemove, this);
         store.on('add',    this._onAccountStoreAdd,    this);
         store.on('update', this._onAccountStoreUpdate, this);
 
-        de.intrabuild.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
+        com.conjoon.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
     },
 
 // -------- helpers
@@ -100,7 +100,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
             return;
         }
 
-        var letterman = de.intrabuild.groupware.email.Letterman;
+        var letterman = com.conjoon.groupware.email.Letterman;
         var item, rec;
         for (var i = 0; i < len; i++) {
             rec = records[i];
@@ -121,28 +121,28 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
 
     _onRetrieveAllClick : function()
     {
-         de.intrabuild.groupware.email.Letterman.peekIntoInbox();
+         com.conjoon.groupware.email.Letterman.peekIntoInbox();
     },
 
     _onLettermanLoad : function()
     {
         this.busy = false;
         this.setDisabled(false);
-        this.setIconClass('de-intrabuild-groupware-email-FetchMenuButton-icon');
+        this.setIconClass('com-conjoon-groupware-email-FetchMenuButton-icon');
     },
 
     _onLettermanBeforeLoad : function()
     {
         this.busy = true;
         this.setDisabled(true);
-        this.setIconClass('de-intrabuild-groupware-email-FetchMenuButton-icon-loading');
+        this.setIconClass('com-conjoon-groupware-email-FetchMenuButton-icon-loading');
     },
 
     _onLettermanLoadException : function()
     {
         this.busy = false;
         this.setDisabled(false);
-        this.setIconClass('de-intrabuild-groupware-email-FetchMenuButton-icon');
+        this.setIconClass('com-conjoon-groupware-email-FetchMenuButton-icon');
     },
 
 
@@ -155,7 +155,7 @@ de.intrabuild.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButt
             this.menu = new Ext.menu.Menu({
                 items : [
                     new Ext.menu.Item({
-                        text    : de.intrabuild.Gettext.gettext("All accounts"),
+                        text    : com.conjoon.Gettext.gettext("All accounts"),
                         handler : this._onRetrieveAllClick,
                         scope   : this
                     }),

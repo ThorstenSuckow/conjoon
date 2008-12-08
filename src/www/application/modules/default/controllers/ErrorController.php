@@ -49,8 +49,8 @@ class ErrorController extends Zend_Controller_Action {
      */
     public function errorAction()
     {
-        require_once 'Intrabuild/BeanContext/Inspector.php';
-        require_once 'Intrabuild/Error.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
+        require_once 'Conjoon/Error.php';
 
         $errors = $this->_getParam('error_handler');
 
@@ -60,7 +60,7 @@ class ErrorController extends Zend_Controller_Action {
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_OTHER:
-                $error = Intrabuild_Error::fromException($errors->exception);
+                $error = Conjoon_Error::fromException($errors->exception);
             break;
         }
 

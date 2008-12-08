@@ -1,0 +1,77 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-email-EmailPanel-icon {
+    background-image:url(../images/16x16/apps/groupware-email.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-sendNowButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-send.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-forwardButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailforward.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-replyButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailreply.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-replyAllButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailreplyall.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-deleteButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-delete.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-spamButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-noSpamButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-markasspam.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-editDraftButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-newButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-mailnew.png)!important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-previewButton-icon {
+    background-image:url(../images/16x16/actions/groupware-email-preview.png)!important;
+}
+
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-previewMenu .x-menu-item-checked {
+    border:1px dotted #a3bae9 !important;
+    background:#DFE8F6;
+    padding:0;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon {
+    background-image: url(../images/16x16/actions/groupware-email-previewbottom.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon {
+    background-image: url(../images/16x16/actions/groupware-email-previewright.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon {
+    background-image: url(../images/16x16/actions/groupware-email-previewhide.png) !important;
+}
+

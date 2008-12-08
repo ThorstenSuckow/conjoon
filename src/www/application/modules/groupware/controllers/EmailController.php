@@ -91,12 +91,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $accountId = null;
         }
 
-        require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Letterman.php';
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        require_once 'Intrabuild/Error.php';
+        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Letterman.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        require_once 'Conjoon/Error.php';
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $emails        = array();
@@ -105,8 +105,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $time = time();
         $currentAccount = null;
         try {
-            $accountDecorator = new Intrabuild_BeanContext_Decorator(
-                'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+            $accountDecorator = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Account_Model_Account'
             );
 
             $noop = false;
@@ -134,7 +134,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
             for ($i = 0, $accLen = count($accounts); $i < $accLen; $i++) {
                 $currentAccount =& $accounts[$i];
-                $tmpEmails = Intrabuild_Modules_Groupware_Email_Letterman::fetchEmails($userId, $currentAccount);
+                $tmpEmails = Conjoon_Modules_Groupware_Email_Letterman::fetchEmails($userId, $currentAccount);
 
                 $emails        = array_merge($emails, $tmpEmails['fetched']);
                 $errorMessages = array_merge($errorMessages, $tmpEmails['errors']);
@@ -151,14 +151,14 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $len = count($emails);
         if ($len > 0) {
-            require_once 'Intrabuild/BeanContext/Decorator.php';
-            require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+            require_once 'Conjoon/BeanContext/Decorator.php';
+            require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
-            $decoratedModel = new Intrabuild_BeanContext_Decorator(
-                'Intrabuild_Modules_Groupware_Email_Item_Model_Inbox',
-                new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+            $decoratedModel = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Item_Model_Inbox',
+                new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
                     array(),
-                    Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                    Conjoon_Filter_Input::CONTEXT_RESPONSE
                 )
             );
 
@@ -182,11 +182,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $this->view->error      = null;
 
         if (count($errorMessages) > 0) {
-            $error = new Intrabuild_Error();
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while fetching email(s)';
             $error->message = implode('<br />', $errorMessages);
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error = $error;
         }
 
@@ -203,38 +203,38 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function deleteFolderAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder(
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
+        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
             $_POST,
-            Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_DELETE
+            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_DELETE
         );
 
         $filteredData = array();
         try {
             $filteredData = $filter->getProcessedData();
         } catch (Zend_Filter_Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = Intrabuild_Error::fromFilter($filter, $e);
+            require_once 'Conjoon/Error.php';
+            $error = Conjoon_Error::fromFilter($filter, $e);
             $this->view->success = false;
             $this->view->error   = $error->getDto();
             return;
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
-        require_once 'Intrabuild/Keys.php';
-        $user   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        require_once 'Conjoon/Keys.php';
+        $user   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
         $userId = $user->getId();
 
         $ret = $folderModel->deleteFolder($filteredData['id'], $userId);
 
         if ($ret === 0) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();
             $error->title   = 'Error';
-            $error->level   = Intrabuild_Error::LEVEL_WARNING;
+            $error->level   = Conjoon_Error::LEVEL_WARNING;
             $error->message = 'Could not delete the specified folder.';
             $this->view->success = false;
             $this->view->error   = $error;
@@ -254,34 +254,34 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function moveFolderAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder(
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
+        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
             $_POST,
-            Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_MOVE
+            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_MOVE
         );
 
         $filteredData = array();
         try {
             $filteredData = $filter->getProcessedData();
         } catch (Zend_Filter_Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = Intrabuild_Error::fromFilter($filter, $e);
+            require_once 'Conjoon/Error.php';
+            $error = Conjoon_Error::fromFilter($filter, $e);
             $this->view->success = false;
             $this->view->error   = $error->getDto();
             return;
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
         $ret = $folderModel->moveFolder($filteredData['id'], $filteredData['parentId']);
 
         if ($ret === 0) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();
             $error->title   = 'Error';
-            $error->level   = Intrabuild_Error::LEVEL_WARNING;
+            $error->level   = Conjoon_Error::LEVEL_WARNING;
             $error->message = 'Could not move the specified folder into the new folder.';
             $this->view->success = false;
             $this->view->error   = $error;
@@ -304,41 +304,41 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function addFolderAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder(
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
+        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
             $_POST,
-            Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_CREATE
+            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_CREATE
         );
 
         $filteredData = array();
         try {
             $filteredData = $filter->getProcessedData();
         } catch (Zend_Filter_Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = Intrabuild_Error::fromFilter($filter, $e);
+            require_once 'Conjoon/Error.php';
+            $error = Conjoon_Error::fromFilter($filter, $e);
             $this->view->success = false;
             $this->view->error   = $error->getDto();
             return;
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
-        require_once 'Intrabuild/Keys.php';
-        $user   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        require_once 'Conjoon/Keys.php';
+        $user   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
         $userId = $user->getId();
 
         $id = $folderModel->addFolder($filteredData['parentId'], $filteredData['name'], $userId);
 
         if ((int)$id <= 0) {
             $this->view->success = false;
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();
             $error->file  = __FILE__;
             $error->line  = __LINE__;
-            $error->type  = Intrabuild_Error::UNKNOWN;
-            $error->level = Intrabuild_Error::LEVEL_WARNING;
+            $error->type  = Conjoon_Error::UNKNOWN;
+            $error->level = Conjoon_Error::LEVEL_WARNING;
             $error->message = "Could not create folder.";
             $this->view->error = $error;
             return;
@@ -358,34 +358,34 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function renameFolderAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder(
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
+        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
             $_POST,
-            Intrabuild_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_RENAME
+            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_RENAME
         );
 
         $filteredData = array();
         try {
             $filteredData = $filter->getProcessedData();
         } catch (Zend_Filter_Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = Intrabuild_Error::fromFilter($filter, $e);
+            require_once 'Conjoon/Error.php';
+            $error = Conjoon_Error::fromFilter($filter, $e);
             $this->view->success = false;
             $this->view->error   = $error->getDto();
             return;
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
         $ret = $folderModel->renameFolder($filteredData['id'], $filteredData['name']);
 
         if ($ret === 0) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();
             $error->title   = 'Error';
-            $error->level   = Intrabuild_Error::LEVEL_WARNING;
+            $error->level   = Conjoon_Error::LEVEL_WARNING;
             $error->message = 'Could not rename the specified folder.';
             $this->view->success = false;
             $this->view->error   = $error;
@@ -438,13 +438,13 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $parentId = 0;
         }
 
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        $decoratedFolderModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Folder_Model_Folder'
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedFolderModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Folder_Model_Folder'
         );
 
-        require_once 'Intrabuild/Keys.php';
-        $user   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        require_once 'Conjoon/Keys.php';
+        $user   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
         $userId = $user->getId();
 
         $rows = $decoratedFolderModel->getFoldersAsDto($parentId, $userId);
@@ -472,11 +472,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $toDelete = Zend_Json::decode($_POST['itemsToDelete'], Zend_Json::TYPE_ARRAY);
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/Item.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Item.php';
 
-        $filter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Item(
+        $filter = new Conjoon_Modules_Groupware_Email_Item_Filter_Item(
             array(),
-            Intrabuild_Modules_Groupware_Email_Item_Filter_Item::CONTEXT_DELETE
+            Conjoon_Modules_Groupware_Email_Item_Filter_Item::CONTEXT_DELETE
         );
 
         $itemIds = array();
@@ -485,12 +485,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $itemIds[] = $filteredData['id'];
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
-        require_once 'Intrabuild/Keys.php';
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
+        require_once 'Conjoon/Keys.php';
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $model = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
+        $model = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
 
         $model->deleteItemsForUser($itemIds, $userId);
 
@@ -516,11 +516,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $toMove = Zend_Json::decode($_POST['itemsToMove'], Zend_Json::TYPE_ARRAY);
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/Item.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Item.php';
 
-        $filter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Item(
+        $filter = new Conjoon_Modules_Groupware_Email_Item_Filter_Item(
             array(),
-            Intrabuild_Modules_Groupware_Email_Item_Filter_Item::CONTEXT_MOVE
+            Conjoon_Modules_Groupware_Email_Item_Filter_Item::CONTEXT_MOVE
         );
 
         $moveData = array();
@@ -532,8 +532,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $moveData[$filteredData['groupwareEmailFoldersId']][] = $filteredData['id'];
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
-        $model = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
+        $model = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
 
         foreach ($moveData as $folderId => $itemIds) {
             $model->moveItemsToFolder($itemIds, $folderId);
@@ -551,7 +551,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      * limit - the number of records to return
      * dir   - the sort direction, either ASC or DESC
      * sort  - the field to sort. Fields are based upon the properties of the
-     *         Intrabuild_Modules_Groupware_Email_ItemDto-class and have to be substituted
+     *         Conjoon_Modules_Groupware_Email_ItemDto-class and have to be substituted
      *         to their appropriate representatives in the underlying datamodel.
      * groupwareEmailFoldersId - the id of the folder, for which the items should be loaded.
      *                           if this parameter is missing, all emails from all accounts
@@ -562,7 +562,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      *
      * The assigned view variables are:
      *
-     * items - an array with objects of Intrabuild_Modules_Groupware_Email_ItemDto
+     * items - an array with objects of Conjoon_Modules_Groupware_Email_ItemDto
      * totalCount - the total count of records available for the requested folder
      *              for this user, or the total count of latest emails for the
      *              user since minDate
@@ -573,16 +573,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function getEmailItemsAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/Request.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Request.php';
 
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Keys.php';
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $CONTEXT_REQUEST_LATEST = Intrabuild_Modules_Groupware_Email_Item_Filter_Request::CONTEXT_REQUEST_LATEST;
-        $CONTEXT_REQUEST        = Intrabuild_Modules_Groupware_Email_Item_Filter_Request::CONTEXT_REQUEST;
+        $CONTEXT_REQUEST_LATEST = Conjoon_Modules_Groupware_Email_Item_Filter_Request::CONTEXT_REQUEST_LATEST;
+        $CONTEXT_REQUEST        = Conjoon_Modules_Groupware_Email_Item_Filter_Request::CONTEXT_REQUEST;
 
         if (isset($_POST['minDate']) && !isset($_POST['groupwareEmailFoldersId'])) {
             $context = $CONTEXT_REQUEST_LATEST;
@@ -590,7 +590,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $context = $CONTEXT_REQUEST;
         }
 
-        $itemRequestFilter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Request(
+        $itemRequestFilter = new Conjoon_Modules_Groupware_Email_Item_Filter_Request(
             $_POST,
             $context
         );
@@ -615,11 +615,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
 
 
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
-        $itemResponseFilter = new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        $itemResponseFilter = new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
             array(),
-            Intrabuild_Filter_Input::CONTEXT_RESPONSE
+            Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
         $pendingItems = -1;
@@ -628,11 +628,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
             // get the number of emails currently available for this folder
             // and this user
-            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Item.php';
-            require_once 'Intrabuild/Modules/Groupware/Email/Folder/Model/Folder.php';
+            require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
 
-            $folderModel = new Intrabuild_Modules_Groupware_Email_Folder_Model_Folder();
-            $itemModel   = new Intrabuild_Modules_Groupware_Email_Item_Model_Item();
+            $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+            $itemModel   = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
 
             $totalCount  = $folderModel->getItemCountForFolderAndUser(
                 $filteredData['groupwareEmailFoldersId'], $userId
@@ -648,7 +648,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 return;
             }
 
-            $decoratedModel = new Intrabuild_BeanContext_Decorator(
+            $decoratedModel = new Conjoon_BeanContext_Decorator(
                 $itemModel,
                 $itemResponseFilter
             );
@@ -667,11 +667,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         } else if ($context == $CONTEXT_REQUEST_LATEST) {
 
-            require_once 'Intrabuild/BeanContext/Decorator.php';
-            require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
-            require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Inbox.php';
+            require_once 'Conjoon/BeanContext/Decorator.php';
+            require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+            require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Inbox.php';
 
-            $itemInboxModel = new Intrabuild_Modules_Groupware_Email_Item_Model_Inbox();
+            $itemInboxModel = new Conjoon_Modules_Groupware_Email_Item_Model_Inbox();
             $totalCount = $itemInboxModel->getLatestItemCount($userId, $filteredData['minDate']);
 
             if ($totalCount == 0) {
@@ -683,7 +683,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 return;
             }
 
-            $decoratedModel = new Intrabuild_BeanContext_Decorator(
+            $decoratedModel = new Conjoon_BeanContext_Decorator(
                 $itemInboxModel,
                 $itemResponseFilter
             );
@@ -727,17 +727,17 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $toUpdate = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
         }
 
-        require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/Flag.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Model/Flag.php';
+        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/Flag.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Flag.php';
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         // set the filter context based on the passed type-parameter
         $type = isset($_POST['type']) ? trim(strtolower($_POST['type'])) : 'null';
-        $CONTEXT_READ = Intrabuild_Modules_Groupware_Email_Item_Filter_Flag::CONTEXT_READ;
-        $CONTEXT_SPAM = Intrabuild_Modules_Groupware_Email_Item_Filter_Flag::CONTEXT_SPAM;
+        $CONTEXT_READ = Conjoon_Modules_Groupware_Email_Item_Filter_Flag::CONTEXT_READ;
+        $CONTEXT_SPAM = Conjoon_Modules_Groupware_Email_Item_Filter_Flag::CONTEXT_SPAM;
         switch ($type) {
             case 'read':
                 $context = $CONTEXT_READ;
@@ -749,8 +749,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 return;
         }
 
-        $model  = new Intrabuild_Modules_Groupware_Email_Item_Model_Flag();
-        $filter = new Intrabuild_Modules_Groupware_Email_Item_Filter_Flag(array(), $context);
+        $model  = new Conjoon_Modules_Groupware_Email_Item_Model_Flag();
+        $filter = new Conjoon_Modules_Groupware_Email_Item_Filter_Flag(array(), $context);
 
         for ($i = 0, $len = count($toUpdate); $i < $len; $i ++) {
             $filter->setData($toUpdate[$i]);
@@ -794,19 +794,19 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     private function _getEmail($groupwareEmailItemsId)
     {
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
+        require_once 'Conjoon/Keys.php';
 
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $messageDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Message_Model_Message',
-            new Intrabuild_Modules_Groupware_Email_Message_Filter_MessageResponse(
+        $messageDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Message_Model_Message',
+            new Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse(
                 array(),
-                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
             )
         );
 
@@ -816,13 +816,13 @@ class Groupware_EmailController extends Zend_Controller_Action {
             return null;
         }
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
 
-        $attachmentDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Attachment_Model_Attachment',
-            new Intrabuild_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
+        $attachmentDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
+            new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
                 array(),
-                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
             )
         );
 
@@ -853,21 +853,21 @@ class Groupware_EmailController extends Zend_Controller_Action {
      * Note: If any error in the user-input was detected, no update-action will happen, but
      * deltes may already have been submitted to the underlying datastore.
      * The first error found in the passed data will be returned as an error of the type
-     * Intrabuild_Error_Form, containing the fields that where errorneous.
+     * Conjoon_Error_Form, containing the fields that where errorneous.
      *
      */
     public function updateEmailAccountsAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Account/Filter/Account.php';
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Account/Filter/Account.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
 
         $toDelete      = array();
         $toUpdate      = array();
         $deletedFailed = array();
         $updatedFailed = array();
 
-        $model   = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+        $model   = new Conjoon_Modules_Groupware_Email_Account_Model_Account();
 
         $data  = array();
         $error = null;
@@ -887,16 +887,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         for ($i = 0, $len = count($toUpdate); $i < $len; $i++) {
             $_ = $toUpdate[$i];
-            $filter = new Intrabuild_Modules_Groupware_Email_Account_Filter_Account(
+            $filter = new Conjoon_Modules_Groupware_Email_Account_Filter_Account(
                 $_,
-                Intrabuild_Filter_Input::CONTEXT_UPDATE
+                Conjoon_Filter_Input::CONTEXT_UPDATE
             );
             try {
                 $data[$i] = $filter->getProcessedData();
-                Intrabuild_Util_Array::underscoreKeys($data[$i]);
+                Conjoon_Util_Array::underscoreKeys($data[$i]);
             } catch (Zend_Filter_Exception $e) {
-                 require_once 'Intrabuild/Error.php';
-                 $error = Intrabuild_Error::fromFilter($filter, $e);
+                 require_once 'Conjoon/Error.php';
+                 $error = Conjoon_Error::fromFilter($filter, $e);
                  $this->view->success = false;
                  $this->view->updatedFailed = array($_['id']);
                  $this->view->deletedFailed = $deletedFailed;
@@ -931,12 +931,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function getEmailAccountsAction()
     {
-        require_once 'Intrabuild/Keys.php';
-        $user = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
+        require_once 'Conjoon/Keys.php';
+        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        $decoratedModel = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
         );
 
         $data = $decoratedModel->getAccountsForUserAsDto($user->getId());
@@ -983,11 +983,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
      * <ul>
      *  <li>success: <tt>true</tt>, if the account was added to the database,
      *  otherwise <tt>false></tt></li>
-     *  <li>account: a fully configured instance of <tt>Intrabuild_Groupware_Email_Account</tt>.
+     *  <li>account: a fully configured instance of <tt>Conjoon_Groupware_Email_Account</tt>.
      * <br /><strong>NOTE:</strong> If the user submitted passwords, those will be replaced by strings
      * containing only blanks, matching the length of the originally submitted
      * passwords.</li>
-     * <li>error: An object of the type <tt>Intrabuild_Groupware_ErrorObject</tt>, if any error
+     * <li>error: An object of the type <tt>Conjoon_Groupware_ErrorObject</tt>, if any error
      * occured, otherwise <tt>null</tt></li>
      * <ul>
      *
@@ -998,22 +998,22 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function addEmailAccountAction()
     {
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/BeanContext/Inspector.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Account/Filter/Account.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Account/Filter/Account.php';
 
-        $model  = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
-        $filter = new Intrabuild_Modules_Groupware_Email_Account_Filter_Account(
+        $model  = new Conjoon_Modules_Groupware_Email_Account_Model_Account();
+        $filter = new Conjoon_Modules_Groupware_Email_Account_Filter_Account(
             array(),
-            Intrabuild_Filter_Input::CONTEXT_CREATE
+            Conjoon_Filter_Input::CONTEXT_CREATE
         );
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $classToCreate = 'Intrabuild_Modules_Groupware_Email_Account';
+        $classToCreate = 'Conjoon_Modules_Groupware_Email_Account';
 
         $this->view->success = true;
         $this->view->error = null;
@@ -1022,20 +1022,20 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $filter->setData($_POST);
             $processedData = $filter->getProcessedData();
             $data = $processedData;
-            Intrabuild_Util_Array::underscoreKeys($data);
+            Conjoon_Util_Array::underscoreKeys($data);
             $processedData['id']     = $model->addAccount($userId, $data);
             $processedData['userId'] = $userId;
             $processedData['passwordInbox']  = str_pad("", strlen($processedData['passwordInbox']), '*');
             if ($processedData['isOutboxAuth']) {
                 $processedData['passwordOutbox'] = str_pad("", strlen($processedData['passwordOutbox']), '*');
             }
-            $this->view->account = Intrabuild_BeanContext_Inspector::create(
+            $this->view->account = Conjoon_BeanContext_Inspector::create(
                 $classToCreate,
                 $processedData
             )->getDto();
         } catch (Zend_Filter_Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = Intrabuild_Error::fromFilter($filter, $e);
+            require_once 'Conjoon/Error.php';
+            $error = Conjoon_Error::fromFilter($filter, $e);
             $accountData = $_POST;
             $accountData['passwordOutbox'] = isset($accountData['passwordOutbox'])
                                              ? str_pad("", strlen($accountData['passwordOutbox']), '*')
@@ -1043,7 +1043,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $accountData['passwordInbox'] = isset($accountData['passwordInbox'])
                                             ? str_pad("", strlen($accountData['passwordInbox']), '*')
                                             : '';
-            $this->view->account = Intrabuild_BeanContext_Inspector::create(
+            $this->view->account = Conjoon_BeanContext_Inspector::create(
                 $classToCreate,
                 $accountData
             )->getDto();
@@ -1063,10 +1063,10 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function getRecipientAction()
     {
-        require_once 'Intrabuild/Util/Array.php';
-        require_once 'Intrabuild/Keys.php';
-        require_once 'Intrabuild/BeanContext/Inspector.php';
-        require_once 'Intrabuild/Modules/Groupware/Contact/Item/Model/Item.php';
+        require_once 'Conjoon/Util/Array.php';
+        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
+        require_once 'Conjoon/Modules/Groupware/Contact/Item/Model/Item.php';
 
         $query = isset($_POST['query']) ? $_POST['query'] : '';
 
@@ -1077,9 +1077,9 @@ class Groupware_EmailController extends Zend_Controller_Action {
             return;
         }
 
-        $model  = new Intrabuild_Modules_Groupware_Contact_Item_Model_Item();
+        $model  = new Conjoon_Modules_Groupware_Contact_Item_Model_Item();
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $contacts = $model->getContactsByNameOrEmailAddress($userId, $query);
@@ -1137,20 +1137,20 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function sendAction()
     {
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
 
         $data = array();
         try {
             // the filter will transform the "message" into bodyHtml and bodyText, depending
             // on the passed format. both will only be filled if format equals to "multipart"
-            $filter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+            $filter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput(
                 $_POST,
-                Intrabuild_Filter_Input::CONTEXT_CREATE
+                Conjoon_Filter_Input::CONTEXT_CREATE
             );
             $data = $filter->getProcessedData();
         } catch (Exception $e) {
-             require_once 'Intrabuild/Error.php';
-             $error = Intrabuild_Error::fromFilter($filter, $e);
+             require_once 'Conjoon/Error.php';
+             $error = Conjoon_Error::fromFilter($filter, $e);
              $this->view->success = false;
              $this->view->error   = $error->getDto();
              $this->view->item    = null;
@@ -1158,9 +1158,9 @@ class Groupware_EmailController extends Zend_Controller_Action {
         }
 
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
-        require_once 'Intrabuild/BeanContext/Inspector.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Address.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
 
         // create the message object here
         $to  = array();
@@ -1171,16 +1171,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $ccString  = array();
 
         foreach ($data['cc'] as $dcc) {
-            $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+            $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
             $cc[]       = $add;
             $toString[] = $add->__toString();
         }
         foreach ($data['bcc'] as $dbcc) {
-            $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+            $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
             $bcc[]       = $add;
         }
         foreach ($data['to'] as $dto) {
-            $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+            $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
             $to[]       = $add;
             $toString[] = $add->__toString();
         }
@@ -1193,45 +1193,45 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $data['bcc'] = $bcc;
 
         // get the specified account for the user
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        require_once 'Conjoon/Keys.php';
 
-        $accountDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        $accountDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
         );
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $account = $accountDecorator->getAccountAsEntity($data['groupwareEmailAccountsId'], $userId);
 
         // no account found?
         if (!$account) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while sending email';
             $error->message = 'Could not find specified account.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
             return;
         }
 
-        $message = Intrabuild_BeanContext_Inspector::create(
-                'Intrabuild_Modules_Groupware_Email_Draft',
+        $message = Conjoon_BeanContext_Inspector::create(
+                'Conjoon_Modules_Groupware_Email_Draft',
                 $data,
                 true
         );
 
-        require_once 'Intrabuild/Modules/Groupware/Email/Sender.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
         try {
-            $mail = Intrabuild_Modules_Groupware_Email_Sender::send($message, $account);
+            $mail = Conjoon_Modules_Groupware_Email_Sender::send($message, $account);
         } catch (Exception $e) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while sending email';
             $error->message = $e->getMessage();
@@ -1245,7 +1245,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                                   . "Please check the internet connection of "
                                   . "the server this software runs on.";
             }
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
@@ -1253,18 +1253,18 @@ class Groupware_EmailController extends Zend_Controller_Action {
         }
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
         // if the email was send successfully, save it into the db and
         // return the params savedId (id of the newly saved email)
         // and savedFolderId (id of the folder where the email was saved in)
-        $itemDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
-            new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+        $itemDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Item_Model_Item',
+            new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
                 array(),
-                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
             ),
             false
         );
@@ -1274,12 +1274,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
         );
 
         if (!$item) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while saving email';
             $error->message = 'The email was sent, but it could not be stored into the database.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
@@ -1330,55 +1330,55 @@ class Groupware_EmailController extends Zend_Controller_Action {
     public function getDraftAction()
     {
         /**
-         * @see Intrabuild_Keys
+         * @see Conjoon_Keys
          */
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
 
         /**
-         * @see Intrabuild_BeanContext_Inspector
+         * @see Conjoon_BeanContext_Inspector
          */
-        require_once 'Intrabuild/BeanContext/Inspector.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse
+         * @see Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftResponse.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftResponse.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Account_Model_Account
+         * @see Conjoon_Modules_Groupware_Email_Account_Model_Account
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Account/Model/Account.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
 
         /**
-         * @see Intrabuild_Util_Array
+         * @see Conjoon_Util_Array
          */
-        require_once 'Intrabuild/Util/Array.php';
+        require_once 'Conjoon/Util/Array.php';
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $id   = (int)$_POST['id'];
         $type = (string)$_POST['type'];
 
-        $accountModel = new Intrabuild_Modules_Groupware_Email_Account_Model_Account();
+        $accountModel = new Conjoon_Modules_Groupware_Email_Account_Model_Account();
 
         // create a new draft so that the user is able to write an email from scratch!
         if ($id <= 0) {
 
             /**
-             * @see Intrabuild_Modules_Groupware_Email_Draft
+             * @see Conjoon_Modules_Groupware_Email_Draft
              */
-            require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+            require_once 'Conjoon/Modules/Groupware/Email/Draft.php';
 
             $standardId   = $accountModel->getStandardAccountIdForUser($userId);
 
             if ($standardId == 0) {
-                require_once 'Intrabuild/Error.php';
-                $error = new Intrabuild_Error();
+                require_once 'Conjoon/Error.php';
+                $error = new Conjoon_Error();
                 $error = $error->getDto();;
                 $error->title = 'Error while opening draft';
                 $error->message = 'Please configure an email account first.';
-                $error->level = Intrabuild_Error::LEVEL_ERROR;
+                $error->level = Conjoon_Error::LEVEL_ERROR;
 
                 $this->view->draft   = null;
                 $this->view->success = false;
@@ -1389,20 +1389,20 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
             $post = $_POST;
 
-            Intrabuild_Util_Array::apply($post, array(
+            Conjoon_Util_Array::apply($post, array(
                 'groupwareEmailAccountsId' => $standardId,
                 'groupwareEmailFoldersId'  => -1
             ));
 
-            $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse(
+            $draftFilter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse(
                 $post,
-                Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_NEW
+                Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_NEW
             );
 
             $data = $draftFilter->getProcessedData();
 
-            $draft = Intrabuild_BeanContext_Inspector::create(
-                'Intrabuild_Modules_Groupware_Email_Draft',
+            $draft = Conjoon_BeanContext_Inspector::create(
+                'Conjoon_Modules_Groupware_Email_Draft',
                 $data
             );
 
@@ -1416,20 +1416,20 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         // load an email to edit, to reply or to forward it
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Model_Draft
+         * @see Conjoon_Modules_Groupware_Email_Draft_Model_Draft
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Model/Draft.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Model/Draft.php';
 
-        $draftModel = new Intrabuild_Modules_Groupware_Email_Draft_Model_Draft();
+        $draftModel = new Conjoon_Modules_Groupware_Email_Draft_Model_Draft();
         $draftData = $draftModel->getDraft($id, $userId, $type);
 
         if (empty($draftData)) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while opening draft';
             $error->message = 'Could not find the referenced draft.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
 
             $this->view->draft   = null;
             $this->view->success = false;
@@ -1442,19 +1442,19 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         switch ($type) {
             case 'reply':
-                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_REPLY;
+                $context = Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_REPLY;
             break;
 
             case 'reply_all':
-                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_REPLY_ALL;
+                $context = Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_REPLY_ALL;
             break;
 
             case 'forward':
-                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_FORWARD;
+                $context = Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_FORWARD;
             break;
 
             case 'edit':
-                $context = Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_EDIT;
+                $context = Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse::CONTEXT_EDIT;
             break;
 
             default:
@@ -1462,13 +1462,13 @@ class Groupware_EmailController extends Zend_Controller_Action {
             break;
         }
 
-        Intrabuild_Util_Array::camelizeKeys($draftData);
+        Conjoon_Util_Array::camelizeKeys($draftData);
 
         $addresses = $accountModel->getEmailAddressesForUser($userId);
 
         $draftData['userEmailAddresses'] = $addresses;
 
-        $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftResponse(
+        $draftFilter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse(
             $draftData,
             $context
         );
@@ -1477,28 +1477,28 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         // convert email addresses
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Address
+         * @see Conjoon_Modules_Groupware_Email_Address
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Address.php';
 
         $to   = array();
         $cc   = array();
         $bcc  = array();
         foreach ($data['to'] as $add) {
-            $to[] = new Intrabuild_Modules_Groupware_Email_Address($add);
+            $to[] = new Conjoon_Modules_Groupware_Email_Address($add);
         }
         foreach ($data['cc'] as $add) {
-            $cc[] = new Intrabuild_Modules_Groupware_Email_Address($add);
+            $cc[] = new Conjoon_Modules_Groupware_Email_Address($add);
         }
         foreach ($data['bcc'] as $add) {
-            $bcc[] = new Intrabuild_Modules_Groupware_Email_Address($add);
+            $bcc[] = new Conjoon_Modules_Groupware_Email_Address($add);
         }
         $data['to']  = $to;
         $data['cc']  = $cc;
         $data['bcc'] = $bcc;
 
-        $draft = Intrabuild_BeanContext_Inspector::create(
-            'Intrabuild_Modules_Groupware_Email_Draft',
+        $draft = Conjoon_BeanContext_Inspector::create(
+            'Conjoon_Modules_Groupware_Email_Draft',
             $data
         );
 
@@ -1519,22 +1519,22 @@ class Groupware_EmailController extends Zend_Controller_Action {
     public function saveDraftAction()
     {
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput
+         * @see Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
 
         $data = array();
         try {
             // the filter will transform the "message" into bodyHtml and bodyText, depending
             // on the passed format. both will only be filled if format equals to "multipart"
-            $filter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+            $filter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput(
                 $_POST,
-                Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput::CONTEXT_DRAFT
+                Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput::CONTEXT_DRAFT
             );
             $data = $filter->getProcessedData();
         } catch (Exception $e) {
-             require_once 'Intrabuild/Error.php';
-             $error = Intrabuild_Error::fromFilter($filter, $e);
+             require_once 'Conjoon/Error.php';
+             $error = Conjoon_Error::fromFilter($filter, $e);
              $this->view->success = false;
              $this->view->error   = $error->getDto();
              $this->view->item    = null;
@@ -1542,19 +1542,19 @@ class Groupware_EmailController extends Zend_Controller_Action {
         }
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Address
+         * @see Conjoon_Modules_Groupware_Email_Address
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Address.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft
+         * @see Conjoon_Modules_Groupware_Email_Draft
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft.php';
 
         /**
-         * @see Intrabuild_BeanContext_Inspector
+         * @see Conjoon_BeanContext_Inspector
          */
-        require_once 'Intrabuild/BeanContext/Inspector.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
 
         // create the message object here
         $to  = array();
@@ -1565,16 +1565,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $ccString  = array();
 
         foreach ($data['cc'] as $dcc) {
-            $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+            $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
             $cc[]       = $add;
             $toString[] = $add->__toString();
         }
         foreach ($data['bcc'] as $dbcc) {
-            $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+            $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
             $bcc[]       = $add;
         }
         foreach ($data['to'] as $dto) {
-            $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+            $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
             $to[]       = $add;
             $toString[] = $add->__toString();
         }
@@ -1587,53 +1587,53 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $data['bcc'] = $bcc;
 
         // get the specified account for the user
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        require_once 'Conjoon/Keys.php';
 
-        $accountDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        $accountDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
         );
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $account = $accountDecorator->getAccountAsEntity($data['groupwareEmailAccountsId'], $userId);
 
         // no account found?
         if (!$account) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while saving email';
             $error->message = 'Could not find specified account.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
             return;
         }
 
-        $draft = Intrabuild_BeanContext_Inspector::create(
-                'Intrabuild_Modules_Groupware_Email_Draft',
+        $draft = Conjoon_BeanContext_Inspector::create(
+                'Conjoon_Modules_Groupware_Email_Draft',
                 $data,
                 true
         );
 
         /**
-         * @see Intrabuild_BeanContext_Decorator
+         * @see Conjoon_BeanContext_Decorator
          */
-        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
-        $itemDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
-            new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+        $itemDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Item_Model_Item',
+            new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
                 array(),
-                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
             ),
             false
         );
@@ -1641,12 +1641,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $item = $itemDecorator->saveDraftAsDto($draft, $account, $userId, $data['type'], $data['referencesId']);
 
         if (!$item) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while saving email';
             $error->message = 'The email could not be stored into the database.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
@@ -1668,22 +1668,22 @@ class Groupware_EmailController extends Zend_Controller_Action {
     public function moveToOutboxAction()
     {
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput
+         * @see Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
 
         $data = array();
         try {
             // the filter will transform the "message" into bodyHtml and bodyText, depending
             // on the passed format. both will only be filled if format equals to "multipart"
-            $filter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+            $filter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput(
                 $_POST,
-                Intrabuild_Filter_Input::CONTEXT_CREATE
+                Conjoon_Filter_Input::CONTEXT_CREATE
             );
             $data = $filter->getProcessedData();
         } catch (Exception $e) {
-             require_once 'Intrabuild/Error.php';
-             $error = Intrabuild_Error::fromFilter($filter, $e);
+             require_once 'Conjoon/Error.php';
+             $error = Conjoon_Error::fromFilter($filter, $e);
              $this->view->success = false;
              $this->view->error   = $error->getDto();
              $this->view->item    = null;
@@ -1691,19 +1691,19 @@ class Groupware_EmailController extends Zend_Controller_Action {
         }
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Address
+         * @see Conjoon_Modules_Groupware_Email_Address
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Address.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft
+         * @see Conjoon_Modules_Groupware_Email_Draft
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft.php';
 
         /**
-         * @see Intrabuild_BeanContext_Inspector
+         * @see Conjoon_BeanContext_Inspector
          */
-        require_once 'Intrabuild/BeanContext/Inspector.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
 
         // create the message object here
         $to  = array();
@@ -1714,16 +1714,16 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $ccString  = array();
 
         foreach ($data['cc'] as $dcc) {
-            $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+            $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
             $cc[]       = $add;
             $toString[] = $add->__toString();
         }
         foreach ($data['bcc'] as $dbcc) {
-            $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+            $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
             $bcc[]       = $add;
         }
         foreach ($data['to'] as $dto) {
-            $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+            $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
             $to[]       = $add;
             $toString[] = $add->__toString();
         }
@@ -1736,53 +1736,53 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $data['bcc'] = $bcc;
 
         // get the specified account for the user
-        require_once 'Intrabuild/BeanContext/Decorator.php';
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        require_once 'Conjoon/Keys.php';
 
-        $accountDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        $accountDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
         );
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
         $account = $accountDecorator->getAccountAsEntity($data['groupwareEmailAccountsId'], $userId);
 
         // no account found?
         if (!$account) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while moving email to the outbox folder';
             $error->message = 'Could not find specified account.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
             return;
         }
 
-        $draft = Intrabuild_BeanContext_Inspector::create(
-                'Intrabuild_Modules_Groupware_Email_Draft',
+        $draft = Conjoon_BeanContext_Inspector::create(
+                'Conjoon_Modules_Groupware_Email_Draft',
                 $data,
                 true
         );
 
         /**
-         * @see Intrabuild_BeanContext_Decorator
+         * @see Conjoon_BeanContext_Decorator
          */
-        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
-        $itemDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
-            new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+        $itemDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Item_Model_Item',
+            new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
                 array(),
-                Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
             ),
             false
         );
@@ -1790,12 +1790,12 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $item = $itemDecorator->moveDraftToOutboxAsDto($draft, $account, $userId, $data['type'], $data['referencesId']);
 
         if (!$item) {
-            require_once 'Intrabuild/Error.php';
-            $error = new Intrabuild_Error();
+            require_once 'Conjoon/Error.php';
+            $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while saving email';
             $error->message = 'The email could not be stored into the database.';
-            $error->level = Intrabuild_Error::LEVEL_ERROR;
+            $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error   = $error;
             $this->view->success = false;
             $this->view->item    = null;
@@ -1824,81 +1824,81 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $date = null;
         if (isset($_POST['date'])) {
-            require_once 'Intrabuild/Filter/DateIso8601.php';
-            $dateFilter = new Intrabuild_Filter_DateIso8601();
+            require_once 'Conjoon/Filter/DateIso8601.php';
+            $dateFilter = new Conjoon_Filter_DateIso8601();
             $date = $dateFilter->filter((int)$_POST['date']);
         }
 
         /**
-         * @see Intrabuild_Filter_EmailRecipients
+         * @see Conjoon_Filter_EmailRecipients
          */
-        require_once 'Intrabuild/Filter/EmailRecipients.php';
+        require_once 'Conjoon/Filter/EmailRecipients.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse
+         * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Address
+         * @see Conjoon_Modules_Groupware_Email_Address
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Address.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Address.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft
+         * @see Conjoon_Modules_Groupware_Email_Draft
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft.php';
 
         /**
-         * @see Intrabuild_BeanContext_Inspector
+         * @see Conjoon_BeanContext_Inspector
          */
-        require_once 'Intrabuild/BeanContext/Inspector.php';
+        require_once 'Conjoon/BeanContext/Inspector.php';
 
         /**
-         * @see Intrabuild_BeanContext_Decorator
+         * @see Conjoon_BeanContext_Decorator
          */
-        require_once 'Intrabuild/BeanContext/Decorator.php';
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
         /**
-         * @see Intrabuild_Util_Array
+         * @see Conjoon_Util_Array
          */
-        require_once 'Intrabuild/Util/Array.php';
+        require_once 'Conjoon/Util/Array.php';
 
         /**
-         * @see Intrabuild_Keys
+         * @see Conjoon_Keys
          */
-        require_once 'Intrabuild/Keys.php';
+        require_once 'Conjoon/Keys.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Model_Draft
+         * @see Conjoon_Modules_Groupware_Email_Draft_Model_Draft
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Model/Draft.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Model/Draft.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput
+         * @see Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
 
         /**
-         * @see Intrabuild_Modules_Groupware_Email_Sender
+         * @see Conjoon_Modules_Groupware_Email_Sender
          */
-        require_once 'Intrabuild/Modules/Groupware/Email/Sender.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Sender.php';
 
-        $auth   = Zend_Registry::get(Intrabuild_Keys::REGISTRY_AUTH_OBJECT);
+        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $draftFilter = new Intrabuild_Modules_Groupware_Email_Draft_Filter_DraftInput(
+        $draftFilter = new Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput(
             array(),
-            Intrabuild_Filter_Input::CONTEXT_CREATE
+            Conjoon_Filter_Input::CONTEXT_CREATE
         );
 
-        $draftModel = new Intrabuild_Modules_Groupware_Email_Draft_Model_Draft();
+        $draftModel = new Conjoon_Modules_Groupware_Email_Draft_Model_Draft();
 
-        $accountDecorator = new Intrabuild_BeanContext_Decorator(
-            'Intrabuild_Modules_Groupware_Email_Account_Model_Account'
+        $accountDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
         );
 
-        $recipientsFilter = new Intrabuild_Filter_EmailRecipients();
+        $recipientsFilter = new Conjoon_Filter_EmailRecipients();
 
         $sendItems              = array();
         $contextReferencedItems = array();
@@ -1917,7 +1917,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 continue;
             }
 
-            Intrabuild_Util_Array::camelizeKeys($rawDraft);
+            Conjoon_Util_Array::camelizeKeys($rawDraft);
 
 
             $account = $accountDecorator->getAccountAsEntity(
@@ -1945,15 +1945,15 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $bcc = array();
 
             foreach ($rawDraft['cc'] as $dcc) {
-                $add        = new Intrabuild_Modules_Groupware_Email_Address($dcc);
+                $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
                 $cc[]       = $add;
             }
             foreach ($rawDraft['bcc'] as $dbcc) {
-                $add         = new Intrabuild_Modules_Groupware_Email_Address($dbcc);
+                $add         = new Conjoon_Modules_Groupware_Email_Address($dbcc);
                 $bcc[]       = $add;
             }
             foreach ($rawDraft['to'] as $dto) {
-                $add        = new Intrabuild_Modules_Groupware_Email_Address($dto);
+                $add        = new Conjoon_Modules_Groupware_Email_Address($dto);
                 $to[]       = $add;
             }
 
@@ -1961,8 +1961,8 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $rawDraft['cc']  = $cc;
             $rawDraft['bcc'] = $bcc;
 
-            $message = Intrabuild_BeanContext_Inspector::create(
-                'Intrabuild_Modules_Groupware_Email_Draft',
+            $message = Conjoon_BeanContext_Inspector::create(
+                'Conjoon_Modules_Groupware_Email_Draft',
                 $rawDraft,
                 true
             );
@@ -1972,7 +1972,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             }
 
             try {
-                $mail = Intrabuild_Modules_Groupware_Email_Sender::send($message, $account);
+                $mail = Conjoon_Modules_Groupware_Email_Sender::send($message, $account);
             } catch (Exception $e) {
                 continue;
             }
@@ -1980,11 +1980,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
             // if the email was send successfully, save it into the db and
             // return the params savedId (id of the newly saved email)
             // and savedFolderId (id of the folder where the email was saved in)
-            $itemDecorator = new Intrabuild_BeanContext_Decorator(
-                'Intrabuild_Modules_Groupware_Email_Item_Model_Item',
-                new Intrabuild_Modules_Groupware_Email_Item_Filter_ItemResponse(
+            $itemDecorator = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Item_Model_Item',
+                new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
                     array(),
-                    Intrabuild_Filter_Input::CONTEXT_RESPONSE
+                    Conjoon_Filter_Input::CONTEXT_RESPONSE
                 ),
                 false
             );

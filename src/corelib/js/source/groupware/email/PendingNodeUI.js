@@ -12,21 +12,21 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
- * @class de.intrabuild.groupware.email.PendingNodeUI
+ * @class com.conjoon.groupware.email.PendingNodeUI
  * @extends Ext.tree.TreeNodeUI
  *
  * A nodeUI implementation that's capable of representing pending items in a folder
  * in a visual appealing format.
  *
  */
-de.intrabuild.groupware.email.PendingNodeUI = function(node) {
-    de.intrabuild.groupware.email.PendingNodeUI.superclass.constructor.call(this, node);
+com.conjoon.groupware.email.PendingNodeUI = function(node) {
+    com.conjoon.groupware.email.PendingNodeUI.superclass.constructor.call(this, node);
 };
 
-Ext.extend(de.intrabuild.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
+Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
 
     /**
      * The extra DOM-node for displaying pending item-count.
@@ -45,7 +45,7 @@ Ext.extend(de.intrabuild.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
      */
     initEvents : function()
     {
-        de.intrabuild.groupware.email.PendingNodeUI.superclass.initEvents.call(this);
+        com.conjoon.groupware.email.PendingNodeUI.superclass.initEvents.call(this);
 
         this.node.addEvents({'mousedown' : true});
 
@@ -90,18 +90,18 @@ Ext.extend(de.intrabuild.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
      */
     renderElements : function(n, a, targetNode, bulkRender)
     {
-        de.intrabuild.groupware.email.PendingNodeUI.superclass.renderElements.call(this,
+        com.conjoon.groupware.email.PendingNodeUI.superclass.renderElements.call(this,
                                                     n, a, targetNode, bulkRender);
 
         this.pendingNode = Ext.DomHelper.insertHtml('beforeEnd', this.textNode.parentNode,
-                            ['<span class="de-intrabuild-groupware-email-EmailTree-itemPending">',
+                            ['<span class="com-conjoon-groupware-email-EmailTree-itemPending">',
                             (a.pendingCount > 0 ? '('+a.pendingCount+')' : '&#160'),
                             '</span>'].join(''));
 
         this.textNode.innerHTML = Ext.util.Format.htmlEncode(a.text);
         var type = a.type;
         if (a.pendingCount > 0 && (type != 'draft' && type != 'outbox')) {
-            Ext.fly(this.anchor).addClass('de-intrabuild-attr-fontWeight-bold');
+            Ext.fly(this.anchor).addClass('com-conjoon-attr-fontWeight-bold');
         }
     },
 
@@ -119,11 +119,11 @@ Ext.extend(de.intrabuild.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
         }
 
         if (value <= 0) {
-            Ext.fly(this.anchor).removeClass('de-intrabuild-attr-fontWeight-bold');
+            Ext.fly(this.anchor).removeClass('com-conjoon-attr-fontWeight-bold');
             Ext.fly(this.pendingNode).update('&#160');
         } else {
             if (info !== true) {
-                Ext.fly(this.anchor).addClass('de-intrabuild-attr-fontWeight-bold');
+                Ext.fly(this.anchor).addClass('com-conjoon-attr-fontWeight-bold');
             }
             Ext.fly(this.pendingNode).update('('+value+')');
         }

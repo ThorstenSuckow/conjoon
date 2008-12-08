@@ -12,14 +12,14 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 
 /**
 * Controller for the emailpanels tree, preview and grid.
 *
 */
-de.intrabuild.groupware.email.EmailTree = function(config) {
+com.conjoon.groupware.email.EmailTree = function(config) {
 
     /**
      * The default value for an editing text field, if a new node is created.
@@ -33,7 +33,7 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
      * The context menu for this tree. Will be lazyly instantiated
      * in createContextMenu
      */
-    this.contextMenu = de.intrabuild.groupware.email.NodeContextMenu;
+    this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
 
     /**
      * The root node for the email tree.
@@ -41,7 +41,7 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
      */
     this.root = new Ext.tree.AsyncTreeNode({
         id            : 'root',
-        iconCls       : 'de-intrabuild-groupware-email-EmailTree-rootIcon',
+        iconCls       : 'com-conjoon-groupware-email-EmailTree-rootIcon',
         draggable     : false,
         isTarget      : false,
         allowChildren : false,
@@ -54,11 +54,11 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
      */
     this.pendingItemStore = new Ext.data.SimpleStore({
         reader      : new Ext.data.ArrayReader(
-                          de.intrabuild.groupware.email.PendingNodeItemRecord),
+                          com.conjoon.groupware.email.PendingNodeItemRecord),
         fields : [{name : 'pending', type : 'int'}]
     });
 
-    var store = de.intrabuild.groupware.email.AccountStore.getInstance();
+    var store = com.conjoon.groupware.email.AccountStore.getInstance();
     store.on('add', this._onAccountStoreAdd, this);
 
 
@@ -68,10 +68,10 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
      * The loader responsible for loading nodes into the tree.
      * Events will be captured by the onNodeLoaded method.
      */
-    this.treeLoader = new de.intrabuild.groupware.email.EmailTreeLoader({
+    this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
         dataUrl   : '/groupware/email/get.folder/format/json',
         baseAttrs : {
-            uiProvider : de.intrabuild.groupware.email.PendingNodeUI
+            uiProvider : com.conjoon.groupware.email.PendingNodeUI
         }
     });
 
@@ -82,14 +82,14 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
      */
     this.tbar = [{
         cls     : 'x-btn-icon',
-        iconCls : 'de-intrabuild-groupware-email-EmailTree-toolbar-expandButton-icon',
-        tooltip : de.intrabuild.Gettext.gettext("Show all folders"),
+        iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
+        tooltip : com.conjoon.Gettext.gettext("Show all folders"),
         handler : function(){ this.root.expand(true); },
         scope   : this
       },'-',{
         cls     : 'x-btn-icon',
-        iconCls : 'de-intrabuild-groupware-email-EmailTree-toolbar-collapseButton-icon',
-        tooltip : de.intrabuild.Gettext.gettext("Hide all folders"),
+        iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
+        tooltip : com.conjoon.Gettext.gettext("Hide all folders"),
         handler : function(){ this.root.collapse(true); },
         scope   : this
     }];
@@ -98,18 +98,18 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
     /**
     * Constructor call.
     */
-    de.intrabuild.groupware.email.EmailTree.superclass.constructor.call(this, {
+    com.conjoon.groupware.email.EmailTree.superclass.constructor.call(this, {
         bodyStyle       : 'background-color:#FFFFFF',
         rootVisible     : false,
         autoScroll      : true,
-        cls             : 'de-intrabuild-groupware-email-EmailTree',
+        cls             : 'com-conjoon-groupware-email-EmailTree',
         minSize         : 175,
         maxSize         : 500,
         collapsible     : true,
         collapseMode    :'mini',
         lines           : false,
         useArrows       : true,
-        ddGroup         : 'de.intrabuild.groupware-email-Email',
+        ddGroup         : 'com.conjoon.groupware-email-Email',
         enableDD        : true,
         containerScroll : true,
         ddAppendOnly    : true,
@@ -119,7 +119,7 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
 
     // this.on('nodedragover', function(overEvent){return overEvent.point == 'append';});
 
-    this.nodeEditor = new de.intrabuild.groupware.email.NodeEditor(this);
+    this.nodeEditor = new com.conjoon.groupware.email.NodeEditor(this);
 
     // register the listeners
     this.treeLoader.on('nodeloaded', this.onNodeLoaded, this);
@@ -149,7 +149,7 @@ de.intrabuild.groupware.email.EmailTree = function(config) {
 
 };
 
-Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
+Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
 
     /**
      * Shorthands for the none-editable folders. They get assigned in the
@@ -281,15 +281,15 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         this.nodeEditor.el.prev().dom.style.zIndex = 99;
 
         msg.show({
-            title    : de.intrabuild.Gettext.gettext("Invalid folder name"),
-            msg      : de.intrabuild.Gettext.gettext("The folder name does already exist or is invalid. Please chose another folder name"),
+            title    : com.conjoon.Gettext.gettext("Invalid folder name"),
+            msg      : com.conjoon.Gettext.gettext("The folder name does already exist or is invalid. Please chose another folder name"),
             buttons  : msg.OK,
             fn       : function(){
                            this.nodeEditor.resetEdit(value, startValue);
             },
             scope    : this,
             icon     : msg.WARNING,
-            cls      :'de-intrabuild-msgbox-warning',
+            cls      :'com-conjoon-msgbox-warning',
             width    : 400
         });
     },
@@ -326,7 +326,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         if (!this.editingNodesStorage) {
             this.editingNodesStorage = new Array();
         } else if (this.editingNodesStorage[nodeConfig.child.id]) {
-            throw("de.intrabuild.groupware.email.EmailTree::saveNode - cannot "+
+            throw("com.conjoon.groupware.email.EmailTree::saveNode - cannot "+
                   "execute request since the editing node was already in the queue.")
         }
 
@@ -442,14 +442,14 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         var oldParent = node.parentNode;
         var msg   = Ext.MessageBox;
         msg.show({
-            title   : de.intrabuild.Gettext.gettext("Confirm - Delete folder"),
-            msg     : de.intrabuild.Gettext.gettext("The selected folder and all its contents will be moved into the trash bin. Are you sure you want to continue?"),
+            title   : com.conjoon.Gettext.gettext("Confirm - Delete folder"),
+            msg     : com.conjoon.Gettext.gettext("The selected folder and all its contents will be moved into the trash bin. Are you sure you want to continue?"),
             buttons : msg.YESNO,
             fn      : function(btn){if (btn == 'yes') {this.proxyAppend(tree, node, oldParent, parentNode);}},
             scope   : this,
             icon    : msg.QUESTION,
             scope   : this,
-            cls     :'de-intrabuild-msgbox-question',
+            cls     :'com-conjoon-msgbox-question',
             width   : 375
         });
 
@@ -590,12 +590,12 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         if (!this.isNodeNameAvailable(newParent, node, node.text)) {
             var msg   = Ext.MessageBox;
             msg.show({
-                title   : de.intrabuild.Gettext.gettext("Warning - Move folder"),
-                msg     : de.intrabuild.Gettext.gettext("A folder with the same name does already exist in the target folder. Please specify another name"),
+                title   : com.conjoon.Gettext.gettext("Warning - Move folder"),
+                msg     : com.conjoon.Gettext.gettext("A folder with the same name does already exist in the target folder. Please specify another name"),
                 buttons : msg.OK,
                 icon    : msg.WARNING,
                 scope   : this,
-                cls     :'de-intrabuild-msgbox-warning',
+                cls     :'com-conjoon-msgbox-warning',
                 width   : 400
             });
 
@@ -669,21 +669,21 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
 
         switch (mode) {
             case 'move':
-                msgAdd = de.intrabuild.Gettext.gettext("Error - Move folder");
+                msgAdd = com.conjoon.Gettext.gettext("Error - Move folder");
             break;
 
             case 'edit':
-                msgAdd = de.intrabuild.Gettext.gettext("Error - Rename folder");
+                msgAdd = com.conjoon.Gettext.gettext("Error - Rename folder");
             break;
 
             case 'add':
-                msgAdd = de.intrabuild.Gettext.gettext("Error - Add folder");
+                msgAdd = com.conjoon.Gettext.gettext("Error - Add folder");
             break;
         }
 
         this.resetState(parameters.params.id, true);
 
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
     },
 
     /**
@@ -693,7 +693,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
     onNodeMoveSuccess : function(response, parameters)
     {
         // shorthands
-        var json = de.intrabuild.util.Json;
+        var json = com.conjoon.util.Json;
         var msg  = Ext.MessageBox;
 
         // the method on the server is intended to always return true on success,
@@ -713,7 +713,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
     onNodeEditSuccess : function(response, parameters)
     {
         // shorthands
-        var json = de.intrabuild.util.Json;
+        var json = com.conjoon.util.Json;
         var msg  = Ext.MessageBox;
 
         // the method on the server is intended to always return true on success,
@@ -734,7 +734,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
     onNodeAddSuccess : function(response, parameters)
     {
         // shorthands
-        var json = de.intrabuild.util.Json;
+        var json = com.conjoon.util.Json;
         var msg  = Ext.MessageBox;
 
         var responseText = response.responseText;
@@ -803,7 +803,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
                     var tmp = this.nodeHash[nodeId];
                     this.nodeHash[newId] = tmp;
                     delete this.nodeHash[nodeId];
-                    this.pendingItemStore.add(new de.intrabuild.groupware.email.PendingNodeItemRecord({
+                    this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
                         pending : 0
                     }, newId));
                 }
@@ -867,8 +867,8 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
             allowChildren : true,
             isLocked        : false,
             type          : 'folder',
-            iconCls       : 'de-intrabuild-groupware-email-EmailTree-folderIcon',
-            uiProvider    : de.intrabuild.groupware.email.PendingNodeUI
+            iconCls       : 'com-conjoon-groupware-email-EmailTree-folderIcon',
+            uiProvider    : com.conjoon.groupware.email.PendingNodeUI
         }));
 
         if (!this.appendingNodesStorage) {
@@ -893,17 +893,17 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
         var id = item.id;
 
         switch (id) {
-            case 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.openItem':
+            case 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.openItem':
                 this.contextMenu.hide();
                 this.openNode();
             break;
 
-            case 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.deleteItem':
+            case 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.deleteItem':
                 this.contextMenu.hide();
                 this.deleteFolder();
             return;
 
-            case 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.renameItem':
+            case 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.renameItem':
                 // hides the contextmenu immediately. If not called before editing the
                 // node, the editor may hide itself when the mouse moves quickly
                 // over the other menu items
@@ -911,7 +911,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
                 this.startNodeEdit(this.nodeEditor.EDIT);
             return;
 
-            case 'de.intrabuild.groupware.email.EmailTree.nodeContextMenu.newItem':
+            case 'com.conjoon.groupware.email.EmailTree.nodeContextMenu.newItem':
                 this.contextMenu.hide();
                 this.prepareAppend();
             return;
@@ -1007,7 +1007,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
     /**
      * Callback fo the oncontextmenu event.
      * Selects the passed node <tt>node</tt> while suspending all its events,
-     * then shows the contextmenu (@link {de.intrabuild.groupware.email.NodeContextMenu})
+     * then shows the contextmenu (@link {com.conjoon.groupware.email.NodeContextMenu})
      * for the node.
      *
      * @param {Ext.tree.TreeNode}
@@ -1060,7 +1060,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
             break;
         }
 
-        this.pendingItemStore.add(new de.intrabuild.groupware.email.PendingNodeItemRecord({
+        this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
             pending : parseInt(attr.pendingCount)
         }, attr.id));
     },
@@ -1076,7 +1076,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTree, Ext.tree.TreePanel, {
             this.root.reload();
         }
 
-        de.intrabuild.groupware.email.AccountStore.getInstance().un(
+        com.conjoon.groupware.email.AccountStore.getInstance().un(
             'add',
             this._onAccountStoreAdd,
             this

@@ -12,27 +12,27 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.forms');
+Ext.namespace('com.conjoon.groupware.forms');
 
-de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs = {};
+com.conjoon.groupware.forms.QuickEmailFormFieldConfigs = {};
 
 // shorthand
-var fields = de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs;
+var fields = com.conjoon.groupware.forms.QuickEmailFormFieldConfigs;
 
 
 fields.textField = {
 
     emailAddress :{
-        fieldLabel: de.intrabuild.Gettext.gettext("To"),
+        fieldLabel: com.conjoon.Gettext.gettext("To"),
         name: 'emailaddress',
-        emptyText: de.intrabuild.Gettext.gettext("<Email address>"),
+        emptyText: com.conjoon.Gettext.gettext("<Email address>"),
          vtype:'email',
         anchor: '100%'
     },
 
     subject : {
-        fieldLabel: de.intrabuild.Gettext.gettext("Subject"),
-        emptyText: de.intrabuild.Gettext.gettext("<Subject>"),
+        fieldLabel: com.conjoon.Gettext.gettext("Subject"),
+        emptyText: com.conjoon.Gettext.gettext("<Subject>"),
         name: 'subject',
         anchor: '100%'
 
@@ -42,8 +42,8 @@ fields.textField = {
 fields.textArea = {
 
     message :{
-        emptyText: de.intrabuild.Gettext.gettext("<Message>"),
-        fieldLabel:de.intrabuild.Gettext.gettext("Message"),
+        emptyText: com.conjoon.Gettext.gettext("<Message>"),
+        fieldLabel:com.conjoon.Gettext.gettext("Message"),
         anchor: '100% -40'
     }
 };
@@ -51,11 +51,11 @@ fields.textArea = {
 fields.button = {
 
     save : {
-        text : de.intrabuild.Gettext.gettext("Send now")
+        text : com.conjoon.Gettext.gettext("Send now")
     },
 
     cancel : {
-        text : de.intrabuild.Gettext.gettext("Cancel")
+        text : com.conjoon.Gettext.gettext("Cancel")
     }
 }
 

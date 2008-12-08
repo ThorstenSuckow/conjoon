@@ -12,14 +12,14 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * Overrides TreeLoader to read out response.value from the responded JSON
  * and apply custom look & feel to the nodes.
  */
 
-de.intrabuild.groupware.email.EmailTreeLoader = function(config){
+com.conjoon.groupware.email.EmailTreeLoader = function(config){
 
     Ext.apply(this, config);
 
@@ -36,14 +36,14 @@ de.intrabuild.groupware.email.EmailTreeLoader = function(config){
     });
 
 
-    de.intrabuild.groupware.email.EmailTreeLoader.superclass.constructor.call(this);
+    com.conjoon.groupware.email.EmailTreeLoader.superclass.constructor.call(this);
 
     this.on('loadexception', this.onLoadException, this);
     this.on('beforeload', this.onBeforeLoad, this);
 };
 
 
-Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
+Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
 
     loadingNode : null,
 
@@ -87,43 +87,43 @@ Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
         switch (attr.type) {
             case 'root':
             case 'accounts_root':
-                attr.iconCls       = 'de-intrabuild-groupware-email-EmailTree-rootIcon',
+                attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-rootIcon',
                 attr.draggable     = false;
                 attr.isTarget      = false;
                 attr.allowChildren = false;
             break;
             case 'folder':
-                attr.iconCls = 'de-intrabuild-groupware-email-EmailTree-folderIcon';
+                attr.iconCls = 'com-conjoon-groupware-email-EmailTree-folderIcon';
             break;
             case 'inbox':
                 attr.allowDrag = false;
-                attr.iconCls   = 'de-intrabuild-groupware-email-EmailTree-inboxIcon';
+                attr.iconCls   = 'com-conjoon-groupware-email-EmailTree-inboxIcon';
             break;
             case 'spam':
                 attr.allowDrag     = false;
-                attr.iconCls = 'de-intrabuild-groupware-email-EmailTree-spamIcon';
+                attr.iconCls = 'com-conjoon-groupware-email-EmailTree-spamIcon';
             break;
             case 'outbox':
                 attr.allowDrag     = false;
                 attr.allowChildren = false;
                 attr.isTarget      = false;
-                attr.iconCls       = 'de-intrabuild-groupware-email-EmailTree-outboxIcon';
+                attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-outboxIcon';
             break;
             case 'draft':
                 attr.allowDrag     = false;
                 attr.allowChildren = false;
                 attr.isTarget      = false;
-                attr.iconCls       = 'de-intrabuild-groupware-email-EmailTree-draftIcon';
+                attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-draftIcon';
             break;
             case 'sent':
                 attr.allowDrag     = false;
                 attr.allowChildren = false;
                 attr.isTarget      = false;
-                attr.iconCls       = 'de-intrabuild-groupware-email-EmailTree-sentIcon';
+                attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-sentIcon';
             break;
             case 'trash':
                 attr.allowDrag     = false;
-                attr.iconCls       = 'de-intrabuild-groupware-email-EmailTree-trashIcon';
+                attr.iconCls       = 'com-conjoon-groupware-email-EmailTree-trashIcon';
             break;
         }
 
@@ -161,7 +161,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
         try {
             var o = eval("("+json+")");
             /**
-             * This line is compliant to the intrabuild's json encoded
+             * This line is compliant to the conjoon's json encoded
              *responseText
              */
             o = o.items;
@@ -185,7 +185,7 @@ Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
 
     requestData : function(node, callback)
     {
-        de.intrabuild.groupware.email.EmailTreeLoader.superclass.requestData.call(this, node, callback);
+        com.conjoon.groupware.email.EmailTreeLoader.superclass.requestData.call(this, node, callback);
 
         if (this.transId) {
             var transId = this.transId;
@@ -219,13 +219,13 @@ Ext.extend(de.intrabuild.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             }
             this.loadingNode = null;
         }
-        de.intrabuild.groupware.email.EmailTreeLoader.superclass.abort.call(this);
+        com.conjoon.groupware.email.EmailTreeLoader.superclass.abort.call(this);
     },
 
 
     onLoadException : function(treeLoader, node, response)
     {
-        de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
                     this.load(node);

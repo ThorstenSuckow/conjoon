@@ -30,12 +30,12 @@
     var dlg = Ext.MessageBox.getDialog();
     dlg.on('hide', function(){
         dlg.el.removeClass([
-            'de-intrabuild-msgbox-warning',
-            'de-intrabuild-msgbox-prompt',
-            'de-intrabuild-msgbox-question',
-            'de-intrabuild-msgbox-info',
-            'de-intrabuild-msgbox-error',
-            'de-intrabuild-msgbox-critical'
+            'com-conjoon-msgbox-warning',
+            'com-conjoon-msgbox-prompt',
+            'com-conjoon-msgbox-question',
+            'com-conjoon-msgbox-info',
+            'com-conjoon-msgbox-error',
+            'com-conjoon-msgbox-critical'
         ]);
     });
 

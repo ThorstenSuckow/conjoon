@@ -12,17 +12,17 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
 /**
  * Helps adding email views to the main content panel.
  *
  */
-de.intrabuild.groupware.email.EmailViewBaton = function() {
+com.conjoon.groupware.email.EmailViewBaton = function() {
 
     var openedEmails = {};
 
-    var EmailEditorManager = de.intrabuild.groupware.email.EmailEditorManager;
+    var EmailEditorManager = com.conjoon.groupware.email.EmailEditorManager;
 
     var contentPanel = null;
 
@@ -32,48 +32,48 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
     var loadedViews = {};
 
-    var tbarManager = de.intrabuild.groupware.ToolbarManager;
+    var tbarManager = com.conjoon.groupware.ToolbarManager;
 
     var registerToolbar = function()
     {
         if (toolbar == null) {
-            tbarManager = de.intrabuild.groupware.ToolbarManager;
+            tbarManager = com.conjoon.groupware.ToolbarManager;
 
-            var decorateAccountRelatedClk = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+            var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
 
             var sendNowButton = new Ext.Toolbar.Button({
                 cls     : 'x-btn-text-icon',
                 hidden  : true,
-                iconCls : 'de-intrabuild-groupware-email-EmailView-toolbar-sendNowButton-icon',
-                text    : '&#160;'+de.intrabuild.Gettext.gettext("Send now"),
+                iconCls : 'com-conjoon-groupware-email-EmailView-toolbar-sendNowButton-icon',
+                text    : '&#160;'+com.conjoon.Gettext.gettext("Send now"),
                 handler : function() {
                     _sendEmail();
                 },
-                scope   : de.intrabuild.groupware.email.EmailViewBaton
+                scope   : com.conjoon.groupware.email.EmailViewBaton
             });
             var sendNowSeparator = new Ext.Toolbar.Separator({
                 hidden : true
             });
 
             var forwardButton = new Ext.Toolbar.Button({
-                id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ForwardButton',
+                id       : 'com.conjoon.groupware.email.EmailView.toolbar.ForwardButton',
                 cls      : 'x-btn-text-icon',
-                iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-forwardButton-icon',
-                text     : '&#160;'+de.intrabuild.Gettext.gettext("Forward"),
+                iconCls  : 'com-conjoon-groupware-email-EmailView-toolbar-forwardButton-icon',
+                text     : '&#160;'+com.conjoon.Gettext.gettext("Forward"),
                 handler  : function(){openEmailEditPanel('forward');}
             });
             var replyButton = new Ext.Toolbar.Button({
-                id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ReplyButton',
+                id       : 'com.conjoon.groupware.email.EmailView.toolbar.ReplyButton',
                 cls      : 'x-btn-text-icon',
-                iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-replyButton-icon',
-                text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply"),
+                iconCls  : 'com-conjoon-groupware-email-EmailView-toolbar-replyButton-icon',
+                text     : '&#160;'+com.conjoon.Gettext.gettext("Reply"),
                 handler  : function(){openEmailEditPanel('reply');}
             });
             var replyAllButton = new Ext.Toolbar.Button({
-                id       : 'de.intrabuild.groupware.email.EmailView.toolbar.ReplyAllButton',
+                id       : 'com.conjoon.groupware.email.EmailView.toolbar.ReplyAllButton',
                 cls      : 'x-btn-text-icon',
-                iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-replyAllButton-icon',
-                text     : '&#160;'+de.intrabuild.Gettext.gettext("Reply all"),
+                iconCls  : 'com-conjoon-groupware-email-EmailView-toolbar-replyAllButton-icon',
+                text     : '&#160;'+com.conjoon.Gettext.gettext("Reply all"),
                 handler  : function(){openEmailEditPanel('reply_all');},
                 scope    : this
             });
@@ -83,10 +83,10 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
             });
 
             var editDraftButton = new Ext.Toolbar.Button({
-                id       : 'de.intrabuild.groupware.email.EmailView.toolbar.EditDraftButton',
+                id       : 'com.conjoon.groupware.email.EmailView.toolbar.EditDraftButton',
                 cls      : 'x-btn-text-icon',
-                iconCls  : 'de-intrabuild-groupware-email-EmailView-toolbar-editDraftButton-icon',
-                text     : '&#160;'+de.intrabuild.Gettext.gettext("Edit draft"),
+                iconCls  : 'com-conjoon-groupware-email-EmailView-toolbar-editDraftButton-icon',
+                text     : '&#160;'+com.conjoon.Gettext.gettext("Edit draft"),
                 hidden   : true,
                 handler  : function(){openEmailEditPanel('edit');}
             });
@@ -111,7 +111,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
             sendNowSeparator.render = func;
             separator.render        = func;
 
-            tbarManager.register('de.intrabuild.groupware.email.EmailView.toolbar', toolbar);
+            tbarManager.register('com.conjoon.groupware.email.EmailView.toolbar', toolbar);
         }
     };
 
@@ -129,8 +129,8 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
     };
 
     /**
-     * Called when the message with the subject "de.intrabuild.groupware.email.EmailGrid.store.remove"
-     * or "de.intrabuild.groupware.email.EmailGrid.store.bulkremove"
+     * Called when the message with the subject "com.conjoon.groupware.email.EmailGrid.store.remove"
+     * or "com.conjoon.groupware.email.EmailGrid.store.bulkremove"
      * is published over Ext.ux.util.MessageBus.
      * Will remove any tab that displays the removed record.
      *
@@ -162,12 +162,12 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
         var emailPanel = contentPanel.getActiveTab();
         var emailItem  = emailPanel.emailItem;
 
-        // should be instance of de.intrabuild.groupware.email.EmailViewPanel
+        // should be instance of com.conjoon.groupware.email.EmailViewPanel
         if (!emailItem || !emailItem.get('isOutboxPending')) {
             return;
         }
 
-        de.intrabuild.groupware.email.Dispatcher.sendPendingEmails(
+        com.conjoon.groupware.email.Dispatcher.sendPendingEmails(
             [emailItem],
             ((new Date()).getTime()/1000)
         );
@@ -178,11 +178,11 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
      * show the removed message
      */
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.EmailGrid.store.remove',
+        'com.conjoon.groupware.email.EmailGrid.store.remove',
         _onEmailRemove
     );
     Ext.ux.util.MessageBus.subscribe(
-        'de.intrabuild.groupware.email.LatestEmailsPanel.store.remove',
+        'com.conjoon.groupware.email.LatestEmailsPanel.store.remove',
         _onEmailRemove
     );
 
@@ -208,7 +208,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
         showEmail : function(emailItem, config, autoRender)
         {
             if (!contentPanel) {
-                contentPanel = de.intrabuild.util.Registry.get('de.intrabuild.groupware.ContentPanel');
+                contentPanel = com.conjoon.util.Registry.get('com.conjoon.groupware.ContentPanel');
             }
 
             if (toolbar == null) {
@@ -234,12 +234,12 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 }
 
                 Ext.applyIf(config.viewConfig, {
-                    fromValue       : de.intrabuild.Gettext.gettext("From"),
-                    toValue         : de.intrabuild.Gettext.gettext("To"),
-                    ccValue         : de.intrabuild.Gettext.gettext("CC"),
-                    bccValue        : de.intrabuild.Gettext.gettext("BCC"),
-                    replyToValue    : de.intrabuild.Gettext.gettext("Reply to"),
-                    attachmentValue : de.intrabuild.Gettext.gettext("Attachments")
+                    fromValue       : com.conjoon.Gettext.gettext("From"),
+                    toValue         : com.conjoon.Gettext.gettext("To"),
+                    ccValue         : com.conjoon.Gettext.gettext("CC"),
+                    bccValue        : com.conjoon.Gettext.gettext("BCC"),
+                    replyToValue    : com.conjoon.Gettext.gettext("Reply to"),
+                    attachmentValue : com.conjoon.Gettext.gettext("Attachments")
                 });
 
                 Ext.applyIf(config, {
@@ -248,7 +248,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                     border    : true
                 });
 
-                var view = new de.intrabuild.groupware.email.EmailViewPanel(config);
+                var view = new com.conjoon.groupware.email.EmailViewPanel(config);
 
                 if (autoRender) {
                     view.emailRecord = emailItem;
@@ -270,23 +270,23 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                         break;
                     }
                     if (hide) {
-                        tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');
+                        tbarManager.hide('com.conjoon.groupware.email.EmailView.toolbar');
                     }
                 });
 
 
                 view.on('activate', function(panel) {
-                    tbarManager.show('de.intrabuild.groupware.email.EmailView.toolbar');
+                    tbarManager.show('com.conjoon.groupware.email.EmailView.toolbar');
 
                     var eItem = panel.emailItem;
 
                     if (loadedViews[eItem.id]) {
-                        tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);
+                        tbarManager.disable('com.conjoon.groupware.email.EmailView.toolbar', false);
                     } else {
-                        tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', true);
+                        tbarManager.disable('com.conjoon.groupware.email.EmailView.toolbar', true);
                     }
 
-                    var toolbar = tbarManager.get('de.intrabuild.groupware.email.EmailView.toolbar');
+                    var toolbar = tbarManager.get('com.conjoon.groupware.email.EmailView.toolbar');
 
                     var tItems = toolbar.items;
 
@@ -308,17 +308,17 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
                 });
 
                 view.on('deactivate', function(panel) {
-                    tbarManager.hide('de.intrabuild.groupware.email.EmailView.toolbar');
-                    tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', true);
+                    tbarManager.hide('com.conjoon.groupware.email.EmailView.toolbar');
+                    tbarManager.disable('com.conjoon.groupware.email.EmailView.toolbar', true);
                 });
 
                 view.on('emailload', function() {
                     loadedViews[emailItem.id] = true;
-                    tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', false);
+                    tbarManager.disable('com.conjoon.groupware.email.EmailView.toolbar', false);
                 });
 
                 view.on('emailloadfailure', function(response, options) {
-                    de.intrabuild.groupware.ResponseInspector.handleFailure(response, {
+                    com.conjoon.groupware.ResponseInspector.handleFailure(response, {
                         onLogin: {
                             fn : function(){
                                 view.load();
@@ -330,7 +330,7 @@ de.intrabuild.groupware.email.EmailViewBaton = function() {
 
                 view.on('beforeemailload', function() {
                     loadedViews[emailItem.id] = false;
-                    tbarManager.disable('de.intrabuild.groupware.email.EmailView.toolbar', true);
+                    tbarManager.disable('com.conjoon.groupware.email.EmailView.toolbar', true);
                 });
 
                 contentPanel.add(view);

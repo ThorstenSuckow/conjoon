@@ -12,10 +12,10 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.feeds');
+Ext.namespace('com.conjoon.groupware.feeds');
 
 
-de.intrabuild.groupware.feeds.ItemRecord = Ext.data.Record.create([
+com.conjoon.groupware.feeds.ItemRecord = Ext.data.Record.create([
 
     {name: 'id', type : 'int'},
     {name: 'groupwareFeedsAccountsId', type : 'int'},

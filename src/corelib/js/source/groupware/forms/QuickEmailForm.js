@@ -12,17 +12,17 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.forms');
+Ext.namespace('com.conjoon.groupware.forms');
 
 /**
- * de.intrabuild.groupware.forms.QuickContactFormFieldConfigs
- * de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs
+ * com.conjoon.groupware.forms.QuickContactFormFieldConfigs
+ * com.conjoon.groupware.forms.QuickEmailFormFieldConfigs
  */
 
-de.intrabuild.groupware.forms.QuickEmailForm = function() {
+com.conjoon.groupware.forms.QuickEmailForm = function() {
 
     // shorthands
-    var _fieldConfigs    = de.intrabuild.groupware.forms.QuickEmailFormFieldConfigs;
+    var _fieldConfigs    = com.conjoon.groupware.forms.QuickEmailFormFieldConfigs;
     var _textFieldConfig = _fieldConfigs.textField;
     var _textAreaConfig  = _fieldConfigs.textArea;
     var _buttonConfig    = _fieldConfigs.button;
@@ -39,7 +39,7 @@ de.intrabuild.groupware.forms.QuickEmailForm = function() {
                 return _form;
             }
 
-            var decorate  = de.intrabuild.groupware.email.decorator.AccountActionComp.decorate;
+            var decorate  = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
             _submitButton = decorate(new Ext.Button(_buttonConfig.save));
             _cancelButton = decorate(new Ext.Button(_buttonConfig.cancel));
 
@@ -47,7 +47,7 @@ de.intrabuild.groupware.forms.QuickEmailForm = function() {
                 labelWidth: 0,
                 frame:false,
                 labelAlign:'left',
-                title: de.intrabuild.Gettext.gettext("Email"),
+                title: com.conjoon.Gettext.gettext("Email"),
                 bodyStyle:'background:#DFE8F6;padding:5px;',
                 cls: 'x-small-editor',
                 labelPad: 0,

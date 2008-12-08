@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email');
+Ext.namespace('com.conjoon.groupware.email');
 
-de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
+com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
     /**
      * @cfg {Object} viewConfig
@@ -37,14 +37,14 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      */
 
     /**
-     * @cfg {de.intrabuild.groupware.email.EmailItemRecord} emailItem The email item this
+     * @cfg {com.conjoon.groupware.email.EmailItemRecord} emailItem The email item this
      * panel represents. Will load the message body according to the record's id.
      * If provided, the title will be automatically set to the value of the record's
      * subject field.
      */
 
     /**
-     * @param {de.intrabuild.groupware.email._EmailView} view the view for this panel
+     * @param {com.conjoon.groupware.email._EmailView} view the view for this panel
      * to render the message
      */
     view : null,
@@ -66,7 +66,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     viewReady : false,
 
     /**
-     * @param {de.intrabuild.groupware.email.EmailRecord} emailRecord The last loaded
+     * @param {com.conjoon.groupware.email.EmailRecord} emailRecord The last loaded
      * email record as specified in the id of emailItem
      */
     emailRecord : null,
@@ -100,7 +100,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         Ext.apply(this, {
             closable  : true,
-            iconCls   : this.iconCls || 'de-intrabuild-groupware-email-EmailView-Icon',
+            iconCls   : this.iconCls || 'com-conjoon-groupware-email-EmailView-Icon',
             hideMode  : 'offsets'
             /**
              * @bug adding listeners via listeners property does not work in initComponent!!!
@@ -109,21 +109,21 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         });
 
         Ext.ux.util.MessageBus.subscribe(
-            'de.intrabuild.groupware.email.editor.draftSave',
+            'com.conjoon.groupware.email.editor.draftSave',
             this._onDraftSave,
             this
         );
 
-        this.on('render',  de.intrabuild.groupware.util.LinkInterceptor.getListener().render);
+        this.on('render',  com.conjoon.groupware.util.LinkInterceptor.getListener().render);
         this.on('destroy', this.abortRequest, this);
 
-        de.intrabuild.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
+        com.conjoon.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
     },
 
     getView : function()
     {
         if (!this.view) {
-            this.view = new de.intrabuild.groupware.email.view.DefaultViewRenderer(
+            this.view = new com.conjoon.groupware.email.view.DefaultViewRenderer(
                 this.viewConfig
             );
         }
@@ -156,7 +156,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
     onRender : function(ct, position)
     {
-        de.intrabuild.groupware.email.EmailViewPanel.superclass.onRender.apply(this, arguments);
+        com.conjoon.groupware.email.EmailViewPanel.superclass.onRender.apply(this, arguments);
 
         var view = this.getView()
         view.init(this);
@@ -176,13 +176,13 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             c.update("");
         }
 
-        de.intrabuild.groupware.email.EmailViewPanel.superclass.onDestroy.call(this);
+        com.conjoon.groupware.email.EmailViewPanel.superclass.onDestroy.call(this);
     },
 
     // private
     onResize : function()
     {
-        de.intrabuild.groupware.email.EmailViewPanel.superclass.onResize.apply(this, arguments);
+        com.conjoon.groupware.email.EmailViewPanel.superclass.onResize.apply(this, arguments);
 
         if(this.viewReady){
             this.view.layout();
@@ -192,7 +192,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     /**
      * Sets a new email item to for this panel to display
      *
-     * @param {de.intrabuild.groupware.email.EmailItemRecord} emailItem The
+     * @param {com.conjoon.groupware.email.EmailItemRecord} emailItem The
      * new emailItem this panel should represent
      * @param {Boolean} suspendAutoLoad If set to true, the according message will not be loaded
      *
@@ -246,7 +246,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         }
 
         this.setTitle(
-            de.intrabuild.Gettext.gettext("Loading...")
+            com.conjoon.Gettext.gettext("Loading...")
         );
 
         this.emailRecord = null;
@@ -283,14 +283,14 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      */
     onEmailLoadSuccess : function(response, parameters)
     {
-        var data = de.intrabuild.groupware.ResponseInspector.isSuccess(response);
+        var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
         if (data === null) {
             this.onEmailLoadFailure(response, parameters);
             return;
         }
 
-        var record = de.intrabuild.util.Record.convertTo(
-            de.intrabuild.groupware.email.EmailRecord,
+        var record = com.conjoon.util.Record.convertTo(
+            com.conjoon.groupware.email.EmailRecord,
             data.item,
             data.item.id
         );
@@ -302,7 +302,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
         this.fireEvent('emailload', record);
 
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.view.onEmailLoad', {
+        Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.view.onEmailLoad', {
             emailRecord : record,
             panelId     : this.id
         });
@@ -317,7 +317,7 @@ de.intrabuild.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     {
         this.fireEvent('emailloadfailure', response, options);
 
-        Ext.ux.util.MessageBus.publish('de.intrabuild.groupware.email.view.onEmailLoadFailure', {
+        Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.view.onEmailLoadFailure', {
             response : response,
             options  : options,
             panelId  : id

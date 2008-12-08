@@ -12,17 +12,17 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.groupware.email.form');
+Ext.namespace('com.conjoon.groupware.email.form');
 
 /**
- * @class de.intrabuild.groupware.email.form.RecipientComboBox
+ * @class com.conjoon.groupware.email.form.RecipientComboBox
  *
  * A special combobox used for querying values server side.
  * The combobox will not trigger a new request if the value submitted has already been
  * queried before, and no corresponding values where returned by the server, i.e. the
  * server returned an empty result set.
  */
-de.intrabuild.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBox, {
+com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBox, {
 
     /**
      * Contains all query strings for which no records from the
@@ -53,7 +53,7 @@ de.intrabuild.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.Combo
                 listeners : {
                     loadexception : {
                         fn:  function(proxy, options, response, jsError) {
-                            de.intrabuild.groupware.ResponseInspector.handleFailure(response);
+                            com.conjoon.groupware.ResponseInspector.handleFailure(response);
                         }
                     }
                 }
@@ -70,7 +70,7 @@ de.intrabuild.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.Combo
 
         this._blacklist = [];
 
-        de.intrabuild.groupware.email.form.RecipientComboBox.superclass.initComponent.call(this);
+        com.conjoon.groupware.email.form.RecipientComboBox.superclass.initComponent.call(this);
     },
 
     /**
@@ -84,7 +84,7 @@ de.intrabuild.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.Combo
 
     initEvents : function()
     {
-        de.intrabuild.groupware.email.form.RecipientComboBox.superclass.initEvents.call(this);
+        com.conjoon.groupware.email.form.RecipientComboBox.superclass.initEvents.call(this);
 
         this.store.on('load',  this._onLoad,        this);
         this.on('beforequery', this._onBeforeQuery, this);

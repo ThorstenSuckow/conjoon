@@ -12,9 +12,9 @@
  * $URL$
  */
 
-Ext.namespace('de.intrabuild.form');
+Ext.namespace('com.conjoon.form');
 
-de.intrabuild.form.TextField = Ext.extend(Ext.form.TextField, {
+com.conjoon.form.TextField = Ext.extend(Ext.form.TextField, {
 
     initComponent : function()
     {
@@ -34,7 +34,7 @@ de.intrabuild.form.TextField = Ext.extend(Ext.form.TextField, {
 
     initEvents : function() {
 
-        de.intrabuild.form.TextField.superclass.initEvents.call(this);
+        com.conjoon.form.TextField.superclass.initEvents.call(this);
 
         this.el.un(Ext.isIE ? "keydown" : "keypress", this.fireKey,  this);
 
