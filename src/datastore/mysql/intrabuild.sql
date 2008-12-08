@@ -1,17 +1,76 @@
+-- conjoon
+-- (c) 2002-2009 siteartwork.de/conjoon.org
+-- licensing@conjoon.org
+--
+-- $Author$
+-- $Id$
+-- $Date$
+-- $Revision$
+-- $LastChangedDate$
+-- $LastChangedBy$
+-- $URL$
+
 -- phpMyAdmin SQL Dump
--- version 2.11.4
+-- version 2.11.9.2
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 21. Juli 2008 um 02:10
--- Server Version: 5.0.51
--- PHP-Version: 5.2.5
+-- Erstellungszeit: 08. Dezember 2008 um 11:07
+-- Server Version: 5.0.67
+-- PHP-Version: 5.2.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
 -- Datenbank: `intrabuild`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `groupware_contact_items`
+--
+
+CREATE TABLE IF NOT EXISTS `groupware_contact_items` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `first_name` varchar(128) NOT NULL,
+  `last_name` varchar(128) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `first_name` (`first_name`),
+  KEY `last_name` (`last_name`),
+  KEY `first/last_name` (`first_name`,`last_name`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `groupware_contact_items_email`
+--
+
+CREATE TABLE IF NOT EXISTS `groupware_contact_items_email` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `groupware_contact_items_id` int(10) unsigned NOT NULL,
+  `email_address` text NOT NULL,
+  `is_standard` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `groupware_contact_items_id` (`groupware_contact_items_id`),
+  KEY `is_standard` (`groupware_contact_items_id`,`email_address`(255),`is_standard`),
+  KEY `email_address` (`groupware_contact_items_id`,`email_address`(255))
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `groupware_contact_items_flags`
+--
+
+CREATE TABLE IF NOT EXISTS `groupware_contact_items_flags` (
+  `groupware_contact_items_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `is_deleted` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`groupware_contact_items_id`,`user_id`),
+  KEY `contact_for_user` (`user_id`,`is_deleted`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -61,7 +120,6 @@ CREATE TABLE IF NOT EXISTS `groupware_email_folders` (
   `parent_id` int(10) unsigned NOT NULL,
   `is_deleted` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`parent_id`,`name`),
   KEY `parent_id` (`parent_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -89,6 +147,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items` (
   `date` datetime NOT NULL,
   `subject` text,
   `from` text NOT NULL,
+  `reply_to` text,
   `to` text NOT NULL,
   `cc` text,
   `bcc` text,
@@ -96,8 +155,11 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items` (
   `references` text,
   `content_text_plain` longtext,
   `content_text_html` longtext,
+  `recipients` text NOT NULL,
+  `sender` text NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `groupware_email_folders_id` (`groupware_email_folders_id`)
+  KEY `groupware_email_folders_id` (`groupware_email_folders_id`),
+  KEY `date` (`date`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Table for storing incomin emails in a readable format.';
 
 -- --------------------------------------------------------
@@ -129,10 +191,9 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_flags` (
   `user_id` int(11) NOT NULL,
   `is_read` tinyint(1) NOT NULL default '0',
   `is_spam` tinyint(1) NOT NULL default '0',
+  `is_deleted` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`groupware_email_items_id`,`user_id`),
-  KEY `is_read` (`user_id`,`is_read`,`groupware_email_items_id`),
-  KEY `is_spam` (`groupware_email_items_id`,`user_id`,`is_spam`),
-  KEY `flags` (`groupware_email_items_id`,`user_id`,`is_read`,`is_spam`)
+  KEY `flags` (`is_read`,`is_spam`,`is_deleted`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -147,7 +208,6 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_inbox` (
   `raw_body` longblob NOT NULL,
   `hash` varchar(32) default NULL,
   `message_id` varchar(255) default NULL,
-  `reply_to` text,
   `uid` varchar(255) default NULL,
   `fetched_timestamp` int(11) NOT NULL,
   PRIMARY KEY  (`groupware_email_items_id`),
@@ -155,6 +215,38 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_inbox` (
   KEY `fetched_timestamp` (`groupware_email_items_id`,`fetched_timestamp`),
   KEY `uid` (`uid`),
   KEY `message_id` (`message_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `groupware_email_items_outbox`
+--
+
+CREATE TABLE IF NOT EXISTS `groupware_email_items_outbox` (
+  `groupware_email_items_id` int(10) unsigned NOT NULL,
+  `groupware_email_accounts_id` int(10) unsigned NOT NULL,
+  `raw_header` longblob NOT NULL,
+  `raw_body` longblob NOT NULL,
+  `sent_timestamp` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`groupware_email_items_id`),
+  KEY `accounts_is` (`groupware_email_accounts_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `groupware_email_items_references`
+--
+
+CREATE TABLE IF NOT EXISTS `groupware_email_items_references` (
+  `groupware_email_items_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `reference_items_id` int(10) unsigned NOT NULL,
+  `reference_type` enum('','reply','reply_all','forward') NOT NULL,
+  `is_pending` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`groupware_email_items_id`,`user_id`),
+  KEY `references` (`reference_items_id`,`is_pending`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -227,100 +319,3 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(32) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
-
-ALTER TABLE `groupware_email_items_flags` ADD `is_deleted` BOOL NOT NULL DEFAULT '0' AFTER `is_spam` ;
-
-ALTER TABLE `groupware_email_items_flags` DROP INDEX `is_spam` ,
-ADD INDEX `is_spam` ( `groupware_email_items_id` , `user_id` , `is_spam` , `is_deleted` );
-
-ALTER TABLE `groupware_email_items_flags` DROP INDEX `is_read` ,
-ADD INDEX `is_read` ( `user_id` , `is_read` , `groupware_email_items_id` , `is_deleted` );
-
-ALTER TABLE `groupware_email_items_flags` DROP INDEX `flags` ,
-ADD INDEX `flags` ( `groupware_email_items_id` , `user_id` , `is_read` , `is_spam` , `is_deleted` );
-
-
-ALTER TABLE `groupware_email_items_flags` DROP INDEX `flags` ,
-ADD INDEX `flags` ( `groupware_email_items_id` , `user_id` , `is_read` , `is_spam` , `is_deleted` );
-
-CREATE TABLE IF NOT EXISTS `groupware_contact_items` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-`first_name` VARCHAR( 128 ) NOT NULL ,
-`last_name` VARCHAR( 128 ) NOT NULL ,
-PRIMARY KEY ( `id` )
-) ENGINE = MYISAM;
-
-ALTER TABLE `groupware_contact_items` ADD INDEX `first_name` ( `first_name` );
-
-ALTER TABLE `groupware_contact_items` ADD INDEX `last_name` ( `last_name` );
-
-ALTER TABLE `groupware_contact_items` ADD INDEX `first/last_name` ( `first_name` , `last_name` );
-
- CREATE TABLE IF NOT EXISTS `groupware_contact_items_flags` (
-`groupware_contact_items_id` INT UNSIGNED NOT NULL ,
-`user_id` INT UNSIGNED NOT NULL ,
-`is_deleted` BOOL NOT NULL DEFAULT '0'
-) ENGINE = MYISAM;
-
- ALTER TABLE `groupware_contact_items_flags` ADD PRIMARY KEY ( `groupware_contact_items_id` , `user_id` );
-
- ALTER TABLE `groupware_contact_items_flags` ADD INDEX `contact_for_user` ( `user_id` , `is_deleted` );
-
- CREATE TABLE IF NOT EXISTS `groupware_contact_items_email` (
-`groupware_contact_items_id` INT UNSIGNED NOT NULL ,
-`email_address` TEXT NOT NULL ,
-`is_standard` BOOL NOT NULL DEFAULT '0'
-) ENGINE = MYISAM;
-
-ALTER TABLE `groupware_contact_items_email` ADD INDEX `groupware_contact_items_id` ( `groupware_contact_items_id` );
-
-ALTER TABLE `groupware_contact_items_email` ADD INDEX `is_standard` ( `groupware_contact_items_id` , `email_address` ( 255 ),  `is_standard`);
-
-ALTER TABLE `groupware_contact_items_email` ADD INDEX `email_address` ( `groupware_contact_items_id` , `email_address` ( 255 ) );
-
-ALTER TABLE `groupware_contact_items_email` ADD `id` INT UNSIGNED NOT NULL FIRST ;
-
-ALTER TABLE `groupware_contact_items_email` ADD PRIMARY KEY ( `id` );
-
-ALTER TABLE `groupware_contact_items_email` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `groupware_email_items` ADD `reply_to` TEXT NOT NULL AFTER `from`;
-
-ALTER TABLE `groupware_email_items_inbox` DROP `reply_to`;
-
-ALTER TABLE `groupware_email_items` CHANGE `reply_to` `reply_to` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
-
-
-CREATE TABLE IF NOT EXISTS `intrabuild`.`groupware_email_items_outbox` (
-`groupware_email_items_id` INT UNSIGNED NOT NULL ,
-`raw_header` LONGBLOB NOT NULL ,
-`raw_body` LONGBLOB NOT NULL ,
-`sent_timestamp` INT UNSIGNED NOT NULL ,
-PRIMARY KEY ( `groupware_email_items_id` )
-) ENGINE = MYISAM;
-
-ALTER TABLE `groupware_email_items_outbox` CHANGE `sent_timestamp` `sent_timestamp` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
-
-ALTER TABLE `groupware_email_items_outbox` ADD `groupware_email_accounts_id` INT UNSIGNED NOT NULL AFTER `groupware_email_items_id` ;
-
-ALTER TABLE `groupware_email_items` ADD `recipients` TEXT NOT NULL AFTER `content_text_html` , ADD `sender` TEXT NOT NULL AFTER `recipients` ;
-
-
- CREATE TABLE IF NOT EXISTS `intrabuild`.`groupware_email_items_references` (
-`groupware_email_items_id` INT UNSIGNED NOT NULL ,
-`user_id` INT UNSIGNED NOT NULL ,
-`reference_items_id` INT UNSIGNED NOT NULL ,
-`reference_type` ENUM( '', 'reply', 'reply_all', 'forward' ) NOT NULL
-) ENGINE = MYISAM;
-
-ALTER TABLE `groupware_email_items_references` ADD PRIMARY KEY ( `groupware_email_items_id` , `user_id` ) ;
-
-ALTER TABLE `groupware_email_items_references` ADD INDEX `references` ( `groupware_email_items_id` , `user_id` , `reference_items_id` )
-
- ALTER TABLE `groupware_email_items` DROP INDEX `groupware_email_folders_id` ,
-ADD INDEX `groupware_email_folders_id` ( `groupware_email_folders_id` , `date` );
-
-ALTER TABLE `groupware_email_folders` DROP INDEX `name`;
-
-ALTER TABLE `groupware_email_items_references` ADD `is_pending` BOOL NOT NULL DEFAULT '0';
