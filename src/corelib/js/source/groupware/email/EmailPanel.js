@@ -213,7 +213,7 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
         handler      : this.hidePreview,
         scope        : this,
         cls          : 'x-btn-text-icon',
-        iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewButton-icon',
+        iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
         text         : com.conjoon.Gettext.gettext("Preview"),
         menu         : {
             id    : 'com.conjoon.groupware.email.emailPreviewMenu',
@@ -737,6 +737,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
     {
         var right  = Ext.getCmp('com.conjoon.groupware.email.rightPreview');
         var bot    = Ext.getCmp('com.conjoon.groupware.email.bottomPreview');
+        var button = Ext.getCmp('com.conjoon.groupware.email.previewButton');
 
         if (btn instanceof Ext.Toolbar.SplitButton) {
             if (btn.pressed) {
@@ -748,12 +749,21 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
                 if (b.checked){
                     b.setChecked(false, true);
                     b.setChecked(true);
+                    button.setIconClass(
+                        'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon'
+                    );
                 } else if(r.checked){
                     r.setChecked(false, true);
                     r.setChecked(true);
+                    button.setIconClass(
+                        'com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon'
+                    );
                 } else if(h.checked){
                     //h.setChecked(false, true);
                     b.setChecked(true);
+                    button.setIconClass(
+                        'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon'
+                    );
                 }
                 return;
 
@@ -762,10 +772,12 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
                 right.hide();
                 this.preview.hide();
                 this.ownerCt.doLayout();
+                button.setIconClass(
+                    'com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon'
+                );
                 return;
             }
         } else {
-            var button      = Ext.getCmp('com.conjoon.groupware.email.previewButton');
             var previewMenu = Ext.menu.MenuMgr.get('com.conjoon.groupware.email.emailPreviewMenu');
             previewMenu.render();
             var items = previewMenu.items.items;
@@ -778,6 +790,9 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
                 bot.show();
                 this.ownerCt.doLayout();
                 this.preview.show();
+                button.setIconClass(
+                    'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon'
+                );
                 return;
             } else if (r.checked) {
                 button.toggle(true);
@@ -786,6 +801,9 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
                 right.add(this.preview);
                 right.show();
                 this.ownerCt.doLayout();
+                button.setIconClass(
+                    'com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon'
+                );
                 this.preview.show();
                 return;
             } else if (h.checked) {
@@ -793,6 +811,9 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
                 bot.hide();
                 right.hide();
                 this.preview.hide();
+                button.setIconClass(
+                    'com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon'
+                );
                 this.ownerCt.doLayout();
                 return;
             }
