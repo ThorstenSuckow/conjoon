@@ -649,6 +649,8 @@ Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
 
         var responseValues = json.getResponseValues(response.responseText);
 
+        this.requestId = null;
+
         if (responseValues['success'] !== true) {
             this.displayError(this.ERROR_FEED, orgParameters.params.uri);
             return;
@@ -673,7 +675,7 @@ Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
         this.loadMask.hide();
         this.tools['close'].unmask();
         this.cancelButton.setDisabled(false);
-
+        this.requestId = null;
         com.conjoon.groupware.ResponseInspector.handleFailure(response);
     },
 
