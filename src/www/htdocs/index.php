@@ -80,7 +80,7 @@ require_once 'Conjoon/Modules/Default/User.php';
 // | Load up config and set up registry/ apply default configs to objects
 // +----------------------------------------------------------------------------
    // load config
-   $config = new Zend_Config_Ini('../application/config.ini');
+   $config = new Zend_Config_Ini('./config.ini.php');
 
    Zend_Registry::set(Conjoon_Keys::REGISTRY_CONFIG_OBJECT, $config);
 
@@ -106,7 +106,7 @@ require_once 'Conjoon/Modules/Default/User.php';
 // +----------------------------------------------------------------------------
    $controller = Zend_Controller_Front::getInstance();
    $controller->throwExceptions(false)
-              ->addModuleDirectory('../application/modules')
+              ->addModuleDirectory($config->environment->application_path . 'application/modules')
               ->setBaseUrl($config->environment->base_url);
 
    // add the plugins

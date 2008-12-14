@@ -1,31 +1,51 @@
+;<?php
+;/**
+; * conjoon
+; * (c) 2002-2009 siteartwork.de/conjoon.org
+; * licensing@conjoon.org
+; *
+; * $Author$
+; * $Id$
+; * $Date$
+; * $Revision$
+; * $LastChangedDate$
+; * $LastChangedBy$
+; * $URL$
+; */
+; ?>
 ;
-; conjoon
-; (c) 2002-2009 siteartwork.de/conjoon.org
-; licensing@conjoon.org
-;
-; $Author$
-; $Id$
-; $Date$
-; $Revision$
-; $LastChangedDate$
-; $LastChangedBy$
-; $URL$
-;
-
-;;;;;;;;;;;;;;;;;;;;;;;;
-;;;     README       ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                             README                                        ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
 ; This is the template for the application configuration file for the conjoon
 ; software.
 ; You should set the variables to the values that suits your installation and
-; then rename this file to "config.ini".
+; then rename this file to "config.ini.php".
+;
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                         SECURITY WARNING                                  ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Do not remove the line below, or otherwise you risc exposing your application
+; settings (i.e. passwords, db settings etc.). You can, however, remove
+; between line 1 and 35.
+;
+; ------- DO NOT REMOVE THE FOLLOWING LINE ------
+;<?php die('forbidden');?>
+; --------- DO NOT REMOVE THE LINE ABOVE --------
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   ENVIRONMENT    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [environment]
+
+; set this to the path where the "application" folder can be found.
+; make sure the containing folders are readable by the webserver.
+application_path = ../
 
 ; set this to the path under which conjoon is available on your host.
 ; Example: If you configured your webserver so that conjoon is available

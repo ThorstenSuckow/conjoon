@@ -1,0 +1,7 @@
+Development notes:
+==================
+"config.ini.default.php" is the template for the configuration settings of the
+application. Please adjust the settings in this file, the rename it to
+"config.ini.php"; once this is done, add "config.ini" either to the ignore-list
+of your SVN client or make sure you never commit this file directly to the
+repository.
