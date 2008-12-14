@@ -244,7 +244,7 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
 
     ]);
 
-    var tbarManager = com.conjoon.groupware.ToolbarManager;
+    var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
     tbarManager.register('com.conjoon.groupware.email.Toolbar', this.controlBar);
 
 
@@ -1324,7 +1324,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
     onPanelRender : function()
     {
-        com.conjoon.groupware.ToolbarManager.show('com.conjoon.groupware.email.Toolbar');
+        com.conjoon.groupware.workbench.ToolbarController.show('com.conjoon.groupware.email.Toolbar');
 
         var sub = com.conjoon.util.Registry.get('com.conjoon.groupware.email.QuickPanel');
 

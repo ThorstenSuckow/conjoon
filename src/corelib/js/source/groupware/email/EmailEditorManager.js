@@ -450,7 +450,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     var registerToolbar = function(panel)
     {
         if (controlBar == null) {
-            var tbarManager = com.conjoon.groupware.ToolbarManager;
+            var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
 
             controlBar = new Ext.Toolbar([{
                 cls     : 'x-btn-text-icon',
@@ -1052,7 +1052,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         //htmlEditor.tb.items.get('sourceedit').toggle(false);
 
         activePanel = null;
-        var tbarManager = com.conjoon.groupware.ToolbarManager;
+        var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
         tbarManager.hide('com.conjoon.groupware.email.EmailForm.toolbar');
     }
 
@@ -1069,7 +1069,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         contentPanel.layout.activeItem = masterPanel;
         contentPanel.layout.layout();
 
-        var tbarManager = com.conjoon.groupware.ToolbarManager;
+        var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
         tbarManager.show('com.conjoon.groupware.email.EmailForm.toolbar');
 
         completeForm(panel.id);
@@ -1088,7 +1088,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             contentPanel.remove(masterPanel, true);
             form = null;
             masterPanel = null;
-            var tbarManager = com.conjoon.groupware.ToolbarManager;
+            var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
             tbarManager.destroy('com.conjoon.groupware.email.EmailForm.toolbar');
             controlBar = null;
             formValues = [];

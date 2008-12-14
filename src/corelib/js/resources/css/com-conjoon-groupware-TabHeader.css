@@ -16,15 +16,29 @@
  * special main tab style
  */
 .com-conjoon-groupware-TabHeader .x-tab-strip-top {
-    background:none !important;
+    background:#3d62a9 url(../images/groupware-header.png) repeat-x scroll 0 0;
+}
+
+.com-conjoon-groupware-TabHeader.x-border-panel {
+    background:#3d62a9 url(../images/groupware-header.png) repeat-x scroll 0 0;
 }
 
 .com-conjoon-groupware-TabHeader-body {
-    padding-top:33px;
+    padding-top:0px;
     padding-left:4px;
     background-color:#C5D7EE !important;
 }
 
+.com-conjoon-groupware-TabHeader-header {
+    height:53px;
+    background:#3d62a9 url(../images/groupware-header.png) repeat-x scroll 0 0;
+    padding-top:11px;
+}
+
+.com-conjoon-groupware-TabHeader-header .x-tab-scroller-left,
+.com-conjoon-groupware-TabHeader-header .x-tab-scroller-right {
+    top:11px;
+}
 
 /* BG images for inactive Tab */
 .com-conjoon-groupware-TabHeader .x-tab-strip-top .x-tab-left {

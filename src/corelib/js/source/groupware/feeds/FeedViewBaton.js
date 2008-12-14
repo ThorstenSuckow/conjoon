@@ -45,7 +45,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
     var registerToolbar = function()
     {
         if (toolbar == null) {
-            var tbarManager = com.conjoon.groupware.ToolbarManager;
+            var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
 
             var linkButton = new Ext.Toolbar.Button({
                 id       : 'com.conjoon.groupware.feeds.FeedView.toolbar.LinkButton',
@@ -202,7 +202,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             ]
         });
 
-        var tbarManager = com.conjoon.groupware.ToolbarManager;
+        var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
 
         view.on('destroy', function(panel){
             delete openedFeeds[panel.id];

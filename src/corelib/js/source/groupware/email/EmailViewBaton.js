@@ -32,12 +32,12 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
 
     var loadedViews = {};
 
-    var tbarManager = com.conjoon.groupware.ToolbarManager;
+    var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
 
     var registerToolbar = function()
     {
         if (toolbar == null) {
-            tbarManager = com.conjoon.groupware.ToolbarManager;
+            tbarManager = com.conjoon.groupware.workbench.ToolbarController;
 
             var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
 
