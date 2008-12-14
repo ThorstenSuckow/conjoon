@@ -53,6 +53,11 @@ com.conjoon.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButton
         store.on('add',    this._onAccountStoreAdd,    this);
         store.on('update', this._onAccountStoreUpdate, this);
 
+        this.on('render', function() {
+            this.setDisabled((store.getCount() == 0));
+            this._onAccountStoreAdd(store, store.getRange());
+        }, this);
+
         com.conjoon.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
     },
 
@@ -103,6 +108,9 @@ com.conjoon.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButton
         var letterman = com.conjoon.groupware.email.Letterman;
         var item, rec;
         for (var i = 0; i < len; i++) {
+            if (this._accountItemMap[records[i].id]) {
+                continue;
+            }
             rec = records[i];
             item = new Ext.menu.Item({
                 text    : rec.get('name'),
