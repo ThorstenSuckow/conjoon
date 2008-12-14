@@ -14,31 +14,36 @@
  */
 
 /**
- * A simple script that will use the yuicompressor found in the vendor directory
- * to "compress" all css files related directly to the intrabuild project, except
- * for css files loaded from vendor libraries, such as Ext JS or Ext user extensions.
+ * A simple script that will use the yuicompressor to "compress" all css files related
+ * directly to the conjoon project, except for css files loaded from vendor libraries,
+ * such as Ext JS or Ext user extensions.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @version 0.1.1
+ * @version 0.2
  */
 
 $cssPath      = "../src/corelib/js/resources/css";
-$yuiPath      = "../vendor/yuicompressor/build/yuicompressor-2.3.4.jar";
-$dropFileName = 'intrabuild-all.css';
-$dropFilePath = "../src/corelib/js/resources/css/".$dropFileName;
+$yuiPath      = isset($argv[1]) ? $argv[1] : null;
+$dropFileName = 'conjoon-all.css';
+$dropFilePath = "../src/corelib/js/resources/css/";
 
 $pathinfo = pathinfo(__FILE__);
 $cwd      = $pathinfo['dirname'];
 
 fwrite(STDOUT, "\n"
                ."+--------------------------------------------+\n"
-               ."|            csscompressor V0.1.1            |\n"
-               ."| CSS Compressor for the intrabuild project. |\n"
-               ."+--------------------------------------------+\n\n");
+               ."|            csscompressor V0.2              |\n"
+               ."|   CSS Compressor for the conjoon project.  |\n"
+               ."+--------------------------------------------+\n\n"
+               ."Usage: csscompressor.php [path_to_yuicompressor]\n\n");
+
+if (!$yuiPath) {
+    fwrite(STDERR, "You must specify the path to yuicompressor. Exiting...\n");
+    exit();
+}
 
 $cssPath      = str_replace("\\", "/", realpath($cwd."/".$cssPath)).'/';
-$yuiPath      = str_replace("\\", "/", realpath($cwd."/".$yuiPath));
-$dropFilePath = str_replace("\\", "/", realpath($cwd."/".$dropFilePath));
+$dropFilePath = str_replace("\\", "/", realpath($cwd."/".$dropFilePath)) . '/' .$dropFileName;
 
 // check if path to css dir exists
 $chk1 = "Checking if directory \"$cssPath\" exists...\n";
@@ -65,7 +70,6 @@ fwrite(STDOUT, "Looking for *.css-files in \"".$cssPath."\"...\n");
 $files = array();
 
 if ($handle = opendir($cssPath)) {
-    /* Das ist der korrekte Weg, ein Verzeichnis zu durchlaufen. */
     while (false !== ($file = readdir($handle))) {
         if (($file != $dropFileName && $file != '.' && $file != '..' && !is_dir($file))
            && (strpos($file, '.css',1) || strpos($file, '.css',1))) {
