@@ -29,7 +29,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
 ; Do not remove the line below, or otherwise you risc exposing your application
-; settings (i.e. passwords, db settings etc.). You can, however, remove
+; settings (i.e. passwords, db settings etc.). You can, however, remove everything
 ; between line 1 and 35.
 ;
 ; ------- DO NOT REMOVE THE FOLLOWING LINE ------
@@ -43,8 +43,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [environment]
 
+; if your hoster does not allow you to configure php's include path, set this to
+; the path where the "lib" folder resides.
+; Notice: since the bootstrapper has to
+; re-set the include path on every request, it is better to hardcode this value
+; in your webserver's config.
+; Example:
+; UNIX: "/path1:/path2"
+; Windows: "\path1;\path2"
+; Notice:
+; If you use this setting, make sure you quote the value if it contains a semicolon
+; when specifying more than one directory, otherwise conjoon will interpret
+; anything that follows the semicolon as a comment.
+include_path =
+
 ; set this to the path where the "application" folder can be found.
-; make sure the containing folders are readable by the webserver.
+; make sure the containing folders are readable and writable by the webserver.
 application_path = ../
 
 ; set this to the path under which conjoon is available on your host.

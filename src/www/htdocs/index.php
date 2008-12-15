@@ -14,14 +14,37 @@
  */
 
 /**
+ * This is he bootstrap file for the conjoon-application.
+ * It takes care of setting up all objects for each request and controls the
+ * application flow.
+ * It is important that each request runs over this file.
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ */
+
+// +----------------------------------------------------------------------------
+// | Before doing anything else, load the config and set the include path if
+// | necessary, so that the lib files can be loaded
+// +----------------------------------------------------------------------------
+   /**
+    * @todo cache the config
+    */
+   $initialConfig = parse_ini_file('./config.ini.php', true);
+
+   // check if the library_path is set, and adjust the include_path if necessary
+   if (($incPath = $initialConfig['environment']['include_path']) != null) {
+       set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
+   }
+
+/**
  * @see Zend_Controller_Front
  */
 require_once 'Zend/Controller/Front.php';
 
 /**
- * @see Zend_Config_Ini
+ * @see Conjoon_Config_Array
  */
-require_once 'Zend/Config/Ini.php';
+require_once 'Conjoon/Config/Array.php';
 
 /**
  * @see Zend_Db_Table
@@ -63,25 +86,16 @@ require_once 'Conjoon/Controller/Plugin/Lock.php';
  */
 require_once 'Conjoon/Modules/Default/User.php';
 
-/**
- * This is he bootstrap file for the conjoon-application.
- * It takes care of setting up all objects for each request and controls the
- * application flow.
- * It is important that each request runs over this file.
- *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */
 // +----------------------------------------------------------------------------
 // | Welcome! Start the session!
 // +----------------------------------------------------------------------------
    Zend_Session::start();
 
 // +----------------------------------------------------------------------------
-// | Load up config and set up registry/ apply default configs to objects
+// | Apply default configs to objects
 // +----------------------------------------------------------------------------
    // load config
-   $config = new Zend_Config_Ini('./config.ini.php');
-
+   $config = new Conjoon_Config_Array($initialConfig);
    Zend_Registry::set(Conjoon_Keys::REGISTRY_CONFIG_OBJECT, $config);
 
    // set as default adapter for all db operations
@@ -106,7 +120,9 @@ require_once 'Conjoon/Modules/Default/User.php';
 // +----------------------------------------------------------------------------
    $controller = Zend_Controller_Front::getInstance();
    $controller->throwExceptions(false)
-              ->addModuleDirectory($config->environment->application_path . 'application/modules')
+              ->addModuleDirectory(
+                  $config->environment->application_path . 'application/modules'
+              )
               ->setBaseUrl($config->environment->base_url);
 
    // add the plugins
