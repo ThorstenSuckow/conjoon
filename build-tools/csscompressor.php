@@ -39,7 +39,7 @@ fwrite(STDOUT, "\n"
 
 if (!$yuiPath) {
     fwrite(STDERR, "You must specify the path to yuicompressor. Exiting...\n");
-    exit();
+    exit(-1);
 }
 
 $cssPath      = str_replace("\\", "/", realpath($cwd."/".$cssPath)).'/';
@@ -50,7 +50,7 @@ $chk1 = "Checking if directory \"$cssPath\" exists...\n";
 fwrite(STDOUT, $chk1);
 if (!file_exists($cssPath)) {
     fwrite(STDERR, "$cssPath does not seem to exist. Exiting...\n");
-    exit();
+    exit(-1);
 } else {
     fwrite(STDOUT, "Done.\n");
 }
@@ -60,7 +60,7 @@ $chk2 = "Checking if file \"$yuiPath\" exists...\n";
 fwrite(STDOUT, $chk2);
 if (!file_exists($yuiPath)) {
     fwrite(STDERR, "$yuiPath does not seem to exist. Exiting...\n");
-    exit();
+    exit(-1);
 } else {
     fwrite(STDOUT, "Done.\n");
 }
@@ -80,14 +80,14 @@ if ($handle = opendir($cssPath)) {
     closedir($handle);
 } else {
     fwrite(STDERR, "Could not open \"".$cssPath."\" for reading. Exiting...\n");
-    exit();
+    exit(-1);
 }
 
 fwrite(STDOUT, "Found ".count($files)." files. Merging now...\n");
 
 if (count($files) == 0) {
     fwrite(STDERR, "No files found in\"".$cssPath."\". Exiting...\n");
-    exit();
+    exit(-1);
 }
 
 for ($i = 0, $len = count($files); $i < $len; $i++) {
@@ -113,4 +113,5 @@ fwrite(STDOUT, "Cleaning up...\n");
 fwrite(STDOUT, "Removing $temp...\n");
 unlink($temp);
 fwrite(STDOUT, "Finished!\n");
+exit(0);
 ?>
