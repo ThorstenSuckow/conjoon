@@ -1,4 +1,4 @@
-﻿Ext.namespace('Ext.ux.layout');
+Ext.namespace('Ext.ux.layout');
 
 /**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
@@ -6,7 +6,7 @@
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  * @url http://www.siteartwork.de/cardlayout
  */
- 
+
 /**
  * @class Ext.ux.layout.CardLayout
  * @extends Ext.layout.CardLayout
@@ -18,13 +18,13 @@
  * the return value of the 'beforehide'-method into account.
  *
  * @constructor
- * @param {Object} config The config object 
- */ 
+ * @param {Object} config The config object
+ */
 Ext.ux.layout.CardLayout = Ext.extend(Ext.layout.CardLayout, {
-	
+
     /**
      * Sets the active (visible) item in the layout.
-     * 
+     *
      * If the currently visible item is still visible after calling the 'hide()
      * method on it, this implementation assumes that the 'beforehide'-event returned
      * false, thus not the item was not allowed to be hidden. The active item will then
@@ -39,16 +39,16 @@ Ext.ux.layout.CardLayout = Ext.extend(Ext.layout.CardLayout, {
             if(this.activeItem){
                 this.activeItem.hide();
             }
-            // check if the beforehide method allowed to 
+            // check if the beforehide method allowed to
             // hide the current item
             if (this.activeItem && !this.activeItem.hidden) {
-            	return;	
+            	return;
             }
-            
+
             this.activeItem = item;
             item.show();
             this.layout();
         }
-    }	
-	
+    }
+
 });
