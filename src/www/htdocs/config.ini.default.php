@@ -59,6 +59,7 @@ include_path =
 
 ; set this to the path where the "application" folder can be found.
 ; make sure the containing folders are readable and writable by the webserver.
+; the path may be relative to the folder where the index.pho resides in.
 application_path = ../
 
 ; set this to the path under which conjoon is available on your host.
@@ -70,7 +71,7 @@ base_url = /
 
 ; The value should be set to anything that provides more infomration about the
 ; context conjoon is installed in. The value is not needed for any evaluation tasks,
-; bit will appear at some places in the software, such as the login screen.
+; but will appear at some places in the software, such as the login screen.
 ; If you are running the software from an USB stick, the value for this property could
 ; be somewhat like "USB installation"
 edition = web edition
@@ -88,7 +89,7 @@ adapter = pdo_mysql
 ; database host
 params.host = 127.0.0.1
 
-; port where your database server listens to. For mysql, this should default to
+; port your database server listens to. For mysql, this should default to
 ; "3306"
 params.port = 3306
 
@@ -106,7 +107,7 @@ params.dbname = conjoon_db
 ; MySQL before, this value should be familiar to you. However, it's used for
 ; all db adapters: Provide a value that is less than or equal to the
 ; "max_allowed_packet" variable of your MySQL server configuration (or any configuration
-; setting of the database server you are using, that corresponds to this variable's
+; setting of the database server you are using that corresponds to this variable's
 ; functionality). The value has to be provided in bytes.
 ; If left empty, conjoon will look up this value from the database configuration by itself.
 ; Setting this value is mainly important for the email module of conjoon, as emails vary in
