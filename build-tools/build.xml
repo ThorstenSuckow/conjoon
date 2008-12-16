@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<!--
+ conjoon
+ (c) 2002-2009 siteartwork.de/conjoon.org
+ licensing@conjoon.org
+
+ $Author$
+ $Id$
+ $Date$
+ $Revision$
+ $LastChangedDate$
+ $LastChangedBy$
+ $URL$
+-->
+
+<!--
+ This build file will process all files/directories related to the conjoon
+ project into the ../build directory.
+
+ Notice:
+ This build file will also call the build files
+  build_login.xml
+ and
+  build_css.xml
+
+ @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+-->
+<!--
+/**
+* @todo @REV@
+* @todo database
+*/
+-->
+<project name="conjoon" default="refresh" basedir="../">
+
+   <property file="./build-tools/build.properties" />
+   <includepath classpath="./build-tools/phing" />
+
+   <property name="force.build_ext"  value="0" />
+   <property name="force.build_zend" value="0" />
+
+
+    <taskdef name="headrevision" classname="tasks.HeadRevisionTask" />
+    <headrevision
+            dir="./"
+            passthru="false"
+            checkreturn="true"
+            revisionProperty="svn.lastrevision"
+    />
+
+   <target name="build_libs">
+     <phingcall target="build_zend" />
+     <phingcall target="build_conjoon_php" />
+   </target>
+
+
+    <target name="build_zend">
+     <available file="./build/libs/Zend" property="zend.exists" value="exists" />
+     <if>
+       <or>
+        <equals arg1="${force.build_zend}" arg2="1" />
+        <not>
+        <equals arg1="${zend.exists}" arg2="exists" />
+        </not>
+       </or>
+     <then>
+      <delete dir="./build/libs/Zend" />
+      <copy todir="./build/libs" includeemptydirs="true">
+       <fileset dir="./vendor/zendframework/library">
+         <exclude name="**/.svn" />
+       </fileset>
+      </copy>
+      </then>
+     </if>
+    </target>
+
+    <target name="build_conjoon_php">
+      <delete dir="./build/libs/Conjoon" />
+      <copy todir="./build/libs/Conjoon" includeemptydirs="true">
+       <fileset dir="./src/corelib/php/library/Conjoon">
+         <include name="**/*.php" />
+       </fileset>
+       <filterchain>
+          <filterreader classname="filters.ProcessDevFragments" />
+          <replacetokens begintoken="@" endtoken="@">
+            <token key="REV" value="${svn.lastrevision}" />
+          </replacetokens>
+      </filterchain>
+      </copy>
+    </target>
+
+   <!-- builds ext js into htdocs. This will only rebuild the dir if either
+        the dir does not already exists or if ${force.build_ext} is set to
+        true -->
+   <target name="build_ext">
+    <available file="./build/htdocs/js/extjs" property="ext.exists" value="exists" />
+    <if>
+      <or>
+       <equals arg1="${force.build_ext}" arg2="1" />
+       <not>
+       <equals arg1="${ext.exists}" arg2="exists" />
+       </not>
+      </or>
+    <then>
+     <delete dir="./build/htdocs/js/extjs" />
+     <copy file="./vendor/extjs/ext-all.js" tofile="./build/htdocs/js/extjs/ext-all.js" overwrite="true"/>
+     <copy file="./vendor/extjs/adapter/ext/ext-base.js" tofile="./build/htdocs/js/extjs/ext-base.js" overwrite="true"/>
+     <copy todir="./build/htdocs/js/extjs/resources" includeemptydirs="true">
+      <fileset dir="./vendor/extjs/resources">
+        <include name="**/ext-all.css" />
+        <include name="**/*.ico" />
+        <include name="**/*.png" />
+        <include name="**/*.gif" />
+        <include name="**/*.jpg" />
+      </fileset>
+     </copy>
+     </then>
+    </if>
+   </target>
+
+   <!-- builds js vendor into htdocs
+        for the conjoon project, all subprojects of conjoon
+        are already in the js conjoon build file.
+   -->
+   <target name="build_vendor_js">
+     <delete dir="./build/htdocs/js/ext-ux-media" />
+     <copy todir="./build/htdocs/js/ext-ux-media" includeemptydirs="true">
+      <fileset dir="./vendor/ext-ux-media">
+        <exclude name="**/.svn" />
+        <include name="**/*.js" />
+      </fileset>
+     </copy>
+   </target>
+
+   <!-- builds conjoon js into htdocs -->
+   <target name="build_conjoon_js">
+        <delete dir="./build/htdocs/js/conjoon" />
+
+        <copy file="./build-tools/header.txt"
+            tofile="./build/htdocs/js/conjoon/conjoon-all.js"
+            overwrite="true"
+        />
+        <copy file="./build-tools/header.txt"
+            tofile="./build/htdocs/js/conjoon/conjoon-all-debug.js"
+            overwrite="true"
+        />
+
+        <php function="tempnam" returnProperty="conjoon.jsmerge.tempfile">
+          <param value="/tmp" />
+          <param value="conjoon.jsmerge" />
+        </php>
+
+        <append destFile="${conjoon.jsmerge.tempfile}">
+          <filterchain>
+           <filterreader classname="filters.AddLinebreak" />
+          </filterchain>
+          <filelist dir="./" listfile="./build-tools/merge_list_js.txt" />
+        </append>
+
+        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/js/conjoon/conjoon-all-debug.js" />
+
+        <exec
+            command='java -jar ${yuicompressor_path} -v --type js -o "${conjoon.jsmerge.tempfile}" "${conjoon.jsmerge.tempfile}"'
+            dir="./"
+            passthru="true"
+            checkreturn="true"
+        />
+        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/js/conjoon/conjoon-all.js" />
+
+        <delete file="${conjoon.jsmerge.tempfile}" verbose="true" failonerror="true" />
+   </target>
+
+   <!-- builds conjoon related css and resources -->
+   <target name="build_css">
+    <delete dir="./build/htdocs/js/conjoon/resources" />
+    <phing phingfile="./build-tools/build_css.xml" haltonfailure="true" inheritRefs="false" inheritAll="false" />
+    <copy todir="./build/htdocs/js/conjoon/resources" includeemptydirs="true">
+     <fileset dir="./src/corelib/js/resources">
+       <exclude name="**/*.css" />
+       <exclude name="**/Thumbs.db" />
+       <exclude name="**/.svn" />
+       <exclude name="**/README" />
+       <exclude name="**/LICENSE" />
+       <exclude name="**/CREDITS" />
+       <exclude name="**/CHANGELOG" />
+     </fileset>
+    </copy>
+    <!-- as follows the subproject extensions for conjoon -->
+     <delete dir="./build/htdocs/js/ext-ux-grid-gridviewmenuplugin" />
+     <delete dir="./build/htdocs/js/ext-ux-youtubeplayer" />
+     <delete dir="./build/htdocs/js/ext-ux-toastwindow" />
+     <delete dir="./build/htdocs/js/ext-ux-livegrid" />
+     <delete dir="./build/htdocs/js/ext-ux-wiz" />
+     <copy todir="./build/htdocs/js/ext-ux-grid-gridviewmenuplugin" includeemptydirs="true">
+      <fileset dir="./vendor/ext-ux-grid-gridviewmenuplugin/src">
+        <include name="**/*.css" />
+        <include name="**/*.jpg" />
+        <include name="**/*.gif" />
+        <include name="**/*.png" />
+      </fileset>
+     </copy>
+     <copy todir="./build/htdocs/js/ext-ux-youtubeplayer" includeemptydirs="true">
+      <fileset dir="./vendor/ext-ux-youtubeplayer/src">
+        <include name="**/*.css" />
+        <include name="**/*.jpg" />
+        <include name="**/*.gif" />
+        <include name="**/*.png" />
+      </fileset>
+     </copy>
+     <copy todir="./build/htdocs/js/ext-ux-toastwindow" includeemptydirs="true">
+      <fileset dir="./vendor/ext-ux-toastwindow">
+        <include name="**/*.css" />
+        <include name="**/*.jpg" />
+        <include name="**/*.gif" />
+        <include name="**/*.png" />
+      </fileset>
+     </copy>
+     <copy todir="./build/htdocs/js/ext-ux-livegrid" includeemptydirs="true">
+      <fileset dir="./vendor/ext-ux-livegrid/build">
+        <include name="**/*.css" />
+        <include name="**/*.jpg" />
+        <include name="**/*.gif" />
+        <include name="**/*.png" />
+      </fileset>
+     </copy>
+     <copy todir="./build/htdocs/js/ext-ux-wiz" includeemptydirs="true">
+      <fileset dir="./vendor/ext-ux-wiz/src">
+        <include name="**/*.css" />
+        <include name="**/*.jpg" />
+        <include name="**/*.gif" />
+        <include name="**/*.png" />
+      </fileset>
+     </copy>
+  </target>
+
+   <!-- rebuilds scripts related to login process -->
+   <target name="build_login">
+    <phing phingfile="./build-tools/build_login.xml" haltonfailure="true" inheritRefs="false" inheritAll="false" />
+   </target>
+
+
+   <target name="prepare">
+     <mkdir dir="./build" />
+   </target>
+
+   <!-- rebuilds the application folder -->
+   <target name="build_application">
+     <delete dir="./build/application" />
+     <copy todir="./build/application" includeemptydirs="true">
+       <fileset dir="./src/www/application">
+         <exclude name="**/.svn" />
+         <exclude name="**/README" />
+         <exclude name="**/LICENSE" />
+         <exclude name="**/CREDITS" />
+         <exclude name="**/CHANGELOG" />
+       </fileset>
+       <filterchain>
+        <filterreader classname="filters.ProcessDevFragments" />
+       </filterchain>
+     </copy>
+   </target>
+
+   <!-- rebuilds the htdocs folder -->
+   <target name="build_htdocs">
+     <available file="./build/htdocs" property="htdocs.exists" value="exists" />
+
+     <if>
+       <equals arg1="${htdocs.exists}" arg2="exists" />
+      <then>
+       <delete>
+         <fileset dir="./build/htdocs">
+           <exclude name="js/**" />
+         </fileset>
+       </delete>
+      </then>
+     </if>
+     <copy todir="./build/htdocs" includeemptydirs="true">
+       <fileset dir="./src/www/htdocs">
+         <exclude name="**/.svn" />
+         <exclude name="**/README" />
+         <exclude name="**/LICENSE" />
+         <exclude name="**/CREDITS" />
+         <exclude name="**/CHANGELOG" />
+         <exclude name="**/config.ini.php" />
+         <exclude name="**/ext-config.js" />
+         <exclude name="**/startup.js" />
+       </fileset>
+       <filterchain>
+        <filterreader classname="filters.ProcessDevFragments" />
+       </filterchain>
+     </copy>
+    <phingcall target="build_conjoon_js" />
+    <phingcall target="build_css" />
+    <phingcall target="build_login" />
+    <phingcall target="build_ext" />
+    <phingcall target="build_vendor_js" />
+   </target>
+
+   <!-- refreshes build contents except for ../build/libs/Zend -->
+   <target name="refresh" depends="prepare">
+    <phingcall target="build_application" />
+    <phingcall target="build_htdocs" />
+    <phingcall target="build_libs" />
+   </target>
+
+   <!-- completely removes the build dir -->
+   <target name="rebuild">
+     <property name="force.build_ext"  value="1" />
+     <property name="force.build_zend" value="1" />
+     <delete dir="./build" />
+     <phingcall target="refresh" />
+    </target>
+
+</project>

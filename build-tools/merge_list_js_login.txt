@@ -1,0 +1,13 @@
+src/www/htdocs/ext-config.js
+src/corelib/js/source/Overrides.js
+src/corelib/js/source/Gettext.js
+src/corelib/js/source/util/Json.js
+src/corelib/js/source/form/TextField.js
+src/corelib/js/source/groupware/Registry.js
+src/corelib/js/source/util/PreLoader.js
+src/corelib/js/source/groupware/util/FormIntro.js
+vendor/ext-ux-util-messagebus/src/MessageBus.js
+src/corelib/js/source/groupware/ResponseInspector.js
+src/corelib/js/source/groupware/Reception.js
+src/corelib/js/source/groupware/reception/LoginWindow.js
+src/corelib/js/source/groupware/reception/StateIndicator.js
