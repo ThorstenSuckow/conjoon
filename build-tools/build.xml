@@ -74,6 +74,18 @@
      </if>
     </target>
 
+    <target name="build_datastore">
+      <delete dir="./build/datastore" />
+      <copy todir="./build/datastore" includeemptydirs="true">
+       <fileset dir="./src/datastore">
+         <exclude name="**/.svn" />
+       </fileset>
+       <filterchain>
+          <filterreader classname="filters.ProcessDevFragments" />
+      </filterchain>
+      </copy>
+    </target>
+
     <target name="build_conjoon_php">
       <delete dir="./build/libs/Conjoon" />
       <copy todir="./build/libs/Conjoon" includeemptydirs="true">
@@ -301,6 +313,7 @@
     <phingcall target="build_application" />
     <phingcall target="build_htdocs" />
     <phingcall target="build_libs" />
+    <phingcall target="build_datastore" />
    </target>
 
    <!-- completely removes the build dir -->
