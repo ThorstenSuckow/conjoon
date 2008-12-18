@@ -80,7 +80,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
                       ),
         sortInfo   : {field: 'date', direction: 'ASC'},
         proxy      : new Ext.data.HttpProxy({
-            url      : '/groupware/email/fetch.emails/format/json',
+            url      : './groupware/email/fetch.emails/format/json',
             timeout  : 20*60*1000
         })
     });

@@ -26,7 +26,7 @@ com.conjoon.groupware.email.AccountStore = function() {
     {
         return new Ext.data.Store({
             storeId  : Ext.id(),
-            url      : '/groupware/email/get.email.accounts/format/json',
+            url      : './groupware/email/get.email.accounts/format/json',
             autoLoad : false,
             pruneModifiedRecords : true,
             reader   : new Ext.data.JsonReader({

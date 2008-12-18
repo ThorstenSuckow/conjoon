@@ -112,7 +112,7 @@ com.conjoon.groupware.Reception = function() {
 
         if (context == this.TYPE_LOGIN || !_applicationStarted) {
             (function(){
-                this.location.href = '/';
+                this.location.href = './';
             }).defer(10, window);
         }
     };
@@ -158,7 +158,7 @@ com.conjoon.groupware.Reception = function() {
     {
         if (buttonType == 'yes') {
             Ext.Ajax.request({
-                url            : '/default/reception/logout/format/json',
+                url            : './default/reception/logout/format/json',
                 success        : _onLogoutSuccess,
                 failure        : _onLogoutFailure,
                 disableCaching : true
@@ -186,7 +186,7 @@ com.conjoon.groupware.Reception = function() {
     var _restart = function(buttonType)
     {
         if (buttonType == 'yes') {
-            window.location.replace('/');
+            window.location.replace('./');
         }
     };
 
@@ -206,7 +206,7 @@ com.conjoon.groupware.Reception = function() {
             return;
         }
 
-        window.location.href = '/';
+        window.location.href = './';
     };
 
     /**
@@ -239,7 +239,7 @@ com.conjoon.groupware.Reception = function() {
     var _login = function()
     {
         _buildLoginWindow({
-            loginUrl : '/default/reception/process/format/json',
+            loginUrl : './default/reception/process/format/json',
             modal    : _applicationStarted
         });
         loginWindow.setFormIntroText(
@@ -255,7 +255,7 @@ com.conjoon.groupware.Reception = function() {
     var _authenticate = function()
     {
         _buildLoginWindow({
-            loginUrl      : '/default/reception/process/format/json',
+            loginUrl      : './default/reception/process/format/json',
             usernameValue : _user.emailAddress,
             modal         : _applicationStarted,
             draggable     : true
@@ -274,7 +274,7 @@ com.conjoon.groupware.Reception = function() {
         _startPing();
 
         _buildLoginWindow({
-            loginUrl      : '/default/reception/unlock/format/json',
+            loginUrl      : './default/reception/unlock/format/json',
             usernameValue : _user.emailAddress,
             showExit      : !_applicationStarted,
             modal         : _applicationStarted,
@@ -311,7 +311,7 @@ com.conjoon.groupware.Reception = function() {
     var _pingServer = function()
     {
         Ext.Ajax.request({
-            url            : '/default/reception/ping/format/json',
+            url            : './default/reception/ping/format/json',
             disableCaching : true,
             failure        : com.conjoon.groupware.ResponseInspector.handleFailure
         });
@@ -354,7 +354,7 @@ com.conjoon.groupware.Reception = function() {
     {
         if (loginWindow === null) {
             var options = {
-                loginUrl      : '/default/reception/process/format/json',
+                loginUrl      : './default/reception/process/format/json',
                 softwareLabel : com.conjoon.groupware.Registry.get('/base/conjoon/name'),
                 editionLabel  : com.conjoon.groupware.Registry.get('/base/conjoon/edition'),
                 versionLabel  : com.conjoon.groupware.Registry.get('/base/conjoon/version'),
@@ -503,7 +503,7 @@ com.conjoon.groupware.Reception = function() {
             _applicationStarted = applicationStarted;
 
             Ext.Ajax.request({
-                url            : '/default/reception/get.user/format/json',
+                url            : './default/reception/get.user/format/json',
                 disableCaching : true,
                 success        : _onUserLoad
             });
@@ -547,7 +547,7 @@ com.conjoon.groupware.Reception = function() {
             }
 
             Ext.Ajax.request({
-                url            : '/default/reception/lock/format/json',
+                url            : './default/reception/lock/format/json',
                 disableCaching : true,
                 success        : _lockWorkbench,
                 failure        : com.conjoon.groupware.ResponseInspector.handleFailure,

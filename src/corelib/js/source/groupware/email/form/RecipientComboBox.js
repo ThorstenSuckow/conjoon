@@ -46,7 +46,7 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
             listClass     : 'x-combo-list-small',
             // store
             store         : new Ext.data.JsonStore({
-                url       : '/groupware/email/get.recipient/format/json',
+                url       : './groupware/email/get.recipient/format/json',
                 root      : 'matches',
                 fields    : ['address'],
                 autoLoad  : false,

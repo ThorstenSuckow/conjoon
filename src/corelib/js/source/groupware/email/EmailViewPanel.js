@@ -253,7 +253,7 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
 
 
         this.requestId = Ext.Ajax.request({
-            url            : '/groupware/email/get.email/format/json',
+            url            : './groupware/email/get.email/format/json',
             params         : {
                 id  : id
             },

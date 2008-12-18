@@ -92,7 +92,7 @@ com.conjoon.groupware.email.EmailGrid = function(config, controller) {
                 });
             }
         },
-        url         : '/groupware/email/get.email.items/format/json'
+        url         : './groupware/email/get.email.items/format/json'
     });
 
 

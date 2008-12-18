@@ -33,7 +33,7 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
             timeout   : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
         },
         proxy : new Ext.data.HttpProxy({
-            url      : '/groupware/feeds/get.feed.items/format/json',
+            url      : './groupware/feeds/get.feed.items/format/json',
             timeout  : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
         })
     });

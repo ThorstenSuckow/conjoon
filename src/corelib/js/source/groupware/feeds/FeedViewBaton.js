@@ -94,7 +94,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
         }
 
         _requestIds[panelId] = Ext.Ajax.request({
-            url    : '/groupware/feeds/get.feed.content/format/json',
+            url    : './groupware/feeds/get.feed.content/format/json',
             params : {
                 id : id
             },

@@ -31,7 +31,7 @@ com.conjoon.groupware.Registry = function() {
                               root: 'entries',
                               id  : 'key'
                           }, ['key', 'value']),
-            url         : '/default/registry/get.entries/format/json'
+            url         : './default/registry/get.entries/format/json'
         });
     };
 

@@ -218,7 +218,7 @@ Ext.extend(com.conjoon.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
         }
 
         Ext.Ajax.request({
-            url: '/groupware/feeds/set.item.read/format/json',
+            url: './groupware/feeds/set.item.read/format/json',
             params: {
                 json: Ext.encode(requestArray)
             }

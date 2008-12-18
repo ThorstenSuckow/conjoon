@@ -134,7 +134,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
      * the corresponding grid.
      */
     var loadConfig = {
-        url: '/groupware/feeds/get.feed.content/format/json',
+        url: './groupware/feeds/get.feed.content/format/json',
         discardUrl: false,
         nocache: true,
         text: com.conjoon.Gettext.gettext("Please wait. Loading entry..."),
@@ -229,7 +229,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
         previewPanel.setTitle(com.conjoon.Gettext.gettext("Loading"));
 
         requestId = Ext.Ajax.request({
-            url       : '/groupware/feeds/get.feed.content/format/json',
+            url       : './groupware/feeds/get.feed.content/format/json',
             params    : {id : clkRecord.id},
             success   : onLoadSuccess,
             failure   : onLoadFailure,
