@@ -62,7 +62,7 @@ require_once 'phing/filters/ChainableReader.php';
  *
  * "<!--@BUILD_ACTIVE@" and "@BUILD_ACTIVE@-->"
  *  "\/*@BUILD_ACTIVE@*\/"
- * "<?php\/*@BUILD_ACTIVE@" and  "@BUILD_ACTIVE@*\/?>"
+ * "<?php \/*@BUILD_ACTIVE@" and  "@BUILD_ACTIVE@*\/ ?>"
  *
  * Example:
  *
@@ -84,12 +84,12 @@ require_once 'phing/filters/ChainableReader.php';
  *
  * Example:
  * <pre>
- *  <?php\/*@REMOVE@*\/?>
+ *  <?php \/*@REMOVE@*\/ ?>
  *   <!-- base -->
  *  <script type="text/javascript" src="/js/extjs/adapter/ext/ext-base.js"></script>
  *  <script type="text/javascript" src="/js/extjs/ext-all-debug.js"></script>
  *  <!-- ^^ EO base -->
- *  <?php\/*@REMOVE@*\/?>
+ *  <?php \/*@REMOVE@*\/ ?>
  * </pre>
  *
  * becomes
@@ -148,19 +148,21 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
         );
 
         $output = preg_replace(
-            "/^(( \*|--|;|; \*) .(Author|Date|Revision|LastChangedDate|LastChangedBy|URL).*)(\n|\r\n)/m",
+            array(
+                "/^(( \*|--|;|; \*) .(Author|Date|Revision|LastChangedDate|LastChangedBy|URL).*)(\n|\r\n)/m",
+                "/<\?php\s*\?>/ims",
+            ),
             "",
             $output
         );
 
         $output = trim(str_replace(
             array(
-                '<?php?>',
                 '<!--@BUILD_ACTIVE@',
                 '@BUILD_ACTIVE@-->',
                 '/*@BUILD_ACTIVE@*/',
-                '<?php/*@BUILD_ACTIVE@',
-                '@BUILD_ACTIVE@*/?>'
+                '<?php /*@BUILD_ACTIVE@',
+                '@BUILD_ACTIVE@*/ ?>'
             ),
             "",
             $output
