@@ -121,7 +121,7 @@ require_once 'Conjoon/Modules/Default/User.php';
    $controller = Zend_Controller_Front::getInstance();
    $controller->throwExceptions(false)
               ->addModuleDirectory(
-                  $config->environment->application_path . 'application/modules'
+                  $config->environment->application_path . '/application/modules'
               )
               ->setBaseUrl($config->environment->base_url);
 
