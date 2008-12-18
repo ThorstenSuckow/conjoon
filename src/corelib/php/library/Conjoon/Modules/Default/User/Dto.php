@@ -19,5 +19,6 @@ class Conjoon_Modules_Default_User_Dto {
     public $firstname;
     public $lastname;
     public $emailAddress;
+    public $userName;
 
 }

@@ -116,7 +116,7 @@ class ReceptionController extends Zend_Controller_Action {
             'Conjoon_Modules_Default_User_Model_User'
         );
 
-        $user = $decorator->getUserForEmailCredentialsAsEntity(
+        $user = $decorator->getUserForUserNameCredentialsAsEntity(
             $username,
             md5($password)
         );

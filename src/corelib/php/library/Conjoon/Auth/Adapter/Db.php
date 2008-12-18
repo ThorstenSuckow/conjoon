@@ -41,19 +41,19 @@ require_once 'Zend/Auth/Result.php';
  */
 class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
 
-    private $email;
+    private $userName;
 
     private $password;
 
     /**
      * Constructor.
      *
-     * @param string $email The email to lookup in the database.
+     * @param string $userName The username to lookup in the database.
      * @param string $password The password to lookup in the database.
      */
-    public function __construct($email, $password)
+    public function __construct($userName, $password)
     {
-        $this->email     = $email;
+        $this->userName = $userName;
         $this->password = $password;
     }
 
@@ -68,15 +68,15 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
      */
     public function authenticate()
     {
-        $email    = $this->email;
+        $userName = $this->userName;
         $password = $this->password;
 
         // return a general failure if either username or password
         // equal to <code>null</code>
-        if (trim($email) == null || trim($password) == null) {
+        if (trim($userName) == null || trim($password) == null) {
             return new Zend_Auth_Result(
                 Zend_Auth_Result::FAILURE,
-                $email,
+                $userName,
                 array('Authentication failed. Invalid data.')
              );
         }
@@ -85,34 +85,34 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
         $userTable = new Conjoon_Modules_Default_User_Model_User();
 
         // check here if the username exists
-        $count = $userTable->getEmailAddressCount($email);
+        $count = $userTable->getUserNameCount($userName);
 
         // rowset! check count()... if this is > 1, 1..n users share the same
         // username, which is a bad thing
         if ($count > 1) {
             return new Zend_Auth_Result(
                 Zend_Auth_Result::FAILURE_IDENTITY_AMBIGUOUS,
-                $email,
+                $userName,
                 array('More than one record matches the supplied identity.')
             );
         } else if ($count == 0) {
             return new Zend_Auth_Result(
                 Zend_Auth_Result::FAILURE_IDENTITY_NOT_FOUND,
-                $email,
+                $userName,
                 array('A record with the supplied identity could not be found.')
             );
         }
 
         require_once 'Conjoon/BeanContext/Decorator.php';
         $decorator = new Conjoon_BeanContext_Decorator($userTable);
-        $user = $decorator->getUserForEmailCredentialsAsEntity($email, md5($password));
+        $user = $decorator->getUserForUserNameCredentialsAsEntity($userName, md5($password));
 
         // <code>null</code> means, that no user was found with the
         // username/ password combination
         if ($user === null) {
             return new Zend_Auth_Result(
                 Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID,
-                $email,
+                $userName,
                 array('Supplied credential is invalid.')
             );
         }

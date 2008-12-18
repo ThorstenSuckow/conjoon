@@ -50,28 +50,28 @@ class Conjoon_Modules_Default_User_Model_User
     protected $_primary = 'id';
 
     /**
-     * Returs the row that matches both the email address and the password.
+     * Returs the row that matches both the username and the password.
      *
-     * @param string $emailAddress
+     * @param string $userName
      * @param string $password
      *
      * @return Zend_Db_Table_Row
      */
-    public function getUserForEmailCredentials($emailAddress, $password)
+    public function getUserForUserNameCredentials($userName, $password)
     {
-        $emailAddress = strtolower(trim((string)$emailAddress));
-        $password     = trim((string)$password);
+        $userName = strtolower(trim((string)$userName));
+        $password = trim((string)$password);
 
-        if ($emailAddress == "" || $password == "") {
+        if ($userName == "" || $password == "") {
             return null;
         }
 
         /**
-         * @todo make sure email and username is a unique index
+         * @todo make sure username and password is a unique index
          */
         $select = $this->select()
                        ->from($this)
-                       ->where('email_address = ?', $emailAddress)
+                       ->where('user_name = ?', $userName)
                        ->where('password=?', $password);
 
         $row = $this->fetchRow($select);
@@ -80,17 +80,18 @@ class Conjoon_Modules_Default_User_Model_User
     }
 
     /**
-     * Returns the number of users that share the same email-address.
+     * Returns the number of users that share the same username,
+     * in case the index on the user_name field is missing.
      *
-     * @param string $emailAddress
+     * @param string $userName
      *
      * @return integer
      */
-    public function getEmailAddressCount($emailAddress)
+    public function getUserNameCount($userName)
     {
-        $emailAddress = strtolower(trim((string)$emailAddress));
+        $userName = strtolower(trim((string)$userName));
 
-        if ($emailAddress == "") {
+        if ($userName == "") {
             return 0;
         }
 
@@ -101,7 +102,7 @@ class Conjoon_Modules_Default_User_Model_User
                   ->from($this, array(
                     'COUNT(id) as count_id'
                   ))
-                  ->where('email_address = ?', $emailAddress);
+                  ->where('user_name = ?', $userName);
 
         $row = $this->fetchRow($select);
 
@@ -146,7 +147,7 @@ class Conjoon_Modules_Default_User_Model_User
     {
         return array(
             'getUser',
-            'getUserForEmailCredentials'
+            'getUserForUserNameCredentials'
         );
     }
 

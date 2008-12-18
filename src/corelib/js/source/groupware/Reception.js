@@ -275,7 +275,7 @@ com.conjoon.groupware.Reception = function() {
 
         _buildLoginWindow({
             loginUrl      : './default/reception/unlock/format/json',
-            usernameValue : _user.emailAddress,
+            usernameValue : _user.userName,
             showExit      : !_applicationStarted,
             modal         : _applicationStarted,
             draggable     : true
