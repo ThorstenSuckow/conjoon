@@ -21,10 +21,6 @@
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
---
--- Datenbank: `intrabuild`
---
-
 -- --------------------------------------------------------
 
 --
@@ -319,3 +315,18 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(32) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+ALTER TABLE `users` ADD `user_name` VARCHAR( 64 ) NOT NULL AFTER `email_address` ;
+ALTER TABLE `users` ADD INDEX `username` ( `user_name` );
+
+INSERT INTO `users` (
+`id` ,
+`firstname` ,
+`lastname` ,
+`email_address` ,
+`user_name` ,
+`password`
+)
+VALUES (
+NULL , 'admin', 'admin', 'admin@localhost', 'admin', MD5( 'password' )
+);
