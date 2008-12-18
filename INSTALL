@@ -1,0 +1,157 @@
+Installing conjoon V0.1a2
+     __________________________________________________________________
+
+   Table of contents
+   1. Requirements
+   2. Installation
+        Folders
+        Installing the database
+        Adjusting the configuration file
+        Adjusting the .htaccess file
+        php.ini settings
+        Apache configuration
+
+   3. Problems?
+     __________________________________________________________________
+
+Chapter 1. Requirements
+
+     In order to install conjoon, you need the following setup:
+         PHP >= 5.2.5
+         Apache >= 2.2.8
+         Apache mod_rewrite module
+         MySQL >= 5.0.51a
+
+     conjoon was tested successfully using the following browsers:
+         Internet Explorer 7.0
+         Mozilla Firefox 3.*
+         Safari 3.1 (Windows)
+         Google Chrome 1.0
+
+     Notice:
+     conjoon may work with a different setup, though it's not guaranteed.
+     You can post your experience with different setups in the forums at
+     http://www.conjon.org/forum
+     __________________________________________________________________
+
+Chapter 2. Installation
+
+Folders
+   When unpacking conjoon, you will find the following directory layout:
+      + build
+      + build-tools
+      + src
+      + vendor
+
+   The folder of interest is the "build" folder: You will find the
+   deployable version of conjoon in there:
+      + build
+        \
+         - datastore
+         - htdocs
+         - application
+         - libs
+
+   The following steps describe the setup of conjoon.
+      1. htdocs:
+      ----------
+         The htdocs folder holds all the files that should be accessible
+         by your webserver. They can either be in the DocumentRoot of your
+         webserver or in any subfolder of the document root.
+      2. application
+      --------------
+         The application folder holds all templates and controllers used
+         by the Zend Framework. It can be put into any location on your
+         server, just make sure it is readable and writable by the webserver.
+         Notice:
+         Though the current version does not contain any sensitive data,
+         the application folder should not be made public accessible.
+     3. libs
+     -------
+         The libs folder holds all php libraries needed by conjoon.
+         It can be put into any location on your server, just make sure
+         the php variable "include_path" points to it. You can also
+         configure this using the configuration file of conjoon.
+     4. datastore
+     ------------
+         This folder contains the files to setup your databse.
+
+Installing the database
+   The current version of conjoon only supports the MySQL database.
+   Navigate to the folder /datastore/mysql and open the file "conjoon.sql".
+   Process the contents with your database. The current version does not
+   support table prefixes, so you should install the tables into a fresh
+   database to make sure you not accidently overwrite any existing table.
+   Tables installed for the current version are as follows:
+      groupware_contact_items
+      groupware_contact_items_email
+      groupware_contact_items_flags
+      groupware_email_accounts
+      groupware_email_folders
+      groupware_email_folders_accounts
+      groupware_email_items
+      groupware_email_items_attachments
+      groupware_email_items_flags
+      groupware_email_items_inbox
+      groupware_email_items_outbox
+      groupware_email_items_references
+      groupware_feeds_accounts
+      groupware_feeds_items
+      groupware_feeds_items_flags
+      users
+
+   Once you have finished processing the file, you might want to change
+   the username and the password of the default user. Do so by browsing
+   the table "users" using phpmyadmin or any other MySQL administration
+   tool and change the field "user_name" to anything of your like and
+   the field "password". The value in the "password" field needs to be
+   plain MD5 encoded.
+
+   Notice:
+   If you do not want to change the default user, the login credentials
+   are as follows:
+      Username: admin
+      Password: password
+
+Adjusting the configuration file
+   Navigate to the path where you have copied the contents of the htdocs
+   folder and rename the file "config.ini.default.php" to "config.ini.php".
+   Adjust the settings to match your server setup. The file is commented
+   so it should be quite easy to configure.
+
+Adjusting the .htaccess file
+   Navigate to the path where you have copied the contents of the htdocs
+   folder and open the .htaccess file in a text editor of your choice.
+   Set the "RewriteBase" value to the value of the "base_url" as configured
+   in your "config.ini.php". This is to make sure mod_rewrite works properly
+   if conjoon is installed in a subfolder of your document root.
+
+php.ini settings
+   The following settings have to be adjusted:
+       * magic_quotes_gpc has to be set to "off"
+       * register_globals has to be set to "off"
+
+   The include path does not have necessarily to be adjusted to hold the
+   path to the "libs" folder, you can configure this using the config.ini.php.
+   However, using the php.ini setting will give you a small performance increase,
+   since conjoon does not have to set this value upon each and every request when
+   configured in the config.ini.php.
+
+Apache configuration
+   Apache should be configured with
+       AllowEncodedSlashes On
+   This is to allow the redirector to use encoded slashes.
+   See also http://zendframework.com/issues/browse/ZF-3959
+
+   Notice:
+   conjoon will still work if this setting is not adjusted, however, when
+   redirecting to other URLS using links in RSS-feeds or emails, conjoon
+   might throw an error.
+     __________________________________________________________________
+
+Chapter 3. Problems?
+
+     In case you experience any problems during installation or running
+     conjoon, please visit the forums over at http://www.conjoon.org/forum
+     and ask for help.
+     __________________________________________________________________
