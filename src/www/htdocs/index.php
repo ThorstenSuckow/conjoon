@@ -23,6 +23,18 @@
  */
 
 // +----------------------------------------------------------------------------
+// | Check if app was installed
+// +----------------------------------------------------------------------------
+   if (!file_exists('./config.ini.php')) {
+       die("<b>Error:</b><br />config.ini.php not found. Either create it manually or ".
+           "run the installation script (" .
+           "<a href=\"".$_SERVER['REQUEST_URI'] . "install/index.php\">".
+           $_SERVER['REQUEST_URI'] . "install/index.php</a>)");
+   } else if (file_exists('./install')) {
+       die("<b>Error: Please delete the install directory first!");
+   }
+
+// +----------------------------------------------------------------------------
 // | Before doing anything else, load the config and set the include path if
 // | necessary, so that the lib files can be loaded
 // +----------------------------------------------------------------------------
@@ -121,7 +133,7 @@ require_once 'Conjoon/Modules/Default/User.php';
    $controller = Zend_Controller_Front::getInstance();
    $controller->throwExceptions(false)
               ->addModuleDirectory(
-                  $config->environment->application_path . '/application/modules'
+                  $config->environment->application_path . '/modules'
               )
               ->setBaseUrl($config->environment->base_url);
 

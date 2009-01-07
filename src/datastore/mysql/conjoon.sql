@@ -319,14 +319,4 @@ CREATE TABLE IF NOT EXISTS `users` (
 ALTER TABLE `users` ADD `user_name` VARCHAR( 64 ) NOT NULL AFTER `email_address` ;
 ALTER TABLE `users` ADD INDEX `username` ( `user_name` );
 
-INSERT INTO `users` (
-`id` ,
-`firstname` ,
-`lastname` ,
-`email_address` ,
-`user_name` ,
-`password`
-)
-VALUES (
-NULL , 'admin', 'admin', 'admin@localhost', 'admin', MD5( 'password' )
-);
+ALTER TABLE `users` ADD `is_root` BOOL NOT NULL DEFAULT '0';

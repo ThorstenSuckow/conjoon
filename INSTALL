@@ -1,16 +1,20 @@
-Installing conjoon V0.1a2
+Installing conjoon V0.1a3
      __________________________________________________________________
 
    Table of contents
    1. Requirements
-   2. Installation
-        Folders
-        Installing the database
-        Adjusting the configuration file
-        Adjusting the .htaccess file
-        php.ini settings
-        Apache configuration
-
+   2.  Installation
+    2.1 Manual installation
+         Folders
+         Installing the database
+         Adjusting the configuration file
+         Adjusting the .htaccess file
+         php.ini settings
+         Apache configuration
+    2.2 Automatic Installation
+         Notes regarding updating conjoon 0.1a2
+         Notes regarding PHP's safe_mode
+         Running the wizard
    3. Problems?
      __________________________________________________________________
 
@@ -36,21 +40,36 @@ Chapter 1. Requirements
 
 Chapter 2. Installation
 
+   Since V0.1a3, conjoon gets shipped with an installation wizard that makes
+   installing and updating the application easier.
+   Simply set up your Webserver so you can access the contents of /build/htdocs
+   in your webbrowser and open the /htdocs/install/index.php. For further explanation,
+   go to "2.2 Automatic installation"
+     __________________________________________________________________
+
+Chapter 2.1 Manual installation
 Folders
    When unpacking conjoon, you will find the following directory layout:
       + build
       + build-tools
       + src
       + vendor
+   (Note: Depending on the package you've downloaded, the only the "build" folder
+   may be available)
 
    The folder of interest is the "build" folder: You will find the
    deployable version of conjoon in there:
       + build
         \
-         - datastore
          - htdocs
-         - application
-         - libs
+          \
+           - install
+           \
+            - files
+             \
+              - datastore
+              - conjoon_application
+              - conjoon_libs
 
    The following steps describe the setup of conjoon.
       1. htdocs:
@@ -58,17 +77,17 @@ Folders
          The htdocs folder holds all the files that should be accessible
          by your webserver. They can either be in the DocumentRoot of your
          webserver or in any subfolder of the document root.
-      2. application
-      --------------
-         The application folder holds all templates and controllers used
+      2. conjoon_application
+      ----------------------
+         The conjoon_application folder holds all templates and controllers used
          by the Zend Framework. It can be put into any location on your
          server, just make sure it is readable and writable by the webserver.
          Notice:
          Though the current version does not contain any sensitive data,
-         the application folder should not be made public accessible.
-     3. libs
-     -------
-         The libs folder holds all php libraries needed by conjoon.
+         the conjoon_application folder should not be made public accessible.
+     3. conjoon_libs
+     ---------------
+         The conjoon_libs folder holds all php libraries needed by conjoon.
          It can be put into any location on your server, just make sure
          the php variable "include_path" points to it. You can also
          configure this using the configuration file of conjoon.
@@ -78,7 +97,8 @@ Folders
 
 Installing the database
    The current version of conjoon only supports the MySQL database.
-   Navigate to the folder /datastore/mysql and open the file "conjoon.sql".
+   Navigate to the folder /build/htdocs/install/datastore/mysql and open
+   the file "conjoon.sql".
    Process the contents with your database. The current version does not
    support table prefixes, so you should install the tables into a fresh
    database to make sure you not accidently overwrite any existing table.
@@ -100,31 +120,27 @@ Installing the database
       groupware_feeds_items_flags
       users
 
-   Once you have finished processing the file, you might want to change
-   the username and the password of the default user. Do so by browsing
-   the table "users" using phpmyadmin or any other MySQL administration
-   tool and change the field "user_name" to anything of your like and
-   the field "password". The value in the "password" field needs to be
-   plain MD5 encoded.
-
-   Notice:
-   If you do not want to change the default user, the login credentials
-   are as follows:
-      Username: admin
-      Password: password
+   Since V0.1a3, conjoon does not set up a default user. If you are not
+   using the installation wizard, you need to add a user by hand.
+   Do so by browsing the table "users" using phpmyadmin or any other MySQL
+   administration tool and insert a new row. Make sure the password you provide
+   is md5-hashed. Also, the "is_root" field for this user has to be set to "1".
 
 Adjusting the configuration file
    Navigate to the path where you have copied the contents of the htdocs
-   folder and rename the file "config.ini.default.php" to "config.ini.php".
+   folder and rename the file "htdocs/install/config.ini.php.template" to
+   "htdocs/config.ini.php".
    Adjust the settings to match your server setup. The file is commented
    so it should be quite easy to configure.
 
 Adjusting the .htaccess file
    Navigate to the path where you have copied the contents of the htdocs
-   folder and open the .htaccess file in a text editor of your choice.
+   folder and open the "htdocs/install/htaccess.template" file in a text editor
+   of your choice.
    Set the "RewriteBase" value to the value of the "base_url" as configured
    in your "config.ini.php". This is to make sure mod_rewrite works properly
-   if conjoon is installed in a subfolder of your document root.
+   if conjoon is installed in a subfolder of your document root. Once this is done,
+   rename the file to "htdocs/.htaccess".
 
 php.ini settings
    The following settings have to be adjusted:
@@ -148,6 +164,36 @@ Apache configuration
    redirecting to other URLS using links in RSS-feeds or emails, conjoon
    might throw an error.
      __________________________________________________________________
+
+Chapter 2.2 Automatic installation
+
+Notes regarding updating conjoon 0.1a2
+   Any version < than V0.1a3 is not compatible with the installation wizard introduced in
+   V0.1a3. It is recommended that you set up a fresh install if you are currently using
+   V0.1a2.
+
+Notes regarding PHP's safe_mode
+   The wizard will generate an error notice if it detects that PHP's safe_mode option is
+   enabled. In this case, the wizard might not be able to move the conjoon_application/_libs
+   folders to their desired location. If safe_mode is enabled on your webserver, you have
+   to move the specified folders by hand, and set the file permissions according to your
+   server setup.
+
+Running the wizard
+   Since V0.1a3, conjoon ships with an installation wizard that will make installing
+   and further upgrading of conjoon easier.
+   Simply set up your webserver so that you can access the contents of the build/htdocs directory
+   using a webbrowser and call the index.php in the folder htdocs/install.
+   The wizard will guide you through the setup steps, which should be quite easy to
+   follow. Once the wizard finishes, you need to delete the install folder entirely.
+   Otherwise conjoon will quit with an error message if it detects that this folder is
+   still accessible.
+   Note:
+   The wizard will save the installation progress in a file called htdocs/installation.info.php.
+   DO NOT DELETE THIS FILE! This file will help the wizard when you update conjoon in
+   the future.
+     __________________________________________________________________
+
 
 Chapter 3. Problems?
 

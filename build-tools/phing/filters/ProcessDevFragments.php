@@ -149,7 +149,7 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
 
         $output = preg_replace(
             array(
-                "/^(( \*|--|;|; \*) .(Author|Date|Revision|LastChangedDate|LastChangedBy|URL).*)(\n|\r\n)/m",
+                "/^(( | \* |-- |; |; \* ).(Author|Date|Revision|LastChangedDate|LastChangedBy|URL).*)(\n|\r\n)/m",
                 "/<\?php\s*\?>/ims",
             ),
             "",

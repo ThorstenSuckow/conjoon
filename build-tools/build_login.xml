@@ -21,7 +21,7 @@
   conjoon-login-debug.js
  and move them to the folder ../build/htdocs/js/conjoon/
  It will also create the file
-  ../build/application/modules/default/views/scripts/reception/_scripts.phtml
+  ../build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml
  and place the logic for loading the js files
   ../build/htdocs/js/ext/ext-all.js
  and
@@ -46,12 +46,12 @@
     <target name="clean">
       <delete file="./build/htdocs/js/conjoon/conjoon-login-debug.js" />
       <delete file="./build/htdocs/js/conjoon/conjoon-login.js" />
-      <delete file="./build/application/modules/default/views/scripts/reception/_scripts.phtml" />
+      <delete file="./build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml" />
     </target>
 
     <target name="make_script" depends="clean">
       <copy file="./src/www/application/modules/default/views/scripts/reception/_scripts.phtml"
-          tofile="./build/application/modules/default/views/scripts/reception/_scripts.phtml"
+          tofile="./build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml"
           overwrite="true">
 
        <filterchain>

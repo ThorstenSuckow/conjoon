@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteBase {REWRITE_BASE}
+RewriteRule (^index\/redirect.+)$ index.php
+RewriteRule !(^install)|(^blank\.html)|\.(mp3|swf|js|ico|gif|jpg|png|css)$ index.php

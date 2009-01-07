@@ -20,5 +20,6 @@ class Conjoon_Modules_Default_User_Dto {
     public $lastname;
     public $emailAddress;
     public $userName;
+    public $isRoot;
 
 }
