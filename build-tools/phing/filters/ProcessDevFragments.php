@@ -162,7 +162,9 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
                 '@BUILD_ACTIVE@-->',
                 '/*@BUILD_ACTIVE@*/',
                 '<?php /*@BUILD_ACTIVE@',
-                '@BUILD_ACTIVE@*/ ?>'
+                '@BUILD_ACTIVE@*/ ?>',
+                '/*@BUILD_ACTIVE@',
+                '@BUILD_ACTIVE@*/'
             ),
             "",
             $output
