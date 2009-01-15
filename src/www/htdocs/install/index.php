@@ -50,6 +50,13 @@ session_start();
        $_SESSION['setup_ini'] = parse_ini_file('./setup.ini', true);
    }
 
+/*@REMOVE@*/
+   if (!isset($_SESSION['current_version'])) {
+       $_SESSION['current_version'] = '0.0';
+   }
+/*@REMOVE@*/
+
+/*@BUILD_ACTIVE@
    if ($action != 'install_success' && $action != 'finish') {
        $ret = @include_once './files/'.$_SESSION['setup_ini']['lib_path']['folder'].'/Conjoon/Version.php';
        if (!$ret || !file_exists('./files/'.$_SESSION['setup_ini']['app_path']['folder'])) {
@@ -62,6 +69,7 @@ session_start();
    if (!isset($_SESSION['current_version'])) {
        $_SESSION['current_version'] = Conjoon_Version::VERSION;
    }
+@BUILD_ACTIVE@*/
 
    // build navigation for available set up steps
    // its important that the navigation appears in the order the various steps

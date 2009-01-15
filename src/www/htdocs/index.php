@@ -25,6 +25,7 @@
 // +----------------------------------------------------------------------------
 // | Check if app was installed
 // +----------------------------------------------------------------------------
+/*@BUILD_ACTIVE
    if (!file_exists('./config.ini.php')) {
        die("<b>Error:</b><br />config.ini.php not found. Either create it manually or ".
            "run the installation script (" .
@@ -33,6 +34,7 @@
    } else if (file_exists('./install')) {
        die("<b>Error: Please delete the install directory first!");
    }
+@BUILD_ACTIVE@*/
 
 // +----------------------------------------------------------------------------
 // | Before doing anything else, load the config and set the include path if
