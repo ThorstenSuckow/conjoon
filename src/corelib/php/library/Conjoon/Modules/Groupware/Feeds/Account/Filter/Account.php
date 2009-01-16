@@ -42,6 +42,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
                 'id',
                 'name',
                 'updateInterval',
+                'requestTimeout',
                 'deleteInterval'
         ),
         'create' =>
@@ -51,6 +52,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
                 'name',
                 'updateInterval',
                 'link',
+                'requestTimeout',
                 'description',
                 'deleteInterval'
         )
@@ -76,6 +78,9 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
             'StringTrim'
          ),
         'updateInterval' => array(
+            'Int'
+        ),
+        'requestTimeout' => array(
             'Int'
         ),
         'deleteInterval' => array(
@@ -109,6 +114,11 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
         'updateInterval' => array(
             'allowEmpty' => true,
             'default'    => 3600,
+            array('GreaterThan', 0)
+        ),
+        'requestTimeout' => array(
+            'allowEmpty' => true,
+            'default'    => 10,
             array('GreaterThan', 0)
         ),
         'deleteInterval' => array(

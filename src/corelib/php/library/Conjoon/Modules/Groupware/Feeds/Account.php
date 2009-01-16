@@ -41,6 +41,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
     private $uri;
     private $updateInterval;
     private $deleteInterval;
+    private $requestTimeout;
     private $_isDeleted;
     private $_lastUpdated;
 
@@ -63,9 +64,11 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
     public function getDescription(){return $this->description;}
     public function getUpdateInterval(){return $this->updateInterval;}
     public function getDeleteInterval(){return $this->deleteInterval;}
+    public function getRequestTimeout(){return $this->requestTimeout;}
     public function getLastUpdated(){return $this->_lastUpdated;}
     public function isDeleted(){return $this->_isDeleted;}
 
+    public function setRequestTimeout($requestTimeout){$this->requestTimeout = $requestTimeout;}
     public function setLastUpdated($lastUpdated){$this->_lastUpdated = $lastUpdated;}
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
@@ -147,6 +150,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
             'link'           => $this->link,
             'description'    => $this->description,
             'uri'            => $this->uri,
+            'requestTimeout' => $this->requestTimeout,
             'updateInterval' => $this->updateInterval,
             'deleteInterval' => $this->deleteInterval
         );
@@ -169,6 +173,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
             'link: '.$data['link'].', '.
             'description: '.$data['description'].', '.
             'updateInterval: '.$data['updateInterval'].', '.
+            'requestTimeout: '.$data['requestTimeout'].', '.
             'deleteInterval: '.$data['deleteInterval'].';';
     }
 }

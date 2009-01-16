@@ -24,5 +24,6 @@ class Conjoon_Modules_Groupware_Feeds_Account_Dto {
     public $description;
     public $updateInterval;
     public $deleteInterval;
+    public $requestTimeout;
 
 }
