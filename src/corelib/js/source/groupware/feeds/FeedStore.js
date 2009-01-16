@@ -35,11 +35,11 @@ com.conjoon.groupware.feeds.FeedStore = function() {
             groupField  : 'name',
             baseParams  : {
                 removeold : true,
-                timeout   : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
+                timeout   : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
             },
             proxy : new Ext.data.HttpProxy({
                 url      : './groupware/feeds/get.feed.items/format/json',
-                timeout  : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
+                timeout  : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
             })
         });
     };
@@ -51,6 +51,8 @@ com.conjoon.groupware.feeds.FeedStore = function() {
          * latest feed items in miliseconds.
          *
          * @return {Number}
+         *
+         * @deprecated use com.conjoon.groupware.feeds.AccountStore.getTimeoutSum instead
          */
         getDefaultTimeOut : function()
         {
@@ -58,6 +60,7 @@ com.conjoon.groupware.feeds.FeedStore = function() {
         },
 
         /**
+         * Returns the singleton instance of the store.
          *
          * @return {Ext.data.GroupingStore}
          */
@@ -65,6 +68,11 @@ com.conjoon.groupware.feeds.FeedStore = function() {
         {
             if (_store === null) {
                 _store = _getStore();
+                _store.on('beforeload', function() {
+                    var timeout = com.conjoon.groupware.feeds.AccountStore.getTimeoutSum();
+                    this.baseParams.timeout = timeout;
+                    this.proxy.timeout      = timeout;
+                }, _store);
             }
 
             return _store;

@@ -36,7 +36,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
     this.feedPanel = new Ext.grid.GridPanel({
         cls        : 'com-conjoon-groupware-feeds-FeedOptionsDialog-feedPanel',
         autoScroll : true,
-        height     : 195,
+        height     : 220,
         hideHeaders : true,
         enableColumnMove : false,
         enableHdMenu : false,
@@ -103,6 +103,30 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
     });
 
     /**
+     * Combobox for choosing the request timeout in seconds.
+     *
+     * @type Ext.form.ComboBox
+     */
+    this.requestTimeoutComboBox = new Ext.form.ComboBox({
+        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+        fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
+        listClass     : 'com-conjoon-smalleditor',
+        displayField  : 'text',
+        valueField    : 'id',
+        mode          : 'local',
+        editable      : false,
+        triggerAction : 'all',
+        store         : new Ext.data.SimpleStore({
+            data   : [
+                [30, com.conjoon.Gettext.gettext("30 seconds")],
+                [20, com.conjoon.Gettext.gettext("20 seconds")],
+                [10, com.conjoon.Gettext.gettext("10 seconds")]
+            ],
+            fields : ['id', 'text']
+        })
+    });
+
+    /**
      * Combobox to store the duration of how long to store the entries before
      * wiped in the DB.
      *
@@ -113,6 +137,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
         fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
         listClass     : 'com-conjoon-smalleditor',
+        itemCls       : 'com-conjoon-margin-b-10',
         displayField  : 'text',
         valueField    : 'id',
         mode          : 'local',
@@ -143,7 +168,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
     this.updateAfter = new Ext.form.ComboBox({
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
         fieldLabel    : com.conjoon.Gettext.gettext("Check for new entries"),
-        itemCls       : 'com-conjoon-margin-b-15',
+        itemCls       : 'com-conjoon-margin-b-10',
         listClass     : 'com-conjoon-smalleditor',
         displayField  : 'text',
         valueField    : 'id',
@@ -181,11 +206,11 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
             this.removeFeedButton
         ]
       }, {
-        margins  : '5 5 5 5',
-        hideMode : 'visibility',
-        id       : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
-        region   :'center',
-        border    :false,
+        margins   : '5 5 5 5',
+        hideMode  : 'visibility',
+        id        : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
+        region    : 'center',
+        border    : false,
         bodyStyle :'background:none',
         defaults  : {
             border : false
@@ -223,7 +248,8 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
                 },
                 items : [
                     this.updateAfter,
-                    this.removeAfter
+                    this.removeAfter,
+                    this.requestTimeoutComboBox
                 ]
           })
         ]
@@ -251,7 +277,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
         iconCls   : 'com-conjoon-groupware-feeds-Icon',
         title     : com.conjoon.Gettext.gettext("Feed settings"),
         bodyStyle : 'background-color:#F6F6F6',
-        height    : 325,
+        height    : 355,
         width     : 450,
         modal     : true,
         resizable : false,
@@ -268,6 +294,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
 
     this.removeAfter.on('select', this.configChanged, this);
     this.updateAfter.on('select', this.configChanged, this);
+    this.requestTimeoutComboBox.on('select', this.configChanged, this);
 
     this.feedName.on('render', function() {
             this.feedName.el.on('keyup',    this.configChanged, this);
@@ -549,6 +576,7 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
                 up.set('name', records[i].get('name'));
                 up.set('updateInterval', records[i].get('updateInterval'));
                 up.set('deleteInterval', records[i].get('deleteInterval'));
+                up.set('requestTimeout', records[i].get('requestTimeout'));
                 for (var a = 0, lena = items.length; a < lena; a++) {
                     if (items[a].get('groupwareFeedsAccountsId') == records[i].id) {
                         items[a].set('name', records[i].get('name'));
@@ -614,6 +642,7 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
 
         this.removeAfter.on('select',   this.configChanged, this);
         this.updateAfter.on('select',   this.configChanged, this);
+        this.requestTimeoutComboBox.on('select',   this.configChanged, this);
         this.feedName.el.on('keyup',    this.configChanged, this);
         this.feedName.el.on('keydown',  this.configChanged, this);
         this.feedName.el.on('keypress', this.configChanged, this);
@@ -634,6 +663,7 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         // detacht listeners, don't need them anymore
         this.removeAfter.un('select',   this.configChanged, this);
         this.updateAfter.un('select',   this.configChanged, this);
+        this.requestTimeoutComboBox.un('select',   this.configChanged, this);
         this.feedName.el.un('keyup',    this.configChanged, this);
         this.feedName.el.un('keydown',  this.configChanged, this);
         this.feedName.el.un('keypress', this.configChanged, this);
@@ -720,6 +750,7 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         this.clkRecord.set('name',    this.feedName.getValue().trim());
         this.clkRecord.set('deleteInterval', this.removeAfter.getValue());
         this.clkRecord.set('updateInterval', this.updateAfter.getValue());
+        this.clkRecord.set('requestTimeout', this.requestTimeoutComboBox.getValue());
         this.modifiedRecordCount = this.feedPanel.store.getModifiedRecords().length;
     },
 
@@ -808,6 +839,7 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         this.feedUrl.setValue(record.get('uri'));
         this.feedName.setValue(record.get('name'));
         this.updateAfter.setValue(record.get('updateInterval'));
+        this.requestTimeoutComboBox.setValue(record.get('requestTimeout'));
         this.removeAfter.setValue(record.get('deleteInterval'));
 
         this.removeFeedButton.setDisabled(false);

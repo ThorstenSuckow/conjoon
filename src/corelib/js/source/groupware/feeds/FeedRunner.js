@@ -30,11 +30,11 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
                       }, com.conjoon.groupware.feeds.ItemRecord),
         baseParams  : {
             removeold : false,
-            timeout   : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
+            timeout   : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
         },
         proxy : new Ext.data.HttpProxy({
             url      : './groupware/feeds/get.feed.items/format/json',
-            timeout  : com.conjoon.groupware.feeds.FeedStore.getDefaultTimeOut()
+            timeout  : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
         })
     });
 
@@ -115,6 +115,11 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
         if (_reception.isLocked()) {
             return;
         }
+
+        var timeout = com.conjoon.groupware.feeds.AccountStore.getTimeoutSum();
+
+        store.baseParams.timeout = timeout;
+        store.proxy.timeout      = timeout;
 
         if (!firstTimeLoaded) {
             store.load();
