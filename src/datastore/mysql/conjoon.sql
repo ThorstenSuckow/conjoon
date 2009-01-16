@@ -320,3 +320,5 @@ ALTER TABLE `users` ADD `user_name` VARCHAR( 64 ) NOT NULL AFTER `email_address`
 ALTER TABLE `users` ADD INDEX `username` ( `user_name` );
 
 ALTER TABLE `users` ADD `is_root` BOOL NOT NULL DEFAULT '0';
+
+ALTER TABLE `groupware_feeds_accounts` ADD `request_timeout` TINYINT NOT NULL DEFAULT '10' AFTER `last_updated`;
