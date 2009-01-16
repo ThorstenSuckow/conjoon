@@ -16,6 +16,8 @@ Ext.namespace('com.conjoon.util.PreLoader');
 
 com.conjoon.util.PreLoader = function() {
 
+    var _loadsAfter = [];
+
     var _kernel = function(){
         this.addEvents(
             /**
@@ -46,6 +48,12 @@ com.conjoon.util.PreLoader = function() {
         } else if (storeCount < 0 ) {
             throw('com.conjoon.util.PreLoader: storeCount is negative, but most not be.');
         }
+
+        for (var i = 0, len = _loadsAfter.length; i < len; i++) {
+            if (_loadsAfter[i].after == Ext.StoreMgr.getKey(store)) {
+                Ext.StoreMgr.lookup(_loadsAfter[i].id).load();
+            }
+        }
     };
 
     var storeDestroyed = function(store)
@@ -66,13 +74,22 @@ com.conjoon.util.PreLoader = function() {
          * Adds a store to the preloader.
          *
          * @param {Ext.data.Store} store The store to add to the preloader
-         * @param {Boolean|function} true to treat a loadexception from the store as
-         * a usual load event, or a callback to be executed when loading fails
-         * @param {Object} scope The scope to use for the callback passed as the
-         * second argument. If ommited, the "window" scope will be used
+         * @param {Object} config A configuration object with the following properties:
+         *  - ignoreLoadException {Boolean} Whether to treat a loadexception as
+         *    a load event and continue with processing remaining stores in the Preloader
+         *  - exceptionCallback {Function} a custom callback for a loadexception
+         *  - scope {Object} The scope of the exceptionCallback
+         *  - loadAfterStore {Ext.data.Store} A store which load event should trigger the
+         *    load process of the passed store.
+         *
+         * Note: ignoreLoadExcpetion will be given presedence before exceptionCallback,
+         * so if you configure ignoreLoadException with true, exceptionCallback will be
+         * ignored
          */
-        addStore : function(store, continueOnLoadException, scope)
+        addStore : function(store, config)
         {
+            var config = config || {};
+
             var id = Ext.StoreMgr.getKey(store);
 
             if (!id) {
@@ -85,10 +102,22 @@ com.conjoon.util.PreLoader = function() {
 
             store.on('load', storeLoaded, com.conjoon.util.PreLoader);
 
-            if (continueOnLoadException === true) {
+            if (config.loadAfterStore) {
+                _loadsAfter.push({
+                    id    : id,
+                    after : Ext.StoreMgr.getKey(config.loadAfterStore)
+                });
+            }
+
+            if (config.ignoreLoadException === true) {
                 store.on('loadexception', storeLoaded, com.conjoon.util.PreLoader, {single : true});
-            } else if (typeof continueOnLoadException == "function") {
-                store.on('loadexception', continueOnLoadException, (scope ? scope : window), {single : true});
+            } else if (typeof config.exceptionCallback == "function") {
+                store.on(
+                    'loadexception',
+                    config.exceptionCallback,
+                    (config.scope ? config.scope : window),
+                    {single : true}
+                );
             }
 
             store.on('destroy', storeDestroyed, com.conjoon.util.PreLoader);
@@ -98,8 +127,18 @@ com.conjoon.util.PreLoader = function() {
 
         load : function()
         {
+            var skip = false;
             for (var i in stores) {
-                stores[i].load();
+                skip = false;
+                for (var a = 0, len = _loadsAfter.length; a < len; a++) {
+                    if (_loadsAfter[a].id == Ext.StoreMgr.getKey(stores[i])) {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (!skip) {
+                    stores[i].load();
+                }
             }
         }
 
