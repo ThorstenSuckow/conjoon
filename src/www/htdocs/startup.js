@@ -16,19 +16,27 @@ Ext.onReady(function(){
 
     Ext.QuickTips.init();
 
-    Ext.getBody().on('contextmenu', function(e){var t = e.getTarget().tagName; if (t != 'INPUT' && t != 'TEXTAREA'){e.stopEvent();}});
-
-    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.email.AccountStore.getInstance());
-    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.AccountStore.getInstance());
-    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
-    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.FeedStore.getInstance(), {
-        ignoreLoadException : true,
-        loadAfterStore      : com.conjoon.groupware.feeds.AccountStore.getInstance()
+    Ext.getBody().on('contextmenu', function(e){
+        var t = e.getTarget().tagName;
+        if (t != 'INPUT' && t != 'TEXTAREA') {
+            e.stopEvent();
+        }
     });
 
-    com.conjoon.util.PreLoader.on('load', function() {
-        com.conjoon.groupware.email.Letterman.wakeup();
-        new com.conjoon.groupware.Workbench();
+    var preLoader = com.conjoon.util.PreLoader;
+    var groupware = com.conjoon.groupware;
+
+    preLoader.addStore(groupware.email.AccountStore.getInstance());
+    preLoader.addStore(groupware.feeds.AccountStore.getInstance());
+    preLoader.addStore(groupware.Registry.getStore());
+    preLoader.addStore(groupware.feeds.FeedStore.getInstance(), {
+        ignoreLoadException : true,
+        loadAfterStore      : groupware.feeds.AccountStore.getInstance()
+    });
+
+    preLoader.on('load', function() {
+        groupware.email.Letterman.wakeup();
+        new groupware.Workbench();
 
         (function(){
             Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({
@@ -41,8 +49,8 @@ Ext.onReady(function(){
         }).defer(1);
     });
 
-    com.conjoon.groupware.Reception.init(true);
-    com.conjoon.groupware.Reception.onUserLoad(function(){
+    groupware.Reception.init(true);
+    groupware.Reception.onUserLoad(function(){
         com.conjoon.util.PreLoader.load();
     });
 
