@@ -44,9 +44,9 @@ src/corelib/js/source/groupware/QuickEditPanel.js
 src/corelib/js/source/groupware/home/HomePanel.js
 src/corelib/js/source/groupware/feeds/ItemRecord.js
 src/corelib/js/source/groupware/feeds/AccountRecord.js
+src/corelib/js/source/groupware/feeds/AccountStore.js
 src/corelib/js/source/groupware/feeds/FeedStore.js
 src/corelib/js/source/groupware/feeds/FeedRunner.js
-src/corelib/js/source/groupware/feeds/AccountStore.js
 src/corelib/js/source/groupware/feeds/FeedViewBaton.js
 src/corelib/js/source/groupware/feeds/FeedPreview.js
 src/corelib/js/source/groupware/feeds/FeedGrid.js
