@@ -21,7 +21,10 @@ Ext.onReady(function(){
     com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.email.AccountStore.getInstance());
     com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.AccountStore.getInstance());
     com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
-    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.FeedStore.getInstance(), true);
+    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.feeds.FeedStore.getInstance(), {
+        ignoreLoadException : true,
+        loadAfterStore      : com.conjoon.groupware.feeds.AccountStore.getInstance()
+    });
 
     com.conjoon.util.PreLoader.on('load', function() {
         com.conjoon.groupware.email.Letterman.wakeup();
