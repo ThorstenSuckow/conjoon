@@ -44,6 +44,11 @@ class Conjoon_Modules_Default_Registry {
         require_once 'Conjoon/Keys.php';
 
         self::$_data = array(
+            'server' => array(
+                'php' => array(
+                    'max_execution_time' => ini_get('max_execution_time')
+                )
+            ),
             'base' => array(
                 'conjoon' => array(
                     'name'    => 'conjoon',
