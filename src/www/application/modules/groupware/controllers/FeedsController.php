@@ -96,32 +96,38 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $insertedItems   = array();
         $len             = count($accounts);
 
+        $secTimeout = $timeout/1000;
+        $defTimeout = -1;
         // compute the timeout for the connections. Filter should have set the default
         // timeout to 30000 ms if the timeout param was not submitted
-        if ($len > 0) {
-            $defTimeout = (int)round(($timeout/1000)/$len);
-            // $defTimeout holds the time in seconds that is available for each connection
-            // adjust it by 5 sec to give enough time to send to the client, if possible
-            $defTimeout = $defTimeout - 5;
+        // we need to compare this with the max_execution_time of the php installation
+        // and take action in case the requestTimeout exceeds it, so each account will have
+        // a reduced timeout, just in case (the configured timeout won't be considered then)
+        if ($len > 0 && $secTimeout >= ini_get('max_execution_time')) {
+            $defTimeout = (int)round(ini_get('max_execution_time')/$len);
 
             // if $defTimeout is less than 1, we will not try to load any feeds, or else
             // no response will ge through to the client
             if ($defTimeout < 1) {
                 $len = 0;
-            } else {
-                Zend_Feed::setHttpClient(
-                    new Zend_Http_Client(
-                        null,
-                        array(
-                            'timeout' => $defTimeout
-                        )
-                    )
-                );
             }
         }
 
         for ($i = 0; $i < $len; $i++) {
+            // set requestTimeout to default if necessary
+            if ($defTimeout != -1) {
+                $accounts[$i]->requestTimeout = $defTimeout;
+            }
             try {
+                // set the client for each account so it can be configured
+                // with the timeout. In case the sum of all timeouts exceeds
+                // the max_execution_time of the PHP installation, each
+                // request will be configured with the same timeout so the script
+                // has enough time to finish
+                Zend_Feed::setHttpClient(new Zend_Http_Client(
+                    null, array('timeout' => $accounts[$i]->requestTimeout - 2)
+                ));
+
                 $import = Zend_Feed::import($accounts[$i]->uri);
                 $items = $this->_importFeedItems($import, $accounts[$i]->id);
                 for ($a = 0, $lena = count($items); $a < $lena; $a++) {
