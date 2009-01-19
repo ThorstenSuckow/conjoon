@@ -49,11 +49,37 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
         fieldLabel   : com.conjoon.Gettext.gettext("Feed name"),
         itemCls      : 'com-conjoon-margin-b-10',
         allowBlank   : false,
-        width        : 202,
+        anchor       : '95%',
         validator    : function(v){
                            var alphanum = /^[a-zA-Z0-9_()\/ :.]+$/;
                            return alphanum.test(v);
                        }
+    });
+
+    /**
+     * Combobox for choosing the request timeout in seconds.
+     *
+     * @type Ext.form.ComboBox
+     */
+    this.requestTimeoutComboBox = new Ext.form.ComboBox({
+        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+        fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
+        listClass     : 'com-conjoon-smalleditor',
+        displayField  : 'text',
+        itemCls       : 'com-conjoon-margin-b-10',
+        valueField    : 'id',
+        mode          : 'local',
+        anchor       : '95%',
+        editable      : false,
+        triggerAction : 'all',
+        store         : new Ext.data.SimpleStore({
+            data   : [
+                [30, com.conjoon.Gettext.gettext("30 seconds")],
+                [20, com.conjoon.Gettext.gettext("20 seconds")],
+                [10, com.conjoon.Gettext.gettext("10 seconds")]
+            ],
+            fields : ['id', 'text']
+        })
     });
 
     /**
@@ -64,12 +90,11 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
         tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
         fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
         listClass     : 'com-conjoon-smalleditor',
-        itemCls       : 'com-conjoon-margin-b-15',
+        itemCls       : 'com-conjoon-margin-b-10',
         displayField  : 'text',
         valueField    : 'id',
         mode          : 'local',
-        width         : 185,
-        listWidth     : 201,
+        anchor        : '95%',
         editable      : false,
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
@@ -103,8 +128,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
         displayField  : 'text',
         valueField    : 'id',
         mode          : 'local',
-        width         : 185,
-        listWidth     : 201,
+        anchor        : '95%',
         editable      : false,
         triggerAction : 'all',
         store         : new Ext.data.SimpleStore({
@@ -135,7 +159,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
         labelSeparator : '',
         boxLabel   : com.conjoon.Gettext.gettext("add another feed after saving"),
         ctCls      : 'com-conjoon-smalleditor',
-        width      : 'auto',
+        anchor     : '95%',
         autoWidth  : true
         //style      : 'margin-left:105px'
     });
@@ -188,7 +212,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
      */
     this.card = new Ext.Panel({
        region     : 'south',
-        height   : 140,
+        height   : 170,
         border         : false,
         deferredRender : true,
         bodyStyle      : 'background-color:#F6F6F6;padding:0px 10px 5px 10px',
@@ -216,6 +240,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
                 this.errorPanel
             ]
           },{
+            hideMode : 'visibility',
               // form card
             id    : 'DOM:com.conjoon.groupware.feeds.AddFeedDialog.additionalFormPanel',
             items : new Ext.FormPanel({
@@ -230,6 +255,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
                     this.feedNameTextField,
                     this.updateComboBox,
                     this.keepEntriesComboBox,
+                    this.requestTimeoutComboBox,
                     this.keepAddModeCheckbox
                 ]
             })
@@ -275,8 +301,8 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
         title     : com.conjoon.Gettext.gettext("Add feed"),
         bodyStyle : 'background-color:#F6F6F6',
         modal     : true,
-        height    : 325,
-        width     : 400,
+        height    : 355,
+        width     : 450,
         defaults  : {
             bodyStyle : 'background:none;'
         },
@@ -307,6 +333,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
     // finish other components
     this.keepEntriesComboBox.setValue(2419200);
     this.updateComboBox.setValue(172800);
+    this.requestTimeoutComboBox.setValue(10);
     this.feedNameTextField.on('valid',   this.onValid, this);
     this.feedNameTextField.on('invalid', this.onInvalid, this);
 
@@ -469,7 +496,8 @@ Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
                 name           : this.feedNameTextField.getValue().trim(),
                 uri            : this.urlTrigger.getValue().trim(),
                 updateInterval : this.updateComboBox.getValue(),
-                deleteInterval : this.keepEntriesComboBox.getValue()
+                deleteInterval : this.keepEntriesComboBox.getValue(),
+                requestTimeout : this.requestTimeoutComboBox.getValue()
             },
             success        : this.onFeedSaveSuccess,
             failure        : this.onFeedFailure,
@@ -739,6 +767,7 @@ Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
         this.feedNameTextField.reset();
         this.keepEntriesComboBox.reset();
         this.updateComboBox.reset();
+        this.requestTimeoutComboBox.reset();
 
         this.urlTrigger.setDisabled(false);
         this.okButton.setDisabled(true);
