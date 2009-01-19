@@ -10,21 +10,12 @@
 -- $LastChangedBy$
 -- $URL$
 
--- phpMyAdmin SQL Dump
--- version 2.11.9.2
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Erstellungszeit: 08. Dezember 2008 um 11:07
--- Server Version: 5.0.67
--- PHP-Version: 5.2.6
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_contact_items`
+-- `groupware_contact_items`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_contact_items` (
@@ -40,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `groupware_contact_items` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_contact_items_email`
+-- `groupware_contact_items_email`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_contact_items_email` (
@@ -57,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `groupware_contact_items_email` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_contact_items_flags`
+-- `groupware_contact_items_flags`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_contact_items_flags` (
@@ -71,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `groupware_contact_items_flags` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_accounts`
+-- `groupware_email_accounts`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_accounts` (
@@ -103,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_accounts` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_folders`
+-- `groupware_email_folders`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_folders` (
@@ -122,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_folders` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_folders_accounts`
+-- `groupware_email_folders_accounts`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_folders_accounts` (
@@ -134,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_folders_accounts` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_items`
+-- `groupware_email_items`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_items` (
@@ -161,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_items_attachments`
+-- `groupware_email_items_attachments`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_items_attachments` (
@@ -179,7 +170,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_attachments` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_items_flags`
+-- `groupware_email_items_flags`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_items_flags` (
@@ -195,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_flags` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_items_inbox`
+-- `groupware_email_items_inbox`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_items_inbox` (
@@ -216,7 +207,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_inbox` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_items_outbox`
+-- `groupware_email_items_outbox`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_items_outbox` (
@@ -232,7 +223,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_outbox` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_email_items_references`
+-- `groupware_email_items_references`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_email_items_references` (
@@ -248,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `groupware_email_items_references` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_feeds_accounts`
+-- `groupware_feeds_accounts`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_feeds_accounts` (
@@ -270,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `groupware_feeds_accounts` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_feeds_items`
+-- `groupware_feeds_items`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_feeds_items` (
@@ -292,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `groupware_feeds_items` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `groupware_feeds_items_flags`
+-- `groupware_feeds_items_flags`
 --
 
 CREATE TABLE IF NOT EXISTS `groupware_feeds_items_flags` (
@@ -304,7 +295,7 @@ CREATE TABLE IF NOT EXISTS `groupware_feeds_items_flags` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `users`
+-- `users`
 --
 
 CREATE TABLE IF NOT EXISTS `users` (
