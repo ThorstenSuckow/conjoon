@@ -1,13 +1,14 @@
 Ext.ux.ToastWindowMgr = {
-    positions: [] 
+    positions: []
 };
 
 Ext.ux.ToastWindow = Ext.extend(Ext.Window, {
     initComponent: function(){
-          Ext.apply(this, {
+          Ext.applyIf(this, {
               iconCls: this.iconCls || 'information',
             width: 200,
             height: 100,
+            delay : 2000,
             autoScroll: true,
             autoDestroy: true,
             plain: false
@@ -34,20 +35,20 @@ Ext.ux.ToastWindow = Ext.extend(Ext.Window, {
                Ext.ux.ToastWindowMgr.positions.remove(this.pos);
             this.task.cancel();}
         , this);
-        this.task.delay(2000);
+        this.task.delay(this.delay);
     },
     animShow: function(){
         this.pos = 0;
         while(Ext.ux.ToastWindowMgr.positions.indexOf(this.pos)>-1)
             this.pos++;
         Ext.ux.ToastWindowMgr.positions.push(this.pos);
-        this.setSize(200,100);
+        this.setSize(this.width, this.height);
         this.el.alignTo(document, "br-br", [ -20, -20-((this.getSize().height+10)*this.pos) ]);
         this.el.slideIn('b', {
             duration: 1,
             callback: this.afterShow,
             scope: this
-        });    
+        });
     },
     animHide: function(){
            Ext.ux.ToastWindowMgr.positions.remove(this.pos);
@@ -56,6 +57,6 @@ Ext.ux.ToastWindow = Ext.extend(Ext.Window, {
             remove: true,
         scope: this,
         callback: this.destroy
-        });    
+        });
     }
 });
