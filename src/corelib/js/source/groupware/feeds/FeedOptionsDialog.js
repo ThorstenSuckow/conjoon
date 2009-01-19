@@ -278,7 +278,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
         title     : com.conjoon.Gettext.gettext("Feed settings"),
         bodyStyle : 'background-color:#F6F6F6',
         height    : 355,
-        width     : 450,
+        width     : 550,
         modal     : true,
         resizable : false,
         layout    : 'border'
