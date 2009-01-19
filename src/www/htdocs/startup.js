@@ -46,6 +46,9 @@ Ext.onReady(function(){
                 remove     : true,
                 useDisplay : false
             });
+
+            Ext.ux.util.MessageBus.publish('com.conjoon.groupware.ready');
+
         }).defer(1);
     });
 

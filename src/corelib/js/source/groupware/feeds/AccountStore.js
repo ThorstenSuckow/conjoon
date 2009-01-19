@@ -56,6 +56,7 @@ com.conjoon.groupware.feeds.AccountStore = function() {
      * The timeout will only be committed if changes have actually been commited
      * to the store.
      *
+     *
      * @return {Number}
      */
     var _storeChanged = function(store, record, operation)
@@ -67,11 +68,18 @@ com.conjoon.groupware.feeds.AccountStore = function() {
         var records = _store.getRange();
         var len     = records.length;
 
+        var _oldTimeout = _timeout || _defaultTimeout;
+
         _timeout = 0;
 
         for (var i = 0; i < len; i++) {
             _timeout += (records[i].get('requestTimeout')*1000);
         }
+
+        Ext.ux.util.MessageBus.publish('com.conjoon.groupware.feeds.AccountStore.update', {
+            requestTimeout    : _timeout,
+            oldRequestTimeout : _oldTimeout
+        });
     };
 
     return {
@@ -80,7 +88,7 @@ com.conjoon.groupware.feeds.AccountStore = function() {
          * Returns the timeout for the request accumulated over all available
          * feed accounts, in miliseconds.
          * If the store is not available yet, the function will return the
-         * a default value to guarantee that the timeout will never equal to 0.
+         * default value to guarantee that the timeout will never equal to 0.
          *
          * @return {Number}
          */
