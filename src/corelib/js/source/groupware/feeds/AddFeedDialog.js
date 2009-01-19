@@ -408,7 +408,7 @@ Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
             var msg = Ext.MessageBox;
             msg.show({
                 title : com.conjoon.Gettext.gettext("Feed name aready existing"),
-                msg : String.format(com.conjoon.Gettext.gettext("The feed name \"{0}\" does already exist. Please chose another one."), Ext.util.Format.htmlEncode(this.feedNameTextField.getValue())),
+                msg : String.format(com.conjoon.Gettext.gettext("The feed name \"{0}\" does already exist. Please chose another one. If you have previously removed a feed with the same name, please apply the changes first."), Ext.util.Format.htmlEncode(this.feedNameTextField.getValue())),
                 buttons: msg.OK,
                 icon: msg.INFO,
                 animateTarget : this.feedNameTextField.el.dom.id,
