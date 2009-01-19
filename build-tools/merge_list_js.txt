@@ -32,7 +32,6 @@ src/corelib/js/source/groupware/reception/LogoutWindow.js
 src/corelib/js/source/groupware/reception/LoginWindow.js
 src/corelib/js/source/groupware/reception/StateIndicator.js
 src/corelib/js/source/groupware/StatusBar.js
-src/corelib/js/source/groupware/ToolbarManager.js
 src/corelib/js/source/groupware/util/LinkInterceptor.js
 src/corelib/js/source/groupware/util/FormIntro.js
 src/corelib/js/source/groupware/util/Clear.js
