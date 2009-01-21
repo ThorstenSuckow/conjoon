@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,9 +17,8 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EmailAddressTest.php 8985 2008-03-21 21:37:24Z matthew $
+ * @version    $Id: EmailAddressTest.php 13253 2008-12-14 20:28:06Z thomas $
  */
-
 
 /**
  * Test helper
@@ -31,7 +29,6 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  * @see Zend_Validate_EmailAddress
  */
 require_once 'Zend/Validate/EmailAddress.php';
-
 
 /**
  * @category   Zend
@@ -258,7 +255,8 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
             'bob.domain.com',
             'bob @domain.com',
             'bob@ domain.com',
-            'bob @ domain.com'
+            'bob @ domain.com',
+            'Abc..123@example.com'
             );
         foreach ($emailAddresses as $input) {
             $this->assertFalse($this->_validator->isValid($input));
@@ -395,5 +393,19 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
             }
         }
         $this->assertTrue($found);
+    }
+
+    /**
+     * @see ZF-4888
+     */
+    public function testEmailsExceedingLength()
+    {
+        $emailAddresses = array(
+            'thislocalpathoftheemailadressislongerthantheallowedsizeof64characters@domain.com',
+            'bob@verylongdomainsupercalifragilisticexpialidociousspoonfulofsugarverylongdomainsupercalifragilisticexpialidociousspoonfulofsugarverylongdomainsupercalifragilisticexpialidociousspoonfulofsugarverylongdomainsupercalifragilisticexpialidociousspoonfulofsugarexpialidociousspoonfulofsugar.com',
+            );
+        foreach ($emailAddresses as $input) {
+            $this->assertFalse($this->_validator->isValid($input));
+        }
     }
 }

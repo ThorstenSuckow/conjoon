@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DijitContainerTest.php 10043 2008-07-11 15:41:54Z matthew $
+ * @version    $Id: DijitContainerTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 // Call Zend_Dojo_Form_Decorator_DijitContainerTest::main() if this source file is executed directly.

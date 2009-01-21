@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 6923 2007-11-25 02:00:06Z peptolab $
+ * @version    $Id: StaticTest.php 13281 2008-12-15 20:53:30Z mikaelkael $
  */
 
 
@@ -277,6 +277,30 @@ class Zend_Db_Adapter_StaticTest extends PHPUnit_Framework_TestCase
         $db = Zend_Db::factory('Static', array('dbname' => 'dummy'));
         $mode = $db->getFetchMode();
         $this->assertType('integer', $mode);
+    }
+
+    /**
+     * @group ZF-5099
+     */
+    public function testDbGetServerVersion()
+    {
+        $db = Zend_Db::factory('Static', array('dbname' => 'dummy'));
+        $version = $db->getServerVersion();
+        $this->assertEquals($version, '5.6.7.8');
+        $this->assertTrue(version_compare($version, '1.0.0', '>'));
+        $this->assertTrue(version_compare($version, '99.0.0', '<'));
+    }
+
+    /**
+     * @group ZF-5050
+     */
+    public function testDbCloseConnection()
+    {
+        $db = Zend_Db::factory('Static', array('dbname' => 'dummy'));
+        $db->getConnection();
+        $this->assertTrue($db->isConnected());
+        $db->closeConnection();
+        $this->assertFalse($db->isConnected());
     }
 
     public function getDriver()

@@ -15,7 +15,7 @@
  * @package    Zend_Controller
  * @subpackage Router
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Route.php 10884 2008-08-11 13:46:33Z matthew $
+ * @version    $Id: Route.php 11073 2008-08-26 16:29:59Z dasprid $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -85,7 +85,7 @@ class Zend_Controller_Router_Route extends Zend_Controller_Router_Route_Abstract
      * for validation
      * @var int
      */
-    private $_staticCount = 0;
+    protected $_staticCount = 0;
 
     public function getVersion() {
         return 1;

@@ -18,14 +18,25 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SessionTestHelper.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: SessionTestHelper.php 12582 2008-11-12 11:53:05Z alexander $
  */
 
 
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
+/** Test helper */
+// require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
+
+// Do not include TestHelper.php since it takes too much time
+// Directly include part of it
+$zfRoot        = dirname(dirname(dirname(dirname(__FILE__))));
+$zfCoreLibrary = "$zfRoot/library";
+$zfCoreTests   = "$zfRoot/tests";
+
+$path = array(
+    $zfCoreLibrary,
+    $zfCoreTests,
+    get_include_path()
+    );
+set_include_path(implode(PATH_SEPARATOR, $path));
 
 
 /**

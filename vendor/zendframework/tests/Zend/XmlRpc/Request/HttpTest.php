@@ -12,7 +12,7 @@ require_once 'Zend/XmlRpc/Request/Http.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: HttpTest.php 8611 2008-03-07 01:55:12Z matthew $
+ * @version $Id: HttpTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 class Zend_XmlRpc_Request_HttpTest extends PHPUnit_Framework_TestCase 
 {

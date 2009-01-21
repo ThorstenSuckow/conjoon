@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ButtonTest.php 10091 2008-07-15 03:46:37Z matthew $
+ * @version    $Id: ButtonTest.php 12374 2008-11-07 17:49:43Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_ButtonTest::main() if this source file is executed directly.
@@ -125,7 +125,7 @@ class Zend_Dojo_Form_Element_ButtonTest extends PHPUnit_Framework_TestCase
         $decorator = $this->element->getDecorator('DijitElement');
         $decorator->setElement($this->element);
         $html = $decorator->render('');
-        $this->assertRegexp('/<(input|button)[^>]*?(value="Submit Button")/', $html, 'Label: ' . $this->element->getLabel() . "\nHTML: " . $html);
+        $this->assertRegexp('/<(input|button)[^>]*?>Submit Button/', $html, 'Label: ' . $this->element->getLabel() . "\nHTML: " . $html);
     }
 
     public function testConstructorSetsLabelToNameIfNoLabelProvided()
@@ -174,6 +174,18 @@ class Zend_Dojo_Form_Element_ButtonTest extends PHPUnit_Framework_TestCase
     {
         $html = $this->element->render();
         $this->assertContains('dojoType="dijit.form.Button"', $html);
+    }
+
+    /**
+     * @group ZF-3961
+     */
+    public function testValuePropertyShouldNotBeRendered()
+    {
+        $this->element->setLabel('Button Label')
+                      ->setView($this->getView());
+        $html = $this->element->render();
+        $this->assertContains('Button Label', $html, $html);
+        $this->assertNotContains('value="', $html);
     }
 }
 

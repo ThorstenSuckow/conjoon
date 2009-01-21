@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MysqliTest.php 6923 2007-11-25 02:00:06Z peptolab $
+ * @version    $Id: MysqliTest.php 13028 2008-12-05 02:12:23Z sidhighwind $
  */
 
 
@@ -228,6 +228,18 @@ class Zend_Db_Adapter_MysqliTest extends Zend_Db_Adapter_TestCommon
     }
 
     /**
+     * test that describeTable() returns correct types
+     * @group ZF-3624
+     *
+     */
+    public function testAdapterDescribeTableAttributeColumnFloat()
+    {
+        $desc = $this->_db->describeTable('zfprice');
+        $this->assertEquals('zfprice',  $desc['price']['TABLE_NAME']);
+        $this->assertRegExp('/float/i', $desc['price']['DATA_TYPE']);
+    }
+
+    /**
      * Ensures that the PDO Buffered Query does not throw the error
      * 2014 General error
      *
@@ -238,7 +250,7 @@ class Zend_Db_Adapter_MysqliTest extends Zend_Db_Adapter_TestCommon
     {
         $params = $this->_util->getParams();
         $db = Zend_Db::factory($this->getDriver(), $params);
-        
+
         // Set default bound value
         $customerId = 1;
 
@@ -251,7 +263,7 @@ class Zend_Db_Adapter_MysqliTest extends Zend_Db_Adapter_TestCommon
 
         // Reset statement
         $stmt->closeCursor();
-        
+
         // Stored procedure returns a single row
         $stmt = $db->prepare('CALL zf_test_procedure(?)');
         $stmt->bindParam(1, $customerId);
@@ -262,6 +274,21 @@ class Zend_Db_Adapter_MysqliTest extends Zend_Db_Adapter_TestCommon
     public function testAdapterAlternateStatement()
     {
         $this->_testAdapterAlternateStatement('Test_MysqliStatement');
+    }
+
+    public function testMySqliInitCommand()
+    {
+        $params = $this->_util->getParams();
+        $params['driver_options'] = array(
+            'mysqli_init_command' => 'SET AUTOCOMMIT=0;'
+        );
+        $db = Zend_Db::factory($this->getDriver(), $params);
+
+        $sql = 'SELECT @@AUTOCOMMIT as autocommit';
+
+        $row = $db->fetchRow($sql);
+
+        $this->assertEquals(0, $row['autocommit']);
     }
 
     public function getDriver()

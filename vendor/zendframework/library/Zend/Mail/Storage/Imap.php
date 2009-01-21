@@ -17,7 +17,7 @@
  * @subpackage Storage
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Imap.php 9099 2008-03-30 19:35:47Z thomas $
+ * @version    $Id: Imap.php 12519 2008-11-10 18:41:24Z alexander $
  */
 
 
@@ -120,19 +120,19 @@ class Zend_Mail_Storage_Imap extends Zend_Mail_Storage_Abstract
             throw new Zend_Mail_Storage_Exception('No selected folder to count');
         }
 
-    	if ($flags === null) {
-    		return count($this->_protocol->search(array('ALL')));
-    	}
-    	
-    	$params = array();
-    	foreach ((array)$flags as $flag) {
-    		if (isset(self::$_searchFlags[$flag])) {
-    			$params[] = self::$_searchFlags[$flag];
-    		} else {
-    			$params[] = 'KEYWORD';
-    			$params[] = $this->_protocol->escapeString($flag);
-    		}
-    	}
+        if ($flags === null) {
+            return count($this->_protocol->search(array('ALL')));
+        }
+    
+        $params = array();
+        foreach ((array)$flags as $flag) {
+            if (isset(self::$_searchFlags[$flag])) {
+                $params[] = self::$_searchFlags[$flag];
+            } else {
+                $params[] = 'KEYWORD';
+                $params[] = $this->_protocol->escapeString($flag);
+            }
+        }
         return count($this->_protocol->search($params));
     }
 
@@ -617,8 +617,8 @@ class Zend_Mail_Storage_Imap extends Zend_Mail_Storage_Abstract
      * @throws Zend_Mail_Storage_Exception
      */
     public function moveMessage($id, $folder) {
-    	$this->copyMessage($id, $folder);
-    	$this->removeMessage($id);
+        $this->copyMessage($id, $folder);
+        $this->removeMessage($id);
     }
 
     /**

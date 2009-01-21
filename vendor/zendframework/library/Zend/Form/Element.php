@@ -32,7 +32,7 @@ require_once 'Zend/Validate/Interface.php';
  * @subpackage Element
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Element.php 11316 2008-09-09 19:17:43Z matthew $
+ * @version    $Id: Element.php 12787 2008-11-23 14:17:44Z matthew $
  */
 class Zend_Form_Element implements Zend_Validate_Interface
 {
@@ -287,6 +287,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
         if (empty($decorators)) {
             $this->addDecorator('ViewHelper')
                 ->addDecorator('Errors')
+                ->addDecorator('Description', array('tag' => 'p', 'class' => 'description'))
                 ->addDecorator('HtmlTag', array('tag' => 'dd'))
                 ->addDecorator('Label', array('tag' => 'dt'));
         }
@@ -303,6 +304,11 @@ class Zend_Form_Element implements Zend_Validate_Interface
         if (isset($options['prefixPath'])) {
             $this->addPrefixPaths($options['prefixPath']);
             unset($options['prefixPath']);
+        }
+
+        if (isset($options['disableTranslator'])) {
+            $this->setDisableTranslator($options['disableTranslator']);
+            unset($options['disableTranslator']);
         }
 
         unset($options['options']);
@@ -760,7 +766,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
     }
 
     /**
-     * Return elment type
+     * Return element type
      * 
      * @return string
      */
@@ -1697,8 +1703,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
         if (null === $options) {
             $decorator = new $class;
         } else {
-            $r = new ReflectionClass($class);
-            $decorator = $r->newInstance($options);
+            $decorator = new $class($options);
         }
 
         return $decorator;

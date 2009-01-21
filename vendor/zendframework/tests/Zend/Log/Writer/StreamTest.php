@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StreamTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: StreamTest.php 12022 2008-10-20 03:45:18Z mike $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -32,7 +32,7 @@ require_once 'Zend/Log/Writer/Stream.php';
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StreamTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: StreamTest.php 12022 2008-10-20 03:45:18Z mike $
  */
 class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
 {
@@ -51,7 +51,7 @@ class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
 
     public function testConstructorWithValidStream()
     {
-        $stream = fopen('php://memory', 'a');
+        $stream = fopen('php://memory', 'w+');
         new Zend_Log_Writer_Stream($stream);
     }
     
@@ -62,9 +62,9 @@ class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
 
     public function testConstructorThrowsWhenModeSpecifiedForExistingStream()
     {
-        $stream = fopen('php://memory', 'a');
+        $stream = fopen('php://memory', 'w+');
         try {
-            new Zend_Log_Writer_Stream($stream, 'w');
+            new Zend_Log_Writer_Stream($stream, 'w+');
             $this->fail();
         } catch (Exception $e) {
             $this->assertType('Zend_Log_Exception', $e);
@@ -85,7 +85,7 @@ class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
     
     public function testWrite()
     {
-        $stream = fopen('php://memory', 'a');
+        $stream = fopen('php://memory', 'w+');
         $fields = array('message' => 'message-to-log');
 
         $writer = new Zend_Log_Writer_Stream($stream);
@@ -100,7 +100,7 @@ class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
     
     public function testWriteThrowsWhenStreamWriteFails()
     {
-        $stream = fopen('php://memory', 'a');
+        $stream = fopen('php://memory', 'w+');
         $writer = new Zend_Log_Writer_Stream($stream);
         fclose($stream);
         
@@ -115,7 +115,7 @@ class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
 
     public function testShutdownClosesStreamResource()
     {
-        $writer = new Zend_Log_Writer_Stream('php://memory', 'a');
+        $writer = new Zend_Log_Writer_Stream('php://memory', 'w+');
         $writer->write(array('message' => 'this write should succeed'));
         
         $writer->shutdown();
@@ -131,7 +131,7 @@ class Zend_Log_Writer_StreamTest extends PHPUnit_Framework_TestCase
 
     public function testSettingNewFormatter()
     {
-        $stream = fopen('php://memory', 'a');
+        $stream = fopen('php://memory', 'w+');
         $writer = new Zend_Log_Writer_Stream($stream);
         $expected = 'foo';
         

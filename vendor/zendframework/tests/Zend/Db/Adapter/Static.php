@@ -18,7 +18,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Static.php 5970 2007-08-03 01:56:49Z bkarwin $
+ * @version    $Id: Static.php 13281 2008-12-15 20:53:30Z mikaelkael $
  */
 
 
@@ -102,7 +102,7 @@ class Zend_Db_Adapter_Static extends Zend_Db_Adapter_Abstract
         }
         $this->config = $config;
     }
-    
+
     /**
      * Prepares and executes a SQL statement with bound data.
      *
@@ -209,6 +209,16 @@ class Zend_Db_Adapter_Static extends Zend_Db_Adapter_Abstract
     }
 
     /**
+     * Test if a connection is active
+     *
+     * @return boolean
+     */
+    public function isConnected()
+    {
+        return ((bool) (!is_null($this->_connection)));
+    }
+
+    /**
      * Force the connection to close.
      *
      * @return void
@@ -306,4 +316,12 @@ class Zend_Db_Adapter_Static extends Zend_Db_Adapter_Abstract
         return true;
     }
 
+    /**
+     * Retrieve server version in PHP style
+     *
+     * @return string
+     */
+    public function getServerVersion() {
+        return "5.6.7.8";
+    }
 }

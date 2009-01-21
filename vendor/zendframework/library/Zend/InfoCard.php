@@ -16,7 +16,7 @@
  * @package    Zend_InfoCard
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: InfoCard.php 11296 2008-09-08 19:46:57Z thomas $
+ * @version    $Id: InfoCard.php 11010 2008-08-24 19:22:58Z thomas $
  */
 
 /**

@@ -83,10 +83,20 @@ dojo.declare("dojox.storage.Provider", null, {
 		//		Puts a key and value into this storage system.
 		// description:
 		//		Example-
-		//			var resultsHandler = function(status, key, message){
+		//			var resultsHandler = function(status, key, message, namespace){
 		//			  alert("status="+status+", key="+key+", message="+message);
 		//			};
 		//			dojox.storage.put("test", "hello world", resultsHandler);
+		//
+		//			Arguments:
+		//
+		//			status - The status of the put operation, given by
+		//								dojox.storage.FAILED, dojox.storage.SUCCEEDED, or
+		//								dojox.storage.PENDING
+		//			key - The key that was used for the put
+		//			message - An optional message if there was an error or things failed.
+		//			namespace - The namespace of the key. This comes at the end since
+		//									it was added later.
 		//	
 		//		Important note: if you are using Dojo Storage in conjunction with
 		//		Dojo Offline, then you don't need to provide
@@ -236,9 +246,9 @@ dojo.declare("dojox.storage.Provider", null, {
 		//		Optional string namespace that this value will be placed into;
 		//		if left off, the value will be placed into dojox.storage.DEFAULT_NAMESPACE
 		
-		console.warn("dojox.storage.putMultiple not implemented");
-		//	JAC: We could implement a 'default' puMultiple here by just doing 
-		//  each put individually
+		for(var i = 0; i < keys.length; i++){ 
+			dojox.storage.put(keys[i], values[i], resultsHandler, namespace); 
+		}
 	},
 
 	getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
@@ -252,18 +262,21 @@ dojo.declare("dojox.storage.Provider", null, {
 		//		Optional string namespace that this value will be retrieved from;
 		//		if left off, the value will be retrieved from dojox.storage.DEFAULT_NAMESPACE
 		// return: Returns any JavaScript object type; null if the key is not present
-
-		console.warn("dojox.storage.getMultiple not implemented");
-		//	JAC: We could implement a 'default' getMultiple here by just 
-		//  doing each get individually
+		
+		var results = []; 
+		for(var i = 0; i < keys.length; i++){ 
+			results.push(dojox.storage.get(keys[i], namespace)); 
+		} 
+		
+		return results;
 	},
 
 	removeMultiple: function(/*array*/ keys, /*string?*/ namespace) {
 		// summary: Removes the given keys from this storage system.
-
-		//	JAC: We could implement a 'default' removeMultiple here by just 
-		//  doing each remove individually
-		console.warn("dojox.storage.remove not implemented");
+		
+		for(var i = 0; i < keys.length; i++){ 
+			dojox.storage.remove(keys[i], namespace); 
+		}
 	},
 	
 	isValidKeyArray: function( keys) {
@@ -275,7 +288,7 @@ dojo.declare("dojox.storage.Provider", null, {
 		//  directly over a joined string
 		return !dojo.some(keys, function(key){
 			return !this.isValidKey(key);
-		}); // Boolean
+		}, this); // Boolean
 	},
 
 	hasSettingsUI: function(){ /*Boolean*/

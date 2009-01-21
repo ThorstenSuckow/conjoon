@@ -36,7 +36,7 @@ require_once 'Zend/Validate/Identical.php';
  * @uses       Zend_Validate_Identical
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IdenticalTest.php 8118 2008-02-18 16:10:32Z matthew $
+ * @version    $Id: IdenticalTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 class Zend_Validate_IdenticalTest extends PHPUnit_Framework_TestCase
 {

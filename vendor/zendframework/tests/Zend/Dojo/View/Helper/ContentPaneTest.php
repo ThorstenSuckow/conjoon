@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ContentPaneTest.php 11287 2008-09-08 17:15:25Z matthew $
+ * @version    $Id: ContentPaneTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_ContentPaneTest::main() if this source file is executed directly.
@@ -124,6 +124,16 @@ class Zend_Dojo_View_Helper_ContentPaneTest extends PHPUnit_Framework_TestCase
         Zend_Dojo_View_Helper_Dojo::setUseProgrammatic();
         $html = $this->view->contentPane('pane1', 'This is the pane content', array('id' => 'pane', 'title' => 'Pane 1'));
         $this->assertNotContains('name="/', $html, $html);
+    }
+
+    /**
+     * @group ZF-4522
+     */
+    public function testCaptureStartShouldReturnVoid()
+    {
+        $test = $this->view->contentPane()->captureStart('pane1');
+        $this->view->contentPane()->captureEnd('pane1');
+        $this->assertNull($test);
     }
 }
 

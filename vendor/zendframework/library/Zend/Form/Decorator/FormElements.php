@@ -37,7 +37,7 @@ require_once 'Zend/Form/Decorator/Abstract.php';
  * @subpackage Decorator
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormElements.php 10277 2008-07-22 15:24:18Z matthew $
+ * @version    $Id: FormElements.php 12347 2008-11-06 21:45:56Z matthew $
  */
 class Zend_Form_Decorator_FormElements extends Zend_Form_Decorator_Abstract
 {
@@ -48,7 +48,7 @@ class Zend_Form_Decorator_FormElements extends Zend_Form_Decorator_Abstract
      * @param  string $belongsTo
      * @return string
      */
-    protected function _mergeBelongsTo($baseBelongsTo, $belongsTo)
+    public function mergeBelongsTo($baseBelongsTo, $belongsTo)
     {
         $endOfArrayName = strpos($belongsTo, '[');
 
@@ -87,7 +87,7 @@ class Zend_Form_Decorator_FormElements extends Zend_Form_Decorator_Abstract
                 $item->setBelongsTo($belongsTo);
             } elseif (!empty($belongsTo) && ($item instanceof Zend_Form)) {
                 if ($item->isArray()) {
-                    $name = $this->_mergeBelongsTo($belongsTo, $item->getElementsBelongTo());
+                    $name = $this->mergeBelongsTo($belongsTo, $item->getElementsBelongTo());
                     $item->setElementsBelongTo($name, true);
                 } else {
                     $item->setElementsBelongTo($belongsTo, true);

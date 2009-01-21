@@ -17,7 +17,7 @@
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlElement.php 11290 2008-09-08 18:39:34Z matthew $
+ * @version    $Id: HtmlElement.php 12477 2008-11-09 01:55:35Z yoshida@zend.co.jp $
  */
 
 /**
@@ -110,7 +110,12 @@ abstract class Zend_View_Helper_HtmlElement extends Zend_View_Helper_Abstract
                 $val = $this->_normalizeId($val);
             }
 
-            $xhtml .= " $key=\"$val\"";
+            if (strpos($val, '"') !== false) {
+                $xhtml .= " $key='$val'";
+            } else {
+                $xhtml .= " $key=\"$val\"";
+            }
+            
         }
         return $xhtml;
     }

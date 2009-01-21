@@ -15,6 +15,7 @@
  *
  * @category   Zend
  * @package    Zend_Gdata
+ * @subpackage Gdata
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -38,6 +39,7 @@ require_once 'Zend/Http/Client.php';
  *
  * @category   Zend
  * @package    Zend_Gdata
+ * @subpackage Gdata
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -60,6 +62,14 @@ class Zend_Gdata_HttpClient extends Zend_Http_Client
      * @var string
      */
     private $_authSubToken = null;
+
+    /**
+     * Token for ClientLogin authentication.  
+     * If only this token is set, ClientLogin authentication is used.
+     *
+     * @var string
+     */
+    private $_clientLoginToken = null;
 
     /**
      * Token for ClientLogin authentication.

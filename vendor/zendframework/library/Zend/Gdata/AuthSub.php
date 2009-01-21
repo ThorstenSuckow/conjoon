@@ -15,6 +15,7 @@
  *
  * @category   Zend
  * @package    Zend_Gdata
+ * @subpackage Gdata
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -37,6 +38,7 @@ require_once 'Zend/Version.php';
  *
  * @category   Zend
  * @package    Zend_Gdata
+ * @subpackage Gdata
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -150,7 +152,18 @@ class Zend_Gdata_AuthSub
                                               $request_uri = self::AUTHSUB_REVOKE_TOKEN_URI)
     {
         $client = self::getHttpClient($token, $client);
-        $client->setUri($request_uri);
+ 
+        if ($client instanceof Zend_Gdata_HttpClient) {
+            $filterResult = $client->filterHttpRequest('GET', $request_uri);
+            $url = $filterResult['url'];
+            $headers = $filterResult['headers'];
+            $client->setHeaders($headers);
+            $client->setUri($url);
+            $client->resetParameters();
+        } else {
+            $client->setUri($request_uri);
+        }
+
         ob_start();
         try {
             $response = $client->request('GET');
@@ -181,7 +194,17 @@ class Zend_Gdata_AuthSub
             $token, $client = null, $request_uri = self::AUTHSUB_TOKEN_INFO_URI)
     {
         $client = self::getHttpClient($token, $client);
-        $client->setUri($request_uri);
+
+        if ($client instanceof Zend_Gdata_HttpClient) {
+            $filterResult = $client->filterHttpRequest('GET', $request_uri);
+            $url = $filterResult['url'];
+            $headers = $filterResult['headers'];
+            $client->setHeaders($headers);
+            $client->setUri($url);
+        } else {
+            $client->setUri($request_uri);
+        }
+
         ob_start();
         try {
             $response = $client->request('GET');

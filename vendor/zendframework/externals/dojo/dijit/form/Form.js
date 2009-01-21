@@ -14,10 +14,23 @@ dojo.declare("dijit.form._FormMixin", null,
 	//	|		Name: <input type="text" name="name" />
 	//	|	</form>
 	//	|	myObj = {name: "John Doe"};
-	//	|	dijit.byId('myForm').setValues(myObj);
+	//	|	dijit.byId('myForm').attr('value', myObj);
 	//	|
-	//	|	myObj=dijit.byId('myForm').getValues();
+	//	|	myObj=dijit.byId('myForm').attr('value');
 
+/*=====
+    // value: Object
+	//		Name/value hash for each form element.
+	//		If there are multiple elements w/the same name, value is an array,
+	//		unless they are radio buttons in which case value is a scalar since only
+	//		one can be checked at a time.
+	//
+	//		If the name is a dot separated list (like a.b.c.d), it's a nested structure.
+	//		Only works on widget form elements.
+	// example:
+	//	| { name: "John Smith", interests: ["sports", "movies"] }
+=====*/
+	
 	//	TODO:
 	//	* Repeater
 	//	* better handling for arrays.  Often form elements have names with [] like
@@ -45,7 +58,7 @@ dojo.declare("dijit.form._FormMixin", null,
 				// Need to set this so that "required" widgets get their 
 				// state set.
 				widget._hasBeenBlurred = true;
-				var valid = !widget.validate || widget.validate();
+				var valid = widget.disabled || !widget.validate || widget.validate();
 				if (!valid && !didFocus) {
 					// Set focus of the first non-valid widget
 					dijit.scrollIntoView(widget.containerNode||widget.domNode);
@@ -53,11 +66,15 @@ dojo.declare("dijit.form._FormMixin", null,
 					didFocus = true;
 				}
 	 			return valid;
-	 		}), "return item;");
+	 		}), function(item) { return item; });
 		},
-		
-		setValues: function(/*object*/obj){
-			// summary: fill in form values from a JSON structure
+	
+		setValues: function(val){
+			dojo.deprecated(this.declaredClass+"::setValues() is deprecated. Use attr('value', val) instead.", "", "2.0");
+			return this.attr('value', val);
+		},
+		_setValueAttr: function(/*object*/obj){
+			// summary: Fill in form values from according to an Object (in the format returned by attr('value'))
 
 			// generate map from name --> [list of widgets with that name]
 			var map = { };
@@ -67,25 +84,31 @@ dojo.declare("dijit.form._FormMixin", null,
 				entry.push(widget);
 			});
 
-			// call setValue() or setAttribute('checked') for each widget, according to obj
 			for(var name in map){
+				if(!map.hasOwnProperty(name)){
+					continue;
+				}
 				var widgets = map[name],						// array of widgets w/this name
 					values = dojo.getObject(name, false, obj);	// list of values for those widgets
+
+				if(values===undefined){
+					continue;
+				}
 				if(!dojo.isArray(values)){
 					values = [ values ];
 				}
 				if(typeof widgets[0].checked == 'boolean'){
 					// for checkbox/radio, values is a list of which widgets should be checked
 					dojo.forEach(widgets, function(w, i){
-						w.setValue(dojo.indexOf(values, w.value) != -1);
+						w.attr('value', dojo.indexOf(values, w.value) != -1);
 					});
 				}else if(widgets[0]._multiValue){
 					// it takes an array (e.g. multi-select)
-					widgets[0].setValue(values);
+					widgets[0].attr('value', values);
 				}else{
 					// otherwise, values is a list of values to be assigned sequentially to each widget
 					dojo.forEach(widgets, function(w, i){
-						w.setValue(values[i]);
+						w.attr('value', values[i]);
 					});					
 				}
 			}
@@ -129,7 +152,7 @@ dojo.declare("dijit.form._FormMixin", null,
 					return;		// like "continue"
 				}
 
-				// TODO: widget values (just call setValue() on the widget)
+				// TODO: widget values (just call attr('value', ...) on the widget)
 
 				switch(element.type){
 					case "checkbox":
@@ -163,16 +186,31 @@ dojo.declare("dijit.form._FormMixin", null,
 		},
 
 		getValues: function(){
-			// summary: generate JSON structure from form values
+			dojo.deprecated(this.declaredClass+"::getValues() is deprecated. Use attr('value') instead.", "", "2.0");
+			return this.attr('value');
+		},
+		_getValueAttr: function(){
+			// summary:
+			// 		Returns Object representing form values.
+			// description:
+			//		Returns name/value hash for each form element.
+			//		If there are multiple elements w/the same name, value is an array,
+			//		unless they are radio buttons in which case value is a scalar since only
+			//		one can be checked at a time.
+			//
+			//		If the name is a dot separated list (like a.b.c.d), creates a nested structure.
+			//		Only works on widget form elements.
+			// example:
+			//	| { name: "John Smith", interests: ["sports", "movies"] }
 
 			// get widget values
 			var obj = { };
 			dojo.forEach(this.getDescendants(), function(widget){
 				var name = widget.name;
-				if(!name){ return; }
+				if(!name||widget.disabled){ return; }
 
 				// Single value widget (checkbox, radio, or plain <input> type widget
-				var value = (widget.getValue && !widget._getValueDeprecated) ? widget.getValue() : widget.value;
+				var value = widget.attr('value');
 
 				// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
 				if(typeof widget.checked == 'boolean'){
@@ -262,9 +300,89 @@ dojo.declare("dijit.form._FormMixin", null,
 		// TODO: ComboBox might need time to process a recently input value.  This should be async?
 	 	isValid: function(){
 	 		// summary: make sure that every widget that has a validator function returns true
+			this._invalidWidgets = [];
 	 		return dojo.every(this.getDescendants(), function(widget){
-	 			return !widget.isValid || widget.isValid();
-	 		});
+				var isValid = widget.disabled || !widget.isValid || widget.isValid();
+				if(!isValid){
+					this._invalidWidgets.push(widget);
+				}
+				return isValid;
+	 		}, this);
+		},
+		
+		
+		onValidStateChange: function(isValid){
+			// summary: stub function to connect to if you want to do something
+			//			(like disable/enable a submit button) when the valid 
+			//			state changes on the form as a whole.
+		},
+		
+		_widgetChange: function(widget){
+			// summary: connected to a widgets onChange function - update our 
+			//			valid state, if needed.
+			var isValid = this._lastValidState;
+			if(!widget || this._lastValidState===undefined){
+				// We have passed a null widget, or we haven't been validated
+				// yet - let's re-check all our children
+				// This happens when we connect (or reconnect) our children
+				isValid = this.isValid();
+				if(this._lastValidState===undefined){
+					// Set this so that we don't fire an onValidStateChange 
+					// the first time
+					this._lastValidState = isValid;
+				}
+			}else if(widget.isValid){
+				this._invalidWidgets = dojo.filter(this._invalidWidgets||[], function(w){
+					return (w != widget);
+				}, this);
+				if(!widget.isValid() && !widget.attr("disabled")){
+					this._invalidWidgets.push(widget);
+				}
+				isValid = (this._invalidWidgets.length === 0);
+			}
+			if (isValid !== this._lastValidState){
+				this._lastValidState = isValid;
+				this.onValidStateChange(isValid);
+			}
+		},
+		
+		connectChildren: function(){
+			// summary: connects to the onChange function of all children to
+			//			track valid state changes.  You can call this function
+			//			directly, ie. in the event that you programmatically
+			//			add a widget to the form *after* the form has been
+			//			initialized
+			dojo.forEach(this._changeConnections, dojo.hitch(this, "disconnect"));
+			var _this = this;
+			
+			// we connect to validate - so that it better reflects the states
+			// of the widgets - also, we only connect if it has a validate
+			// function (to avoid too many unneeded connections)
+			var conns = this._changeConnections = [];
+			dojo.forEach(dojo.filter(this.getDescendants(),
+				function(item){ return item.validate; }
+			),
+			function(widget){
+				// We are interested in whenever the widget is validated - or
+				// whenever the disabled attribute on that widget is changed
+				conns.push(_this.connect(widget, "validate", 
+									dojo.hitch(_this, "_widgetChange", widget)));
+				conns.push(_this.connect(widget, "_setDisabledAttr", 
+									dojo.hitch(_this, "_widgetChange", widget)));
+			});
+
+			// Call the widget change function to update the valid state, in 
+			// case something is different now.
+			this._widgetChange(null);
+		},
+		
+		startup: function(){
+			this.inherited(arguments);
+			// Initialize our valid state tracking.  Needs to be done in startup
+			//  because it's not guaranteed that our children are initialized 
+			//  yet.
+			this._changeConnections = [];
+			this.connectChildren();
 		}
 	});
 
@@ -299,20 +417,19 @@ dojo.declare(
 			//		Deprecated: use onSubmit()
 		},
 
-		setAttribute: function(/*String*/ attr, /*anything*/ value){
-			this.inherited(arguments);
-			switch(attr){
-				case "encType":
-					if(dojo.isIE){ this.domNode.encoding = value; }
-			}
+		_setEncTypeAttr: function(/*String*/ value){
+			this.encType = value;
+			dojo.attr(this.domNode, "encType", value);
+			if(dojo.isIE){ this.domNode.encoding = value; }
 		},
 
 		postCreate: function(){
 			// IE tries to hide encType
+			// TODO: this code should be in parser, not here.
 			if(dojo.isIE && this.srcNodeRef && this.srcNodeRef.attributes){
 				var item = this.srcNodeRef.attributes.getNamedItem('encType');
 				if(item && !item.specified && (typeof item.value == "string")){
-					this.setAttribute('encType', item.value);
+					this.attr('encType', item.value);
 				}
 			}
 			this.inherited(arguments);

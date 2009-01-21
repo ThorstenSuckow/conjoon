@@ -17,9 +17,9 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 10720 2008-08-06 14:43:19Z matthew $
+ * @version    $Id: AllTests.php 12648 2008-11-14 15:46:12Z ralph $
  */
- 
+
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Log_AllTests::main');
 }
@@ -34,7 +34,9 @@ require_once 'Zend/Log/Filter/SuppressTest.php';
 require_once 'Zend/Log/Formatter/SimpleTest.php';
 require_once 'Zend/Log/Formatter/XmlTest.php';
 require_once 'Zend/Log/Writer/DbTest.php';
-require_once 'Zend/Log/Writer/FirebugTest.php';
+if (PHP_OS != 'AIX') {
+    require_once 'Zend/Log/Writer/FirebugTest.php';
+}
 require_once 'Zend/Log/Writer/MockTest.php';
 require_once 'Zend/Log/Writer/NullTest.php';
 require_once 'Zend/Log/Writer/StreamTest.php';
@@ -45,7 +47,7 @@ require_once 'Zend/Log/Writer/StreamTest.php';
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 10720 2008-08-06 14:43:19Z matthew $
+ * @version    $Id: AllTests.php 12648 2008-11-14 15:46:12Z ralph $
  */
 class Zend_Log_AllTests
 {
@@ -57,7 +59,7 @@ class Zend_Log_AllTests
     public static function suite()
     {
         // hack to allow us to view code coverage for Log.php
-        PHPUnit_Util_Filter::removeFileFromFilter('Log.php', 'PEAR');
+        PHPUnit_Util_Filter::removeFileFromFilter(dirname(__FILE__) . '/../../../library/Zend/Log.php', 'PEAR');
 
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Log');
 
@@ -69,11 +71,13 @@ class Zend_Log_AllTests
         $suite->addTestSuite('Zend_Log_Formatter_SimpleTest');
         $suite->addTestSuite('Zend_Log_Formatter_XmlTest');
         $suite->addTestSuite('Zend_Log_Writer_DbTest');
-        $suite->addTestSuite('Zend_Log_Writer_FirebugTest');
+        if (PHP_OS != 'AIX') {
+            $suite->addTestSuite('Zend_Log_Writer_FirebugTest');
+        }
         $suite->addTestSuite('Zend_Log_Writer_MockTest');
         $suite->addTestSuite('Zend_Log_Writer_NullTest');
         $suite->addTestSuite('Zend_Log_Writer_StreamTest');
-       
+
         return $suite;
     }
 }

@@ -30,7 +30,7 @@ require_once 'Zend/Dojo/Form/Element/Button.php';
  * @subpackage Form_Element
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SubmitButton.php 10622 2008-08-04 00:07:27Z matthew $
+ * @version    $Id: SubmitButton.php 10621 2008-08-04 00:05:33Z matthew $
  */
 class Zend_Dojo_Form_Element_SubmitButton extends Zend_Dojo_Form_Element_Button
 {

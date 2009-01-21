@@ -25,7 +25,7 @@
  * @package    Zend_Form
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DisplayGroup.php 11316 2008-09-09 19:17:43Z matthew $
+ * @version    $Id: DisplayGroup.php 12787 2008-11-23 14:17:44Z matthew $
  */
 class Zend_Form_DisplayGroup implements Iterator,Countable
 {
@@ -645,8 +645,7 @@ class Zend_Form_DisplayGroup implements Iterator,Countable
         if (null === $options) {
             $decorator = new $class;
         } else {
-            $r = new ReflectionClass($class);
-            $decorator = $r->newInstance($options);
+            $decorator = new $class($options);
         }
 
         return $decorator;

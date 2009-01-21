@@ -17,18 +17,13 @@
  * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ActionStack.php 9098 2008-03-30 19:29:10Z thomas $
+ * @version    $Id: ActionStack.php 11493 2008-09-23 14:25:11Z doctorrock83 $
  */
 
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
 require_once 'Zend/Controller/Action/Helper/Abstract.php';
-
-/**
- * @see Zend_Registry
- */
-require_once 'Zend/Registry.php';
 
 /**
  * Add to action stack

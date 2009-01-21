@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 10573 2008-07-31 14:54:00Z matthew $
+ * @version    $Id: ImageTest.php 12805 2008-11-24 17:28:53Z matthew $
  */
 
 // Call Zend_Captcha_ImageTest::main() if this source file is executed directly.
@@ -170,6 +170,15 @@ class Zend_Captcha_ImageTest extends PHPUnit_Framework_TestCase
         $id = $this->captcha->getId();
         $this->assertRegexp("|<img[^>]*?src=\"/images/captcha/$id.png\"|", $html, "Expected $id in HTML:\n" . $html);
     }
+
+    public function testCaptchaHasAlt() 
+    {
+        $html = $this->element->render($this->getView());
+	$this->assertRegexp('|<img[^>]*? alt=""|', $html, "Expected alt= in HTML:\n" . $html);
+	$this->captcha->setImgAlt("Test Image");
+        $html = $this->element->render($this->getView());
+	$this->assertRegexp('|<img[^>]*? alt="Test Image"|', $html, "Wrong alt in HTML:\n" . $html);
+    }
     
     public function testCaptchaSetSuffix()
     {
@@ -207,6 +216,7 @@ class Zend_Captcha_ImageTest extends PHPUnit_Framework_TestCase
         $this->captcha->setGcFreq(1);
         sleep(2);
         $this->captcha->generate();
+	clearstatcache();
         $this->assertFalse(file_exists($filename), "File $filename was found even after GC");
     }
     
@@ -298,6 +308,26 @@ class Zend_Captcha_ImageTest extends PHPUnit_Framework_TestCase
         $this->testCaptchaIsRendered();
         $input = array($this->element->getName() => array("id" => $this->captcha->getId(), "input" => "blah"));
         $this->assertFalse($this->element->isValid("", $input));
+    }
+
+    /**
+     * @group ZF-3995
+     */
+    public function testIsValidShouldAllowPassingArrayValueWithNoContext()
+    {
+        $this->testCaptchaIsRendered();
+        $input = array($this->element->getName() => array("id" => $this->captcha->getId(), "input" => $this->captcha->getWord()));
+        $this->assertTrue($this->element->isValid($input));
+    }
+
+    /**
+     * @group ZF-3995
+     */
+    public function testIsValidShouldNotRequireValueToBeNestedArray()
+    {
+        $this->testCaptchaIsRendered();
+        $input = array("id" => $this->captcha->getId(), "input" => $this->captcha->getWord());
+        $this->assertTrue($this->element->isValid($input));
     }
 }
 

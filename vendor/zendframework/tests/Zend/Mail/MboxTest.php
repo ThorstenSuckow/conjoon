@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MboxTest.php 9276 2008-04-22 15:39:06Z nico $
+ * @version    $Id: MboxTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 
@@ -176,13 +176,13 @@ class Zend_Mail_MboxTest extends PHPUnit_Framework_TestCase
         $mail = new Zend_Mail_Storage_Mbox(array('filename' => $this->_mboxFile));
 
         $count = $mail->countMessages();
-        $this->assertEquals(6, $count);
+        $this->assertEquals(7, $count);
     }
 
     public function testSize()
     {
         $mail = new Zend_Mail_Storage_Mbox(array('filename' => $this->_mboxFile));
-        $shouldSizes = array(1 => 397, 89, 694, 452, 497, 103);
+        $shouldSizes = array(1 => 397, 89, 694, 452, 497, 101, 139);
 
 
         $sizes = $mail->getSize();

@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NullTest.php 3980 2007-03-15 21:38:38Z mike $
+ * @version    $Id: FirebugTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -48,7 +48,7 @@ require_once 'Zend/Controller/Response/Http.php';
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NullTest.php 3980 2007-03-15 21:38:38Z mike $
+ * @version    $Id: FirebugTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
 {
@@ -126,8 +126,8 @@ class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
         $messages = $protocol->getMessages();
 
         $this->assertEquals(substr($messages[Zend_Wildfire_Plugin_FirePhp::STRUCTURE_URI_FIREBUGCONSOLE]
-                                            [Zend_Wildfire_Plugin_FirePhp::PLUGIN_URI][0],0,44),
-                            '[{"Type":"TABLE"},["Zend_Db_Profiler_Firebug');
+                                            [Zend_Wildfire_Plugin_FirePhp::PLUGIN_URI][0],0,55),
+                            '[{"Type":"TABLE","Label":"Zend_Db_Profiler_Firebug (1 @');
     }
 
     public function testDisable()
@@ -161,10 +161,10 @@ class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
         $messages = $protocol->getMessages();
 
         $this->assertEquals(substr($messages[Zend_Wildfire_Plugin_FirePhp::STRUCTURE_URI_FIREBUGCONSOLE]
-                                            [Zend_Wildfire_Plugin_FirePhp::PLUGIN_URI][0],0,27),
-                            '[{"Type":"TABLE"},["Label 1');
+                                            [Zend_Wildfire_Plugin_FirePhp::PLUGIN_URI][0],0,38),
+                            '[{"Type":"TABLE","Label":"Label 1 (1 @');
     }
-
+    
     public function testNoQueries()
     {
         $channel = Zend_Wildfire_Channel_HttpHeaders::getInstance();

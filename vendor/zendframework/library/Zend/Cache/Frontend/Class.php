@@ -88,7 +88,14 @@ class Zend_Cache_Frontend_Class extends Zend_Cache_Core
       *
       * @var string
       */
-     private $_cachedEntityLabel = '';
+    private $_cachedEntityLabel = '';
+    
+    /**
+     * Priority (used by some particular backends)
+     *
+     * @var int
+     */
+    private $_priority = 8;
 
     /**
      * Constructor
@@ -118,9 +125,19 @@ class Zend_Cache_Frontend_Class extends Zend_Cache_Core
     public function setSpecificLifetime($specificLifetime = false)
     {
         $this->_specificLifetime = $specificLifetime;
-    }    
+    }  
+
+    /**
+     * Set the priority (used by some particular backends)
+     * 
+     * @param int $priority integer between 0 (very low priority) and 10 (maximum priority)
+     */
+    public function setPriority($priority)
+    {
+        $this->_priority = $priority;
+    }
         
-	/**
+    /**
      * Public frontend to set an option
      *
      * Just a wrapper to get a specific behaviour for cached_entity
@@ -204,7 +221,7 @@ class Zend_Cache_Frontend_Class extends Zend_Cache_Core
             $output = ob_get_contents();
             ob_end_clean();
             $data = array($output, $return);
-            $this->save($data, $id, $this->_tags, $this->_specificLifetime);
+            $this->save($data, $id, $this->_tags, $this->_specificLifetime, $this->_priority);
         }
         echo $output;
         return $return;

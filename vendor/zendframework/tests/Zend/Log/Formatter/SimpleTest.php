@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTest.php 10726 2008-08-06 16:38:09Z cadorn $
+ * @version    $Id: SimpleTest.php 10725 2008-08-06 16:01:05Z cadorn $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -32,7 +32,7 @@ require_once 'Zend/Log/Formatter/Simple.php';
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTest.php 10726 2008-08-06 16:38:09Z cadorn $
+ * @version    $Id: SimpleTest.php 10725 2008-08-06 16:01:05Z cadorn $
  */
 class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
 {
@@ -62,7 +62,7 @@ class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
         $this->assertContains($fields['priorityName'], $line);
         $this->assertContains((string)$fields['priority'], $line);
     }
-
+    
     function testComplexValues()
     {
         $fields = array('timestamp'    => 0,

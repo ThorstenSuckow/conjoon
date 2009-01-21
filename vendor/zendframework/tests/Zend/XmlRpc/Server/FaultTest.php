@@ -16,7 +16,7 @@ require_once 'Zend/XmlRpc/Server/Fault.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: FaultTest.php 6935 2007-11-26 15:41:31Z matthew $
+ * @version $Id: FaultTest.php 12568 2008-11-11 19:54:06Z matthew $
  */
 class Zend_XmlRpc_Server_FaultTest extends PHPUnit_Framework_TestCase 
 {
@@ -186,7 +186,7 @@ class Zend_XmlRpc_Server_FaultTest extends PHPUnit_Framework_TestCase
      */
     public function test__toString()
     {
-        $dom  = new DOMDocument('1.0', 'ISO-8859-1');
+        $dom  = new DOMDocument('1.0', 'UTF-8');
         $r    = $dom->appendChild($dom->createElement('methodResponse'));
         $f    = $r->appendChild($dom->createElement('fault'));
         $v    = $f->appendChild($dom->createElement('value'));

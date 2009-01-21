@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: ExtensionTest.php 12541 2008-11-11 05:44:35Z matthew $
  */
 
 // Call Zend_Validate_File_ExtensionTest::main() if this source file is executed directly.
@@ -75,7 +75,11 @@ class Zend_Validate_File_ExtensionTest extends PHPUnit_Framework_TestCase
 
         foreach ($valuesExpected as $element) {
             $validator = new Zend_Validate_File_Extension($element[0]);
-            $this->assertEquals($element[1], $validator->isValid(dirname(__FILE__) . '/_files/testsize.mo'));
+            $this->assertEquals(
+                $element[1],
+                $validator->isValid(dirname(__FILE__) . '/_files/testsize.mo'),
+                "Tested with " . var_export($element, 1)
+            );
         }
 
         $validator = new Zend_Validate_File_Extension('mo');
@@ -124,10 +128,10 @@ class Zend_Validate_File_ExtensionTest extends PHPUnit_Framework_TestCase
             'tmp_name' => dirname(__FILE__) . '/_files/testsize.mo',
             'error'    => 0
         );
-        $validator = new Zend_Validate_File_Extension('MO', true);
+        $validator = new Zend_Validate_File_Extension(array('MO', 'case' => true));
         $this->assertEquals(false, $validator->isValid(dirname(__FILE__) . '/_files/testsize.mo', $files));
 
-        $validator = new Zend_Validate_File_Extension('MO', false);
+        $validator = new Zend_Validate_File_Extension(array('MO', 'case' => false));
         $this->assertEquals(true, $validator->isValid(dirname(__FILE__) . '/_files/testsize.mo', $files));
     }
 
@@ -139,13 +143,10 @@ class Zend_Validate_File_ExtensionTest extends PHPUnit_Framework_TestCase
     public function testGetExtension()
     {
         $validator = new Zend_Validate_File_Extension('mo');
-        $this->assertEquals('mo', $validator->getExtension());
+        $this->assertEquals(array('mo'), $validator->getExtension());
 
         $validator = new Zend_Validate_File_Extension(array('mo', 'gif', 'jpg'));
-        $this->assertEquals('mo,gif,jpg', $validator->getExtension());
-
-        $validator = new Zend_Validate_File_Extension(array('mo', 'gif', 'jpg'));
-        $this->assertEquals(array('mo', 'gif', 'jpg'), $validator->getExtension(true));
+        $this->assertEquals(array('mo', 'gif', 'jpg'), $validator->getExtension());
     }
 
     /**
@@ -157,16 +158,13 @@ class Zend_Validate_File_ExtensionTest extends PHPUnit_Framework_TestCase
     {
         $validator = new Zend_Validate_File_Extension('mo');
         $validator->setExtension('gif');
-        $this->assertEquals('gif', $validator->getExtension());
-        $this->assertEquals(array('gif'), $validator->getExtension(true));
-        
+        $this->assertEquals(array('gif'), $validator->getExtension());
+
         $validator->setExtension('jpg, mo');
-        $this->assertEquals('jpg,mo', $validator->getExtension());
-        $this->assertEquals(array('jpg', 'mo'), $validator->getExtension(true));
-        
+        $this->assertEquals(array('jpg', 'mo'), $validator->getExtension());
+
         $validator->setExtension(array('zip', 'ti'));
-        $this->assertEquals('zip,ti', $validator->getExtension());
-        $this->assertEquals(array('zip', 'ti'), $validator->getExtension(true));
+        $this->assertEquals(array('zip', 'ti'), $validator->getExtension());
     }
 
     /**
@@ -178,20 +176,16 @@ class Zend_Validate_File_ExtensionTest extends PHPUnit_Framework_TestCase
     {
         $validator = new Zend_Validate_File_Extension('mo');
         $validator->addExtension('gif');
-        $this->assertEquals('mo,gif', $validator->getExtension());
-        $this->assertEquals(array('mo', 'gif'), $validator->getExtension(true));
+        $this->assertEquals(array('mo', 'gif'), $validator->getExtension());
 
         $validator->addExtension('jpg, to');
-        $this->assertEquals('mo,gif,jpg,to', $validator->getExtension());
-        $this->assertEquals(array('mo', 'gif', 'jpg', 'to'), $validator->getExtension(true));
+        $this->assertEquals(array('mo', 'gif', 'jpg', 'to'), $validator->getExtension());
 
         $validator->addExtension(array('zip', 'ti'));
-        $this->assertEquals('mo,gif,jpg,to,zip,ti', $validator->getExtension());
-        $this->assertEquals(array('mo', 'gif', 'jpg', 'to', 'zip', 'ti'), $validator->getExtension(true));
+        $this->assertEquals(array('mo', 'gif', 'jpg', 'to', 'zip', 'ti'), $validator->getExtension());
 
         $validator->addExtension('');
-        $this->assertEquals('mo,gif,jpg,to,zip,ti', $validator->getExtension());
-        $this->assertEquals(array('mo', 'gif', 'jpg', 'to', 'zip', 'ti'), $validator->getExtension(true));
+        $this->assertEquals(array('mo', 'gif', 'jpg', 'to', 'zip', 'ti'), $validator->getExtension());
     }
 }
 

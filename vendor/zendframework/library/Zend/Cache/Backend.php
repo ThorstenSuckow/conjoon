@@ -105,10 +105,9 @@ class Zend_Cache_Backend
             Zend_Cache::throwException("Incorrect option name : $name");
         }
         $name = strtolower($name);
-        if (!array_key_exists($name, $this->_options)) {
-            Zend_Cache::throwException("Incorrect option name : $name");
+        if (array_key_exists($name, $this->_options)) {
+            $this->_options[$name] = $value;
         }
-        $this->_options[$name] = $value;
     }
 
     /**
@@ -131,6 +130,9 @@ class Zend_Cache_Backend
     /**
      * Return true if the automatic cleaning is available for the backend
      *
+     * DEPRECATED : use getCapabilities() instead
+     * 
+     * @deprecated 
      * @return boolean
      */
     public function isAutomaticCleaningAvailable()
@@ -182,11 +184,9 @@ class Zend_Cache_Backend
         }
         try {
             /**
-             * @see Zend_Loader
              * @see Zend_Log
              */
-            require_once 'Zend/Loader.php';
-            Zend_Loader::loadClass('Zend_Log');
+            require_once 'Zend/Log.php';
         } catch (Zend_Exception $e) {
             Zend_Cache::throwException('Logging feature is enabled but the Zend_Log class is not available');
         }
@@ -194,7 +194,7 @@ class Zend_Cache_Backend
             return;
         }
         // Create a default logger to the standard output stream
-        Zend_Loader::loadClass('Zend_Log_Writer_Stream');
+        require_once 'Zend/Log/Writer/Stream.php';
         $logger = new Zend_Log(new Zend_Log_Writer_Stream('php://output'));
         $this->_directives['logger'] = $logger;
     }

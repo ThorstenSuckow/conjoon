@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RegistryTest.php 9007 2008-03-22 23:19:56Z alexander $
+ * @version    $Id: RegistryTest.php 12065 2008-10-21 20:56:32Z doctorrock83 $
  */
 
 /**
@@ -205,4 +205,10 @@ class Zend_RegistryTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testDefaultRegistryArrayAsPropsZF4654()
+    {
+        $registry = Zend_Registry::getInstance();
+        $registry->bar = "baz";
+        $this->assertEquals('baz', Zend_Registry::get('bar'));
+    }
 }

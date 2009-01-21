@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,9 +17,8 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateTest.php 11179 2008-09-01 09:25:19Z alexander $
+ * @version    $Id: DateTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
-
 
 /**
  * Test helper
@@ -31,7 +29,6 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  * @see Zend_Validate_Date
  */
 require_once 'Zend/Validate/Date.php';
-
 
 /**
  * @category   Zend

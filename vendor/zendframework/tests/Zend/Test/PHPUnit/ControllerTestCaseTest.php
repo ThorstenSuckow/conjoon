@@ -285,6 +285,16 @@ class Zend_Test_PHPUnit_ControllerTestCaseTest extends PHPUnit_Framework_TestCas
         $this->testCase->assertQueryCountMax('div#foo legend.bar', 2, $body);
     }
 
+    /**
+     * @group ZF-4673
+     */
+    public function testAssertionsShouldIncreasePhpUnitAssertionCounter()
+    {
+        $this->testAssertQueryShouldDoNothingForValidResponseContent();
+        $this->assertTrue(0 < $this->testCase->getNumAssertions());
+        $this->assertTrue(12 <= $this->testCase->getNumAssertions());
+    }
+
     public function testAssertQueryShouldThrowExceptionsForInValidResponseContent()
     {
         $this->testCase->getFrontController()->setControllerDirectory(dirname(__FILE__) . '/_files/application/controllers');
@@ -588,6 +598,19 @@ class Zend_Test_PHPUnit_ControllerTestCaseTest extends PHPUnit_Framework_TestCas
         $this->testCase->resetResponse();
         $test = $this->testCase->getResponse();
         $this->assertNotSame($response, $test);
+    }
+
+    /**
+     * @group ZF-4511
+     */
+    public function testResetRequestShouldClearRequestObject()
+    {
+        $this->testCase->getFrontController()->setControllerDirectory(dirname(__FILE__) . '/_files/application/controllers');
+        $this->testCase->dispatch('/zend-test-php-unit-foo/baz');
+        $request = $this->testCase->getRequest();
+        $this->testCase->resetRequest();
+        $test = $this->testCase->getRequest();
+        $this->assertNotSame($request, $test);
     }
 
     public function testResetResponseShouldClearAllViewPlaceholders()

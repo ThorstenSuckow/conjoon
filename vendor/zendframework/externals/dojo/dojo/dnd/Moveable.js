@@ -51,12 +51,14 @@ dojo.declare("dojo.dnd.Moveable", null, {
 		// e: Event: mouse event
 		if(this.skip && dojo.dnd.isFormElement(e)){ return; }
 		if(this.delay){
-			this.events.push(dojo.connect(this.handle, "onmousemove", this, "onMouseMove"));
-			this.events.push(dojo.connect(this.handle, "onmouseup", this, "onMouseUp"));
+			this.events.push(
+				dojo.connect(this.handle, "onmousemove", this, "onMouseMove"),
+				dojo.connect(this.handle, "onmouseup", this, "onMouseUp")
+			);
 			this._lastX = e.pageX;
 			this._lastY = e.pageY;
 		}else{
-			new this.mover(this.node, e, this);
+			this.onDragDetected(e);
 		}
 		dojo.stopEvent(e);
 	},
@@ -65,15 +67,17 @@ dojo.declare("dojo.dnd.Moveable", null, {
 		// e: Event: mouse event
 		if(Math.abs(e.pageX - this._lastX) > this.delay || Math.abs(e.pageY - this._lastY) > this.delay){
 			this.onMouseUp(e);
-			new this.mover(this.node, e, this);
+			this.onDragDetected(e);
 		}
 		dojo.stopEvent(e);
 	},
 	onMouseUp: function(e){
-		// summary: event processor for onmouseup, used only for delayed delayed drags
+		// summary: event processor for onmouseup, used only for delayed drags
 		// e: Event: mouse event
-		dojo.disconnect(this.events.pop());
-		dojo.disconnect(this.events.pop());
+		for(var i = 0; i < 2; ++i){
+			dojo.disconnect(this.events.pop());
+		}
+		dojo.stopEvent(e);
 	},
 	onSelectStart: function(e){
 		// summary: event processor for onselectevent and ondragevent
@@ -84,6 +88,11 @@ dojo.declare("dojo.dnd.Moveable", null, {
 	},
 	
 	// local events
+	onDragDetected: function(/* Event */ e){
+		// summary: called when the drag is detected,
+		// responsible for creation of the mover
+		new this.mover(this.node, e, this);
+	},
 	onMoveStart: function(/* dojo.dnd.Mover */ mover){
 		// summary: called before every move operation
 		dojo.publish("/dnd/move/start", [mover]);

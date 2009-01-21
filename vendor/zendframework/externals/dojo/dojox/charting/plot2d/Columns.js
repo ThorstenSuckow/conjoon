@@ -19,16 +19,20 @@ dojo.require("dojox.lang.functional.reversed");
 			gap:	0,		// gap between columns in pixels
 			shadows: null	// draw shadows
 		},
-		optionalParams: {},	// no optional parameters
-		
+		optionalParams: {
+			minBarSize: 1,	// minimal bar size in pixels
+			maxBarSize: 1	// maximal bar size in pixels
+		},
+
 		constructor: function(chart, kwArgs){
 			this.opt = dojo.clone(this.defaultParams);
 			du.updateWithObject(this.opt, kwArgs);
+			du.updateWithPattern(this.opt, kwArgs, this.optionalParams);
 			this.series = [];
 			this.hAxis = this.opt.hAxis;
 			this.vAxis = this.opt.vAxis;
 		},
-		
+
 		calculateAxes: function(dim){
 			var stats = dc.collectSimpleStats(this.series);
 			stats.hmin -= 0.5;
@@ -37,14 +41,23 @@ dojo.require("dojox.lang.functional.reversed");
 			return this;
 		},
 		render: function(dim, offsets){
+			this.dirty = this.isDirty();
 			if(this.dirty){
 				dojo.forEach(this.series, purgeGroup);
 				this.cleanGroup();
 				var s = this.group;
 				df.forEachRev(this.series, function(item){ item.cleanGroup(s); });
 			}
-			var t = this.chart.theme, color, stroke, fill, f,
-				gap = this.opt.gap < this._hScaler.scale / 3 ? this.opt.gap : 0;
+			var t = this.chart.theme, color, stroke, fill, f, gap, width,
+				ht = this._hScaler.scaler.getTransformerFromModel(this._hScaler),
+				vt = this._vScaler.scaler.getTransformerFromModel(this._vScaler),
+				baseline = Math.max(0, this._vScaler.bounds.lower),
+				baselineHeight = vt(baseline),
+				events = this.events();
+			f = dc.calculateBarSize(this._hScaler.bounds.scale, this.opt);
+			gap = f.gap;
+			width = f.size;
+			this.resetEvents();
 			for(var i = this.series.length - 1; i >= 0; --i){
 				var run = this.series[i];
 				if(!this.dirty && !run.dirty){ continue; }
@@ -56,23 +69,34 @@ dojo.require("dojox.lang.functional.reversed");
 				}
 				stroke = run.stroke ? run.stroke : dc.augmentStroke(t.series.stroke, color);
 				fill = run.fill ? run.fill : dc.augmentFill(t.series.fill, color);
-				var baseline = Math.max(0, this._vScaler.bounds.lower),
-					xoff = offsets.l + this._hScaler.scale * (0.5 - this._hScaler.bounds.lower) + gap,
-					yoff = dim.height - offsets.b - this._vScaler.scale * (baseline - this._vScaler.bounds.lower);
 				for(var j = 0; j < run.data.length; ++j){
-					var v = run.data[j], 
-						width  = this._hScaler.scale - 2 * gap,
-						height = this._vScaler.scale * (v - baseline),
+					var v = run.data[j],
+						vv = vt(v),
+						height = vv - baselineHeight,
 						h = Math.abs(height);
 					if(width >= 1 && h >= 1){
 						var rect = {
-								x: xoff + this._hScaler.scale * j,
-								y: yoff - (height < 0 ? 0 : height),
+								x: offsets.l + ht(j + 0.5) + gap,
+								y: dim.height - offsets.b - (v > baseline ? vv : baselineHeight),
 								width: width, height: h
 							},
 							shape = s.createRect(rect).setFill(fill).setStroke(stroke);
 						run.dyn.fill   = shape.getFill();
 						run.dyn.stroke = shape.getStroke();
+						if(events){
+							var o = {
+								element: "column",
+								index:   j,
+								run:     run,
+								plot:    this,
+								hAxis:   this.hAxis || null,
+								vAxis:   this.vAxis || null,
+								shape:   shape,
+								x:       j + 0.5,
+								y:       v
+							};
+							this._connectEvents(shape, o);
+						}
 					}
 				}
 				run.dirty = false;

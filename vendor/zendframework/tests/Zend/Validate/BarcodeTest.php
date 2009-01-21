@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BarcodeTest.php 8211 2008-02-20 14:29:24Z darby $
+ * @version    $Id: BarcodeTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 /**
@@ -59,13 +59,24 @@ class Zend_Validate_BarcodeTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($barcode->isValid('0075678164124'));
     }
 
+    /**
+     * Test if EAN-13 contains only numeric characters
+     *
+     * @group ZF-3297
+     */
+    public function testEan13ContainsOnlyNumeric()
+    {
+        $barcode = new Zend_Validate_Barcode('ean-13');
+        $this->assertFalse($barcode->isValid('3RH1131-1BB40'));
+    }
+
     public function testNoneExisting()
     {
         try {
             $barcode = new Zend_Validate_Barcode('Zend');
             $this->fail("'Zend' is not a valid barcode type'");
         } catch (Exception $e) {
-            // success
+            $this->assertContains("'Zend' is not supported", $e->getMessage());
         }
     }
 

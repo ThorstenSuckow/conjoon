@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysqli.php 9577 2008-05-31 01:50:27Z peptolab $
+ * @version    $Id: Mysqli.php 13281 2008-12-15 20:53:30Z mikaelkael $
  */
 
 
@@ -102,7 +102,8 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
     /**
      * Quote a raw string.
      *
-     * @param string $value     Raw string
+     * @param mixed $value Raw string
+     *
      * @return string           Quoted string
      */
     protected function _quote($value)
@@ -233,6 +234,10 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
                 $row['Type'] = 'decimal';
                 $row['Precision'] = $matches[1];
                 $row['Scale'] = $matches[2];
+            } else if (preg_match('/^float\((\d+),(\d+)\)/', $row['Type'], $matches)) {
+                $row['Type'] = 'float';
+                $row['Precision'] = $matches[1];
+                $row['Scale'] = $matches[2];
             } else if (preg_match('/^((?:big|medium|small|tiny)?int)\((\d+)\)/', $row['Type'], $matches)) {
                 $row['Type'] = $matches[1];
                 /**
@@ -297,16 +302,33 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
             $port = null;
         }
 
+        $this->_connection = mysqli_init();
+
+        if(!empty($this->_config['driver_options'])) {
+            foreach($this->_config['driver_options'] as $option=>$value) {
+                if(is_string($option)) {
+                    // Suppress warnings here
+                    // Ignore it if it's not a valid constant
+                    $option = @constant(strtoupper($option));
+                    if(is_null($option))
+                        continue;
+                }
+                mysqli_options($this->_connection, $option, $value);
+            }
+        }
+
         // Suppress connection warnings here.
         // Throw an exception instead.
-        @$this->_connection = new mysqli(
+        $_isConnected = @mysqli_real_connect(
+            $this->_connection,
             $this->_config['host'],
             $this->_config['username'],
             $this->_config['password'],
             $this->_config['dbname'],
             $port
         );
-        if ($this->_connection === false || mysqli_connect_errno()) {
+
+        if ($_isConnected === false || mysqli_connect_errno()) {
             /**
              * @see Zend_Db_Adapter_Mysqli_Exception
              */
@@ -316,13 +338,25 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
     }
 
     /**
+     * Test if a connection is active
+     *
+     * @return boolean
+     */
+    public function isConnected()
+    {
+        return ((bool) ($this->_connection instanceof mysqli));
+    }
+
+    /**
      * Force the connection to close.
      *
      * @return void
      */
     public function closeConnection()
     {
-        $this->_connection->close();
+        if ($this->isConnected()) {
+            $this->_connection->close();
+        }
         $this->_connection = null;
     }
 
@@ -364,6 +398,7 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
      * @param string $tableName   OPTIONAL Name of table.
      * @param string $primaryKey  OPTIONAL Name of primary key column.
      * @return string
+     * @todo Return value should be int?
      */
     public function lastInsertId($tableName = null, $primaryKey = null)
     {
@@ -493,4 +528,18 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
         }
     }
 
+    /**
+     * Retrieve server version in PHP style
+     *
+     *@return string
+     */
+    public function getServerVersion()
+    {
+        $this->_connect();
+        $version = $this->_connection->server_version;
+        $major = (int) ($version / 10000);
+        $minor = (int) ($version % 10000 / 100);
+        $revision = (int) ($version % 100);
+        return $major . '.' . $minor . '.' . $revision;
+    }
 }

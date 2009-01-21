@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ReCaptchaTest.php 10743 2008-08-07 02:24:43Z matthew $
+ * @version    $Id: ReCaptchaTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 // Call Zend_Captcha_ReCaptchaTest::main() if this source file is executed directly.

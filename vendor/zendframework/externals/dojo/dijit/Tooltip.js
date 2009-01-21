@@ -15,7 +15,7 @@ dojo.declare(
 
 		// duration: Integer
 		//		Milliseconds to fade in/fade out
-		duration: 200,
+		duration: dijit.defaultDuration,
 
 		templatePath: dojo.moduleUrl("dijit", "templates/Tooltip.html"),
 
@@ -105,19 +105,19 @@ dojo.declare(
 
 		hide: function(aroundNode){
 			// summary: hide the tooltip
-			if(!this.aroundNode || this.aroundNode !== aroundNode){
-				return;
-			}
-			if(this._onDeck){
+			if(this._onDeck && this._onDeck[1] == aroundNode){
 				// this hide request is for a show() that hasn't even started yet;
 				// just cancel the pending show()
 				this._onDeck=null;
-				return;
+			}else if(this.aroundNode === aroundNode){
+				// this hide request is for the currently displayed tooltip
+				this.fadeIn.stop();
+				this.isShowingNow = false;
+				this.aroundNode = null;
+				this.fadeOut.play();
+			}else{
+				// just ignore the call, it's for a tooltip that has already been erased
 			}
-			this.fadeIn.stop();
-			this.isShowingNow = false;
-			this.aroundNode = null;
-			this.fadeOut.play();
 		},
 
 		_onHide: function(){
@@ -174,9 +174,8 @@ dojo.declare(
 		position: [],
 
 		postCreate: function(){
-			if(this.srcNodeRef){
-				this.srcNodeRef.style.display = "none";
-			}
+			
+			dojo.addClass(this.domNode,"dijitTooltipData");
 
 			this._connectNodes = [];
 			
@@ -184,7 +183,7 @@ dojo.declare(
 				var node = dojo.byId(id);
 				if (node) {
 					this._connectNodes.push(node);
-					dojo.forEach(["onMouseOver", "onMouseOut", "onFocus", "onBlur", "onHover", "onUnHover"], function(event){
+					dojo.forEach(["onMouseEnter", "onMouseLeave", "onFocus", "onBlur"], function(event){
 						this.connect(node, event.toLowerCase(), "_"+event);
 					}, this);
 					if(dojo.isIE){
@@ -195,15 +194,11 @@ dojo.declare(
 			}, this);
 		},
 
-		_onMouseOver: function(/*Event*/ e){
+		_onMouseEnter: function(/*Event*/ e){
 			this._onHover(e);
 		},
 
-		_onMouseOut: function(/*Event*/ e){
-			if(dojo.isDescendant(e.relatedTarget, e.target)){
-				// false event; just moved from target to target child; ignore.
-				return;
-			}
+		_onMouseLeave: function(/*Event*/ e){
 			this._onUnHover(e);
 		},
 
@@ -251,10 +246,14 @@ dojo.declare(
 		},
 
 		close: function(){
-			// summary: hide the tooltip; usually not called directly.
-			dijit.hideTooltip(this._connectNode);
-			delete this._connectNode;
+			// summary: hide the tooltip or cancel timer for show of tooltip
+			if(this._connectNode){
+				// if tooltip is currently shown
+				dijit.hideTooltip(this._connectNode);
+				delete this._connectNode;
+			}
 			if(this._showTimer){
+				// if tooltip is scheduled to be shown (after a brief delay)
 				clearTimeout(this._showTimer);
 				delete this._showTimer;
 			}

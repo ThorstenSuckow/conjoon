@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IntTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: IntTest.php 12336 2008-11-06 19:11:46Z thomas $
  */
 
 
@@ -75,6 +75,8 @@ class Zend_Validate_IntTest extends PHPUnit_Framework_TestCase
             array('10', true),
             array(1, true),
             array('not an int', false),
+            array(true, false),
+            array(false, false),
             );
         foreach ($valuesExpected as $element) {
             $this->assertEquals($element[1], $this->_validator->isValid($element[0]));

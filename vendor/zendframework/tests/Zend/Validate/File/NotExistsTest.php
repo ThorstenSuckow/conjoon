@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: NotExistsTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 
 // Call Zend_Validate_File_NotExistsTest::main() if this source file is executed directly.
@@ -80,8 +80,16 @@ class Zend_Validate_File_NotExistsTest extends PHPUnit_Framework_TestCase
 
         foreach ($valuesExpected as $element) {
             $validator = new Zend_Validate_File_NotExists($element[0]);
-            $this->assertEquals($element[2], $validator->isValid($element[1]));
-            $this->assertEquals($element[2], $validator->isValid($element[1], $files));
+            $this->assertEquals(
+                $element[2],
+                $validator->isValid($element[1]),
+                "Tested with " . var_export($element, 1)
+            );
+            $this->assertEquals(
+                $element[2],
+                $validator->isValid($element[1], $files),
+                "Tested with " . var_export($element, 1)
+                );
         }
 
         $valuesExpected = array(
@@ -100,8 +108,16 @@ class Zend_Validate_File_NotExistsTest extends PHPUnit_Framework_TestCase
 
         foreach ($valuesExpected as $element) {
             $validator = new Zend_Validate_File_NotExists($element[0]);
-            $this->assertEquals($element[2], $validator->isValid($element[1]));
-            $this->assertEquals($element[3], $validator->isValid($element[1], $files));
+            $this->assertEquals(
+                $element[2],
+                $validator->isValid($element[1]),
+                "Tested with " . var_export($element, 1)
+            );
+            $this->assertEquals(
+                $element[3],
+                $validator->isValid($element[1], $files),
+                "Tested with " . var_export($element, 1)
+            );
         }
 
         $valuesExpected = array(
@@ -111,8 +127,16 @@ class Zend_Validate_File_NotExistsTest extends PHPUnit_Framework_TestCase
 
         foreach ($valuesExpected as $element) {
             $validator = new Zend_Validate_File_NotExists();
-            $this->assertEquals($element[2], $validator->isValid($element[1]));
-            $this->assertEquals($element[3], $validator->isValid($element[1], $files));
+            $this->assertEquals(
+                $element[2],
+                $validator->isValid($element[1]),
+                "Tested with " . var_export($element, 1)
+            );
+            $this->assertEquals(
+                $element[3],
+                $validator->isValid($element[1], $files),
+                "Tested with " . var_export($element, 1)
+            );
         }
     }
 

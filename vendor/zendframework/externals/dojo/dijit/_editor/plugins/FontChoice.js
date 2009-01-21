@@ -43,6 +43,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 		_uniqueId: 0,
 
 		buttonClass: dijit.form.FilteringSelect,
+		useDefaultCommand: false,
 
 		_initButton: function(){
 			//TODO: would be nice to be able to handle comma-separated font lists and search within them
@@ -54,6 +55,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				fontSize: [1,2,3,4,5,6,7], // sizes according to the old HTML FONT SIZE
 				formatBlock: ["p", "h1", "h2", "h3", "pre"]
 			}[cmd];
+			this._availableValues = names; //store all possible values
 			var strings = dojo.i18n.getLocalization("dijit._editor", "FontChoice");
 			var items = dojo.map(names, function(value){
 				var name = strings[value] || value;
@@ -73,49 +75,16 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 			});
 			//items.push({label: "", name:"", value:""}); // FilteringSelect doesn't like unmatched blank strings
 
-			this.inherited(arguments,[{ labelType: "html", labelAttr: "label", searchAttr: "name", store: new dojo.data.ItemFileReadStore(
+			this.inherited(arguments,[{required:false, labelType: "html", labelAttr: "label", searchAttr: "name", store: new dojo.data.ItemFileReadStore(
 					{ data: { identifier: "value", items: items } })}]);
 
-			//overload isValid/setValue to not show any validate error: if invalid, just show empty in the widget
-			this.button.isValid = function(){ return true; };
-			this.button.setValue = function(/*String*/ value, /*Boolean?*/ priorityChange){
-				//copied from FilteringSelect.setValue, just added one line
-				//TODO: is there a better way to achieve this? or shall we add a hook to
-				//FilteringSelect.setValue to allow inserting a _setValue more easily?
-				var self=this;
-				var handleFetchByIdentity = function(item, priorityChange){
-					if(item){
-						if(self.store.isItemLoaded(item)){
-							self._callbackSetLabel([item], undefined, priorityChange);
-						}else{
-							self.store.loadItem({
-								item: item, 
-								onItem: function(result, dataObject){
-									self._callbackSetLabel(result, dataObject, priorityChange);
-								}
-							});
-						}
-					}else{
-						self._isvalid=false;
-						self.validate(false);
-						self._setValue('','',false); //added this line to reset the input field to empty
-					}
-				}
-				this.store.fetchItemByIdentity({
-					identity: value, 
-					onItem: function(item){
-						handleFetchByIdentity(item, priorityChange);
-					}
-				});
-			}
-			this.button.setValue("");
+			this.button.attr("value", "");
 
 			this.connect(this.button, "onChange", function(choice){
 				if(this.updating){ return; }
-				if(dojo.isIE){
+				if(dojo.isIE || !this._focusHandle){
 					this.editor.focus();
 				}else{
-//					this.editor.focus();
 					dijit.focus(this._focusHandle);
 				}
 				if(this.command == "fontName" && choice.indexOf(" ") != -1){ choice = "'" + choice + "'"; }
@@ -139,7 +108,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				// strip off single quotes, if any
 				var quoted = dojo.isString(value) && value.match(/'([^']*)'/);
 				if(quoted){ value = quoted[1]; }
-//console.log("selected " + value);
+
 				if(this.generic && _c == "fontName"){
 					var map = {
 						"Arial": "sans-serif",
@@ -154,7 +123,7 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 						"Papyrus": "fantasy"
 // 						,"????": "fantasy" TODO: IE doesn't map fantasy font-family?
 					};
-//console.log("mapped to " + map[value]);
+
 					value = map[value] || value;
 				}else if(_c == "fontSize" && value.indexOf && value.indexOf("px") != -1){
 					var pixels = parseInt(value);
@@ -162,11 +131,15 @@ dojo.declare("dijit._editor.plugins.FontChoice",
 				}
 
 				this.updating = true;
-				this.button.setValue(value);
+				//if the value is not a permitted value, just set empty string to prevent
+				//showing the warning icon
+				this.button.attr('value', dojo.indexOf(this._availableValues,value)<0?"":value);
 				delete this.updating;
 			}
 
-			this._focusHandle = dijit.getFocus(this.editor.iframe);
+			if(this.editor.iframe){
+				this._focusHandle = dijit.getFocus(this.editor.iframe);
+			}
 		},
 
 		setToolbar: function(){

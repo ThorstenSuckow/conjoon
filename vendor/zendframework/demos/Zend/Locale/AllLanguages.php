@@ -31,12 +31,11 @@
  */
 require_once 'Zend/Locale.php';
 
-$locale = new Zend_Locale();
-$list = $locale->getTranslationList('language');
+$list = Zend_Locale::getTranslationList('language');
 
 foreach($list as $language => $content) {
     try {
-        $lang = $locale->getTranslation($language, 'language', $language);
+        $lang = Zend_Locale::getTranslation($language, 'language', $language);
         print "\n<br>[".$language."] ".$lang;
     } catch (Exception $e) {
         // no output

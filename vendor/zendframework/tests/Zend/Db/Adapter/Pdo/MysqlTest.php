@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MysqlTest.php 6923 2007-11-25 02:00:06Z peptolab $
+ * @version    $Id: MysqlTest.php 12842 2008-11-25 22:07:48Z mikaelkael $
  */
 
 
@@ -237,6 +237,18 @@ class Zend_Db_Adapter_Pdo_MysqlTest extends Zend_Db_Adapter_Pdo_TestCommon
         $string = "table_'_name";
         $value = $this->_db->quoteIdentifier($string);
         $this->assertEquals('`table_\'_name`', $value);
+    }
+
+    /**
+     * test that describeTable() returns correct types
+     * @group ZF-3624
+     * 
+     */
+    public function testAdapterDescribeTableAttributeColumnFloat()
+    {
+        $desc = $this->_db->describeTable('zfprice');
+        $this->assertEquals('zfprice',  $desc['price']['TABLE_NAME']);
+        $this->assertRegExp('/float/i', $desc['price']['DATA_TYPE']);
     }
 
     /**

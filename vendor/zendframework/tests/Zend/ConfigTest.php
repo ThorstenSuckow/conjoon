@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConfigTest.php 11119 2008-08-29 12:42:59Z rob $
+ * @version    $Id: ConfigTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 /**
@@ -409,6 +409,32 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('override', $newConfig->key->nested, '$newConfig is not overridden');
         $this->assertEquals('parent', $parent->key->nested, '$parent has been overridden');
+        
+    }
+    
+    /**
+     * @group ZF-3575
+     *
+     */
+    public function testMergeHonoursAllowModificationsFlagAtAllLevels()
+    {
+        $config = new Zend_Config(array('key' => array('nested' => 'yes'), 'key2'=>'yes'), false);
+        $config2 = new Zend_Config(array(), true);
+
+        $config2->merge($config);
+        try {
+            $config2->key2 = 'no';
+        }  catch (Zend_Config_Exception $e) {
+            $this->fail('Unexpected exception at top level has been raised: ' . $e->getMessage());
+        }
+        $this->assertEquals('no', $config2->key2);
+
+        try {
+            $config2->key->nested = 'no';
+        }  catch (Zend_Config_Exception $e) {
+            $this->fail('Unexpected exception on nested object has been raised: ' . $e->getMessage());
+        }
+        $this->assertEquals('no', $config2->key->nested);
         
     }
 }

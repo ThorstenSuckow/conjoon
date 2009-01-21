@@ -16,7 +16,7 @@
  * @package    Zend_Controller
  * @subpackage Zend_Controller_Action
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Layout.php 9098 2008-03-30 19:29:10Z thomas $
+ * @version    $Id: Layout.php 11508 2008-09-24 14:21:30Z doctorrock83 $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -61,6 +61,10 @@ class Zend_Layout_Controller_Action_Helper_Layout extends Zend_Controller_Action
         if (null !== $layout) {
             $this->setLayoutInstance($layout);
         } else {
+            /**
+             * @see Zend_Layout
+             */
+            require_once 'Zend/Layout.php';
             $layout = Zend_Layout::getMvcInstance();
         }
         
@@ -87,6 +91,9 @@ class Zend_Layout_Controller_Action_Helper_Layout extends Zend_Controller_Action
     public function getFrontController()
     {
         if (null === $this->_frontController) {
+            /**
+             * @see Zend_Controller_Front
+             */
             require_once 'Zend/Controller/Front.php';
             $this->_frontController = Zend_Controller_Front::getInstance();
         }
@@ -102,6 +109,9 @@ class Zend_Layout_Controller_Action_Helper_Layout extends Zend_Controller_Action
     public function getLayoutInstance()
     {
         if (null === $this->_layout) {
+            /**
+             * @see Zend_Layout
+             */
             require_once 'Zend/Layout.php';
             if (null === ($this->_layout = Zend_Layout::getMvcInstance())) {
                 $this->_layout = new Zend_Layout();

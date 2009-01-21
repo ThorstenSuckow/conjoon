@@ -17,7 +17,7 @@
  * @package    Zend_Session
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTable.php 10116 2008-07-16 02:34:10Z matthew $
+ * @version    $Id: DbTable.php 12585 2008-11-12 17:02:49Z alexander $
  */
 
 /**
@@ -514,6 +514,8 @@ class Zend_Session_SaveHandler_DbTable extends Zend_Db_Table_Abstract implements
      */
     protected function _getPrimary($id, $type = null)
     {
+    	$this->_setupPrimaryKey();
+
         if ($type === null) {
             $type = self::PRIMARY_TYPE_NUM;
         }

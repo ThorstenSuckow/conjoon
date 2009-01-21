@@ -1,6 +1,3 @@
-// FIXME: need to add async tests
-// FIXME: need to handle URL wrapping and test registration/running from URLs
-
 // package system gunk. 
 try{
 	dojo.provide("doh.runner");
@@ -15,6 +12,8 @@ try{
 //
 
 doh.selfTest = false;
+
+doh.global = this;
 
 doh.hitch = function(/*Object*/thisObject, /*Function|String*/method /*, ...*/){
 	var args = [];
@@ -101,12 +100,15 @@ doh.debug = function(){
 	// YOUR TEST RUNNER NEEDS TO IMPLEMENT THIS
 }
 
-doh._AssertFailure = function(msg){
+doh._AssertFailure = function(msg, hint){
 	// idea for this as way of dis-ambiguating error types is from JUM. 
 	// The JUM is dead! Long live the JUM!
 
 	if(!(this instanceof doh._AssertFailure)){
 		return new doh._AssertFailure(msg);
+	}
+	if(hint){
+		msg = (new String(msg||""))+" with hint: \n\t\t"+(new String(hint)+"\n");
 	}
 	this.message = new String(msg||"");
 	return this;
@@ -130,13 +132,13 @@ doh.extend(doh.Deferred, {
 		var _this = this;
 		return function(){
 			try{
-				cb.apply(scope||dojo.global||_this, arguments);
+				cb.apply(scope||doh.global||_this, arguments);
 			}catch(e){
 				_this.errback(e);
 				return;
 			}
 			_this.callback(true);
-		}
+		};
 	},
 
 	getFunctionFromArgs: function(){
@@ -145,7 +147,7 @@ doh.extend(doh.Deferred, {
 			if(typeof a[0] == "function"){
 				return a[0];
 			}else if(typeof a[0] == "string"){
-				return dojo.global[a[0]];
+				return doh.global[a[0]];
 			}
 		}else if((a[0])&&(a[1])){
 			return doh.hitch(a[0], a[1]);
@@ -174,7 +176,7 @@ doh.extend(doh.Deferred, {
 			if(this.fired == -1){
 				this.errback(new Error("Deferred(unfired)"));
 			}
-		}else if(	(this.fired == 0)&&
+		}else if(this.fired == 0 &&
 					(this.results[0] instanceof doh.Deferred)){
 			this.results[0].cancel();
 		}
@@ -251,7 +253,7 @@ doh.extend(doh.Deferred, {
 	},
 
 	addCallbacks: function(cb, eb){
-		this.chain.push([cb, eb])
+		this.chain.push([cb, eb]);
 		if(this.fired >= 0){
 			this._fire();
 		}
@@ -264,7 +266,7 @@ doh.extend(doh.Deferred, {
 		var res = this.results[fired];
 		var self = this;
 		var cb = null;
-		while (chain.length > 0 && this.paused == 0){
+		while(chain.length > 0 && this.paused == 0){
 			// Array
 			var pair = chain.shift();
 			var f = pair[fired];
@@ -277,7 +279,7 @@ doh.extend(doh.Deferred, {
 				if(res instanceof doh.Deferred){
 					cb = function(res){
 						self._continue(res);
-					}
+					};
 					this._pause();
 				}
 			}catch(err){
@@ -394,7 +396,7 @@ doh._getTestObj = function(group, test){
 			return this.registerUrl(group, test);
 		}else{
 			tObj = {
-				name: test.replace("/\s/g", "_")
+				name: test.replace("/\s/g", "_") // FIXME: bad escapement
 			};
 			tObj.runTest = new Function("t", test);
 		}
@@ -436,7 +438,7 @@ doh.registerTest = function(/*String*/ group, /*Function||Object*/ test){
 		this._groups[group].inFlight = 0;
 	}
 	var tObj = this._getTestObj(group, test);
-	if(!tObj){ return; }
+	if(!tObj){ return null; }
 	this._groups[group].push(tObj);
 	this._testCount++;
 	this._testRegistered(group, tObj);
@@ -497,35 +499,85 @@ doh.register = doh.add = function(groupOrNs, testOrNull){
 		return;
 	}
 	this.registerTest(groupOrNs, testOrNull);
-}
+};
+
+doh.registerDocTests = function(module){
+	// no-op for when Dojo isn't loaded into the page
+	this.debug("registerDocTests() requires dojo to be loaded into the environment. Skipping doctest set for module:", module);
+};
+(function(){
+	if(typeof dojo != "undefined"){
+		try{
+			dojo.require("dojox.testing.DocTest");
+		}catch(e){
+			// if the DocTest module isn't available (e.g., the build we're
+			// running from doesn't include it), stub it out and log the error
+			console.debug(e);
+
+			doh.registerDocTests = function(){}
+			return;
+		}
+		doh.registerDocTests = function(module){
+			//	summary:
+			//		Get all the doctests from the given module and register each of them
+			//		as a single test case here.
+			//
+			
+			var docTest = new dojox.testing.DocTest();
+			var docTests = docTest.getTests(module);
+			var len = docTests.length;
+			var tests = [];
+			for (var i=0; i<len; i++){
+				var test = docTests[i];
+				// Extract comment on first line and add to test name.
+				var comment = "";
+				if (test.commands.length && test.commands[0].indexOf("//")!=-1) {
+					var parts = test.commands[0].split("//");
+					comment = ", "+parts[parts.length-1]; // Get all after the last //, so we dont get trapped by http:// or alikes :-).
+				}
+				tests.push({
+					runTest: (function(test){ 
+						return function(t){
+							var r = docTest.runTest(test.commands, test.expectedResult);
+							t.assertTrue(r.success);
+						}
+					})(test),
+					name:"Line "+test.line+comment
+				}
+				);
+			}
+			this.register("DocTests: "+module, tests);
+		}
+	}
+})();
 
 //
 // Assertions and In-Test Utilities
 //
 
-doh.t = doh.assertTrue = function(/*Object*/ condition){
+doh.t = doh.assertTrue = function(/*Object*/ condition, /*String?*/ hint){
 	// summary:
 	//		is the passed item "truthy"?
-	if(arguments.length != 1){ 
-		throw doh._AssertFailure("assertTrue failed because it was not passed exactly 1 argument"); 
+	if(arguments.length < 1){ 
+		throw new doh._AssertFailure("assertTrue failed because it was not passed at least 1 argument"); 
 	} 
 	if(!eval(condition)){
-		throw doh._AssertFailure("assertTrue('" + condition + "') failed");
+		throw new doh._AssertFailure("assertTrue('" + condition + "') failed", hint);
 	}
 }
 
-doh.f = doh.assertFalse = function(/*Object*/ condition){
+doh.f = doh.assertFalse = function(/*Object*/ condition, /*String?*/ hint){
 	// summary:
 	//		is the passed item "falsey"?
-	if(arguments.length != 1){ 
-		throw doh._AssertFailure("assertFalse failed because it was not passed exactly 1 argument"); 
+	if(arguments.length < 1){ 
+		throw new doh._AssertFailure("assertFalse failed because it was not passed at least 1 argument"); 
 	} 
 	if(eval(condition)){
-		throw doh._AssertFailure("assertFalse('" + condition + "') failed");
+		throw new doh._AssertFailure("assertFalse('" + condition + "') failed", hint);
 	}
 }
 
-doh.e = doh.assertError = function(/*Error object*/expectedError, /*Object*/scope, /*String*/functionName, /*Array*/args){
+doh.e = doh.assertError = function(/*Error object*/expectedError, /*Object*/scope, /*String*/functionName, /*Array*/args, /*String?*/ hint){
 	//	summary:
 	//		Test for a certain error to be thrown by the given function.
 	//	example:
@@ -537,14 +589,14 @@ doh.e = doh.assertError = function(/*Error object*/expectedError, /*Object*/scop
 		if(e instanceof expectedError){
 			return true;
 		}else{
-			throw new doh._AssertFailure("assertError() failed:\n\texpected error\n\t\t"+expectedError+"\n\tbut got\n\t\t"+e+"\n\n");
+			throw new doh._AssertFailure("assertError() failed:\n\texpected error\n\t\t"+expectedError+"\n\tbut got\n\t\t"+e+"\n\n", hint);
 		}
 	}
-	throw new doh._AssertFailure("assertError() failed:\n\texpected error\n\t\t"+expectedError+"\n\tbut no error caught\n\n");
+	throw new doh._AssertFailure("assertError() failed:\n\texpected error\n\t\t"+expectedError+"\n\tbut no error caught\n\n", hint);
 }
 
 
-doh.is = doh.assertEqual = function(/*Object*/ expected, /*Object*/ actual){
+doh.is = doh.assertEqual = function(/*Object*/ expected, /*Object*/ actual, /*String?*/ hint){
 	// summary:
 	//		are the passed expected and actual objects/values deeply
 	//		equivalent?
@@ -568,7 +620,34 @@ doh.is = doh.assertEqual = function(/*Object*/ expected, /*Object*/ actual){
 		(this._objPropEq(expected, actual)) ){
 		return true;
 	}
-	throw new doh._AssertFailure("assertEqual() failed:\n\texpected\n\t\t"+expected+"\n\tbut got\n\t\t"+actual+"\n\n");
+	throw new doh._AssertFailure("assertEqual() failed:\n\texpected\n\t\t"+expected+"\n\tbut got\n\t\t"+actual+"\n\n", hint);
+}
+
+doh.isNot = doh.assertNotEqual = function(/*Object*/ notExpected, /*Object*/ actual, /*String?*/ hint){
+	// summary:
+	//		are the passed notexpected and actual objects/values deeply
+	//		not equivalent?
+
+	// Compare undefined always with three equal signs, because undefined==null
+	// is true, but undefined===null is false. 
+	if((notExpected === undefined)&&(actual === undefined)){ 
+        throw new doh._AssertFailure("assertNotEqual() failed: not expected |"+notExpected+"| but got |"+actual+"|", hint);
+	}
+	if(arguments.length < 2){ 
+		throw doh._AssertFailure("assertEqual failed because it was not passed 2 arguments"); 
+	} 
+	if((notExpected === actual)||(notExpected == actual)){ 
+        throw new doh._AssertFailure("assertNotEqual() failed: not expected |"+notExpected+"| but got |"+actual+"|", hint);
+	}
+	if(	(this._isArray(notExpected) && this._isArray(actual))&&
+		(this._arrayEq(notExpected, actual)) ){
+		throw new doh._AssertFailure("assertNotEqual() failed: not expected |"+notExpected+"| but got |"+actual+"|", hint);
+	}
+	if( ((typeof notExpected == "object")&&((typeof actual == "object")))&&
+		(this._objPropEq(notExpected, actual)) ){
+        throw new doh._AssertFailure("assertNotEqual() failed: not expected |"+notExpected+"| but got |"+actual+"|", hint);
+	}
+    return true;
 }
 
 doh._arrayEq = function(expected, actual){
@@ -584,14 +663,15 @@ doh._objPropEq = function(expected, actual){
 	if(expected instanceof Date){
 		return actual instanceof Date && expected.getTime()==actual.getTime();
 	}
+	var x;
 	// Make sure ALL THE SAME properties are in both objects!
-	for(var x in actual){ // Lets check "actual" here, expected is checked below.
+	for(x in actual){ // Lets check "actual" here, expected is checked below.
 		if(expected[x] === undefined){
 			return false;
 		}
 	};
 
-	for(var x in expected){
+	for(x in expected){
 		if(!doh.assertEqual(expected[x], actual[x])){
 			return false;
 		}
@@ -600,7 +680,13 @@ doh._objPropEq = function(expected, actual){
 }
 
 doh._isArray = function(it){
-	return (it && it instanceof Array || typeof it == "array" || (dojo["NodeList"] !== undefined && it instanceof dojo.NodeList));
+	return (it && it instanceof Array || typeof it == "array" || 
+		(
+			!!doh.global["dojo"] &&
+			doh.global["dojo"]["NodeList"] !== undefined && 
+			it instanceof doh.global["dojo"]["NodeList"]
+		)
+	);
 }
 
 //
@@ -865,7 +951,8 @@ doh.run = function(){
 tests = doh;
 
 (function(){
-	// scop protection
+	// scope protection
+	var x;
 	try{
 		if(typeof dojo != "undefined"){
 			dojo.platformRequire({
@@ -873,10 +960,15 @@ tests = doh;
 				rhino: ["doh._rhinoRunner"],
 				spidermonkey: ["doh._rhinoRunner"]
 			});
-			var _shouldRequire = (dojo.isBrowser) ? (dojo.global == dojo.global["parent"]) : true;
+			var _shouldRequire = dojo.isBrowser ? (dojo.global == dojo.global["parent"]) : true;
 			if(_shouldRequire){
 				if(dojo.isBrowser){
 					dojo.addOnLoad(function(){
+						if (dojo.global.registerModulePath){
+							dojo.forEach(dojo.global.registerModulePath, function(m){
+								dojo.registerModulePath(m[0], m[1]);
+							});
+						}
 						if(dojo.byId("testList")){
 							var _tm = ( (dojo.global.testModule && dojo.global.testModule.length) ? dojo.global.testModule : "dojo.tests.module");
 							dojo.forEach(_tm.split(","), dojo.require, dojo);
@@ -890,14 +982,27 @@ tests = doh;
 				}
 			}
 		}else{
-			if(
-				(typeof load == "function")&&
-				(	(typeof Packages == "function")||
-					(typeof Packages == "object")	)
-			){
+			if(typeof load == "function" &&
+				(typeof Packages == "function" || typeof Packages == "object")){
 				throw new Error();
 			}else if(typeof load == "function"){
 				throw new Error();
+			}
+
+			if(this["document"]){
+				// if we survived all of that, we're probably in a browser but
+				// don't have Dojo handy. Load _browserRunner.js using a
+				// document.write() call.
+
+				// find runner.js, load _browserRunner relative to it
+				var scripts = document.getElementsByTagName("script");
+				for(x=0; x<scripts.length; x++){
+					var s = scripts[x].src;
+					if(s && (s.substr(s.length - 9) == "runner.js")){
+						document.write("<scri"+"pt src='" + s.substr(0, s.length - 9)
+							+ "_browserRunner.js' type='text/javascript'></scr"+"ipt>");
+					}
+				}
 			}
 		}
 	}catch(e){
@@ -912,7 +1017,7 @@ tests = doh;
 			var dojoUrl = "../../dojo/dojo.js";
 			var testUrl = "";
 			var testModule = "dojo.tests.module";
-			for(var x=0; x<arguments.length; x++){
+			for(x=0; x<arguments.length; x++){
 				if(arguments[x].indexOf("=") > 0){
 					var tp = arguments[x].split("=");
 					if(tp[0] == "dojoUrl"){

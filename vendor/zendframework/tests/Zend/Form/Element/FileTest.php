@@ -9,12 +9,16 @@ require_once dirname(__FILE__) . '/../../../TestHelper.php';
 require_once 'Zend/Form/Element/File.php';
 require_once 'Zend/File/Transfer/Adapter/Abstract.php';
 require_once 'Zend/Validate/File/Upload.php';
+require_once 'Zend/Form/SubForm.php';
+require_once 'Zend/View.php';
 
 /**
  * Test class for Zend_Form_Element_File
  */
 class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
 {
+    protected $_errorOccurred = false;
+
     /**
      * Runs the test methods of this class.
      *
@@ -121,14 +125,15 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
 
     public function testValidatorAccessAndMutationShouldProxyToAdapter()
     {
+        $this->testElementShouldAllowSpecifyingAdapterUsingConcreteInstance();
         $this->element->addValidator('Count', false, 1)
                       ->addValidators(array(
                           'Extension' => 'jpg',
-                          new Zend_Validate_File_Upload,
+                          new Zend_Validate_File_Upload(),
                       ));
         $validators = $this->element->getValidators();
         $test       = $this->element->getTransferAdapter()->getValidators();
-        $this->assertSame($validators, $test);
+        $this->assertEquals($validators, $test);
         $this->assertTrue(is_array($test));
         $this->assertEquals(3, count($test));
 
@@ -170,9 +175,133 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
 
     public function testDestinationMutatorsShouldProxyToTransferAdapter()
     {
-        $this->element->setDestination('/var/www/upload');
-        $this->assertEquals('/var/www/upload', $this->element->getDestination());
-        $this->assertEquals('/var/www/upload', $this->element->getTransferAdapter()->getDestination('foo'));
+        $this->element->setDestination(dirname(__FILE__));
+        $this->assertEquals(dirname(__FILE__), $this->element->getDestination());
+        $this->assertEquals(dirname(__FILE__), $this->element->getTransferAdapter()->getDestination('foo'));
+    }
+
+    public function testSettingMultipleFiles()
+    {
+        $this->element->setMultiFile(3);
+        $this->assertEquals(3, $this->element->getMultiFile());
+    }
+
+    public function testFileInSubSubSubform()
+    {
+        $form = new Zend_Form();
+        $element = new Zend_Form_Element_File('file1');
+        $element2 = new Zend_Form_Element_File('file2');
+
+        $subform0 = new Zend_Form_SubForm();
+        $subform0->addElement($element);
+        $subform0->addElement($element2);
+        $subform1 = new Zend_Form_SubForm();
+        $subform1->addSubform($subform0, 'subform0');
+        $subform2 = new Zend_Form_SubForm();
+        $subform2->addSubform($subform1, 'subform1');
+        $subform3 = new Zend_Form_SubForm();
+        $subform3->addSubform($subform2, 'subform2');
+        $form->addSubform($subform3, 'subform3');
+
+        $form->setView(new Zend_View());
+        $output = (string) $form;
+        $this->assertContains('name="file1"', $output);
+        $this->assertContains('name="file2"', $output);
+    }
+
+    public function testMultiFileInSubSubSubform()
+    {
+        $form = new Zend_Form();
+        $element = new Zend_Form_Element_File('file');
+        $element->setMultiFile(2);
+
+        $subform0 = new Zend_Form_SubForm();
+        $subform0->addElement($element);
+        $subform1 = new Zend_Form_SubForm();
+        $subform1->addSubform($subform0, 'subform0');
+        $subform2 = new Zend_Form_SubForm();
+        $subform2->addSubform($subform1, 'subform1');
+        $subform3 = new Zend_Form_SubForm();
+        $subform3->addSubform($subform2, 'subform2');
+        $form->addSubform($subform3, 'subform3');
+
+        $form->setView(new Zend_View());
+        $output = (string) $form;
+        $this->assertContains('name="file[]"', $output);
+        $this->assertEquals(2, substr_count($output, 'file[]'));
+    }
+
+    public function testSettingMaxFileSize()
+    {
+        $max = $this->_convertIniToInteger(trim(ini_get('upload_max_filesize')));
+
+        $this->assertEquals(0, $this->element->getMaxFileSize());
+        $this->element->setMaxFileSize($max);
+        $this->assertEquals($max, $this->element->getMaxFileSize());
+
+        $this->_errorOccurred = false;
+        set_error_handler(array($this, 'errorHandlerIgnore'));
+        $this->element->setMaxFileSize(999999999999);
+        if (!$this->_errorOccurred) {
+            $this->fail('INI exception expected');
+        }
+        restore_error_handler();
+    }
+
+    public function testTranslatingValidatorErrors()
+    {
+        require_once 'Zend/Translate.php';
+        $translate = new Zend_Translate('array', array('unused', 'foo' => 'bar'), 'en');
+        $this->element->setTranslator($translate);
+
+        $adapter = $this->element->getTranslator();
+        $this->assertTrue($adapter instanceof Zend_Translate_Adapter_Array);
+
+        $adapter = $this->element->getTransferAdapter();
+        $adapter = $adapter->getTranslator();
+        $this->assertTrue($adapter instanceof Zend_Translate_Adapter_Array);
+
+        $this->assertFalse($this->element->translatorIsDisabled());
+        $this->element->setDisableTranslator($translate);
+        $this->assertTrue($this->element->translatorIsDisabled());
+    }
+
+    private function _convertIniToInteger($setting)
+    {
+        if (!is_numeric($setting)) {
+            $type = strtoupper(substr($setting, -1));
+            $setting = (integer) substr($setting, 0, -1);
+
+            switch ($type) {
+                case 'M' :
+                    $setting *= 1024;
+                    break;
+
+                case 'G' :
+                    $setting *= 1024 * 1024;
+                    break;
+
+                default :
+                    break;
+            }
+        }
+
+        return (integer) $setting;
+    }
+
+    /**
+     * Ignores a raised PHP error when in effect, but throws a flag to indicate an error occurred
+     *
+     * @param  integer $errno
+     * @param  string  $errstr
+     * @param  string  $errfile
+     * @param  integer $errline
+     * @param  array   $errcontext
+     * @return void
+     */
+    public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
+    {
+        $this->_errorOccurred = true;
     }
 }
 
@@ -184,24 +313,56 @@ class Zend_Form_Element_FileTest_MockAdapter extends Zend_File_Transfer_Adapter_
     {
         $this->_files = array(
             'foo' => array(
-                'name'     => 'foo.jpg',
-                'type'     => 'image/jpeg',
-                'size'     => 126976,
-                'tmp_name' => '/tmp/489127ba5c89c',
+                'name'       => 'foo.jpg',
+                'type'       => 'image/jpeg',
+                'size'       => 126976,
+                'tmp_name'   => '/tmp/489127ba5c89c',
+                'validated'  => false,
+                'received'   => false,
+                'filtered'   => false,
+                'validators' => array(),
             ),
             'bar' => array(
-                'name'     => 'bar.png',
-                'type'     => 'image/png',
-                'size'     => 91136,
-                'tmp_name' => '/tmp/489128284b51f',
+                'name'       => 'bar.png',
+                'type'       => 'image/png',
+                'size'       => 91136,
+                'tmp_name'   => '/tmp/489128284b51f',
+                'validated'  => false,
+                'received'   => false,
+                'filtered'   => false,
+                'validators' => array(),
             ),
             'baz' => array(
-                'name'     => 'baz.text',
-                'type'     => 'text/plain',
-                'size'     => 1172,
-                'tmp_name' => '/tmp/4891286cceff3',
+                'name'       => 'baz.text',
+                'type'       => 'text/plain',
+                'size'       => 1172,
+                'tmp_name'   => '/tmp/4891286cceff3',
+                'validated'  => false,
+                'received'   => false,
+                'filtered'   => false,
+                'validators' => array(),
             ),
-        );
+            'file_1_' => array(
+                'name'       => 'baz.text',
+                'type'       => 'text/plain',
+                'size'       => 1172,
+                'tmp_name'   => '/tmp/4891286cceff3',
+                'validated'  => false,
+                'received'   => false,
+                'filtered'   => false,
+                'validators' => array(),
+            ),
+            'file_2_' => array(
+                'name'       => 'baz.text',
+                'type'       => 'text/plain',
+                'size'       => 1172,
+                'tmp_name'   => '/tmp/4891286cceff3',
+                'validated'  => false,
+                'received'   => false,
+                'filtered'   => false,
+                'validators' => array(),
+            ),
+            );
     }
 
     public function send($options = null)
@@ -223,6 +384,16 @@ class Zend_Form_Element_FileTest_MockAdapter extends Zend_File_Transfer_Adapter_
     public function isReceived($file = null)
     {
         return $this->received;
+    }
+
+    public function isUploaded($files = null)
+    {
+        return true;
+    }
+
+    public function isFiltered($files = null)
+    {
+        return true;
     }
 
     public function getProgress()

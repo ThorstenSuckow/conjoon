@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CheckBoxTest.php 11293 2008-09-08 18:54:34Z matthew $
+ * @version    $Id: CheckBoxTest.php 12690 2008-11-18 18:45:28Z alexander $
  */
 
 // Call Zend_Dojo_Form_Element_CheckBoxTest::main() if this source file is executed directly.
@@ -251,6 +251,20 @@ class Zend_Dojo_Form_Element_CheckBoxTest extends PHPUnit_Framework_TestCase
     {
         $html = $this->element->render();
         $this->assertNotContains('options="', $html, $html);
+    }
+    
+    /**
+     * @group ZF-4274
+     */
+    public function testCheckedValuesCanBePassedInConstructor()
+    {
+    	$element = new Zend_Dojo_Form_Element_CheckBox('myCheckbox',    array(
+			        'checkedValue' => 'checkedVal',
+					'unCheckedValue' => 'UNCHECKED',
+			    ));
+		$element->setView(new Zend_View());
+		$html = $element->render();
+        $this->assertContains('value="checkedVal"', $html, $html);
     }
 }
 

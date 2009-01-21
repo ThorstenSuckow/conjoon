@@ -39,7 +39,7 @@ require_once 'Zend/Form/Decorator/Abstract.php';
  * @subpackage Decorator
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewHelper.php 10198 2008-07-18 22:46:53Z matthew $
+ * @version    $Id: ViewHelper.php 12374 2008-11-07 17:49:43Z matthew $
  */
 class Zend_Form_Decorator_ViewHelper extends Zend_Form_Decorator_Abstract
 {
@@ -194,6 +194,10 @@ class Zend_Form_Decorator_ViewHelper extends Zend_Form_Decorator_Abstract
 
         foreach ($this->_buttonTypes as $type) {
             if ($element instanceof $type) {
+                if (stristr($type, 'button')) {
+                    $element->content = $element->getLabel();
+                    return null;
+                }
                 return $element->getLabel();
             }
         }

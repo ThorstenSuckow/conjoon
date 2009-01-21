@@ -44,6 +44,12 @@ class Zend_Db_Profiler_Firebug extends Zend_Db_Profiler
      * @var string
      */
     protected $_label = null;
+    
+    /**
+     * The label template for this profiler
+     * @var string
+     */
+    protected $_label_template = '%label% (%totalCount% @ %totalDuration% sec)';
   
     /**
      * The message envelope holding the profiling summary
@@ -118,14 +124,14 @@ class Zend_Db_Profiler_Firebug extends Zend_Db_Profiler
         if (!$this->getEnabled()) {
             return;
         }
-        
+
         $this->_message->setDestroy(false);
 
         $profile = $this->getQueryProfile($queryId);
         
         $this->_totalElapsedTime += $profile->getElapsedSecs();
         
-        $this->_message->addRow(array(round($profile->getElapsedSecs(),5),
+        $this->_message->addRow(array((string)round($profile->getElapsedSecs(),5),
                                       $profile->getQuery(),
                                       ($params=$profile->getQueryParams())?$params:null));
                                       
@@ -142,6 +148,12 @@ class Zend_Db_Profiler_Firebug extends Zend_Db_Profiler
         if (!$this->_message) {
             return;
         }
-        $this->_message->setLabel($this->_label . ' (' . round($this->_totalElapsedTime,5) . ' sec)');
+        $this->_message->setLabel(str_replace(array('%label%',
+                                                    '%totalCount%',
+                                                    '%totalDuration%'),
+                                              array($this->_label,
+                                                    $this->getTotalNumQueries(),
+                                                    (string)round($this->_totalElapsedTime,5)),
+                                              $this->_label_template));
     }
 }

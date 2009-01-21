@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 10130 2008-07-16 14:51:08Z matthew $
+ * @version    $Id: AllTests.php 12195 2008-10-30 13:34:35Z matthew $
  */
 
 /**
@@ -29,6 +29,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Json_Server_AllTests::main');
 }
 
+require_once 'Zend/Json/Server/CacheTest.php';
 require_once 'Zend/Json/Server/ErrorTest.php';
 require_once 'Zend/Json/Server/RequestTest.php';
 require_once 'Zend/Json/Server/ResponseTest.php';
@@ -53,6 +54,7 @@ class Zend_Json_Server_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Json - Server');
 
+        $suite->addTestSuite('Zend_Json_Server_CacheTest');
         $suite->addTestSuite('Zend_Json_Server_ErrorTest');
         $suite->addTestSuite('Zend_Json_Server_RequestTest');
         $suite->addTestSuite('Zend_Json_Server_ResponseTest');

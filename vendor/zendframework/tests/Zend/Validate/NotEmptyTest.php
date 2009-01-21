@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NotEmptyTest.php 10371 2008-07-24 16:22:50Z matthew $
+ * @version    $Id: NotEmptyTest.php 13250 2008-12-14 19:49:21Z thomas $
  */
 
 // Call Zend_Validate_NotEmptyTest::main() if this source file is executed directly.
@@ -84,6 +84,8 @@ class Zend_Validate_NotEmptyTest extends PHPUnit_Framework_TestCase
         $valuesExpected = array(
             array('word', true),
             array('', false),
+            array('    ', false),
+            array('  word  ', true),
             array(1, true),
             array(0, false),
             array(true, true),

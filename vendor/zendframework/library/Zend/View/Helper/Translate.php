@@ -17,7 +17,7 @@
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Translate.php 10665 2008-08-05 10:57:18Z matthew $
+ * @version    $Id: Translate.php 12062 2008-10-21 17:28:12Z thomas $
  */
 
 /** Zend_Locale */
@@ -82,7 +82,7 @@ class Zend_View_Helper_Translate extends Zend_View_Helper_Abstract
         $count  = count($options);
         $locale = null;
         if ($count > 0) {
-            if (Zend_Locale::isLocale($options[($count - 1)]) !== false) {
+            if (Zend_Locale::isLocale($options[($count - 1)], null, false) !== false) {
                 $locale = array_pop($options);
             }
         }

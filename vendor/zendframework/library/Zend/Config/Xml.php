@@ -16,7 +16,7 @@
  * @package   Zend_Config
  * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: Xml.php 11181 2008-09-01 09:41:44Z alexander $
+ * @version   $Id: Xml.php 11427 2008-09-18 16:11:43Z doctorrock83 $
  */
 
 /**
@@ -65,6 +65,7 @@ class Zend_Config_Xml extends Zend_Config
         restore_error_handler();
         // Check if there was a error while loading file
         if ($this->_loadFileErrorStr !== null) {
+            require_once 'Zend/Config/Exception.php';
             throw new Zend_Config_Exception($this->_loadFileErrorStr);
         }
 

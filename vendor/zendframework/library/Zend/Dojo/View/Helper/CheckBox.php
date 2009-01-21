@@ -17,7 +17,7 @@
  * @subpackage View
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CheckBox.php 11293 2008-09-08 18:54:34Z matthew $
+ * @version    $Id: CheckBox.php 11292 2008-09-08 18:51:39Z matthew $
  */
 
 /** Zend_Dojo_View_Helper_Dijit */

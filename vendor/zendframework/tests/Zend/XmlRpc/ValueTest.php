@@ -26,7 +26,7 @@ require_once 'Zend/XmlRpc/Value/Struct.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: ValueTest.php 8955 2008-03-21 16:48:43Z matthew $
+ * @version $Id: ValueTest.php 12721 2008-11-20 18:21:58Z matthew $
  */
 class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase 
 {
@@ -292,6 +292,25 @@ class Zend_XmlRpc_ValueTest extends PHPUnit_Framework_TestCase
         $native = array('foo' => 0);
         $xml = '<value><struct><member><name>foo</name><value><int>0</int>'
              . '</value></member></struct></value>';
+
+        $val = Zend_XmlRpc_Value::getXmlRpcValue($xml, 
+                                    Zend_XmlRpc_Value::XML_STRING);
+
+        $this->assertXmlRpcType('struct', $val);
+        $this->assertEquals('struct', $val->getType());
+        $this->assertSame($native, $val->getValue());
+        $this->assertType('DomElement', $val->getAsDOM());
+        $this->assertEquals($this->wrapXml($xml), $val->saveXML());         
+    }
+
+    /**
+     * @group ZF-3947
+     */
+    public function testMarshallingStructsWithEmptyValueFromXmlRpcShouldRetainKeys()
+    {
+        $native = array('foo' => '');
+        $xml = '<value><struct><member><name>foo</name>'
+             . '<value/></member></struct></value>';
 
         $val = Zend_XmlRpc_Value::getXmlRpcValue($xml, 
                                     Zend_XmlRpc_Value::XML_STRING);

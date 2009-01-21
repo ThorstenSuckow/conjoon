@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysql.php 9101 2008-03-30 19:54:38Z thomas $
+ * @version    $Id: Mysql.php 12842 2008-11-25 22:07:48Z mikaelkael $
  */
 
 
@@ -159,6 +159,10 @@ class Zend_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Abstract
                 $length = $matches[2];
             } else if (preg_match('/^decimal\((\d+),(\d+)\)/', $row[$type], $matches)) {
                 $row[$type] = 'decimal';
+                $precision = $matches[1];
+                $scale = $matches[2];
+            } else if (preg_match('/^float\((\d+),(\d+)\)/', $row[$type], $matches)) {
+                $row[$type] = 'float';
                 $precision = $matches[1];
                 $scale = $matches[2];
             } else if (preg_match('/^((?:big|medium|small|tiny)?int)\((\d+)\)/', $row[$type], $matches)) {

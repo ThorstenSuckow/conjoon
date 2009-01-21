@@ -15,7 +15,7 @@
  * @package    Zend_Controller
  * @subpackage Router
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Regex.php 10744 2008-08-07 02:32:44Z matthew $
+ * @version    $Id: Regex.php 12525 2008-11-10 20:18:32Z ralph $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -168,6 +168,12 @@ class Zend_Controller_Router_Route_Regex extends Zend_Controller_Router_Route_Ab
         $mergedData = $defaultValuesMapped;
         $mergedData = $this->_arrayMergeNumericKeys($mergedData, $matchedValuesMapped);
         $mergedData = $this->_arrayMergeNumericKeys($mergedData, $dataValuesMapped);
+
+        if ($encode) {
+            foreach ($mergedData as $key => &$value) {
+                $value = urlencode($value);
+            }
+        }	
 
         ksort($mergedData);
 

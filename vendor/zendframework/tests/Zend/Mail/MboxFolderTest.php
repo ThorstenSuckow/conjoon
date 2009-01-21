@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MboxFolderTest.php 9276 2008-04-22 15:39:06Z nico $
+ * @version    $Id: MboxFolderTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 
@@ -295,7 +295,7 @@ class Zend_Mail_MboxFolderTest extends PHPUnit_Framework_TestCase
         $mail = new Zend_Mail_Storage_Folder_Mbox($this->_params);
 
         $count = $mail->countMessages();
-        $this->assertEquals(6, $count);
+        $this->assertEquals(7, $count);
 
         $mail->selectFolder(DIRECTORY_SEPARATOR . 'subfolder' . DIRECTORY_SEPARATOR . 'test');
         $count = $mail->countMessages();
@@ -305,7 +305,7 @@ class Zend_Mail_MboxFolderTest extends PHPUnit_Framework_TestCase
     public function testSize()
     {
         $mail = new Zend_Mail_Storage_Folder_Mbox($this->_params);
-        $shouldSizes = array(1 => 397, 89, 694, 452, 497, 103);
+        $shouldSizes = array(1 => 397, 89, 694, 452, 497, 101, 139);
 
         $sizes = $mail->getSize();
         $this->assertEquals($shouldSizes, $sizes);

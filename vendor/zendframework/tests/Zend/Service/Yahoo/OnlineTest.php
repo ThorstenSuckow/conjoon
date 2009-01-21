@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OnlineTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: OnlineTest.php 13006 2008-12-03 21:17:01Z matthew $
  */
 
 
@@ -326,6 +326,24 @@ class Zend_Service_Yahoo_OnlineTest extends PHPUnit_Framework_TestCase
         } catch (Zend_Service_Exception $e) {
             $this->assertContains('error occurred sending request', $e->getMessage());
         }
+    }
+    
+    /**
+     * Check support for the region option and ensure that it throws an exception
+     * for unsupported regions
+     * 
+     * @group ZF-3222
+     * @return void
+     */
+    public function testWebSearchRegion()
+    {
+    	$this->_yahoo->webSearch('php', array('region' => 'nl'));
+    	try {
+    		$this->_yahoo->webSearch('php', array('region' => 'oops'));
+    		$this->fail('Expected Zend_Service_Exception not thrown');
+    	}catch (Zend_Service_Exception $e) {
+    		$this->assertContains("Invalid value for option 'region': oops", $e->getMessage());
+    	}
     }
 }
 

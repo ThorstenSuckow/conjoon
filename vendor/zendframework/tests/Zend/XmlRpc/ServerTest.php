@@ -15,7 +15,7 @@ require_once 'Zend/XmlRpc/Response.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: ServerTest.php 8974 2008-03-21 20:26:07Z matthew $
+ * @version $Id: ServerTest.php 12163 2008-10-28 15:59:33Z matthew $
  */
 class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase 
 {
@@ -302,7 +302,7 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($response instanceof Zend_XmlRpc_Response, $response->__toString() . "\n\n" . $request->__toString());
         $returns = $response->getReturnValue();
         $this->assertTrue(is_array($returns));
-        $this->assertEquals(2, count($returns));
+        $this->assertEquals(2, count($returns), var_export($returns, 1));
         $this->assertTrue(is_array($returns[0]), var_export($returns[0], 1));
         $this->assertTrue(is_string($returns[1]), var_export($returns[1], 1));
     }

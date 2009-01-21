@@ -25,11 +25,16 @@ dojo.mixin(dijit,
 
 	isCollapsed: function(){
 		// summary: tests whether the current selection is empty
-		var _window = dojo.global;
 		var _document = dojo.doc;
 		if(_document.selection){ // IE
-			return !_document.selection.createRange().text; // Boolean
+			var s=_document.selection;
+			if(s.type=='Text'){
+				return !s.createRange().htmlText.length; // Boolean
+			}else{ //Control range
+				return !s.createRange().length; // Boolean
+			}
 		}else{
+			var _window = dojo.global;
 			var selection = _window.getSelection();
 			if(dojo.isString(selection)){ // Safari
 				return !selection; // Boolean
@@ -79,7 +84,11 @@ dojo.mixin(dijit,
 			var range;
 			if(dojo.isArray(bookmark)){
 				range = _document.body.createControlRange();
-				dojo.forEach(bookmark, "range.addElement(item)"); //range.addElement does not have call/apply method, so can not call it directly
+				//range.addElement does not have call/apply method, so can not call it directly
+				//range is not available in "range.addElement(item)", so can't use that either
+				dojo.forEach(bookmark, function(n){
+					range.addElement(n);
+				});
 			}else{
 				range = _document.selection.createRange();
 				range.moveToBookmark(bookmark);
@@ -190,21 +199,27 @@ dojo.mixin(dijit,
 		//dojo.connect(targetWindow, "onscroll", ???);
 
 		// Listen for blur and focus events on targetWindow's body
-		var body = targetWindow.document.body || targetWindow.document.getElementsByTagName("body")[0];
-		if(body){
+		var doc = targetWindow.document;
+		if(doc){
 			if(dojo.isIE){
-				body.attachEvent('onactivate', function(evt){
-					if(evt.srcElement.tagName.toLowerCase() != "body"){
+				doc.attachEvent('onactivate', function(evt){
+					if(evt.srcElement.tagName.toLowerCase() != "#document"){
 						dijit._onFocusNode(evt.srcElement);
 					}
 				});
-				body.attachEvent('ondeactivate', function(evt){ dijit._onBlurNode(evt.srcElement); });
+				doc.attachEvent('ondeactivate', function(evt){
+					dijit._onBlurNode(evt.srcElement);
+				});
 			}else{
-				body.addEventListener('focus', function(evt){ dijit._onFocusNode(evt.target); }, true);
-				body.addEventListener('blur', function(evt){ dijit._onBlurNode(evt.target); }, true);
+				doc.addEventListener('focus', function(evt){
+					dijit._onFocusNode(evt.target);
+				}, true);
+				doc.addEventListener('blur', function(evt){
+					dijit._onBlurNode(evt.target);
+				}, true);
 			}
 		}
-		body = null;	// prevent memory leak (apparent circular reference via closure)
+		doc = null;	// prevent memory leak (apparent circular reference via closure)
 	},
 
 	_onBlurNode: function(/*DomNode*/ node){
@@ -274,9 +289,32 @@ dojo.mixin(dijit,
 	_onFocusNode: function(/*DomNode*/ node){
 		// summary
 		//		Callback when node is focused
-		if(node && node.tagName && node.tagName.toLowerCase() == "body"){
+
+		if(!node){
 			return;
 		}
+
+		if(node.nodeType == 9){
+			// Ignore focus events on the document itself.  This is here so that
+			// (for example) clicking the up/down arrows of a spinner
+			//  (which don't get focus) won't cause that widget to blur. (FF issue)
+			return;
+		}
+
+		if(node.nodeType == 9){
+			// We focused on (the body of) the document itself, either the main document
+			// or an iframe
+			var iframe = dijit.getDocumentWindow(node).frameElement;
+			if(!iframe){
+				// Ignore focus events on main document.  This is specifically here
+				// so that clicking the up/down arrows of a spinner (which don't get focus)
+				// won't cause that widget to blur.
+				return;
+			}
+
+			node = iframe;
+		}
+
 		dijit._onTouchNode(node);
 
 		if(node==dijit._curFocus){ return; }
@@ -291,7 +329,7 @@ dojo.mixin(dijit,
 		// summary
 		//	The stack of active widgets has changed.  Send out appropriate events and record new stack
 
-		var oldStack = dijit._activeStack;		
+		var oldStack = dijit._activeStack;
 		dijit._activeStack = newStack;
 
 		// compare old stack to new stack to see how many elements they have in common

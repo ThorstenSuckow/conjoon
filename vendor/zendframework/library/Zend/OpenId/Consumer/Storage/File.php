@@ -18,7 +18,7 @@
  * @subpackage Zend_OpenId_Consumer
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: File.php 9250 2008-04-18 21:00:13Z darby $
+ * @version    $Id: File.php 12970 2008-12-01 12:55:17Z dmitry $
  */
 
 /**
@@ -142,17 +142,24 @@ class Zend_OpenId_Consumer_Storage_File extends Zend_OpenId_Consumer_Storage
         fwrite($f, $data);
         if (function_exists('symlink')) {
             @unlink($name2);
-            symlink($name1, $name2);
-        } else {
-            $f2 = @fopen($name2, 'w+');
-            if ($f2) {
-                fwrite($f2, $data);
-                fclose($f2);
+            if (symlink($name1, $name2)) {
+                fclose($f);
+                fclose($lock);
+                return true;
             }
+        }
+        $f2 = @fopen($name2, 'w+');
+        if ($f2) {
+            fwrite($f2, $data);
+            fclose($f2);
+            @unlink($name1);
+            $ret = true;
+        } else {
+        	$ret = false;
         }
         fclose($f);
         fclose($lock);
-        return true;
+        return $ret;
     }
 
     /**

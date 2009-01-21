@@ -16,7 +16,7 @@
  * @package    UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestHelper.php 11403 2008-09-14 17:21:52Z alexander $
+ * @version    $Id: TestHelper.php 13682 2009-01-17 22:13:23Z alexander $
  */
 
 /*

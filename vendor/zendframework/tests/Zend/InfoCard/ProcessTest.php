@@ -16,7 +16,7 @@
  * @package    Zend_InfoCard
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProcessTest.php 8789 2008-03-12 20:07:42Z darby $
+ * @version    $Id: ProcessTest.php 12608 2008-11-13 12:51:00Z alexander $
  */
 
 // Call Zend_InfoCard_ProcessTest::main() if this source file is executed directly.
@@ -59,6 +59,8 @@ class Zend_InfoCard_ProcessTest extends PHPUnit_Framework_TestCase
         $this->sslPubKey     = dirname(__FILE__) . '/_files/ssl_pub.cert';
         $this->sslPrvKey     = dirname(__FILE__) . '/_files/ssl_private.cert';
         $this->loadXmlDocument();
+        $_SERVER['SERVER_NAME'] = "192.168.1.105";
+        $_SERVER['SERVER_PORT'] = 80;
     }
 
     public function loadXmlDocument()
@@ -136,9 +138,6 @@ class Zend_InfoCard_ProcessTest extends PHPUnit_Framework_TestCase
         if (version_compare(PHP_VERSION, '5.2.0', '<')) {
             $this->markTestSkipped('DOMDocument::C14N() not available until PHP 5.2.0');
         }
-
-        $_SERVER['SERVER_NAME'] = "192.168.1.105";
-        $_SERVER['SERVER_PORT'] = 80;
 
         try {
             $infoCard = new Zend_InfoCard();

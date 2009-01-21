@@ -17,18 +17,13 @@
  * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Url.php 10189 2008-07-18 19:40:35Z dasprid $
+ * @version    $Id: Url.php 12526 2008-11-10 20:25:20Z ralph $
  */
 
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
 require_once 'Zend/Controller/Action/Helper/Abstract.php';
-
-/**
- * @see Zend_Controller_Front
- */
-require_once 'Zend/Controller/Front.php';
 
 /**
  * Helper for creating URLs for redirects and other tasks
@@ -64,8 +59,12 @@ class Zend_Controller_Action_Helper_Url extends Zend_Controller_Action_Helper_Ab
         }
 
         $url = $controller . '/' . $action;
-        if ($module != Zend_Controller_Front::getInstance()->getDispatcher()->getDefaultModule()) {
+        if ($module != $this->getFrontController()->getDispatcher()->getDefaultModule()) {
             $url = $module . '/' . $url;
+        }
+        
+        if ('' !== ($baseUrl = $this->getFrontController()->getBaseUrl())) {
+        	$url = $baseUrl . '/' . $url;
         }
 
         if (null !== $params) {

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BasicSqliteTest.php 4194 2007-03-22 23:50:34Z darby $
+ * @version    $Id: SkipTests.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 
 
@@ -73,5 +73,9 @@ class Zend_Cache_SqliteBackendTest_SkipTests extends Zend_Cache_BackendTest_Skip
 }
 
 class Zend_Cache_ZendPlatformBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
+{
+}
+
+class Zend_Cache_TwoLevelsBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }

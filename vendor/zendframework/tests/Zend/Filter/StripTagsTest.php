@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StripTagsTest.php 10752 2008-08-07 13:20:50Z alexander $
+ * @version    $Id: StripTagsTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 

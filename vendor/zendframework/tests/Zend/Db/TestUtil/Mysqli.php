@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysqli.php 6847 2007-11-18 05:24:21Z peptolab $
+ * @version    $Id: Mysqli.php 12882 2008-11-26 18:21:16Z mikaelkael $
  */
 
 
@@ -88,6 +88,36 @@ class Zend_Db_TestUtil_Mysqli extends Zend_Db_TestUtil_Common
             require_once 'Zend/Db/Exception.php';
             throw new Zend_Db_Exception("SQL error for \"$sql\": $e");
         }
+    }
+
+    /**
+     * Test that describeTable() returns correct float type
+     * @group ZF-3624
+     */
+    protected function _getColumnsPrice()
+    {
+        return array(
+            'product_id'    => 'INTEGER NOT NULL',
+            'price_name'    => 'VARCHAR(100)',
+            'price'         => 'FLOAT(10,8)',
+            'price_total'   => 'DECIMAL(10,2) NOT NULL',
+            'PRIMARY KEY'   => 'product_id'
+            );
+    }
+
+    /**
+     * Test that describeTable() returns correct float type
+     * @group ZF-3624
+     */
+    protected function _getDataPrice()
+    {
+        return array(
+            array(
+                'product_id'   => 1,
+                'price_name'   => 'Price 1',
+                'price_total'  => 200.45
+            )
+        );
     }
 
     public function setUp(Zend_Db_Adapter_Abstract $db)

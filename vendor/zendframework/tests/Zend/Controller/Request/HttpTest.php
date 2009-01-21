@@ -367,6 +367,17 @@ class Zend_Controller_Request_HttpTest extends PHPUnit_Framework_TestCase
         $this->assertSame('', $this->_request->getBaseUrl());
     }
  
+    /*
+     * Tests if an empty string gets returned when no basepath is set on the request.
+     * This is important on windows, where before this fix '\' was returned instead of an empty string.
+     * @group ZF-4810
+     */
+    public function testGetBasePathIsEmptyStringIfNoneSet()
+    {
+        $request = new Zend_Controller_Request_Http();
+        $this->assertEquals('', $request->getBasePath());
+    }
+
     public function testSetBaseUrl()
     {
         $this->_request->setBaseUrl('/news');
@@ -568,10 +579,13 @@ class Zend_Controller_Request_HttpTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->_request->isFlashRequest());
         $_SERVER['HTTP_USER_AGENT'] = 'Shockwave Flash';
         $this->assertTrue($this->_request->isFlashRequest());
+
+        $_SERVER['HTTP_USER_AGENT'] = 'Adobe Flash Player 10';
+        $this->assertTrue($this->_request->isFlashRequest());
     }
 
     /**
-     * ZF-1798
+     * @group ZF-1798
      */
     public function testGetAndPostBothInDefaultParamSources()
     {
@@ -579,7 +593,7 @@ class Zend_Controller_Request_HttpTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * ZF-1798
+     * @group ZF-1798
      */
     public function testCanSetParamSources()
     {
@@ -591,7 +605,7 @@ class Zend_Controller_Request_HttpTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * ZF-1798
+     * @group ZF-1798
      */
     public function testParamSourcesHonoredByGetParam()
     {
@@ -599,6 +613,30 @@ class Zend_Controller_Request_HttpTest extends PHPUnit_Framework_TestCase
         $_POST = array('foo' => 'baz');
         $this->_request->setParamSources(array('_POST'));
         $this->assertEquals('baz', $this->_request->getParam('foo'));
+    }
+
+    /**
+     * @group ZF-3161
+     */
+    public function testRetrievingRequestUriShouldStripProtocolHostAndPortWhenPresent()
+    {
+        $_SERVER['REQUEST_URI'] = 'http://foo.example.com/foo/bar';
+        $_SERVER['HTTP_HOST']   = 'foo.example.com';
+        $request = new Zend_Controller_Request_Http();
+        $test = $request->getRequestUri();
+        $this->assertEquals('/foo/bar', $test);
+    }
+
+    /**
+     * @group ZFI-233
+     */
+    public function testStrippingProtocolHostAndPortShouldStripFromBeginningOfUri()
+    {
+        $_SERVER['REQUEST_URI'] = 'http://foo.example.com/foo/bar?r=http://foo.example.com/bar/baz';
+        $_SERVER['HTTP_HOST']   = 'foo.example.com';
+        $request = new Zend_Controller_Request_Http();
+        $test = $request->getRequestUri();
+        $this->assertEquals('/foo/bar?r=http://foo.example.com/bar/baz', $test);
     }
 }
 

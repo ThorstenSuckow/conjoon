@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 10976 2008-08-22 15:48:52Z doctorrock83 $
+ * @version    $Id: Abstract.php 13355 2008-12-18 21:20:16Z mikaelkael $
  */
 
 
@@ -176,7 +176,7 @@ abstract class Zend_Db_Adapter_Abstract
 
         $options = array(
             Zend_Db::CASE_FOLDING           => $this->_caseFolding,
-            Zend_DB::AUTO_QUOTE_IDENTIFIERS => $this->_autoQuoteIdentifiers
+            Zend_Db::AUTO_QUOTE_IDENTIFIERS => $this->_autoQuoteIdentifiers
         );
         $driverOptions = array();
 
@@ -211,6 +211,7 @@ abstract class Zend_Db_Adapter_Abstract
                     $this->_caseFolding = $case;
                     break;
                 default:
+                    /** @see Zend_Db_Adapter_Exception */
                     require_once 'Zend/Db/Adapter/Exception.php';
                     throw new Zend_Db_Adapter_Exception('Case must be one of the following constants: '
                         . 'Zend_Db::CASE_NATURAL, Zend_Db::CASE_LOWER, Zend_Db::CASE_UPPER');
@@ -242,6 +243,7 @@ abstract class Zend_Db_Adapter_Abstract
     {
         // we need at least a dbname
         if (! array_key_exists('dbname', $config)) {
+            /** @see Zend_Db_Adapter_Exception */
             require_once 'Zend/Db/Adapter/Exception.php';
             throw new Zend_Db_Adapter_Exception("Configuration array must have a key for 'dbname' that names the database instance");
         }
@@ -354,6 +356,7 @@ abstract class Zend_Db_Adapter_Abstract
         }
 
         if (!$profilerInstance instanceof Zend_Db_Profiler) {
+            /** @see Zend_Db_Profiler_Exception */
             require_once 'Zend/Db/Profiler/Exception.php';
             throw new Zend_Db_Profiler_Exception('Class ' . get_class($profilerInstance) . ' does not extend '
                 . 'Zend_Db_Profiler');
@@ -392,7 +395,7 @@ abstract class Zend_Db_Adapter_Abstract
     /**
      * Set the default statement class.
      *
-     * @return Zend_Db_Abstract Fluent interface
+     * @return Zend_Db_Adapter_Abstract Fluent interface
      */
     public function setStatementClass($class)
     {
@@ -1069,6 +1072,13 @@ abstract class Zend_Db_Adapter_Abstract
     abstract protected function _connect();
 
     /**
+     * Test if a connection is active
+     *
+     * @return boolean
+     */
+    abstract public function isConnected();
+
+    /**
      * Force the connection to close.
      *
      * @return void
@@ -1141,4 +1151,10 @@ abstract class Zend_Db_Adapter_Abstract
      */
     abstract public function supportsParameters($type);
 
+    /**
+     * Retrieve server version in PHP style
+     *
+     * @return string
+     */
+    abstract public function getServerVersion();
 }

@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DataTest.php 3776 2007-03-06 22:50:56Z thomas $
+ * @version    $Id: CurrencyTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 
 /**
@@ -35,7 +35,6 @@ require_once 'Zend/Currency.php';
  * PHPUnit test case
  */
 require_once 'PHPUnit/Framework.php';
-
 
 /**
  * @package    Zend_Currency
@@ -129,7 +128,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
     /**
      * tests the creation of Zend_Currency
      */
@@ -164,7 +162,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             // success
         }
     }
-
 
     /**
      * tests the creation of Zend_Currency
@@ -233,7 +230,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         $this->assertSame('€ 1.000,00', $currency->toCurrency(1000));
     }
 
-
     /**
      * tests failed creation of Zend_Currency
      */
@@ -280,7 +276,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
     /*
      * testing toCurrency
      */
@@ -308,7 +303,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             $this->assertContains("has to be numeric", $e->getMessage());
         }
     }
-
 
     /**
      * testing setFormat
@@ -420,7 +414,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
     /**
      * test getSign
      */
@@ -442,7 +435,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             // success
         }
     }
-
 
     /**
      * test getName
@@ -467,7 +459,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
     /**
      * test getShortName
      */
@@ -489,7 +480,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             // success
         }
     }
-
 
     /**
      * testing getRegionList
@@ -525,7 +515,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             7 => 'PR', 8 => 'PW', 9 => 'TC', 10 => 'TL', 11 => 'UM', 12 => 'US', 13 => 'VG', 14 => 'VI'), $currency->getRegionList());
     }
 
-
     /**
      * testing getCurrencyList
      */
@@ -543,7 +532,6 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists('EGP', $currency->getCurrencyList()));
     }
 
-
     /**
      * testing toString
      *
@@ -553,5 +541,19 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         $USD = new Zend_Currency('USD','en_US');
         $this->assertSame('US Dollar', $USD->toString());
         $this->assertSame('US Dollar', $USD->__toString());
+    }
+
+    /**
+     * testing registry Locale
+     * ZF-3676
+     */
+    public function testRegistryLocale()
+    {
+        $locale = new Zend_Locale('de_AT');
+        require_once 'Zend/Registry.php';
+        Zend_Registry::set('Zend_Locale', $locale);
+
+        $currency = new Zend_Currency('EUR');
+        $this->assertSame('de_AT', $currency->getLocale());
     }
 }

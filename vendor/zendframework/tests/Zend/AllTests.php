@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 10743 2008-08-07 02:24:43Z matthew $
+ * @version    $Id: AllTests.php 12749 2008-11-21 17:36:33Z matthew $
  */
 
 /**
@@ -31,6 +31,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Zend/AclTest.php';
+require_once 'Zend/Amf/AllTests.php';
 require_once 'Zend/Auth/AllTests.php';
 require_once 'Zend/Cache/AllTests.php';
 require_once 'Zend/Captcha/AllTests.php';
@@ -53,7 +54,7 @@ require_once 'Zend/Gdata/AllTests.php';
 require_once 'Zend/Http/AllTests.php';
 require_once 'Zend/InfoCard/AllTests.php';
 require_once 'Zend/JsonTest.php';
-require_once 'Zend/Json/JsonXMLTest.php';
+require_once 'Zend/Json/AllTests.php';
 require_once 'Zend/Layout/AllTests.php';
 require_once 'Zend/Ldap/AllTests.php';
 require_once 'Zend/LoaderTest.php';
@@ -82,14 +83,16 @@ require_once 'Zend/Test/AllTests.php';
 require_once 'Zend/Text/AllTests.php';
 require_once 'Zend/TimeSyncTest.php';
 require_once 'Zend/TranslateTest.php';
-require_once 'Zend/Translate/AllTests.php';
+require_once 'Zend/Translate/Adapter/AllTests.php';
 require_once 'Zend/UriTest.php';
 require_once 'Zend/Uri/AllTests.php';
 require_once 'Zend/ValidateTest.php';
 require_once 'Zend/Validate/AllTests.php';
 require_once 'Zend/VersionTest.php';
 require_once 'Zend/ViewTest.php';
-require_once 'Zend/Wildfire/AllTests.php';
+if (PHP_OS != 'AIX') {
+    require_once 'Zend/Wildfire/AllTests.php';
+}
 require_once 'Zend/XmlRpc/AllTests.php';
 
 /**
@@ -111,6 +114,7 @@ class Zend_AllTests
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend');
 
         $suite->addTestSuite('Zend_AclTest');
+        $suite->addTest(Zend_Amf_AllTests::suite());
         $suite->addTest(Zend_Auth_AllTests::suite());
         $suite->addTest(Zend_Cache_AllTests::suite());
         $suite->addTest(Zend_Captcha_AllTests::suite());
@@ -133,7 +137,7 @@ class Zend_AllTests
         $suite->addTest(Zend_Http_AllTests::suite());
         $suite->addTest(Zend_InfoCard_AllTests::suite());
         $suite->addTestSuite('Zend_JsonTest');
-        $suite->addTestSuite('Zend_Json_JsonXMLTest');
+        $suite->addTest(Zend_Json_AllTests::suite());
         $suite->addTest(Zend_Layout_AllTests::suite());
         $suite->addTest(Zend_Ldap_AllTests::suite());
         $suite->addTestSuite('Zend_LoaderTest');
@@ -162,14 +166,16 @@ class Zend_AllTests
         $suite->addTest(Zend_Text_AllTests::suite());
         $suite->addTestSuite('Zend_TimeSyncTest');
         $suite->addTestSuite('Zend_TranslateTest');
-        $suite->addTest(Zend_Translate_AllTests::suite());
+        $suite->addTest(Zend_Translate_Adapter_AllTests::suite());
         $suite->addTestSuite('Zend_UriTest');
         $suite->addTest(Zend_Uri_AllTests::suite());
         $suite->addTestSuite('Zend_ValidateTest');
         $suite->addTest(Zend_Validate_AllTests::suite());
         $suite->addTestSuite('Zend_ViewTest');
         $suite->addTestSuite('Zend_VersionTest');
-        $suite->addTest(Zend_Wildfire_AllTests::suite());
+        if (PHP_OS != 'AIX') {
+            $suite->addTest(Zend_Wildfire_AllTests::suite());
+        }
         $suite->addTest(Zend_XmlRpc_AllTests::suite());
 
         return $suite;

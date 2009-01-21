@@ -27,7 +27,7 @@ require_once 'Zend/View.php';
  * @package    Zend_View
  * @subpackage UnitTests
  */
-class Zend_View_Helper_HeadLinkTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_HeadLinkTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_View_Helper_HeadLink
@@ -374,6 +374,49 @@ class Zend_View_Helper_HeadLinkTest extends PHPUnit_Framework_TestCase
         $this->helper->appendStylesheet(array('href' => '/bar/baz', 'conditionalStylesheet' => false));
         $test = $this->helper->toString();
         $this->assertNotContains('[if false]', $test);
+    }
+
+    /**
+     * test for ZF-3271
+     *
+     */
+    public function testBooleanTrueConditionalStylesheet()
+    {
+        $this->helper->appendStylesheet(array('href' => '/bar/baz', 'conditionalStylesheet' => true));
+        $test = $this->helper->toString();
+        $this->assertNotContains('[if 1]', $test);
+        $this->assertNotContains('[if true]', $test);
+    }
+
+    /**
+     * @issue ZF-3928
+     * @link http://framework.zend.com/issues/browse/ZF-3928
+     */
+    public function testTurnOffAutoEscapeDoesNotEncodeAmpersand()
+    {
+        $this->helper->setAutoEscape(false)->appendStylesheet('/css/rules.css?id=123&foo=bar');
+        $this->assertContains('id=123&foo=bar', $this->helper->toString());
+    }
+
+    public function testSetAlternateWithExtras()
+    {
+        $this->helper->setAlternate('/mydocument.pdf', 'application/pdf', 'foo', array('media' => array('print','screen')));
+        $test = $this->helper->toString();
+        $this->assertContains('media="print,screen"', $test);
+    }
+
+    public function testAppendStylesheetWithExtras()
+    {
+        $this->helper->appendStylesheet(array('href' => '/bar/baz', 'conditionalStylesheet' => false, 'extras' => array('id' => 'my_link_tag')));
+        $test = $this->helper->toString();
+        $this->assertContains('id="my_link_tag"', $test);
+    }
+
+    public function testSetStylesheetWithMediaAsArray()
+    {
+        $this->helper->appendStylesheet('/bar/baz', array('screen','print'));
+        $test = $this->helper->toString();
+        $this->assertContains(' media="screen,print"', $test);
     }
 }
 

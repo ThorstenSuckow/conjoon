@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 9670 2008-06-11 08:51:21Z dasprid $
+ * @version    $Id: FigletTest.php 12648 2008-11-14 15:46:12Z ralph $
  */
 
 // Call Zend_Text_FigletTest::main() if this source file is executed directly.
@@ -125,6 +125,10 @@ class Zend_Text_FigletTest extends PHPUnit_Framework_TestCase
 
     public function testCorrectEncodingISO885915()
     {
+        if (PHP_OS == 'AIX') {
+            $this->markTestSkipped('Test case cannot run on AIX');
+        }
+        
         $figlet = new Zend_Text_Figlet();
 
         $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
@@ -138,7 +142,13 @@ class Zend_Text_FigletTest extends PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('Test case not reproducible on all setups');
         $figlet  = new Zend_Text_Figlet();
-        $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
+        
+        if (PHP_OS == 'AIX') {
+            $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
+        } else {
+            $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
+        }
+        
         $figlet->render($isoText);
     }
 

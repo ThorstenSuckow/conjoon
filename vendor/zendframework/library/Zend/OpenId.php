@@ -17,7 +17,7 @@
  * @package    Zend_OpenId
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OpenId.php 9240 2008-04-18 13:06:29Z dmitry $
+ * @version    $Id: OpenId.php 12972 2008-12-01 13:26:36Z dmitry $
  */
 
 /**
@@ -65,6 +65,26 @@ class Zend_OpenId
      * Allows enable/disable stoping execution of PHP script after redirect()
      */
     static public $exitOnRedirect = true;
+   
+    /**
+     * Alternative request URL that can be used to override the default 
+     * selfUrl() response
+     */
+    static public $selfUrl = null;
+
+    /**
+     * Sets alternative request URL that can be used to override the default
+     * selfUrl() response
+     *
+     * @param string $selfUrl the URL to be set
+     * @return string the old value of overriding URL
+     */
+    static public function setSelfUrl($selfUrl = null)
+    {
+    	$ret = self::$selfUrl;
+		self::$selfUrl = $selfUrl;
+		return $ret;
+	}
 
     /**
      * Returns a full URL that was requested on current HTTP request.
@@ -73,7 +93,9 @@ class Zend_OpenId
      */
     static public function selfUrl()
     {
-        if (isset($_SERVER['SCRIPT_URI'])) {
+    	if (self::$selfUrl !== null) {
+			return self::$selfUrl;
+        } if (isset($_SERVER['SCRIPT_URI'])) {
             return $_SERVER['SCRIPT_URI'];
         }
         $url = '';
@@ -508,7 +530,7 @@ class Zend_OpenId
         if (function_exists('hash_hmac')) {
             return hash_hmac($macFunc, $data, $secret, 1);
         } else {
-            if (strlen($secret) > 64) {
+            if (Zend_OpenId::strlen($secret) > 64) {
                 $secret = self::digest($macFunc, $secret);
             }
             $secret = str_pad($secret, 64, chr(0x00));
@@ -533,7 +555,7 @@ class Zend_OpenId
             return gmp_init(bin2hex($bin), 16);
         } else if (extension_loaded('bcmath')) {
             $bn = 0;
-            $len = strlen($bin);
+            $len = Zend_OpenId::strlen($bin);
             for ($i = 0; $i < $len; $i++) {
                 $bn = bcmul($bn, 256);
                 $bn = bcadd($bn, ord($bin[$i]));
@@ -614,7 +636,7 @@ class Zend_OpenId
             $bn_p        = self::binToBigNum($p);
             $bn_g        = self::binToBigNum($g);
             if (is_null($priv_key)) {
-                $priv_key    = self::randomBytes(strlen($p));
+                $priv_key    = self::randomBytes(Zend_OpenId::strlen($p));
             }
             $bn_priv_key = self::binToBigNum($priv_key);
             if (extension_loaded('gmp')) {
@@ -710,6 +732,22 @@ class Zend_OpenId
             return chr(0) . $str;
         }
         return $str;
+    }
+
+    /**
+     * Returns lenght of binary string in bytes
+     *
+     * @param string $str 
+     * @return int the string lenght
+     */
+    static public function strlen($str)
+    {
+        if (extension_loaded('mbstring') &&
+            (((int)ini_get('mbstring.func_overload')) & 2)) {
+            return mb_strlen($str, 'latin1');
+        } else {
+            return strlen($str);
+        }
     }
 
 }

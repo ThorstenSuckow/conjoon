@@ -137,6 +137,63 @@ class Zend_Db_Adapter_Pdo_OciTest extends Zend_Db_Adapter_Pdo_TestCommon
     }
 
     /**
+     * Test that quote() takes an array and returns
+     * an imploded string of comma-separated, quoted elements.
+     */
+    public function testAdapterQuoteArray()
+    {
+        $array = array("it's", 'all', 'right!');
+        $value = $this->_db->quote($array);
+        $this->assertEquals("'it''s', 'all', 'right!'", $value);
+    }
+
+    /**
+     * test that quote() escapes a double-quote
+     * character in a string.
+     */
+    public function testAdapterQuoteDoubleQuote()
+    {
+        $string = 'St John"s Wort';
+        $value = $this->_db->quote($string);
+        $this->assertEquals("'St John\"s Wort'", $value);
+    }
+
+    /**
+     * test that quote() escapes a single-quote
+     * character in a string.
+     */
+    public function testAdapterQuoteSingleQuote()
+    {
+        $string = "St John's Wort";
+        $value = $this->_db->quote($string);
+        $this->assertEquals("'St John''s Wort'", $value);
+    }
+
+    /**
+     * test that quoteInto() escapes a double-quote
+     * character in a string.
+     */
+    public function testAdapterQuoteIntoDoubleQuote()
+    {
+        $string = 'id=?';
+        $param = 'St John"s Wort';
+        $value = $this->_db->quoteInto($string, $param);
+        $this->assertEquals("id='St John\"s Wort'", $value);
+    }
+
+    /**
+     * test that quoteInto() escapes a single-quote
+     * character in a string.
+     */
+    public function testAdapterQuoteIntoSingleQuote()
+    {
+        $string = 'id = ?';
+        $param = 'St John\'s Wort';
+        $value = $this->_db->quoteInto($string, $param);
+        $this->assertEquals("id = 'St John''s Wort'", $value);
+    }
+
+    /**
      * test that quoteTableAs() accepts a string and an alias,
      * and returns each as delimited identifiers.
      * Oracle does not want the 'AS' in between.
@@ -149,9 +206,80 @@ class Zend_Db_Adapter_Pdo_OciTest extends Zend_Db_Adapter_Pdo_TestCommon
         $this->assertEquals('"foo" "bar"', $value);
     }
 
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchAll()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $value = $this->_db->fetchAll("SELECT * FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, stream_get_contents($value[0]['doc_clob']));
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchRow()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $value = $this->_db->fetchRow("SELECT * FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, stream_get_contents($value['doc_clob']));
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchAssoc()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $value = $this->_db->fetchAssoc("SELECT * FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, stream_get_contents($value[1]['doc_clob']));
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchCol()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $document_clob = $this->_db->quoteIdentifier('doc_clob');
+        $value = $this->_db->fetchCol("SELECT $document_clob FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, stream_get_contents($value[0]));
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchOne()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $document_clob = $this->_db->quoteIdentifier('doc_clob');
+        $value = $this->_db->fetchOne("SELECT $document_clob FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, stream_get_contents($value));
+    }
+
     public function getDriver()
     {
         return 'Pdo_Oci';
     }
-
 }

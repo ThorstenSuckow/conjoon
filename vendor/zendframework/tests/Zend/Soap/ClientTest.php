@@ -18,6 +18,8 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+require_once dirname(__FILE__)."/../../TestHelper.php";
+
 /** PHPUnit Test Case */
 require_once "PHPUnit/Framework/TestCase.php";
 
@@ -32,16 +34,19 @@ require_once 'Zend/Soap/Client.php';
  *
  * @category   Zend
  * @package    UnitTests
- * @version    $Id: ServerTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: ClientTest.php 13267 2008-12-15 17:09:32Z alexander $
  */
 class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
 {
-    public function testSetOptions()
+    public function setUp()
     {
         if (!extension_loaded('soap')) {
            $this->markTestSkipped('SOAP Extension is not loaded');
         }
+    }
 
+    public function testSetOptions()
+    {
     	/*************************************************************
     	 * ------ Test WSDL mode options -----------------------------
     	 *************************************************************/
@@ -107,10 +112,6 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
 
     public function testGetOptions()
     {
-        if (!extension_loaded('soap')) {
-           $this->markTestSkipped('SOAP Extension is not loaded');
-        }
-
     	$client = new Zend_Soap_Client();
 
         $this->assertTrue($client->getOptions() == array('encoding' => 'UTF-8', 'soap_version' => SOAP_1_2));
@@ -161,10 +162,6 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testGetTypes()
     {
-        if (!extension_loaded('soap')) {
-           $this->markTestSkipped('SOAP Extension is not loaded');
-        }
-
     	// Remove the following line when you implement this test.
         $this->markTestIncomplete(
           "This test has not been implemented yet."
@@ -173,10 +170,6 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
 
     public function testGetLastRequest()
     {
-        if (!extension_loaded('soap')) {
-           $this->markTestSkipped('SOAP Extension is not loaded');
-        }
-
     	$server = new Zend_Soap_Server(dirname(__FILE__) . '/_files/wsdl_example.wsdl');
         $server->setClass('Zend_Soap_Client_TestClass');
 
@@ -185,7 +178,7 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
         // Perform request
         $client->testFunc2('World');
 
-        $expectedRequest = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL
+        $expectedRequest = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
                          . '<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" '
                          .               'xmlns:xsd="http://www.w3.org/2001/XMLSchema" '
                          .               'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -195,17 +188,13 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
                          .             '<who xsi:type="xsd:string">World</who>'
                          .         '</env:testFunc2>'
                          .     '</env:Body>'
-                         . '</env:Envelope>' . PHP_EOL;
+                         . '</env:Envelope>' . "\n";
 
         $this->assertEquals($client->getLastRequest(), $expectedRequest);
     }
 
     public function testGetLastResponse()
     {
-        if (!extension_loaded('soap')) {
-           $this->markTestSkipped('SOAP Extension is not loaded');
-        }
-
     	$server = new Zend_Soap_Server(dirname(__FILE__) . '/_files/wsdl_example.wsdl');
         $server->setClass('Zend_Soap_Client_TestClass');
 
@@ -214,7 +203,7 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
         // Perform request
         $client->testFunc2('World');
 
-        $expectedResponse = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL
+        $expectedResponse = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
                           . '<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" '
                           .               'xmlns:xsd="http://www.w3.org/2001/XMLSchema" '
                           .               'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -225,17 +214,13 @@ class Zend_Soap_ClientTest extends PHPUnit_Framework_TestCase
                           .             '<testFunc2Return xsi:type="xsd:string">Hello World!</testFunc2Return>'
                           .         '</env:testFunc2Response>'
                           .     '</env:Body>'
-                          . '</env:Envelope>' . PHP_EOL;
+                          . '</env:Envelope>' . "\n";
 
         $this->assertEquals($client->getLastResponse(), $expectedResponse);
     }
 
     public function testCallInvoke()
     {
-        if (!extension_loaded('soap')) {
-           $this->markTestSkipped('SOAP Extension is not loaded');
-        }
-
     	$server = new Zend_Soap_Server(dirname(__FILE__) . '/_files/wsdl_example.wsdl');
         $server->setClass('Zend_Soap_Client_TestClass');
 

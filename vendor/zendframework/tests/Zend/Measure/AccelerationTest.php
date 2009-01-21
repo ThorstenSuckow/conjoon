@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AccelerationTest.php 6799 2007-11-09 22:44:42Z thomas $
+ * @version    $Id: AccelerationTest.php 10502 2008-07-27 18:55:57Z thomas $
  */
 
 /**

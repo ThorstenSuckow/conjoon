@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: AllTests.php 12204 2008-10-30 20:42:37Z dasprid $
  */
 
 /**
@@ -29,6 +29,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Config_AllTests::main');
 }
 
+require_once 'Zend/Config/Writer/AllTests.php';
 require_once 'Zend/Config/IniTest.php';
 require_once 'Zend/Config/XmlTest.php';
 
@@ -50,6 +51,8 @@ class Zend_Config_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Config');
 
+        $suite->addTest(Zend_Config_Writer_AllTests::suite());
+        
         $suite->addTestSuite('Zend_Config_IniTest');
         $suite->addTestSuite('Zend_Config_XmlTest');
 

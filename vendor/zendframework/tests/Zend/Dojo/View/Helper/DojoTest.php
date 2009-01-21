@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DojoTest.php 11320 2008-09-09 19:35:29Z matthew $
+ * @version    $Id: DojoTest.php 11991 2008-10-16 15:12:15Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_DojoTest::main() if this source file is executed directly.
@@ -206,22 +206,22 @@ class Zend_Dojo_View_Helper_DojoTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->helper->useCdn());
     }
 
-    public function testShouldUseAolCdnByDefault()
+    public function testShouldUseGoogleCdnByDefault()
     {
-        $this->assertEquals(Zend_Dojo::CDN_BASE_AOL, $this->helper->getCdnBase());
+        $this->assertEquals(Zend_Dojo::CDN_BASE_GOOGLE, $this->helper->getCdnBase());
     }
 
     public function testShouldAllowSpecifyingCdnBasePath()
     {
-        $this->testShouldUseAolCdnByDefault();
-        $this->helper->setCdnBase(Zend_Dojo::CDN_BASE_GOOGLE);
-        $this->assertEquals(Zend_Dojo::CDN_BASE_GOOGLE, $this->helper->getCdnBase());
+        $this->testShouldUseGoogleCdnByDefault();
+        $this->helper->setCdnBase(Zend_Dojo::CDN_BASE_AOL);
+        $this->assertEquals(Zend_Dojo::CDN_BASE_AOL, $this->helper->getCdnBase());
     }
 
     public function testShouldUseLatestVersionWhenUsingCdnByDefault()
     {
         $this->helper->enable();
-        $this->assertEquals('1.1.1', $this->helper->getCdnVersion());
+        $this->assertEquals('1.2.0', $this->helper->getCdnVersion());
     }
 
     public function testShouldAllowSpecifyingDojoVersionWhenUtilizingCdn()
@@ -429,7 +429,7 @@ function() {
                     $this->assertContains('parseOnLoad', $script);
                     break;
                 case 1:
-                    $this->assertContains('src="http://o.aolcdn.com/dojo/1.1/dojo/dojo.xd.js"', $script);
+                    $this->assertRegexp('#src="http://.+/dojo/[0-9.]+/dojo/dojo.xd.js"#', $script);
                     $this->assertContains('/>', $script);
                     break;
                 case 2:
@@ -446,7 +446,7 @@ function() {
         $style = $doc->saveXML($results->item(0));
         $this->assertContains('@import', $style);
         $this->assertEquals(2, substr_count($style, '@import'));
-        $this->assertEquals(1, substr_count($style, 'http://o.aolcdn.com/dojo/1.1/'), $style);
+        $this->assertEquals(1, substr_count($style, 'http://ajax.googleapis.com/ajax/libs/dojo/'), $style);
         $this->assertContains('css/custom.css', $style);
         $this->assertContains('dijit/themes/tundra/tundra.css', $style);
     }
@@ -813,6 +813,26 @@ function() {
             $this->fail('Failed to find djConfig settings: ' . $html);
         }
         $this->assertNotContains('"parseOnLoad":true', $matches[1]);
+    }
+
+    /**
+     * @group ZF-4522
+     */
+    public function testOnLoadCaptureStartShouldReturnVoid()
+    {
+        $test = $this->helper->onLoadCaptureStart();
+        $this->helper->onLoadCaptureEnd();
+        $this->assertNull($test);
+    }
+
+    /**
+     * @group ZF-4522
+     */
+    public function testJavascriptCaptureStartShouldReturnVoid()
+    {
+        $test = $this->helper->javascriptCaptureStart();
+        $this->helper->javascriptCaptureEnd();
+        $this->assertNull($test);
     }
 
     public function setupDojo()

@@ -42,10 +42,12 @@ require_once 'Zend/Gdata/AuthSubTest.php';
  */
 require_once 'Zend/Gdata/AppTest.php';
 require_once 'Zend/Gdata/App/UtilTest.php';
+require_once 'Zend/Gdata/App/BaseTest.php';
 require_once 'Zend/Gdata/App/AuthorTest.php';
 require_once 'Zend/Gdata/App/CategoryTest.php';
 require_once 'Zend/Gdata/App/ContentTest.php';
 require_once 'Zend/Gdata/App/ControlTest.php';
+require_once 'Zend/Gdata/App/EntryTest.php';
 require_once 'Zend/Gdata/App/FeedTest.php';
 require_once 'Zend/Gdata/App/GeneratorTest.php';
 require_once 'Zend/Gdata/App/CaptchaRequiredExceptionTest.php';
@@ -55,6 +57,8 @@ require_once 'Zend/Gdata/QueryTest.php';
 require_once 'Zend/Gdata/AttendeeStatusTest.php';
 require_once 'Zend/Gdata/AttendeeTypeTest.php';
 require_once 'Zend/Gdata/CommentsTest.php';
+require_once 'Zend/Gdata/EntryTest.php';
+require_once 'Zend/Gdata/FeedTest.php';
 require_once 'Zend/Gdata/EntryLinkTest.php';
 require_once 'Zend/Gdata/EventStatusTest.php';
 require_once 'Zend/Gdata/ExtendedPropertyTest.php';
@@ -73,10 +77,10 @@ require_once 'Zend/Gdata/WhereTest.php';
 require_once 'Zend/Gdata/WhoTest.php';
 
 require_once 'Zend/Gdata/Gbase/ItemEntryTest.php';
-require_once 'Zend/Gdata/Gbase/ItemFeedTest.php';        
+require_once 'Zend/Gdata/Gbase/ItemFeedTest.php';
 require_once 'Zend/Gdata/Gbase/ItemQueryTest.php';
 require_once 'Zend/Gdata/Gbase/SnippetFeedTest.php';
-require_once 'Zend/Gdata/Gbase/SnippetQueryTest.php';        
+require_once 'Zend/Gdata/Gbase/SnippetQueryTest.php';
 require_once 'Zend/Gdata/Gbase/QueryTest.php';
 require_once 'Zend/Gdata/Gbase/BaseAttributeTest.php';
 
@@ -162,7 +166,17 @@ require_once 'Zend/Gdata/YouTube/CommentFeedTest.php';
 require_once 'Zend/Gdata/YouTube/CommentEntryTest.php';
 require_once 'Zend/Gdata/YouTube/ContactFeedTest.php';
 require_once 'Zend/Gdata/YouTube/ContactEntryTest.php';
+require_once 'Zend/Gdata/YouTube/VideoQueryTest.php';
 
+require_once 'Zend/Gdata/Books/CollectionFeedTest.php';
+require_once 'Zend/Gdata/Books/CollectionEntryTest.php';
+require_once 'Zend/Gdata/Books/VolumeFeedTest.php';
+require_once 'Zend/Gdata/Books/VolumeEntryTest.php';
+
+require_once 'Zend/Gdata/Health/QueryTest.php';
+require_once 'Zend/Gdata/Health/ProfileListEntryTest.php';
+require_once 'Zend/Gdata/Health/ProfileEntryTest.php';
+require_once 'Zend/Gdata/Health/ProfileFeedTest.php';
 
 /**
  * Tests that do require online access to servers
@@ -171,11 +185,13 @@ require_once 'Zend/Gdata/YouTube/ContactEntryTest.php';
 require_once 'Zend/Gdata/GdataOnlineTest.php';
 require_once 'Zend/Gdata/GbaseOnlineTest.php';
 require_once 'Zend/Gdata/CalendarOnlineTest.php';
+require_once 'Zend/Gdata/HealthOnlineTest.php';
 require_once 'Zend/Gdata/SpreadsheetsOnlineTest.php';
 require_once 'Zend/Gdata/DocsOnlineTest.php';
 require_once 'Zend/Gdata/PhotosOnlineTest.php';
 require_once 'Zend/Gdata/GappsOnlineTest.php';
 require_once 'Zend/Gdata/YouTubeOnlineTest.php';
+require_once 'Zend/Gdata/BooksOnlineTest.php';
 require_once 'Zend/Gdata/SkipTests.php';
 
 class Zend_Gdata_AllTests
@@ -200,19 +216,23 @@ class Zend_Gdata_AllTests
          */
         $suite->addTestSuite('Zend_Gdata_AppTest');
         $suite->addTestSuite('Zend_Gdata_App_UtilTest');
+        $suite->addTestSuite('Zend_Gdata_App_BaseTest');
         $suite->addTestSuite('Zend_Gdata_App_AuthorTest');
         $suite->addTestSuite('Zend_Gdata_App_CategoryTest');
         $suite->addTestSuite('Zend_Gdata_App_ContentTest');
         $suite->addTestSuite('Zend_Gdata_App_ControlTest');
+        $suite->addTestSuite('Zend_Gdata_App_EntryTest');
         $suite->addTestSuite('Zend_Gdata_App_FeedTest');
         $suite->addTestSuite('Zend_Gdata_App_GeneratorTest');
         $suite->addTestSuite('Zend_Gdata_App_CaptchaRequiredExceptionTest');
         $suite->addTestSuite('Zend_Gdata_GdataTest');
         $suite->addTestSuite('Zend_Gdata_QueryTest');
-        
+
         $suite->addTestSuite('Zend_Gdata_AttendeeStatusTest');
         $suite->addTestSuite('Zend_Gdata_AttendeeTypeTest');
         $suite->addTestSuite('Zend_Gdata_CommentsTest');
+        $suite->addTestSuite('Zend_Gdata_EntryTest');
+        $suite->addTestSuite('Zend_Gdata_FeedTest');
         $suite->addTestSuite('Zend_Gdata_EntryLinkTest');
         $suite->addTestSuite('Zend_Gdata_EventStatusTest');
         $suite->addTestSuite('Zend_Gdata_ExtendedPropertyTest');
@@ -231,10 +251,10 @@ class Zend_Gdata_AllTests
         $suite->addTestSuite('Zend_Gdata_WhoTest');
 
         $suite->addTestSuite('Zend_Gdata_Gbase_ItemEntryTest');
-        $suite->addTestSuite('Zend_Gdata_Gbase_ItemFeedTest');        
+        $suite->addTestSuite('Zend_Gdata_Gbase_ItemFeedTest');
         $suite->addTestSuite('Zend_Gdata_Gbase_ItemQueryTest');
         $suite->addTestSuite('Zend_Gdata_Gbase_SnippetFeedTest');
-        $suite->addTestSuite('Zend_Gdata_Gbase_SnippetQueryTest');        
+        $suite->addTestSuite('Zend_Gdata_Gbase_SnippetQueryTest');
         $suite->addTestSuite('Zend_Gdata_Gbase_QueryTest');
         $suite->addTestSuite('Zend_Gdata_Gbase_BaseAttributeTest');
 
@@ -243,7 +263,7 @@ class Zend_Gdata_AllTests
         $suite->addTestSuite('Zend_Gdata_CalendarEventTest');
         $suite->addTestSuite('Zend_Gdata_CalendarFeedCompositeTest');
         $suite->addTestSuite('Zend_Gdata_Calendar_EventQueryTest');
-        $suite->addTestSuite('Zend_Gdata_Calendar_EventQueryExceptionTest');        
+        $suite->addTestSuite('Zend_Gdata_Calendar_EventQueryExceptionTest');
         $suite->addTestSuite('Zend_Gdata_Calendar_EventEntryTest');
         $suite->addTestSuite('Zend_Gdata_Calendar_AccessLevelTest');
         $suite->addTestSuite('Zend_Gdata_Calendar_ColorTest');
@@ -254,7 +274,7 @@ class Zend_Gdata_AllTests
         $suite->addTestSuite('Zend_Gdata_Calendar_TimezoneTest');
         $suite->addTestSuite('Zend_Gdata_Calendar_WebContentTest');
         $suite->addTestSuite('Zend_Gdata_Calendar_QuickAddTest');
-        
+
         $suite->addTestSuite('Zend_Gdata_Spreadsheets_ColCountTest');
         $suite->addTestSuite('Zend_Gdata_Spreadsheets_RowCountTest');
         $suite->addTestSuite('Zend_Gdata_Spreadsheets_CellTest');
@@ -269,7 +289,7 @@ class Zend_Gdata_AllTests
         $suite->addTestSuite('Zend_Gdata_Spreadsheets_DocumentQueryTest');
         $suite->addTestSuite('Zend_Gdata_Spreadsheets_CellQueryTest');
         $suite->addTestSuite('Zend_Gdata_Spreadsheets_ListQueryTest');
-        
+
         $suite->addTestSuite('Zend_Gdata_Docs_DocumentListFeedTest');
         $suite->addTestSuite('Zend_Gdata_Docs_DocumentListEntryTest');
         $suite->addTestSuite('Zend_Gdata_Docs_QueryTest');
@@ -321,6 +341,16 @@ class Zend_Gdata_AllTests
         $suite->addTestSuite('Zend_Gdata_YouTube_ContactFeedTest');
         $suite->addTestSuite('Zend_Gdata_YouTube_ContactEntryTest');
 
+        $suite->addTestSuite('Zend_Gdata_Books_CollectionEntryTest');
+        $suite->addTestSuite('Zend_Gdata_Books_CollectionFeedTest');
+        $suite->addTestSuite('Zend_Gdata_Books_VolumeEntryTest');
+        $suite->addTestSuite('Zend_Gdata_Books_VolumeFeedTest');
+        
+        $suite->addTestSuite('Zend_Gdata_Health_QueryTest');
+        $suite->addTestSuite('Zend_Gdata_Health_ProfileListEntryTest');
+        $suite->addTestSuite('Zend_Gdata_Health_ProfileEntryTest');
+        $suite->addTestSuite('Zend_Gdata_Health_ProfileFeedTest');
+
         $skippingOnlineTests = true;
         if (defined('TESTS_ZEND_GDATA_ONLINE_ENABLED') &&
             constant('TESTS_ZEND_GDATA_ONLINE_ENABLED') == true &&
@@ -345,7 +375,7 @@ class Zend_Gdata_AllTests
             constant('TESTS_ZEND_GDATA_CALENDAR_ONLINE_ENABLED') == true) {
                 $suite->addTestSuite('Zend_Gdata_CalendarOnlineTest');
             }
-            
+
             if (defined('TESTS_ZEND_GDATA_SPREADSHEETS_ONLINE_ENABLED') &&
             constant('TESTS_ZEND_GDATA_SPREADSHEETS_ONLINE_ENABLED') == true) {
                 $suite->addTestSuite('Zend_Gdata_SpreadsheetsOnlineTest');
@@ -360,13 +390,24 @@ class Zend_Gdata_AllTests
             constant('TESTS_ZEND_GDATA_PHOTOS_ONLINE_ENABLED') == true) {
                 $suite->addTestSuite('Zend_Gdata_PhotosOnlineTest');
             }
-        } 
+
+            if (defined('TESTS_ZEND_GDATA_BOOKS_ONLINE_ENABLED') &&
+            constant('TESTS_ZEND_GDATA_BOOKS_ONLINE_ENABLED') == true) {
+                $suite->addTestSuite('Zend_Gdata_BooksOnlineTest');
+            }
+
+            if (defined('TESTS_ZEND_GDATA_HEALTH_ONLINE_ENABLED') &&
+            constant('TESTS_ZEND_GDATA_HEALTH_ONLINE_ENABLED') == true) {
+                $suite->addTestSuite('Zend_Gdata_HealthOnlineTest');
+            }
+
+        }
         if (defined('TESTS_ZEND_GDATA_ONLINE_ENABLED') &&
                    constant('TESTS_ZEND_GDATA_ONLINE_ENABLED') == true) {
             /**
              * Tests that do require online access to servers, but
              * don't require the standard authentication credentials
-             */ 
+             */
             $skippingOnlineTests = false;
             if (defined('TESTS_ZEND_GDATA_GAPPS_ONLINE_ENABLED') &&
             constant('TESTS_ZEND_GDATA_GAPPS_ONLINE_ENABLED') == true) {

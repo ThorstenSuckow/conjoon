@@ -19,12 +19,13 @@ dojo.require("dojox.lang.functional");
 			vStripes: "none"	// TBD
 		},
 		optionalParams: {},	// no optional parameters
-		
+
 		constructor: function(chart, kwArgs){
 			this.opt = dojo.clone(this.defaultParams);
 			du.updateWithObject(this.opt, kwArgs);
 			this.hAxis = this.opt.hAxis;
 			this.vAxis = this.opt.vAxis;
+			this.dirty = true;
 		},
 		clear: function(){
 			this._hAxis = null;
@@ -46,64 +47,76 @@ dojo.require("dojox.lang.functional");
 			// nothing
 			return this;
 		},
+		isDirty: function(){
+			return this.dirty || this._hAxis && this._hAxis.dirty || this._vAxis && this._vAxis.dirty;
+		},
 		getRequiredColors: function(){
 			return 0;
 		},
 		render: function(dim, offsets){
-			// draw horizontal stripes and lines
+			this.dirty = this.isDirty();
 			if(!this.dirty){ return this; }
 			this.cleanGroup();
-			var s = this.group, ta = this.chart.theme.axis,
-				scaler = this._vAxis.getScaler();
-			if(this.opt.hMinorLines && scaler.minor.tick){
-				for(var i = 0; i < scaler.minor.count; ++i){
-					var y = dim.height - offsets.b - scaler.scale * 
-							(scaler.minor.start - scaler.bounds.lower + i * scaler.minor.tick);
-					s.createLine({
-						x1: offsets.l,
-						y1: y,
-						x2: dim.width - offsets.r,
-						y2: y
-					}).setStroke(ta.minorTick);
+			var s = this.group, ta = this.chart.theme.axis;
+			// draw horizontal stripes and lines
+			try{
+				var vScaler = this._vAxis.getScaler(),
+					vt = vScaler.scaler.getTransformerFromModel(vScaler),
+					ticks = this._vAxis.getTicks();
+				if(this.opt.hMinorLines){
+					dojo.forEach(ticks.minor, function(tick){
+						var y = dim.height - offsets.b - vt(tick.value);
+						s.createLine({
+							x1: offsets.l,
+							y1: y,
+							x2: dim.width - offsets.r,
+							y2: y
+						}).setStroke(ta.minorTick);
+					});
 				}
-			}
-			if(this.opt.hMajorLines && scaler.major.tick){
-				for(var i = 0; i < scaler.major.count; ++i){
-					var y = dim.height - offsets.b - scaler.scale * 
-							(scaler.major.start - scaler.bounds.lower + i * scaler.major.tick);
-					s.createLine({
-						x1: offsets.l,
-						y1: y,
-						x2: dim.width - offsets.r,
-						y2: y
-					}).setStroke(ta.majorTick);
+				if(this.opt.hMajorLines){
+					dojo.forEach(ticks.major, function(tick){
+						var y = dim.height - offsets.b - vt(tick.value);
+						s.createLine({
+							x1: offsets.l,
+							y1: y,
+							x2: dim.width - offsets.r,
+							y2: y
+						}).setStroke(ta.majorTick);
+					});
 				}
+			}catch(e){
+				// squelch
 			}
 			// draw vertical stripes and lines
-			scaler = this._hAxis.getScaler();
-			if(this.opt.vMinorLines && scaler.minor.tick){
-				for(var i = 0; i < scaler.minor.count; ++i){
-					var x = offsets.l + scaler.scale * 
-							(scaler.minor.start - scaler.bounds.lower + i * scaler.minor.tick);
-					s.createLine({
-						x1: x,
-						y1: offsets.t,
-						x2: x,
-						y2: dim.height - offsets.b
-					}).setStroke(ta.minorTick);
+			try{
+				var hScaler = this._hAxis.getScaler(),
+					ht = hScaler.scaler.getTransformerFromModel(hScaler),
+					ticks = this._hAxis.getTicks();
+				if(ticks && this.opt.vMinorLines){
+					dojo.forEach(ticks.minor, function(tick){
+						var x = offsets.l + ht(tick.value);
+						s.createLine({
+							x1: x,
+							y1: offsets.t,
+							x2: x,
+							y2: dim.height - offsets.b
+						}).setStroke(ta.minorTick);
+					});
 				}
-			}
-			if(this.opt.vMajorLines && scaler.major.tick){
-				for(var i = 0; i < scaler.major.count; ++i){
-					var x = offsets.l + scaler.scale * 
-							(scaler.major.start - scaler.bounds.lower + i * scaler.major.tick);
-					s.createLine({
-						x1: x,
-						y1: offsets.t,
-						x2: x,
-						y2: dim.height - offsets.b
-					}).setStroke(ta.majorTick);
+				if(ticks && this.opt.vMajorLines){
+					dojo.forEach(ticks.major, function(tick){
+						var x = offsets.l + ht(tick.value);
+						s.createLine({
+							x1: x,
+							y1: offsets.t,
+							x2: x,
+							y2: dim.height - offsets.b
+						}).setStroke(ta.majorTick);
+					});
 				}
+			}catch(e){
+				// squelch
 			}
 			this.dirty = false;
 			return this;

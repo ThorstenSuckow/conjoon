@@ -26,19 +26,63 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 class Zend_Db_Select_OracleTest extends Zend_Db_Select_TestCommon
 {
 
-    public function testSelectFromQualified()
+    /**
+     * ZF-4330: this test must be done on string field
+     */
+    protected function _selectColumnWithColonQuotedParameter ()
     {
-        $this->markTestIncomplete($this->getDriver() . ' does not report its schema as we expect.');
+        $product_name = $this->_db->quoteIdentifier('product_name');
+
+        $select = $this->_db->select()
+                            ->from('zfproducts')
+                            ->where($product_name . ' = ?', "as'as:x");
+        return $select;
     }
 
-    public function testSelectJoinQualified()
+    /**
+     * ZF-4330 : Oracle doesn't use 'AS' to identify table alias
+     */
+    public function testSelectFromSelectObject ()
     {
-        $this->markTestIncomplete($this->getDriver() . ' does not report its schema as we expect.');
+        $select = $this->_selectFromSelectObject();
+        $query = $select->assemble();
+        $cmp = 'SELECT ' . $this->_db->quoteIdentifier('t') . '.* FROM (SELECT '
+                         . $this->_db->quoteIdentifier('subqueryTable') . '.* FROM '
+                         . $this->_db->quoteIdentifier('subqueryTable') . ') '
+                         . $this->_db->quoteIdentifier('t');
+        $this->assertEquals($query, $cmp);
     }
 
-    public function getDriver()
+    /**
+     * ZF-4330 : for Oracle, we must add order clause
+     */
+    public function testSelectWhereOr ()
+    {
+        $select = $this->_selectWhereOr();
+        $select->order('product_id');
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertEquals(2, count($result));
+        $this->assertEquals(1, $result[0]['product_id']);
+        $this->assertEquals(2, $result[1]['product_id']);
+    }
+
+    /**
+     * ZF-4330 : for Oracle, we must add order clause
+     */
+    public function testSelectWhereOrWithParameter ()
+    {
+        $select = $this->_selectWhereOrWithParameter();
+        $select->order('product_id');
+        $stmt = $this->_db->query($select);
+        $result = $stmt->fetchAll();
+        $this->assertEquals(2, count($result));
+        $this->assertEquals(1, $result[0]['product_id']);
+        $this->assertEquals(2, $result[1]['product_id']);
+    }
+
+    public function getDriver ()
     {
         return 'Oracle';
     }
-
 }

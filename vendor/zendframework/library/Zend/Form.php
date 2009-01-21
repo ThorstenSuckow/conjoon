@@ -28,7 +28,7 @@ require_once 'Zend/Validate/Interface.php';
  * @package    Zend_Form
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Form.php 11316 2008-09-09 19:17:43Z matthew $
+ * @version    $Id: Form.php 12787 2008-11-23 14:17:44Z matthew $
  */
 class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
 {
@@ -303,7 +303,7 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
 
         if (isset($options['displayGroupPrefixPath'])) {                          
             $this->addDisplayGroupPrefixPaths($options['displayGroupPrefixPath']);      
-            unset($options['elementPrefixPath']);                             
+            unset($options['displayGroupPrefixPath']);                             
         }
 
         if (isset($options['elements'])) {
@@ -1622,7 +1622,7 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
      * 
      * @param  array $elements 
      * @param  string $name 
-     * @param  int $order 
+     * @param  array|Zend_Config $options 
      * @return Zend_Form
      * @throws Zend_Form_Exception if no valid elements provided
      */
@@ -2322,8 +2322,7 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
         if (null === $options) {
             $decorator = new $class;
         } else {
-            $r = new ReflectionClass($class);
-            $decorator = $r->newInstance($options);
+            $decorator = new $class($options);
         }
 
         return $decorator;
@@ -2611,7 +2610,9 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
             $return = $this->render();
             return $return;
         } catch (Exception $e) {
-            trigger_error($e->getMessage(), E_USER_WARNING);
+            $message = "Exception caught by form: " . $e->getMessage()
+                     . "\nStack Trace:\n" . $e->getTraceAsString();
+            trigger_error($message, E_USER_WARNING);
             return '';
         }
     }

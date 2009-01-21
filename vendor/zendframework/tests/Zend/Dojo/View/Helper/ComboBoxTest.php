@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ComboBoxTest.php 11015 2008-08-24 21:17:21Z matthew $
+ * @version    $Id: ComboBoxTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_ComboBoxTest::main() if this source file is executed directly.

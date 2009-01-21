@@ -17,7 +17,7 @@
  * @subpackage Zend_Auth_Adapter_Http
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Http.php 9404 2008-05-07 23:42:02Z doctorrock83 $
+ * @version    $Id: Http.php 12503 2008-11-10 16:28:40Z matthew $
  */
 
 
@@ -413,10 +413,10 @@ class Zend_Auth_Adapter_Http implements Zend_Auth_Adapter_Interface
             break;
             default:
                 /**
-                * @see Zend_Auth_Adapter_Exception
-                */
- 	            require_once 'Zend/Auth/Adapter/Exception.php';
- 	            throw new Zend_Auth_Adapter_Exception('Unsupported authentication scheme');
+                 * @see Zend_Auth_Adapter_Exception
+                 */
+                require_once 'Zend/Auth/Adapter/Exception.php';
+                throw new Zend_Auth_Adapter_Exception('Unsupported authentication scheme');
         }
 
         return $result;

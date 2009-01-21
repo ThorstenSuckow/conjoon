@@ -22,7 +22,7 @@ require_once 'Zend/Registry.php';
  * @package    Zend_View
  * @subpackage UnitTests
  */
-class Zend_View_Helper_HeadScriptTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_HeadScriptTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_View_Helper_HeadScript
@@ -317,7 +317,7 @@ class Zend_View_Helper_HeadScriptTest extends PHPUnit_Framework_TestCase
         $this->helper->setIndent(4);
         $this->helper->appendScript('
 var foo = "bar";
-document.write(foo.strlen());');
+    document.write(foo.strlen());');
         $this->helper->appendScript('
 var bar = "baz";
 document.write(bar.strlen());');
@@ -326,7 +326,8 @@ document.write(bar.strlen());');
         $scripts = substr_count($string, '    <script');
         $this->assertEquals(2, $scripts);
         $this->assertContains('    //', $string);
-        $this->assertContains('    var', $string);
+        $this->assertContains('var', $string);
+        $this->assertContains('document', $string);
         $this->assertContains('    document', $string);
     }
 
@@ -379,6 +380,23 @@ document.write(bar.strlen());');
             $this->assertContains('Cannot nest', $e->getMessage());
         }
         $this->helper->headScript()->captureEnd();
+    }
+
+    /**
+     * @issue ZF-3928
+     * @link http://framework.zend.com/issues/browse/ZF-3928
+     */
+    public function testTurnOffAutoEscapeDoesNotEncodeAmpersand()
+    {
+        $this->helper->setAutoEscape(false)->appendFile('test.js?id=123&foo=bar');
+        $this->assertEquals('<script type="text/javascript" src="test.js?id=123&foo=bar"></script>', $this->helper->toString());
+    }
+
+    public function testConditionalScript()
+    {
+        $this->helper->headScript()->appendFile('/js/foo.js', 'text/javascript', array('conditional' => 'lt IE 7'));
+        $test = $this->helper->headScript()->toString();
+        $this->assertContains('<!--[if lt IE 7]>', $test);
     }
 }
 

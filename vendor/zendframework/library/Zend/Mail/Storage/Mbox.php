@@ -17,7 +17,7 @@
  * @subpackage Storage
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mbox.php 9099 2008-03-30 19:35:47Z thomas $
+ * @version    $Id: Mbox.php 12519 2008-11-10 18:41:24Z alexander $
  */
 
 
@@ -141,13 +141,13 @@ class Zend_Mail_Storage_Mbox extends Zend_Mail_Storage_Abstract
      */
     public function getMessage($id)
     {
-    	// TODO that's ugly, would be better to let the message class decide
-    	if (strtolower($this->_messageClass) == 'zend_mail_message_file' || is_subclass_of($this->_messageClass, 'zend_mail_message_file')) {
-    	    // TODO top/body lines
-    	    $messagePos = $this->_getPos($id);
-    	    return new $this->_messageClass(array('file' => $this->_fh, 'startPos' => $messagePos['start'],
-    	                                          'endPos' => $messagePos['end']));
-    	}
+        // TODO that's ugly, would be better to let the message class decide
+        if (strtolower($this->_messageClass) == 'zend_mail_message_file' || is_subclass_of($this->_messageClass, 'zend_mail_message_file')) {
+            // TODO top/body lines
+            $messagePos = $this->_getPos($id);
+            return new $this->_messageClass(array('file' => $this->_fh, 'startPos' => $messagePos['start'],
+                                                  'endPos' => $messagePos['end']));
+        }
 
         $bodyLines = 0; // TODO: need a way to change that
 

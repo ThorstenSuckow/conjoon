@@ -16,7 +16,11 @@ dojo.require("dojo._base.connect");
 				//oname = name;
 				name = (name == "mouseenter") ? "mouseover" : "mouseout";
 				fp = function(e){
-					// thanks ben!
+					// check tagName to fix a FF2 bug with invalid nodes (hidden child DIV of INPUT)
+					// which causes isDecendant to return false which causes
+					// spurious, and more importantly, incorrect mouse events to fire.
+					// TODO: remove tagName check when Firefox 2 is no longer supported
+					try{ e.relatedTarget.tagName; } catch(e2){ return; }
 					if(!dojo.isDescendant(e.relatedTarget, node)){
 						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
 						return ofp.call(this, e); 
@@ -36,7 +40,12 @@ dojo.require("dojo._base.connect");
 			// handle:
 			//		the handle returned from add
 			if (node){
-				node.removeEventListener(del._normalizeEventName(event), handle, false);
+				event = del._normalizeEventName(event);
+				if(!dojo.isIE && (event == "mouseenter" || event == "mouseleave")){
+					event = (event == "mouseenter") ? "mouseover" : "mouseout";
+				}
+
+				node.removeEventListener(event, handle, false);
 			}
 		},
 		_normalizeEventName: function(/*String*/name){
@@ -66,6 +75,25 @@ dojo.require("dojo._base.connect");
 		},
 		_setKeyChar: function(evt){
 			evt.keyChar = evt.charCode ? String.fromCharCode(evt.charCode) : '';
+			evt.charOrCode = evt.keyChar || evt.keyCode;
+		},
+		// For IE and Safari: some ctrl-key combinations (mostly w/punctuation) do not emit a char code in IE
+		// we map those virtual key codes to ascii here
+		// not valid for all (non-US) keyboards, so maybe we shouldn't bother
+		_punctMap: { 
+			106:42, 
+			111:47, 
+			186:59, 
+			187:43, 
+			188:44, 
+			189:45, 
+			190:46, 
+			191:47, 
+			192:96, 
+			219:91, 
+			220:92, 
+			221:93, 
+			222:39 
 		}
 	});
 
@@ -198,6 +226,7 @@ dojo.require("dojo._base.connect");
 
 		// by default, use the standard listener
 		var iel = dojo._listener;
+		var listenersName = dojo._ieListenersName = "_" + dojo._scopeName + "_listeners";
 		// dispatcher tracking property
 		if(!dojo.config._allow_leaks){
 			// custom listener that handles leak protection for DOM events
@@ -209,20 +238,20 @@ dojo.require("dojo._base.connect");
 				add: function(/*Object*/ source, /*String*/ method, /*Function*/ listener){
 					source = source || dojo.global;
 					var f = source[method];
-					if(!f||!f._listeners){
+					if(!f||!f[listenersName]){
 						var d = dojo._getIeDispatcher();
 						// original target function is special
 						d.target = f && (ieh.push(f) - 1);
 						// dispatcher holds a list of indices into handlers table
-						d._listeners = [];
+						d[listenersName] = [];
 						// redirect source to dispatcher
 						f = source[method] = d;
 					}
-					return f._listeners.push(ieh.push(listener) - 1) ; /*Handle*/
+					return f[listenersName].push(ieh.push(listener) - 1) ; /*Handle*/
 				},
 				// remove a listener from an object
 				remove: function(/*Object*/ source, /*String*/ method, /*Handle*/ handle){
-					var f = (source||dojo.global)[method], l = f && f._listeners;
+					var f = (source||dojo.global)[method], l = f && f[listenersName];
 					if(f && l && handle--){
 						delete ieh[l[handle]];
 						delete l[handle];
@@ -242,7 +271,7 @@ dojo.require("dojo._base.connect");
 					// keypress events that otherwise won't fire
 					// on IE
 					var kd = node.onkeydown;
-					if(!kd || !kd._listeners || !kd._stealthKeydownHandle){
+					if(!kd || !kd[listenersName] || !kd._stealthKeydownHandle){
 						var h = del.add(node, "onkeydown", del._stealthKeyDown);
 						kd = node.onkeydown;
 						kd._stealthKeydownHandle = h;
@@ -327,30 +356,12 @@ dojo.require("dojo._base.connect");
 				}
 				return evt;
 			},
-			// some ctrl-key combinations (mostly w/punctuation) do not emit a char code in IE
-			// we map those virtual key codes to ascii here
-			// not valid for all (non-US) keyboards, so maybe we shouldn't bother
-			_punctMap: { 
-				106:42, 
-				111:47, 
-				186:59, 
-				187:43, 
-				188:44, 
-				189:45, 
-				190:46, 
-				191:47, 
-				192:96, 
-				219:91, 
-				220:92, 
-				221:93, 
-				222:39 
-			},
 			_stealthKeyDown: function(evt){
 				// IE doesn't fire keypress for most non-printable characters.
 				// other browsers do, we simulate it here.
 				var kp = evt.currentTarget.onkeypress;
 				// only works if kp exists and is a dispatcher
-				if(!kp || !kp._listeners){ return; }
+				if(!kp || !kp[listenersName]){ return; }
 				// munge key/charCode
 				var k=evt.keyCode;
 				// These are Windows Virtual Key Codes
@@ -440,60 +451,66 @@ dojo.require("dojo._base.connect");
 
 	// Safari event normalization
 	if(dojo.isSafari){
+		del._add = del.add;
+		del._remove = del.remove;
+
 		dojo.mixin(del, {
+			add: function(/*DOMNode*/node, /*String*/event, /*Function*/fp){
+				if(!node){return;} // undefined
+				var handle = del._add(node, event, fp);
+				if(del._normalizeEventName(event) == "keypress"){
+					// we need to listen to onkeydown to synthesize
+					// keypress events that otherwise won't fire
+					// in Safari 3.1+: https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
+					handle._stealthKeyDownHandle = del._add(node, "keydown", function(evt){
+						//A variation on the IE _stealthKeydown function
+						//Synthesize an onkeypress event, but only for unprintable characters.
+						var k=evt.keyCode;
+						// These are Windows Virtual Key Codes
+						// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
+						var unprintable = (k!=13)&&(k!=32)&&(k!=27)&&(k<48||k>90)&&(k<96||k>111)&&(k<186||k>192)&&(k<219||k>222);
+						// synthesize keypress for most unprintables and CTRL-keys
+						if(unprintable||evt.ctrlKey){
+							var c = unprintable ? 0 : k;
+							if(evt.ctrlKey){
+								if(k==3 || k==13){
+									return; // IE will post CTRL-BREAK, CTRL-ENTER as keypress natively 
+								}else if(c>95 && c<106){ 
+									c -= 48; // map CTRL-[numpad 0-9] to ASCII
+								}else if((!evt.shiftKey)&&(c>=65&&c<=90)){ 
+									c += 32; // map CTRL-[A-Z] to lowercase
+								}else{ 
+									c = del._punctMap[c] || c; // map other problematic CTRL combinations to ASCII
+								}
+							}
+							// simulate a keypress event
+							var faux = del._synthesizeEvent(evt, {type: 'keypress', faux: true, charCode: c});
+							fp.call(evt.currentTarget, faux);
+						}
+					});
+				}
+				return handle; /*Handle*/
+			},
+
+			remove: function(/*DOMNode*/node, /*String*/event, /*Handle*/handle){
+				if(node){
+					if(handle._stealthKeyDownHandle){
+						del._remove(node, "keydown", handle._stealthKeyDownHandle);
+					}
+					del._remove(node, event, handle);
+				}
+			},
 			_fixEvent: function(evt, sender){
 				switch(evt.type){
 					case "keypress":
-						var c = evt.charCode, s = evt.shiftKey, k = evt.keyCode;
-						// FIXME: This is a hack, suggest we rethink keyboard strategy.
-						// Arrow and page keys have 0 "keyCode" in keypress events.on Safari for Windows
-						k = k || identifierMap[evt.keyIdentifier] || 0;
-						if(evt.keyIdentifier=="Enter"){
-							c = 0; // differentiate Enter from CTRL-m (both code 13)
-						}else if((evt.ctrlKey)&&(c>0)&&(c<27)){
-							c += 96; // map CTRL-[A-Z] codes to ASCII
-						} else if (c==dojo.keys.SHIFT_TAB) {
-							c = dojo.keys.TAB; // morph SHIFT_TAB into TAB + shiftKey: true
-							s = true;
-						} else {
-							c = (c>=32 && c<63232 ? c : 0); // avoid generating keyChar for non-printables
-						}
-						return del._synthesizeEvent(evt, {charCode: c, shiftKey: s, keyCode: k});
+						if(evt.faux){ return evt; }
+						var c = evt.charCode;
+						c = c>=32? c : 0;
+						return del._synthesizeEvent(evt, {charCode: c, faux: true});
 				}
 				return evt;
 			}
 		});
-		
-		dojo.mixin(dojo.keys, {
-			SHIFT_TAB: 25,
-			UP_ARROW: 63232,
-			DOWN_ARROW: 63233,
-			LEFT_ARROW: 63234,
-			RIGHT_ARROW: 63235,
-			F1: 63236,
-			F2: 63237,
-			F3: 63238,
-			F4: 63239,
-			F5: 63240,
-			F6: 63241,
-			F7: 63242,
-			F8: 63243,
-			F9: 63244,
-			F10: 63245,
-			F11: 63246,
-			F12: 63247,
-			PAUSE: 63250,
-			DELETE: 63272,
-			HOME: 63273,
-			END: 63275,
-			PAGE_UP: 63276,
-			PAGE_DOWN: 63277,
-			INSERT: 63302,
-			PRINT_SCREEN: 63248,
-			SCROLL_LOCK: 63249,
-			NUM_LOCK: 63289
-		});
-		var dk = dojo.keys, identifierMap = { "Up": dk.UP_ARROW, "Down": dk.DOWN_ARROW, "Left": dk.LEFT_ARROW, "Right": dk.RIGHT_ARROW, "PageUp": dk.PAGE_UP, "PageDown": dk.PAGE_DOWN }; 
 	}
 })();
 
@@ -502,19 +519,21 @@ if(dojo.isIE){
 	// closing over 'iel' or 'ieh' b0rks leak prevention
 	// ls[i] is an index into the master handler array
 	dojo._ieDispatcher = function(args, sender){
-		var ap=Array.prototype, h=dojo._ie_listener.handlers, c=args.callee, ls=c._listeners, t=h[c.target];
+		var ap=Array.prototype, h=dojo._ie_listener.handlers, c=args.callee, ls=c[dojo._ieListenersName], t=h[c.target];
 		// return value comes from original target function
 		var r = t && t.apply(sender, args);
+		// make local copy of listener array so it's immutable during processing
+		var lls = [].concat(ls);
 		// invoke listeners after target function
-		for(var i in ls){
+		for(var i in lls){
 			if(!(i in ap)){
-				h[ls[i]].apply(sender, args);
+				h[lls[i]].apply(sender, args);
 			}
 		}
 		return r;
 	}
 	dojo._getIeDispatcher = function(){
-		// ensure the returned function closes over nothing
+		// ensure the returned function closes over nothing ("new Function" apparently doesn't close)
 		return new Function(dojo._scopeName + "._ieDispatcher(arguments, this)"); // function
 	}
 	// keep this out of the closure to reduce RAM allocation

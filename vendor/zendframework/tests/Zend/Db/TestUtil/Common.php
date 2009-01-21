@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Common.php 7508 2008-01-19 03:12:38Z peptolab $
+ * @version    $Id: Common.php 13284 2008-12-15 21:41:49Z mikaelkael $
  */
 
 
@@ -210,7 +210,7 @@ abstract class Zend_Db_TestUtil_Common
         if (isset($param['dbname']) && strpos($param['dbname'], ':') === false) {
             return $param['dbname'];
         }
-        
+
         return null;
     }
 
@@ -438,6 +438,27 @@ abstract class Zend_Db_TestUtil_Common
         }
     }
 
+    public function createView()
+    {
+        $sql = 'CREATE VIEW '
+             . $this->_db->quoteIdentifier('temp_view', true)
+             . ' AS SELECT * FROM '
+             . $this->_db->quoteIdentifier('zfbugs', true);
+        $result = $this->_rawQuery($sql);
+        if ($result === false) {
+            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+        }
+    }
+
+    public function dropView()
+    {
+        $sql = 'DROP VIEW ' . $this->_db->quoteIdentifier('temp_view', true);
+        $result = $this->_rawQuery($sql);
+        if ($result === false) {
+            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+        }
+    }
+
     public function setUp(Zend_Db_Adapter_Abstract $db)
     {
         $this->setAdapter($db);
@@ -459,6 +480,8 @@ abstract class Zend_Db_TestUtil_Common
 
         $this->createTable('Price');
         $this->populateTable('Price');
+
+        $this->createView();
     }
 
     public function setAdapter(Zend_Db_Adapter_Abstract $db)
@@ -468,6 +491,7 @@ abstract class Zend_Db_TestUtil_Common
 
     public function tearDown()
     {
+        $this->dropView();
         $this->dropTable();
         $this->dropSequence();
         $this->_db->closeConnection();

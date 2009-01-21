@@ -79,10 +79,11 @@ class Zend_Search_Lucene_Document_Html extends Zend_Search_Lucene_Document
         $this->_doc->substituteEntities = true;
 
         if ($isFile) {
-            @$this->_doc->loadHTMLFile($data);
-        } else{
-            @$this->_doc->loadHTML($data);
+            $htmlData = file_get_contents($data);
+        } else {
+            $htmlData = $data;
         }
+        @$this->_doc->loadHTML($htmlData);
 
         $xpath = new DOMXPath($this->_doc);
 
@@ -118,7 +119,7 @@ class Zend_Search_Lucene_Document_Html extends Zend_Search_Lucene_Document
             if (($href = $linkNode->getAttribute('href')) != '' &&
                 (!self::$_excludeNoFollowLinks  ||  strtolower($linkNode->getAttribute('rel')) != 'nofollow' )
                ) {
-            	$this->_links[] = $href;
+                $this->_links[] = $href;
             }
         }
         $this->_links = array_unique($this->_links);
@@ -139,7 +140,7 @@ class Zend_Search_Lucene_Document_Html extends Zend_Search_Lucene_Document
      */
     public static function setExcludeNoFollowLinks($newValue)
     {
-    	self::$_excludeNoFollowLinks = $newValue;
+        self::$_excludeNoFollowLinks = $newValue;
     }
 
     /**

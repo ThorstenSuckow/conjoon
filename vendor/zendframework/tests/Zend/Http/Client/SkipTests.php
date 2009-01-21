@@ -19,6 +19,8 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+require_once realpath(dirname(__FILE__) . '/../../../') . '/TestHelper.php';
+
 /**
  * PHPUnit test case
  */

@@ -13,7 +13,7 @@ djConfig = {
 	//
 	// isDebug: Boolean
 	//		Defaults to `false`. If set to `true`, ensures that Dojo provides
-	//		extende debugging feedback via Firebug. If Firebug is not available
+	//		extended debugging feedback via Firebug. If Firebug is not available
 	//		on your platform, setting `isDebug` to `true` will force Dojo to
 	//		pull in (and display) the version of Firebug Lite which is
 	//		integrated into the Dojo distribution, thereby always providing a
@@ -56,7 +56,7 @@ djConfig = {
 	//		conditions, Dojo auto-detects the correct location from which it
 	//		was loaded. You may need to manually configure `baseUrl` in cases
 	//		where you have renamed `dojo.js` or in which `<base>` tags confuse
-	//		some browsers (e.g., IE 6). The variable `dojo.baseUrl` is assigned
+	//		some browsers (e.g. IE 6). The variable `dojo.baseUrl` is assigned
 	//		either the value of `djConfig.baseUrl` if one is provided or the
 	//		auto-detected root if not. Other modules are located relative to
 	//		this path.
@@ -69,6 +69,25 @@ djConfig = {
 	//		of calling `dojo.registerModulePath("foo", "../../bar");`. Multiple
 	//		modules may be configured via `djConfig.modulePaths`.
 	modulePaths: {},
+	// afterOnLoad: Boolean 
+	//		Indicates Dojo was added to the page after the page load. In this case
+	//		Dojo will not wait for the page DOMContentLoad/load events and fire
+	//		its dojo.addOnLoad callbacks after making sure all outstanding
+	//		dojo.required modules have loaded.
+	afterOnLoad: false,
+	// addOnLoad: Function or Array
+	//		Adds a callback via dojo.addOnLoad. Useful when Dojo is added after
+	//		the page loads and djConfig.afterOnLoad is true. Supports the same
+	//		arguments as dojo.addOnLoad. When using a function reference, use
+	//		`djConfig.addOnLoad = function(){};`. For object with function name use
+	//		`djConfig.addOnLoad = [myObject, "functionName"];` and for object with
+	//		function reference use
+	//		`djConfig.addOnLoad = [myObject, function(){}];`
+	addOnLoad: null,
+	// require: Array
+	//		An array of module names to be loaded immediately after dojo.js has been included
+	//		in a page. 
+	require: []
 }
 =====*/
 
@@ -79,10 +98,10 @@ djConfig = {
 
 	if(!this["console"]){
 		this.console = {
-			log: function(){} // no-op
 		};
 	}
 
+	//	Be careful to leave 'log' always at the end
 	var cn = [
 		"assert", "count", "debug", "dir", "dirxml", "error", "group",
 		"groupEnd", "info", "profile", "profileEnd", "time", "timeEnd",
@@ -93,11 +112,11 @@ djConfig = {
 		if(!console[tn]){
 			(function(){
 				var tcn = tn+"";
-				console[tcn] = function(){ 
+				console[tcn] = ('log' in console) ? function(){ 
 					var a = Array.apply({}, arguments);
 					a.unshift(tcn+":");
-					console.log(a.join(" "));
-				}
+					console["log"](a.join(" "));
+				} : function(){}
 			})();
 		}
 	}
@@ -166,7 +185,7 @@ dojo.global = {
 =====*/
 	dojo.locale = d.config.locale;
 	
-	var rev = "$Rev: 13231 $".match(/\d+/);
+	var rev = "$Rev: 15278 $".match(/\d+/);
 
 	dojo.version = {
 		// summary: 
@@ -181,7 +200,7 @@ dojo.global = {
 		//		Descriptor flag. If total version is "1.2.0beta1", will be "beta1"
 		//	revision: Number
 		//		The SVN rev from which dojo was pulled
-		major: 1, minor: 1, patch: 0, flag: "",
+		major: 1, minor: 1, patch: 0, flag: "dev",
 		revision: rev ? +rev[0] : 999999, //FIXME: use NaN?
 		toString: function(){
 			with(d.version){
@@ -263,8 +282,8 @@ dojo.global = {
 		//	|	var flattened = dojo.mixin(
 		//	|		{
 		//	|			name: "Frylock",
-		//	|			braces: true,
-		//	|		}
+		//	|			braces: true
+		//	|		},
 		//	|		{
 		//	|			name: "Carl Brutanananadilewski"
 		//	|		}
@@ -374,7 +393,7 @@ dojo.global = {
 		//		Placed in a separate function to minimize size of trapped
 		//		exceptions. Calling eval() directly from some other scope may
 		//		complicate tracebacks on some platforms.
-		//	return:
+		//	returns:
 		//		The result of the evaluation. Often `undefined`
 
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,9 +17,8 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IpTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: IpTest.php 13242 2008-12-14 17:49:11Z thomas $
  */
-
 
 /**
  * Test helper
@@ -31,7 +29,6 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  * @see Zend_Validate_Ip
  */
 require_once 'Zend/Validate/Ip.php';
-
 
 /**
  * @category   Zend
@@ -87,5 +84,27 @@ class Zend_Validate_IpTest extends PHPUnit_Framework_TestCase
     public function testGetMessages()
     {
         $this->assertEquals(array(), $this->_validator->getMessages());
+    }
+
+    public function testInvalidIpForZF4809()
+    {
+        $this->assertFalse($this->_validator->isValid('1.2.333'));
+    }
+
+    public function testInvalidIpForZF3435()
+    {
+        $this->assertFalse($this->_validator->isValid('192.168.0.2 adfs'));
+    }
+
+    /**
+     * @see ZF-2694
+     */
+    public function testIPv6addresses()
+    {
+        if (!function_exists('inet_pton')) {
+            $this->markTestIncomplete('No IPv6 support within this PHP release');
+        }
+
+        $this->assertTrue($this->_validator->isValid('::127.0.0.1'));
     }
 }

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 6923 2007-11-25 02:00:06Z peptolab $
+ * @version    $Id: TestCommon.php 13363 2008-12-19 06:40:31Z ralph $
  */
 
 
@@ -191,6 +191,7 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
             'result of second query not as expected');
 
         // clean up
+        unset($stmt);
         $util->dropTable($tableName);
     }
 
@@ -400,6 +401,15 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         $this->assertNull(                       $desc['product_id']['PRECISION'], 'Expected precision to be null');
         $this->assertTrue(                       $desc['product_id']['PRIMARY'], 'Expected product_id to be a primary key');
         $this->assertEquals(1,                   $desc['product_id']['PRIMARY_POSITION']);
+    }
+
+    /**
+     * @group ZF-2927
+     */
+    public function testAdapterDescribeView()
+    {
+        $describe = $this->_db->describeTable('temp_view');
+        $this->assertEquals(8, count($describe));
     }
 
     /**
@@ -1216,13 +1226,13 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
             'Incorrect quoteInto() result for CHAR');
     }
 
-    public function testAdapterQuoteIntoCount() 
-    { 
-        $value = $this->_db->quoteInto('foo = ? and bar = ?', 1234, null, 1); 
-        $this->assertType('string', $value); 
-        $this->assertEquals('foo = 1234 and bar = ?', $value, 
-            'Incorrect quoteInto() result for count'); 
-    } 
+    public function testAdapterQuoteIntoCount()
+    {
+        $value = $this->_db->quoteInto('foo = ? and bar = ?', 1234, null, 1);
+        $this->assertType('string', $value);
+        $this->assertEquals('foo = 1234 and bar = ?', $value,
+            'Incorrect quoteInto() result for count');
+    }
 
     public function testAdapterQuoteTypeInt()
     {
@@ -1444,7 +1454,10 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
     {
         $value       = ':0\'';
         $valueQuoted = $this->_db->quote($value);
-        $sql = 'SELECT bug_id FROM zfbugs WHERE bug_status != ' . $valueQuoted;
+        $bugs = $this->_db->quoteIdentifier('zfbugs');
+        $bug_id = $this->_db->quoteIdentifier('bug_id');
+        $bug_status = $this->_db->quoteIdentifier('bug_status');
+        $sql = "SELECT $bug_id FROM $bugs WHERE $bug_status != " . $valueQuoted;
         $results = $this->_db->fetchAll($sql);
         $this->assertEquals(4, count($results));
     }
@@ -1760,4 +1773,104 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         }
     }
 
+    /**
+     * @group ZF-5099
+     */
+    public function testAdapterGetServerVersion()
+    {
+        $version = $this->_db->getServerVersion();
+        $this->assertNotNull($version);
+        $this->assertTrue(version_compare($version, '1.0.0', '>'));
+        $this->assertTrue(version_compare($version, '99.0.0', '<'));
+    }
+
+    public function testAdapterGetConnection()
+    {
+        $this->_db->getConnection();
+        $this->assertTrue($this->_db->isConnected());
+    }
+
+    /**
+     * @group ZF-5050
+     */
+    public function testAdapterCloseConnection()
+    {
+        $this->_db->closeConnection();
+        $this->assertFalse($this->_db->isConnected());
+        // Double closing must be without any errors
+        $this->_db->closeConnection();
+        $this->assertFalse($this->_db->isConnected());
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchAll()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $value = $this->_db->fetchAll("SELECT * FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, $value[0]['doc_clob']);
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchRow()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $value = $this->_db->fetchRow("SELECT * FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, $value['doc_clob']);
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchAssoc()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $value = $this->_db->fetchAssoc("SELECT * FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, $value[1]['doc_clob']);
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchCol()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $document_clob = $this->_db->quoteIdentifier('doc_clob');
+        $value = $this->_db->fetchCol("SELECT $document_clob FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, $value[0]);
+    }
+
+    /**
+     * @group ZF-5146
+     */
+    public function testAdapterReadClobFetchOne()
+    {
+        $documents = $this->_db->quoteIdentifier('zfdocuments');
+        $document_id = $this->_db->quoteIdentifier('doc_id');
+        $document_clob = $this->_db->quoteIdentifier('doc_clob');
+        $value = $this->_db->fetchOne("SELECT $document_clob FROM $documents WHERE $document_id = 1");
+        $expected = 'this is the clob that never ends...'.
+                    'this is the clob that never ends...'.
+                    'this is the clob that never ends...';
+        $this->assertEquals($expected, $value);
+    }
 }

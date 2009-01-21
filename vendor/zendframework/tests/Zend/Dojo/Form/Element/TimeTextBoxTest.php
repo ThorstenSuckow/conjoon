@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TimeTextBoxTest.php 10079 2008-07-14 10:56:37Z matthew $
+ * @version    $Id: TimeTextBoxTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_TimeTextBoxTest::main() if this source file is executed directly.

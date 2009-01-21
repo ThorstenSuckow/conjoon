@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SubmitButtonTest.php 10628 2008-08-04 14:30:19Z matthew $
+ * @version    $Id: SubmitButtonTest.php 12692 2008-11-18 20:30:09Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_SubmitButtonTest::main() if this source file is executed directly.
@@ -118,6 +118,15 @@ class Zend_Dojo_View_Helper_SubmitButtonTest extends PHPUnit_Framework_TestCase
         $html = $this->getElement();
         $this->assertNotRegexp('/<input[^>]*(dojoType="dijit.form.Button")/', $html);
         $this->assertNotNull($this->view->dojo()->getDijit('elementId'));
+    }
+
+    /**
+     * @group ZF-4977
+     */
+    public function testHelperShouldRenderContentKeyAsLabelWhenPassed()
+    {
+        $html = $this->helper->submitButton('foo', '', array('content' => 'Label'));
+        $this->assertRegexp('/<input[^>]*(value="Label")/', $html, $html);
     }
 }
 

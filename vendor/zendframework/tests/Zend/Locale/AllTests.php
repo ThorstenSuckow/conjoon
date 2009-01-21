@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 4013 2007-03-16 10:20:43Z gavin $
+ * @version    $Id: AllTests.php 11977 2008-10-15 19:46:49Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -39,10 +39,8 @@ if (!defined('TESTS_ZEND_LOCALE_FORMAT_SETLOCALE')) {
     }
 }
 
-require_once 'PHPUnit/Framework/TestSuite.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
+require_once dirname(__FILE__) . '/../../TestHelper.php';
 
-error_reporting( E_ALL | E_STRICT ); // now required for each test suite
 // define('TESTS_ZEND_LOCALE_BCMATH_ENABLED', false); // uncomment to disable use of bcmath extension by Zend_Date
 
 require_once 'Zend/Locale/DataTest.php';

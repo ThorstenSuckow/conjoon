@@ -17,7 +17,7 @@
  * @subpackage Value
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Value.php 9095 2008-03-30 18:52:31Z thomas $
+ * @version    $Id: Value.php 12721 2008-11-20 18:21:58Z matthew $
  */
 
 
@@ -373,7 +373,7 @@ abstract class Zend_XmlRpc_Value
                 foreach ($value->member as $member) {
                     // @todo? If a member doesn't have a <value> tag, we don't add it to the struct
                     // Maybe we want to throw an exception here ?
-                    if ((!$member->value instanceof SimpleXMLElement) || empty($member->value)) {
+                    if ((!$member->value instanceof SimpleXMLElement)) {
                         continue;
                         //throw new Zend_XmlRpc_Value_Exception('Member of the '. self::XMLRPC_TYPE_STRUCT .' XML-RPC native type must contain a VALUE tag');
                     }

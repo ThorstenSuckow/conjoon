@@ -17,10 +17,25 @@ require_once 'Zend/Http/Client/Adapter/Test.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id$
+ * @version $Id: ClientTest.php 12361 2008-11-07 10:16:34Z beberlei $
  */
 class Zend_XmlRpc_ClientTest extends PHPUnit_Framework_TestCase 
 {
+    /**
+     * @var Zend_Http_Client_Adapter_Abstract
+     */
+    protected $httpAdapter;
+
+    /**
+     * @var Zend_Http_Client
+     */
+    protected $httpClient;
+
+    /**
+     * @var Zend_XmlRpc_Client
+     */
+    protected $xmlrpcClient;
+
     /**
      * Runs the test methods of this class.
      *
@@ -519,6 +534,41 @@ class Zend_XmlRpc_ClientTest extends PHPUnit_Framework_TestCase
         
         $request = $this->xmlrpcClient->getLastRequest();
         $this->assertEquals('system.methodSignature', $request->getMethod());
+    }
+
+    /**
+     * @group ZF-4372
+     */
+    public function testSettingUriOnHttpClientIsNotOverwrittenByXmlRpcClient()
+    {
+        $changedUri = "http://bar:80";
+        // Overwrite: http://foo:80
+        $this->setServerResponseTo(array());
+        $this->xmlrpcClient->getHttpClient()->setUri($changedUri);
+        $this->xmlrpcClient->call("foo");
+        $uri = $this->xmlrpcClient->getHttpClient()->getUri(true);
+
+        $this->assertEquals($changedUri, $uri);
+    }
+
+    /**
+     * @group ZF-4372
+     */
+    public function testSettingNoHttpClientUriForcesClientToSetUri()
+    {
+        $baseUri = "http://foo:80";
+        $this->httpAdapter = new Zend_Http_Client_Adapter_Test();
+        $this->httpClient = new Zend_Http_Client(null, array('adapter' => $this->httpAdapter));
+
+        $this->xmlrpcClient = new Zend_XmlRpc_Client($baseUri);
+        $this->xmlrpcClient->setHttpClient($this->httpClient);
+
+        $this->setServerResponseTo(array());
+        $this->assertNull($this->xmlrpcClient->getHttpClient()->getUri());
+        $this->xmlrpcClient->call("foo");
+        $uri = $this->xmlrpcClient->getHttpClient()->getUri(true);
+
+        $this->assertEquals($baseUri, $uri);
     }
     
     

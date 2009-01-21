@@ -136,18 +136,13 @@
 		this._loadNotifying = true;
 		this._postLoad = true;
 		var mll = d._loaders;
-		
+
 		//Clear listeners so new ones can be added
 		//For other xdomain package loads after the initial load.
 		this._loaders = [];
 
 		for(var x = 0; x < mll.length; x++){
-			try{
-				mll[x]();
-			}catch(e){
-				throw e;
-				console.error("dojo.addOnLoad callback failed: " + e, e); /* let other load events fire, like the parser, but report the error */
-			}
+			mll[x]();
 		}
 
 		this._loadNotifying = false;
@@ -164,14 +159,14 @@
 		// summary:
 		//		signal fired by impending environment destruction. You may use
 		//		dojo.addOnUnload() or dojo.connect() to this method to perform
-		//		page/application cleanup methods.
+		//		page/application cleanup methods. See dojo.addOnUnload for more info.
 		var mll = this._unloaders;
 		while(mll.length){
 			(mll.pop())();
 		}
 	}
 
-	var onto = function(arr, obj, fn){
+	d._onto = function(arr, obj, fn){
 		if(!fn){
 			arr.push(obj);
 		}else if(fn){
@@ -193,7 +188,7 @@
 		//	|	dojo.addOnLoad(object, "functionName");
 		//	|	dojo.addOnLoad(object, function(){ /* ... */});
 
-		onto(d._loaders, obj, functionName);
+		d._onto(d._loaders, obj, functionName);
 
 		//Added for xdomain loading. dojo.addOnLoad is used to
 		//indicate callbacks after doing some dojo.require() statements.
@@ -204,15 +199,29 @@
 		}
 	}
 
+	//Support calling dojo.addOnLoad via djConfig.addOnLoad. Support all the
+	//call permutations of dojo.addOnLoad. Mainly useful when dojo is added
+	//to the page after the page has loaded.
+	var dca = d.config.addOnLoad;
+	if(dca){
+		d.addOnLoad[(dca instanceof Array ? "apply" : "call")](d, dca);
+	}
+
 	dojo.addOnUnload = function(/*Object?*/obj, /*String|Function?*/functionName){
 		// summary:
-		//		registers a function to be triggered when the page unloads
+		//		registers a function to be triggered when the page unloads. In a browser
+		//		enviroment, the functions will be triggered during the window.onbeforeunload
+		//		event. Be careful doing work during window.onbeforeunload. onbeforeunload
+		//		can be triggered if a link to download a file is clicked, or if the link is a
+		//		javascript: link. In these cases, the onbeforeunload event fires, but the
+		//		document is not actually destroyed. So be careful about doing destructive
+		//		operations in a dojo.addOnUnload callback.
 		// example:
 		//	|	dojo.addOnUnload(functionPointer)
 		//	|	dojo.addOnUnload(object, "functionName")
 		//	|	dojo.addOnUnload(object, function(){ /* ... */});
 
-		onto(d._unloaders, obj, functionName);
+		d._onto(d._unloaders, obj, functionName);
 	}
 
 	dojo._modulesLoaded = function(){
@@ -268,45 +277,63 @@
 
 	dojo._global_omit_module_check = false;
 
+	dojo.loadInit = function(/*Function*/init){
+		//	summary:
+		//		Executes a function that needs to be executed for the loader's dojo.requireIf
+		//		resolutions to work. This is needed mostly for the xdomain loader case where
+		//		a function needs to be executed to set up the possible values for a dojo.requireIf
+		//		call.
+		//	init:
+		//		a function reference. Executed immediately.
+		//	description: This function is mainly a marker for the xdomain loader to know parts of
+		//		code that needs be executed outside the function wrappper that is placed around modules.
+		//		The init function could be executed more than once, and it should make no assumptions
+		//		on what is loaded, or what modules are available. Only the functionality in Dojo Base
+		//		is allowed to be used. Avoid using this method. For a valid use case,
+		//		see the source for dojox.gfx.
+		init();
+	}
+
 	dojo._loadModule = dojo.require = function(/*String*/moduleName, /*Boolean?*/omitModuleCheck){
 		//	summary:
 		//		loads a Javascript module from the appropriate URI
 		//	moduleName:
-		//		module name to load. Module paths are de-referenced by dojo's
+		//		module name to load, using periods for separators,
+		//		 e.g. "dojo.date.locale".  Module paths are de-referenced by dojo's
 		//		internal mapping of locations to names and are disambiguated by
 		//		longest prefix. See `dojo.registerModulePath()` for details on
 		//		registering new modules.
 		//	omitModuleCheck:
 		//		if `true`, omitModuleCheck skips the step of ensuring that the
 		//		loaded file actually defines the symbol it is referenced by.
-		//		For example if it called as `dojo._loadModule("a.b.c")` and the
+		//		For example if it called as `dojo.require("a.b.c")` and the
 		//		file located at `a/b/c.js` does not define an object `a.b.c`,
 		//		and exception will be throws whereas no exception is raised
-		//		when called as `dojo._loadModule("a.b.c", true)`
+		//		when called as `dojo.require("a.b.c", true)`
 		//	description:
-		//		`dojo._loadModule("A.B")` first checks to see if symbol A.B is
+		//		`dojo.require("A.B")` first checks to see if symbol A.B is
 		//		defined. If it is, it is simply returned (nothing to do).
 		//	
 		//		If it is not defined, it will look for `A/B.js` in the script root
 		//		directory.
 		//	
-		//		`dojo._loadModule` throws an excpetion if it cannot find a file
+		//		`dojo.require` throws an excpetion if it cannot find a file
 		//		to load, or if the symbol `A.B` is not defined after loading.
 		//	
 		//		It returns the object `A.B`.
 		//	
-		//		`dojo._loadModule()` does nothing about importing symbols into
+		//		`dojo.require()` does nothing about importing symbols into
 		//		the current namespace.  It is presumed that the caller will
 		//		take care of that. For example, to import all symbols into a
 		//		local block, you might write:
 		//	
-		//		|	with (dojo._loadModule("A.B")) {
+		//		|	with (dojo.require("A.B")) {
 		//		|		...
 		//		|	}
 		//	
 		//		And to import just the leaf symbol to a local variable:
 		//	
-		//		|	var B = dojo._loadModule("A.B");
+		//		|	var B = dojo.require("A.B");
 		//	   	|	...
 		//	returns: the required namespace object
 		omitModuleCheck = this._global_omit_module_check || omitModuleCheck;
@@ -391,7 +418,7 @@
 		//		|		browser: [
 		//		|			"foo.sample", // simple module
 		//		|			"foo.test",
-		//		|			["foo.bar.baz", true] // skip object check in _loadModule
+		//		|			["foo.bar.baz", true] // skip object check in _loadModule (dojo.require)
 		//		|		],
 		//		|		default: [ "foo.sample._base" ],
 		//		|		common: [ "important.module.common" ]
@@ -462,49 +489,12 @@
 		//		Declares translated resources and loads them if necessary, in the
 		//		same style as dojo.require.  Contents of the resource bundle are
 		//		typically strings, but may be any name/value pair, represented in
-		//		JSON format.  See also dojo.i18n.getLocalization.
-		// moduleName: 
-		//		name of the package containing the "nls" directory in which the
-		//		bundle is found
-		// bundleName: 
-		//		bundle name, i.e. the filename without the '.js' suffix
-		// locale: 
-		//		the locale to load (optional)  By default, the browser's user
-		//		locale as defined by dojo.locale
-		// availableFlatLocales: 
-		//		A comma-separated list of the available, flattened locales for this
-		//		bundle. This argument should only be set by the build process.
+		//		JSON format.  See also `dojo.i18n.getLocalization`.
+		//
 		// description:
 		//		Load translated resource bundles provided underneath the "nls"
 		//		directory within a package.  Translated resources may be located in
-		//		different packages throughout the source tree.  For example, a
-		//		particular widget may define one or more resource bundles,
-		//		structured in a program as follows, where moduleName is
-		//		mycode.mywidget and bundleNames available include bundleone and
-		//		bundletwo:
-		//
-		//	|		...
-		//	|		mycode/
-		//	|		 mywidget/
-		//	|		  nls/
-		//	|		   bundleone.js (the fallback translation, English in this example)
-		//	|		   bundletwo.js (also a fallback translation)
-		//	|		   de/
-		//	|		    bundleone.js
-		//	|		    bundletwo.js
-		//	|		   de-at/
-		//	|		    bundleone.js
-		//	|		   en/
-		//	|		    (empty; use the fallback translation)
-		//	|		   en-us/
-		//	|		    bundleone.js
-		//	|		   en-gb/
-		//	|		    bundleone.js
-		//	|		   es/
-		//	|		    bundleone.js
-		//	|		    bundletwo.js
-		//	|		  ...etc
-		//	|		...
+		//		different packages throughout the source tree.  
 		//
 		//		Each directory is named for a locale as specified by RFC 3066,
 		//		(http://www.ietf.org/rfc/rfc3066.txt), normalized in lowercase.
@@ -518,6 +508,50 @@
 		//		will follow this cascading pattern.  An optional build step can
 		//		preload the bundles to avoid data redundancy and the multiple
 		//		network hits normally required to load these resources.
+		//
+		// moduleName: 
+		//		name of the package containing the "nls" directory in which the
+		//		bundle is found
+		//
+		// bundleName: 
+		//		bundle name, i.e. the filename without the '.js' suffix
+		//
+		// locale: 
+		//		the locale to load (optional)  By default, the browser's user
+		//		locale as defined by dojo.locale
+		//
+		// availableFlatLocales: 
+		//		A comma-separated list of the available, flattened locales for this
+		//		bundle. This argument should only be set by the build process.
+		//
+		//	example:
+		//		A particular widget may define one or more resource bundles,
+		//		structured in a program as follows, where moduleName is
+		//		mycode.mywidget and bundleNames available include bundleone and
+		//		bundletwo:
+		//	|		...
+		//	|	mycode/
+		//	|		mywidget/
+		//	|			nls/
+		//	|				bundleone.js (the fallback translation, English in this example)
+		//	|				bundletwo.js (also a fallback translation)
+		//	|				de/
+		//	|					bundleone.js
+		//	|					bundletwo.js
+		//	|				de-at/
+		//	|					bundleone.js
+		//	|				en/
+		//	|					(empty; use the fallback translation)
+		//	|				en-us/
+		//	|					bundleone.js
+		//	|				en-gb/
+		//	|					bundleone.js
+		//	|				es/
+		//	|					bundleone.js
+		//	|					bundletwo.js
+		//	|				  ...etc
+		//	|				...
+		//
 
 		d.require("dojo.i18n");
 		d.i18n._requireLocalization.apply(d.hostenv, arguments);
@@ -525,7 +559,7 @@
 
 
 	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$");
-	var ire = new RegExp("^((([^:]+:)?([^@]+))@)?([^:]*)(:([0-9]+))?$");
+	var ire = new RegExp("^((([^\\[:]+):)?([^@]+)@)?(\\[([^\\]]+)\\]|([^\\[:]*))(:([0-9]+))?$");
 
 	dojo._Url = function(/*dojo._Url||String...*/){
 		// summary: 
@@ -540,7 +574,6 @@
 
 		var n = null;
 
-		// TODO: support for IPv6, see RFC 2732
 		var _a = arguments;
 		var uri = [_a[0]];
 		// resolve uri components relative to each other
@@ -633,8 +666,8 @@
 
 			this.user = r[3] || n;
 			this.password = r[4] || n;
-			this.host = r[5];
-			this.port = r[7] || n;
+			this.host = r[6] || r[7]; // ipv6 || ipv4
+			this.port = r[9] || n;
 		}
 	}
 

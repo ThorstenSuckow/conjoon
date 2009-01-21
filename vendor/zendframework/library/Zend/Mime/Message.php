@@ -247,13 +247,12 @@ class Zend_Mime_Message
         $res = new self();
         foreach ($parts as $part) {
             // now we build a new MimePart for the current Message Part:
-            $newPart = new Zend_Mime_Part($part);
+            $newPart = new Zend_Mime_Part($part['body']);
             foreach ($part['header'] as $key => $value) {
                 /**
                  * @todo check for characterset and filename
                  */
-                // list($key, $value) = $header;
-                switch($key) {
+                switch(strtolower($key)) {
                     case 'content-type':
                         $newPart->type = $value;
                         break;
@@ -263,11 +262,17 @@ class Zend_Mime_Message
                     case 'content-id':
                         $newPart->id = trim($value,'<>');
                         break;
-                    case 'Content-Disposition':
+                    case 'content-disposition':
                         $newPart->disposition = $value;
                         break;
                     case 'content-description':
                         $newPart->description = $value;
+                        break;
+                    case 'content-location':
+                        $newPart->location = $value;
+                        break;
+                    case 'content-language':
+                        $newPart->language = $value;
                         break;
                     default:
                         throw new Zend_Exception('Unknown header ignored for MimePart:' . $key);

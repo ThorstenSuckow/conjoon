@@ -17,7 +17,7 @@
  * @subpackage Zend_Controller_Action_Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AutoCompleteDojo.php 9098 2008-03-30 19:29:10Z thomas $
+ * @version    $Id: AutoCompleteDojo.php 12301 2008-11-05 16:04:12Z matthew $
  */
 
 /**
@@ -39,17 +39,15 @@ class Zend_Controller_Action_Helper_AutoCompleteDojo extends Zend_Controller_Act
 {
     /**
      * Validate data for autocompletion
+     *
+     * Stub; unused
      * 
      * @param  mixed $data 
      * @return boolean
      */
     public function validateData($data)
     {
-        if (is_array($data) && isset($data['items']) && is_array($data['items'])) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -61,14 +59,29 @@ class Zend_Controller_Action_Helper_AutoCompleteDojo extends Zend_Controller_Act
      */
     public function prepareAutoCompletion($data, $keepLayouts = false)
     {
-        $items = array();
-        foreach ($data as $key => $value) {
-            $items[] = array('label' => $value, 'name' => $value);
+        if (!$data instanceof Zend_Dojo_Data) {
+            require_once 'Zend/Dojo/Data.php';
+            $items = array();
+            foreach ($data as $key => $value) {
+                $items[] = array('label' => $value, 'name' => $value);
+            }
+            $data = new Zend_Dojo_Data('name', $items);
         }
-        $final = array(
-            'identifier' => 'name',
-            'items'      => $items,
-        );
-        return $this->encodeJson($final, $keepLayouts);
+
+        if (!$keepLayouts) {
+            require_once 'Zend/Controller/Action/HelperBroker.php';
+            Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setNoRender(true);
+
+            require_once 'Zend/Layout.php';
+            $layout = Zend_Layout::getMvcInstance();
+            if ($layout instanceof Zend_Layout) {
+                $layout->disableLayout();
+            }
+        }
+
+        $response = Zend_Controller_Front::getInstance()->getResponse();
+        $response->setHeader('Content-Type', 'application/json');
+
+        return $data->toJson();
     }
 }

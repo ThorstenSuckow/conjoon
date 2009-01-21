@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HorizontalSliderTest.php 10066 2008-07-12 20:26:33Z matthew $
+ * @version    $Id: HorizontalSliderTest.php 13658 2009-01-15 23:37:30Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_HorizontalSliderTest::main() if this source file is executed directly.
@@ -35,6 +35,12 @@ require_once 'Zend/View.php';
 
 /** Zend_Registry */
 require_once 'Zend/Registry.php';
+
+/** Zend_Dojo_Form */
+require_once 'Zend/Dojo/Form.php';
+
+/** Zend_Dojo_Form_SubForm */
+require_once 'Zend/Dojo/Form/SubForm.php';
 
 /** Zend_Dojo_View_Helper_Dojo */
 require_once 'Zend/Dojo/View/Helper/Dojo.php';
@@ -205,7 +211,7 @@ class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestC
     {
         $html = $this->getElement();
         $this->assertRegexp('/<div[^>]*(dojoType="dijit.form.HorizontalRule")/', $html, $html);
-        $this->assertRegexp('/<div[^>]*(dojoType="dijit.form.HorizontalRuleLabels")/', $html, $html);
+        $this->assertRegexp('/<ol[^>]*(dojoType="dijit.form.HorizontalRuleLabels")/', $html, $html);
         $this->assertContains('topDecoration', $html);
         $this->assertContains('bottomDecoration', $html);
     }
@@ -255,6 +261,63 @@ class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestC
         );
         $this->assertContains('required="', $html);
         $this->assertContains('minimum="', $html);
+    }
+
+    /**
+     * @group ZF-4435
+     */
+    public function testShouldCreateAppropriateIdsForElementsInSubForms()
+    {
+        $form = new Zend_Dojo_Form;
+        $form->setDecorators(array(
+            'FormElements',
+            array('TabContainer', array(
+                'id' => 'tabContainer',
+                'style' => 'width: 600px; height: 300px;',
+                'dijitParams' => array(
+                    'tabPosition' => 'top'
+                ),
+            )),
+            'DijitForm',
+        ));
+
+        $sliderForm = new Zend_Dojo_Form_SubForm();
+        $sliderForm->setAttribs(array(
+            'name'   => 'slidertab',
+            'legend' => 'Slider Elements',
+        ));
+
+        $sliderForm->addElement(
+                'HorizontalSlider',
+                'slide1',
+                array(
+                    'label' => 'Slide me:',
+                    'minimum' => 0,
+                    'maximum' => 25,
+                    'discreteValues' => 10,
+                    'style' => 'width: 450px;',
+                    'topDecorationDijit' => 'HorizontalRuleLabels',
+                    'topDecorationLabels' => array('0%', '50%', '100%'),
+                    'topDecorationParams' => array('style' => 'padding-bottom: 20px;')
+                )   
+            );      
+                    
+        $form->addSubForm($sliderForm, 'slidertab')
+             ->setView($this->getView());
+        $html = $form->render();
+        $this->assertContains('id="slidertab-slide1-slider"', $html);
+        $this->assertContains('id="slidertab-slide1-slider-topDecoration"', $html);
+        $this->assertContains('id="slidertab-slide1-slider-topDecoration-labels"', $html);
+    }
+
+    /**
+     * @group ZF-5220
+     */
+    public function testLabelDivShouldOpenAndCloseBeforeLabelOl()
+    {
+        $html = $this->getElement();
+        $this->assertNotRegexp('/<div[^>]*(dojoType="dijit.form.HorizontalRuleLabels")[^>]*><\/div>\s*<ol/s', $html, $html);
+        $this->assertRegexp('/<div[^>]*><\/div>\s*<ol[^>]*(dojoType="dijit.form.HorizontalRuleLabels")/s', $html, $html);
     }
 }
 

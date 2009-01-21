@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlEntitiesTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: HtmlEntitiesTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 
@@ -119,5 +119,16 @@ class Zend_Filter_HtmlEntitiesTest extends PHPUnit_Framework_TestCase
     {
         $this->_filter->setCharSet('UTF-8');
         $this->assertEquals('UTF-8', $this->_filter->getCharSet());
+    }
+
+    /**
+     * Ensure that fluent interfaces are supported
+     *
+     * @group ZF-3172
+     */
+    public function testFluentInterface()
+    {
+        $instance = $this->_filter->setCharSet('UTF-8')->setQuoteStyle(ENT_QUOTES);
+        $this->assertTrue($instance instanceof Zend_Filter_HtmlEntities);
     }
 }

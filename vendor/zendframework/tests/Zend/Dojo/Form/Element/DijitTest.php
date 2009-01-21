@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DijitTest.php 10076 2008-07-13 12:58:08Z matthew $
+ * @version    $Id: DijitTest.php 13261 2008-12-15 14:32:20Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_DijitTest::main() if this source file is executed directly.
@@ -130,6 +130,15 @@ class Zend_Dojo_Form_Element_DijitTest extends PHPUnit_Framework_TestCase
     {
         $decorator = $this->element->getDecorator('DijitElement');
         $this->assertTrue($decorator instanceof Zend_Dojo_Form_Decorator_DijitElement, get_class($decorator));
+    }
+
+    /**
+     * @group ZF-5264
+     */
+    public function testDescriptionDecoratorShouldBeEnabledByDefault()
+    {
+        $decorator = $this->element->getDecorator('Description');
+        $this->assertTrue($decorator instanceof Zend_Form_Decorator_Description, get_class($decorator));
     }
 
     public function testRenderingShouldCreateDijit()

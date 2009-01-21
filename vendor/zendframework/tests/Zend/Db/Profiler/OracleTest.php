@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 4700 2007-05-04 04:25:11Z bkarwin $
+ * @version    $Id: OracleTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 
 
@@ -147,6 +147,38 @@ class Zend_Db_Profiler_OracleTest extends Zend_Db_Profiler_TestCommon
         $this->assertEquals(array(':bug_id' => 3), $params);
     }
 
+    /**
+     * Ensures that setFilterQueryType() actually filters
+     *
+     * @return void
+     */
+    protected function _testProfilerSetFilterQueryTypeCommon($queryType)
+    {
+        $bugs = $this->_db->quoteIdentifier('zfbugs', true);
+        $bug_id = $this->_db->quoteIdentifier('bug_id', true);
+        $bug_status = $this->_db->quoteIdentifier('bug_status', true);
+
+        $prof = $this->_db->getProfiler();
+        $prof->setEnabled(true);
+
+        $this->assertSame($prof->setFilterQueryType($queryType), $prof);
+        $this->assertEquals($queryType, $prof->getFilterQueryType());
+
+        $this->_db->query("SELECT * FROM $bugs");
+        $this->_db->query("INSERT INTO $bugs ($bug_id, $bug_status) VALUES (:id, :status)", array(':id' => 100,':status' => 'NEW'));
+        $this->_db->query("DELETE FROM $bugs");
+        $this->_db->query("UPDATE $bugs SET $bug_status = :status", array(':status'=>'FIXED'));
+
+        $qps = $prof->getQueryProfiles();
+        $this->assertType('array', $qps, 'Expecting some query profiles, got none');
+        foreach ($qps as $qp) {
+            $qtype = $qp->getQueryType();
+            $this->assertEquals($queryType, $qtype,
+                "Found query type $qtype, which should have been filtered out");
+        }
+
+        $prof->setEnabled(false);
+    }
 
     public function getDriver()
     {

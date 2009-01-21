@@ -30,7 +30,7 @@ require_once 'Zend/Dojo/Form/Element/DijitMulti.php';
  * @subpackage Form_Element
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ComboBox.php 10724 2008-08-06 15:31:23Z matthew $
+ * @version    $Id: ComboBox.php 10723 2008-08-06 15:30:18Z matthew $
  */
 class Zend_Dojo_Form_Element_ComboBox extends Zend_Dojo_Form_Element_DijitMulti
 {

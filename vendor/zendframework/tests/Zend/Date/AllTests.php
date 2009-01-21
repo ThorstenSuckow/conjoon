@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 2883 2007-01-18 05:56:31Z gavin $
+ * @version    $Id: AllTests.php 11977 2008-10-15 19:46:49Z matthew $
  */
 
 error_reporting( E_ALL | E_STRICT ); // now required for each test suite
@@ -28,8 +28,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Date_AllTests::main');
 }
 
-require_once 'PHPUnit/Framework/TestSuite.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
+require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 require_once 'Zend/Date/DateObjectTest.php';
 

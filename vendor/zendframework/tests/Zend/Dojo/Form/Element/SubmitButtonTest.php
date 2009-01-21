@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SubmitButtonTest.php 10668 2008-08-05 13:01:56Z matthew $
+ * @version    $Id: SubmitButtonTest.php 12692 2008-11-18 20:30:09Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_SubmitButtonTest::main() if this source file is executed directly.
@@ -180,6 +180,16 @@ class Zend_Dojo_Form_Element_SubmitButtonTest extends PHPUnit_Framework_TestCase
     {
         $html = $this->element->render();
         $this->assertContains('type="submit"', $html);
+    }
+
+    /**
+     * @group ZF-4977
+     */
+    public function testElementShouldRenderLabelAsInputValue()
+    {
+        $this->element->setLabel('Label!');
+        $html = $this->element->render();
+        $this->assertRegexp('/<input[^>]*(value="Label!")/', $html, $html);
     }
 }
 

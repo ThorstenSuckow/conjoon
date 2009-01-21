@@ -120,22 +120,26 @@ dojo.require("dojo._base.html");
 			//		The event to fire.
 			//	args:
 			//		The arguments to pass to the event.
-			try{
-				if(this[evt]){
+			if(this[evt]){
+				if(dojo.config.isDebug){
 					this[evt].apply(this, args||[]);
+				}else{
+					try{
+						this[evt].apply(this, args||[]);
+					}catch(e){
+						// squelch and log because we shouldn't allow exceptions in
+						// synthetic event handlers to cause the internal timer to run
+						// amuck, potentially pegging the CPU. I'm not a fan of this
+						// squelch, but hopefully logging will make it clear what's
+						// going on
+						console.error("exception in animation handler for:", evt);
+						console.error(e);
+					}
 				}
-			}catch(e){
-				// squelch and log because we shouldn't allow exceptions in
-				// synthetic event handlers to cause the internal timer to run
-				// amuck, potentially pegging the CPU. I'm not a fan of this
-				// squelch, but hopefully logging will make it clear what's
-				// going on
-				console.error("exception in animation handler for:", evt);
-				console.error(e);
 			}
 			return this; // dojo._Animation
 		},
-	
+
 		play: function(/*int?*/ delay, /*Boolean?*/ gotoStart){
 			// summary:
 			//		Start the animation.
@@ -312,13 +316,6 @@ dojo.require("dojo._base.html");
 		// only set the zoom if the "tickle" value would be the same as the
 		// default
 		var ns = node.style;
-		if(!ns.zoom.length && d.style(node, "zoom") == "normal"){
-			// make sure the node "hasLayout"
-			// NOTE: this has been tested with larger and smaller user-set text
-			// sizes and works fine
-			ns.zoom = "1";
-			// node.style.zoom = "normal";
-		}
 		// don't set the width to auto if it didn't already cascade that way.
 		// We don't want to f anyones designs
 		if(!ns.width.length && d.style(node, "width") == "auto"){
@@ -441,8 +438,9 @@ dojo.require("dojo._base.html");
 		//		integer specified for the width to the more expressive but
 		//		verbose form `{ width: { end: '400', units: 'px' } }` which you
 		//		can also specify directly
+		//
 		// 	example:
-		//		animate width, height, and padding over 2 seconds...the
+		//		Animate width, height, and padding over 2 seconds... the
 		//		pedantic way:
 		//	|	dojo.animateProperty({ node: node, duration:2000,
 		//	|		properties: {
@@ -451,9 +449,11 @@ dojo.require("dojo._base.html");
 		//	|			paddingTop: { start:'5', end:'50', unit:"px" } 
 		//	|		}
 		//	|	}).play();
-		//
+		//		Note 'paddingTop' is used over 'padding-top'. Multi-name CSS properties
+		//		are written using "mixed case", as the hyphen is illegal as an object key.
+		//		
 		// 	example:
-		//		plug in a different easing function and register a callback for
+		//		Plug in a different easing function and register a callback for
 		//		when the animation ends. Easing functions accept values between
 		//		zero and one and return a value on that basis. In this case, an
 		//		exponential-in curve.
@@ -468,7 +468,23 @@ dojo.require("dojo._base.html");
 		//	|			// called when the animation finishes
 		//	|		}
 		//	|	}).play(500); // delay playing half a second
-
+		//
+		//	example:
+		//		Like all `dojo._Animation`s, animateProperty returns a handle to the
+		//		Animation instance, which fires the events common to Dojo FX. Use `dojo.connect`
+		//		to access these events outside of the Animation definiton:
+		//	|	var anim = dojo.animateProperty({
+		//	|		node:"someId",
+		//	|		properties:{
+		//	|			width:400, height:500
+		//	|		}
+		//	|	});
+		//	|	dojo.connect(anim,"onEnd", function(){
+		//	|		console.log("animation ended");
+		//	|	});
+		//	|	// play the animation now:
+		//	|	anim.play();
+		
 		args.node = d.byId(args.node);
 		if(!args.easing){ args.easing = d._defaultEasing; }
 
@@ -515,13 +531,7 @@ dojo.require("dojo._base.html");
 			}
 			this.curve = new PropLine(pm);
 		});
-		d.connect(anim, "onAnimate", anim, function(propValues){
-			// try{
-			for(var s in propValues){
-				d.style(this.node, s, propValues[s]);
-				// this.node.style[s] = propValues[s];
-			}
-		});
+		d.connect(anim, "onAnimate", d.hitch(d, "style", anim.node));
 		return anim; // dojo._Animation
 	}
 
@@ -556,7 +566,7 @@ dojo.require("dojo._base.html");
 		//		and deceleration of the animation through its duration.
 		//		A default easing algorithm is provided, but you may
 		//		plug in any you wish. A large selection of easing algorithms
-		//		are available in `dojox.fx.easing`.
+		//		are available in `dojo.fx.easing`.
 		//	onEnd:
 		//		A function to be called when the animation finishes
 		//		running.

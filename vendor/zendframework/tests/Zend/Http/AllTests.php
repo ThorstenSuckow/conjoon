@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: AllTests.php 12036 2008-10-20 18:37:47Z shahar $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -28,7 +28,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 /**
  * Test helper
  */
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
+require_once realpath(dirname(__FILE__) . '/../../') . '/TestHelper.php';
 
 require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';

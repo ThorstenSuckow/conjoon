@@ -16,14 +16,14 @@
  * @package    Zend_Soap
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Parser.php 9722 2008-06-18 12:36:35Z alexander $
+ * @version    $Id: Parser.php 12080 2008-10-22 16:40:33Z beberlei $
  */
 
 require_once 'Zend/Soap/Wsdl/Parser/Result.php';
 
 /**
  * Zend_Soap_Wsdl_Parser
- * 
+ *
  * @category   Zend
  * @package    Zend_Soap
  */
@@ -45,13 +45,13 @@ class Zend_Soap_Wsdl_Parser {
             $wsdl_result = new Zend_Soap_Wsdl_Parser_Result($wsdl);
             $wsdl = file_get_contents($wsdl);
         } else {
-            $tmp = new tempnam(ini_get('upload_tmp_dir'), 'ZF_Temp_');
+            $tmp = tempnam(ini_get('upload_tmp_dir'), 'ZF_Temp_');
             file_put_contents($tmp, $wsdl);
             $wsdl_result = new Zend_Soap_Wsdl_Parser_Result($tmp);
         }
 
         self::$xml = simplexml_load_string($wsdl);
-        
+
         /* This is done so that we have a known prefix to the WSDL elements
             for XPath queries */
 

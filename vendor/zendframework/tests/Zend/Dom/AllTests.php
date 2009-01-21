@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 9799 2008-06-27 01:54:36Z dasprid $
+ * @version    $Id: AllTests.php 12358 2008-11-07 09:34:42Z beberlei $
  */
 
 /**
@@ -30,6 +30,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Zend/Dom/QueryTest.php';
+require_once 'Zend/Dom/Query/ResultTest.php';
 require_once 'Zend/Dom/Query/Css2XpathTest.php';
 
 /**
@@ -52,6 +53,7 @@ class Zend_Dom_AllTests
 
         $suite->addTestSuite('Zend_Dom_QueryTest');
         $suite->addTestSuite('Zend_Dom_Query_Css2XpathTest');
+        $suite->addTestSuite('Zend_Dom_Query_ResultTest');
 
         return $suite;
     }

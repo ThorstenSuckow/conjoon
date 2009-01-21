@@ -4,7 +4,7 @@
  * @category   Zend
  * @package    Zend_Http
  * @subpackage UnitTests
- * @version    $Id: CookieJarTest.php 7366 2008-01-09 13:48:52Z shahar $
+ * @version    $Id: CookieJarTest.php 11973 2008-10-15 16:00:56Z matthew $
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com/)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HttpTest.php 9656 2008-06-10 16:21:13Z dasprid $
+ * @version    $Id: HttpTest.php 12041 2008-10-20 22:13:01Z shahar $
  */
 
 /**
@@ -54,12 +54,37 @@ class Zend_Uri_HttpTest extends PHPUnit_Framework_TestCase
         $this->_testValidUri('http://www.zend.com');
     }
 
+    /**
+     * Test that fromString() works proprerly for simple valid URLs
+     *
+     */
     public function testSimpleFromString()
     {
-        $uri = 'http://www.zend.com';
+        $tests = array(
+            'http://www.zend.com',
+            'https://www.zend.com',
+            'http://www.zend.com/path',
+            'http://www.zend.com/path?query=value'
+        );
 
-        $obj = Zend_Uri_Http::fromString($uri);
-        $this->assertEquals($uri, $obj->getUri(), 'getUri() returned value that differs from input');
+        foreach ($tests as $uri) {
+            $obj = Zend_Uri_Http::fromString($uri);
+            $this->assertEquals($uri, $obj->getUri(), 
+                "getUri() returned value that differs from input for $uri");
+        }
+    }
+    
+    /**
+     * Make sure an exception is thrown when trying to use fromString() with a
+     * non-HTTP scheme
+     * 
+     * @see http://framework.zend.com/issues/browse/ZF-4395
+     * 
+     * @expectedException Zend_Uri_Exception
+     */
+    public function testFromStringInvalidScheme()
+    {
+       Zend_Uri_Http::fromString('ftp://example.com/file');
     }
 
     public function testAllParts()
@@ -162,6 +187,7 @@ class Zend_Uri_HttpTest extends PHPUnit_Framework_TestCase
      * Test that setQuery() can handle unencoded query parameters (as other
      * browsers do), ZF-1934
      *
+     * @link   http://framework.zend.com/issues/browse/ZF-1934
      * @return void
      */
     public function testUnencodedQueryParameters()
@@ -180,6 +206,64 @@ class Zend_Uri_HttpTest extends PHPUnit_Framework_TestCase
          $this->assertEquals('id=123&url=http%3A%2F%2Fexample.com%2F%3Fbar%3Dfoo+baz', $parts['query']);
     }
 
+    /**
+     * Test that unwise characters in the query string are not valid
+     *
+     */
+    public function testExceptionUnwiseQueryString()
+    {
+        $unwise = array(
+            'http://example.com/?q={',
+            'http://example.com/?q=}',
+            'http://example.com/?q=|',
+            'http://example.com/?q=\\',
+            'http://example.com/?q=^',
+            'http://example.com/?q=`',
+        ); 
+        
+        foreach ($unwise as $uri) {
+            $this->assertFalse(Zend_Uri::check($uri), "failed for URI $uri");
+        }
+    }
+    
+    /**
+     * Test that after setting 'allow_unwise' to true unwise characters are
+     * accepted
+     *
+     */
+    public function testAllowUnwiseQueryString()
+    {
+        $unwise = array(
+            'http://example.com/?q={',
+            'http://example.com/?q=}',
+            'http://example.com/?q=|',
+            'http://example.com/?q=\\',
+            'http://example.com/?q=^',
+            'http://example.com/?q=`',
+        ); 
+        
+        Zend_Uri::setConfig(array('allow_unwise' => true));
+        
+        foreach ($unwise as $uri) {
+            $this->assertTrue(Zend_Uri::check($uri), "failed for URI $uri");
+        }
+        
+        Zend_Uri::setConfig(array('allow_unwise' => false));
+    }
+    
+    /**
+     * Test that an extremely long URI does not break things up
+     * 
+     * @link http://framework.zend.com/issues/browse/ZF-3712
+     */
+    public function testVeryLongUriZF3712()
+    {
+        $uri = file_get_contents(dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR .
+           '_files' . DIRECTORY_SEPARATOR . 'testVeryLongUriZF3712.txt');
+        
+        $this->_testValidUri($uri);
+    }
+    
     /**
      * Test a known valid URI
      *

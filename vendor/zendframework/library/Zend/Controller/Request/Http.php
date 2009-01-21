@@ -390,6 +390,12 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
                 $requestUri = $_SERVER['HTTP_X_REWRITE_URL'];
             } elseif (isset($_SERVER['REQUEST_URI'])) {
                 $requestUri = $_SERVER['REQUEST_URI'];
+                if (isset($_SERVER['HTTP_HOST']) && strstr($requestUri, $_SERVER['HTTP_HOST'])) {
+                    $pathInfo    = parse_url($requestUri, PHP_URL_PATH);
+                    $queryString = parse_url($requestUri, PHP_URL_QUERY);
+                    $requestUri  = $pathInfo
+                                 . ((empty($queryString)) ? '' : '?' . $queryString);
+                }
             } elseif (isset($_SERVER['ORIG_PATH_INFO'])) { // IIS 5.0, PHP as CGI
                 $requestUri = $_SERVER['ORIG_PATH_INFO'];
                 if (!empty($_SERVER['QUERY_STRING'])) {
@@ -456,19 +462,20 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
         }
 
         if ($baseUrl === null) {
-            $filename = basename($_SERVER['SCRIPT_FILENAME']);
+            $filename = (isset($_SERVER['SCRIPT_FILENAME'])) ? basename($_SERVER['SCRIPT_FILENAME']) : '';
 
-            if (basename($_SERVER['SCRIPT_NAME']) === $filename) {
+            if (isset($_SERVER['SCRIPT_NAME']) && basename($_SERVER['SCRIPT_NAME']) === $filename) {
                 $baseUrl = $_SERVER['SCRIPT_NAME'];
-            } elseif (basename($_SERVER['PHP_SELF']) === $filename) {
+            } elseif (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) === $filename) {
                 $baseUrl = $_SERVER['PHP_SELF'];
             } elseif (isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === $filename) {
                 $baseUrl = $_SERVER['ORIG_SCRIPT_NAME']; // 1and1 shared hosting compatibility
             } else {
                 // Backtrack up the script_filename to find the portion matching
                 // php_self
-                $path    = $_SERVER['PHP_SELF'];
-                $segs    = explode('/', trim($_SERVER['SCRIPT_FILENAME'], '/'));
+                $path    = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '';
+                $file    = isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : '';
+                $segs    = explode('/', trim($file, '/'));
                 $segs    = array_reverse($segs);
                 $index   = 0;
                 $last    = count($segs);
@@ -552,6 +559,10 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
             } else {
                 $basePath = $baseUrl;
             }
+        }
+        
+        if (substr(PHP_OS, 0, 3) === 'WIN') {
+            $basePath = str_replace('\\', '/', $basePath);
         }
 
         $this->_basePath = rtrim($basePath, '/');
@@ -887,7 +898,8 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
      */
     public function isFlashRequest()
     {
-        return ($this->getHeader('USER_AGENT') == 'Shockwave Flash');
+        $header = strtolower($this->getHeader('USER_AGENT'));
+        return (strstr($header, ' flash')) ? true : false;
     }
     
     /**

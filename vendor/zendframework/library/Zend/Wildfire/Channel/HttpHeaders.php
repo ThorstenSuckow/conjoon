@@ -214,7 +214,7 @@ class Zend_Wildfire_Channel_HttpHeaders extends Zend_Controller_Plugin_Abstract 
         $controller = Zend_Controller_Front::getInstance();
         if (!$controller->hasPlugin(get_class($this))) {
             $controller->registerPlugin($this, self::$_controllerPluginStackIndex);
-        }
+        }        
     }
 
     

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 6170 2007-08-21 21:59:18Z bkarwin $
+ * @version    $Id: ProfilerCustom.php 12004 2008-10-18 14:29:41Z mikaelkael $
  */
 
 

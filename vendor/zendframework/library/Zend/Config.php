@@ -16,7 +16,7 @@
  * @package    Zend_Config
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Config.php 11386 2008-09-13 15:25:12Z alexander $
+ * @version    $Id: Config.php 12204 2008-10-30 20:42:37Z dasprid $
  */
 
 
@@ -162,7 +162,7 @@ class Zend_Config implements Countable, Iterator
             throw new Zend_Config_Exception('Zend_Config is read only');
         }
     }
-
+    
     /**
      * Deep clone of this instance to ensure that nested Zend_Configs
      * are also cloned.
@@ -325,12 +325,16 @@ class Zend_Config implements Countable, Iterator
         foreach($merge as $key => $item) {
             if(array_key_exists($key, $this->_data)) {
                 if($item instanceof Zend_Config && $this->$key instanceof Zend_Config) {
-                    $this->$key = $this->$key->merge($item);
+                    $this->$key = $this->$key->merge(new Zend_Config($item->toArray(), !$this->readOnly()));
                 } else {
                     $this->$key = $item;
                 }
             } else {
-                $this->$key = $item;
+                if($item instanceof Zend_Config) {
+                    $this->$key = new Zend_Config($item->toArray(), !$this->readOnly());
+                } else {
+                    $this->$key = $item;
+                }
             }
         }
 
@@ -347,7 +351,43 @@ class Zend_Config implements Countable, Iterator
     {
         $this->_allowModifications = false;
     }
-
+    
+    /**
+     * Returns if this Zend_Config object is read only or not.
+     *
+     * @return boolean
+     */
+    public function readOnly()
+    {
+        return !$this->_allowModifications;
+    }
+    
+    /**
+     * Get the current extends
+     *
+     * @return array
+     */
+    public function getExtends()
+    {
+        return $this->_extends;
+    }
+    
+    /**
+     * Set an extend for Zend_Config_Writer
+     *
+     * @param  string $extendingSection
+     * @param  string $extendedSection
+     * @return void
+     */
+    public function setExtend($extendingSection, $extendedSection = null)
+    {
+        if ($extendedSection === null && isset($this->_extends[$extendingSection])) {
+            unset($this->_extends[$extendingSection]);
+        } else if ($extendedSection !== null) {
+            $this->_extends[$extendingSection] = $extendedSection;
+        }
+    }
+    
     /**
      * Throws an exception if $extendingSection may not extend $extendedSection,
      * and tracks the section extension if it is valid.

@@ -22,47 +22,44 @@
 
 /**
  * For handling the HTTP connection to the XML-RPC service
+ * @see Zend_Http_Client
  */
 require_once 'Zend/Http/Client.php';
 
 /**
- * Exception thrown when an HTTP error occurs
- */
-require_once 'Zend/XmlRpc/Client/HttpException.php';
-
-/**
- * Exception thrown when an XML-RPC fault is returned
- */
-require_once 'Zend/XmlRpc/Client/FaultException.php';
-
-/**
  * Enables object chaining for calling namespaced XML-RPC methods.
+ * @see Zend_XmlRpc_Client_ServerProxy
  */
 require_once 'Zend/XmlRpc/Client/ServerProxy.php';
 
 /**
  * Introspects remote servers using the XML-RPC de facto system.* methods
+ * @see Zend_XmlRpc_Client_ServerIntrospection
  */
 require_once 'Zend/XmlRpc/Client/ServerIntrospection.php';
 
 /**
  * Represent a native XML-RPC value, used both in sending parameters
  * to methods and as the parameters retrieve from method calls
+ * @see Zend_XmlRpc_Value
  */
 require_once 'Zend/XmlRpc/Value.php';
 
 /**
  * XML-RPC Request
+ * @see Zend_XmlRpc_Request
  */
 require_once 'Zend/XmlRpc/Request.php';
 
 /**
  * XML-RPC Response
+ * @see Zend_XmlRpc_Response
  */
 require_once 'Zend/XmlRpc/Response.php';
 
 /**
  * XML-RPC Fault
+ * @see Zend_XmlRpc_Fault
  */
 require_once 'Zend/XmlRpc/Fault.php';
 
@@ -78,26 +75,48 @@ require_once 'Zend/XmlRpc/Fault.php';
  */
 class Zend_XmlRpc_Client
 {
-    /** @var string */
-    private $_serverAddress;
+    /**
+     * Full address of the XML-RPC service
+     * @var string
+     * @example http://time.xmlrpc.com/RPC2
+     */
+    protected $_serverAddress;
 
-    /** @var Zend_Http_Client */
-    private $_httpClient = null;
+    /**
+     * HTTP Client to use for requests
+     * @var Zend_Http_Client
+     */
+    protected $_httpClient = null;
 
-    /** @var Zend_Http_Client_Introspector */
-    private $_introspector = null;
+    /**
+     * Introspection object
+     * @var Zend_Http_Client_Introspector
+     */
+    protected $_introspector = null;
 
-    /** @var Zend_XmlRpc_Request */
-    private $_lastRequest = null;
+    /**
+     * Request of the last method call
+     * @var Zend_XmlRpc_Request
+     */
+    protected $_lastRequest = null;
 
-    /** @var Zend_XmlRpc_Response */
-    private $_lastResponse = null;
+    /**
+     * Response received from the last method call
+     * @var Zend_XmlRpc_Response
+     */
+    protected $_lastResponse = null;
 
-    /** @var array of Zend_XmlRpc_Client_ServerProxy */
-    private $_proxyCache = array();
+    /**
+     * Proxy object for more convenient method calls
+     * @var array of Zend_XmlRpc_Client_ServerProxy
+     */
+    protected $_proxyCache = array();
 
-    /** @var bool */
-    private $_skipSystemLookup = false;
+    /**
+     * Flag for skipping system lookup
+     * @var bool
+     */
+    protected $_skipSystemLookup = false;
 
     /**
      * Create a new XML-RPC client to a remote server
@@ -205,8 +224,8 @@ class Zend_XmlRpc_Client
 
     /**
      * Set skip system lookup flag
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_XmlRpc_Client
      */
     public function setSkipSystemLookup($flag = true)
@@ -217,7 +236,7 @@ class Zend_XmlRpc_Client
 
     /**
      * Skip system lookup when determining if parameter should be array or struct?
-     * 
+     *
      * @return bool
      */
     public function skipSystemLookup()
@@ -231,6 +250,7 @@ class Zend_XmlRpc_Client
      * @param Zend_XmlRpc_Request $request
      * @param null|Zend_XmlRpc_Response $response
      * @return void
+     * @throws Zend_XmlRpc_Client_HttpException
      */
     public function doRequest($request, $response = null)
     {
@@ -241,7 +261,9 @@ class Zend_XmlRpc_Client
         iconv_set_encoding('internal_encoding', 'UTF-8');
 
         $http = $this->getHttpClient();
-        $http->setUri($this->_serverAddress);
+        if($http->getUri() === null) {
+            $http->setUri($this->_serverAddress);
+        }
 
         $http->setHeaders(array(
             'Content-Type: text/xml; charset=utf-8',
@@ -254,6 +276,11 @@ class Zend_XmlRpc_Client
         $httpResponse = $http->request(Zend_Http_Client::POST);
 
         if (! $httpResponse->isSuccessful()) {
+            /**
+             * Exception thrown when an HTTP error occurs
+             * @see Zend_XmlRpc_Client_HttpException
+             */
+            require_once 'Zend/XmlRpc/Client/HttpException.php';
             throw new Zend_XmlRpc_Client_HttpException(
                                     $httpResponse->getMessage(),
                                     $httpResponse->getStatus());
@@ -271,7 +298,7 @@ class Zend_XmlRpc_Client
      *
      * @param string $method Name of the method we want to call
      * @param array $params Array of parameters for the method
-     * @throws Zend_Http_Client_FaultException
+     * @throws Zend_XmlRpc_Client_FaultException
      */
     public function call($method, $params=array())
     {
@@ -299,10 +326,10 @@ class Zend_XmlRpc_Client
                             }
                         }
                         $params[$key] = array(
-                            'type'  => $type, 
+                            'type'  => $type,
                             'value' => $param
                         );
-                    } 
+                    }
                 }
             }
         }
@@ -313,6 +340,11 @@ class Zend_XmlRpc_Client
 
         if ($this->_lastResponse->isFault()) {
             $fault = $this->_lastResponse->getFault();
+            /**
+             * Exception thrown when an XML-RPC fault is returned
+             * @see Zend_XmlRpc_Client_FaultException
+             */
+            require_once 'Zend/XmlRpc/Client/FaultException.php';
             throw new Zend_XmlRpc_Client_FaultException($fault->getMessage(),
                                                         $fault->getCode());
         }

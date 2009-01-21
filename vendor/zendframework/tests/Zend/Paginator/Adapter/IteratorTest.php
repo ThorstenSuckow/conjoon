@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IteratorTest.php 11223 2008-09-04 03:18:57Z mratzloff $
+ * @version    $Id: IteratorTest.php 11762 2008-10-09 01:38:48Z mratzloff $
  */
 
 /**
@@ -103,7 +103,9 @@ class Zend_Paginator_Adapter_IteratorTest extends PHPUnit_Framework_TestCase
         }
     }
     
-    // ZF-4151
+    /**
+     * @group ZF-4151
+     */
     public function testDoesNotThrowOutOfBoundsExceptionIfIteratorIsEmpty()
     {
         $this->_paginator = Zend_Paginator::factory(new ArrayIterator(array()));

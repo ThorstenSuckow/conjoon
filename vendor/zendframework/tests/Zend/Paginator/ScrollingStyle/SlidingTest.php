@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SlidingTest.php 11219 2008-09-04 02:09:23Z mratzloff $
+ * @version    $Id: SlidingTest.php 11218 2008-09-04 02:08:28Z mratzloff $
  */
 
 /**

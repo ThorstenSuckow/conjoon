@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AtomEntryOnlyTest.php 10317 2008-07-23 19:15:34Z matthew $
+ * @version    $Id: AtomEntryOnlyTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 

@@ -1,14 +1,51 @@
 dojo.provide("dijit._editor.plugins.EnterKeyHandling");
 
 dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
-	// summary: this plugin tries to handle enter key events to make all 
-	//		browsers have identical behaviors.
+	// summary:
+	//		This plugin tries to make all browsers have identical behavior
+	//		when the user presses the ENTER key.
+	//		Specifically, it fixes the double-spaced line problem on IE.
+	// description:
+	//		On IE the ENTER key creates a new paragraph, which visually looks
+	//		bad (ie, "double-spaced") and is also different than FF, which
+	//		makes a <br> in that.
+	//
+	//		In this plugin's default operation, where blockNodeForEnter==BR, it
+	//		makes the Editor on IE appear to work like other browsers, by:
+	//			1. changing the CSS for the <p> node to not have top/bottom margins,
+	//				thus eliminating the double-spaced appearance.
+	//			2. adds the singleLinePsToRegularPs callback when the
+	//				editor writes out it's data, in order to convert adjacent <p>
+	//				nodes into a single node
+	//		There's also a pre-filter to convert a single <p> with <br> line breaks
+	//		 into separate <p> nodes, to mirror the post-filter.
+	//
+	//		(Note: originally based on http://bugs.dojotoolkit.org/ticket/2859)
+	//
+	//		If you set the blockNodeForEnter option to another value, then this
+	//		plugin will monitor keystrokes (as they are typed) and apparently
+	//		update the editor's content on the fly so that the ENTER key will
+	//		either create a new <div>, or a new <p>.
+	//
+	//		This is useful because in some cases, you need the editor content to be
+	//		consistent with the serialized html even while the user is editing
+	//		(such as in a collaboration mode extension to the editor).
+	//
+	//		The handleEnterKey() code was mainly written for the IE double-spacing
+	//		issue that is now handled in the pre/post filters.  And it has some
+	//		issues... on IE setting blockNodeForEnter to P or BR
+	//		causes screen jumps as you type (making it unusable), and on safari
+	//		it just has no effect (safari creates a <div> every time the user
+	//		hits the enter key).  But apparently useful for case mentioned above.
+	//
+	//		(Note: originally based on http://bugs.dojotoolkit.org/ticket/1331)
 
 	// blockNodeForEnter: String
 	//		this property decides the behavior of Enter key. It can be either P,
 	//		DIV, BR, or empty (which means disable this feature). Anything else
 	//		will trigger errors.
-	blockNodeForEnter: 'P',
+	blockNodeForEnter: 'BR',
+
 	constructor: function(args){
 		if(args){
 			dojo.mixin(this,args);
@@ -34,8 +71,8 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 			// FIXME: need to port to the new event code!!
 			dojo['require']('dijit._editor.range');
 			var h = dojo.hitch(this,this.handleEnterKey);
-			editor.addKeyHandler(13, 0, h); //enter
-			editor.addKeyHandler(13, 2, h); //shift+enter
+			editor.addKeyHandler(13, 0, 0, h); //enter
+			editor.addKeyHandler(13, 0, 1, h); //shift+enter
 			this.connect(this.editor,'onKeyPressed','onKeyPressed');
 		}
 	},
@@ -52,20 +89,21 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 	onKeyPressed: function(e){
 		if(this._checkListLater){
 			if(dojo.withGlobal(this.editor.window, 'isCollapsed', dijit)){
-				if(!dojo.withGlobal(this.editor.window, 'hasAncestorElement', dijit._editor.selection, ['LI'])){
+				var liparent=dojo.withGlobal(this.editor.window, 'getAncestorElement', dijit._editor.selection, ['LI']);
+				if(!liparent){
 					//circulate the undo detection code by calling RichText::execCommand directly
-					dijit._editor.RichText.prototype.execCommand.apply(this.editor, ['formatblock',this.blockNodeForEnter]);
+					dijit._editor.RichText.prototype.execCommand.call(this.editor, 'formatblock',this.blockNodeForEnter);
 					//set the innerHTML of the new block node
 					var block = dojo.withGlobal(this.editor.window, 'getAncestorElement', dijit._editor.selection, [this.blockNodeForEnter]);
 					if(block){
 						block.innerHTML=this.bogusHtmlContent;
 						if(dojo.isIE){
 							//the following won't work, it will move the caret to the last list item in the previous list
-//							var newrange = dijit.range.create();
-//							newrange.setStart(block.firstChild,0);
-//							var selection = dijit.range.getSelection(this.editor.window)
-//							selection.removeAllRanges();
-//							selection.addRange(newrange);
+							/*var newrange = dijit.range.create();
+							newrange.setStart(block.firstChild,0);
+							var selection = dijit.range.getSelection(this.editor.window)
+							selection.removeAllRanges();
+							selection.addRange(newrange);*/
 							//move to the start by move backward one char
 							var r = this.editor.document.selection.createRange();
 							r.move('character',-1);
@@ -74,28 +112,55 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 					}else{
 						alert('onKeyPressed: Can not find the new block node'); //FIXME
 					}
+				}else{
+					
+					if(dojo.isMoz){
+						if(liparent.parentNode.parentNode.nodeName=='LI'){
+							liparent=liparent.parentNode.parentNode;
+						}
+					}
+					var fc=liparent.firstChild;
+					if(fc && fc.nodeType==1 && (fc.nodeName=='UL' || fc.nodeName=='OL')){
+						liparent.insertBefore(fc.ownerDocument.createTextNode('\xA0'),fc);
+						var newrange = dijit.range.create();
+						newrange.setStart(liparent.firstChild,0);
+						var selection = dijit.range.getSelection(this.editor.window,true)
+						selection.removeAllRanges();
+						selection.addRange(newrange);
+					}
 				}
 			}
 			this._checkListLater = false;
-		}else if(this._pressedEnterInBlock){
+		}
+		if(this._pressedEnterInBlock){
 			//the new created is the original current P, so we have previousSibling below
-			this.removeTrailingBr(this._pressedEnterInBlock.previousSibling);
+			if(this._pressedEnterInBlock.previousSibling){
+			    this.removeTrailingBr(this._pressedEnterInBlock.previousSibling);
+			}
 			delete this._pressedEnterInBlock;
 		}
 	},
 	bogusHtmlContent: '&nbsp;',
-	blockNodes: /^(?:H1|H2|H3|H4|H5|H6|LI)$/,
+	blockNodes: /^(?:P|H1|H2|H3|H4|H5|H6|LI)$/,
 	handleEnterKey: function(e){
-		// summary: manually handle enter key event to make the behavior consistant across
-		//	all supported browsers. See property blockNodeForEnter for available options
-		if(!this.blockNodeForEnter){ return true; } //let browser handle this
-		var selection, range, newrange;
+		// summary:
+		//		Manually handle enter key event to make the behavior consistant across
+		//		all supported browsers. See property blockNodeForEnter for available options
+		
+		 // let browser handle this
+		// TODO: delete.  this code will never fire because 
+		// onKeyPress --> handleEnterKey is only called when blockNodeForEnter != null
+		if(!this.blockNodeForEnter){ return true; }
+
+		var selection, range, newrange, doc=this.editor.document,br;
 		if(e.shiftKey  //shift+enter always generates <br>
 			|| this.blockNodeForEnter=='BR'){
+			// TODO: above condition 'this.blockNodeForEnter=='BR'' is meaningless,
+			// onKeyPress --> handleEnterKey is only called when blockNodeForEnter != BR
 			var parent = dojo.withGlobal(this.editor.window, "getParentElement", dijit._editor.selection);
-			var header = dijit.range.getAncestor(parent,this.editor.blockNodes);
+			var header = dijit.range.getAncestor(parent,this.blockNodes);
 			if(header){
-				if(header.tagName=='LI'){
+				if(!e.shiftKey && header.tagName=='LI'){
 					return true; //let brower handle
 				}
 				selection = dijit.range.getSelection(this.editor.window);
@@ -104,11 +169,27 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 					range.deleteContents();
 				}
 				if(dijit.range.atBeginningOfContainer(header, range.startContainer, range.startOffset)){
-					dojo.place(this.editor.document.createElement('br'), header, "before");
+					if(e.shiftKey){
+						br=doc.createElement('br');
+						newrange = dijit.range.create();
+						header.insertBefore(br,header.firstChild);
+						newrange.setStartBefore(br.nextSibling);
+						selection.removeAllRanges();
+						selection.addRange(newrange);
+					}else{
+						dojo.place(br, header, "before");
+					}
 				}else if(dijit.range.atEndOfContainer(header, range.startContainer, range.startOffset)){
-					dojo.place(this.editor.document.createElement('br'), header, "after");
 					newrange = dijit.range.create();
-					newrange.setStartAfter(header);
+					br=doc.createElement('br');
+					if(e.shiftKey){
+						header.appendChild(br);
+						header.appendChild(doc.createTextNode('\xA0'));
+						newrange.setStart(header.lastChild,0);
+					}else{
+						dojo.place(br, header, "after");
+						newrange.setStartAfter(header);
+					}
 
 					selection.removeAllRanges();
 					selection.addRange(newrange);
@@ -132,14 +213,26 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 		}
 
 		var block = dijit.range.getBlockAncestor(range.endContainer, null, this.editor.editNode);
+		var blockNode = block.blockNode;
 
-		if((this._checkListLater = (block.blockNode && block.blockNode.tagName == 'LI'))){
+		//if this is under a LI or the parent of the blockNode is LI, just let browser to handle it
+		if((this._checkListLater = (blockNode && (blockNode.nodeName == 'LI' || blockNode.parentNode.nodeName == 'LI')))){
+			
+		    if(dojo.isMoz){
+				//press enter in middle of P may leave a trailing <br/>, let's remove it later
+				this._pressedEnterInBlock = blockNode;
+			}
+			//if this li only contains spaces, set the content to empty so the browser will outdent this item
+			if(/^(?:\s|&nbsp;)$/.test(blockNode.innerHTML)){
+				blockNode.innerHTML='';
+			}
+
 			return true;
 		}
 
 		//text node directly under body, let's wrap them in a node
-		if(!block.blockNode){
-			this.editor.document.execCommand('formatblock', false, this.blockNodeForEnter);
+		if(!block.blockNode || block.blockNode===this.editor.editNode){
+			dijit._editor.RichText.prototype.execCommand.call(this.editor, 'formatblock',this.blockNodeForEnter);
 			//get the newly created block node
 			// FIXME
 			block = {blockNode:dojo.withGlobal(this.editor.window, "getAncestorElement", dijit._editor.selection, [this.blockNodeForEnter]),
@@ -155,7 +248,8 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 			selection = dijit.range.getSelection(this.editor.window);
 			range = selection.getRangeAt(0);
 		}
-		var newblock = this.editor.document.createElement(this.blockNodeForEnter);
+
+		var newblock = doc.createElement(this.blockNodeForEnter);
 		newblock.innerHTML=this.bogusHtmlContent;
 		this.removeTrailingBr(block.blockNode);
 		if(dijit.range.atEndOfContainer(block.blockNode, range.endContainer, range.endOffset)){
@@ -206,6 +300,10 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 		}
 	},
 	_fixNewLineBehaviorForIE: function(d){
+		// summary:
+		//		Insert CSS so <p> nodes don't have spacing around them,
+		//		thus hiding the fact that ENTER key on IE is creating new
+		//		paragraphs
 		if(this.editor.document.__INSERTED_EDITIOR_NEWLINE_CSS === undefined){
 			var lineFixingStyles = "p{margin:0 !important;}";
 			var insertCssText = function(
@@ -261,6 +359,12 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 		return null;
 	},
 	regularPsToSingleLinePs: function(element, noWhiteSpaceInEmptyP){
+		// summary:
+		//		Converts a <p> node containing <br>'s into multiple <p> nodes.
+		// description:
+		//		See singleLinePsToRegularPs().   This method does the
+		//		opposite thing, and is used as a pre-filter when loading the
+		//		editor, to mirror the effects of the post-filter at end of edit.
 		function wrapLinesInPs(el){
 		  // move "lines" of top-level text nodes into ps
 			function wrapNodes(nodes){
@@ -277,9 +381,8 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 			var currentNode;
 			while(currentNodeIndex < el.childNodes.length){
 				currentNode = el.childNodes[currentNodeIndex];
-				if( (currentNode.nodeName!='BR') &&
-					(currentNode.nodeType==1) &&
-					(dojo.style(currentNode, "display")!="block")
+				if( currentNode.nodeType==3 ||	// text node
+					(currentNode.nodeType==1 && currentNode.nodeName!='BR' && dojo.style(currentNode, "display")!="block")
 				){
 					nodesInLine.push(currentNode);
 				}else{
@@ -343,7 +446,37 @@ dojo.declare("dijit._editor.plugins.EnterKeyHandling", dijit._editor._Plugin, {
 	},
 
 	singleLinePsToRegularPs: function(element){
+		// summary:
+		//		Called as post-filter.
+		//		Apparently collapses adjacent <p> nodes into a single <p>
+		//		nodes with <br> separating each line.
+		//
+		//	example:
+		//		Given this input:
+		//	|	<p>line 1</p>
+		//	|	<p>line 2</p>
+		//	|	<ol>
+		//	|		<li>item 1
+		//	|		<li>item 2
+		//	|	</ol>
+		//	|	<p>line 3</p>
+		//	|	<p>line 4</p>
+		//
+		//		Will convert to:
+		//	|	<p>line 1<br>line 2</p>
+		//	|	<ol>
+		//	|		<li>item 1
+		//	|		<li>item 2
+		//	|	</ol>
+		//	|	<p>line 3<br>line 4</p>
+		//
+		// Not sure why this situation would even come up after the pre-filter and
+		// the enter-key-handling code.
+	
 		function getParagraphParents(node){
+			// summary:
+			//		Used to get list of all nodes that contain paragraphs.
+			//		Seems like that would just be the very top node itself, but apparently not.
 			var ps = node.getElementsByTagName('p');
 			var parents = [];
 			for(var i=0; i<ps.length; i++){

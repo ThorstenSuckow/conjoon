@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LogTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: LogTest.php 12022 2008-10-20 03:45:18Z mike $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -35,13 +35,13 @@ require_once 'Zend/Log/Writer/Mock.php';
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LogTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: LogTest.php 12022 2008-10-20 03:45:18Z mike $
  */
 class Zend_Log_LogTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->log = fopen('php://memory', 'a');
+        $this->log = fopen('php://memory', 'w+');
         $this->writer = new Zend_Log_Writer_Stream($this->log);
     }
     
@@ -71,9 +71,9 @@ class Zend_Log_LogTest extends PHPUnit_Framework_TestCase
         $logger = new Zend_Log();
 
         // create writers for two separate streams of temporary memory
-        $log1    = fopen('php://memory', 'a');
+        $log1    = fopen('php://memory', 'w+');
         $writer1 = new Zend_Log_Writer_Stream($log1);
-        $log2    = fopen('php://memory', 'a');
+        $log2    = fopen('php://memory', 'w+');
         $writer2 = new Zend_Log_Writer_Stream($log2);
 
         // add the writers

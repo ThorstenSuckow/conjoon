@@ -5,6 +5,12 @@
  * @subpackage UnitTests
  */
 
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Controller_Router_RewriteTest::main');
+}
+
+require_once dirname(__FILE__) . '/../../../TestHelper.php';
+
 /** Zend_Controller_Router_Rewrite */
 require_once 'Zend/Controller/Router/Rewrite.php';
 
@@ -26,6 +32,9 @@ require_once 'Zend/Controller/Router/Route/Chain.php';
 /** Zend_Controller_Router_Route_Hostname */
 require_once 'Zend/Controller/Router/Route/Hostname.php';
 
+/** Zend_Uri_Http */
+require_once 'Zend/Uri/Http.php';
+
 /** PHPUnit test case */
 require_once 'PHPUnit/Framework/TestCase.php';
 
@@ -40,6 +49,20 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
 {
     protected $_router;
 
+    /**
+     * Runs the test methods of this class.
+     *
+     * @access public
+     * @static
+     */
+    public static function main()
+    {
+        require_once "PHPUnit/TextUI/TestRunner.php";
+
+        $suite  = new PHPUnit_Framework_TestSuite("Zend_Controller_Router_RewriteTest");
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+    
     public function setUp() {
         $this->_router = new Zend_Controller_Router_Rewrite();
         $front = Zend_Controller_Front::getInstance();
@@ -462,7 +485,7 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
         
     public function testRoutingChainedRoutes()
     {
-        $this->markTestSkipped('Route features not ready');
+        $this->markTestSkipped('Router features not ready');
         
         $request = new Zend_Controller_Router_RewriteTest_Request('http://localhost/foo/bar');
 
@@ -470,7 +493,8 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
         $bar = new Zend_Controller_Router_Route('bar', array('bar' => true, 'controller' => 'foo', 'action' => 'bar'));
 
         $chain = new Zend_Controller_Router_Route_Chain();
-        $chain->chain($foo)->chain($bar);
+        $chain->chain($foo);
+        $foo->chain($bar);
 
         $this->_router->addRoute('foo-bar', $chain);
 
@@ -509,9 +533,7 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
     } 
     
     public function testAssemblingWithHostnameHttp()
-    {
-        $this->markTestSkipped('Router features not ready');
-        
+    {       
         $route = new Zend_Controller_Router_Route_Hostname('www.zend.com');
 
         $this->_router->addRoute('hostname-route', $route);
@@ -520,9 +542,7 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
     }
     
     public function testAssemblingWithHostnameHttps()
-    {
-        $this->markTestSkipped('Router features not ready');
-        
+    {        
         $backupServer = $_SERVER;
         $_SERVER['HTTPS'] = 'on';
         
@@ -536,9 +556,7 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
     }
     
     public function testAssemblingWithHostnameThroughChainHttp()
-    {
-        $this->markTestSkipped('Router features not ready');
-        
+    {        
         $foo = new Zend_Controller_Router_Route_Hostname('www.zend.com');
         $bar = new Zend_Controller_Router_Route_Static('bar');
 
@@ -551,9 +569,7 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
     }
     
     public function testAssemblingWithHostnameWithChainHttp()
-    {
-        $this->markTestSkipped('Router features not ready');
-        
+    {        
         $foo = new Zend_Controller_Router_Route_Hostname('www.zend.com');
         $bar = new Zend_Controller_Router_Route_Static('bar');
 
@@ -602,6 +618,42 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
         $this->assertSame('article-id', $this->_router->getCurrentRouteName());
 
         $this->assertEquals('2006', $token->getParam('id', false));
+    }
+    
+    public function testGlobalParam()
+    {
+        $route = new Zend_Controller_Router_Route(
+            ':lang/articles/:id', 
+            array(
+                'controller' => 'blog',
+                'action'     => 'articles',
+                'id'         => 0,
+            )
+        );
+        $this->_router->addRoute('article-id', $route);
+        $this->_router->setGlobalParam('lang', 'de');
+        
+        $url = $this->_router->assemble(array('id' => 1), 'article-id');
+        
+        $this->assertEquals('/de/articles/1', $url);
+    }
+    
+    public function testGlobalParamOverride()
+    {
+        $route = new Zend_Controller_Router_Route(
+            ':lang/articles/:id', 
+            array(
+                'controller' => 'blog',
+                'action'     => 'articles',
+                'id'         => 0,
+            )
+        );
+        $this->_router->addRoute('article-id', $route);
+        $this->_router->setGlobalParam('lang', 'de');
+        
+        $url = $this->_router->assemble(array('id' => 1, 'lang' => 'en'), 'article-id');
+        
+        $this->assertEquals('/en/articles/1', $url);
     }
 }
 
@@ -705,4 +757,8 @@ class Zend_Controller_Router_Route_Interface_Mockup implements Zend_Controller_R
     public function getRequest() {
         return $this->_request;
     }
+}
+
+if (PHPUnit_MAIN_METHOD == "Zend_Controller_Router_RewriteTest::main") {
+    Zend_Controller_Router_RewriteTest::main();
 }

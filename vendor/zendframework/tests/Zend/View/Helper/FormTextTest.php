@@ -16,7 +16,7 @@ require_once 'Zend/Registry.php';
  * Tests formText helper, including some common functionality of all form helpers
  * 
  * @uses PHPUnit_Framework_TestCase
- * @version $Id: FormTextTest.php 8185 2008-02-19 22:27:55Z matthew $
+ * @version $Id: FormTextTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 class Zend_View_Helper_FormTextTest extends PHPUnit_Framework_TestCase 
 {

@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BorderContainerTest.php 9994 2008-07-08 17:16:24Z matthew $
+ * @version    $Id: BorderContainerTest.php 12378 2008-11-07 18:39:20Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_BorderContainerTest::main() if this source file is executed directly.
@@ -117,6 +117,18 @@ class Zend_Dojo_View_Helper_BorderContainerTest extends PHPUnit_Framework_TestCa
         $html = $this->getContainer();
         $this->assertNotRegexp('/<div[^>]*(dojoType="dijit.layout.BorderContainer")/', $html);
         $this->assertNotNull($this->view->dojo()->getDijit('container'));
+    }
+
+    /**
+     * @group ZF-4664
+     */
+    public function testMultipleCallsToBorderContainerShouldNotCreateMultipleStyleEntries()
+    {
+        $this->getContainer();
+        $this->getContainer();
+        $style  = 'html, body { height: 100%; width: 100%; margin: 0; padding: 0; }';
+        $styles = $this->helper->view->headStyle()->toString();
+        $this->assertEquals(1, substr_count($styles, $style), $styles);
     }
 }
 

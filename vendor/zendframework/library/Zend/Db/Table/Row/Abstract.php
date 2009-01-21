@@ -37,7 +37,7 @@ require_once 'Zend/Loader.php';
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class Zend_Db_Table_Row_Abstract
+abstract class Zend_Db_Table_Row_Abstract implements ArrayAccess
 {
 
     /**
@@ -143,7 +143,7 @@ abstract class Zend_Db_Table_Row_Abstract
             $info = $table->info();
             $this->_primary = (array) $info['primary'];
         }
-        
+
         $this->init();
     }
 
@@ -236,6 +236,52 @@ abstract class Zend_Db_Table_Row_Abstract
     {
         $this->_connected = false;
     }
+
+    /**
+     * Proxy to __isset
+     * Required by the ArrayAccess implementation
+     *
+     * @param string $offset
+     * @return boolean
+     */
+    public function offsetExists($offset)
+    {
+        return $this->__isset($offset);
+    }
+
+    /**
+     * Proxy to __get
+     * Required by the ArrayAccess implementation
+     *
+     * @param string $offset
+     * @return string
+     */
+     public function offsetGet($offset)
+     {
+         return $this->__get($offset);
+     }
+
+     /**
+      * Proxy to __set
+      * Required by the ArrayAccess implementation
+      *
+      * @param string $offset
+      * @param mixed $value
+      */
+     public function offsetSet($offset, $value)
+     {
+         $this->__set($offset, $value);
+     }
+
+     /**
+      * Does nothing
+      * Required by the ArrayAccess implementation
+      *
+      * @param string $offset
+      */
+     public function offsetUnset($offset)
+     {
+     }
 
     /**
      * Initialize object
@@ -533,6 +579,14 @@ abstract class Zend_Db_Table_Row_Abstract
      */
     public function delete()
     {
+        /**
+         * A read-only row cannot be deleted.
+         */
+        if ($this->_readOnly === true) {
+            require_once 'Zend/Db/Table/Row/Exception.php';
+            throw new Zend_Db_Table_Row_Exception('This row has been marked read-only');
+        }
+
         $where = $this->_getWhereQuery();
 
         /**
@@ -598,6 +652,8 @@ abstract class Zend_Db_Table_Row_Abstract
      */
     public function setFromArray(array $data)
     {
+        $data = array_intersect_key($data, $this->_data);
+
         foreach ($data as $columnName => $value) {
             $this->__set($columnName, $value);
         }
@@ -672,7 +728,7 @@ abstract class Zend_Db_Table_Row_Abstract
         // retrieve recently updated row using primary keys
         $where = array();
         foreach ($primaryKey as $column => $value) {
-            $tableName = $db->quoteIdentifier($info[Zend_Db_Table_Abstract::NAME]);
+            $tableName = $db->quoteIdentifier($info[Zend_Db_Table_Abstract::NAME], true);
             $type = $metadata[$column]['DATA_TYPE'];
             $columnName = $db->quoteIdentifier($column, true);
             $where[] = $db->quoteInto("{$tableName}.{$columnName} = ?", $value, $type);
@@ -797,7 +853,7 @@ abstract class Zend_Db_Table_Row_Abstract
     public function findDependentRowset($dependentTable, $ruleKey = null, Zend_Db_Table_Select $select = null)
     {
         $db = $this->_getTable()->getAdapter();
-        
+
         if (is_string($dependentTable)) {
             try {
                 @Zend_Loader::loadClass($dependentTable);
@@ -946,13 +1002,15 @@ abstract class Zend_Db_Table_Row_Abstract
         } else {
             $select->setTable($matchTable);
         }
-        
+
         // Use adapter from intersection table to ensure correct query construction
         $interInfo = $intersectionTable->info();
         $interDb   = $intersectionTable->getAdapter();
         $interName = $interInfo['name'];
+        $interSchema = isset($interInfo['schema']) ? $interInfo['schema'] : null;
         $matchInfo = $matchTable->info();
         $matchName = $matchInfo['name'];
+        $matchSchema = isset($matchInfo['schema']) ? $matchInfo['schema'] : null;
 
         $matchMap = $this->_prepareReference($intersectionTable, $matchTable, $matchRefRule);
 
@@ -963,8 +1021,8 @@ abstract class Zend_Db_Table_Row_Abstract
         }
         $joinCond = implode(' AND ', $joinCond);
 
-        $select->from(array('i' => $interName))
-               ->joinInner(array('m' => $matchName), $joinCond)
+        $select->from(array('i' => $interName), Zend_Db_Select::SQL_WILDCARD, $interSchema)
+               ->joinInner(array('m' => $matchName), $joinCond, Zend_Db_Select::SQL_WILDCARD, $matchSchema)
                ->setIntegrityCheck(false);
 
         $callerMap = $this->_prepareReference($intersectionTable, $this->_getTable(), $callerRefRule);
@@ -974,7 +1032,6 @@ abstract class Zend_Db_Table_Row_Abstract
             $value = $this->_data[$callerColumnName];
             $interColumnName = $interDb->foldCase($callerMap[Zend_Db_Table_Abstract::COLUMNS][$i]);
             $interCol = $interDb->quoteIdentifier("i.$interColumnName", true);
-            $matchColumnName = $interDb->foldCase($matchMap[Zend_Db_Table_Abstract::REF_COLUMNS][$i]);
             $interInfo = $intersectionTable->info();
             $type = $interInfo[Zend_Db_Table_Abstract::METADATA][$interColumnName]['DATA_TYPE'];
             $select->where($interDb->quoteInto("$interCol = ?", $value, $type));
@@ -1013,13 +1070,13 @@ abstract class Zend_Db_Table_Row_Abstract
     public function __call($method, array $args)
     {
         $matches = array();
-        
+
         if (count($args) && $args[0] instanceof Zend_Db_Table_Select) {
             $select = $args[0];
         } else {
             $select = null;
         }
-        
+
         /**
          * Recognize methods for Has-Many cases:
          * findParent<Class>()

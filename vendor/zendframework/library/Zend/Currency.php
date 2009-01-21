@@ -90,10 +90,17 @@ class Zend_Currency
      */
     public function __construct($currency = null, $locale = null)
     {
-        if (Zend_Locale::isLocale($currency) !== false) {
+        if (Zend_Locale::isLocale($currency, true, false)) {
             $temp     = $locale;
             $locale   = $currency;
             $currency = $temp;
+        }
+
+        if (empty($locale)) {
+            require_once 'Zend/Registry.php';
+            if (Zend_Registry::isRegistered('Zend_Locale') === true) {
+                $locale = Zend_Registry::get('Zend_Locale');
+            }
         }
 
         $this->setLocale($locale);
@@ -116,8 +123,6 @@ class Zend_Currency
         } else if (empty($this->_options['currency']) === false) {
             $this->_options['display'] = self::USE_SHORTNAME;
         }
-
-        return $this;
     }
 
     /**
@@ -236,24 +241,19 @@ class Zend_Currency
     private function _checkParams($currency = null, $locale = null)
     {
         // Manage the params
-        if ((empty($locale) === true) and (empty($currency) === false) and
-            (Zend_Locale::isLocale($currency) !== false)) {
+        if ((empty($locale)) and (!empty($currency)) and
+            (Zend_Locale::isLocale($currency, true, false))) {
             $locale   = $currency;
             $currency = null;
         }
 
-        if ($locale instanceof Zend_Locale) {
-            $locale = $locale->toString();
-        }
-
         // Validate the locale and get the country short name
         $country = null;
-        $locale  = Zend_Locale::isLocale($locale);
-        if (($locale !== false) and (strlen($locale) > 4)) {
+        if ((Zend_Locale::isLocale($locale, true, false)) and (strlen($locale) > 4)) {
             $country = substr($locale, (strpos($locale, '_') + 1));
         } else {
             require_once 'Zend/Currency/Exception.php';
-            throw new Zend_Currency_Exception("No region found within the locale '$locale'");
+            throw new Zend_Currency_Exception("No region found within the locale '" . (string) $locale . "'");
         }
 
         // Get the available currencies for this country
@@ -423,17 +423,6 @@ class Zend_Currency
     }
 
     /**
-     * Sets a cache for Zend_Currency
-     *
-     * @param  Zend_Cache_Core $cache Cache to set
-     * @return void
-     */
-    public static function setCache(Zend_Cache_Core $cache)
-    {
-        Zend_Locale_Data::setCache($cache);
-    }
-
-    /**
      * Returns the set cache
      *
      * @return Zend_Cache_Core The set cache
@@ -445,33 +434,74 @@ class Zend_Currency
     }
 
     /**
+     * Sets a cache for Zend_Currency
+     *
+     * @param  Zend_Cache_Core $cache Cache to set
+     * @return void
+     */
+    public static function setCache(Zend_Cache_Core $cache)
+    {
+        Zend_Locale_Data::setCache($cache);
+    }
+
+    /**
+     * Returns true when a cache is set
+     *
+     * @return boolean
+     */
+    public static function hasCache()
+    {
+        return Zend_Locale_Data::hasCache();
+    }
+
+    /**
+     * Removes any set cache
+     *
+     * @return void
+     */
+    public static function removeCache()
+    {
+        Zend_Locale_Data::removeCache();
+    }
+
+    /**
+     * Clears all set cache data
+     *
+     * @return void
+     */
+    public static function clearCache()
+    {
+        Zend_Locale_Data::clearCache();
+    }
+
+    /**
      * Sets a new locale for data retreivement
-     * Returned is the really set locale
      * Example: 'de_XX' will be set to 'de' because 'de_XX' does not exist
      * 'xx_YY' will be set to 'root' because 'xx' does not exist
      *
      * @param  string|Zend_Locale $locale (Optional) Locale for parsing input
      * @throws Zend_Currency_Exception When the given locale does not exist
-     * @return string
+     * @return Zend_Currency Provides fluent interface
      */
     public function setLocale($locale = null)
     {
-        if ($locale instanceof Zend_Locale) {
-            $this->_locale = $locale->toString();
-        } else {
-            $this->_locale = Zend_Locale::isLocale($locale, true);
-            if ($this->_locale === false) {
+        if (!Zend_Locale::isLocale($locale, false, false)) {
+            if (!Zend_Locale::isLocale($locale, true, false)) {
                 require_once 'Zend/Currency/Exception.php';
-                throw new Zend_Currency_Exception("Given locale ($locale) does not exist");
+                throw new Zend_Currency_Exception("Given locale (" . (string) $locale . ") does not exist");
+            } else {
+                $locale = new Zend_Locale();
             }
         }
+
+        $this->_locale = (string) $locale;
 
         // Get currency details
         $this->_options['currency'] = $this->getShortName(null, $this->_locale);
         $this->_options['name']     = $this->getName(null, $this->_locale);
         $this->_options['symbol']   = $this->getSymbol(null, $this->_locale);
 
-        return $this->getLocale();
+        return $this;
     }
 
     /**
@@ -523,7 +553,7 @@ class Zend_Currency
                     break;
 
                 case 'format':
-                    if ((empty($value) === false) and (Zend_Locale::isLocale($value) === false)) {
+                    if ((empty($value) === false) and (Zend_Locale::isLocale($value, null, false) === false)) {
                         require_once 'Zend/Currency/Exception.php';
                         throw new Zend_Currency_Exception("'" .
                             ((gettype($value) === 'object') ? get_class($value) : $value)

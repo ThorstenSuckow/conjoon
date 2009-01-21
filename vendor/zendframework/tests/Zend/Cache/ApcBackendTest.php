@@ -13,7 +13,7 @@ require_once 'Zend/Cache/Backend/Apc.php';
 /**
  * Common tests for backends
  */
-require_once 'CommonBackendTest.php';
+require_once 'CommonExtendedBackendTest.php';
 
 /**
  * PHPUnit test case
@@ -24,13 +24,13 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @package    Zend_Cache
  * @subpackage UnitTests
  */
-class Zend_Cache_ApcBackendTest extends Zend_Cache_CommonBackendTest {
+class Zend_Cache_ApcBackendTest extends Zend_Cache_CommonExtendedBackendTest {
     
     protected $_instance;
  
-    public function __construct()
+    public function __construct($name = null, array $data = array(), $dataName = '')
     {
-        parent::__construct('Zend_Cache_Backend_Apc');
+        parent::__construct('Zend_Cache_Backend_Apc', $data, $dataName);
     }
        
     public function setUp($notag = true)
@@ -76,6 +76,15 @@ class Zend_Cache_ApcBackendTest extends Zend_Cache_CommonBackendTest {
     public function testCleanModeMatchingTags2() {}
     public function testCleanModeNotMatchingTags2() {}
     public function testCleanModeNotMatchingTags3() {}
+    public function testGetIdsMatchingTags() {}
+    public function testGetIdsMatchingTags2() {}
+    public function testGetIdsMatchingTags3() {}
+    public function testGetIdsMatchingTags4() {}
+    public function testGetIdsNotMatchingTags() {}
+    public function testGetIdsNotMatchingTags2() {}
+    public function testGetIdsNotMatchingTags3() {}
+    public function testGetTags() {}
+
     public function testSaveCorrectCall()
     {
         $this->_instance->setDirectives(array('logging' => false));
@@ -98,6 +107,11 @@ class Zend_Cache_ApcBackendTest extends Zend_Cache_CommonBackendTest {
         $this->_instance->setDirectives(array('logging' => true));
     }
     
+    public function testGetMetadatas($notag = true)
+    {
+        parent::testGetMetadatas($notag);
+    }
+        
 }
 
 

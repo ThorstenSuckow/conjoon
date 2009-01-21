@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mssql.php 9101 2008-03-30 19:54:38Z thomas $
+ * @version    $Id: Mssql.php 13280 2008-12-15 20:48:08Z mikaelkael $
  */
 
 
@@ -360,4 +360,22 @@ class Zend_Db_Adapter_Pdo_Mssql extends Zend_Db_Adapter_Pdo_Abstract
         return (int)$this->fetchOne($sql);
     }
 
+    /**
+     * Retrieve server version in PHP style
+     * Pdo_Mssql doesn't support getAttribute(PDO::ATTR_SERVER_VERSION)
+     * @return string
+     */
+    public function getServerVersion()
+    {
+        try {
+            $stmt = $this->query("SELECT SERVERPROPERTY('productversion')");
+            $result = $stmt->fetchAll(Zend_Db::FETCH_NUM);
+            if (count($result)) {
+                return $result[0][0];
+            }
+            return null;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
 }

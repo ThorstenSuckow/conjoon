@@ -13,7 +13,7 @@ require_once 'Zend/XmlRpc/Server/Cache.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: CacheTest.php 8617 2008-03-07 02:51:58Z matthew $
+ * @version $Id: CacheTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 class Zend_XmlRpc_Server_CacheTest extends PHPUnit_Framework_TestCase 
 {

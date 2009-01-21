@@ -25,15 +25,6 @@ require_once 'Zend/Loader.php';
 /** Zend_Controller_Dispatcher_Abstract */
 require_once 'Zend/Controller/Dispatcher/Abstract.php';
 
-/** Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
-
-/** Zend_Controller_Response_Abstract */
-require_once 'Zend/Controller/Response/Abstract.php';
-
-/** Zend_Controller_Action */
-require_once 'Zend/Controller/Action.php';
-
 /**
  * @category   Zend
  * @package    Zend_Controller
@@ -110,6 +101,7 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
                 $this->addControllerDirectory($path, $module);
             }
         } else {
+            require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Exception('Controller directory spec must be either a string or an array');
         }
 
@@ -232,7 +224,7 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
      *
      * @param Zend_Controller_Request_Abstract $request
      * @param Zend_Controller_Response_Abstract $response
-     * @return boolean
+     * @return void
      * @throws Zend_Controller_Dispatcher_Exception
      */
     public function dispatch(Zend_Controller_Request_Abstract $request, Zend_Controller_Response_Abstract $response)
@@ -338,14 +330,10 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
 
         $dispatchDir = $this->getDispatchDirectory();
         $loadFile    = $dispatchDir . DIRECTORY_SEPARATOR . $this->classToFilename($className);
-        $dir         = dirname($loadFile);
-        $file        = basename($loadFile);
 
-        try {
-            Zend_Loader::loadFile($file, $dir, true);
-        } catch (Zend_Exception $e) {
+        if (!include_once $loadFile) {
             require_once 'Zend/Controller/Dispatcher/Exception.php';
-            throw new Zend_Controller_Dispatcher_Exception('Cannot load controller class "' . $className . '" from file "' . $file . '" in directory "' . $dir . '"');
+            throw new Zend_Controller_Dispatcher_Exception('Cannot load controller class "' . $className . '" from file "' . $loadFile . "'");
         }
 
         if (!class_exists($finalClass, false)) {

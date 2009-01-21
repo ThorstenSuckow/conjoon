@@ -15,7 +15,7 @@
  * @package    Zend_View
  * @subpackage Helper
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Standalone.php 11374 2008-09-12 17:06:22Z ralph $
+ * @version    $Id: Standalone.php 13198 2008-12-13 13:51:40Z matthew $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -66,7 +66,6 @@ abstract class Zend_View_Helper_Placeholder_Container_Standalone extends Zend_Vi
     public function __construct()
     {
         $this->setRegistry(Zend_View_Helper_Placeholder_Registry::getRegistry());
-        $registry = $this->getRegistry();
         $this->setContainer($this->getRegistry()->getContainer($this->_regKey));
     }
 

@@ -16,7 +16,7 @@
  * @package    Zend_Soap
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CodeGenerator.php 9722 2008-06-18 12:36:35Z alexander $
+ * @version    $Id: CodeGenerator.php 11560 2008-10-01 10:09:10Z yoshida@zend.co.jp $
  */
 
 require_once 'Zend/Soap/Wsdl/Parser.php';

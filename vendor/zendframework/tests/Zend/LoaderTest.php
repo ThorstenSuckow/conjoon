@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LoaderTest.php 9301 2008-04-24 13:21:59Z doctorrock83 $
+ * @version    $Id: LoaderTest.php 12596 2008-11-12 18:52:38Z alexander $
  */
 
 // Call Zend_LoaderTest::main() if this source file is executed directly.
@@ -192,7 +192,7 @@ class Zend_LoaderTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue(Zend_Loader::isReadable(__FILE__));
         $this->assertFalse(Zend_Loader::isReadable(__FILE__ . '.foobaar'));
-        
+
         // test that a file in include_path gets loaded, see ZF-2985
         $this->assertTrue(Zend_Loader::isReadable('Zend/Controller/Front.php'));
     }
@@ -347,11 +347,15 @@ class Zend_LoaderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return void
+     * @todo   Determine how to get the shell_exec to work on windows
      * @see    http://framework.zend.com/issues/browse/ZF-2463
+     * @return void
      */
     public function testLoaderAutoloadDoesNotHideParseError()
     {
+        if (isset($_SERVER['OS'])  &&  strstr($_SERVER['OS'], 'Win')) {
+            $this->markTestSkipped(__METHOD__ . ' does not work on Windows');
+        }
         $command = 'php -d include_path='
             . escapeshellarg(get_include_path())
             . ' Zend/Loader/AutoloadDoesNotHideParseError.php 2>&1';

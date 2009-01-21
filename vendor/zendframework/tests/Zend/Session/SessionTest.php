@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SessionTest.php 10802 2008-08-08 12:14:42Z alexander $
+ * @version    $Id: SessionTest.php 13338 2008-12-17 11:13:16Z sidhighwind $
  */
 
 
@@ -65,9 +65,10 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
-        $this->_script = 'php -c ' . php_ini_loaded_file() . ' '
+        parent::__construct($name, $data, $dataName);
+        $this->_script = 'php -c \'' . php_ini_loaded_file() . '\' '
             . escapeshellarg(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SessionTestHelper.php');
 
         $this->_savePath = ini_get('session.save_path');
@@ -370,6 +371,23 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
                 . 'an underscore');
         } catch (Zend_Session_Exception $e) {
             $this->assertRegexp('/underscore/i', $e->getMessage());
+        }
+    }
+
+    /**
+     * test for detection of illegal namespace names; expect exception complaining about name beginning
+     * with an underscore
+     *
+     * @return void
+     */
+    public function testInitNamespaceNumber()
+    {
+        try {
+            $s = new Zend_Session_Namespace('0namespace');
+            $this->fail('No exception was returned when requesting a namespace having a name beginning with '
+                . 'a number');
+        } catch (Zend_Session_Exception $e) {
+            $this->assertRegexp('/number/i', $e->getMessage());
         }
     }
 
@@ -974,5 +992,17 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
 
         // Do not destroy session since it still may be used by other tests
         // Zend_Session::destroy();
+    }
+
+    /**
+     * @group ZF-5003
+     */
+    public function testProcessSessionMetadataShouldNotThrowAnError()
+    {
+        Zend_Session::$_unitTestEnabled = true;
+        if (isset($_SESSION) && isset($_SESSION['__ZF'])) {
+            unset($_SESSION['__ZF']);
+        }
+        Zend_Session::start();
     }
 }

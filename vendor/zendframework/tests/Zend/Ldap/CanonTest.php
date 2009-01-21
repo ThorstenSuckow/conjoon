@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CanonTest.php 8565 2008-03-06 04:08:06Z miallen $
+ * @version    $Id: CanonTest.php 11973 2008-10-15 16:00:56Z matthew $
  */
 
 /**

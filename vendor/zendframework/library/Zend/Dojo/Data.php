@@ -16,7 +16,7 @@
  * @package    Zend_Dojo
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Data.php 11283 2008-09-08 16:08:43Z matthew $
+ * @version    $Id: Data.php 11282 2008-09-08 16:05:59Z matthew $
  */
 
 /**
