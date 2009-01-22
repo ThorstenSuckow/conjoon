@@ -21,7 +21,7 @@ require_once 'Conjoon/Filter/Input.php';
 /**
  * @see Zend_Filter_Htmlentities
  */
-require_once 'Zend/Filter/Htmlentities.php';
+require_once 'Zend/Filter/HtmlEntities.php';
 
 
 /**
