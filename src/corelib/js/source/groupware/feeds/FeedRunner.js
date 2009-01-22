@@ -119,7 +119,7 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
         var timeout = com.conjoon.groupware.feeds.AccountStore.getTimeoutSum();
 
         store.baseParams.timeout = timeout;
-        store.proxy.timeout      = timeout;
+        store.proxy.conn.timeout = timeout;
 
         if (!firstTimeLoaded) {
             store.load();

@@ -71,7 +71,7 @@ com.conjoon.groupware.feeds.FeedStore = function() {
                 _store.on('beforeload', function() {
                     var timeout = com.conjoon.groupware.feeds.AccountStore.getTimeoutSum();
                     this.baseParams.timeout = timeout;
-                    this.proxy.timeout      = timeout;
+                    this.proxy.conn.timeout = timeout;
                 }, _store);
             }
 
