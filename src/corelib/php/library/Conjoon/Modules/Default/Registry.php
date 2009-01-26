@@ -44,6 +44,14 @@ class Conjoon_Modules_Default_Registry {
         require_once 'Conjoon/Keys.php';
 
         self::$_data = array(
+            'client' => array(
+                'environment' => array(
+                    'device' => (strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'ipod')
+                                || strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'iphone'))
+                                ? 'iphone'
+                                : 'default'
+                )
+            ),
             'server' => array(
                 'php' => array(
                     'max_execution_time' => ini_get('max_execution_time')

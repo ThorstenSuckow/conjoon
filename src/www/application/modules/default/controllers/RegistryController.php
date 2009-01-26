@@ -50,6 +50,12 @@ class RegistryController extends Zend_Controller_Action {
 
         $this->view->entries = array(
             array(
+                'key'   => '/client/environment/device',
+                'value' => Conjoon_Modules_Default_Registry::get(
+                    '/client/environment/device'
+                )
+            ),
+            array(
                 'key'   => '/server/php/max_execution_time',
                 'value' => Conjoon_Modules_Default_Registry::get(
                     '/server/php/max_execution_time'
