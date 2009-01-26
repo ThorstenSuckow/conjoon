@@ -292,8 +292,6 @@ com.conjoon.groupware.ResponseInspector = function() {
             }
 
             var json = com.conjoon.util.Json;
-            var msg  = Ext.MessageBox;
-
 
             var error = null;
 
@@ -313,7 +311,9 @@ com.conjoon.groupware.ResponseInspector = function() {
                 };
             }
 
-            msg.show({
+            var msg  = Ext.MessageBox;
+
+            com.conjoon.SystemMessageManager.show({
                 title   : opt.title || com.conjoon.Gettext.gettext("Error"),
                 msg     : opt.message,
                 buttons : msg.OK,

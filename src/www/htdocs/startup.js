@@ -47,6 +47,10 @@ Ext.onReady(function(){
                 useDisplay : false
             });
 
+            com.conjoon.SystemMessageManager.setContext(groupware.Registry.get(
+                '/client/environment/device'
+            ));
+
             Ext.ux.util.MessageBus.publish('com.conjoon.groupware.ready');
 
         }).defer(1);
