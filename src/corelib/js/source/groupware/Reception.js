@@ -24,6 +24,14 @@ Ext.namespace('com.conjoon.groupware');
 com.conjoon.groupware.Reception = function() {
 
     /**
+     * @param {Object} _options
+     */
+    var _options = {
+        loginWindowClass : com.conjoon.groupware.reception.LoginWindow
+    };
+
+
+    /**
      * @param {Object}
      */
     var _user = null;
@@ -365,7 +373,7 @@ com.conjoon.groupware.Reception = function() {
 
             Ext.apply(options, config);
 
-            loginWindow = new com.conjoon.groupware.reception.LoginWindow(options);
+            loginWindow = new _options['loginWindowClass'](options);
             loginWindow.on('exit',         _onExit,          com.conjoon.groupware.Reception);
             loginWindow.on('loginsuccess', _onLoginSuccess, com.conjoon.groupware.Reception);
             loginWindow.on('loginfailure', _onLoginFailure, com.conjoon.groupware.Reception);
@@ -498,9 +506,11 @@ com.conjoon.groupware.Reception = function() {
         /**
          *
          */
-        init : function(applicationStarted)
+        init : function(applicationStarted, options)
         {
             _applicationStarted = applicationStarted;
+
+           Ext.apply(_options, options || {});
 
             Ext.Ajax.request({
                 url            : './default/reception/get.user/format/json',
@@ -565,7 +575,7 @@ com.conjoon.groupware.Reception = function() {
         {
             var msg = Ext.MessageBox;
 
-            msg.show({
+            com.conjoon.SystemMessageManager.show({
                 title   : com.conjoon.Gettext.gettext("Restart"),
                 msg     : com.conjoon.Gettext.gettext("All unsaved data will be lost. Are you sure you want to restart?"),
                 buttons : msg.YESNO,
@@ -586,7 +596,7 @@ com.conjoon.groupware.Reception = function() {
         {
             var msg = Ext.MessageBox;
 
-            msg.show({
+            com.conjoon.SystemMessageManager.show({
                 title   : com.conjoon.Gettext.gettext("Logout"),
                 msg     : com.conjoon.Gettext.gettext("All unsaved data will be lost. Are you sure you want to log out and exit?"),
                 buttons : msg.YESNO,
