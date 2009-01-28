@@ -20,7 +20,7 @@ Ext.namespace('Ext.ux.layout');
  */
 Ext.ux.layout.SlideLayout = Ext.extend(Ext.layout.FitLayout, {
 
-    deferredRender : false,
+    deferredRender : true,
 
     renderHidden : false,
 
