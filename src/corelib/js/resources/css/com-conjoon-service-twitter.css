@@ -1,0 +1,235 @@
+
+.com-conjoon-service-twitter-TwitterPanel {
+    font-size:11px;
+    font-family:Tahoma,Verdana,Helvetica,Arial;
+}
+
+.com-conjoon-service-twitter-twitterIcon {
+    background-image:url(../images/16x16/apps/service-twitter-icon.png)!important;
+}
+
+.com-conjoon-service-twitter-FriendsList {
+    padding:2px;
+    overflow-y:auto!important;
+}
+
+.com-conjoon-service-twitter-FriendsList .user {
+    float:left;
+    width:48px;
+    cursor:pointer;
+    height:48px;
+    background:url(../images/s.gif) no-repeat top left;
+    margin:2px;
+}
+
+.com-conjoon-service-twitter-TweetList .authorName {
+    font-weight:bold;
+    color:#1f98c7;
+    cursor:pointer;
+    font-family:'Lucida Grande',sans-serif;
+}
+
+.com-conjoon-service-twitter-TweetList .tweetEntry {
+    color:#663B12;
+    padding:4px;
+    font-family:'Lucida Grande',sans-serif;
+}
+
+.com-conjoon-service-twitter-TweetList.usersRecentTweets .tweetEntry {
+    padding:6px;
+}
+
+.com-conjoon-service-twitter-TweetList.usersRecentTweets .authorName {
+    cursor:default;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet .image {
+    padding:4px;
+    text-align:center;
+    vertical-align:top;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet td {
+    border-bottom:1px solid #c9fbfc;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet {
+    background-color:#f7fdff;
+    cursor:default;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.over {
+    background:#aad9e6 url(../images/tweet_bg.gif) repeat-x!important;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.row {
+    background-color:#ffffff;
+}
+
+.com-conjoon-service-twitter-InputBox .charCounter {
+    font-size:11px;
+    float:right;
+    width:20px;
+    text-align:right;
+    color:#000000;
+    font-weight:bold;
+    font-family:'Georgia','Serif';
+}
+
+.com-conjoon-service-twitter-InputBox .charCounter.warning {
+    color:#5C0002;
+}
+
+.com-conjoon-service-twitter-InputBox .charCounter.error{
+    color:#D40D12;
+}
+
+.com-conjoon-service-twitter-InputBox .textArea {
+    color:#2B2B2B;
+    font-family:Georgia;
+    font-size:11px;
+    width:98%;
+    height:50px;
+}
+
+.com-conjoon-service-twitter-TwitterUserContainer .viewContainer,
+.com-conjoon-service-twitter-RecentTweetsContainer .viewContainer {
+    overflow-y:auto;
+    overflow-x:hidden;
+    position:relative;
+}
+
+.com-conjoon-service-twitter-TwitterPanel .x-panel-body {
+    background:#90b2b3 url(../images/twitter_canvas_bg.png) repeat-x 0 0!important;
+}
+
+.com-conjoon-service-twitter-InputBox .buttonContainer {
+    margin-top:4px;
+}
+
+.com-conjoon-service-twitter-InputBox .buttonContainer .button{
+    margin:auto;
+}
+
+.com-conjoon-service-twitter-UserInfoBox {
+    background-color:#ffffff;
+    padding:4px;
+    border-bottom:1px solid #999999;
+}
+
+.com-conjoon-service-twitter-UserInfoBox table {
+    width:100%;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .image {
+    background:url(../images/s.gif) no-repeat;
+    padding-left:54px;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .screenName {
+    font-size:18px;
+    color:#2400db;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .name {
+    padding:4px;
+    background-color:#e8ecb2;
+    color:#4b4b4b;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .name .label {
+    font-weight:bold;
+    color:#000000;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .location .label,
+.com-conjoon-service-twitter-UserInfoBox .web .label,
+.com-conjoon-service-twitter-UserInfoBox .description .label {
+    font-weight:bold;
+    width:56px;
+    padding:2px 0 0 0;
+    color:#000000;
+    vertical-align:top;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .location .value,
+.com-conjoon-service-twitter-UserInfoBox .web .value,
+.com-conjoon-service-twitter-UserInfoBox .description .value {
+    color:#4b4b4b;
+    padding:2px 0 0 0;
+    vertical-align:top;
+}
+
+
+.com-conjoon-service-twitter-InputBox {
+    height : 85px;
+    background:#90b2b3 url(../images/twitter-inputbox-bg.png) repeat-x 0 0;
+    padding:4px;
+    border-bottom:1px solid #999999;
+}
+
+.com-conjoon-service-twitter-TweetList .meta {
+    color:#999999;
+    font-family:georgia;
+    font-style:italic;
+    margin:3px 0 0;
+}
+
+.com-conjoon-service-twitter-TweetList.x-masked{
+    position:static!important;
+}
+
+.com-conjoon-service-twitter-TweetList .tweetAction {
+    width:17px;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet_reply_icon {
+    width:17px;
+    height:18px;
+    background:url(../images/16x16/actions/service-twitter-reply.png) no-repeat -18px -18px;
+    cursor:pointer;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.over .tweet_reply_icon {
+    background-position:top left;
+}
+
+
+.com-conjoon-service-twitter-TwitterPanel .show_recent_icon {
+    background-image:url(../images/16x16/actions/service-twitter-showrecent.png)!important;
+}
+
+.com-conjoon-service-twitter-TwitterPanel .show_input_icon {
+    background-image:url(../images/16x16/actions/service-twitter-showinput.png)!important;
+}
+
+.com-conjoon-service-twitter-TwitterPanel .show_friends_icon {
+    background-image:url(../images/16x16/actions/service-twitter-showfriends.png)!important;
+}
+
+.com-conjoon-service-twitter-HomePanel {
+    padding-top:40px;
+}
+
+.com-conjoon-service-twitter-HomePanel .introContainer {
+    height: 200px;
+    width:200px;
+    margin:auto;
+}
+
+.com-conjoon-service-twitter-HomePanel .introContainer .text {
+    background:url(../images/conjoon_twitter_logo.png) no-repeat 50% 0;
+    height:100%;
+    padding-top:110px;
+    text-align:center;
+    color:#6a6a6a;
+}
+
+.com-conjoon-service-twitter-AccountButton-icon {
+    background-image:url(../images/16x16/apps/service-twitter-accountconfig.png)!important;
+}
+
+.com-conjoon-service-twitter-AccountButton-icon-loading {
+    background-image:url(../images/loading.gif)!important;
+}
+

@@ -313,3 +313,12 @@ ALTER TABLE `users` ADD INDEX `username` ( `user_name` );
 ALTER TABLE `users` ADD `is_root` BOOL NOT NULL DEFAULT '0';
 
 ALTER TABLE `groupware_feeds_accounts` ADD `request_timeout` TINYINT NOT NULL DEFAULT '10' AFTER `last_updated`;
+
+ CREATE TABLE IF NOT EXISTS `service_twitter_accounts` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+`user_id` INT UNSIGNED NOT NULL ,
+`name` VARCHAR( 15 ) NOT NULL ,
+`password` VARCHAR( 32 ) NOT NULL ,
+`update_interval` INT UNSIGNED NOT NULL ,
+PRIMARY KEY ( `id` )
+) ENGINE = MYISAM  DEFAULT CHARSET=utf8;
