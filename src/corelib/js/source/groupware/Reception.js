@@ -251,7 +251,7 @@ com.conjoon.groupware.Reception = function() {
             modal    : _applicationStarted
         });
         loginWindow.setFormIntroText(
-            com.conjoon.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
+            com.conjoon.Gettext.gettext("Please sign in with your username and your password. Press &quot;Login&quot; when ready.")
         );
     };
 
@@ -269,7 +269,7 @@ com.conjoon.groupware.Reception = function() {
             draggable     : true
         });
         loginWindow.setFormIntroText(
-            com.conjoon.Gettext.gettext("Your request could not be processed. Most likely did your session expire. Please log in again and retry your last action.")
+            com.conjoon.Gettext.gettext("Your request could not be processed. Most likely did your session expire. Please sign in again and retry your last action.")
         );
     };
 
@@ -291,9 +291,9 @@ com.conjoon.groupware.Reception = function() {
 
         var msg = null;
         if (_applicationStarted) {
-            msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again.");
+            msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please sign in again to unlock the workbench.");
         } else {
-            msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please log in to unlock the workbench again. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
+            msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please sign in again to unlock the workbench. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
         }
         loginWindow.setFormIntroText(msg);
     };
@@ -598,7 +598,7 @@ com.conjoon.groupware.Reception = function() {
 
             com.conjoon.SystemMessageManager.show({
                 title   : com.conjoon.Gettext.gettext("Logout"),
-                msg     : com.conjoon.Gettext.gettext("All unsaved data will be lost. Are you sure you want to log out and exit?"),
+                msg     : com.conjoon.Gettext.gettext("All unsaved data will be lost. Are you sure you want to sign out and exit?"),
                 buttons : msg.YESNO,
                 icon    : msg.QUESTION,
                 cls     : 'com-conjoon-msgbox-question',

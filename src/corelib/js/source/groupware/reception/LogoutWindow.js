@@ -52,7 +52,7 @@ com.conjoon.groupware.reception.LogoutWindow = Ext.extend(Ext.Window, {
                     cls         : 'com-conjoon-groupware-reception-LogoutWindow-logoutButton',
                     overCls     : 'over',
                     columnWidth : .33,
-                    text        : com.conjoon.Gettext.gettext("Logout"),
+                    text        : com.conjoon.Gettext.gettext("Sign out"),
                     handler     : function () {
                         com.conjoon.groupware.Reception.logout();
                     }
