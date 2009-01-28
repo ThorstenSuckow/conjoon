@@ -139,12 +139,15 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             this._formIntro
         );
 
+        Ext.applyIf(this, {
+            height : 335
+        });
+
         Ext.apply(this, {
             cls       : 'com-conjoon-groupware-reception-LoginWindow',
             closable  : false,
             resizable : false,
             width     : 490,
-            height    : 335,
             items     : [{
                 xtype  :'box',
                 cls    : 'com-conjoon-groupware-reception-LoginWindow-softwareLabel',
