@@ -46,6 +46,17 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
 
     return {
 
+        handleLinkClick : function(item)
+        {
+            var address = item.href;
+
+            if (!address || address == '#') {
+                return;
+            }
+
+            window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(address));
+        },
+
         removeListener : function(p)
         {
             p.un('mousedown', _listener.mousedown, window, _listener.options);
