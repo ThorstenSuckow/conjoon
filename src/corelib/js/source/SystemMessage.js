@@ -65,3 +65,8 @@ com.conjoon.SystemMessage.TYPE_NOTICE = 8;
  * @const {Number} TYPE_CRITICAL
  */
 com.conjoon.SystemMessage.TYPE_CRITICAL = 16;
+
+/**
+ * @const {Number} TYPE_CONFIRM
+ */
+com.conjoon.SystemMessage.TYPE_CONFIRM = 32;

@@ -72,6 +72,34 @@ com.conjoon.SystemMessageManager = function() {
         },
 
         /**
+         * Shows a confirm dialog.
+         *
+         * @param {com.conjoon.SystemMessage} message
+         * @param {Object} options
+         */
+        confirm : function(message, options)
+        {
+            var msg = Ext.MessageBox;
+
+            var c = {};
+
+            Ext.apply(c, message);
+
+            c.msg = c.text;
+            delete c.text;
+
+            Ext.apply(c, {
+                buttons : msg.YESNO,
+                icon    : msg.QUESTION,
+                cls     : 'com-conjoon-msgbox-question',
+                width   : 400
+            });
+
+            Ext.apply(c, options);
+            this.show(c);
+        },
+
+        /**
          * Shows a system message using {Ext.Msg} taking the
          * context of the SystemMessageManager into account.
          *
