@@ -28,7 +28,7 @@ require_once 'Conjoon/BeanContext.php';
  * @subpackage Error
  * @category   Error
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Error implements Conjoon_BeanContext, Serializable {
 
