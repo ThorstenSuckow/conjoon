@@ -25,6 +25,37 @@ com.conjoon.util.Format = function() {
     return {
 
         /**
+         * Looks up URLS and in the given text and wraps them in a-tags.
+         *
+         * For example:
+         * "This is a text with an url in the form of http://domain.com"
+         * will be returned as
+         * "This is a text with an url in the form of <a href="http://domain.com>http://domain.com</a>"
+         *
+         * @param {String} text The text that may contains URLS.
+         * @param {Object} attributes An optional object that contains attribute/value
+         * pairs to be added to the generated link-tags.
+         *
+         * @return {String}
+         */
+        formatUrls : function(text, attributes)
+        {
+            var attrStr = "";
+            if (attributes) {
+                for (var i in attributes) {
+                    attrStr += " "+i+"="+'"'+attributes[i]+'"';
+                }
+            }
+
+            text = ""+text;
+            return text.replace(
+                /(http:\/\/)(.*?)(\s|$|:|>|.\s)/ig,
+                '<a '+attrStr+' href="$1$2">$1$2</a>$3'
+            );
+        },
+
+
+        /**
          * Replaces a pair of whitespaces in the passed argument
          * with a pair of " &nbsp;". Whitespaces will not be replaced
          * within opening and closing angle brackets.
