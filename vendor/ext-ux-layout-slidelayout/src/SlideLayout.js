@@ -77,7 +77,8 @@ Ext.ux.layout.SlideLayout = Ext.extend(Ext.layout.FitLayout, {
 
                 // whows the item if it was hidden before.
                 item.show();
-                item.el.setY(cBody.getY());
+                item.el.dom.style.position = "absolute";
+                item.el.setTop(0);
                 item.el.setX((this.activeItemNo < itemInt ? s[1] : s[0] ));
 
                 item.el.shift({
