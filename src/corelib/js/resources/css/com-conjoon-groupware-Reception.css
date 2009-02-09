@@ -62,7 +62,7 @@
     background-color:#ffffff;
     background-image:url(../images/login-bg.png);
     background-repeat:no-repeat;
-    background-position:bottom;
+    background-position:left bottom;
 }
 
 .com-conjoon-groupware-reception-LoginWindow .x-panel-body {
@@ -103,26 +103,24 @@
 }
 
 .com-conjoon-groupware-reception-LoginWindow-stateIndicator .com-conjoon-groupware-reception-LoginWindow-stateIndicator-messageCont {
+    padding-left:20px;
     height:16px;
     line-height:16px;
 }
 
 .com-conjoon-groupware-reception-LoginWindow-stateIndicator .com-conjoon-groupware-reception-LoginWindow-stateIndicator-messageCont.error {
-    padding-left:20px;
     color:red;
     background-image:url(../images/16x16/actions/groupware-reception-loginerror.png);
     background-repeat:no-repeat;
 }
 
 .com-conjoon-groupware-reception-LoginWindow-stateIndicator .com-conjoon-groupware-reception-LoginWindow-stateIndicator-messageCont.ok {
-    padding-left:20px;
     color:green;
     background-image:url(../images/16x16/actions/groupware-reception-loginok.png);
     background-repeat:no-repeat;
 }
 
 .com-conjoon-groupware-reception-LoginWindow-stateIndicator .com-conjoon-groupware-reception-LoginWindow-stateIndicator-messageCont.loading {
-    padding-left:20px;
     background-image:url(../images/login-processing.gif);
     background-repeat:no-repeat;
 }

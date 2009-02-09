@@ -1,0 +1,197 @@
+.com-conjoon-msgbox-warning .x-window-tl,
+.com-conjoon-msgbox-prompt .x-window-tl,
+.com-conjoon-msgbox-question .x-window-tl,
+.com-conjoon-msgbox-info .x-window-tl,
+.com-conjoon-msgbox-error .x-window-tl,
+.com-conjoon-msgbox-critical .x-window-tl,
+.com-conjoon-msgbox-warning .x-window-bl,
+.com-conjoon-msgbox-prompt .x-window-bl,
+.com-conjoon-msgbox-question .x-window-bl,
+.com-conjoon-msgbox-info .x-window-bl,
+.com-conjoon-msgbox-error .x-window-bl,
+.com-conjoon-msgbox-critical .x-window-bl {
+    background-image:url(./images/window/left-corners.png)!important;
+}
+
+.com-conjoon-msgbox-warning .x-window-tr,
+.com-conjoon-msgbox-prompt .x-window-tr,
+.com-conjoon-msgbox-question .x-window-tr,
+.com-conjoon-msgbox-info .x-window-tr,
+.com-conjoon-msgbox-error .x-window-tr,
+.com-conjoon-msgbox-critical .x-window-tr,
+.com-conjoon-msgbox-warning .x-window-br,
+.com-conjoon-msgbox-prompt .x-window-br,
+.com-conjoon-msgbox-question .x-window-br,
+.com-conjoon-msgbox-info .x-window-br,
+.com-conjoon-msgbox-error .x-window-br,
+.com-conjoon-msgbox-critical .x-window-br {
+    background-image:url(./images/window/right-corners.png)!important;
+}
+
+.com-conjoon-msgbox-warning .x-window-tc,
+.com-conjoon-msgbox-prompt .x-window-tc,
+.com-conjoon-msgbox-question .x-window-tc,
+.com-conjoon-msgbox-info .x-window-tc,
+.com-conjoon-msgbox-error .x-window-tc,
+.com-conjoon-msgbox-critical .x-window-tc,
+.com-conjoon-msgbox-warning .x-window-bc,
+.com-conjoon-msgbox-prompt .x-window-bc,
+.com-conjoon-msgbox-question .x-window-bc,
+.com-conjoon-msgbox-info .x-window-bc,
+.com-conjoon-msgbox-error .x-window-bc,
+.com-conjoon-msgbox-critical .x-window-bc {
+    background-image:url(./images/window/top-bottom.png)!important;
+}
+
+.com-conjoon-msgbox-warning .x-window-ml,
+.com-conjoon-msgbox-prompt .x-window-ml,
+.com-conjoon-msgbox-question .x-window-ml,
+.com-conjoon-msgbox-info .x-window-ml,
+.com-conjoon-msgbox-error .x-window-ml,
+.com-conjoon-msgbox-critical .x-window-ml,
+.com-conjoon-msgbox-warning .x-window-mr,
+.com-conjoon-msgbox-prompt .x-window-mr,
+.com-conjoon-msgbox-question .x-window-mr,
+.com-conjoon-msgbox-info .x-window-mr,
+.com-conjoon-msgbox-error .x-window-mr,
+.com-conjoon-msgbox-critical .x-window-mr {
+    background-image:url(./images/window/left-right.png)!important;
+}
+
+.com-conjoon-msgbox-warning .x-window-header-text,
+.com-conjoon-msgbox-prompt .x-window-header-text,
+.com-conjoon-msgbox-question .x-window-header-text,
+.com-conjoon-msgbox-info .x-window-header-text,
+.com-conjoon-msgbox-error .x-window-header-text,
+.com-conjoon-msgbox-critical .x-window-header-text {
+    color:white;
+}
+
+.com-conjoon-msgbox-warning .ext-mb-content,
+.com-conjoon-msgbox-prompt .ext-mb-content,
+.com-conjoon-msgbox-question .ext-mb-content,
+.com-conjoon-msgbox-info .ext-mb-content,
+.com-conjoon-msgbox-error .ext-mb-content,
+.com-conjoon-msgbox-critical .ext-mb-content {
+    background:none!important;
+}
+
+.com-conjoon-msgbox-warning .x-window-mc,
+.com-conjoon-msgbox-prompt .x-window-mc,
+.com-conjoon-msgbox-question .x-window-mc,
+.com-conjoon-msgbox-info .x-window-mc,
+.com-conjoon-msgbox-error .x-window-mc,
+.com-conjoon-msgbox-critical .x-window-mc {
+    background:#F6F6F6 url(./images/window/window-bg.png)!important;
+}
+.com-conjoon-msgbox-warning .ext-mb-text,
+.com-conjoon-msgbox-prompt .ext-mb-textc,
+.com-conjoon-msgbox-question .ext-mb-text,
+.com-conjoon-msgbox-info .ext-mb-text,
+.com-conjoon-msgbox-error .ext-mb-text,
+.com-conjoon-msgbox-critical .ext-mb-text {
+    color:#ffffff;
+}
+
+.com-conjoon-msgbox-warning .x-tool,
+.com-conjoon-msgbox-prompt .x-tool,
+.com-conjoon-msgbox-question .x-tool,
+.com-conjoon-msgbox-info .x-tool,
+.com-conjoon-msgbox-error .x-tool,
+.com-conjoon-msgbox-critical .x-tool {
+    background-image:url(./images/panel/tool-sprites.gif)!important;
+}
+
+/**
+ * Buttons.
+ */
+.x-panel-btn-td .x-btn-center {
+    background:transparent url(./images/button/btn-sprite.gif) repeat-x scroll 0 -42px!important;
+}
+
+.x-panel-btn-td .x-btn-left {
+    background:transparent url(./images/button/btn-sprite.gif) no-repeat scroll 0 0!important;
+}
+
+.x-panel-btn-td .x-btn-right {
+    background:transparent url(./images/button/btn-sprite.gif) no-repeat scroll 0 -21px!important;
+}
+
+.x-panel-btn-td .x-btn-over .x-btn-left{
+    background-position:0 -63px!important;
+}
+
+.x-panel-btn-td .x-btn-over .x-btn-right{
+    background-position:0 -84px!important;
+}
+
+.x-panel-btn-td .x-btn-over .x-btn-center{
+    background-position:0 -105px!important;
+}
+
+.x-panel-btn-td .x-btn-click .x-btn-center {
+    background-position:0 -126px!important;
+}
+
+/**
+ * Reception
+ */
+.com-conjoon-groupware-reception-LoginWindow-formPanel {
+    width:280px;
+    margin:10px 0 0 5px;
+}
+
+.com-conjoon-groupware-reception-LoginWindow-stateIndicator {
+    width:280px;
+    margin:10px 0 0 5px;
+}
+
+/**
+ * Splashcreen
+ */
+.com-conjoon-groupware-SplashScreen-body {
+    width:266px;
+    height:315px;
+}
+
+/**
+ * Workbench
+ */
+.com-conjoon-iphone-groupware-workbench .x-panel-body {
+    background:#2b5c93 url(./images/homepanel-bg.png) repeat-x 0 0;
+}
+
+.com-conjoon-iphone-groupware-workbench .homeButton-icon {
+    background-image:url(./images/16x16/apps/workbench-toolbar-home.png)!important;
+}
+
+/**
+ * Home panel
+ */
+.com-conjoon-iphone-groupware-workbench .homePanel .x-panel-body {
+    padding:5px;
+    background:none;
+}
+
+.com-conjoon-iphone-groupware-workbench .homePanel .x-panel-body .app-icon {
+    width:64px;
+    float:left;
+    height:64px;
+    margin:5px;
+    background-image:url(./images/64x64/apps/app-unknown.png);
+}
+
+.com-conjoon-iphone-groupware-workbench .homePanel .x-panel-body .app-icon.icon-twitter {
+    background-image:url(./images/64x64/apps/twitter.png)!important;
+}
+
+/**
+ * Twitter
+ */
+.com-conjoon-service-twitter-TwitterPanel {
+    font-size:14px;
+}
+
+.com-conjoon-service-twitter-InputBox .textArea {
+    font-size:14px;
+}

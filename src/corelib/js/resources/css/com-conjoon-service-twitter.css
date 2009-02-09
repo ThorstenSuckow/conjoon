@@ -22,49 +22,7 @@
     margin:2px;
 }
 
-.com-conjoon-service-twitter-TweetList .authorName {
-    font-weight:bold;
-    color:#1f98c7;
-    cursor:pointer;
-    font-family:'Lucida Grande',sans-serif;
-}
 
-.com-conjoon-service-twitter-TweetList .tweetEntry {
-    color:#663B12;
-    padding:4px;
-    font-family:'Lucida Grande',sans-serif;
-}
-
-.com-conjoon-service-twitter-TweetList.usersRecentTweets .tweetEntry {
-    padding:6px;
-}
-
-.com-conjoon-service-twitter-TweetList.usersRecentTweets .authorName {
-    cursor:default;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet .image {
-    padding:4px;
-    text-align:center;
-    vertical-align:top;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet td {
-    border-bottom:1px solid #c9fbfc;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet {
-    background-color:#f7fdff;
-    cursor:default;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet.over {
-    background:#aad9e6 url(../images/tweet_bg.gif) repeat-x!important;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet.row {
-    background-color:#ffffff;
-}
 
 .com-conjoon-service-twitter-InputBox .charCounter {
     font-size:11px;
@@ -95,6 +53,7 @@
 .com-conjoon-service-twitter-TwitterUserContainer .viewContainer,
 .com-conjoon-service-twitter-RecentTweetsContainer .viewContainer {
     overflow-y:auto;
+    background-color:#ffffff;
     overflow-x:hidden;
     position:relative;
 }
@@ -107,9 +66,18 @@
     margin-top:4px;
 }
 
-.com-conjoon-service-twitter-InputBox .buttonContainer .button{
+.com-conjoon-service-twitter-InputBox .buttonContainer .button {
     margin:auto;
 }
+
+.com-conjoon-service-twitter-InputBox .buttonContainer .button .busy{
+    background-image:url(../images/loading.gif)!important;
+}
+
+.com-conjoon-service-twitter-InputBox .buttonContainer .button .default{
+    background-image:url(../images/16x16/actions/service-twitter-updatestatus.png)!important;
+}
+
 
 .com-conjoon-service-twitter-UserInfoBox {
     background-color:#ffffff;
@@ -163,37 +131,14 @@
 
 .com-conjoon-service-twitter-InputBox {
     height : 85px;
-    background:#90b2b3 url(../images/twitter-inputbox-bg.png) repeat-x 0 0;
+    background:#f6f6f6;
     padding:4px;
-    border-bottom:1px solid #999999;
-}
-
-.com-conjoon-service-twitter-TweetList .meta {
-    color:#999999;
-    font-family:georgia;
-    font-style:italic;
-    margin:3px 0 0;
+    border-bottom:1px solid #99bbe8;
 }
 
 .com-conjoon-service-twitter-TweetList.x-masked{
     position:static!important;
 }
-
-.com-conjoon-service-twitter-TweetList .tweetAction {
-    width:17px;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet_reply_icon {
-    width:17px;
-    height:18px;
-    background:url(../images/16x16/actions/service-twitter-reply.png) no-repeat -18px -18px;
-    cursor:pointer;
-}
-
-.com-conjoon-service-twitter-TweetList .tweet.over .tweet_reply_icon {
-    background-position:top left;
-}
-
 
 .com-conjoon-service-twitter-TwitterPanel .show_recent_icon {
     background-image:url(../images/16x16/actions/service-twitter-showrecent.png)!important;
@@ -233,3 +178,145 @@
     background-image:url(../images/loading.gif)!important;
 }
 
+/**
+ * Tweet List entries
+ */
+.com-conjoon-service-twitter-TweetList .tweetEntry {
+    color:#663B12;
+    padding:4px;
+    font-family:'Lucida Grande',sans-serif;
+    margin-left:55px;
+}
+
+.com-conjoon-service-twitter-TweetList.usersRecentTweets .authorName,
+.com-conjoon-service-twitter-TweetList.usersRecentTweets .image {
+    display:none;
+}
+
+.com-conjoon-service-twitter-TweetList.usersRecentTweets .tweetEntry {
+    margin-left:5px;
+}
+
+.com-conjoon-service-twitter-TweetList .authorName {
+    font-weight:bold;
+    color:#1f98c7;
+    cursor:pointer;
+    font-family:'Lucida Grande',sans-serif;
+    margin:0 0 0 59px;
+    padding:4px 0 0;
+}
+
+
+.com-conjoon-service-twitter-TweetList .meta {
+    color:#999999;
+    font-family:georgia;
+    font-style:italic;
+    margin:0px;
+    display:block;
+}
+
+.com-conjoon-service-twitter-TweetList .tweetEntry  a.screenName,
+.com-conjoon-service-twitter-TweetList .tweetEntry  a.tweetUrl  {
+    color:#1f98c7;
+    text-decoration:none;
+}
+
+.com-conjoon-service-twitter-TweetList .meta a {
+    color:#999999;
+    text-decoration:none;
+}
+
+.com-conjoon-service-twitter-TweetList div.tweet:hover .meta a {
+    color:#1f98c7;
+}
+
+.com-conjoon-service-twitter-TweetList .tweetEntry a.screenName:hover,
+.com-conjoon-service-twitter-TweetList .tweetEntry a.tweetUrl:hover {
+    text-decoration:underline;
+}
+
+.com-conjoon-service-twitter-TweetList .meta a:hover {
+    text-decoration:underline;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet .image {
+    padding:4px;
+    float:left;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet {
+    border-bottom:1px solid #c9fbfc;
+    cursor:default;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.over {
+    background:#aad9e6 url(../images/tweet_bg.gif) repeat-x!important;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.even {
+    background-color:#f7fdff;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.odd {
+    background-color:#ffffff;
+}
+
+.com-conjoon-service-twitter-TweetList .tweetAction {
+    position:absolute;
+    right:0px;
+    margin-top:4px;
+}
+
+/*.com-conjoon-service-twitter-TweetList .tweet.over .tweetAction {
+    display:block;
+}*/
+
+
+.com-conjoon-service-twitter-TweetList .tweet_reply_icon {
+    height:16px;
+    width:16px;
+    margin-right:10px;
+    float:left;
+    display:none;
+    background:url(../images/16x16/actions/service-twitter-reply.png) no-repeat 50% 50%;
+    cursor:pointer;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet_delete_icon {
+    height:16px;
+    float:left;
+    width:16px;
+    display:none;
+    margin-right:10px;
+    background:url(../images/16x16/actions/service-twitter-deletetweet.png) no-repeat 50% 50%;
+    cursor:pointer;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet_bookmark_icon {
+    height:16px;
+    float:left;
+    width:16px;
+    display:none;
+    background:url(../images/16x16/actions/service-twitter-bookmark.png) no-repeat 50% 50%;
+    cursor:pointer;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet.over .tweet_reply_icon,
+.com-conjoon-service-twitter-TweetList .tweet.over .tweet_delete_icon,
+.com-conjoon-service-twitter-TweetList .tweet.over .tweet_bookmark_icon {
+    display:block;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet_unbookmark_icon {
+    height:16px;
+    float:left;
+    width:16px;
+    background:url(../images/16x16/actions/service-twitter-unbookmark.png) no-repeat 50% 50%;
+    cursor:pointer;
+}
+
+.com-conjoon-service-twitter-TweetList .tweet_bookmark_icon.pending,
+.com-conjoon-service-twitter-TweetList .tweet_unbookmark_icon.pending {
+    display:block!important;
+    background-image:url(../images/loading.gif)!important;
+}
