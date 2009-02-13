@@ -83,10 +83,11 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
 
         store.on('beforeload', this._onAccountStoreBeforeLoad, this);
 
-        store.on('load',   this._onAccountStoreAdd,    this);
-        store.on('remove', this._onAccountStoreRemove, this);
-        store.on('add',    this._onAccountStoreAdd,    this);
-        store.on('update', this._onAccountStoreUpdate, this);
+        store.on('load',          this._onAccountStoreAdd,           this);
+        store.on('loadexception', this._onAccountStoreLoadException, this);
+        store.on('remove',        this._onAccountStoreRemove,        this);
+        store.on('add',           this._onAccountStoreAdd,           this);
+        store.on('update',        this._onAccountStoreUpdate,        this);
 
         this.on('render', function() {
             this.setDisabled((store.getCount() == 0));
@@ -227,6 +228,16 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
             this.setDisabled(true);
         }
 
+    },
+
+    /**
+     * Called when loading the account-store failed.
+     *
+     * Will reset the account-button.
+     */
+    _onAccountStoreLoadException : function()
+    {
+        this.setIconClass('com-conjoon-service-twitter-AccountButton-icon');
     },
 
     /**
