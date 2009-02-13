@@ -12,6 +12,10 @@
  * $URL$
  */
 
+/**
+ * Inits the application when used with an iPhone/iPod device.
+ *
+ */
 Ext.onReady(function(){
 
     Ext.QuickTips.init();

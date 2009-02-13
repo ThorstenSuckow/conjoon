@@ -1,8 +1,30 @@
 <?php
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
 
-
+/**
+ * @see Conjoon_Service_Twitter
+ */
 require_once 'Conjoon/Service/Twitter.php';
 
+/**
+ * This class proxies requests to the Twitter service and takes care
+ * of returning appropriate and easy to use objects depending on the
+ * requested actions.
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ */
 class Conjoon_Service_Twitter_Proxy  {
 
 

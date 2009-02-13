@@ -1,9 +1,35 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
 Ext.namespace('com.conjoon.groupware.service');
 
-
+/**
+ * A Panel that contains all components needed to use with a
+ * Twitter account.
+ *
+ * @class com.conjoon.groupware.service.TwitterPanel
+ * @extends com.conjoon.service.twitter.TwitterPanel
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ */
 com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twitter.TwitterPanel, {
 
 
+    /**
+     * Inits this component.
+     *
+     */
     initComponent : function()
     {
         var recTweetStore = new com.conjoon.service.twitter.data.TweetStore({

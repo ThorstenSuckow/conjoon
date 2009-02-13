@@ -1,13 +1,40 @@
 <?php
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
 
-
+/**
+ * @see Zend_Service_Twitter
+ */
 require_once 'Zend/Service/Twitter.php';
 
+/**
+ * This class main purpose is to send a source id "conjoon" with any status update,
+ * thus notifying the Twitter service that the update was done using conjoon.
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author The Zend Framework Team
+ */
 class Conjoon_Service_Twitter extends Zend_Service_Twitter {
 
 
     /**
      * Update user's current status
+     * This implementation will send a sourceId "conjoon" to the Twitter service,
+     * notifying that the corresponding update was done using conjoon.
+     * This implementation will also skipp checking if the requested update is
+     * longer than 140 bytes, as this will be done by the Twitter service itself, truncating
+     * the status message if needed.
      *
      * @param  string $status
      * @param  int $in_reply_to_status_id
