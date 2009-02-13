@@ -35,6 +35,12 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
     },
 
     /**
+     * @cfg {com.conjoon.service.twitter.data.TweetStore} tweetStore The tweet store
+     * which loads recent tweet's of a specified user. The template of this component
+     * will be populated with the data of the store upon load.
+     */
+
+    /**
      * @cfg {Ext.Xtemplate} tpl template used to render the contents of this
      * component.
      */
@@ -75,6 +81,11 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
             )
         });
 
+        if (this.tweetStore) {
+            this.tweetStore.on('load',       this._onTweetStoreLoad, this);
+            this.tweetStore.on('beforeload', this._onBeforeTweetStoreLoad, this);
+        }
+
         com.conjoon.service.twitter.UserInfoBox.superclass.initComponent.call(this);
     },
 
@@ -90,8 +101,38 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
      */
     loadUser : function(record)
     {
+        if (!record) {
+            throw("com.conjoon.service.twitter.UserInfoBox.loadUser: record was undefined");
+        }
         this.tpl.overwrite(this.el, record.data);
         this.fireEvent('userload', this, record);
-    }
+    },
+
+// -------- listeners
+
+    /**
+     *
+     * @param {Ext.data.Store} store
+     * @param {Array} records
+     * @param {Object} options
+     *
+     */
+    _onTweetStoreLoad : function(store, records, options)
+    {
+        this.loadUser(records[0]);
+    },
+
+    /**
+     *
+     *
+     * @param {Ext.data.Store} store
+     * @param {Array} records
+     * @param {Object} options
+     *
+     */
+    _onBeforeTweetStoreLoad : function(store, records, options)
+    {
+
+    },
 
 });

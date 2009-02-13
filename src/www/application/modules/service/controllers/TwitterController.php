@@ -39,6 +39,8 @@ class Service_TwitterController extends Zend_Controller_Action {
                       ->addActionContext('get.friends',       self::CONTEXT_JSON)
                       ->addActionContext('get.accounts',      self::CONTEXT_JSON)
                       ->addActionContext('send.update',       self::CONTEXT_JSON)
+                      ->addActionContext('delete.tweet',      self::CONTEXT_JSON)
+                      ->addActionContext('favorite.tweet',    self::CONTEXT_JSON)
                       ->addActionContext('get.users.recent.tweets', self::CONTEXT_JSON)
                       ->initContext();
     }
@@ -54,6 +56,7 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function getAccountsAction()
     {
+
         require_once 'Conjoon/Keys.php';
         $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
@@ -68,6 +71,7 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         for ($i = 0, $len = count($data); $i < $len; $i++) {
             $dto =& $data[$i];
+            $dto->updateInterval = ((int)$dto->updateInterval) * 1000;
 
             try {
                 /**
@@ -109,12 +113,20 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function getRecentTweetsAction()
     {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
         $accountId = (int)$this->_request->getParam('id');
 
         if ($accountId <= 0) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not send the status update: No account-id provided.", Conjoon_Error::LEVEL_ERROR
+            )->getDto();
             $this->view->success = false;
             $this->view->tweets  = array();
-            $this->view->error   = null;
+            $this->view->error   = $errorDto;
             return;
         }
 
@@ -126,42 +138,42 @@ class Service_TwitterController extends Zend_Controller_Action {
         $accountDto = $decoratedModel->getAccountAsDto($accountId);
 
         if (!$accountDto) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not retrieve tweets: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+            )->getDto();
             $this->view->success = false;
             $this->view->tweets  = array();
-            $this->view->error   = null;
+            $this->view->error   = $errorDto;
             return;
         }
 
-        require_once 'Zend/Service/Twitter.php';
+        /**
+         * @see Conjoon_Service_Twitter_Proxy
+         */
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Zend_Service_Twitter($accountDto->name, $accountDto->password);
+        $twitter = new Conjoon_Service_Twitter_Proxy(
+            $accountDto->name, $accountDto->password
+        );
 
-        $response = $twitter->status->friendsTimeline();
+        $tweets = $twitter->statusFriendsTimeline();
+        $twitter->accountEndSession();
 
-        $tweets = array();
+        if ($tweets instanceof Conjoon_Error) {
+            $this->view->success = false;
+            $this->view->tweets  = array();
+            $this->view->error   = $tweets->getDto();
+            return;
+        }
 
-        foreach ($response->status as $tweet) {
-            $tweets[] = array(
-                'id'              => (int)(string)$tweet->id,
-                'text'            => (string)$tweet->text,
-                'createdAt'       => (string)$tweet->created_at,
-                'source'          => (string)$tweet->source,
-                'truncated'       => (bool)(string)$tweet->truncated,
+        $dtoTweets = array();
 
-                'userId'          => (int)(string)$tweet->user->id,
-                'name'            => (string)$tweet->user->name,
-                'screenName'      => (string)$tweet->user->screen_name,
-                'location'        => (string)$tweet->user->location,
-                'profileImageUrl' => (string)$tweet->user->profile_image_url,
-                'url'             => (string)$tweet->user->url,
-                'description'     => (string)$tweet->user->description,
-                'protected'       => (bool)(string)$tweet->user->protected,
-                'followersCount'  => (int)(string)$tweet->user->followers_count
-            );
+        for ($i = 0, $len = count($tweets); $i < $len; $i++) {
+            $dtoTweets[] = $tweets[$i]->getDto();
         }
 
         $this->view->success = true;
-        $this->view->tweets  = $tweets;
+        $this->view->tweets  = $dtoTweets;
         $this->view->error   = null;
     }
 
@@ -237,13 +249,30 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function getUsersRecentTweetsAction()
     {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
         $userId    = (int)$this->_request->getParam('userId');
         $accountId = (int)$this->_request->getParam('id');
+        $userName  = (string)$this->_request->getParam('userName');
 
-        if ($accountId <= 0) {
+        if ($userName != "" && $userId <= 0) {
+            $userId = $userName;
+        }
+
+        if ($accountId <= 0 || (!is_string($userId) && $userId <= 0)) {
+            $errorTxt = $accountId <= 0
+                        ? "Could not receive tweets: No account-id provided."
+                        : "Could not receive tweets: No user-id or screen-name provided.";
+
+            $errorDto = Conjoon_Error_Factory::createError(
+                $errorTxt, Conjoon_Error::LEVEL_ERROR
+            )->getDto();
             $this->view->success = false;
             $this->view->tweets  = array();
-            $this->view->error   = null;
+            $this->view->error   = $errorDto;
             return;
         }
 
@@ -255,45 +284,45 @@ class Service_TwitterController extends Zend_Controller_Action {
         $accountDto = $decoratedModel->getAccountAsDto($accountId);
 
         if (!$accountDto) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not retrieve tweets: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+            )->getDto();
             $this->view->success = false;
             $this->view->tweets  = array();
-            $this->view->error   = null;
+            $this->view->error   = $errorDto;
             return;
         }
 
-        require_once 'Zend/Service/Twitter.php';
+        /**
+         * @see Conjoon_Service_Twitter_Proxy
+         */
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Zend_Service_Twitter($accountDto->name, $accountDto->password);
+        $twitter = new Conjoon_Service_Twitter_Proxy(
+            $accountDto->name, $accountDto->password
+        );
 
-        $response = $twitter->status->userTimeline(array(
+        $tweets = $twitter->statusUserTimeline(array(
             'id' => $userId
         ));
+        $twitter->accountEndSession();
 
-        $tweets = array();
+        if ($tweets instanceof Conjoon_Error) {
+            $this->view->success = false;
+            $this->view->tweets  = array();
+            $this->view->error   = $tweets->getDto();
+            return;
+        }
 
-        foreach ($response->status as $tweet) {
-            $tweets[] = array(
-                'id'              => (int)(string)$tweet->id,
-                'text'            => (string)$tweet->text,
-                'createdAt'       => (string)$tweet->created_at,
-                'source'          => (string)$tweet->source,
-                'truncated'       => (bool)(string)$tweet->truncated,
+        $dtoTweets = array();
 
-                'userId'          => (int)(string)$tweet->user->id,
-                'name'            => (string)$tweet->user->name,
-                'screenName'      => (string)$tweet->user->screen_name,
-                'location'        => (string)$tweet->user->location,
-                'profileImageUrl' => (string)$tweet->user->profile_image_url,
-                'url'             => (string)$tweet->user->url,
-                'description'     => (string)$tweet->user->description,
-                'protected'       => (bool)(string)$tweet->user->protected,
-                'followersCount'  => (int)(string)$tweet->user->followers_count
-            );
+        for ($i = 0, $len = count($tweets); $i < $len; $i++) {
+            $dtoTweets[] = $tweets[$i]->getDto();
         }
 
         $this->view->success = true;
+        $this->view->tweets  = $dtoTweets;
         $this->view->error   = null;
-        $this->view->tweets  = $tweets;
     }
 
 
@@ -304,13 +333,23 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function sendUpdateAction()
     {
-        $accountId = (int)$this->_request->getParam('accountId');
-        $message   = (string)$this->_request->getParam('message');
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
+        $accountId         = (int)$this->_request->getParam('accountId');
+        $inReplyToStatusId = (int)$this->_request->getParam('inReplyToStatusId');
+        $message            = (string)$this->_request->getParam('message');
 
         if ($accountId <= 0) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not send the status update: No account-id provided.", Conjoon_Error::LEVEL_ERROR
+            )->getDto();
+
             $this->view->success = false;
             $this->view->tweets  = array();
-            $this->view->error   = null;
+            $this->view->error   = $errorDto;
             return;
         }
 
@@ -322,21 +361,178 @@ class Service_TwitterController extends Zend_Controller_Action {
         $accountDto = $decoratedModel->getAccountAsDto($accountId);
 
         if (!$accountDto) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not send the status update: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+            )->getDto();
+
             $this->view->success = false;
             $this->view->tweets  = array();
-            $this->view->error   = null;
+            $this->view->error   = $errorDto;
             return;
         }
 
-        require_once 'Conjoon/Service/Twitter.php';
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter($accountDto->name, $accountDto->password);
-        $response = $twitter->statusUpdate(
-            $message
+        $twitter = new Conjoon_Service_Twitter_Proxy($accountDto->name, $accountDto->password);
+
+        // check inReplyToStatusId and set to null if necessary
+        $inReplyToStatusId = $inReplyToStatusId > 0 ? $inReplyToStatusId : null;
+
+        $result  = $twitter->statusUpdate($message, $inReplyToStatusId);
+        $twitter->accountEndSession();
+
+        if ($result instanceof Conjoon_Error) {
+            $this->view->success = false;
+            $this->view->tweets  = array();
+            $this->view->error   = $result->getDto();
+            return;
+        }
+
+        $this->view->success = true;
+        $this->view->tweet   = $result->getDto();
+        $this->view->error   = null;
+    }
+
+    /**
+     * requests to delete a tweet with a specific id.
+     * The acount used to request the delete is passed as an id in accountId,
+     * the id of the tweet to delete is passed in the parameter tweetId.
+     *
+     */
+    public function deleteTweetAction()
+    {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
+        $accountId  = (int)$this->_request->getParam('accountId');
+        $tweetId    = (int)$this->_request->getParam('tweetId');
+
+        if ($accountId <= 0 || $tweetId <= 0) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                (($accountId <= 0)
+                ? "Could not delete the tweet: No account-id provided."
+                : "Could not delete the tweet: No tweet specified."),
+                Conjoon_Error::LEVEL_ERROR
+            )->getDto();
+
+            $this->view->success      = false;
+            $this->view->deletedTweet = null;
+            $this->view->error        = $errorDto;
+            return;
+        }
+
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Service_Twitter_Account_Model_Account'
         );
 
-        var_dump($response);
+        $accountDto = $decoratedModel->getAccountAsDto($accountId);
 
+        if (!$accountDto) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not delete the tweet: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+            )->getDto();
+
+            $this->view->success      = false;
+            $this->view->deletedTweet = null;
+            $this->view->error        = $errorDto;
+            return;
+        }
+
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
+
+        $twitter = new Conjoon_Service_Twitter_Proxy($accountDto->name, $accountDto->password);
+
+        $result  = $twitter->deleteTweet($tweetId);
+        $twitter->accountEndSession();
+
+        if ($result instanceof Conjoon_Error) {
+            $this->view->success      = false;
+            $this->view->deletedTweet = null;
+            $this->view->error        = $result->getDto();
+            return;
+        }
+
+        $this->view->success      = true;
+        $this->view->deletedTweet = $result->getDto();
+        $this->view->error        = null;
+    }
+
+    /**
+     * requests to favorite a tweet with a specific id.
+     * The acount used to request the "favorite" is passed as an id in accountId,
+     * the id of the tweet to favorite is passed in the parameter tweetId.
+     * The boolean parameter "favorite" tells whether to "favorite" or
+     * "un-favorite" the specified tweet.
+     *
+     */
+    public function favoriteTweetAction()
+    {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
+        $accountId  = (int)$this->_request->getParam('accountId');
+        $tweetId    = (int)$this->_request->getParam('tweetId');
+        /**
+         * @todo Filter!!!
+         */
+        $favorite   = $this->_request->getParam('favorite') == 'false'
+                      ? false
+                      : true;
+
+        if ($accountId <= 0 || $tweetId <= 0) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                (($accountId <= 0)
+                ? "Could not process the request: No account-id provided."
+                : "Could not process the request: No tweet specified."),
+                Conjoon_Error::LEVEL_ERROR
+            )->getDto();
+
+            $this->view->success        = false;
+            $this->view->favoritedTweet = null;
+            $this->view->error          = $errorDto;
+            return;
+        }
+
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Service_Twitter_Account_Model_Account'
+        );
+
+        $accountDto = $decoratedModel->getAccountAsDto($accountId);
+
+        if (!$accountDto) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not delete the tweet: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+            )->getDto();
+
+            $this->view->success        = false;
+            $this->view->favoritedTweet = null;
+            $this->view->error          = $errorDto;
+            return;
+        }
+
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
+
+        $twitter = new Conjoon_Service_Twitter_Proxy($accountDto->name, $accountDto->password);
+
+        $result  = $twitter->favoriteTweet($tweetId, $favorite);
+        $twitter->accountEndSession();
+
+        if ($result instanceof Conjoon_Error) {
+            $this->view->success        = false;
+            $this->view->favoritedTweet = null;
+            $this->view->error          = $result->getDto();
+            return;
+        }
+
+        $this->view->success        = true;
+        $this->view->favoritedTweet = $result->getDto();
+        $this->view->error          = null;
     }
 
 }

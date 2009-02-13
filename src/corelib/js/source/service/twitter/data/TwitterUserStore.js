@@ -30,7 +30,7 @@ com.conjoon.service.twitter.data.TwitterUserStore = function(c){
             reader : new Ext.data.JsonReader({
                 root : 'users',
                 id   : 'id'
-            }, com.conjoon.service.twitter.data.TwitterUserRecord),
+            }, com.conjoon.service.twitter.data.TwitterUserRecord)
     }));
 
 };

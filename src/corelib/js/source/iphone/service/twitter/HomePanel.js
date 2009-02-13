@@ -12,7 +12,7 @@
  * $URL$
  */
 
-Ext.namespace('com.conjoon.service.twitter');
+Ext.namespace('com.conjoon.iphone.service.twitter');
 
 /**
  * A component for displaying the startscreen of a twitter application.
@@ -22,7 +22,7 @@ Ext.namespace('com.conjoon.service.twitter');
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-com.conjoon.service.twitter.HomePanel = Ext.extend(Ext.BoxComponent, {
+com.conjoon.iphone.service.twitter.HomePanel = Ext.extend(Ext.BoxComponent, {
 
     /**
      * @cfg {Object} autoEl
@@ -35,7 +35,12 @@ com.conjoon.service.twitter.HomePanel = Ext.extend(Ext.BoxComponent, {
             cls      : 'introContainer',
             children : [{
                 tag  : 'div',
-                cls  : 'text'
+                cls  : 'text',
+                html : 'conjoonTwitter<br />' +
+                       '(c) 2009 <a href="http://www.conjoon.org" target="_blank">conjoon open source project</a><br />'+
+                       '<br />'+
+                       '"Twitter" is a service by <a target="_blank" href="http://www.twitter.com">Twitter, Inc.</a>, San Francisco, USA<br /><br />'+
+                       'This client is powered by the <br /><a target="_blank" href="http://www.extjs.com">Ext JS framework</a>'
             }]
         }]
     }

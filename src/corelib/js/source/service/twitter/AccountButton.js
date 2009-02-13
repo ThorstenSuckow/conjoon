@@ -99,6 +99,19 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
 // -------- public API
 
     /**
+     * Resets the check status from the given account items.
+     *
+     * @param {Boolean} suppressEvent true to not fire any event for the
+     * checkItem
+     */
+    resetAccountMenuItemStates : function(suppressEvent)
+    {
+        for (var i in this._accountItemMap) {
+            this._accountItemMap[i].setChecked(false, suppressEvent);
+        }
+    },
+
+    /**
      * Returns this button's menu exit menu item.
      *
      * @return {Ext.menu.Item}

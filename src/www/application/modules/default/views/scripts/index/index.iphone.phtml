@@ -1,0 +1,39 @@
+<?php
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title><?php echo $this->title; ?></title>
+
+    <?php echo $this->render('index/_stylesheets.iphone.phtml'); ?>
+
+</head>
+
+<body>
+
+<?php echo $this->render('index/_splashscreen.iphone.phtml'); ?>
+
+<?php echo $this->render('index/_scripts.iphone.phtml'); ?>
+
+
+
+</body>
+</html>

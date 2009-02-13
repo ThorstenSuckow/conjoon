@@ -31,6 +31,11 @@ com.conjoon.service.twitter.data.TweetStore = function(c){
                 root : 'tweets',
                 id   : 'id'
             }, com.conjoon.service.twitter.data.TweetRecord),
+            remoteSort : false,
+            sortInfo   : {
+                field     : 'createdAt',
+                direction : 'DESC'
+            },
     }));
 };
 Ext.extend(com.conjoon.service.twitter.data.TweetStore, Ext.data.Store);

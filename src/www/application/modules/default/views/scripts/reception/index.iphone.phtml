@@ -1,0 +1,66 @@
+<?php
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+?>
+
+<!DOCTYPE htmlPUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+ <head>
+  <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <title><?php echo $this->title; ?></title>
+
+  <?php echo $this->render('reception/_stylesheets.iphone.phtml'); ?>
+
+
+ </head>
+
+ <body class="com-conjoon-groupware-Reception-body">
+
+<?php echo $this->render('reception/_scripts.iphone.phtml'); ?>
+
+<script type="text/javascript">
+
+
+Ext.onReady(function(){
+
+    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
+
+    com.conjoon.util.PreLoader.on('load', function() {
+
+        var w = new Ext.Viewport();
+
+        var reception = com.conjoon.groupware.Reception;
+        reception.init(false, {
+            loginWindowClass : com.conjoon.iphone.groupware.reception.LoginWindow
+        });
+
+        <?php if ($this->locked === true) { ?>
+            reception.onUserLoad(function(){
+                reception.showLogin(reception.TYPE_UNLOCK);
+            });
+        <?php } else { ?>
+            reception.showLogin(reception.TYPE_LOGIN);
+        <?php } ?>
+    });
+
+    com.conjoon.util.PreLoader.load();
+});
+  </script>
+ </body>
+
+</html>

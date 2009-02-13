@@ -42,7 +42,7 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
      * @type {String} createdAt The date the status update was created, as managed
      * by the Twitter service.
      */
-    {name : 'createdAt',       type : 'date',  format : 'm/d/Y'},
+    {name : 'createdAt', sortType : Ext.data.SortTypes.asDate, type : 'date',  dateFormat : 'Y-m-d H:i:s'},
 
     /**
      * @type {String} sourceName Stripped from the source-property from the Twitter
@@ -118,6 +118,30 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
      * @type {Number} followersCount The number of followers for the user who posted this
      * tweet, as managed by the Twitter service.
      */
-    {name : 'followersCount',  type : 'int'}
+    {name : 'followersCount',  type : 'int'},
+
+    /**
+     * @type {Number} inReplyToStatusId The id of the tweet this tweet referrs to, as managed
+     * by the Twitter service. May be null.
+     */
+    {name : 'inReplyToStatusId',  type : 'int'},
+
+    /**
+     * @type {Number} inReplyToUserId The id of the user of the tweet this tweet
+     * referrs to, as managed by the Twitter service. May be null.
+     */
+    {name : 'inReplyToUserId',  type : 'int'},
+
+    /**
+     * @type {String} inReplyToScreenName The screen name of the user of the tweet
+     * this tweet referrs to, as managed by the Twitter service. May be null.
+     */
+    {name : 'inReplyToScreenName',  type : 'string'},
+
+    /**
+     * @type {Number} favorited Whether this tweet was favorited by the user which is
+     * viewing this tweet, as managed by the Twitter service. May be null.
+     */
+    {name : 'favorited',  type : 'bool'}
 
 ]);

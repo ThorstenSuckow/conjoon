@@ -47,7 +47,7 @@ com.conjoon.service.twitter.data.AccountRecord = Ext.data.Record.create([
 
     /**
      * @type {Number} updateInterval The interval in which the server queries for new
-     * updates, in milliseconds.
+     * updates, in miliseconds.
      */
     {name : 'updateInterval',         type : 'int'},
 

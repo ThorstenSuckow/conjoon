@@ -149,6 +149,9 @@ require_once 'Conjoon/Modules/Default/User.php';
    $lockPlugin = new Conjoon_Controller_Plugin_Lock();
    $controller->registerPlugin($lockPlugin);
 
+    // add helper namespace
+    Zend_Controller_Action_HelperBroker::addPrefix('Conjoon_Controller_Action_Helper');
+
 // +----------------------------------------------------------------------------
 // | Set up Routing
 // +----------------------------------------------------------------------------

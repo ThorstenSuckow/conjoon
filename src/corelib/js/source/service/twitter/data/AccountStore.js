@@ -32,7 +32,7 @@ com.conjoon.service.twitter.data.AccountStore = function(c){
             reader : new Ext.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'
-            }, com.conjoon.service.twitter.data.AccountRecord),
+            }, com.conjoon.service.twitter.data.AccountRecord)
     }));
 
 };

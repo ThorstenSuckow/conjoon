@@ -60,6 +60,11 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
 
     /**
+     * @cfg {com.conjoon.service.twitter.data.TweetPoller} tweetPoller The tweet Poller
+     * that updates the records of the recentTweets' store
+     */
+
+    /**
      * @cfg {String} titleTpl This template is used to be rendered as the title for this
      * panel.
      */
@@ -114,6 +119,11 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _currentAccountId : -1,
 
     /**
+     * @type Ext.Toolbar} _toolbar
+     */
+    _toolbar : null,
+
+    /**
      * Inits this component.
      *
      */
@@ -140,17 +150,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             ],
             cls    : 'com-conjoon-service-twitter-TwitterPanel',
             border : false,
-            bbar   : new Ext.Toolbar({
-                items : [
-                    this.getHomePanel(),
-                    this.getShowRecentTweetsButton(),
-                    this.getShowFriendsButton(),
-                    '->',
-                    this.getShowInputButton(),
-                    '-',
-                    this.getChooseAccountButton()
-                ]
-            })
+            bbar   : this.getToolbar()
         });
 
         com.conjoon.service.twitter.TwitterPanel.superclass.initComponent.call(this);
@@ -171,6 +171,11 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.recentTweets.on('click', this._onRecentTweetClick, this);
         this.friendsList.on('click',  this._onFriendsListClick, this);
 
+        this.recentTweets.store.on('beforeload', this._onRecentTweetBeforeLoad, this);
+        this.recentTweets.store.on('load',       this._onRecentTweetLoad,       this);
+
+        this.tweetPoller.on('updateempty', this._onTweetPollerUpdateEmpty, this);
+
         this.inputBox.getUpdateButton().on('click', this._onUpdateButtonClick, this);
 
         this.getChooseAccountButton().on('checkchange', this._onAccountButtonCheckChange, this);
@@ -179,6 +184,56 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     },
 
 // -------- listeners
+
+    /**
+     * Called before the recentTweets'store loads. Will stop the tweetPoller's
+     * task.
+     *
+     * @param {Ext.data.Store} store
+     * @param {Object} options
+     */
+    _onRecentTweetBeforeLoad : function(store, options)
+    {
+        this.tweetPoller.stopPolling();
+    },
+
+    /**
+     * Called when the tweet poller finished loading and no additional records
+     * have been added to the tweetPoller's updateStore (which should be the store
+     * of the current recentTweets).
+     * This implementation will force the recentTweets to update its meta information,
+     * e.g. informations which can be calculated and displayed using the current set
+     * of records in the recentTweets store, such as a posted timestamp.
+     *
+     * @param {com.conjoon.service.twitter.data.TweetPoller} tweetPoller
+     *
+     * @protected
+     */
+    _onTweetPollerUpdateEmpty : function(tweetPoller)
+    {
+        this.recentTweets.updateMetaInfo();
+    },
+
+    /**
+     * Called when the recentTweets'store loads. Will start polling with the
+     * account id specified in the ooptions param's "id" property.
+     *
+     * @param {Ext.data.Store} store
+     * @param {Object} options
+     */
+    _onRecentTweetLoad : function(store, records, options)
+    {
+        var rec = this.accountStore.getById(options.params.id);
+
+        if (!rec) {
+            return;
+        }
+
+        this.tweetPoller.startPolling(
+            options.params.id,
+            rec.get('updateInterval')
+        );
+    },
 
     /**
      * Listens to the "exitclick" event of the _chooseAccountButton's exit menu item.
@@ -273,16 +328,130 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             return;
         }
 
+        this.inputBox.setInputBusy(true);
+        this.getToolbar().setDisabled(true);
+
+        var replyStatus = this.inputBox.getReplyStatus();
+
         Ext.Ajax.request({
             url    : '/service/twitter/send.update/format/json',
             params : {
-                message   : v,
-                accountId : this._currentAccountId
+                message           : v,
+                accountId         : this._currentAccountId,
+                inReplyToStatusId : (replyStatus != null
+                                    ? replyStatus[0]
+                                    : null)
             },
             success : this._onUpdateSuccess,
             failure : this._onUpdateFailure,
             scope   : this
         });
+    },
+
+    /**
+     * Callback for the success-event of the Ajax request that requests
+     * to (un)favorite a specific tweet.
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     *
+     * @protected
+     */
+    _onFavoriteTweetSuccess : function(response, options)
+    {
+        var insp = com.conjoon.groupware.ResponseInspector;
+
+        var encResponse = insp.isSuccess(response);
+
+        if (!insp.isSuccess(response)) {
+            this._onFavoriteTweetFailure(response, options);
+            return;
+        }
+
+        Ext.fly(options.item).removeClass('pending');
+
+        var json          = com.conjoon.util.Json;
+        var responseValue = json.getResponseValues(response.responseText);
+
+        var rec = com.conjoon.util.Record.convertTo(
+            com.conjoon.service.twitter.data.TweetRecord,
+            responseValue.favoritedTweet,
+            responseValue.favoritedTweet.id
+        );
+
+        var store  = this.recentTweets.store;
+        var updRec = store.getById(rec.id);
+
+        if (!updRec) {
+            return;
+        }
+
+        updRec.set('favorited', rec.get('favorited'));
+    },
+
+    /**
+     * Callback for the failure-event of the Ajax request that requests
+     * to (un)favorite a specific tweet.
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     *
+     * @protected
+     */
+    _onFavoriteTweetFailure : function(response, options)
+    {
+        Ext.fly(options.item).removeClass('pending');
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
+    },
+
+    /**
+     * Callback for the success-event of the Ajax request that requests
+     * to delete a specific tweet.
+     * The HtmlNode representing the record to delete can be found in the
+     * options-property "item".
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     *
+     * @protected
+     */
+    _onDeleteTweetSuccess : function(response, options)
+    {
+        var insp = com.conjoon.groupware.ResponseInspector;
+
+        var encResponse = insp.isSuccess(response);
+        if (!insp.isSuccess(response)) {
+            this._onDeleteTweetFailure(response, options);
+            return;
+        }
+
+        Ext.fly(options.item).unmask();
+        this.getToolbar().setDisabled(false);
+
+        var json          = com.conjoon.util.Json;
+        var responseValue = json.getResponseValues(response.responseText);
+
+        this.recentTweets.removeTweet(responseValue.deletedTweet.id);
+    },
+
+    /**
+     * Callback for the failure-event of the Ajax request that requests
+     * to delete a tweet.
+     * The HtmlNode representing the record to delete can be found in the
+     * options-property "item".
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     *
+     * @protected
+     */
+    _onDeleteTweetFailure : function(response, options)
+    {
+        this.getToolbar().setDisabled(false);
+        Ext.fly(options.item).unmask();
+        Ext.fly(options.item).highlight('ff0000');
+
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
     },
 
     /**
@@ -301,7 +470,23 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         var encResponse = insp.isSuccess(response);
         if (!insp.isSuccess(response)) {
             this._onUpdateFailure(response, options);
+            return;
         }
+
+        var json          = com.conjoon.util.Json;
+        var responseValue = json.getResponseValues(response.responseText);
+
+        var rec = com.conjoon.util.Record.convertTo(
+            com.conjoon.service.twitter.data.TweetRecord,
+            responseValue.tweet,
+            responseValue.tweet.id
+        );
+
+        this.inputBox.setInputBusy(false);
+        this.getToolbar().setDisabled(false);
+        this.inputBox.setMessage("");
+        this.recentTweets.store.insert(0, [rec]);
+
     },
 
     /**
@@ -315,6 +500,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
     _onUpdateFailure : function(response, options)
     {
+        this.inputBox.setInputBusy(false);
+        this.getToolbar().setDisabled(false);
         com.conjoon.groupware.ResponseInspector.handleFailure(response);
     },
 
@@ -334,8 +521,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Callback for the "click" event for the RecentTweetsList.
-     * Depending on the target, the event will be delegated to _handleReplyClick
-     * if a click on the reply link/icon was detected.
+     * Depending on the target, the event will be delegated to other methods
+     * if a click on the reply/delete link/icon was detected.
      *
      * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
      * that triggered this event
@@ -347,6 +534,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
     _onRecentTweetClick : function(dataView, index, item, e)
     {
+
         switch (e.getTarget().className) {
             case 'tweet_reply_icon':
                 this._handleReplyClick(dataView, index, item, e);
@@ -354,6 +542,26 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
             case 'authorName':
                 this.showUserInfo(this.recentTweets.getSelectedRecords()[0]);
+            break;
+
+            case 'tweetUrl':
+                this._handleTweetUrlClick(dataView, index, item, e);
+            break;
+
+            case 'screenName':
+                this.showUserInfo(e.getTarget().firstChild.data);
+            break;
+
+            case 'tweet_delete_icon':
+                this._handleTweetDeleteClick(dataView, index, item, e);
+            break;
+
+            case 'tweet_bookmark_icon':
+                this._handleTweetBookmarkClick(dataView, index, item, e, true);
+            break;
+
+            case 'tweet_unbookmark_icon':
+                this._handleTweetBookmarkClick(dataView, index, item, e, false);
             break;
         }
     },
@@ -497,12 +705,15 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         this._currentAccountId = -1;
 
+        this.tweetPoller.stopPolling();
+
         if (this.inputBox.rendered) {
             this.inputBox.setMessage("");
         }
 
         // remove all data from the stores
         this.recentTweets.store.removeAll();
+        this.recentTweets.setAccountRecord(null);
         this.usersRecentTweets.store.removeAll();
         this.friendsList.store.removeAll();
 
@@ -525,6 +736,117 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Delegate for the callback for the "click" event for the RecentTweetsList.
+     * gets called internally if a click on a link with the class "tweetUrl" is
+     * clicked.
+     *
+     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
+     * that triggered this event
+     * @param {Number} index The index of the target node
+     * @param {HtmlElement} item native HtmlElement on which this event occured
+     * @param {Ext.EvenObject} e The raw Ext.EventObject
+     *
+     * @protected
+     */
+    _handleTweetUrlClick : function(dataView, index, item, e)
+    {
+        com.conjoon.groupware.util.LinkInterceptor.handleLinkClick(e.getTarget());
+    },
+
+    /**
+     * Delegate for the callback for the "click" event for the RecentTweetsList.
+     * Gets called internally if a click on the "bookmark"/"unbookmark"
+     * link/icon happend.
+     *
+     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
+     * that triggered this event
+     * @param {Number} index The index of the target node
+     * @param {HtmlElement} item native HtmlElement on which this event occured
+     * @param {Ext.EvenObject} e The raw Ext.EventObject
+     * @param {Boolean} Whether to favorite this tweet - true to favorite it, otherwise
+     * false
+     *
+     * @protected
+     */
+    _handleTweetBookmarkClick : function(dataView, index, item, e, favorite)
+    {
+        var selRec = this.recentTweets.getSelectedRecords()[0];
+
+        if (!selRec) {
+            return;
+        }
+
+        Ext.fly(e.getTarget()).addClass('pending');
+
+        Ext.Ajax.request({
+            item   : item,
+            url    : '/service/twitter/favorite.tweet/format/json',
+            params : {
+                accountId : this._currentAccountId,
+                tweetId   : selRec.id,
+                favorite  : favorite
+            },
+            success : this._onFavoriteTweetSuccess,
+            failure : this._onFavoriteTweetFailure,
+            scope   : this
+        });
+    },
+
+    /**
+     * Delegate for the callback for the "click" event for the RecentTweetsList.
+     * Gets called internally if a click on the "delete" link/icon happend.
+     *
+     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
+     * that triggered this event
+     * @param {Number} index The index of the target node
+     * @param {HtmlElement} item native HtmlElement on which this event occured
+     * @param {Ext.EvenObject} e The raw Ext.EventObject
+     *
+     * @protected
+     */
+    _handleTweetDeleteClick : function(dataView, index, item, e)
+    {
+        var selRec = this.recentTweets.getSelectedRecords()[0];
+
+        if (!selRec) {
+            return;
+        }
+
+        com.conjoon.SystemMessageManager.confirm(
+            new com.conjoon.SystemMessage({
+                title : com.conjoon.Gettext.gettext("Delete Tweet"),
+                text  : com.conjoon.Gettext.gettext(
+                    "Are you sure you want to delete this tweet? There is no \"undo\"!"
+                ),
+                type  : com.conjoon.SystemMessage.TYPE_CONFIRM
+            }), {
+                fn : function(button) {
+                    if (button != 'yes') {
+                        return;
+                    }
+                    this.getToolbar().setDisabled(true);
+                    Ext.fly(item).mask(
+                        com.conjoon.Gettext.gettext("Deleting..."),
+                        'x-mask-loading'
+                    );
+                    Ext.Ajax.request({
+                        item   : item,
+                        url    : '/service/twitter/delete.tweet/format/json',
+                        params : {
+                            accountId : this._currentAccountId,
+                            tweetId   : selRec.id
+                        },
+                        success : this._onDeleteTweetSuccess,
+                        failure : this._onDeleteTweetFailure,
+                        scope   : this
+                    });
+                },
+                scope : this
+            }
+        );
+    },
+
+    /**
+     * Delegate for the callback for the "click" event for the RecentTweetsList.
      * gets called internally if a click on the "reply" link/icon happend.
      *
      * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
@@ -538,25 +860,32 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _handleReplyClick : function(dataView, index, item, e)
     {
         var v = this.inputBox.getMessage();
-        var recipient = '@'+this.recentTweets.getSelectedRecords()[0].get('screenName');
+
+        var selRec = this.recentTweets.getSelectedRecords()[0];
+
+        var recipient   = selRec.get('screenName');
+        var atRecipient = '@' + recipient;
+        var statusId    = selRec.get('id');
 
         if (!this._showInputButton.pressed) {
             this._showInputButton.toggle(true);
         }
 
         this.inputBox.focus();
+        this.inputBox.setReplyStatus([statusId, recipient]);
 
-        if (v.indexOf(recipient) != -1) {
-            return;
+        if (v.indexOf(atRecipient) != -1) {
+            v = v.replace(new RegExp(atRecipient), "");
         }
 
-        v = recipient+' '+v;
+        v = atRecipient+' '+v;
         this.inputBox.setMessage(v);
     },
 
     /**
      * Loads the data for the specified account into this panel and
-     * its components.
+     * its components. Will also request the recentTweets' store to reload
+     * is contents while setting its accountRecord property to the given record.
      *
      * @param {com.conjoon.service.twitter.data.AccountRecord} record
      *
@@ -579,6 +908,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
         this._currentAccountId = record.get('id');
 
+        this.recentTweets.setAccountRecord(record);
         var store = this.recentTweets.store;
 
         if (store.getRange().length == 0) {
@@ -594,7 +924,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      * Loads the information for the specified user into the TwitterUserContainer.
      *
      * @param {com.conjoon.service.twitter.data.TwitterUserRecord|
-     *  com.conjoon.service.twitter.data.TweetRecord} record
+     * com.conjoon.service.twitter.data.TweetRecord|String} record or the screenName
+     * of the user to fetch the information for
      */
     showUserInfo : function(tweetRecord)
     {
@@ -619,14 +950,25 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             this.getUsersRecentTweetsContainer().getId()
         );
 
-        this.userInfoBox.loadUser(tweetRecord);
-        this.usersRecentTweets.store.load({
-            params : {
-                id     : this._currentAccountId,
+        var params = {
+            id : this._currentAccountId,
+        };
+
+        if ((typeof tweetRecord) != 'string') {
+            this.userInfoBox.loadUser(tweetRecord);
+            Ext.apply(params, {
                 userId : tweetRecord.get('userId')
                        ? tweetRecord.get('userId')
-                      :  tweetRecord.get('id')
-            }
+                       : tweetRecord.get('id'),
+            });
+        } else {
+            Ext.apply(params, {
+                userName : tweetRecord
+            });
+        }
+
+        this.usersRecentTweets.store.load({
+            params : params
         })
     },
 
@@ -765,6 +1107,20 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         return this._homePanel;
     },
 
+    /**
+     * returns the toolbar for this panel.
+     *
+     * @return {Ext.Toolbar}
+     */
+    getToolbar : function()
+    {
+        if (!this._toolbar) {
+            this._toolbar = this._getToolbar();
+        }
+
+        return this._toolbar;
+    },
+
 // -------- builders
 
     /**
@@ -880,6 +1236,26 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         return new com.conjoon.service.twitter.TwitterUserContainer({
             userInfoBox       : this.userInfoBox,
             usersRecentTweets : this.usersRecentTweets
+        });
+    },
+
+    /**
+     * Override this to add custom behavior.
+     *
+     * @return {Ext.Toolbar}
+     */
+    _getToolbar : function()
+    {
+        return new Ext.Toolbar({
+            items : [
+                this.getHomePanel(),
+                this.getShowRecentTweetsButton(),
+                this.getShowFriendsButton(),
+                '->',
+                this.getShowInputButton(),
+                '-',
+                this.getChooseAccountButton()
+            ]
         });
     }
 

@@ -232,7 +232,8 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
                     new com.conjoon.groupware.email.LatestEmailsPanel({
                         collapsed:true
                     }),
-                    new com.conjoon.groupware.feeds.FeedGrid()
+                    new com.conjoon.groupware.feeds.FeedGrid(),
+                    new com.conjoon.groupware.service.TwitterPanel()
                 ]
             }]
         });

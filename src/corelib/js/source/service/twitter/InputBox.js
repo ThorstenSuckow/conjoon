@@ -49,6 +49,21 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     inputMaxLength : 140,
 
     /**
+     * @cfg {String} buttonTextBusy
+     */
+
+    /**
+     * @type {Array} _replyStatus The id of the status this message is a reply to as the first
+     * value, and the screenName of the author of the referred status as the second value.
+     */
+    _replyStatus : null,
+
+    /**
+     * @type {String} _buttonText
+     */
+    _buttonText : null,
+
+    /**
      * @type {HtmlElement} _charCounter Native HtmlElement representing the
      * container that renders the remaining characters before inputMaxLength is
      * exceeded.
@@ -69,6 +84,21 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
      * @protected
      */
     _updateButton : null,
+
+    /**
+     * Inits this component.
+     *
+     */
+    initComponent : function()
+    {
+        Ext.applyIf(this, {
+            buttonTextBusy : com.conjoon.Gettext.gettext("Updating...")
+        });
+
+        this._buttonText = this.getUpdateButton().getText();
+
+        com.conjoon.service.twitter.InputBox.superclass.initComponent.call(this);
+    },
 
     /**
      * Overrides parent's implementation by initializing additional elements
@@ -96,6 +126,53 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
 
 
 // -------- public API
+
+    /**
+     * Returns the status id/author this message referres to.
+     * Returns "null" if the current message does not referr to any
+     * status update.
+     *
+     * @return {Array}
+     */
+    getReplyStatus : function()
+    {
+        return this._replyStatus;
+    },
+
+    /**
+     * Sets the status id/screenName this message referres to.
+     * Pass "null" as an argument to reset the replyStatus.
+     *
+     * @param {Array} status first value is the statusId, second is the
+     * referred authors screenName
+     */
+    setReplyStatus : function(status)
+    {
+        this._replyStatus = status;
+    },
+
+    /**
+     * Renders this component or parts of this component busy, e.g.
+     * if a transaction is on its way and there is now further input allowed.
+     *
+     * @param {Boolean} busy true, if the component should be rendered busy,
+     * otehrwise false
+     */
+    setInputBusy : function(busy)
+    {
+        if (busy) {
+            this._textArea.disabled = true;
+            this._updateButton.setIconClass('busy');
+            this._updateButton.setDisabled(true);
+            this._updateButton.setText(this.buttonTextBusy);
+        } else {
+            this._textArea.disabled = false;
+            this._updateButton.setIconClass('default');
+            this._updateButton.setDisabled(false);
+            this._updateButton.setText(this._buttonText);
+        }
+
+    },
 
     /**
      * Requests input focus for the _textArea element.
@@ -131,13 +208,34 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
      * Validates the value of _textArea and adds additional
      * classes to _charCounter depending on the validity of the
      * value specified.
+     * It is important that this method gets called after setReplyStatus
+     * and setMessage, as it will compare any referred author and update the
+     * replyStatus if necessary.
      */
     validateMessage : function()
     {
-        var v      = this._textArea.value;
+        var v      = this._textArea.value.trim();
         var length = v.length;
 
         this._updateButton.setDisabled(length == 0);
+        if (length == 0) {
+            this.setReplyStatus(null);
+        }
+
+        // make sure we reset _replyStatus even if
+        // the current value does not start with a @, which would
+        // indicate that we are referring to a status update
+        if (v.indexOf('@') == 0) {
+            var status = this.getReplyStatus();
+            if (status !== null) {
+                if (v.substring(1) != status[1] &&
+                    v.substring(1, v.indexOf(" ")) != status[1]) {
+                    this.setReplyStatus(null);
+                }
+            }
+        } else {
+            this.setReplyStatus(null);
+        }
 
         var remaining = this.inputMaxLength - length;
 
@@ -196,7 +294,9 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     {
         return new Ext.Button({
             text     : com.conjoon.Gettext.gettext("Update"),
-            cls      : 'button',
+            cls      : 'x-btn-text-icon button',
+            iconCls  : 'default',
+            minWidth : 95,
             disabled : true
         });
     }

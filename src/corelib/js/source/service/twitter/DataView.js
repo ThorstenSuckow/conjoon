@@ -50,12 +50,25 @@ com.conjoon.service.twitter.DataView = Ext.extend(Ext.DataView, {
     {
         if (!initial && this.store){
             this.store.un("load", this.onLoad, this);
+            this.store.un("loadexception", this._onLoadException, this);
         }
         if (store) {
             Ext.StoreMgr.lookup(store).on("load", this.onLoad, this);
+            Ext.StoreMgr.lookup(store).on("loadexception", this._onLoadException, this);
         }
 
         com.conjoon.service.twitter.DataView.superclass.setStore.call(this, store, initial);
+    },
+
+    /**
+     * Handles a store's loadexception.
+     *
+     */
+    _onLoadException : function()
+    {
+        if (this.loadMask) {
+            this.loadMask.hide();
+        }
     },
 
     /**
@@ -101,6 +114,56 @@ com.conjoon.service.twitter.DataView = Ext.extend(Ext.DataView, {
         if (this.loadMask) {
             this.loadMask.hide();
         }
+    },
+
+    /**
+     * Listener for the add event of the attached store. Calls parent's implementation
+     * and right afterwards the "addFx" method.
+     *
+     * @param {Ext.data.Store} ds
+     * @param {Array} records
+     * @param {Number} index
+     */
+    onAdd : function(ds, records, index)
+    {
+        com.conjoon.service.twitter.DataView.superclass.onAdd.call(this, ds, records, index);
+
+        for (var i = 0, len = records.length; i < len; i++) {
+            this.addFx(index+i);
+        }
+    },
+
+    /**
+     * Listener for the update event of the attached store. Calls parent's implementation
+     * and right afterwards the "addFx" method.
+     *
+     * @param {Ext.data.Store} ds
+     * @param {Ext.data.Record} records
+     */
+    onUpdate : function(ds, record)
+    {
+        com.conjoon.service.twitter.DataView.superclass.onUpdate.call(this, ds, record);
+
+        var index = this.store.indexOf(record);
+        this.addFx(index, '3cff00');
+    },
+
+    /**
+     * Applies a visual effect to the element at the given index in the view.
+     * The first argument should be the index of the domnode to apply the fx to,
+     * teh remaining arguments will be passed to the fx method.
+     *
+     * @param {Number} index The index of the data in the view to apply an effect to
+     *
+     */
+    addFx : function()
+    {
+        if (arguments[0] < 0) {
+            return;
+        }
+
+        var el = this.all.item(arguments[0]);
+        el.highlight.apply(el, Array.prototype.slice.call(arguments, 1));
     }
 
 });
