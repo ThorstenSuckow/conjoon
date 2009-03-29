@@ -236,6 +236,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             hidden       : true,
             maxSize      : 600,
             border       : false,
+            cls          : 'com-conjoon-groupware-QuickPanel-itemPanel',
             listeners    : {
                 show  : this._onQuickPanelVisibilityChange,
                 hide  : this._onQuickPanelVisibilityChange,

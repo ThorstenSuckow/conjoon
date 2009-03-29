@@ -19,6 +19,7 @@
     font-size:11px;
 }
 
+
 /**
  * Icons for quickpanel
  */
@@ -84,6 +85,6 @@
     font-weight:bold;
 }
 
-.com-conjoon-groupware-QuickPanel-editPanel .x-layout-split {
-    background-color:black !important;
+.com-conjoon-groupware-QuickPanel-itemPanel .x-layout-split {
+    background-color:transparent !important;
 }
