@@ -124,14 +124,11 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
     ]);
 
     com.conjoon.groupware.feeds.FeedGrid.superclass.constructor.call(this, {
-
         loadMask : {msg: com.conjoon.Gettext.gettext("Loading feeds...")},
-
         autoScroll:true,
         style:'cursor:default',
         title: com.conjoon.Gettext.gettext("Feeds"),
         iconCls: 'com-conjoon-groupware-feeds-Icon',
-        border:false,
         hideBorders:true
     });
 

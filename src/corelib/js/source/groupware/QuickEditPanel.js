@@ -21,13 +21,8 @@ Ext.namespace('com.conjoon.groupware');
  */
 com.conjoon.groupware.QuickEditPanel = function(){
 
-    //var com.conjoon.groupware.QuickContactForm;
-    //var com.conjoon.groupware.QuickEmailForm;
-
-
     // shorthands
-    var _quickContactForm = com.conjoon.groupware.forms.QuickContactForm;
-    var _quickEmailForm   = com.conjoon.groupware.forms.QuickEmailForm;
+
 
 
     var _panel = null;
@@ -93,154 +88,52 @@ com.conjoon.groupware.QuickEditPanel = function(){
         return w;
     };
 
-    var _createLayout = function()
-    {
-        _panel.add(_quickContactForm.getComponent());
-        _panel.add(_quickEmailForm.getComponent());
-        _panel.add(getYoutubePanel());
-    };
-
-    var _installListeners = function()
-    {
-        _panel.on('beforerender', _createLayout, this);
-    };
-
-    var _initComponents = function()
-    {
-        _installListeners.call(this);
-        _createLayout.call(this);
-    };
-
     return {
 
 
-        getComponent : function()
+        getComponent : function(config)
         {
             if (_panel !== null) {
                 return _panel;
             }
 
-            _panel = new Ext.TabPanel({
-                         tabPosition:'bottom',
-                         activeTab:0, // NEEDS TO BE CALLED WHEN COMPONENT IS INITIALIZED
-                         border:false,
-                         region:'center',
-                         height:180,
-                         bodyStyle:'background:#DFE8F6;'
-                     });
+            var initConfig = {
+                tabPosition : 'bottom',
+                activeTab   : 0,
+                bodyStyle   : 'background:#DFE8F6;',
+                resizable   : false,
+                collapsed   : false,
+                title       : com.conjoon.Gettext.gettext("Quickpanel"),
+                height      : 205,
+                cls         : 'com-conjoon-groupware-QuickPanel-editPanel',
+                iconCls     : 'com-conjoon-groupware-quickpanel-NewIcon',
+                headerAsText  : true,
+                items       : [
+                    com.conjoon.groupware.forms.QuickContactForm.getComponent(),
+                    com.conjoon.groupware.forms.QuickEmailForm.getComponent(),
+                    getYoutubePanel()
+                ],
+                listeners : {
+                    /**
+                     * @bug (?) Ext 2.2 Rendering titles in the headers is disabled by default
+                     * since headerAstext defaults to false for TabPanels
+                     */
+                    render : function(p) {
+                        p.header.addClass('x-panel-header');
+                    },
+                    scope : this
+                }
+            };
 
-            _panel.on('beforerender', _initComponents, this);
+            Ext.apply(initConfig, config || {});
+
+            _panel = new Ext.TabPanel(initConfig);
+
 
             return _panel;
-        },
-
-        render : function()
-        {
-            if (_panel.rendered) {
-                return;
-            }
-
-            _panel.render();
-
-
-                       /* new Ext.TabPanel( {
-                                        tabPosition:'bottom',
-                                        activeTab:0,
-                                        border:false,
-                                        region:'center',
-                                        height:180,
-                                        bodyStyle:'background:#DFE8F6;',
-                                        items:[
-                                            new Ext.FormPanel({
-                                                labelWidth: 0,
-                                                frame:false,
-                                                labelAlign:'left',
-                                                title: 'Kontakt',
-                                                width: 220,
-                                                bodyStyle:'background:#DFE8F6;padding:5px;',
-                                                cls: 'x-small-editor',
-                                                labelPad: 0,
-                                                defaultType: 'textfield',
-                                                hideLabels:true,
-                                                defaults: {
-                                                    width: 210
-                                                },
-                                                layoutConfig: {
-                                                    labelSeparator: ''
-                                                },
-                                                items: [{
-                                                        fieldLabel: 'Vorname',
-                                                        name: 'first',
-                                                        emptyText:'<Vorname>',
-                                                        allowBlank: false
-                                                    },{
-                                                        fieldLabel: 'Nachname',
-                                                        emptyText:'<Nachname>',
-                                                        name: 'last'
-                                                    },{
-                                                        fieldLabel: 'Email',
-                                                        name: 'email',
-                                                        emptyText:'<Email-Adresse>',
-                                                        vtype:'email'
-                                                    }, new Ext.form.Checkbox({
-                                                        boxLabel: 'zum Bearbeiten wechseln',
-                                                        ctCls: 'com-conjoon-groupware-quickpanel-SmallEditorFont'
-                                                    })
-                                                ],
-                                                buttons: [{
-                                                        text: 'Save'
-                                                    },{
-                                                        text: 'Cancel'
-                                                    }]
-                                            }),
-                                            new Ext.FormPanel({
-                                                labelWidth: 0,
-                                                frame:false,
-                                                labelAlign:'left',
-                                                title: 'Email',
-                                                width: 220,
-                                                bodyStyle:'background:#DFE8F6;padding:5px',
-                                                cls: 'x-small-editor',
-                                                labelPad: 0,
-                                                defaultType: 'textfield',
-                                                hideLabels:true,
-                                                defaults: {
-                                                    // applied to each contained item
-                                                    width: 210
-                                                },
-                                                layoutConfig: {
-                                                    // layout-specific configs go here
-                                                    labelSeparator: ':'
-                                                },
-                                                items: [{
-                                                        fieldLabel: 'An',
-                                                        name: 'first',
-                                                        emptyText: '<Empfaenger>',
-                                                        allowBlank: false
-                                                    },{
-                                                        fieldLabel: 'Betreff',
-                                                        emptyText: '<Betreff>',
-                                                        name: 'last'
-                                                    },
-                                                    new Ext.form.TextArea({
-                                                        emptyText: '<Nachricht>',
-                                                        fieldLabel:'Nachricht',
-                                                        height:50
-                                                    })
-                                                ],
-                                                buttons: [
-                                                    {
-                                                        text: 'Save'
-                                                    },{
-                                                        text: 'Cancel'
-                                                }]
-                                            })
-                                        ]
-                                 });*/
         }
 
     };
 
-    this.initComponent();
 
 }();

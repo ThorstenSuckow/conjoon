@@ -71,8 +71,19 @@
     background-position:-15px -240px;
 }
 
+.com-conjoon-groupware-QuickPanel-editPanel .x-tab-panel-body {
+    border-top:none;
+}
+
+.com-conjoon-groupware-QuickPanel-editPanel .x-tab-panel-footer {
+    border-top:none;
+}
+
 .com-conjoon-groupware-QuickPanel-itemPanel .x-panel-header {
     color:#15428B;
     font-weight:bold;
 }
 
+.com-conjoon-groupware-QuickPanel-editPanel .x-layout-split {
+    background-color:black !important;
+}

@@ -16,10 +16,6 @@ html {
     background:none!important;
 }
 
-.x-layout-split {
-    background-color:#C5D7EE !important;
-}
-
 .x-panel-btn-td .x-btn-left{
     background: url(../images/qp-btn-sprite.gif) no-repeat 0 -147px;
 }

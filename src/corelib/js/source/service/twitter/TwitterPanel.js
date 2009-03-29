@@ -149,7 +149,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
                 this.getUsersRecentTweetsContainer()
             ],
             cls    : 'com-conjoon-service-twitter-TwitterPanel',
-            border : false,
             bbar   : this.getToolbar()
         });
 

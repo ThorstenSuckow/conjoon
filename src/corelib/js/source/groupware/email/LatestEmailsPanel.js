@@ -116,7 +116,6 @@ com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
 
     com.conjoon.groupware.email.EmailGrid.superclass.constructor.call(this, {
         title          : com.conjoon.Gettext.gettext("Newest Emails"),
-        border         : false,
         iconCls        : 'com-conjoon-groupware-quickpanel-EmailIcon',
         loadMask       : {
             msg : com.conjoon.Gettext.gettext("Loading...")

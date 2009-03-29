@@ -53,22 +53,8 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
     {
         com.conjoon.groupware.workbench.ContentPanel.superclass.initEvents.call(this);
 
-        this.on('add',    this._onAdd,    this);
-    },
-
-    doLayout : function()
-    {
-        com.conjoon.groupware.workbench.ContentPanel.superclass.doLayout.call(this);
-
-        var td = document.getElementById('DOM:com.conjoon.groupware.Toolbar.controls');
-        if (!td) {
-            return;
-        }
-        td.style.width = document.body.offsetWidth-250+"px";
-        this.header.setWidth(document.body.offsetWidth-50)
-        this.header.dom.nextSibling.style.width = (document.body.offsetWidth-50)+"px";
-        this.el.dom.firstChild.style.marginLeft= "50px";
-        this.delegateUpdates();
+        this.on('add',    this._onAdd, this);
+        this.on('resize', this.doLayout, this);
     },
 
     _onAdd : function(container, component, index)

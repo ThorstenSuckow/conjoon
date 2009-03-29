@@ -36,7 +36,11 @@ Ext.onReady(function(){
 
     preLoader.on('load', function() {
         groupware.email.Letterman.wakeup();
-        new groupware.Workbench();
+
+        com.conjoon.util.Registry.register(
+            'com.conjoon.groupware.Workbench',
+            new groupware.Workbench()
+        );
 
         (function(){
             Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({

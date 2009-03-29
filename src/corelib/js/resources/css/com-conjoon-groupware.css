@@ -15,7 +15,7 @@
 body, html {
     overflow:hidden;
     cursor:default!important;
-	background:#cad9ec!important;
+    background:#cad9ec url(../images/body-bg.png) repeat-x 0 0!important;
 }
 
 /**
