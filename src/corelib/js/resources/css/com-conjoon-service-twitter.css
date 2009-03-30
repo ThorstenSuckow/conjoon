@@ -241,6 +241,8 @@
 
 .com-conjoon-service-twitter-TweetList .tweet .image {
     padding:4px;
+    height:48px;
+    width:48px;
     float:left;
 }
 
