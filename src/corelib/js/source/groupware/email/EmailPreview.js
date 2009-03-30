@@ -33,8 +33,6 @@ Ext.namespace('com.conjoon.groupware.email');
  * </ul>
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @copyright 2007 MindPatterns Software Solutions
- *
  */
 com.conjoon.groupware.email.EmailPreview = function() {
 
