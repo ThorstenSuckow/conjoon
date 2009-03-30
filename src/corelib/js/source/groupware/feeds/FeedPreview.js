@@ -47,6 +47,11 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
     var clkCellY = 0;
 
     /**
+     * @type {Ext.Element} gridEl The element of the grid the preview is attached to
+     */
+    var gridEl = null;
+
+    /**
      * Initial width of the preview panel.
      * @param {Number}
      */
@@ -191,7 +196,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
         previewPanel.setTitle(com.conjoon.Gettext.gettext("Loading..."));
         previewPanel.body.update("");
         if (!skipAlign) {
-            container.alignTo(clkCell, 'tr-tl');
+            refreshAnimSettings();
         }
     };
 
@@ -382,6 +387,26 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
         return win;
     };
 
+    var animConfig = 'r';
+
+    var refreshAnimSettings = function()
+    {
+        var x = gridEl.getX();
+
+        // this should work in most cases - determine if the panel is rendered
+        // in the left side of the workbench
+        if (x <= 50) {
+            x += gridEl.getSize().width;
+            animConfig = 'l';
+        } else {
+            x -= container.getSize().width;
+            animConfig = 'r';
+        }
+
+        container.setY(clkCellY);
+        container.setX(x);
+    };
+
 // }}}
 
 
@@ -423,6 +448,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
             clkRowIndex = rowIndex;
             clkCell     = grid.view.getCell(rowIndex, _getColumnIndex(grid, columnIndex));
             clkCellY    = Ext.fly(clkCell).getY();
+            gridEl      = grid.el;
 
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
@@ -434,30 +460,32 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
                 if (activeFeedId != null) {
                     // if the activeFeedId does not equal to zero, the
                     // previewPanel was hidden using the animation effect.
-                    previewPanel.el.slideOut('r', {
+                    previewPanel.el.slideOut(animConfig, {
                                         duration : .4,
                                         callback : function(){
                                             onHide();
                                             decoratePreviewPanel();},
                                         scope:this
                                    })
-                                   .slideIn('r', {callback: onShow});
+                                   .slideIn(animConfig, {callback: onShow});
                 } else {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
                     container.setDisplayed(true);
-                    container.alignTo(clkCell, 'tr-tl');
+                    refreshAnimSettings();
                     decoratePreviewPanel();
-                    previewPanel.el.slideIn('r', {callback: onShow});
+                    previewPanel.el.slideIn(animConfig, {callback: onShow});
                 }
             } else {
                 previewPanel = createPreviewWindow();
                 previewPanel.render(container);
-                container.alignTo(clkCell, 'tr-tl');
+
+                refreshAnimSettings();
+
                 loadMask = new Ext.LoadMask(previewPanel.el.dom);
                 previewPanel.show();
                 decoratePreviewPanel();
-                previewPanel.el.slideIn('r', {callback: onShow});
+                previewPanel.el.slideIn(animConfig, {callback: onShow});
 
                 previewPanel.on('beforeclose', this.hide, this, [true]);
                 previewPanel.on('move', onMove);
@@ -482,10 +510,10 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
                 return;
             }
             if (!skipAnimation) {
-                previewPanel.el.slideOut("r", {duration : .4,  callback : onHide});
+                previewPanel.el.slideOut(animConfig, {duration : .4,  callback : onHide});
             } else {
                 container.setDisplayed(false);
-                previewPanel.el.slideOut("r", {useDisplay : false, duration : .1});
+                previewPanel.el.slideOut(animConfig, {useDisplay : false, duration : .1});
                 onHide(true);
             }
 

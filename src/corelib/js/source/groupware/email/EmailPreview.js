@@ -39,6 +39,11 @@ com.conjoon.groupware.email.EmailPreview = function() {
 // {{{ private members
 
     /**
+     * @type {Ext.Element} gridEl The element of the grid the preview is attached to
+     */
+    var gridEl = null;
+
+    /**
      * Initial width of the preview panel.
      * @param {Number}
      */
@@ -199,7 +204,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
             return;
         }
 
-        container.alignTo(clkCell, 'tr-tl');
+        refreshAnimSettings();
     };
 
 
@@ -329,6 +334,26 @@ com.conjoon.groupware.email.EmailPreview = function() {
         return win;
     };
 
+    var animConfig = 'r';
+
+    var refreshAnimSettings = function()
+    {
+        var x = gridEl.getX();
+
+        // this should work in most cases - determine if the panel is rendered
+        // in the left side of the workbench
+        if (x <= 50) {
+            x += gridEl.getSize().width;
+            animConfig = 'l';
+        } else {
+            x -= container.getSize().width;
+            animConfig = 'r';
+        }
+
+        container.setY(clkCellY);
+        container.setX(x);
+    };
+
 // }}}
 
 
@@ -381,6 +406,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
             clkRowIndex  = rowIndex;
             clkCell      = grid.view.getCell(rowIndex, _getColumnIndex(grid, columnIndex));
             clkCellY     = Ext.fly(clkCell).getY();
+            gridEl       = grid.el;
 
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
@@ -390,7 +416,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
                 if (activeEmailId != null) {
                     // if the activeEmailId does not equal to zero, the
                     // previewPanel was hidden using the animation effect.
-                    previewPanel.el.slideOut('r', {
+                    previewPanel.el.slideOut(animConfig, {
                                         duration : .4,
                                         useDisplay: false,
                                         callback : function(){
@@ -400,7 +426,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
                                         },
                                         scope:this
                                    })
-                                   .slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
+                                   .slideIn(animConfig, {callback : onShow, duration : .4, useDisplay: false});
 
 
 
@@ -408,18 +434,18 @@ com.conjoon.groupware.email.EmailPreview = function() {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
                     container.setDisplayed(true);
-                    container.alignTo(clkCell, 'tr-tl');
+                    refreshAnimSettings();
                     decoratePreviewPanel();
-                    previewPanel.el.slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
+                    previewPanel.el.slideIn(animConfig, {callback : onShow, duration : .4, useDisplay: false});
                 }
             } else {
-                container.alignTo(clkCell, 'tr-tl');
+                refreshAnimSettings();
                 previewPanel = createPreviewWindow();
                 previewPanel.render(container);
                 loadMask = new Ext.LoadMask(previewPanel.el.dom);
                 previewPanel.show();
                 decoratePreviewPanel();
-                previewPanel.el.slideIn('r', {callback : onShow, duration : .4, useDisplay: false});
+                previewPanel.el.slideIn(animConfig, {callback : onShow, duration : .4, useDisplay: false});
                 previewPanel.on('beforeclose', this.hide, this, [true, true]);
                 previewPanel.on('move', onMove);
             }
@@ -443,10 +469,10 @@ com.conjoon.groupware.email.EmailPreview = function() {
                 return;
             }
             if (!skipAnimation) {
-                previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .4,  callback : onHide});
+                previewPanel.el.slideOut(animConfig, {callback : function(){emailView.hide();}, useDisplay : false, duration : .4,  callback : onHide});
             } else {
                 container.setDisplayed(false);
-                previewPanel.el.slideOut("r", {callback : function(){emailView.hide();}, useDisplay : false, duration : .1});
+                previewPanel.el.slideOut(animConfig, {callback : function(){emailView.hide();}, useDisplay : false, duration : .1});
                 onHide(true);
             }
 
