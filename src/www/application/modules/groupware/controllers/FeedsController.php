@@ -459,7 +459,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $item = $itemModel->getItemAsDto($id);
 
         if ($item == null) {
-            $this->view->success = true;
+            $this->view->success = false;
             $this->view->item    = null;
             $this->view->error   = null;
         } else {
