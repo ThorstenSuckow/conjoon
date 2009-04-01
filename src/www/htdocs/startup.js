@@ -29,13 +29,13 @@ Ext.onReady(function(){
     preLoader.addStore(groupware.email.AccountStore.getInstance());
     preLoader.addStore(groupware.feeds.AccountStore.getInstance());
     preLoader.addStore(groupware.Registry.getStore());
-    /*preLoader.addStore(groupware.feeds.FeedStore.getInstance(), {
+    preLoader.addStore(groupware.feeds.FeedStore.getInstance(), {
         ignoreLoadException : true,
         loadAfterStore      : groupware.feeds.AccountStore.getInstance()
-    });*/
+    });
 
     preLoader.on('load', function() {
-      //  groupware.email.Letterman.wakeup();
+        groupware.email.Letterman.wakeup();
 
         com.conjoon.util.Registry.register(
             'com.conjoon.groupware.Workbench',
