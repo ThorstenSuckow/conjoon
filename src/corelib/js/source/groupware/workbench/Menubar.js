@@ -211,8 +211,11 @@ com.conjoon.groupware.workbench.Menubar = function(){
                     }, {
                         text : com.conjoon.Gettext.gettext("?"),
                         menu : [{
-                              text : com.conjoon.Gettext.gettext("About")
-                             }]
+                            text : com.conjoon.Gettext.gettext("About"),
+                            handler : function() {
+                                com.conjoon.groupware.workbench.AboutDialog.show();
+                            }
+                        }]
                     }]
                 });
 

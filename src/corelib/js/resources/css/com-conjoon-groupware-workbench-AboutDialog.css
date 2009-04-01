@@ -1,0 +1,33 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-workbench-AboutDialog .x-window-body {
+    background:#ffffff url(../images/about_bg.png) no-repeat left bottom;
+
+}
+
+.com-conjoon-groupware-workbench-AboutDialog .info {
+    font-size:12px;
+    text-align:center;
+    margin:90px 0 0 0 ;
+    color:#2D5094;
+}
+
+.com-conjoon-groupware-workbench-AboutDialog .about {
+    margin:30px;
+}
+
+.com-conjoon-groupware-workbench-AboutDialog .bold {
+    font-weight:bold;
+}
