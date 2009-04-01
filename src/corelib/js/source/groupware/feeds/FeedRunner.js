@@ -151,7 +151,10 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
     // leave this here since listener only works if observer function gets defined before
     // (stopRunning, onStoreLoad)
     var feedStore = com.conjoon.groupware.feeds.FeedStore.getInstance();
-    feedStore.on('beforeload', stopRunning, com.conjoon.groupware.feeds.FeedRunner);
+    feedStore.on('load', function() {
+        this.on('beforeload', stopRunning, com.conjoon.groupware.feeds.FeedRunner);
+    }, feedStore, {single : true});
+
     store.on('load', onStoreLoad, com.conjoon.groupware.feeds.FeedRunner);
     store.on('loadexception', onStoreLoadException, com.conjoon.groupware.feeds.FeedRunner);
 
