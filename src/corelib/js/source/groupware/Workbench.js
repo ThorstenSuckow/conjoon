@@ -381,19 +381,27 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
 
     _resizeHeaders : function(wWidth)
     {
+        var offsetWidth = document.body.offsetWidth;
+
         // right toolbar controls
         var td = document.getElementById('DOM:com.conjoon.groupware.Toolbar.controls');
         if (td) {
-            td.style.width = document.body.offsetWidth-250+"px";
+            td.style.width = offsetWidth-250+"px";
         }
 
         if (wWidth === undefined) {
-            wWidth = this.getWestPanel().el.getWidth();
+            wWidth = 0;
+            if (!this.getWestPanel().hidden) {
+                wWidth = this.getWestPanel().el.getWidth();
+            }
         }
 
-        this.getCenterPanel().header.dom.style.position="relative";
-        this.getCenterPanel().header.dom.style.left = -wWidth+50+"px";
-        this.getCenterPanel().header.dom.style.width = document.body.offsetWidth-52+"px";
+        var headerDom = this.getCenterPanel().header.dom;
+
+        headerDom.style.position ="relative";
+        headerDom.style.left     = -wWidth+50+"px";
+        headerDom.style.width    = offsetWidth-52+"px";
+        headerDom.lastChild.previousSibling.style.width = offsetWidth-52+"px";
 
         this.getCenterPanel().delegateUpdates();
     },
