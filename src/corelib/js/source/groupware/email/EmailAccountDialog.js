@@ -479,7 +479,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.closable  = true;
         this.height    = 400;
         this.width     = 600;
-        this.title     = "Konten";
+        this.title     = com.conjoon.Gettext.gettext("Accounts");
         this.layout    = 'border';
         this.bodyStyle = 'background-color:#F6F6F6';
 
