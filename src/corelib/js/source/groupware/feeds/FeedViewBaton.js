@@ -116,7 +116,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
 
         var data = inspector.isSuccess(response);
 
-        if (data === null) {
+        if (data === null || (data && !data.item)) {
             onFeedLoadFailure(response, options);
             return;
         }
@@ -146,8 +146,18 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
      */
     var onFeedLoadFailure = function(response, options)
     {
+        var panel = openedFeeds[options.panelId];
+        if (panel && panel.view) {
+            panel.view.ownerCt.remove(panel.view);
+        }
+
         _requestIds[options.panelId] = null;
         delete _requestIds[options.panelId];
+
+        Ext.ux.util.MessageBus.publish(
+            'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadFailure',
+            {id : options.params.id}
+        );
 
         com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin : {

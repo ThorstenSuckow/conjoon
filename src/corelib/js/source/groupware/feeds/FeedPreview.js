@@ -278,6 +278,11 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
 
     var onLoadFailure = function(response, options)
     {
+        Ext.ux.util.MessageBus.publish(
+            'com.conjoon.groupware.feeds.FeedPreview.onLoadFailure',
+            {id : options.params.id}
+        );
+
         com.conjoon.groupware.ResponseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
@@ -432,7 +437,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
             }
 
             // get the record information of the current selected cell
-            clkRecord = grid.getSelectionModel().getSelected();
+            clkRecord = grid.getSelectionModel().getSelected().copy();
 
             var pId = clkRecord.id;
             if (activeFeedId == pId) {

@@ -44,6 +44,26 @@ com.conjoon.groupware.feeds.FeedStore = function() {
         });
     };
 
+    var _onFeedLoadFailure = function(subject, message)
+    {
+        var store = com.conjoon.groupware.feeds.FeedStore.getInstance();
+        var rec   = store.getById(message.id);
+
+        if (rec) {
+            store.remove(rec);
+        }
+    };
+
+    Ext.ux.util.MessageBus.subscribe(
+        'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadFailure',
+        _onFeedLoadFailure
+    );
+
+    Ext.ux.util.MessageBus.subscribe(
+        'com.conjoon.groupware.feeds.FeedPreview.onLoadFailure',
+        _onFeedLoadFailure
+    );
+
     return {
 
         /**
