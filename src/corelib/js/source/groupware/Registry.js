@@ -15,7 +15,7 @@
 Ext.namespace('com.conjoon.groupware');
 
 /**
- * @class com.conjoon.groupware.RegistryStore
+ * @class com.conjoon.groupware.Registry
  * @singleton
  */
 com.conjoon.groupware.Registry = function() {
