@@ -49,8 +49,8 @@ com.conjoon.util.Format = function() {
 
             text = ""+text;
             return text.replace(
-                /(http:\/\/)(.*?)(\s|$|:|>|.\s)/ig,
-                '<a '+attrStr+' href="$1$2">$1$2</a>$3'
+                /((www\.|(http|https|ftp|news|file)+\:\/\/)[_.a-z0-9-]+\.[a-z0-9\/_:@=.+?,##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])/ig,
+                '<a '+attrStr+' href="$1">$1</a>'
             );
         },
 
