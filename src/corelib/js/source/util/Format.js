@@ -40,6 +40,8 @@ com.conjoon.util.Format = function() {
          */
         formatUrls : function(text, attributes)
         {
+            text = ""+text;
+
             var attrStr = "";
             if (attributes) {
                 for (var i in attributes) {
@@ -47,10 +49,24 @@ com.conjoon.util.Format = function() {
                 }
             }
 
-            text = ""+text;
             return text.replace(
                 /((www\.|(http|https|ftp|news|file)+\:\/\/)[_.a-z0-9-]+\.[a-z0-9\/_:@=.+?,##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])/ig,
-                '<a '+attrStr+' href="$1">$1</a>'
+                function(m, key, value) {
+                    if (m == key) {
+                        var prots = ['http', 'https', 'ftp', 'news', 'file'];
+                        var found = false;
+                        for (var i = 0, len = prots.length; i < len; i++) {
+                            if (m.indexOf(prots[i]) == 0) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        return '<a '+attrStr+' href="'+(found ? '' : 'http://')+m+'">'+m+'</a>';
+                    } else {
+                        return m;
+                    }
+                }
             );
         },
 
