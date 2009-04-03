@@ -780,7 +780,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
         if (!$message) {
             $this->view->success    = true;
             $this->view->error      = null;
-            $this->view->item       = array();
+            $this->view->item       = null;
             return;
         }
 
