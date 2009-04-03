@@ -138,7 +138,10 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'StringTrim'
          ),
         'pubDate' => array(
-            'StringTrim'
+            'StringTrim',
+            'DateFormat' => array(
+                'Y-m-d H:i:s'
+            )
          ),
         'link' => array(
             'StringTrim'

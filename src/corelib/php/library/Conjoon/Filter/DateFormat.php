@@ -37,10 +37,19 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
      */
     private $_format = "F j, Y, g:i a";
 
-    public function __construct($format = null)
+    /**
+     * @var string
+     */
+    private $_inputFormat = null;
+
+    public function __construct($format = null, $inputFormat = null)
     {
         if ($format != null) {
             $this->_format = $format;
+        }
+
+        if ($inputFormat != null) {
+            $this->_inputFormat = $inputFormat;
         }
     }
 
@@ -58,21 +67,23 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
     {
         Zend_Date::setOptions(array('format_type' => 'php'));
         $d = strtotime($value);
+
         if ($d === false) {
             try {
-                $date = new Zend_Date($value);
+                $date = new Zend_Date($value, $this->_inputFormat);
             } catch (Zend_Date_Exception $e) {
                 $date = new Zend_Date("1970-01-01 00:00:00");
             }
         } else {
             try {
-                $date = new Zend_Date($d);
+                $date = new Zend_Date($d, Zend_Date::TIMESTAMP);
             } catch (Zend_Date_Exception $e) {
                 $date = new Zend_Date("1970-01-01 00:00:00");
             }
         }
 
         $d = $date->get($this->_format);
+
         Zend_Date::setOptions(array('format_type' => 'iso'));
         return $d;
     }

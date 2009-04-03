@@ -484,6 +484,11 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         require_once 'Conjoon/Util/Array.php';
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
+        /**
+         * @see Conjoon_Filter_DateFormat
+         */
+        require_once 'Conjoon/Filter/DateFormat.php';
+
         $dateInputFormat = Zend_Date::TIMESTAMP;
 
         switch (get_class($import)) {
@@ -495,6 +500,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 $dateInputFormat = Zend_Date::RSS;
             break;
         }
+
+        $dateFilter = new Conjoon_Filter_DateFormat('Y-m-d H:i:s', $dateInputFormat);
 
         $data = array();
 
@@ -547,14 +554,17 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             }
 
             // pubDate
+
             if ($pubDate = $item->updated()) {
-                $date = new Zend_Date($pubDate, $dateInputFormat);
+                $date = $pubDate;
             } else if ($pubDate = $item->pubDate()) {
-                $date = new Zend_Date($pubDate, $dateInputFormat);
+                $date = $pubDate;
             } else {
                 $date = new Zend_Date();
             }
-            $itemData['pubDate'] = $date->get(Zend_Date::ISO_8601);
+
+            $itemData['pubDate'] = $dateFilter->filter($date);
+
             $itemData['savedTimestamp'] = time();
             $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                 $itemData,
