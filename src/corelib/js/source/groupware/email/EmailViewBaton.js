@@ -324,6 +324,12 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
                                 view.load();
                             },
                             scope : view
+                        },
+                        onGeneral : {
+                            fn : function() {
+                                this.ownerCt.remove(this);
+                            },
+                            scope : view
                         }
                     });
                 });
