@@ -282,12 +282,15 @@ com.conjoon.groupware.ResponseInspector = function() {
             }
 
             // check if the response send an authentication failure
-            if (options && options.onLogin) {
-                if (com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
+            if (options) {
+                if (options.onLogin && com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
                     var ol = options.onLogin;
                     com.conjoon.groupware.Reception.onLogin(
                         ol.fn, ol.scope
                     );
+                } else if (options.onGeneral) {
+                    var ol = options.onGeneral;
+                    ol.fn.call(ol.scope);
                 }
             }
 
