@@ -25,7 +25,7 @@
 // +----------------------------------------------------------------------------
 // | Check if app was installed
 // +----------------------------------------------------------------------------
-/*@BUILD_ACTIVE
+/*@BUILD_ACTIVE@
    if (!file_exists('./config.ini.php')) {
        die("<b>Error:</b><br />config.ini.php not found. Either create it manually or ".
            "run the installation script (" .
