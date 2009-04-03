@@ -28,7 +28,7 @@ com.conjoon.service.twitter.data.AccountStore = function(c){
     com.conjoon.service.twitter.data.AccountStore.superclass.constructor.call(
         this, Ext.apply(c || {}, {
             autoLoad : false,
-            url      : '/service/twitter/get.accounts/format/json',
+            url      : './service/twitter/get.accounts/format/json',
             reader : new Ext.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'

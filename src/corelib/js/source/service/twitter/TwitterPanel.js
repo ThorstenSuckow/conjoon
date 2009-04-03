@@ -333,7 +333,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         var replyStatus = this.inputBox.getReplyStatus();
 
         Ext.Ajax.request({
-            url    : '/service/twitter/send.update/format/json',
+            url    : './service/twitter/send.update/format/json',
             params : {
                 message           : v,
                 accountId         : this._currentAccountId,
@@ -778,7 +778,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
         Ext.Ajax.request({
             item   : item,
-            url    : '/service/twitter/favorite.tweet/format/json',
+            url    : './service/twitter/favorite.tweet/format/json',
             params : {
                 accountId : this._currentAccountId,
                 tweetId   : selRec.id,
@@ -829,7 +829,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
                     );
                     Ext.Ajax.request({
                         item   : item,
-                        url    : '/service/twitter/delete.tweet/format/json',
+                        url    : './service/twitter/delete.tweet/format/json',
                         params : {
                             accountId : this._currentAccountId,
                             tweetId   : selRec.id

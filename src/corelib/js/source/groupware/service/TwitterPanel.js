@@ -33,7 +33,7 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
     initComponent : function()
     {
         var recTweetStore = new com.conjoon.service.twitter.data.TweetStore({
-            url : '/service/twitter/get.recent.tweets/format/json'
+            url : './service/twitter/get.recent.tweets/format/json'
         });
 
         var recentTweets = new com.conjoon.service.twitter.TweetList({
@@ -41,12 +41,12 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
         });
 
         var tweetPoller = new com.conjoon.service.twitter.data.TweetPoller({
-             url         : '/service/twitter/get.recent.tweets/format/json',
+             url         : './service/twitter/get.recent.tweets/format/json',
              updateStore : recTweetStore
         });
 
         var recentTweetStore = new com.conjoon.service.twitter.data.TweetStore({
-            url : '/service/twitter/get.users.recent.tweets/format/json'
+            url : './service/twitter/get.users.recent.tweets/format/json'
         });
 
         var usersRecentTweets = new com.conjoon.service.twitter.TweetList({
@@ -58,7 +58,7 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
         });
 
         var friendsStore = new com.conjoon.service.twitter.data.TwitterUserStore({
-            url : '/service/twitter/get.friends/format/json'
+            url : './service/twitter/get.friends/format/json'
         });
 
         var friendsList = new com.conjoon.service.twitter.FriendsList({
