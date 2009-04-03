@@ -439,24 +439,25 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function getFeedContentAction()
     {
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
-        require_once 'Conjoon/BeanContext/Decorator.php';
-
-        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-            array(),
-            Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE
-        );
-        $itemModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',
-            $itemResponseFilter
-        );
-
         /**
          * @todo filter incoming data
          */
         $id = $this->_request->getParam('id', 0);
 
-        $item = $itemModel->getItemAsDto($id);
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
+        $item = Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_FEED_ITEM,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->get(array('id' => $id));
 
         if ($item == null) {
             $this->view->success = false;

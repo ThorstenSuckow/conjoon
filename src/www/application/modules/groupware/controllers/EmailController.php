@@ -790,47 +790,31 @@ class Groupware_EmailController extends Zend_Controller_Action {
     }
 
     /**
-     * @todo Move to model
+     * @todo
      */
     private function _getEmail($groupwareEmailItemsId)
     {
-        require_once 'Conjoon/BeanContext/Decorator.php';
-        require_once 'Conjoon/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
+        /**
+         * @see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
 
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
 
         $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        $messageDecorator = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Message_Model_Message',
-            new Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse(
-                array(),
-                Conjoon_Filter_Input::CONTEXT_RESPONSE
-            )
-        );
+        return Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_EMAIL_MESSAGE,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->get(array(
+                'groupwareEmailItemsId' => $groupwareEmailItemsId,
+                'userId'                => $userId
+               ));
 
-        $message = $messageDecorator->getEmailMessageAsDto($groupwareEmailItemsId, $userId);
-
-        if (!$message) {
-            return null;
-        }
-
-        require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
-
-        $attachmentDecorator = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
-            new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
-                array(),
-                Conjoon_Filter_Input::CONTEXT_RESPONSE
-            )
-        );
-
-        $attachments = $attachmentDecorator->getAttachmentsForItemAsDto($groupwareEmailItemsId);
-
-        $message->attachments = $attachments;
-
-        return $message;
     }
 
 // -------- email accounts
