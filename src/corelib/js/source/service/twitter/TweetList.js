@@ -103,14 +103,14 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
                           ' from '+
 
                           '<tpl if="sourceUrl != 0">'+
-                              '<a href="{sourceUrl}">{source}</a>'+
+                              '<a class="source" href="{sourceUrl}">{source}</a>'+
                           '</tpl>'+
                           '<tpl if="sourceUrl == 0">'+
                               '{source}'+
                           '</tpl>'+
 
                           '<tpl if="inReplyToScreenName != 0">'+
-                              ' <a href="#">in reply to {inReplyToScreenName}</a>'+
+                              ' <a class="inReplyTo" href="#">in reply to {inReplyToScreenName}</a>'+
                           '</tpl>'+
 
                           '</span>'+

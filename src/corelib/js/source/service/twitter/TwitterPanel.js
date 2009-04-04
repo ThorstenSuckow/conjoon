@@ -562,6 +562,18 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             case 'tweet_unbookmark_icon':
                 this._handleTweetBookmarkClick(dataView, index, item, e, false);
             break;
+
+            case 'when':
+                this._handleTweetWhenClick(dataView, index, item, e, false);
+            break;
+
+            case 'source':
+                this._handleTweetSourceClick(dataView, index, item, e, false);
+            break;
+
+            case 'inReplyTo':
+                this._handleTweetInReplyToClick(dataView, index, item, e, false);
+            break;
         }
     },
 
@@ -749,6 +761,59 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _handleTweetUrlClick : function(dataView, index, item, e)
     {
         com.conjoon.groupware.util.LinkInterceptor.handleLinkClick(e.getTarget());
+    },
+
+
+    /**
+     * Delegate for the callback for the "click" event for the RecentTweetsList.
+     * Gets called internally if a click on the "when"
+     * link happend.
+     *
+     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
+     * that triggered this event
+     * @param {Number} index The index of the target node
+     * @param {HtmlElement} item native HtmlElement on which this event occured
+     * @param {Ext.EvenObject} e The raw Ext.EventObject
+     *
+     * @protected
+     */
+    _handleTweetWhenClick : function(dataView, index, item, e)
+    {
+        alert("_handleTweetWhenClick not implemented yet");
+    },
+
+    /**
+     * Delegate for the callback for the "click" event for the RecentTweetsList.
+     * Gets called internally if a click on the "source" link happend.
+     *
+     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
+     * that triggered this event
+     * @param {Number} index The index of the target node
+     * @param {HtmlElement} item native HtmlElement on which this event occured
+     * @param {Ext.EvenObject} e The raw Ext.EventObject
+     *
+     * @protected
+     */
+    _handleTweetSourceClick : function(dataView, index, item, e)
+    {
+        com.conjoon.groupware.util.LinkInterceptor.handleLinkClick(e.getTarget());
+    },
+
+    /**
+     * Delegate for the callback for the "click" event for the RecentTweetsList.
+     * Gets called internally if a click on the "in reply to" link happend.
+     *
+     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
+     * that triggered this event
+     * @param {Number} index The index of the target node
+     * @param {HtmlElement} item native HtmlElement on which this event occured
+     * @param {Ext.EvenObject} e The raw Ext.EventObject
+     *
+     * @protected
+     */
+    _handleTweetInReplyToClick : function(dataView, index, item, e)
+    {
+        alert("_handleTweetInReplyToClick not implemented yet");
     },
 
     /**
