@@ -59,15 +59,19 @@ class Conjoon_Cache_Factory {
             break;
         }
 
-        $appPath  = $options['environment']['application_path'];
-        $cacheDir = $options['environment']['cache_dir'];
-
         $frontendOptions = $cacheOptions['frontend'];
         $backendOptions  = $cacheOptions['backend'];
 
-        $backendOptions['cache_dir'] = $appPath  . '/' .
-                                       $cacheDir . '/' .
-                                       $backendOptions['cache_dir'];
+        // check whether the cache-dir for the backend options is relative or
+        // absolute. This is a very simple check and may be error-prone,
+        // but its okay for now
+        $isAbsolute = false;
+        if (strpos($backendOptions['cache_dir'], '/') !== 0 &&
+            strpos($backendOptions['cache_dir'], ':') !== 1) {
+            $backendOptions['cache_dir'] = $options['environment']['application_path'] .
+                                           DIRECTORY_SEPARATOR .
+                                           $backendOptions['cache_dir'];
+        }
 
         $frontendType = $cacheOptions['frontend_type'];
         $backendType  = $cacheOptions['backend_type'];

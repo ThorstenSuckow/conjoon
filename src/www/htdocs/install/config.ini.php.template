@@ -62,11 +62,6 @@ include_path = {INCLUDE_PATH}
 ; the path may be relative to the folder where the index.pho resides in.
 application_path = {APPLICATION_PATH}
 
-; set this to the name of the directory that holds all caching files/directories.
-; if the name starts with a leading slash, conjoon assumes that the cache directory
-; should NOT be created under the application_path.
-cache_dir = {CACHE_DIR}
-
 ; set this to the path under which conjoon is available on your host.
 ; Example: If you configured your webserver so that conjoon is available
 ; under http://my.domain.com/, the value must be set to "/". If you configured
@@ -163,12 +158,9 @@ email.message.frontend.ignore_user_abort = 1
 ; Zend_Cache_Backend_File-class
 email.message.backend_type = file
 
-; Directory where to store cache files. Please note, that conjoon will automatically
-; look up the given folder name in the cache folder which is automazically generated during
-; installation. I.e. if your application_path points to /home/usr/app and the environment.cache_dir
-; to "cache", and this cache_dir value equals to "emails", then the cache folder is
-; /home/usr/app/cache/emails
-email.message.backend.cache_dir = email/messages
+; Directory where to store cache files. If the name does not start with a slash or a drive
+; letter (i.e. F:/), conjoon asumes that the path is relative to the application path
+email.message.backend.cache_dir = cache/email/messages
 
 ; Hashed directory structure level : 0 means "no hashed directory structure", 1 means
 ; "one level of directory", 2 means "two levels"... This option can speed up the cache
@@ -212,12 +204,9 @@ feed.item.frontend.ignore_user_abort = 1
 ; Zend_Cache_Backend_File-class
 feed.item.backend_type = file
 
-; Directory where to store cache files. Please note, that conjoon will automatically
-; look up the given folder name in the cache folder which is automazically generated during
-; installation. I.e. if your application_path points to /home/usr/app and the environment.cache_dir
-; to "cache", and this cache_dir value equals to "feeds", then the cache folder is
-; /home/usr/app/cache/feeds
-feed.item.backend.cache_dir = feed/items
+; Directory where to store cache files. If the name does not start with a slash or a drive
+; letter (i.e. F:/), conjoon asumes that the path is relative to the application path
+feed.item.backend.cache_dir = cache/feed/items
 
 ; Hashed directory structure level : 0 means "no hashed directory structure", 1 means
 ; "one level of directory", 2 means "two levels"... This option can speed up the cache
@@ -261,12 +250,9 @@ db.metadata.frontend.ignore_user_abort = 1
 ; Zend_Cache_Backend_File-class
 db.metadata.backend_type = file
 
-; Directory where to store cache files. Please note, that conjoon will automatically
-; look up the given folder name in the cache folder which is automazically generated during
-; installation. I.e. if your application_path points to /home/usr/app and the environment.cache_dir
-; to "cache", and this cache_dir value equals to "metadata", then the cache folder is
-; /home/usr/app/cache/metadata
-db.metadata.backend.cache_dir = db/metadata
+; Directory where to store cache files. If the name does not start with a slash or a drive
+; letter (i.e. F:/), conjoon asumes that the path is relative to the application path
+db.metadata.backend.cache_dir = cache/db/metadata
 
 ; Hashed directory structure level : 0 means "no hashed directory structure", 1 means
 ; "one level of directory", 2 means "two levels"... This option can speed up the cache
