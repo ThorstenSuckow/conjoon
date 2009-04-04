@@ -168,6 +168,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.inputBox.on('render', this.showInputBox.createDelegate(this, [false]), this);
 
         this.recentTweets.on('click', this._onRecentTweetClick, this);
+        this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
         this.friendsList.on('click',  this._onFriendsListClick, this);
 
         this.recentTweets.store.on('beforeload', this._onRecentTweetBeforeLoad, this);

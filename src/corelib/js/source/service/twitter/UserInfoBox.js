@@ -60,7 +60,7 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
             tpl : new Ext.XTemplate('<table cellspacing="0" cellpadding="0">' +
                   '<tbody>',
                   '<tr class="meta">',
-                  '<td class="image" colspan="2" style="background-image:url({profileImageUrl})">',
+                  '<td class="image" colspan="2" style="{profileImageUrl}">',
                   '<div class="screenName">{screenName}</div>',
                   '<div class="name"><span class="label">Name:</span> {name}</div>',
                   '</td>',
@@ -70,7 +70,14 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
                   '</tr>',
                   '<tr class="web">',
                   '<td class="label">Web:</span></td>',
-                  '<td class="value">{url}</td>',
+
+                  '<td class="value">',
+                  '<tpl if="url != 0">',
+                      '<a target="_blank" href="{url}">{url}</a>',
+                  '</tpl>',
+                  '<tpl if="url == 0">&nbsp;</tpl>',
+                  '</td>',
+
                   '</tr>',
                   '<tr class="description">',
                   '<td class="label">Bio:</span></td>',
@@ -104,7 +111,12 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
         if (!record) {
             throw("com.conjoon.service.twitter.UserInfoBox.loadUser: record was undefined");
         }
-        this.tpl.overwrite(this.el, record.data);
+
+        var data = Ext.apply({}, record.data);
+
+        data.profileImageUrl = 'background-image:url('+data.profileImageUrl+')';
+
+        this.tpl.overwrite(this.el, data);
         this.fireEvent('userload', this, record);
     },
 
@@ -132,7 +144,14 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
      */
     _onBeforeTweetStoreLoad : function(store, records, options)
     {
-
+        this.tpl.overwrite(this.el, {
+            profileImageUrl   : '',
+            screenName        : com.conjoon.Gettext.gettext("Loading..."),
+            name              : '',
+            location          : '',
+            url               : '',
+            description       : ''
+        });
     },
 
 });
