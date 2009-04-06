@@ -41,6 +41,7 @@ class Service_TwitterController extends Zend_Controller_Action {
                       ->addActionContext('send.update',       self::CONTEXT_JSON)
                       ->addActionContext('delete.tweet',      self::CONTEXT_JSON)
                       ->addActionContext('favorite.tweet',    self::CONTEXT_JSON)
+                      ->addActionContext('switch.friendship', self::CONTEXT_JSON)
                       ->addActionContext('get.users.recent.tweets', self::CONTEXT_JSON)
                       ->initContext();
     }
@@ -507,7 +508,7 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         if (!$accountDto) {
             $errorDto = Conjoon_Error_Factory::createError(
-                "Could not delete the tweet: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+                "Could not favorite the tweet: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
             )->getDto();
 
             $this->view->success        = false;
@@ -534,5 +535,82 @@ class Service_TwitterController extends Zend_Controller_Action {
         $this->view->favoritedTweet = $result->getDto();
         $this->view->error          = null;
     }
+
+
+    /**
+     * Switches a friendship to a user based on the parameter createFriendship and
+     * the screen name of the user.
+     *
+     */
+    public function switchFriendshipAction()
+    {
+        /**
+         * @see Conjoon_Error_Factory
+         */
+        require_once 'Conjoon/Error/Factory.php';
+
+        $accountId  = (int)$this->_request->getParam('accountId');
+
+        $createFriendship = $this->_request->getParam('createFriendship') == 'false'
+                            ? false
+                            : true;
+        $screenName       = $this->_request->getParam('screenName');
+
+
+        if ($accountId <= 0) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not process the request: No account-id provided.",
+                Conjoon_Error::LEVEL_ERROR
+            )->getDto();
+
+            $this->view->success     = false;
+            $this->view->isFollowing = !$createFriendship;
+            $this->view->error       = $errorDto;
+            return;
+        }
+
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Service_Twitter_Account_Model_Account'
+        );
+
+        $accountDto = $decoratedModel->getAccountAsDto($accountId);
+
+        if (!$accountDto) {
+            $errorDto = Conjoon_Error_Factory::createError(
+                "Could not switch friendship: No account matches the id \"".$accountId."\".", Conjoon_Error::LEVEL_CRITICAL
+            )->getDto();
+
+            $this->view->success     = false;
+            $this->view->isFollowing = !$createFriendship;
+            $this->view->error       = $errorDto;
+            return;
+        }
+
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
+
+        $twitter = new Conjoon_Service_Twitter_Proxy(
+            $accountDto->name,
+            $accountDto->password
+        );
+
+        if ($createFriendship) {
+            $result = $twitter->friendshipCreate($screenName);
+        } else {
+            $result = $twitter->friendshipDestroy($screenName);
+        }
+
+        if ($result instanceof Conjoon_Error) {
+            $this->view->success     = false;
+            $this->view->isFollowing = !$createFriendship;
+            $this->view->error       = $result->getDto();
+            return;
+        }
+
+        $this->view->success     = true;
+        $this->view->isFollowing = $createFriendship;
+        $this->view->error       = null;
+    }
+
 
 }

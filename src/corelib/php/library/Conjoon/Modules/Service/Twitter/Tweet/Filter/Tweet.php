@@ -57,6 +57,7 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
                 'protected',
                 'description',
                 'followersCount',
+                'isFollowing',
                 'inReplyToStatusId',
                 'inReplyToUserId',
                 'inReplyToScreenName',
@@ -130,6 +131,9 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
         'protected' => array(
             'FormBoolToInt'
         ),
+        'isFollowing' => array(
+            'FormBoolToInt'
+        ),
         'description' => array(
             array(
                 'HtmlEntities',
@@ -193,6 +197,10 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
             'default'    => ""
          ),
         'protected' => array(
+            'allowEmpty' => true,
+            'default'    => false
+        ),
+        'isFollowing' => array(
             'allowEmpty' => true,
             'default'    => false
         ),

@@ -49,6 +49,84 @@ class Conjoon_Service_Twitter_Proxy  {
     }
 
     /**
+     * Create friendship
+     *
+     * @param  int|string $id User ID or name of new friend
+     * @return true or Conjoon_Error
+     */
+    public function friendshipCreate($id)
+    {
+        try {
+            $response = $this->_twitter->friendshipCreate($id);
+        } catch (Zend_Service_Twitter_Exception $e) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        if (isset($response->error)) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                (string)$response->error .
+                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
+                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
+                "]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Destroy friendship
+     *
+     * @param  int|string $id User ID or name of friend to remove
+     * @return true or Conjoon_Error
+     */
+    public function friendshipDestroy($id)
+    {
+        try {
+            $response = $this->_twitter->friendshipDestroy($id);
+        } catch (Zend_Service_Twitter_Exception $e) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        if (isset($response->error)) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                (string)$response->error .
+                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
+                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
+                "]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        return true;
+    }
+
+    /**
      * Favorites or unfavorites a tweet based on the $favorite
      * parameter.
      *
@@ -107,6 +185,7 @@ class Conjoon_Service_Twitter_Proxy  {
             'url'                 => (string)$favoriteStatus->user->url,
             'description'         => (string)$favoriteStatus->user->description,
             'protected'           => (string)$favoriteStatus->user->protected,
+            'isFollowing'         => (string)$favoriteStatus->user->following,
             'followersCount'      => (string)$favoriteStatus->user->followers_count,
             'inReplyToStatusId'   => (string)$favoriteStatus->in_reply_to_status_id,
             'inReplyToUserId'     => (string)$favoriteStatus->in_reply_to_user_id,
@@ -190,6 +269,7 @@ class Conjoon_Service_Twitter_Proxy  {
             'url'                 => (string)$destroyStatus->user->url,
             'description'         => (string)$destroyStatus->user->description,
             'protected'           => (string)$destroyStatus->user->protected,
+            'isFollowing'         => (string)$destroyStatus->user->following,
             'followersCount'      => (string)$destroyStatus->user->followers_count,
             'inReplyToStatusId'   => (string)$destroyStatus->in_reply_to_status_id,
             'inReplyToUserId'     => (string)$destroyStatus->in_reply_to_user_id,
@@ -291,6 +371,7 @@ class Conjoon_Service_Twitter_Proxy  {
                 'url'                 => (string)$tweet->user->url,
                 'description'         => (string)$tweet->user->description,
                 'protected'           => (string)$tweet->user->protected,
+                'isFollowing'         => (string)$tweet->user->following,
                 'followersCount'      => (string)$tweet->user->followers_count,
                 'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
                 'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
@@ -381,6 +462,7 @@ class Conjoon_Service_Twitter_Proxy  {
                 'description'         => (string)$tweet->user->description,
                 'protected'           => (string)$tweet->user->protected,
                 'followersCount'      => (string)$tweet->user->followers_count,
+                'isFollowing'         => (string)$tweet->user->following,
                 'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
                 'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
                 'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,
@@ -455,6 +537,7 @@ class Conjoon_Service_Twitter_Proxy  {
             'description'         => (string)$tweet->user->description,
             'protected'           => (string)$tweet->user->protected,
             'followersCount'      => (string)$tweet->user->followers_count,
+            'isFollowing'         => (string)$tweet->user->following,
             'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
             'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
             'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,

@@ -121,6 +121,12 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
     {name : 'followersCount',  type : 'int'},
 
     /**
+     * @type {Boolean} isFollowing Whether the current user follows the user that created
+     * this tweet.
+     */
+    {name : 'isFollowing',  type : 'bool'},
+
+    /**
      * @type {Number} inReplyToStatusId The id of the tweet this tweet referrs to, as managed
      * by the Twitter service. May be null.
      */

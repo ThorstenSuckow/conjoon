@@ -47,6 +47,7 @@ class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Seri
     private $protected;
     private $description;
     private $followersCount;
+    private $isFollowing;
     private $inReplyToStatusId;
     private $inReplyToUserId;
     private $inReplyToScreenName;
@@ -82,6 +83,7 @@ class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Seri
     public function setInReplyToStatusId($inReplyToStatusId){$this->inReplyToStatusId = $inReplyToStatusId;}
     public function setInReplyToUserId($inReplyToUserId){$this->inReplyToUserId = $inReplyToUserId;}
     public function setInReplyToScreenName($inReplyToScreenName){$this->inReplyToScreenName = $inReplyToScreenName;}
+    public function setFollowing($following){$this->isFollowing = $following;}
     public function setFavorited($favorited){$this->favorited = $favorited;}
 
     public function getId(){return $this->id;}
@@ -102,6 +104,7 @@ class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Seri
     public function getInReplyToStatusId(){return $this->inReplyToStatusId;}
     public function getInReplyToUserId(){return $this->inReplyToUserId;}
     public function getInReplyToScreenName(){return $this->inReplyToScreenName;}
+    public function isFollowing(){return $this->isFollowing;}
     public function isFavorited(){return $this->favorited;}
 
 // -------- interface Serializable
@@ -181,6 +184,7 @@ class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Seri
             'protected'           => $this->protected,
             'description'         => $this->description,
             'followersCount'      => $this->followersCount,
+            'isFollowing'         => $this->isFollowing,
             'inReplyToStatusId'   => $this->inReplyToStatusId,
             'inReplyToUserId'     => $this->inReplyToUserId,
             'inReplyToScreenName' => $this->inReplyToScreenName,
@@ -213,6 +217,7 @@ class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Seri
             'protected'           . ': '.$this->protected . ', ' .
             'description'         . ': '.$this->description . ', ' .
             'followersCount'      . ': '.$this->followersCount . ', ' .
+            'isFollowing'         . ': '.$this->isFollowing . ', ' .
             'inReplyToStatusId'   . ': ' . $this->inReplyToStatusId . ', ' .
             'inReplyToUserId'     . ': ' . $this->inReplyToUserId . ', ' .
             'inReplyToScreenName' . ': ' . $this->inReplyToScreenName . ', ' .

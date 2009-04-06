@@ -26,6 +26,7 @@ class Conjoon_Modules_Service_Twitter_Tweet_Dto {
     public $screenName;
     public $location;
     public $profileImageUrl;
+    public $isFollowing;
     public $url;
     public $protected;
     public $description;

@@ -30,7 +30,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     autoEl :  {
         tag      : 'div',
         cls      : 'com-conjoon-service-twitter-InputBox',
-        children : [{
+        /*children : [{
             tag : 'textarea',
             cls : 'textArea'
         }, {
@@ -40,7 +40,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
         }, {
             tag  : 'div',
             cls  : 'buttonContainer'
-        }]
+        }]*/
     },
 
     /**
@@ -72,11 +72,16 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     _charCounter : null,
 
     /**
-     * @type {HtmlElement} _textArea Native HtmlElement representing the textarea
+     * @type {Ext.form.TextArea} _textArea Native HtmlElement representing the textarea
      * used for typing in the status update.
      * @protected
      */
     _textArea : null,
+
+    /**
+     * @type {Ext.Element} _inputCont shortcut to the container that holds the _textArea
+     */
+    _inputCont : null,
 
     /**
      * @type {Ext.Button} _updateButton The button rendered for sending the status
@@ -92,11 +97,29 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     initComponent : function()
     {
         Ext.applyIf(this, {
-            buttonTextBusy : com.conjoon.Gettext.gettext("Updating...")
+            buttonTextBusy : com.conjoon.Gettext.gettext("Updating..."),
+            tpl : new Ext.XTemplate(
+
+                '<div>',
+                '<div class="x-window">',
+                '<div class="x-window-tl x-panel-noheader"><div class="x-window-tr"><div class="x-window-tc" style="height:8px;"></div></div></div>',
+                '<div class="x-window-bwrap">',
+                '<div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">',
+                '<div class="inputCont"></div>',
+                '<div class="charCounter"></div>',
+                '<div class="buttonContainer"></div>',
+                 '</div>',
+                '</div>',
+                '</div>',
+                '</div>',
+                '<div class="x-window-bl x-panel-nofooter"><div class="x-window-br"><div class="x-window-bc"></div></div></div>',
+                '</div>',
+                '</div>'
+            )
         });
 
-        this._buttonText = this.getUpdateButton().getText();
 
+        this._buttonText = this.getUpdateButton().getText();
         com.conjoon.service.twitter.InputBox.superclass.initComponent.call(this);
     },
 
@@ -107,22 +130,32 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     afterRender : function()
     {
         com.conjoon.service.twitter.InputBox.superclass.afterRender.call(this);
+        this.tpl.overwrite(this.el, {});
 
-        var dom = this.el.dom;
+        this._inputCont = new Ext.Element(
+            Ext.DomQuery.selectNode('div[class=inputCont]', this.el.dom)
+        );
 
-        this._charCounter = dom.lastChild.previousSibling;
-        this._textArea    = dom.firstChild;
+        this._charCounter = Ext.DomQuery.selectNode('div[class=charCounter]', this.el.dom);
+
+        this._textArea = new Ext.form.TextArea({
+            height          : 80,
+            enableKeyEvents : true
+        });
+
+        this._textArea.render(this._inputCont);
 
         this._updateButton = this.getUpdateButton();
-        this._updateButton.render(dom.lastChild);
+        this._updateButton.render(Ext.DomQuery.selectNode('div[class=buttonContainer]', this.el.dom));
 
-        Ext.fly(this._textArea).on({
+        this._textArea.on({
             keydown  : this._onKeyEvent,
             keypress : this._onKeyEvent,
             keyup    : this._onKeyEvent,
             scope    : this
         });
     },
+
 
 
 // -------- public API
@@ -161,12 +194,12 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     setInputBusy : function(busy)
     {
         if (busy) {
-            this._textArea.disabled = true;
+            this._textArea.setDisabled(true);
             this._updateButton.setIconClass('busy');
             this._updateButton.setDisabled(true);
             this._updateButton.setText(this.buttonTextBusy);
         } else {
-            this._textArea.disabled = false;
+            this._textArea.setDisabled(false);
             this._updateButton.setIconClass('default');
             this._updateButton.setDisabled(false);
             this._updateButton.setText(this._buttonText);
@@ -189,7 +222,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
      */
     getMessage : function()
     {
-        return this._textArea.value;
+        return this._textArea.getValue();
     },
 
     /**
@@ -199,7 +232,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
      */
     setMessage : function(message)
     {
-        this._textArea.value = message;
+        this._textArea.setValue(message);
 
         this.validateMessage();
     },
@@ -214,7 +247,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
      */
     validateMessage : function()
     {
-        var v      = this._textArea.value.trim();
+        var v      = this._textArea.getValue().trim();
         var length = v.length;
 
         this._updateButton.setDisabled(length == 0);
@@ -239,17 +272,26 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
 
         var remaining = this.inputMaxLength - length;
 
-        Ext.fly(this._charCounter).update(remaining);
+        var taEl = this._textArea.el;
+        var cC   = this._charCounter;
+
+        Ext.fly(cC).update(remaining);
 
         if (remaining <= 10) {
-            Ext.fly(this._charCounter).removeClass('warning');
-            Ext.fly(this._charCounter).addClass('error');
+            taEl.removeClass('warning');
+            taEl.addClass('error');
+            Ext.fly(cC).removeClass('warning');
+            Ext.fly(cC).addClass('error');
         } else if (remaining <= 20) {
-            Ext.fly(this._charCounter).removeClass('error');
-            Ext.fly(this._charCounter).addClass('warning');
+            taEl.removeClass('error');
+            taEl.addClass('warning');
+            Ext.fly(cC).removeClass('error');
+            Ext.fly(cC).addClass('warning');
         } else {
-            Ext.fly(this._charCounter).removeClass('error');
-            Ext.fly(this._charCounter).removeClass('warning');
+            taEl.removeClass('error');
+            taEl.removeClass('warning');
+            Ext.fly(cC).removeClass('error');
+            Ext.fly(cC).removeClass('warning');
         }
     },
 
@@ -269,6 +311,28 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
     },
 
 // -------- listener
+    /**
+     * Called after the component is resized.
+     *
+     * @param {Number} adjWidth The box-adjusted width that was set
+     * @param {Number} adjHeight The box-adjusted height that was set
+     * @param {Number} rawWidth The width that was originally specified
+     * @param {Number} rawHeight The height that was originally specified
+     */
+    onResize : function(adjWidth, adjHeight, rawWidth, rawHeight)
+    {
+        if (!this._textArea) {
+            return;
+        }
+
+        this._textArea.setWidth(
+            this._inputCont.getStyleSize().width
+        );
+
+        return;
+    },
+
+
 
     /**
      * Listens to the keydown/keypress/keyup event of the _textArea.

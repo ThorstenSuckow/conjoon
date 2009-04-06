@@ -76,5 +76,11 @@ com.conjoon.service.twitter.data.TwitterUserRecord = Ext.data.Record.create([
      * @type {Number} followersCount The number of followers for the user
      * as managed by the Twitter service.
      */
-    {name : 'followersCount',  type : 'int'}
+    {name : 'followersCount',  type : 'int'},
+
+    /**
+     * @type {Boolean} isFollowing Whether the currenty logged in user follows
+     * this user or not.
+     */
+    {name : 'isFollowing',  type : 'bool'}
 ]);

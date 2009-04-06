@@ -32,22 +32,17 @@
     color:#000000;
     font-weight:bold;
     font-family:'Georgia','Serif';
+    margin:6px;
 }
 
+.com-conjoon-service-twitter-InputBox  textarea.x-form-field.warning,
 .com-conjoon-service-twitter-InputBox .charCounter.warning {
     color:#5C0002;
 }
 
-.com-conjoon-service-twitter-InputBox .charCounter.error{
+.com-conjoon-service-twitter-InputBox textarea.x-form-field.error,
+.com-conjoon-service-twitter-InputBox .charCounter.error {
     color:#D40D12;
-}
-
-.com-conjoon-service-twitter-InputBox .textArea {
-    color:#2B2B2B;
-    font-family:Georgia;
-    font-size:11px;
-    width:98%;
-    height:50px;
 }
 
 .com-conjoon-service-twitter-TwitterUserContainer .viewContainer,
@@ -63,7 +58,7 @@
 }
 
 .com-conjoon-service-twitter-InputBox .buttonContainer {
-    margin-top:4px;
+    margin:4px 0;
 }
 
 .com-conjoon-service-twitter-InputBox .buttonContainer .button {
@@ -80,34 +75,49 @@
 
 
 .com-conjoon-service-twitter-UserInfoBox {
-    background-color:#ffffff;
-    padding:4px;
-    border-bottom:1px solid #999999;
+
 }
 
 .com-conjoon-service-twitter-UserInfoBox table {
     width:100%;
+    margin:4px;
 }
 
 .com-conjoon-service-twitter-UserInfoBox .meta .image {
-    background:url(../images/loading-big.gif) no-repeat;
-    padding-left:54px;
+    background:url(../images/loading-big.gif) no-repeat 5px 5px;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .profileImageCont {
+    float:left;
+    width:48px;
+    height:48px;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .profileImageClass {
+    height:48px;
+    width:48px;
+}
+
+.com-conjoon-service-twitter-UserInfoBox .meta .nameCont {
+    margin-left:54px;
 }
 
 .com-conjoon-service-twitter-UserInfoBox .meta .screenName {
     font-size:18px;
-    color:#2400db;
+    color:#626262;
 }
 
 .com-conjoon-service-twitter-UserInfoBox .meta .name {
     padding:4px;
-    background-color:#e8ecb2;
+    background-image:url(../images/service-twitter-userinfonamebg.png);
+    background-repeat:repeat-x;
     color:#4b4b4b;
+    margin-right:8px;
 }
 
 .com-conjoon-service-twitter-UserInfoBox .meta .name .label {
     font-weight:bold;
-    color:#000000;
+    color:#626262;
 }
 
 .com-conjoon-service-twitter-UserInfoBox .location .label,
@@ -116,7 +126,7 @@
     font-weight:bold;
     width:56px;
     padding:2px 0 0 0;
-    color:#000000;
+    color:#626262;
     vertical-align:top;
 }
 
@@ -128,12 +138,13 @@
     vertical-align:top;
 }
 
+.com-conjoon-service-twitter-UserInfoBox .followIndicator {
+
+    float:left;
+
+}
 
 .com-conjoon-service-twitter-InputBox {
-    height : 85px;
-    background:#f6f6f6;
-    padding:4px;
-    border-bottom:1px solid #99bbe8;
 }
 
 .com-conjoon-service-twitter-TweetList.x-masked{
@@ -150,6 +161,14 @@
 
 .com-conjoon-service-twitter-TwitterPanel .show_friends_icon {
     background-image:url(../images/16x16/actions/service-twitter-showfriends.png)!important;
+}
+
+.com-conjoon-service-twitter-TwitterPanel .follow_user_icon {
+    background-image:url(../images/16x16/actions/service-twitter-followuser.png)!important;
+}
+
+.com-conjoon-service-twitter-TwitterPanel .unfollow_user_icon {
+    background-image:url(../images/16x16/actions/service-twitter-unfollowuser.png)!important;
 }
 
 .com-conjoon-service-twitter-HomePanel {

@@ -94,6 +94,12 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _showInputButton : null,
 
     /**
+     * @type {Ext.Button} _switchFriendshipButton The button used to
+     * switch friendship to a user
+     */
+    _switchFriendshipButton : null,
+
+    /**
      * @type {com.conjoon.service.twitter.AccountButton} _chooseAccountButton The
      * button used to choose between different accounts.
      */
@@ -117,6 +123,12 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      * Will default to 0 or -1 if no current account was selected.
      */
     _currentAccountId : -1,
+
+    /**
+     * @type {Number} _currentTwitterId Holds the id of the currently selected account as
+     * provided by twitter. Defaults to 0 or -1 if no current account was selected.
+     */
+    _currentTwitterId : -1,
 
     /**
      * @type Ext.Toolbar} _toolbar
@@ -171,6 +183,16 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
         this.friendsList.on('click',  this._onFriendsListClick, this);
 
+        this.userInfoBox.tweetStore.on('beforeload', this._onBeforeUsersRecentTweetStoreLoad, this);
+        this.userInfoBox.on('userload', this._onUserLoad, this);
+
+        this.on('resize', function() {
+            this.inputBox.setWidth(this.el.getSize().width);
+        }, this);
+
+
+        this.getUsersRecentTweetsContainer().on('hide', this._onUsersRecentTweetsHide, this);
+
         this.recentTweets.store.on('beforeload', this._onRecentTweetBeforeLoad, this);
         this.recentTweets.store.on('load',       this._onRecentTweetLoad,       this);
 
@@ -184,6 +206,39 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     },
 
 // -------- listeners
+
+    _onBeforeUsersRecentTweetStoreLoad : function()
+    {
+        this.getSwitchFriendshipButton().setVisible(false);
+    },
+
+    _onUserLoad : function(userInfoBox, record)
+    {
+        if (record.get('userId') == this._currentTwitterId) {
+            this.getSwitchFriendshipButton().setVisible(false);
+        } else {
+
+            this.getSwitchFriendshipButton().setTooltip(
+                (record.get('isFollowing')
+                ?  com.conjoon.Gettext.gettext("Unfollow this user")
+                :  com.conjoon.Gettext.gettext("Follow this user"))
+            );
+
+            this.getSwitchFriendshipButton().setIconClass(
+                record.get('isFollowing')
+                ?  'unfollow_user_icon'
+                :  'follow_user_icon'
+            );
+            this.getSwitchFriendshipButton().setVisible(true);
+        }
+    },
+
+    _onUsersRecentTweetsHide : function()
+    {
+        Ext.Ajax.abort(this.userInfoBox.tweetStore.proxy.activeRequest);
+
+        this.getSwitchFriendshipButton().setVisible(false);
+    },
 
     /**
      * Called before the recentTweets'store loads. Will stop the tweetPoller's
@@ -716,6 +771,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _clearCurrentAccount : function()
     {
         this._currentAccountId = -1;
+        this._currentTwitterId = -1;
 
         this.tweetPoller.stopPolling();
 
@@ -857,6 +913,87 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
+     * Sends a request to switch the friendship between the currently logged in
+     * user and the user that is passed via the record property.
+     *
+     * @param {com.conjoon.service.twitter.UserInfoBox} userInfoBox
+     * @param {Ext.data.Record} record
+     */
+    _onSwitchFriendshipButton : function()
+    {
+        var record = this.userInfoBox.getLoadedUser();
+
+        if (!record) {
+            return;
+        }
+
+        this.userInfoBox.el.mask(
+            (record.get('isFollowing')
+             ? com.conjoon.Gettext.gettext("Unfollowing user...")
+             : com.conjoon.Gettext.gettext("Following user...")),
+            'x-mask-loading'
+        );
+
+        this.usersRecentTweets.un('click', this._onRecentTweetClick, this);
+        this.usersRecentTweets.setDisabled(true);
+        this.getToolbar().setDisabled(true);
+
+        Ext.Ajax.request({
+            user   : record,
+            url    : './service/twitter/switch.friendship/format/json',
+            params : {
+                accountId        : this._currentAccountId,
+                screenName       : record.get('screenName'),
+                createFriendship : !record.get('isFollowing')
+            },
+            success : this._onSwitchFriendshipSuccess,
+            failure : this._onSwitchFriendshipFailure,
+            scope   : this
+        });
+    },
+
+    /**
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     */
+    _onSwitchFriendshipSuccess : function(response, options)
+    {
+        var insp = com.conjoon.groupware.ResponseInspector;
+
+        var encResponse = insp.isSuccess(response);
+        if (!insp.isSuccess(response)) {
+            this._onSwitchFriendshipFailure(response, options);
+            return;
+        }
+
+        this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
+        this.usersRecentTweets.setDisabled(false);
+        this.getToolbar().setDisabled(false);
+        this.userInfoBox.el.unmask();
+
+        var json          = com.conjoon.util.Json;
+        var responseValue = json.getResponseValues(response.responseText);
+
+        options.user.set('isFollowing', responseValue.isFollowing);
+        this.userInfoBox.loadUser(options.user, true);
+    },
+
+    /**
+     *
+     * @param {XmlHttpResponse} response
+     * @param {Object} options
+     */
+    _onSwitchFriendshipFailure : function(response, options)
+    {
+        this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
+        this.usersRecentTweets.setDisabled(false);
+        this.getToolbar().setDisabled(false);
+        this.userInfoBox.el.unmask();
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
+    },
+
+    /**
      * Delegate for the callback for the "click" event for the RecentTweetsList.
      * Gets called internally if a click on the "delete" link/icon happend.
      *
@@ -959,6 +1096,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _loadAccount : function(record)
     {
         this._currentAccountId = -1;
+        this._currentTwitterId = -1;
+
         this.getShowRecentTweetsButton().toggle(true);
 
         this.getShowInputButton().setDisabled(false);
@@ -972,6 +1111,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         }
 
         this._currentAccountId = record.get('id');
+        this._currentTwitterId = record.get('twitterId');
 
         this.recentTweets.setAccountRecord(record);
         var store = this.recentTweets.store;
@@ -1052,6 +1192,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
                 callback   : function() {
                     rc.syncSize();
                     this.inputBox.focus();
+                    this.inputBox.onResize();
                 },
                 scope : this
             };
@@ -1141,6 +1282,21 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         }
 
         return this._showInputButton;
+    },
+
+    /**
+     * Returns the button that controlls if a friendship to a user should
+     * be switched.
+     *
+     * @return {Ext.Button}
+     */
+    getSwitchFriendshipButton : function()
+    {
+        if (!this._switchFriendshipButton) {
+            this._switchFriendshipButton = this._getSwitchFriendshipButton();
+        }
+
+        return this._switchFriendshipButton;
     },
 
     /**
@@ -1261,6 +1417,24 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      *
      * @protected
      */
+    _getSwitchFriendshipButton : function()
+    {
+        return new Ext.Button({
+            scope   : this,
+            hidden  : true,
+            iconCls : 'follow_user_icon',
+            handler : this._onSwitchFriendshipButton,
+            scope   : this
+        });
+    },
+
+    /**
+     * Override this to add custom behavior.
+     *
+     * @return {Ext.Button}
+     *
+     * @protected
+     */
     _getShowFriendsButton : function()
     {
         return new Ext.Button({
@@ -1317,6 +1491,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
                 this.getShowRecentTweetsButton(),
                 this.getShowFriendsButton(),
                 '->',
+                this.getSwitchFriendshipButton(),
                 this.getShowInputButton(),
                 '-',
                 this.getChooseAccountButton()

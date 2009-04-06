@@ -45,6 +45,12 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
      * component.
      */
 
+    /**
+     * @type {Ext.data.Record} _loadedUser
+     */
+    _loadedUser : null,
+
+
     initComponent : function()
     {
         this.addEvents(
@@ -57,34 +63,55 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
         );
 
         Ext.applyIf(this, {
-            tpl : new Ext.XTemplate('<table cellspacing="0" cellpadding="0">' +
-                  '<tbody>',
-                  '<tr class="meta">',
-                  '<td class="image" colspan="2" style="{profileImageUrl}">',
-                  '<div class="screenName">{screenName}</div>',
-                  '<div class="name"><span class="label">Name:</span> {name}</div>',
-                  '</td>',
-                  '<tr class="location">',
-                  '<td class="label">Location:</span></td>',
-                  '<td class="value">{location}</td>',
-                  '</tr>',
-                  '<tr class="web">',
-                  '<td class="label">Web:</span></td>',
+            tpl : new Ext.XTemplate(
 
-                  '<td class="value">',
-                  '<tpl if="url != 0">',
-                      '<a target="_blank" href="{url}">{url}</a>',
-                  '</tpl>',
-                  '<tpl if="url == 0">&nbsp;</tpl>',
-                  '</td>',
+                '<div>',
+                '<div class="x-window">',
+                '<div class="x-window-tl x-panel-noheader"><div class="x-window-tr"><div class="x-window-tc" style="height:8px;"></div></div></div>',
+                '<div class="x-window-bwrap">',
+                '<div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">',
+                '<div>',
 
-                  '</tr>',
-                  '<tr class="description">',
-                  '<td class="label">Bio:</span></td>',
-                  '<td class="value">{description}</td>',
-                  '</tr>',
-                  '</tbody>',
-                  '</table>'
+                '<table cellspacing="0" cellpadding="0">',
+                '<tbody>',
+                '<tr class="meta">',
+                '<td class="image" colspan="2">',
+                '<div class="profileImageCont">',
+                '<img class="profileImageClass" src="{profileImageUrl}" border="0"/>',
+                '</div>',
+                '<div class="nameCont">',
+                '<div class="screenName">{screenName}</div>',
+                '<div class="name"><span class="label">Name:</span> {name}</div>',
+                '</div>',
+                '<div class="x-clear"></div>',
+                '</td>',
+                '<tr class="location">',
+                '<td class="label">Location:</span></td>',
+                '<td class="value">{location}</td>',
+                '</tr>',
+                '<tr class="web">',
+                '<td class="label">Web:</span></td>',
+                '<td class="value">',
+                '<tpl if="url != 0">',
+                '<a target="_blank" href="{url}">{url}</a>',
+                '</tpl>',
+                '<tpl if="url == 0">&nbsp;</tpl>',
+                '</td>',
+                '</tr>',
+                '<tr class="description">',
+                '<td class="label">Bio:</span></td>',
+                '<td class="value">{description}</td>',
+                '</tr>',
+                '</tbody>',
+                '</table>',
+                '</div>',
+                '</div>',
+                '</div>',
+                '</div>',
+                '</div>',
+                '<div class="x-window-bl x-panel-nofooter"><div class="x-window-br"><div class="x-window-bc"></div></div></div>',
+                '</div>',
+                '</div>'
             )
         });
 
@@ -105,19 +132,27 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
      * @param mixed record either {com.conjoon.service.twitter.data.TwitterUserRecord} or
      * {com.conjoon.service.twitter.data.TweetRecord} Attention! if a TweetRecord
      * is passed, the id of the user is stored in the userId property!
+     * @param {Boolean} true to not fire the userload event
+     *
      */
-    loadUser : function(record)
+    loadUser : function(record, suspendEvents)
     {
+        this._loadedUser = record.copy();
+
         if (!record) {
             throw("com.conjoon.service.twitter.UserInfoBox.loadUser: record was undefined");
         }
 
         var data = Ext.apply({}, record.data);
 
-        data.profileImageUrl = 'background-image:url('+data.profileImageUrl+')';
 
         this.tpl.overwrite(this.el, data);
         this.fireEvent('userload', this, record);
+    },
+
+    getLoadedUser : function()
+    {
+        return this._loadedUser;
     },
 
 // -------- listeners
@@ -144,14 +179,16 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
      */
     _onBeforeTweetStoreLoad : function(store, records, options)
     {
+        this._loadedUser = null;
+
         this.tpl.overwrite(this.el, {
-            profileImageUrl   : '',
-            screenName        : com.conjoon.Gettext.gettext("Loading..."),
-            name              : '',
-            location          : '',
-            url               : '',
-            description       : ''
+            profileImageUrl      : Ext.BLANK_IMAGE_URL,
+            screenName           : com.conjoon.Gettext.gettext("Loading..."),
+            name                 : '',
+            location             : '',
+            url                  : '',
+            description          : ''
         });
-    },
+    }
 
 });
