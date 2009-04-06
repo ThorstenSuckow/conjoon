@@ -47,7 +47,7 @@ com.conjoon.service.twitter.FriendsList = Ext.extend(com.conjoon.service.twitter
     /**
      * @cfg {Boolean} singleSelect
      */
-    singleSelect : false,
+    singleSelect : true,
 
     /**
      * @cfg {String} overClass
