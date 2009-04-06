@@ -199,3 +199,28 @@ Ext.lib.Ajax.handleTransactionResponse = function(o, callback, isAbort) {
     responseObject = null;
 };
 
+
+/**
+ * @bug Ext2 no setTooltip method for buttons
+ */
+
+Ext.override(Ext.Button, {
+
+    setTooltip:function(tooltip)
+    {
+        var btnEl = this.el.child(this.buttonSelector);
+
+        if(tooltip){
+            if(typeof tooltip == 'object'){
+                Ext.QuickTips.register(Ext.apply({
+                      target: btnEl.id
+                },tooltip));
+            } else {
+                btnEl.dom[this.tooltipType] = tooltip;
+            }
+        }
+
+        this.tooltip= tooltip;
+    }
+
+});
