@@ -37,7 +37,8 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
         });
 
         var recentTweets = new com.conjoon.service.twitter.TweetList({
-            store : recTweetStore
+            store           : recTweetStore,
+            clearBeforeLoad : true
         });
 
         var tweetPoller = new com.conjoon.service.twitter.data.TweetPoller({

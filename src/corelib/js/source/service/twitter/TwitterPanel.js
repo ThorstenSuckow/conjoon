@@ -207,11 +207,24 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
 // -------- listeners
 
+    /**
+     * Listener for the beforeload event of the recent tweet's store.
+     * Default implementation will hide the switchFriendshipButton.
+     *
+     * @protected
+     */
     _onBeforeUsersRecentTweetStoreLoad : function()
     {
         this.getSwitchFriendshipButton().setVisible(false);
     },
 
+    /**
+     * Listener for the userload event of the userInfoBox. Default implementation
+     * sets the state of the switchFriendshipButton according to the relationship
+     * of the currently logged in user and the loaded user.
+     *
+     * @protected
+     */
     _onUserLoad : function(userInfoBox, record)
     {
         if (record.get('userId') == this._currentTwitterId) {
@@ -233,6 +246,13 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         }
     },
 
+    /**
+     * Listener for the hide event of the users recent tweet's container.
+     * This default implementation will hide the switchFriendshipButton and
+     * cancel any ongoing request of the users recent tweet's proxy.
+     *
+     * @protected
+     */
     _onUsersRecentTweetsHide : function()
     {
         Ext.Ajax.abort(this.userInfoBox.tweetStore.proxy.activeRequest);
@@ -596,7 +616,11 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'authorName':
-                this.showUserInfo(this.recentTweets.getSelectedRecords()[0]);
+                if (this.getLayout().activeItem.getId() == this.getUsersRecentTweetsContainer().getId()) {
+                    this.showUserInfo(this.usersRecentTweets.getSelectedRecords()[0]);
+                } else {
+                    this.showUserInfo(this.recentTweets.getSelectedRecords()[0]);
+                }
             break;
 
             case 'tweetUrl':
@@ -620,7 +644,11 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'when':
-                this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'status');
+                if (this.getLayout().activeItem.getId() == this.getUsersRecentTweetsContainer().getId()) {
+                    this.showUserInfo(this.usersRecentTweets.getSelectedRecords()[0], 'status');
+                } else {
+                    this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'status');
+                }
             break;
 
             case 'source':
@@ -628,7 +656,11 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'inReplyTo':
-                this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'replyStatus');
+                if (this.getLayout().activeItem.getId() == this.getUsersRecentTweetsContainer().getId()) {
+                    this.showUserInfo(this.usersRecentTweets.getSelectedRecords()[0], 'replyStatus');
+                } else {
+                    this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'replyStatus');
+                }
             break;
         }
     },
