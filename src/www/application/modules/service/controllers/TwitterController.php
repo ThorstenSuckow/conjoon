@@ -305,7 +305,7 @@ class Service_TwitterController extends Zend_Controller_Action {
             $accountDto->name, $accountDto->password
         );
 
-        if ($accountId > 0) {
+        if ($statusId > 0) {
             $tweets = $twitter->statusShow($statusId);
         } else {
             $tweets = $twitter->statusUserTimeline(array(
