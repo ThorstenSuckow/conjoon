@@ -620,7 +620,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'when':
-                this._handleTweetWhenClick(dataView, index, item, e, false);
+                this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'status');
             break;
 
             case 'source':
@@ -628,7 +628,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'inReplyTo':
-                this._handleTweetInReplyToClick(dataView, index, item, e, false);
+                this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'replyStatus');
             break;
         }
     },
@@ -820,25 +820,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         com.conjoon.groupware.util.LinkInterceptor.handleLinkClick(e.getTarget());
     },
 
-
-    /**
-     * Delegate for the callback for the "click" event for the RecentTweetsList.
-     * Gets called internally if a click on the "when"
-     * link happend.
-     *
-     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
-     * that triggered this event
-     * @param {Number} index The index of the target node
-     * @param {HtmlElement} item native HtmlElement on which this event occured
-     * @param {Ext.EvenObject} e The raw Ext.EventObject
-     *
-     * @protected
-     */
-    _handleTweetWhenClick : function(dataView, index, item, e)
-    {
-        alert("_handleTweetWhenClick not implemented yet");
-    },
-
     /**
      * Delegate for the callback for the "click" event for the RecentTweetsList.
      * Gets called internally if a click on the "source" link happend.
@@ -854,23 +835,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _handleTweetSourceClick : function(dataView, index, item, e)
     {
         com.conjoon.groupware.util.LinkInterceptor.handleLinkClick(e.getTarget());
-    },
-
-    /**
-     * Delegate for the callback for the "click" event for the RecentTweetsList.
-     * Gets called internally if a click on the "in reply to" link happend.
-     *
-     * @param {com.conjoon.service.twitter.TweetList} dataView The DataView
-     * that triggered this event
-     * @param {Number} index The index of the target node
-     * @param {HtmlElement} item native HtmlElement on which this event occured
-     * @param {Ext.EvenObject} e The raw Ext.EventObject
-     *
-     * @protected
-     */
-    _handleTweetInReplyToClick : function(dataView, index, item, e)
-    {
-        alert("_handleTweetInReplyToClick not implemented yet");
     },
 
     /**
@@ -1127,12 +1091,18 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Loads the information for the specified user into the TwitterUserContainer.
+     * Based on the provided params, a full list of recent tweets for the user will be
+     * loaded, or just a single entry according to the parameter "type".
      *
      * @param {com.conjoon.service.twitter.data.TwitterUserRecord|
      * com.conjoon.service.twitter.data.TweetRecord|String} record or the screenName
      * of the user to fetch the information for
+     * @param {String} type if anything but "status" or "replyStatus", a full list for the
+     * user will be provided. If "status", a single entry for this user will be shown, if
+     * "replyStatus", the tweet on which this tweet is an reply will be shown, only if the
+     * "inReplyToStatusId" property of the passed tweetRecord is a number greater than 0.
      */
-    showUserInfo : function(tweetRecord)
+    showUserInfo : function(tweetRecord, type)
     {
         this._showInputButton.setDisabled(true);
 
@@ -1158,6 +1128,16 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         var params = {
             id : this._currentAccountId,
         };
+
+        if (type === 'status') {
+            Ext.apply(params, {
+                statusId : tweetRecord.id
+            });
+        } else if (type === 'replyStatus' && tweetRecord.get('inReplyToStatusId') > 0) {
+            Ext.apply(params, {
+                statusId : tweetRecord.get('inReplyToStatusId')
+            });
+        }
 
         if ((typeof tweetRecord) != 'string') {
             this.userInfoBox.loadUser(tweetRecord);

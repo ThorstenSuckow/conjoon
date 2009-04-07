@@ -302,6 +302,89 @@ class Conjoon_Service_Twitter_Proxy  {
     }
 
     /**
+     * Show a single status
+     *
+     * @param  int $id Id of status to show
+     * @return Conjoon_Error if any error occures, otherwise an instance of
+     * Conjoon_Modules_Service_Twitter_Tweet
+     */
+    public function statusShow($id)
+    {
+        try {
+            $tweet = $this->_twitter->statusShow($id);
+        } catch (Zend_Service_Twitter_Exception $e) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        if (isset($tweet->error)) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                (string)$tweet->error .
+                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
+                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
+                "]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Tweet/Filter/Tweet.php';
+
+        /**
+         * @see Conjoon_BeanContext_Inspector
+         */
+        require_once 'Conjoon/BeanContext/Inspector.php';
+
+        $filter = new Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet(
+            array(), Conjoon_Filter_Input::CONTEXT_RESPONSE
+        );
+
+
+        $data = array(
+            'id'                  => (string)$tweet->id,
+            'text'                => (string)$tweet->text,
+            'createdAt'           => (string)$tweet->created_at,
+            'source'              => (string)$tweet->source,
+            'truncated'           => (string)$tweet->truncated,
+            'userId'              => (string)$tweet->user->id,
+            'name'                => (string)$tweet->user->name,
+            'screenName'          => (string)$tweet->user->screen_name,
+            'location'            => (string)$tweet->user->location,
+            'profileImageUrl'     => (string)$tweet->user->profile_image_url,
+            'url'                 => (string)$tweet->user->url,
+            'description'         => (string)$tweet->user->description,
+            'protected'           => (string)$tweet->user->protected,
+            'isFollowing'         => (string)$tweet->user->following,
+            'followersCount'      => (string)$tweet->user->followers_count,
+            'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
+            'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
+            'inReplyToScreenName' => (string)$tweet->in_reply_to_screen_name,
+            'favorited'           => (string)$tweet->favorited
+        );
+
+        $filter->setData($data);
+        $data = $filter->getProcessedData();
+
+        return Conjoon_BeanContext_Inspector::create(
+            'Conjoon_Modules_Service_Twitter_Tweet',
+            $data
+        );
+    }
+
+    /**
      * Returns the recent tweets of the user with the speified id.
      *
      * @param array $params A list of parameters to send to the Twitter service

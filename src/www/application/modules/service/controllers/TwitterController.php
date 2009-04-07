@@ -246,6 +246,7 @@ class Service_TwitterController extends Zend_Controller_Action {
      * Sends a list of recent tweets for a Twitter user which id is specified
      * in the request parameter "userIdd". the account which triggered this request
      * is specified in the request parameter "id".
+     * If the parameter statusId is supplied, only this single entry will be returned.
      *
      */
     public function getUsersRecentTweetsAction()
@@ -258,6 +259,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         $userId    = (int)$this->_request->getParam('userId');
         $accountId = (int)$this->_request->getParam('id');
         $userName  = (string)$this->_request->getParam('userName');
+        $statusId  = (int)$this->_request->getParam('statusId');
 
         if ($userName != "" && $userId <= 0) {
             $userId = $userName;
@@ -303,9 +305,14 @@ class Service_TwitterController extends Zend_Controller_Action {
             $accountDto->name, $accountDto->password
         );
 
-        $tweets = $twitter->statusUserTimeline(array(
-            'id' => $userId
-        ));
+        if ($accountId > 0) {
+            $tweets = $twitter->statusShow($statusId);
+        } else {
+            $tweets = $twitter->statusUserTimeline(array(
+                'id' => $userId
+            ));
+        }
+
         $twitter->accountEndSession();
 
         if ($tweets instanceof Conjoon_Error) {
@@ -317,8 +324,12 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         $dtoTweets = array();
 
-        for ($i = 0, $len = count($tweets); $i < $len; $i++) {
-            $dtoTweets[] = $tweets[$i]->getDto();
+        if ($statusId > 0) {
+            $dtoTweets[] = $tweets->getDto();
+        } else {
+            for ($i = 0, $len = count($tweets); $i < $len; $i++) {
+                $dtoTweets[] = $tweets[$i]->getDto();
+            }
         }
 
         $this->view->success = true;
