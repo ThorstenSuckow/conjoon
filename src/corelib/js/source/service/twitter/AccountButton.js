@@ -49,6 +49,12 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
     _exitMenuItem : null,
 
     /**
+     * @type {Ext.menu.Item} _manageAccountMenuItem
+     * @protected
+     */
+    _manageAccountMenuItem : null,
+
+    /**
      * Inits this component.
      *
      */
@@ -124,6 +130,20 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
         }
 
         return this._exitMenuItem;
+    },
+
+    /**
+     * Returns this button's manage accounts menu item.
+     *
+     * @return {Ext.menu.Item}
+     */
+    getManageAccountMenuItem : function()
+    {
+        if (!this._manageAccountMenuItem) {
+            this._manageAccountMenuItem = this._getManageAccountMenuItem();
+        }
+
+        return this._manageAccountMenuItem;
     },
 
 // -------- listeners
@@ -302,6 +322,7 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
             this.menu = new Ext.menu.Menu({
                 items : [
                     new Ext.menu.Separator(),
+                    this.getManageAccountMenuItem(),
                     this.getExitMenuItem()
                 ]
             });
@@ -325,6 +346,21 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
             text     : com.conjoon.Gettext.gettext("Exit"),
             handler  : this._onExitItemClick,
             scope    : this
+        });
+    },
+
+    /**
+     * Returns the {Ext.menu.Item} used for this button's menu.
+     * Overwrite this to return a custom implementation of a menu item.
+     *
+     * @return {Ext.menu.Item}
+     *
+     * @protected
+     */
+    _getManageAccountMenuItem : function()
+    {
+        return new Ext.menu.Item({
+            text : com.conjoon.Gettext.gettext("Manage Accounts...")
         });
     }
 
