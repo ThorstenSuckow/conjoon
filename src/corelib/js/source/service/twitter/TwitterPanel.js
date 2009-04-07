@@ -616,11 +616,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'authorName':
-                if (this.getLayout().activeItem.getId() == this.getUsersRecentTweetsContainer().getId()) {
-                    this.showUserInfo(this.usersRecentTweets.getSelectedRecords()[0]);
-                } else {
-                    this.showUserInfo(this.recentTweets.getSelectedRecords()[0]);
-                }
+                this.showUserInfo(dataView.getSelectedRecords()[0]);
             break;
 
             case 'tweetUrl':
@@ -644,11 +640,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'when':
-                if (this.getLayout().activeItem.getId() == this.getUsersRecentTweetsContainer().getId()) {
-                    this.showUserInfo(this.usersRecentTweets.getSelectedRecords()[0], 'status');
-                } else {
-                    this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'status');
-                }
+                this.showUserInfo(dataView.getSelectedRecords()[0], 'status');
             break;
 
             case 'source':
@@ -656,11 +648,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             break;
 
             case 'inReplyTo':
-                if (this.getLayout().activeItem.getId() == this.getUsersRecentTweetsContainer().getId()) {
-                    this.showUserInfo(this.usersRecentTweets.getSelectedRecords()[0], 'replyStatus');
-                } else {
-                    this.showUserInfo(this.recentTweets.getSelectedRecords()[0], 'replyStatus');
-                }
+                this.showUserInfo(dataView.getSelectedRecords()[0], 'replyStatus');
             break;
         }
     },
