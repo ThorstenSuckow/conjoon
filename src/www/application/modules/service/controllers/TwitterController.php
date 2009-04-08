@@ -57,48 +57,31 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function getAccountsAction()
     {
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Builder
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Builder.php';
 
+        /**
+         * @see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
-        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
-        require_once 'Conjoon/BeanContext/Decorator.php';
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Service_Twitter_Account_Model_Account'
-        );
+        $user   = Zend_Registry::get(
+            Conjoon_Keys::REGISTRY_AUTH_OBJECT
+        )->getIdentity();
 
-        $data = $decoratedModel->getAccountsForUserAsDto($user->getId());
+        $userId = $user->getId();
 
-        require_once 'Zend/Service/Twitter.php';
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
 
-        for ($i = 0, $len = count($data); $i < $len; $i++) {
-            $dto =& $data[$i];
-            $dto->updateInterval = ((int)$dto->updateInterval) * 1000;
-
-            try {
-                /**
-                 * @todo move to separate model
-                 */
-                $twitter = new Zend_Service_Twitter($dto->name, $dto->password);
-                $response = $twitter->userShow($dto->name);
-
-                $dto->twitterId              = (string)$response->id;
-                $dto->twitterName            = (string)$response->name;
-                $dto->twitterScreenName      = (string)$response->screen_name;
-                $dto->twitterLocation        = (string)$response->location;
-                $dto->twitterProfileImageUrl = (string)$response->profile_image_url;
-                $dto->twitterUrl             = (string)$response->url;
-                $dto->twitterProtected       = (bool)(string)$response->protected;
-                $dto->twitterDescription     = (string)$response->description;
-                $dto->twitterFollowersCount  = (int)(string)$response->followers_count;
-
-                $twitter->accountEndSession();
-
-            } catch (Exception $e) {
-                // ignore
-            }
-
-            $dto->password = str_pad("", strlen($dto->password), '*');
-        }
+        $data = Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_TWITTER_ACCOUNTS,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->get(array('userId' => $userId));
 
         $this->view->success  = true;
         $this->view->accounts = $data;

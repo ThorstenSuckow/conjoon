@@ -40,4 +40,7 @@ interface Conjoon_Keys {
 
 // -------- cache db metadata
     const CACHE_DB_METADATA = 'com.conjoon.cache.db.metadata';
+
+// -------- cache twitter accounts
+    const CACHE_TWITTER_ACCOUNTS = 'com.conjoon.cache.twitter.accounts';
 }

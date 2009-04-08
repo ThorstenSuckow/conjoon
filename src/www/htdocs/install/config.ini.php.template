@@ -122,142 +122,109 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [cache]
 
+; The following settings for caching data is supported in conjoon since V0.1RC1
+;
+; [frontend]
+;   frontend_type:
+;     set this to any valid Zend_Cache_Frontend-type. Note, that if you change
+;     the type, you have to adjust the frontend-settings according to the new
+;     frontend type. By default, conjoon is optimized to use the
+;     Zend_Cache_Frontend_Core-class
+;
+;   automatic_cleaning_factor:
+;     Disable / Tune the automatic cleaning process (garbage collector): 0 means
+;     no automatic cache cleaning, 1 means systematic cache cleaning and x > 1 means
+;     automatic random cleaning 1 times in x write operations.
+;
+;   lifetime:
+;     denotes the valid lifetime of a cached object. Defaults to 31536000, which is
+;     approximately 1 year
+;
+;   caching:
+;     Tells whether caching is active or inactive. Set this to 0, and caching
+;     won't happen
+;
+;   automatic_serialization:
+;     Whether to use automatic serialization of email messages when caching
+;
+;   ignore_user_abort:
+;     if set to 1, the core will set the ignore_user_abort PHP flag inside the
+;     save() method to avoid cache corruptions in some cases
+;
+; [backend]
+;   backend_type
+;     set this to any valid Zend_Cache_Backend-type. Note, that if you change
+;     the type, you have to adjust the backend-settings according to the new
+;     backend type. By default, conjoon is optimized to use the
+;     Zend_Cache_Backend_File-class
+;
+;   cache_dir
+;     Directory where to store cache files, if backend_type is set to "file".
+;     If the name does not start with a slash or a drive letter (i.e. F:/), conjoon
+;     asumes that the path is relative to the application path
+;
+;   hashed_directory_level
+;     Hashed directory structure level : 0 means "no hashed directory structure", 1 means
+;     "one level of directory", 2 means "two levels"... This option can speed up the cache
+;     only when you have many thousands of cache files. Only specific benchs can help you to
+;     choose the perfect value for you. Maybe, 1 or 2 is a good start.
+
+
 ;;;;;;;;;;;;;;;;;;;;
 ;;  CACHE EMAILS  ;;
 ;;;;;;;;;;;;;;;;;;;;
 
-; set this to any valid Zend_Cache_Frontend-type. Note, that if you change
-; the type, you have to adjust the frontend-settings according to the new
-; frontend type. By default, conjoon is optimized to use the
-; Zend_Cache_Frontend_Core-class
 email.message.frontend_type = core
-
-;Disable / Tune the automatic cleaning process (garbage collector): 0 means
-; no automatic cache cleaning, 1 means systematic cache cleaning and x > 1 means
-; automatic random cleaning 1 times in x write operations.
 email.message.frontend.automatic_cleaning_factor = 10
-
-; denotes the valid lifetime of a cached object. Defaults to 31536000, which is
-; approximately 1 year
 email.message.frontend.lifetime = 31536000
-
-; Tells whether caching is active or inactive. Set this to 0, and caching
-; won't happen
 email.message.frontend.caching = 1
-
-; Whether to use automatic serialization of email messages when caching
 email.message.frontend.automatic_serialization = 1
-
-; if set to 1, the core will set the ignore_user_abort PHP flag inside the
-; save() method to avoid cache corruptions in some cases
 email.message.frontend.ignore_user_abort = 1
-
-; set this to any valid Zend_Cache_Backend-type. Note, that if you change
-; the type, you have to adjust the backend-settings according to the new
-; backend type. By default, conjoon is optimized to use the
-; Zend_Cache_Backend_File-class
 email.message.backend_type = file
-
-; Directory where to store cache files. If the name does not start with a slash or a drive
-; letter (i.e. F:/), conjoon asumes that the path is relative to the application path
 email.message.backend.cache_dir = cache/email/messages
-
-; Hashed directory structure level : 0 means "no hashed directory structure", 1 means
-; "one level of directory", 2 means "two levels"... This option can speed up the cache
-; only when you have many thousands of cache files. Only specific benchs can help you to
-; choose the perfect value for you. Maybe, 1 or 2 is a good start.
 email.message.backend.hashed_directory_level = 1
+
 
 ;;;;;;;;;;;;;;;;;;;
 ;;  CACHE FEEDS  ;;
 ;;;;;;;;;;;;;;;;;;;
 
-; set this to any valid Zend_Cache_Frontend-type. Note, that if you change
-; the type, you have to adjust the frontend-settings according to the new
-; frontend type. By default, conjoon is optimized to use the
-; Zend_Cache_Frontend_Core-class
 feed.item.frontend_type = core
-
-;Disable / Tune the automatic cleaning process (garbage collector): 0 means
-; no automatic cache cleaning, 1 means systematic cache cleaning and x > 1 means
-; automatic random cleaning 1 times in x write operations.
 feed.item.frontend.automatic_cleaning_factor = 10
-
-; denotes the valid lifetime of a cached object. Defaults to 31536000, which is
-; approximately 1 year
 feed.item.frontend.lifetime = 31536000
-
-; Tells whether caching is active or inactive. Set this to 0, and caching
-; won't happen
 feed.item.frontend.caching = 1
-
-; Whether to use automatic serialization of feed items when caching
 feed.item.frontend.automatic_serialization = 1
-
-; if set to 1, the core will set the ignore_user_abort PHP flag inside the
-; save() method to avoid cache corruptions in some cases
 feed.item.frontend.ignore_user_abort = 1
-
-; set this to any valid Zend_Cache_Backend-type. Note, that if you change
-; the type, you have to adjust the backend-settings according to the new
-; backend type. By default, conjoon is optimized to use the
-; Zend_Cache_Backend_File-class
 feed.item.backend_type = file
-
-; Directory where to store cache files. If the name does not start with a slash or a drive
-; letter (i.e. F:/), conjoon asumes that the path is relative to the application path
 feed.item.backend.cache_dir = cache/feed/items
-
-; Hashed directory structure level : 0 means "no hashed directory structure", 1 means
-; "one level of directory", 2 means "two levels"... This option can speed up the cache
-; only when you have many thousands of cache files. Only specific benchs can help you to
-; choose the perfect value for you. Maybe, 1 or 2 is a good start.
 feed.item.backend.hashed_directory_level = 1
+
 
 ;;;;;;;;;;;;;;;;
 ;; CACHE DB   ;;
 ;;;;;;;;;;;;;;;;
 
-; set this to any valid Zend_Cache_Frontend-type. Note, that if you change
-; the type, you have to adjust the frontend-settings according to the new
-; frontend type. By default, conjoon is optimized to use the
-; Zend_Cache_Frontend_Core-class
 db.metadata.frontend_type = core
-
-; Disable / Tune the automatic cleaning process (garbage collector): 0 means
-; no automatic cache cleaning, 1 means systematic cache cleaning and x > 1 means
-; automatic random cleaning 1 times in x write operations.
 db.metadata.frontend.automatic_cleaning_factor = 10
-
-; denotes the valid lifetime of a cached object. Defaults to 31536000, which is
-; approximately 1 year
 db.metadata.frontend.lifetime = 31536000
-
-; Tells whether caching is active or inactive. Set this to 0, and caching
-; won't happen
 db.metadata.frontend.caching = 1
-
-; Whether to use automatic serialization of feed items when caching
 db.metadata.frontend.automatic_serialization = 1
-
-; if set to 1, the core will set the ignore_user_abort PHP flag inside the
-; save() method to avoid cache corruptions in some cases
 db.metadata.frontend.ignore_user_abort = 1
-
-; set this to any valid Zend_Cache_Backend-type. Note, that if you change
-; the type, you have to adjust the backend-settings according to the new
-; backend type. By default, conjoon is optimized to use the
-; Zend_Cache_Backend_File-class
 db.metadata.backend_type = file
-
-; Directory where to store cache files. If the name does not start with a slash or a drive
-; letter (i.e. F:/), conjoon asumes that the path is relative to the application path
 db.metadata.backend.cache_dir = cache/db/metadata
-
-; Hashed directory structure level : 0 means "no hashed directory structure", 1 means
-; "one level of directory", 2 means "two levels"... This option can speed up the cache
-; only when you have many thousands of cache files. Only specific benchs can help you to
-; choose the perfect value for you. Maybe, 1 or 2 is a good start.
-; since we don't expect to have thousands of tables in our db, we can safely leave the value
-; to 0
 db.metadata.backend.hashed_directory_level = 0
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;;  TWITTER CACHE  ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+twitter.accounts.frontend_type = core
+twitter.accounts.frontend.automatic_cleaning_factor = 10
+twitter.accounts.frontend.lifetime = 86400
+twitter.accounts.frontend.caching = 1
+twitter.accounts.frontend.automatic_serialization = 1
+twitter.accounts.frontend.ignore_user_abort = 1
+twitter.accounts.backend_type = file
+twitter.accounts.backend.cache_dir = cache/twitter/accounts
+twitter.accounts.backend.hashed_directory_level = 1

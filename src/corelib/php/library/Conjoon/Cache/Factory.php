@@ -57,6 +57,11 @@ class Conjoon_Cache_Factory {
             case Conjoon_Keys::CACHE_DB_METADATA:
                 $cacheOptions = $options['cache']['db']['metadata'];
             break;
+
+            case Conjoon_Keys::CACHE_TWITTER_ACCOUNTS:
+                $cacheOptions = $options['cache']['twitter']['accounts'];
+            break;
+
         }
 
         $frontendOptions = $cacheOptions['frontend'];
