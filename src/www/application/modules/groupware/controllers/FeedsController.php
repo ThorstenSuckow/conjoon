@@ -140,15 +140,17 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                         $itemResponseFilter->setData($items[$a]);
                         $insertedItems[] = $itemResponseFilter->getProcessedData();
                     }
-                    $updatedAccounts[$accounts[$i]->id] = true;
                 }
             } catch (Exception $e) {
                 // ignore
             }
+            $updatedAccounts[$accounts[$i]->id] = true;
         }
 
         // set the last updated timestamp for the accounts
-        $model->setLastUpdated(array_keys($updatedAccounts), $time);
+        if (!empty($updatedAccounts)) {
+            $model->setLastUpdated(array_keys($updatedAccounts), $time);
+        }
 
         if ($removeOld) {
             $model->deleteOldFeedItems($userId);
