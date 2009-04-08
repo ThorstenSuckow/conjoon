@@ -255,6 +255,7 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
         title          : com.conjoon.Gettext.gettext("Emails"),
         iconCls        : 'com-conjoon-groupware-email-EmailPanel-icon',
         closable       : true,
+        id             : 'DOM:com.conjoon.groupware.EmailPanel',
         autoScroll     : false,
         deferredRender : true,
         layout         : 'border',

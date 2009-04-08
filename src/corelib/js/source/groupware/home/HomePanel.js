@@ -27,6 +27,7 @@ com.conjoon.groupware.home.HomePanel = Ext.extend(Ext.Panel, {
             cls        : 'com-conjoon-groupware-HomePanel-body',
             closable   : false,
             iconCls    : 'com-conjoon-groupware-HomePanel-icon',
+            id         : 'DOM:com.conjoon.groupware.HomePanel',
             autoScroll : true
         });
 
