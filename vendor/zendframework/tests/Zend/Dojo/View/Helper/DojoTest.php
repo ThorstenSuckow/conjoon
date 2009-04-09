@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DojoTest.php 11991 2008-10-16 15:12:15Z matthew $
+ * @version    $Id: DojoTest.php 14166 2009-02-25 17:58:58Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_DojoTest::main() if this source file is executed directly.
@@ -833,6 +833,18 @@ function() {
         $test = $this->helper->javascriptCaptureStart();
         $this->helper->javascriptCaptureEnd();
         $this->assertNull($test);
+    }
+
+    /**
+     * @group ZF-4587
+     * @group ZF-5808
+     */
+    public function testZendDijitOnLoadMarkupShouldPrecedeAllOtherOnLoadEvents()
+    {
+        $this->helper->addOnLoad('zend.custom');
+        $this->view->textBox('foo', 'bar');
+        $test = $this->helper->__toString();
+        $this->assertRegexp('/zendDijits.*?(zend\.custom)/s', $test, 'Generated markup: ' . $test);
     }
 
     public function setupDojo()

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -18,9 +17,13 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StripTagsTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: StripTagsTest.php 14273 2009-03-10 20:00:32Z matthew $
  */
 
+// Call Zend_Filter_StripTagsTest::main() if this source file is executed directly.
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Filter_StripTagsTest::main');
+}
 
 /**
  * Test helper
@@ -48,6 +51,19 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
      * @var Zend_Filter_StripTags
      */
     protected $_filter;
+
+    /**
+     * Runs the test methods of this class.
+     *
+     * @return void
+     */
+    public static function main()
+    {
+        require_once "PHPUnit/TextUI/TestRunner.php";
+
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
 
     /**
      * Creates a new Zend_Filter_StripTags object for each test method
@@ -318,7 +334,7 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
             );
         $this->_filter->setTagsAllowed($tagsAllowed);
         $input    = '<img src="image.png" alt="square height="100" width="100" />';
-        $expected = '<img src="image.png" height="100" width="100" />';
+        $expected = '<img src="image.png" alt="square height=" width="100" />';
         $this->assertEquals($expected, $this->_filter->filter($input));
     }
 
@@ -473,20 +489,35 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that an allowed attribute's value may end with an equals sign '='
      *
-     * @return void
-     * @link   http://framework.zend.com/issues/browse/ZF-3293
+     * @group ZF-3293
+     * @group ZF-5983
      */
     public function testAllowedAttributeValueMayEndWithEquals()
     {
-        $this->markTestSkipped();
-        return;
-        /*
         $tagsAllowed = array(
             'element' => 'attribute'
         );
         $this->_filter->setTagsAllowed($tagsAllowed);
         $input = '<element attribute="a=">contents</element>';
         $this->assertEquals($input, $this->_filter->filter($input));
-        */
     }
+
+    /**
+     * @group ZF-5983
+     */
+    public function testDisallowedAttributesSplitOverMultipleLinesShouldBeStripped()
+    {
+        $tagsAllowed = array('a' => 'href');
+        $this->_filter->setTagsAllowed($tagsAllowed);
+        $input = '<a href="http://framework.zend.com/issues" onclick
+=
+    "alert(&quot;Gotcha&quot;); return false;">http://framework.zend.com/issues</a>';
+        $filtered = $this->_filter->filter($input);
+        $this->assertNotContains('onclick', $filtered);
+    }
+}
+
+// Call Zend_Filter_StripTagsTest::main() if this source file is executed directly.
+if (PHPUnit_MAIN_METHOD === 'Zend_Filter_StripTagsTest::main') {
+    Zend_Filter_StripTagsTest::main();
 }

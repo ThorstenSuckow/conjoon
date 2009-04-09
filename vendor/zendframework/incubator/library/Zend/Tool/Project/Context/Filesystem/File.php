@@ -7,19 +7,9 @@ abstract class Zend_Tool_Project_Context_Filesystem_File extends Zend_Tool_Proje
     
     public function init()
     {
-        //@todo check to ensure that this 'file' resource has no children
+        // @todo check to ensure that this 'file' resource has no children
         parent::init();
     }
-    
-    /**
-     * @todo determine if this is needed
-     *
-     * @param unknown_type $fileName
-     */
-//    public function setFileName($fileName)
-//    {
-//        $this->_filesystemName = $fileName;
-//    }
     
     public function setResource($resource)
     {
@@ -29,13 +19,32 @@ abstract class Zend_Tool_Project_Context_Filesystem_File extends Zend_Tool_Proje
 
     public function create()
     {
+        // check to ensure the parent exists, if not, call it and create it
+        if (($parentResource = $this->_resource->getParentResource()) instanceof Zend_Tool_Project_Profile_Resource) {
+            if ((($parentContext = $parentResource->getContext()) instanceof Zend_Tool_Project_Context_Filesystem_Abstract)
+                && (!$parentContext->exists())) {
+                $parentResource->create();
+            }
+        }
+        
+        
+        if (file_exists($this->getPath())) {
+            //if (Zend_Tool_Framework_Registry::getInstance()->getClient()->isInteractive()) {
+                // @todo prompt user
+            //} else {
+                
+            //}
+        }
+        
         file_put_contents($this->getPath(), $this->getContents());
+        return $this;
     }
     
     public function delete()
     {
         unlink($this->getPath());
         $this->_resource->setDeleted(true);
+        return $this;
     }
     
     public function getContents()

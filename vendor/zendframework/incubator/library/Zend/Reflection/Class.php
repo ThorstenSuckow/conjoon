@@ -1,14 +1,50 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
+ */
 
+/**
+ * @see Zend_Reflection_Property
+ */
 require_once 'Zend/Reflection/Property.php';
+
+/**
+ * @see Zend_Reflection_Method
+ */
 require_once 'Zend/Reflection/Method.php';
+
+/**
+ * Zend_Reflection_Docblock
+ */
 require_once 'Zend/Reflection/Docblock.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Zend_Reflection_Class extends ReflectionClass
 {
 
     /**
-     * Return the reflection file of the declaring file.
+     * getDeclaringFile() - Return the reflection file of the declaring file.
      *
      * @return Zend_Reflection_File
      */
@@ -17,9 +53,8 @@ class Zend_Reflection_Class extends ReflectionClass
         return new Zend_Reflection_File($this->getFileName());
     }
     
-    
     /**
-     * Return the classes Docblock reflection object
+     * getDocblock() - Return the classes Docblock reflection object
      *
      * @return Zend_Reflection_Docblock
      */
@@ -34,7 +69,7 @@ class Zend_Reflection_Class extends ReflectionClass
     }
     
     /**
-     * Return the start line
+     * getStartLine() - Return the start line
      *
      * @param bool $includeDocComment
      * @return int
@@ -51,27 +86,25 @@ class Zend_Reflection_Class extends ReflectionClass
     }
     
     /**
-     * Return the contents of the class
+     * getContents() - Return the contents of the class
      *
      * @param bool $includeDocblock
      * @return string
      */
     public function getContents($includeDocblock = true)
     {
-        return implode("\n", 
-            array_splice(
-                file($this->getFileName()), 
-                $this->getStartLine($includeDocblock), 
-                ($this->getEndLine() - $this->getStartLine()), 
-                true
-                )
-            );
+        $filename  = $this->getFileName();
+        $filelines = file($filename);
+        $startnum  = $this->getStartLine($includeDocblock);
+        $endnum    = $this->getEndLine() - $this->getStartLine();
+        
+        return implode('', array_splice($filelines, $startnum, $endnum, true));
     }
     
     /**
-     * Enter description here...
+     * getInterfaces()
      *
-     * @return Zend_Reflection_Class[]
+     * @return array Array of Zend_Reflection_Class
      */
     public function getInterfaces()
     {
@@ -86,7 +119,7 @@ class Zend_Reflection_Class extends ReflectionClass
     }
     
     /**
-     * Return method reflection by name
+     * getMethod() Return method reflection by name
      *
      * @param string $name
      * @return Zend_Reflection_Method
@@ -100,10 +133,10 @@ class Zend_Reflection_Class extends ReflectionClass
     }
 
     /**
-     * Enter description here...
+     * getMethods()
      *
      * @param string $filter
-     * @return Zend_Reflection_Method[]
+     * @return array Array of Zend_Reflection_Method
      */
     public function getMethods($filter = -1)
     {
@@ -118,7 +151,7 @@ class Zend_Reflection_Class extends ReflectionClass
     }
 
     /**
-     * Parent reflection class of reflected class
+     * getParentClass() - Parent reflection class of reflected class
      *
      * @return Zend_Reflection_Class
      */
@@ -135,7 +168,7 @@ class Zend_Reflection_Class extends ReflectionClass
     }
 
     /**
-     * Return reflection property of this class by name
+     * getProperty() - Return reflection property of this class by name
      *
      * @param string $name
      * @return Zend_Reflection_Property
@@ -149,10 +182,10 @@ class Zend_Reflection_Class extends ReflectionClass
     }
     
     /**
-     * Return reflection properties of this class
+     * getProperties() - Return reflection properties of this class
      *
      * @param int $filter
-     * @return Zend_Reflection_Property[]
+     * @return array Array of Zend_Reflection_Property
      */
     public function getProperties($filter = -1)
     {
@@ -165,8 +198,5 @@ class Zend_Reflection_Class extends ReflectionClass
         unset($phpReflections);
         return $zendReflections;
     }
-    
-    
-    
-    
+
 }

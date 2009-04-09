@@ -35,11 +35,11 @@ class Zend_Tool_Project_Context_Zf_ZfStandardLibraryDirectory extends Zend_Tool_
     protected function _getZfPath()
     {
         foreach (explode(PATH_SEPARATOR, get_include_path()) as $includePath) {
-        	
+            
             if (!file_exists($includePath) || $includePath[0] == '.') {
                 continue;
             }
-        	
+            
             if (realpath($checkedPath = rtrim($includePath, '\\/') . '/Zend/Loader.php') !== false && file_exists($checkedPath)) {
                 return dirname($checkedPath);
             }

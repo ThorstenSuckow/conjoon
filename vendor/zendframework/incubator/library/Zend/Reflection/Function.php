@@ -1,10 +1,43 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
+ */
 
+/**
+ * @see Zend_Reflection_Parameter
+ */
+require_once 'Zend/Reflection/Parameter.php';
+
+/**
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Zend_Reflection_Function extends ReflectionFunction
 {
     
-    
-    
+    /**
+     * getDocblock()
+     *
+     * @return Zend_Reflection_Docblock
+     */
     public function getDocblock()
     {
         if (($comment = $this->getDocComment()) != '') {
@@ -14,6 +47,12 @@ class Zend_Reflection_Function extends ReflectionFunction
         throw new Zend_Reflection_Exception($this->getName() . ' does not have a Docblock.');
     }
     
+    /**
+     * getStartLine()
+     *
+     * @param bool $includeDocComment
+     * @return int
+     */
     public function getStartLine($includeDocComment = false)
     {
         if ($includeDocComment) {
@@ -25,6 +64,12 @@ class Zend_Reflection_Function extends ReflectionFunction
         return parent::getStartLine();
     }
     
+    /**
+     * getContents() - 
+     *
+     * @param bool $includeDocblock
+     * @return string
+     */
     public function getContents($includeDocblock = true)
     {
         return implode("\n", 
@@ -37,6 +82,11 @@ class Zend_Reflection_Function extends ReflectionFunction
             );
     }
     
+    /**
+     * getParameters()
+     *
+     * @return array Array of Zend_Reflection_Parameter
+     */
     public function getParameters()
     {
         $phpReflections = parent::getParameters();

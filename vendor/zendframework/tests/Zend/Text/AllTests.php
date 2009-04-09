@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12496 2008-11-10 16:10:42Z dasprid $
+ * @version    $Id: AllTests.php 14285 2009-03-12 13:48:39Z dasprid $
  */
 
 /**
@@ -31,6 +31,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once 'Zend/Text/FigletTest.php';
 require_once 'Zend/Text/TableTest.php';
+require_once 'Zend/Text/MultiByteTest.php';
 
 /**
  * @category   Zend
@@ -52,6 +53,7 @@ class Zend_Text_AllTests
 
         $suite->addTestSuite('Zend_Text_FigletTest');
         $suite->addTestSuite('Zend_Text_TableTest');
+        $suite->addTestSuite('Zend_Text_MultiByteTest');
 
         return $suite;
     }

@@ -1,10 +1,11 @@
 <?php
 
 require_once 'Zend/Tool/Project/Profile/Resource/Container.php';
-require_once 'Zend/Tool/Project/Context/Registry.php';
+require_once 'Zend/Tool/Project/Context/Repository.php';
 
 class Zend_Tool_Project_Profile_Resource extends Zend_Tool_Project_Profile_Resource_Container
 {
+    
     protected $_profile = null;
     protected $_parentResource = null;
 
@@ -67,10 +68,10 @@ class Zend_Tool_Project_Profile_Resource extends Zend_Tool_Project_Profile_Resou
         return $this->_profile;
     }
 
-    public function getPersistentParameters()
+    public function getPersistentAttributes()
     {
-        if (method_exists($this->_context, 'getPersistentParameters')) {
-            return $this->_context->getPersistentParameters();
+        if (method_exists($this->_context, 'getPersistentAttributes')) {
+            return $this->_context->getPersistentAttributes();
         }
 
         return array();
@@ -98,19 +99,24 @@ class Zend_Tool_Project_Profile_Resource extends Zend_Tool_Project_Profile_Resou
     {
         return $this->_deleted;
     }
-
+    
     public function initializeContext()
     {
         if ($this->_isContextInitialized) {
             return;
         }
         if (is_string($this->_context)) {
-            $this->_context = Zend_Tool_Project_Context_Registry::getInstance()->getContext($this->_context);
+            $this->_context = Zend_Tool_Project_Context_Repository::getInstance()->getContext($this->_context);
         }
-        $this->_context->setResource($this);
+        
+        if (method_exists($this->_context, 'setResource')) {
+            $this->_context->setResource($this);
+        }
+        
         if (method_exists($this->_context, 'init')) {
             $this->_context->init();
         }
+        
         $this->_isContextInitialized = true;
     }
 
@@ -119,15 +125,16 @@ class Zend_Tool_Project_Profile_Resource extends Zend_Tool_Project_Profile_Resou
         return $this->_context->getName();
     }
 
-    /**
     public function __call($method, $arguments)
     {
         if (method_exists($this->_context, $method)) {
+            if (!$this->isEnabled()) {
+                $this->setEnabled(true);
+            }
             return call_user_func_array(array($this->_context, $method), $arguments);
         } else {
-            throw new Exception('cannot call ' . $method);
+            throw new Zend_Tool_Project_Profile_Exception('cannot call ' . $method);
         }
     }
-    */
 
 }

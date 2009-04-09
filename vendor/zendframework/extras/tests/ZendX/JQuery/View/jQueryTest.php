@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: jQueryTest.php 13640 2009-01-14 21:50:50Z beberlei $
+ * @version     $Id: jQueryTest.php 14115 2009-02-19 17:36:01Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";
@@ -399,21 +399,29 @@ class ZendX_JQuery_View_jQueryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @group ZF-5344
+     * @group ZF-5839
      */
-    public function testNoConflictModeIsRecognizedInRenderingOnLoadStackEvent()
+    public function testStylesheetShouldRenderCorrectClosingBracketBasedOnHtmlDoctypeDefinition()
     {
-        ZendX_JQuery_View_Helper_JQuery::enableNoConflictMode();
-        $this->helper->addOnLoad("foo");
-        $this->helper->addOnLoad("bar");
+        $this->helper->addStylesheet("test.css");
+        $this->view->doctype("HTML4_STRICT");
+
+        $assert = '<link rel="stylesheet" href="test.css" type="text/css" media="screen">';
         $this->helper->enable();
+        $this->assertContains($assert, $this->helper->__toString());
 
-        $jQueryStack = $this->helper->__toString();
-        $this->assertContains('$j(document).ready(function()', $jQueryStack);
+    }
 
-        ZendX_JQuery_View_Helper_JQuery::disableNoConflictMode();
+    /**
+     * @group ZF-5839
+     */
+    public function testStylesheetShouldRenderCorrectClosingBracketBasedOnXHtmlDoctypeDefinition()
+    {
+        $this->helper->addStylesheet("test.css");
+        $this->view->doctype("XHTML1_STRICT");
 
-        $jQueryStack =  $this->helper->__toString();
-        $this->assertNotContains('$j(document).ready(function()', $jQueryStack);
+        $assert = '<link rel="stylesheet" href="test.css" type="text/css" media="screen" />';
+        $this->helper->enable();
+        $this->assertContains($assert, $this->helper->__toString());
     }
 }

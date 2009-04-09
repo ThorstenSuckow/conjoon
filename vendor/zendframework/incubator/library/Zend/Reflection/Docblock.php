@@ -1,31 +1,98 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
+ */
 
+/**
+ * @see Zend_Reflection_Docblock_Tag
+ */
 require_once 'Zend/Reflection/Docblock/Tag.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Zend_Reflection_Docblock implements Reflector
 {
+    
+    /**
+     * @var Reflector
+     */
     protected $_reflector = null;
     
+    /**#@+
+     * @var int
+     */
     protected $_startLine = null;
     protected $_endLine = null;
+    /**#@-*/
     
+    /**
+     * @var string
+     */
     protected $_docComment = null;
+    
+    /**
+     * @var string
+     */
     protected $_cleanDocComment = null;
     
+    /**
+     * @var string
+     */
     protected $_longDescription = null;
+    
+    /**
+     * @var string
+     */
     protected $_shortDescription = null;
+    
+    /**
+     * @var array
+     */
     protected $_tags = array();
     
+    /**
+     * export()
+     *
+     */
     public static function export()
     {
-        /* huh? */
+        // reqired by the reflector interface
     }
     
+    /**
+     * __toString()
+     *
+     */
     public function __toString()
     {
-        /* wha? */
+        // required by the reflector interface
     }
     
+    /**
+     * __construct()
+     *
+     * @param Reflector|string $commentOrReflector
+     */
     public function __construct($commentOrReflector)
     {
         if ($commentOrReflector instanceof Reflector) {
@@ -54,31 +121,62 @@ class Zend_Reflection_Docblock implements Reflector
         $this->_parse();
     }
     
+    /**
+     * getContents()
+     *
+     * @return string
+     */
     public function getContents()
     {
         return $this->_cleanDocComment;
     }
     
+    /**
+     * getStartLine()
+     *
+     * @return int
+     */
     public function getStartLine()
     {
         return $this->_startLine;
     }
     
+    /**
+     * getEndLine()
+     *
+     * @return int
+     */
     public function getEndLine()
     {
         return $this->_endLine;
     }
     
+    /**
+     * getShortDescription()
+     *
+     * @return string
+     */
     public function getShortDescription()
     {
         return $this->_shortDescription;
     }
     
+    /**
+     * getLongDescription()
+     *
+     * @return string
+     */
     public function getLongDescription()
     {
         return $this->_longDescription;
     }
     
+    /**
+     * hasTag()
+     *
+     * @param string $name
+     * @return bool
+     */
     public function hasTag($name)
     {
         foreach ($this->_tags as $tag) {
@@ -89,6 +187,12 @@ class Zend_Reflection_Docblock implements Reflector
         return false;
     }
     
+    /**
+     * getTag()
+     *
+     * @param string  $name
+     * @return Zend_Reflection_Docblock_Tag
+     */
     public function getTag($name)
     {
         foreach ($this->_tags as $tag) {
@@ -100,6 +204,12 @@ class Zend_Reflection_Docblock implements Reflector
         return false;
     }
     
+    /**
+     * getTags()
+     *
+     * @param string $filter
+     * @return array Array of Zend_Reflection_Docblock_Tag
+     */
     public function getTags($filter = null)
     {
         if ($filter === null || !is_string($filter)) {
@@ -115,6 +225,12 @@ class Zend_Reflection_Docblock implements Reflector
         return $returnTags;
     }
     
+    /**
+     * _parse()
+     * 
+     * This method does the work of parsing docblocks out of a string
+     *
+     */
     protected function _parse()
     {
         $docComment = $this->_docComment;
@@ -131,6 +247,8 @@ class Zend_Reflection_Docblock implements Reflector
         while (($newlinePos = strpos($parsedDocComment, "\n")) !== false) {
             $lineNumber++;
             $line = substr($parsedDocComment, 0, $newlinePos);
+            
+            $matches = array();
             
             if ((strpos($line, '@') === 0) && (preg_match('#^(@\w+.*?)(\n)(?:@|\r?\n|$)#s', $parsedDocComment, $matches))) {
                 $this->_tags[] = Zend_Reflection_Docblock_Tag::factory($matches[1]);

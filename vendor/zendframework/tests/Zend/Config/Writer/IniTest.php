@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IniTest.php 12221 2008-10-31 20:32:43Z dasprid $
+ * @version    $Id: IniTest.php 14412 2009-03-21 18:40:48Z dasprid $
  */
 
 /**
@@ -108,6 +108,34 @@ class Zend_Config_Writer_IniTest extends PHPUnit_Framework_TestCase
         
         $this->assertEquals('foo', $config->default->test);
     }
+    
+    public function testNoSection()
+    {
+        $config = new Zend_Config(array('test' => 'foo', 'test2' => array('test3' => 'bar')));
+
+        $writer = new Zend_Config_Writer_Ini(array('config' => $config, 'filename' => $this->_tempName));
+        $writer->write();
+                
+        $config = new Zend_Config_Ini($this->_tempName, null);
+        
+        $this->assertEquals('foo', $config->test);
+        $this->assertEquals('bar', $config->test2->test3);
+    }
+    
+    public function testWriteAndReadOriginalFile()
+    {
+        $config = new Zend_Config_Ini(dirname(__FILE__) . '/files/allsections.ini', null, array('skipExtends' => true));
+
+        $writer = new Zend_Config_Writer_Ini(array('config' => $config, 'filename' => $this->_tempName));
+        $writer->write();
+           
+        $config = new Zend_Config_Ini($this->_tempName, null);       
+        $this->assertEquals('multi', $config->staging->one->two->three);
+
+        $config = new Zend_Config_Ini($this->_tempName, null, array('skipExtends' => true));
+        $this->assertFalse(isset($config->staging->one));
+    }
+    
     
     public function testWriteAndReadSingleSection()
     {

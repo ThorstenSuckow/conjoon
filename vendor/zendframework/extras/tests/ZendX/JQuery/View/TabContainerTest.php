@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: TabContainerTest.php 11952 2008-10-14 17:04:46Z beberlei $
+ * @version     $Id: TabContainerTest.php 13958 2009-02-03 18:41:14Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";
@@ -96,7 +96,7 @@ class ZendX_JQuery_View_TabContainerTest extends PHPUnit_Framework_TestCase
                         ->addPane("container1", "elem2", "Text2")
                         ->tabContainer("container1", array(), array());
 
-        $this->assertEquals(array('$("#container1 > ul").tabs({});'), $this->jquery->getOnLoadActions());
+        $this->assertEquals(array('$("#container1").tabs({});'), $this->jquery->getOnLoadActions());
         $this->assertContains("elem1", $tabs);
         $this->assertContains("Text1", $tabs);
         $this->assertContains("elem2", $tabs);
@@ -111,7 +111,7 @@ class ZendX_JQuery_View_TabContainerTest extends PHPUnit_Framework_TestCase
                         ->addPane("container1", "elem2", '', array('contentUrl' => 'cookie.html'))
                         ->tabContainer("container1", array(), array());
 
-        $this->assertEquals(array('$("#container1 > ul").tabs({});'), $this->jquery->getOnLoadActions());
+        $this->assertEquals(array('$("#container1").tabs({});'), $this->jquery->getOnLoadActions());
         $this->assertContains("elem1", $tabs);
         $this->assertContains("elem2", $tabs);
         $this->assertContains('href="blub.html"', $tabs);
@@ -130,7 +130,7 @@ class ZendX_JQuery_View_TabContainerTest extends PHPUnit_Framework_TestCase
 
         $tabs = $this->view->tabContainer("container1", array(), array());
 
-        $this->assertEquals(array('$("#container1 > ul").tabs({});'), $this->jquery->getOnLoadActions());
+        $this->assertEquals(array('$("#container1").tabs({});'), $this->jquery->getOnLoadActions());
         $this->assertContains('elem1', $tabs);
         $this->assertContains('elem2', $tabs);
         $this->assertContains('Lorem Ipsum!', $tabs);
@@ -145,7 +145,7 @@ class ZendX_JQuery_View_TabContainerTest extends PHPUnit_Framework_TestCase
 
         $tabs = $this->view->tabContainer("container1", array(), array());
 
-        $this->assertEquals(array('$("#container1 > ul").tabs({});'), $this->jquery->getOnLoadActions());
+        $this->assertEquals(array('$("#container1").tabs({});'), $this->jquery->getOnLoadActions());
         $this->assertContains('elem1', $tabs);
         $this->assertContains('elem2', $tabs);
         $this->assertContains('Lorem Ipsum!', $tabs);

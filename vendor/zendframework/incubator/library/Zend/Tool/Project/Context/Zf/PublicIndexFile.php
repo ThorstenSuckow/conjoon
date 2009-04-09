@@ -12,7 +12,7 @@ class Zend_Tool_Project_Context_Zf_PublicIndexFile extends Zend_Tool_Project_Con
     
     public function getContents()
     {
-        $codeGenerator = new Zend_Tool_CodeGenerator_Php_File(array(
+        $codeGenerator = new Zend_CodeGenerator_Php_File(array(
             'body' => <<<EOS
 <?php 
 // @see application/bootstrap.php

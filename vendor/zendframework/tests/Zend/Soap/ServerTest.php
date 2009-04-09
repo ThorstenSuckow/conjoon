@@ -36,7 +36,7 @@ require_once 'Zend/Soap/Server/Exception.php';
  * @uses       Zend_Server_Interface
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ServerTest.php 13267 2008-12-15 17:09:32Z alexander $
+ * @version    $Id: ServerTest.php 13821 2009-01-29 19:37:15Z beberlei $
  */
 class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
 {
@@ -803,7 +803,7 @@ class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
         $response = $server->handle($request);
 
         $this->assertContains(
-            '<SOAP-ENV:Fault><faultcode>Reciever</faultcode><faultstring>Test Message</faultstring></SOAP-ENV:Fault>',
+            '<SOAP-ENV:Fault><faultcode>Receiver</faultcode><faultstring>Test Message</faultstring></SOAP-ENV:Fault>',
             $response
         );
     }

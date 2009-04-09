@@ -6,27 +6,33 @@
 $zendFrameworkPath    = realpath(dirname(__FILE__) . '/../../library/'); // trunk
 $zendFrameworkIncPath = realpath(dirname(__FILE__) . '/../library/');    // incubator
 
-if ($zendFrameworkPathOverride = getenv('ZF_PATH') != '') {
+if (($zendFrameworkPathOverride = getenv('ZF_PATH')) != '') {
     $zendFrameworkPath = $zendFrameworkPathOverride;
 }
 
-if ($zendFrameworkIncPathOverride = getenv('ZFI_PATH') != '') {
+if (($zendFrameworkIncPathOverride = getenv('ZFI_PATH')) != '') {
     $zendFrameworkIncPath = $zendFrameworkIncPathOverride;
 }
 
-set_include_path($zendFrameworkIncPath . PATH_SEPARATOR . $zendFrameworkPath . PATH_SEPARATOR . get_include_path());
+unset($zendFrameworkPathOverride, $zendFrameworkIncPathOverride);
 
-unset($zendFrameworkPath, $zendFrameworkIncPath, $zendFrameworkPathOverride, $zendFrameworkIncPathOverride);
+$includePaths = array();
+if ($zendFrameworkIncPath) {
+    $includePaths[] = $zendFrameworkIncPath;
+}
+if ($zendFrameworkPath) {
+    $includePaths[] = $zendFrameworkPath;
+}
+
+$includePaths[] = get_include_path();
+set_include_path(implode(PATH_SEPARATOR, $includePaths));
+
+unset($zendFrameworkPath, $zendFrameworkIncPath, $includePaths);
 /**
  * DEV ONLY STOP
  */
 
-if (isset($_ENV['PWD'])) {
-    chdir($_ENV['PWD']);
-}
-
-require_once 'Zend/Loader.php';
-require_once 'Zend/Tool/Framework/Client/Cli.php';
+require_once 'Zend/Tool/Framework/Client/ConsoleClient.php';
 
 // run the cli client
-Zend_Tool_Framework_Client_Cli::main();
+Zend_Tool_Framework_Client_ConsoleClient::main();

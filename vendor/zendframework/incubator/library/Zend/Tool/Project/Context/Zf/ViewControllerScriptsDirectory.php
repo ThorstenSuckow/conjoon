@@ -15,7 +15,7 @@ class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_T
         parent::init();
     }
     
-    public function getPersistentParameters()
+    public function getPersistentAttributes()
     {
         return array(
             'forControllerName' => $this->_forControllerName

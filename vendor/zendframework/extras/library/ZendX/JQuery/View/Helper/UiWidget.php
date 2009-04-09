@@ -17,18 +17,13 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: UiWidget.php 13637 2009-01-14 21:40:31Z beberlei $
+ * @version     $Id: UiWidget.php 13717 2009-01-20 23:20:42Z beberlei $
  */
 
 /**
  * @see ZendX_JQuery_View_Helper_UiWidget
  */
 require_once "Zend/View/Helper/HtmlElement.php";
-
-/**
- * @see ZendX_JQuery_Json_Expr
- */
-require_once "ZendX/JQuery/Json/Expr.php";
 
 /**
  * jQuery Ui Widget Base class

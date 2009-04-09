@@ -1,16 +1,23 @@
 <?php
 
 require_once 'Zend/Tool/Project/Provider/Abstract.php';
-require_once 'Zend/Tool/Framework/Client/Registry.php';
+require_once 'Zend/Tool/Framework/Registry.php';
 
 class Zend_Tool_Project_Provider_Project extends Zend_Tool_Project_Provider_Abstract
 {
 
-    public function create($path = null)
+    public function create($path)
     {
         if ($path == null) {
             $path = getcwd();
         } else {
+            if (!file_exists($path)) {
+                $created = mkdir($path);
+                if (!$created) {
+                    require_once 'Zend/Tool/Framework/Client/Exception.php';
+                    throw new Zend_Tool_Framework_Client_Exception('Could not create requested project direcotry ' . $path);
+                }
+            }
             $path = str_replace('\\', '/', realpath($path));
         }
 
@@ -27,16 +34,14 @@ class Zend_Tool_Project_Provider_Project extends Zend_Tool_Project_Provider_Abst
         $newProfile = new Zend_Tool_Project_Profile(array(
             'projectDirectory' => $path,
             'profileData' => $this->_getDefaultProfile()
-        ));
+            ));
 
         $newProfile->loadFromData();
-
-        Zend_Tool_Framework_Client_Registry::getInstance()->response->appendContent(
-            'Creating project at ' . $path
-        );
+        
+        $this->_registry->getResponse()->appendContent('Creating project at ' . $path);
 
         foreach ($newProfile->getIterator() as $resource) {
-            $resource->getContext()->create();
+            $resource->create();
         }
     }
 
@@ -44,14 +49,18 @@ class Zend_Tool_Project_Provider_Project extends Zend_Tool_Project_Provider_Abst
     {
         $data = <<<EOS
 <?xml version="1.0" encoding="UTF-8"?>
-    <projectProfile name="default">
+    <projectProfile type="default">
         <projectDirectory>
             <projectProfileFile />
             <applicationDirectory>
                 <apisDirectory enabled="false" />
-                <configsDirectory />
+                <configsDirectory>
+                    <applicationConfigFile type="ini" />
+                </configsDirectory>
                 <controllersDirectory>
-                    <controllerFile controllerName="index" />
+                    <controllerFile controllerName="index">
+                        <actionMethod actionName="index" />
+                    </controllerFile>
                     <controllerFile controllerName="error" />
                 </controllersDirectory>
                 <layoutsDirectory enabled="false" />
@@ -60,10 +69,10 @@ class Zend_Tool_Project_Provider_Project extends Zend_Tool_Project_Provider_Abst
                 <viewsDirectory>
                     <viewScriptsDirectory>
                         <viewControllerScriptsDirectory forControllerName="index">
-                            <viewScriptFile scriptName="index" />
+                            <viewScriptFile forActionName="index" />
                         </viewControllerScriptsDirectory>
                         <viewControllerScriptsDirectory forControllerName="error">
-                            <viewScriptFile scriptName="error" />
+                            <viewScriptFile forActionName="error" />
                         </viewControllerScriptsDirectory>
                     </viewScriptsDirectory>
                     <viewHelpersDirectory />
@@ -80,7 +89,7 @@ class Zend_Tool_Project_Provider_Project extends Zend_Tool_Project_Provider_Abst
                 <uploadsDirectory enabled="false" />
             </dataDirectory>
             <libraryDirectory>
-                <zfStandardLibraryDirectory />
+                <zfStandardLibraryDirectory enabled="false" />
             </libraryDirectory>
             <publicDirectory>
                 <publicStylesheetsDirectory enabled="false" />
@@ -89,11 +98,17 @@ class Zend_Tool_Project_Provider_Project extends Zend_Tool_Project_Provider_Abst
                 <publicIndexFile />
                 <htaccessFile />
             </publicDirectory>
-            <providersDirectory enabled="false" />
-            <!--
+            <projectProvidersDirectory enabled="false" />
             <temporaryDirectory enabled="false" />
-            <testsDirectory enabled="false" />
-            -->
+            <testsDirectory>
+                <testPHPUnitConfigFile />
+                <testApplicationDirectory>
+                    <testApplicationBootstrapFile />
+                </testApplicationDirectory>
+                <testLibraryDirectory>
+                    <testLibraryBootstrapFile />
+                </testLibraryDirectory>
+            </testsDirectory>
         </projectDirectory>
     </projectProfile>
 EOS;

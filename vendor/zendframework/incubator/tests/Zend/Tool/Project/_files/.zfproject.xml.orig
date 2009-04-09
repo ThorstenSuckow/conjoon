@@ -41,6 +41,6 @@
       <publicIndexFile/>
       <htaccessFile/>
     </publicDirectory>
-    <providersDirectory enabled="false"/>
+    <projectProvidersDirectory enabled="false"/>
   </projectDirectory>
 </projectProfile>

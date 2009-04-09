@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 12221 2008-10-31 20:32:43Z dasprid $
+ * @version    $Id: XmlTest.php 14412 2009-03-21 18:40:48Z dasprid $
  */
 
 /**
@@ -109,6 +109,33 @@ class Zend_Config_Writer_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $config->default->test);
     }
     
+    public function testNoSection()
+    {
+        $config = new Zend_Config(array('test' => 'foo', 'test2' => array('test3' => 'bar')));
+
+        $writer = new Zend_Config_Writer_Xml(array('config' => $config, 'filename' => $this->_tempName));
+        $writer->write();
+                
+        $config = new Zend_Config_Xml($this->_tempName, null);
+        
+        $this->assertEquals('foo', $config->test);
+        $this->assertEquals('bar', $config->test2->test3);
+    }
+
+    public function testWriteAndReadOriginalFile()
+    {
+        $config = new Zend_Config_Xml(dirname(__FILE__) . '/files/allsections.xml', null, array('skipExtends' => true));
+
+        $writer = new Zend_Config_Writer_Xml(array('config' => $config, 'filename' => $this->_tempName));
+        $writer->write();
+           
+        $config = new Zend_Config_Xml($this->_tempName, null);       
+        $this->assertEquals('multi', $config->staging->one->two->three);
+        
+        $config = new Zend_Config_Xml($this->_tempName, null, array('skipExtends' => true));
+        $this->assertFalse(isset($config->staging->one));
+    }
+    
     public function testWriteAndReadSingleSection()
     {
         $config = new Zend_Config_Xml(dirname(__FILE__) . '/files/allsections.xml', 'staging', array('skipExtends' => true));
@@ -121,6 +148,33 @@ class Zend_Config_Writer_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('staging', $config->staging->hostname);
         $this->assertEquals('false', $config->staging->debug);
         $this->assertEquals(null, @$config->production);
+    }
+    
+    public function testNumericArray()
+    {
+        $config = new Zend_Config(array('foo' => array('bar' => array(1 => 'a', 2 => 'b', 5 => 'c'))));
+
+        $writer = new Zend_Config_Writer_Xml(array('config' => $config, 'filename' => $this->_tempName));
+        $writer->write();
+                
+        $config = new Zend_Config_Xml($this->_tempName, null);
+        
+        $this->assertEquals('a', $config->foo->bar->{0});
+        $this->assertEquals('b', $config->foo->bar->{1});
+        $this->assertEquals('c', $config->foo->bar->{2});
+    }
+    
+    public function testMixedArrayFailure()
+    {
+        $config = new Zend_Config(array('foo' => array('bar' => array('a', 'b', 'c' => 'd'))));
+
+        try {
+            $writer = new Zend_Config_Writer_Xml(array('config' => $config, 'filename' => $this->_tempName));
+            $writer->write();
+            $this->fail('Expected Zend_Config_Exception not raised');
+        } catch (Zend_Config_Exception $e) {
+            $this->assertEquals('Mixing of string and numeric keys is not allowed', $e->getMessage());
+        }
     }
     
     public function testArgumentOverride()

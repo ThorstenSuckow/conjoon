@@ -1,14 +1,62 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Tool
+ * @subpackage Framework
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
+ */
 
+/**
+ * @see Zend_Tool_Project_Profile
+ */
 require_once 'Zend/Tool/Project/Profile.php';
-require_once 'Zend/Tool/Framework/Provider/Interface.php';
-require_once 'Zend/Tool/Project/Context/Registry.php';
-require_once 'Zend/Tool/Project/Profile/FileParser/Xml.php';
-require_once 'Zend/Tool/Framework/Client/Registry.php';
 
-abstract class Zend_Tool_Project_Provider_Abstract implements Zend_Tool_Framework_Provider_Interface
+/**
+ * @see Zend_Tool_Framework_Provider_Abstract
+ */
+require_once 'Zend/Tool/Framework/Provider/Abstract.php';
+
+/**
+ * @see Zend_Tool_Project_Context_Repository
+ */
+require_once 'Zend/Tool/Project/Context/Repository.php';
+
+/**
+ * @see Zend_Tool_Project_Profile_FileParser_Xml
+ */
+require_once 'Zend/Tool/Project/Profile/FileParser/Xml.php';
+
+/**
+ * @see Zend_Tool_Framework_Registry
+ */
+require_once 'Zend/Tool/Framework/Registry.php';
+
+/**
+ * @category   Zend
+ * @package    Zend_Tool
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
+abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_Provider_Abstract
 {
 
+    /**
+     * @var bool
+     */
     protected static $_isInitialized = false;
 
     /**
@@ -16,25 +64,22 @@ abstract class Zend_Tool_Project_Provider_Abstract implements Zend_Tool_Framewor
      */
     protected $_loadedProfile = null;
 
-    public static function initialize()
+    /**
+     * constructor
+     *
+     * YOU SHOULD NOT OVERRIDE THIS, unless you know what you are doing
+     * 
+     */
+    public function __construct()
     {
-        // return if we have already initialized the ZF contexts
-        if (self::$_isInitialized) {
-            return;
+        // initialize the ZF Contexts (only once per php request)
+        if (!self::$_isInitialized) {
+            $contextRegistry = Zend_Tool_Project_Context_Repository::getInstance();
+            $contextRegistry->addContextsFromDirectory(
+                dirname(dirname(__FILE__)) . '/Context/Zf/', 'Zend_Tool_Project_Context_Zf_'
+            );
+            self::$_isInitialized = true;
         }
-
-        $contextRegistry = Zend_Tool_Project_Context_Registry::getInstance();
-        $contextRegistry->addContextsFromDirectory(
-            dirname(dirname(__FILE__)) . '/Context/Zf/', 'Zend_Tool_Project_Context_Zf_'
-        );
-
-        self::$_isInitialized = true;
-    }
-
-    final public function __construct()
-    {
-        // initialize always
-        self::initialize();
 
         // load up the extending providers required context classes
         if ($contextClasses = $this->getContextClasses()) {
@@ -57,12 +102,12 @@ abstract class Zend_Tool_Project_Provider_Abstract implements Zend_Tool_Framewor
      *
      * @return Zend_Tool_Project_Profile
      */
-    protected function _loadProfile($projectDirectory = null)
+    protected function _loadProfile() //$projectDirectory = null)
     {
 
-        if ($projectDirectory == null) {
-            $projectDirectory = getcwd();
-        }
+        $projectDirectory = getcwd();
+        //if ($projectDirectory == null) {
+        //}
 
         $profile = new Zend_Tool_Project_Profile();
         $profile->setAttribute('projectDirectory', $projectDirectory);
@@ -76,20 +121,26 @@ abstract class Zend_Tool_Project_Provider_Abstract implements Zend_Tool_Framewor
         return false;
     }
 
-    protected function _createNode($searchNodeToAppendTo, Zend_Tool_Project_Context_Interface $context)
+    /**
+     * Load the project profile from the current working directory, if not throw exception
+     *
+     * @return Zend_Tool_Project_Profile
+     */
+    protected function _loadProfileRequired()
     {
-        if ($this->_loadedProfile == null) {
+        $profile = $this->_loadProfile();
+        if ($profile === false) {
             require_once 'Zend/Tool/Project/Provider/Exception.php';
-
-            throw new Zend_Tool_Project_Provider_Exception('You must call _loadExistingProfile first.');
+            throw new Zend_Tool_Project_Provider_Exception('A project profile was not found in the current working directory.');
         }
-
-        $searchNode = $this->_loadedProfile->findNodeByContext($searchNodeToAppendTo);
-
-        $newNode = new ZendL_Tool_Project_Resource($context);
-        $searchNode->append($newNode);
+        return $profile;
     }
-
+    
+    /**
+     * Return the currently loaded profile
+     *
+     * @return Zend_Tool_Project_Profile
+     */
     protected function _getProfile()
     {
         if (!$this->_loadedProfile) {
@@ -99,22 +150,33 @@ abstract class Zend_Tool_Project_Provider_Abstract implements Zend_Tool_Framewor
         return $this->_loadedProfile;
     }
 
+    /**
+     * _storeProfile()
+     *
+     * This method will store the profile into its proper location
+     * 
+     */
     protected function _storeProfile()
     {
-        $projectProfileFile = $this->_profile->findNodeByContext('ProjectProfileFile');
-
+        $projectProfileFile = $this->_loadedProfile->search('ProjectProfileFile');
+        
         $name = $projectProfileFile->getContext()->getPath();
 
-        Zend_Tool_Framework_Client_Registry::getInstance()->response->appendContent(
-            'Updating project profile \'' . $name . '\''
-        );
+        $this->_registry->getResponse()->appendContent('Updating project profile \'' . $name . '\'');
 
-        $projectProfileFile->create();
+        $projectProfileFile->getContext()->save();
     }
 
+    /**
+     * _loadContextClassesIntoRegistry() - This is called by the constructor
+     * so that child providers can provide a list of contexts to load into the
+     * context repository
+     *
+     * @param array $contextClasses
+     */
     private function _loadContextClassesIntoRegistry($contextClasses)
     {
-        $registry = Zend_Tool_Project_Context_Registry::getInstance();
+        $registry = Zend_Tool_Project_Context_Repository::getInstance();
 
         foreach ($contextClasses as $contextClass) {
             $registry->addContextClass($contextClass);

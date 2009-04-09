@@ -1,25 +1,23 @@
 <?php
 
 require_once 'Zend/Tool/Project/Provider/Abstract.php';
-require_once 'Zend/Tool/Framework/Client/Registry.php';
+require_once 'Zend/Tool/Framework/Registry.php';
 
 class Zend_Tool_Project_Provider_Profile extends Zend_Tool_Project_Provider_Abstract
 {
     public function show()
     {
-        $response = Zend_Tool_Framework_Client_Registry::getInstance()->response;
-
         $profile = $this->_loadProfile();
 
         if ($profile === false) {
-            $response->appendContent('There is no profile located here.');
+            $this->_registry->getResponse()->appendContent('There is no profile located here.');
             return;
         }
 
         $profileIterator = $profile->getIterator();
 
         foreach ($profileIterator as $profileItem) {
-            $response->appendContent(
+            $this->_registry->getResponse()->appendContent(
                 str_repeat('    ', $profileIterator->getDepth()) . $profileItem
             );
         }

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12232 2008-11-01 00:00:54Z dasprid $
+ * @version    $Id: AllTests.php 13882 2009-01-31 03:15:42Z yoshida@zend.co.jp $
  */
 
 /**
@@ -32,6 +32,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once 'ZendX/Console/AllTests.php';
 require_once 'ZendX/JQuery/AllTests.php';
+require_once 'ZendX/Db/AllTests.php';
 
 /**
  * @category   ZendX
@@ -53,6 +54,7 @@ class ZendX_AllTests
 
         $suite->addTestSuite('ZendX_Console_AllTests');
         $suite->addTestSuite('ZendX_JQuery_AllTests');
+        $suite->addTestSuite('ZendX_Db_AllTests');
 
         return $suite;
     }

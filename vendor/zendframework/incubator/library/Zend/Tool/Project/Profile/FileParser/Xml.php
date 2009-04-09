@@ -1,7 +1,7 @@
 <?php
 
 require_once 'Zend/Tool/Project/Profile/FileParser/Interface.php';
-require_once 'Zend/Tool/Project/Context/Registry.php';
+require_once 'Zend/Tool/Project/Context/Repository.php';
 require_once 'Zend/Tool/Project/Profile.php';
 require_once 'Zend/Tool/Project/Profile/Resource.php';
 
@@ -19,14 +19,14 @@ class Zend_Tool_Project_Profile_FileParser_Xml implements Zend_Tool_Project_Prof
     protected $_profile = null;
     
     /**
-     * @var Zend_Tool_Project_Context_Registry
+     * @var Zend_Tool_Project_Context_Repository
      */
-    protected $_contextRegistry = null;
+    protected $_contextRepository = null;
 
     
     public function __construct()
     {
-        $this->_contextRegistry = Zend_Tool_Project_Context_Registry::getInstance();
+        $this->_contextRepository = Zend_Tool_Project_Context_Repository::getInstance();
     }
     
     public function serialize(Zend_Tool_Project_Profile $profile)
@@ -99,7 +99,7 @@ class Zend_Tool_Project_Profile_FileParser_Xml implements Zend_Tool_Project_Prof
                 $newNode->addAttribute('enabled', 'false');
             }
             
-            foreach ($resource->getPersistentParameters() as $paramName => $paramValue) {
+            foreach ($resource->getPersistentAttributes() as $paramName => $paramValue) {
                 $newNode->addAttribute($paramName, $paramValue);
             }
 
@@ -118,7 +118,6 @@ class Zend_Tool_Project_Profile_FileParser_Xml implements Zend_Tool_Project_Prof
         
         foreach ($xmlIterator as $resourceName => $resourceData) {
             
-            //$context = Zend_Tool_Project_Context_Registry::getInstance()->getContext($resourceName);
             $contextName = $resourceName;
             $subResource = new Zend_Tool_Project_Profile_Resource($contextName);
             $subResource->setProfile($this->_profile);
@@ -132,12 +131,12 @@ class Zend_Tool_Project_Profile_FileParser_Xml implements Zend_Tool_Project_Prof
             }
             
             if ($resource) {
-                $resource->append($subResource);
+                $resource->append($subResource, false);
             } else {
                 $this->_profile->append($subResource);
             }
 
-            if ($this->_contextRegistry->isOverwritableContext($contextName) == false) {
+            if ($this->_contextRepository->isOverwritableContext($contextName) == false) {
                 $subResource->initializeContext();
             }
             

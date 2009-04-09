@@ -4,8 +4,6 @@ require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Tool/Project/Profile.php';
 
-require_once 'Zend/Debug.php';
-
 class Zend_Tool_Project_ProfileTest extends PHPUnit_Framework_TestCase
 {
     
@@ -24,12 +22,10 @@ class Zend_Tool_Project_ProfileTest extends PHPUnit_Framework_TestCase
 
         $this->_removeProjectFiles();
 
-        Zend_Tool_Project_Context_Registry::resetInstance();
+        Zend_Tool_Project_Context_Repository::resetInstance();
         
-        $contextRegistry = Zend_Tool_Project_Context_Registry::getInstance();
+        $contextRegistry = Zend_Tool_Project_Context_Repository::getInstance();
         $contextRegistry->addContextsFromDirectory(dirname(__FILE__) . '/../../../../library/Zend/Tool/Project/Context/Zf/', 'Zend_Tool_Project_Context_Zf_');
-        
-        
         
         $this->_standardProfileFromData = new Zend_Tool_Project_Profile();
         $this->_standardProfileFromData->setAttribute('profileData',      file_get_contents($this->_projectProfileFile));
@@ -136,7 +132,7 @@ class Zend_Tool_Project_ProfileTest extends PHPUnit_Framework_TestCase
     public function testProfileCanReturnStorageData()
     {
         $this->_standardProfileFromData->loadFromData();
-        $expectedValue = '<?xml version="1.0"?><projectProfile>  <projectDirectory>    <projectProfileFile/>    <applicationDirectory>      <apisDirectory enabled="false"/>      <configsDirectory/>      <controllersDirectory>        <controllerFile controllerName="index"/>        <controllerFile controllerName="error"/>      </controllersDirectory>      <layoutsDirectory enabled="false"/>      <modelsDirectory/>      <modulesDirectory enabled="false"/>      <viewsDirectory>        <viewScriptsDirectory>          <viewControllerScriptsDirectory forControllerName="index">            <viewScriptFile scriptName="index"/>          </viewControllerScriptsDirectory>        </viewScriptsDirectory>        <viewHelpersDirectory/>        <viewFiltersDirectory enabled="false"/>      </viewsDirectory>      <bootstrapFile/>    </applicationDirectory>    <dataDirectory enabled="false">      <cacheDirectory enabled="false"/>      <searchIndexesDirectory enabled="false"/>      <localesDirectory enabled="false"/>      <logsDirectory enabled="false"/>      <sessionsDirectory enabled="false"/>      <uploadsDirectory enabled="false"/>    </dataDirectory>    <libraryDirectory>      <zfStandardLibraryDirectory/>    </libraryDirectory>    <publicDirectory>      <publicStylesheetsDirectory enabled="false"/>      <publicScriptsDirectory enabled="false"/>      <publicImagesDirectory enabled="false"/>      <publicIndexFile/>      <htaccessFile/>    </publicDirectory>    <providersDirectory enabled="false"/>  </projectDirectory></projectProfile>';
+        $expectedValue = '<?xml version="1.0"?><projectProfile>  <projectDirectory>    <projectProfileFile/>    <applicationDirectory>      <apisDirectory enabled="false"/>      <configsDirectory/>      <controllersDirectory>        <controllerFile controllerName="index"/>        <controllerFile controllerName="error"/>      </controllersDirectory>      <layoutsDirectory enabled="false"/>      <modelsDirectory/>      <modulesDirectory enabled="false"/>      <viewsDirectory>        <viewScriptsDirectory>          <viewControllerScriptsDirectory forControllerName="index">            <viewScriptFile scriptName="index"/>          </viewControllerScriptsDirectory>        </viewScriptsDirectory>        <viewHelpersDirectory/>        <viewFiltersDirectory enabled="false"/>      </viewsDirectory>      <bootstrapFile/>    </applicationDirectory>    <dataDirectory enabled="false">      <cacheDirectory enabled="false"/>      <searchIndexesDirectory enabled="false"/>      <localesDirectory enabled="false"/>      <logsDirectory enabled="false"/>      <sessionsDirectory enabled="false"/>      <uploadsDirectory enabled="false"/>    </dataDirectory>    <libraryDirectory>      <zfStandardLibraryDirectory/>    </libraryDirectory>    <publicDirectory>      <publicStylesheetsDirectory enabled="false"/>      <publicScriptsDirectory enabled="false"/>      <publicImagesDirectory enabled="false"/>      <publicIndexFile/>      <htaccessFile/>    </publicDirectory>    <projectProvidersDirectory enabled="false"/>  </projectDirectory></projectProfile>';
         $this->assertEquals($expectedValue, str_replace(PHP_EOL, '', $this->_standardProfileFromData->storeToData()));
     }
     
@@ -254,6 +250,11 @@ class Zend_Tool_Project_ProfileTest extends PHPUnit_Framework_TestCase
         $rdi = new RecursiveDirectoryIterator($this->_projectDirectory);
         
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $dirIteratorItem) {
+            
+            if (stristr($dirIteratorItem->getPathname(), '.svn')) {
+                continue;
+            }
+            
             if ($dirIteratorItem->isDir()) {
                 rmdir($dirIteratorItem->getPathname());
             } elseif ($dirIteratorItem->isFile()) {

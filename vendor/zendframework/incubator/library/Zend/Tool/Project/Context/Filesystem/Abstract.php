@@ -18,10 +18,6 @@ abstract class Zend_Tool_Project_Context_Filesystem_Abstract implements Zend_Too
         $this->_baseDirectory = $parentBaseDirectory;
     }
     
-    abstract public function create();
-
-    abstract public function delete();
-    
     public function setResource($resource)
     {
         $this->_resource = $resource;
@@ -59,5 +55,13 @@ abstract class Zend_Tool_Project_Context_Filesystem_Abstract implements Zend_Too
         return $path;
     }
     
+    public function exists()
+    {
+        return file_exists($this->getPath());
+    }
+    
+    abstract public function create();
+
+    abstract public function delete();
     
 }

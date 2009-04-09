@@ -1,20 +1,20 @@
 <?php
 
 require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
-require_once 'Zend/Tool/Project/Context/System/ISystem.php';
-require_once 'Zend/Tool/Project/Context/System/INotOverwritable.php';
+require_once 'Zend/Tool/Project/Context/System/Interface.php';
+require_once 'Zend/Tool/Project/Context/System/NotOverwritable.php';
 
 class Zend_Tool_Project_Context_System_ProjectProvidersDirectory 
     extends Zend_Tool_Project_Context_Filesystem_Directory
-    implements Zend_Tool_Project_Context_System_ISystem,
-               Zend_Tool_Project_Context_System_INotOverwritable
+    implements Zend_Tool_Project_Context_System_Interface,
+               Zend_Tool_Project_Context_System_NotOverwritable
 {
     
     protected $_filesystemName = 'providers';
     
     public function getName()
     {
-        return 'ProvidersDirectory';
+        return 'ProjectProvidersDirectory';
     }
     
     public function init()
@@ -22,8 +22,17 @@ class Zend_Tool_Project_Context_System_ProjectProvidersDirectory
         parent::init();
         
         if (file_exists($this->getPath())) {
-            // @todo
-            echo 'Loop through here and find the appropriate providers for lazy loading';
+
+            foreach (new DirectoryIterator($this->getPath()) as $item) {
+                if ($item->isFile()) {
+                    $loadableFiles[] = $item->getPathname();
+                }
+            }
+            
+            if ($loadableFiles) {
+                $loader = Zend_Tool_Framework_Registry::getInstance()->getLoader();
+                $loader->loadFromFiles($loadableFiles);
+            }
         }
         
     }

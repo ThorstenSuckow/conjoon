@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: GetoptTest.php 13634 2009-01-14 21:13:36Z beberlei $
+ * @version    $Id: GetoptTest.php 13770 2009-01-24 14:24:21Z letssurf $
  */
 
 /**
@@ -530,5 +530,19 @@ class Zend_Console_GetoptTest extends PHPUnit_Framework_TestCase
         } catch(Exception $e) {
             $this->assertTrue($e instanceof Zend_Console_Getopt_Exception);
         }
+    }
+    
+    /**
+     * @group ZF-5624
+     */
+    public function testEqualsCharacterInLongOptionsValue()
+    {
+        $fooValue = 'some text containing an = sign which breaks';
+
+        $opts = new Zend_Console_Getopt(
+            array('foo=s' => 'Option One (string)'),
+            array('--foo='.$fooValue)
+        );
+        $this->assertEquals($fooValue, $opts->foo);
     }
 }

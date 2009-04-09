@@ -1,13 +1,58 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Tool
+ * @subpackage Framework
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
+ */
 
+/**
+ * @category   Zend
+ * @package    Zend_Tool
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Zend_Tool_Framework_Manifest_Metadata
 {
+    /**#@+
+     * Search constants
+     */
+    const ATTRIBUTES_ALL    = 'attributesAll';
+    const ATTRIBUTES_NO_PARENT = 'attributesParent';
+    /**#@-*/
     
+    /**#@+
+     * @var string
+     */
     protected $_type        = 'Global';
     protected $_name        = null;
     protected $_value       = null;
-    protected $_reference   = null;
+    /**#@-*/
     
+    /**
+     * @var mixed
+     */
+    protected $_reference   = null;
+
+    /**
+     * Constructor - allows for the setting of options
+     *
+     * @param array $options
+     */
     public function __construct(Array $options = array())
     {
         if ($options) {
@@ -15,6 +60,13 @@ class Zend_Tool_Framework_Manifest_Metadata
         }
     }
     
+    /**
+     * setOptions() - standard issue implementation, this will set any 
+     * options that are supported via a set method.
+     *
+     * @param array $options
+     * @return Zend_Tool_Framework_Manifest_Metadata
+     */
     public function setOptions(Array $options)
     {
         foreach ($options as $optionName => $optionValue) {
@@ -23,10 +75,14 @@ class Zend_Tool_Framework_Manifest_Metadata
                 $this->{$setMethod}($optionValue);
             }
         }
+        
+        return $this;
     }
 
     /**
-     * @return unknown
+     * getType()
+     * 
+     * @return string
      */
     public function getType()
     {
@@ -34,15 +90,21 @@ class Zend_Tool_Framework_Manifest_Metadata
     }
     
     /**
+     * setType()
+     * 
      * @param string $type
+     * @return Zend_Tool_Framework_Manifest_Metadata
      */
     public function setType($type)
     {
         $this->_type = $type;
+        return $this;
     }
 
     /**
-     * @return unknown
+     * getName()
+     * 
+     * @return string
      */
     public function getName()
     {
@@ -50,15 +112,21 @@ class Zend_Tool_Framework_Manifest_Metadata
     }
     
     /**
-     * @param unknown_type $Name
+     * setName()
+     * 
+     * @param string $name
+     * @return Zend_Tool_Framework_Manifest_Metadata
      */
     public function setName($name)
     {
         $this->_name = $name;
+        return $this;
     }
     
     /**
-     * @return unknown
+     * getValue() 
+     * 
+     * @return mixed
      */
     public function getValue()
     {
@@ -66,21 +134,82 @@ class Zend_Tool_Framework_Manifest_Metadata
     }
     
     /**
+     * setValue()
+     * 
      * @param unknown_type $Value
+     * @return Zend_Tool_Framework_Manifest_Metadata
      */
     public function setValue($value)
     {
         $this->_value = $value;
+        return $this;
     }
 
+    /**
+     * setReference()
+     *
+     * @param mixed $reference
+     * @return Zend_Tool_Framework_Manifest_Metadata
+     */
     public function setReference($reference)
     {
         $this->_reference = $reference;
         return $this;
     }
     
+    /**
+     * getReference()
+     *
+     * @return mixed
+     */
     public function getReference()
     {
         return $this->_reference;
+    }
+    
+    /**
+     * getAttributes() - this will retrieve any attributes of this object that exist as properties
+     * This is most useful for printing metadata.
+     *
+     * @param const $type
+     * @return array
+     */
+    public function getAttributes($type = self::ATTRIBUTES_ALL, $stringRepresentationOfNonScalars = false)
+    {
+        $thisReflection = new ReflectionObject($this);
+            
+        $metadataPairValues = array();
+
+        foreach (get_object_vars($this) as $varName => $varValue) {
+            if ($type == self::ATTRIBUTES_NO_PARENT && ($thisReflection->getProperty($varName)->getDeclaringClass()->getName() == 'Zend_Tool_Framework_Manifest_Metadata')) {
+                continue;
+            }
+            
+            if ($stringRepresentationOfNonScalars) {
+                
+                if (is_object($varValue)) {
+                    $varValue = '(object)';
+                }
+                
+                if (is_null($varValue)) {
+                    $varValue = '(null)';
+                }
+                
+            }
+            
+            $metadataPairValues[ltrim($varName, '_')] = $varValue;
+        }
+        
+        return $metadataPairValues;
+    }
+    
+    /**
+     * __toString() - string representation of this object 
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'Type: ' . $this->_type . ', Name: ' . $this->_name . ', Value: ' . (is_array($this->_value) ? http_build_query($this->_value) : (string) $this->_value);
     }
 }

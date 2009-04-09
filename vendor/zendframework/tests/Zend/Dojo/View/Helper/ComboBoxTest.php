@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ComboBoxTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ComboBoxTest.php 14300 2009-03-13 15:24:35Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_ComboBoxTest::main() if this source file is executed directly.
@@ -165,22 +165,12 @@ class Zend_Dojo_View_Helper_ComboBoxTest extends PHPUnit_Framework_TestCase
         $found = false;
         $scripts = $this->view->dojo()->getJavascript();
         foreach ($scripts as $js) {
-            if (strstr($js, 'var stateStore;')) {
+            if (strstr($js, 'var stateStore = new ')) {
                 $found = true;
                 break;
             }
         }
         $this->assertTrue($found, 'No store declaration found: ' . var_export($scripts, 1));
-
-        $found = false;
-        $actions = $this->view->dojo()->getOnloadActions();
-        foreach ($actions as $action) {
-            if (strstr($action, 'stateStore = ')) {
-                $found = true;
-                break;
-            }
-        }
-        $this->assertTrue($found, 'No store onLoad action found: ' . var_export($actions, 1));
     }
 
     public function testShouldAllowAlternateNotationToSpecifyRemoter()
@@ -203,6 +193,24 @@ class Zend_Dojo_View_Helper_ComboBoxTest extends PHPUnit_Framework_TestCase
             $this->fail('Did not create data store: ' . $html);
         }
         $this->assertContains('url="states.txt"', $m[1]);
+    }
+
+    /**
+     * @group ZF-5987
+     */
+    public function testStoreCreationWhenUsingProgrammaticCreationShouldRegisterAsDojoJavascript()
+    {
+        Zend_Dojo_View_Helper_Dojo::setUseProgrammatic(true);
+        $html = $this->getElementAsRemoter();
+        $js   = $this->view->dojo()->getJavascript();
+        $storeDeclarationFound = false;
+        foreach ($js as $statement) {
+            if (strstr($statement, 'var stateStore = new ')) {
+                $storeDeclarationFound = true;
+                break;
+            }
+        }
+        $this->assertTrue($storeDeclarationFound, 'Store declaration not found');
     }
 }
 

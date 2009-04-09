@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormatTest.php 10113 2008-07-15 20:07:16Z thomas $
+ * @version    $Id: FormatTest.php 14171 2009-02-26 12:39:23Z alexander $
  */
 
 
@@ -121,6 +121,19 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue( Zend_Locale_Format::isNumber('-1.234.567,12345',  array('locale' => 'de_AT')));
         $this->assertFalse(Zend_Locale_Format::isNumber('textwithoutnumber', array('locale' => 'de_AT')));
+    }
+
+    /**
+     * test isNumber
+     * expected boolean
+     *
+     * @group ZF-5879
+     */
+    public function testIsNumberENotation()
+    {
+        $this->assertTrue( Zend_Locale_Format::isNumber('5,0004E+5',  array('locale' => 'de_AT')));
+        $this->assertTrue( Zend_Locale_Format::isNumber('2.34E-7',    array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isNumber('2.34E-7E-7', array('locale' => 'de_AT')));
     }
 
 

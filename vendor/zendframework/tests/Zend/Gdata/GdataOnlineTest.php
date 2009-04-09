@@ -132,6 +132,8 @@ class Zend_Gdata_GdataOnlineTest extends PHPUnit_Framework_TestCase
         $blogsUrl = 'http://www.blogger.com/feeds/default/blogs';
         $blogsQuery = $this->gdata->newQuery($blogsUrl);
         $retrievedFeed = $this->gdata->getFeed($blogsQuery);
+        // rewind the retrieved feed first
+        $retrievedFeed->rewind();
 
         // Make sure the iterator and array impls match
         $entry1 = $retrievedFeed->current();
@@ -229,6 +231,15 @@ class Zend_Gdata_GdataOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('My New Test Photo',
                 $createdPhotoMultipart->title->text);
 
+        // cleanup and remove the album 
+        // first we wait 5 seconds
+        sleep(5);
+        try {
+            $albumEntry->delete();
+        } catch (Zend_Gdata_App_Exception $e) {
+            $this->fail('Tried to delete the test album, got exception: ' .
+                $e->getMessage());
+        }
     }
 
     function testIsAuthenticated()
@@ -292,6 +303,37 @@ class Zend_Gdata_GdataOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($previousFeed instanceof Zend_Gdata_App_Feed);
         $this->assertEquals($previousFeed->count(), 25);
 
+    }
+
+    public function testDisableXMLToObjectMappingReturnsStringForFeed()
+    {
+        $gdata = new Zend_Gdata();
+        $gdata->useObjectMapping(false);
+        $xmlString = $gdata->getFeed(
+            'http://gdata.youtube.com/feeds/api/standardfeeds/top_rated');
+        $this->assertEquals('string', gettype($xmlString));
+    }
+
+    public function testDisableXMLToObjectMappingReturnsStringForEntry()
+    {
+        $gdata = new Zend_Gdata();
+        $gdata->useObjectMapping(false);
+        $xmlString = $gdata->getFeed(
+            'http://gdata.youtube.com/feeds/api/videos/O4SWAfisH-8');
+        $this->assertEquals('string', gettype($xmlString));
+    }
+
+    public function testDisableAndReEnableXMLToObjectMappingReturnsObject()
+    {
+        $gdata = new Zend_Gdata();
+        $gdata->useObjectMapping(false);
+        $xmlString = $gdata->getEntry(
+            'http://gdata.youtube.com/feeds/api/videos/O4SWAfisH-8');
+        $this->assertEquals('string', gettype($xmlString));
+        $gdata->useObjectMapping(true);
+        $entry = $gdata->getEntry(
+            'http://gdata.youtube.com/feeds/api/videos/O4SWAfisH-8');
+        $this->assertTrue($entry instanceof Zend_Gdata_Entry);
     }
 
 }

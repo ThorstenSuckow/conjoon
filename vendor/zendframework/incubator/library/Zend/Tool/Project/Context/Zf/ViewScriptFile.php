@@ -5,22 +5,38 @@ class Zend_Tool_Project_Context_Zf_ViewScriptFile extends Zend_Tool_Project_Cont
     
     protected $_filesystemName = 'view.phtml';
     
+    protected $_forActionName = null;
     protected $_scriptName = null;
 
     public function init()
     {
-        $this->_scriptName     = $this->_resource->getAttribute('scriptName');
-        $this->_filesystemName = $this->_scriptName . '.phtml';
+        if ($forActionName = $this->_resource->getAttribute('forActionName')) {
+            $this->_forActionName = $forActionName;
+            $this->_filesystemName = $forActionName . '.phtml';
+        } elseif ($scriptName = $this->_resource->getAttribute('scriptName')) {
+            $this->_scriptName = $scriptName;
+            $this->_filesystemName = $scriptName . '.phtml';
+        } else {
+            throw new Exception('Either a forActionName or scriptName is required.');
+        }
         
         parent::init();
     }
     
     
-    public function getPersistentParameters()
+    public function getPersistentAttributes()
     {
-        return array(
-            'scriptName' => $this->_scriptName
-            );
+        $attributes = array();
+        
+        if ($this->_forActionName) {
+            $attributes['forActionName'] = $this->_forActionName;      
+        }
+        
+        if ($this->_scriptName) {
+            $attributes['scriptName'] = $this->_scriptName;
+        }
+        
+        return $attributes;
     }
     
     public function getName()
@@ -65,8 +81,59 @@ class Zend_Tool_Project_Context_Zf_ViewScriptFile extends Zend_Tool_Project_Cont
 </html>
             
 EOS;
+        } elseif ($this->_forActionName == 'index' && $this->_resource->getParentResource()->getAttribute('forControllerName') == 'index') {
+            
+            $contents =<<<EOS
+<style>
+    
+    a:link,
+    a:visited
+    {
+        color: #0398CA;
+    }
+
+    span#zf-name
+    {
+        color: #91BE3F;
+    }
+
+    div#welcome
+    {
+        color: #FFFFFF;
+        background-image: url(http://framework.zend.com/images/bkg_header.jpg);
+        width:  600px;
+        height: 400px;
+        border: 2px solid #444444;
+        overflow: hidden;
+    }
+    
+    div#more-information
+    {
+        background-image: url(http://framework.zend.com/images/bkg_body-bottom.gif);
+        height: 100%;
+    }
+
+</style>
+<center>
+    <div id="welcome">
+        <center>
+        <br />
+        <h1>Welcome to the <span id="zf-name">Zend Framework!</span><h1 />
+        <h3>This is your projects main page<h3 /><br /><br />
+        <div id="more-information">
+            <br />
+            <img src="http://framework.zend.com/images/PoweredBy_ZF_4LightBG.png" /><br /><br />
+            Helpful Links: <br />
+            <A href="http://framework.zend.com/">Zend Framework Website</a> |
+            <A href="http://framework.zend.com/manual/en/">Zend Framework Manual</a>
+        </div>
+    </div>
+</center>
+EOS;
+            
         } else {
-            $contents = 'Hello from the view script!';
+            $contents = '<br /><br /><center>View script for controller <b>' . $this->_resource->getParentResource()->getAttribute('forControllerName') . '</b>'
+                . ' and script/action name <b>' . $this->_forActionName . '</b></center>';
         }
         return $contents;
     }

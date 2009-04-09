@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: TabContainer.php 11941 2008-10-13 19:41:38Z matthew $
+ * @version     $Id: TabContainer.php 13959 2009-02-03 18:43:11Z beberlei $
  */
 
 /**
@@ -119,7 +119,7 @@ class ZendX_JQuery_View_Helper_TabContainer extends ZendX_JQuery_View_Helper_UiW
             $params = '{}';
         }
 
-        $js = sprintf('%s("#%s > ul").tabs(%s);',
+        $js = sprintf('%s("#%s").tabs(%s);',
             ZendX_JQuery_View_Helper_JQuery::getJQueryHandler(),
             $attribs['id'],
             $params

@@ -3,28 +3,37 @@
 class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator extends RecursiveFilterIterator
 {
 
-    protected static $_denyDirectoryPattern = null;
-    protected static $_acceptFilePattern = null;
+    protected $_denyDirectoryPattern = null;
+    protected $_acceptFilePattern    = null;
+    
 
-    public static function setDenyDirectoryPattern($denyDirectoryPattern)
+    /*
+    public function __construct(RecursiveIterator $iterator, $denyDirectoryPattern = null, $acceptFilePattern = null)
     {
-        self::$_denyDirectoryPattern = $denyDirectoryPattern;
+        parent::__construct($iterator);
     }
-
-    public static function setAcceptFilePattern($acceptFilePattern)
-    {
-        self::$_acceptFilePattern = $acceptFilePattern;
-    }
+    */
+    
 
     public function accept()
     {
         $currentNode = $this->current();
 
-        if ($currentNode->isDir() && !preg_match('#' . self::$_denyDirectoryPattern. '#', $currentNode)) {
+        if ($currentNode->isDir() && !preg_match('#.*(/|\\\\).svn#', $currentNode)) {
+            //echo ' accept ' . $currentNode . PHP_EOL;
             return true;
         }
 
-        return (preg_match('#' . self::$_acceptFilePattern  . '#', $currentNode)) ? true : false;
+        return (preg_match('#.*(?:Manifest|Provider)\.php$#', $currentNode)) ? true : false;
+        
+        /* This will not work
+        if ($currentNode->isDir() && !preg_match('#' . $this->_denyDirectoryPattern . '#', $currentNode)) {
+            //echo ' accept ' . $currentNode . PHP_EOL;
+            return true;
+        }
+
+        return (preg_match('#' . $this->_acceptFilePattern . '#', $currentNode)) ? true : false;
+         */
     }
 
 }

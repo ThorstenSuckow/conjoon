@@ -128,12 +128,19 @@ class Zend_Amf_Parse_Amf0_Serializer extends Zend_Amf_Parse_Serializer
                     $markerType = Zend_Amf_Constants::AMF0_NULL;
                     break;
                 case (is_array($data)):
-                    // check if it is a mixed typed array
+                    // check if it is an associative array
+                    $i = 0;
                     foreach (array_keys($data) as $key) {
-                        if (!is_numeric($key)) {
-                            $markerType = Zend_Amf_Constants::AMF0_MIXEDARRAY;
-                            break;
-                        }
+                        // check if it contains non-integer keys
+                        if (!is_numeric($key) || intval($key) != $key) { 
+                            $markerType = Zend_Amf_Constants::AMF0_OBJECT; 
+                            break; 
+                            // check if it is a sparse indexed array
+                         } else if ($key != $i) { 
+                             $markerType = Zend_Amf_Constants::AMF0_MIXEDARRAY; 
+                             break; 
+                         }
+                         $i++;
                     }
                     // Dealing with a standard numeric array
                     if(!$markerType){
@@ -161,6 +168,8 @@ class Zend_Amf_Parse_Amf0_Serializer extends Zend_Amf_Parse_Serializer
     {
         // Loop each element and write the name of the property.
         foreach ($object as $key => $value) {
+            // skip variables starting with an _ provate transient
+            if( $key[0] == "_")	continue;
             $this->_stream->writeUTF($key);
             $this->writeTypeMarker($value);
         }
@@ -270,7 +279,6 @@ class Zend_Amf_Parse_Amf0_Serializer extends Zend_Amf_Parse_Serializer
                 // Check to see if the user has defined an explicit Action Script type.
             case isset($object->_explicitType):
                 $className = $object->_explicitType;
-                unset($object->_explicitType);
                 break;
                 // Check if user has defined a method for accessing the Action Script type
             case method_exists($object, 'getASClassName'):

@@ -1,44 +1,150 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Tool
+ * @subpackage Framework
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
+ */
 
-require_once 'Zend/Tool/Framework/Manifest/Registry.php';
-require_once 'Zend/Tool/Framework/Provider/Registry.php';
+/**
+ * @see Zend_Tool_Framework_Registry_EnabledInterface
+ */
+require_once 'Zend/Tool/Framework/Registry/EnabledInterface.php';
 
-abstract class Zend_Tool_Framework_Loader_Abstract
+/**
+ * @category   Zend
+ * @package    Zend_Tool
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
+abstract class Zend_Tool_Framework_Loader_Abstract implements Zend_Tool_Framework_Registry_EnabledInterface
 {
+    /**
+     * @var Zend_Tool_Framework_Repository_Interface
+     */
+    protected $_registry = null;
     
+    /**
+     * @var array
+     */
+    private $_retrievedFiles = array();
+    
+    /**
+     * @var array
+     */
+    private $_loadedClasses  = array();
+    
+    /**
+     * _getFiles
+     *
+     * @return array Array Of Files
+     */
     abstract protected function _getFiles();
-    
-    public function load()
+
+    /**
+     * setRegistry() - required by the enabled interface to get an instance of
+     * the registry
+     *
+     * @param Zend_Tool_Framework_Registry_Interface $registry
+     * @return Zend_Tool_Framework_Loader_Abstract
+     */
+    public function setRegistry(Zend_Tool_Framework_Registry_Interface $registry)
     {
-        $files = $this->_getFiles();
-        $manifestRegistry = Zend_Tool_Framework_Manifest_Registry::getInstance();
-        $providerRegistry = Zend_Tool_Framework_Provider_Registry::getInstance();
-        
-        $classesLoadedBefore = get_declared_classes();
-        
-        $oldLevel = error_reporting(E_ALL | ~E_STRICT); // remove strict so that other packages wont throw warnings
-        foreach ($files as $file) {
-            // should we lint the files here? i think so
-            require_once $file;
-        }
-        error_reporting($oldLevel); // restore old error level
-
-        $classesLoadedAfter = get_declared_classes();
-        
-        $loadedClasses = array_diff($classesLoadedAfter, $classesLoadedBefore);
-
-        foreach ($loadedClasses as $loadedClass) {
-            
-            $reflectionClass = new ReflectionClass($loadedClass);  
-            if ($reflectionClass->implementsInterface('Zend_Tool_Framework_Manifest_Interface') && !$reflectionClass->isAbstract()) {
-                $manifestRegistry->addManifest($reflectionClass->newInstance());
-            }
-            
-            if ($reflectionClass->implementsInterface('Zend_Tool_Framework_Provider_Interface') && !$reflectionClass->isAbstract()) {
-                $providerRegistry->addProvider($reflectionClass->newInstance());
-            }
-        }
+        $this->_registry = $registry;
+        return $this;
     }
     
+    /**
+     * load() - called by the client initialize routine to load files
+     *
+     */
+    public function load()
+    {
+        $this->loadFromFiles($this->_getFiles());
+    }
+    
+    /**
+     * getRetrievedFiles()
+     *
+     * @return array Array of Files Retrieved
+     */
+    public function getRetrievedFiles()
+    {
+        return $this->_retrievedFiles;
+    }
+    
+    /**
+     * getLoadedClasses()
+     *
+     * @return array Array of Loaded Classes
+     */
+    public function getLoadedClasses()
+    {
+        return $this->_loadedClasses;
+    }
+    
+    /**
+     * loadFromFiles()
+     *
+     * @param array $files
+     * @return array Array of loaded classes
+     */
+    public function loadFromFiles(Array $files)
+    {
+        $this->_retrievedFiles = $files;
+        $this->_loadedClasses  = array();
+        
+        $manifestRegistry = $this->_registry->getManifestRepository();
+        $providerRegistry = $this->_registry->getProviderRepository();
+        
+        $loadedClasses = array();
+        
+        // loop through files and find the classes declared by loading the file
+        foreach ($files as $file) {
+            $classesLoadedBefore = get_declared_classes();
+            $oldLevel = error_reporting(E_ALL | ~E_STRICT); // remove strict so that other packages wont throw warnings
+            // should we lint the files here? i think so
+            include_once $file;
+            error_reporting($oldLevel); // restore old error level
+            $classesLoadedAfter = get_declared_classes();
+            $loadedClasses = array_merge($loadedClasses, array_diff($classesLoadedAfter, $classesLoadedBefore));
+        }
+        
+        // loop through the loaded classes and ensure that 
+        foreach ($loadedClasses as $loadedClass) {
+            
+            // reflect class to see if its something we want to load
+            $reflectionClass = new ReflectionClass($loadedClass);
+            if ($reflectionClass->implementsInterface('Zend_Tool_Framework_Manifest_Interface') && !$reflectionClass->isAbstract()) {
+                $manifestRegistry->addManifest($reflectionClass->newInstance());
+                $this->_loadedClasses[] = $loadedClass;
+            }
+            
+            if ($reflectionClass->implementsInterface('Zend_Tool_Framework_Provider_Interface') 
+                && !$reflectionClass->isAbstract()
+                && !$providerRegistry->hasProvider($reflectionClass->getName(), false)) 
+            {
+                $providerRegistry->addProvider($reflectionClass->newInstance());
+                $this->_loadedClasses[] = $loadedClass;
+            }
+
+        }
+        
+        return $this->_loadedClasses;
+    }
     
 }

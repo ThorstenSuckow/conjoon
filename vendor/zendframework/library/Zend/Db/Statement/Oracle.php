@@ -313,19 +313,19 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
 
         switch ($style) {
             case Zend_Db::FETCH_NUM:
-                $row = oci_fetch_array($this->_stmt, OCI_NUM | $lob_as_string);
+                $row = oci_fetch_array($this->_stmt, OCI_NUM | OCI_RETURN_NULLS | $lob_as_string);
                 break;
             case Zend_Db::FETCH_ASSOC:
-                $row = oci_fetch_array($this->_stmt, OCI_ASSOC | $lob_as_string);
+                $row = oci_fetch_array($this->_stmt, OCI_ASSOC | OCI_RETURN_NULLS | $lob_as_string);
                 break;
             case Zend_Db::FETCH_BOTH:
-                $row = oci_fetch_array($this->_stmt, OCI_BOTH | $lob_as_string);
+                $row = oci_fetch_array($this->_stmt, OCI_BOTH | OCI_RETURN_NULLS | $lob_as_string);
                 break;
             case Zend_Db::FETCH_OBJ:
                 $row = oci_fetch_object($this->_stmt);
                 break;
             case Zend_Db::FETCH_BOUND:
-                $row = oci_fetch_array($this->_stmt, OCI_BOTH | $lob_as_string);
+                $row = oci_fetch_array($this->_stmt, OCI_BOTH | OCI_RETURN_NULLS | $lob_as_string);
                 if ($row !== false) {
                     return $this->_fetchBound($row);
                 }
@@ -467,7 +467,15 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
         }
 
         if (!oci_fetch($this->_stmt)) {
-            /* TODO ERROR */
+            // if no error, there is simply no record
+            if (!$error = oci_error($this->_stmt)) {
+                return false;
+            }
+            /**
+             * @see Zend_Db_Adapter_Oracle_Exception
+             */
+            require_once 'Zend/Db/Statement/Oracle/Exception.php';
+            throw new Zend_Db_Statement_Oracle_Exception($error);
         }
 
         $data = oci_result($this->_stmt, $col+1); //1-based
@@ -506,12 +514,12 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
 
         $obj = oci_fetch_object($this->_stmt);
 
-        if ($obj === false) {
+        if ($error = oci_error($this->_stmt)) {
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
             require_once 'Zend/Db/Statement/Oracle/Exception.php';
-            throw new Zend_Db_Statement_Oracle_Exception(oci_error($this->_stmt));
+            throw new Zend_Db_Statement_Oracle_Exception($error);
         }
 
         /* @todo XXX handle parameters */

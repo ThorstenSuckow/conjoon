@@ -15,7 +15,7 @@ require_once 'Zend/XmlRpc/Response.php';
  *
  * @package Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: ServerTest.php 12163 2008-10-28 15:59:33Z matthew $
+ * @version $Id: ServerTest.php 14323 2009-03-15 11:24:58Z matthew $
  */
 class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase 
 {
@@ -509,6 +509,20 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
         $response = $this->_server->handle($request);
         $this->assertFalse($response instanceof Zend_XmlRpc_Fault);
         $this->assertEquals($data, $response->getReturnValue());
+    }
+
+    /**
+     * @group ZF-6034
+     */
+    public function testPrototypeReturnValueMustReflectDocBlock()
+    {
+        $server = new Zend_XmlRpc_Server();
+        $server->setClass('Zend_XmlRpc_Server_testClass');
+        $table = $server->getDispatchTable();
+        $method = $table->getMethod('test1');
+        foreach ($method->getPrototypes() as $prototype) {
+            $this->assertNotEquals('void', $prototype->getReturnType(), var_export($prototype, 1));
+        }
     }
 }
 

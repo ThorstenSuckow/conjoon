@@ -1,10 +1,38 @@
 <?php
-
-require_once 'Zend/Reflection/Class.php';
-
-
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 
 /**
+ * @see TestHelper
+ */
+require_once dirname(__FILE__) . '/../../TestHelper.php';
+
+/** requires */
+require_once 'Zend/Reflection/Class.php';
+
+/**
+ * @category   Zend
+ * @package    Zend_Reflection
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * 
  * @group Zend_Reflection
  * @group Zend_Reflection_Class
@@ -16,6 +44,7 @@ class Zend_Reflection_ClassTest extends PHPUnit_Framework_TestCase
     
     public function setup()
     {
+        // ensure we are only required this file once per runtime
         if (self::$_sampleClassFileRequired === false) {
             $fileToRequire = dirname(__FILE__) . '/_files/TestSampleClass.php';
             require_once $fileToRequire;
@@ -74,12 +103,49 @@ class Zend_Reflection_ClassTest extends PHPUnit_Framework_TestCase
         
     }
     
+    public function testGetContentsReturnsContents()
+    {
+        $reflectionClass = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass2');
+        $target = <<<EOS
+{
+    
+    protected \$_prop1 = null;
+    protected \$_prop2 = null;
+    
+    public function getProp1()
+    {
+        return \$this->_prop1;
+    }
+    
+    public function getProp2(\$param1, Zend_Reflection_TestSampleClass \$param2)
+    {
+        return \$this->_prop2;
+    }
+    
+    public function getIterator()
+    {
+        return array();
+    }
+    
+}
+
+EOS;
+        $this->assertEquals($target, $reflectionClass->getContents());
+    }
+    
     public function testStartLine()
     {
         $reflectionClass = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass5');
         
         $this->assertEquals($reflectionClass->getStartLine(), 87);
         $this->assertEquals($reflectionClass->getStartLine(true), 76);
+    }
+    
+
+    public function testGetDeclaringFileReturnsFilename()
+    {
+        $reflectionClass = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass2');
+        $this->assertContains('TestSampleClass.php', $reflectionClass->getDeclaringFile()->getFileName()); //ns(, $reflectionClass->getDeclaringFile());
     }
     
 }

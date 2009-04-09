@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CurrencyTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: CurrencyTest.php 13686 2009-01-18 15:29:46Z thomas $
  */
 
 /**
@@ -64,7 +64,7 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('Autodetection of locale failed');
             return;
         }
-        
+
         $locale = new Zend_Locale('de_AT');
 
         try {
@@ -527,7 +527,7 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('Autodetection of locale failed');
             return;
         }
-        
+
         $currency = new Zend_Currency('ar_EG');
         $this->assertTrue(array_key_exists('EGP', $currency->getCurrencyList()));
     }
@@ -555,5 +555,21 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
 
         $currency = new Zend_Currency('EUR');
         $this->assertSame('de_AT', $currency->getLocale());
+    }
+
+    /**
+     * Caching method tests
+     */
+    public function testCaching()
+    {
+        $cache = Zend_Currency::getCache();
+        $this->assertTrue($cache instanceof Zend_Cache_Core);
+        $this->assertTrue(Zend_Currency::hasCache());
+
+        Zend_Currency::clearCache();
+        $this->assertTrue(Zend_Currency::hasCache());
+
+        Zend_Currency::removeCache();
+        $this->assertFalse(Zend_Currency::hasCache());
     }
 }

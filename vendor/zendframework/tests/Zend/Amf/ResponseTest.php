@@ -18,7 +18,7 @@ require_once 'Zend/Date.php';
  *
  * @package Zend_Amf
  * @subpackage UnitTests
- * @version $Id: ResponseTest.php 12142 2008-10-27 14:45:26Z wadearnold $
+ * @version $Id: ResponseTest.php 14455 2009-03-24 04:03:47Z wadearnold $
  */
 class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 {
@@ -436,6 +436,85 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
         // Check that the response matches the expected serialized value
         $this->assertEquals($mockResponse, $testResponse);
     }
+    
+    /**
+     * Returning a DOMDocument object to AMF is serialized into a XMString ready for E4X
+     * 
+     * @group ZF-4999
+     */
+    public function testPhpDomDocumentSerializedToAmf3XmlString()
+    {
+        $sXML = '<root><element><key>a</key><value>b</value></element></root>';
+		$data = new DOMDocument();
+		$data->preserveWhiteSpace = false;
+		$data->loadXML($sXML);
+        
+		
+        // Create an acknowlege message for a response to a RemotingMessage
+        $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
+        $acknowledgeMessage->correlationId = 'B0B0E583-5A80-826B-C2D1-D67A63D2F5E1';
+        $acknowledgeMessage->clientId = '3D281DFB-FAC8-E368-3267-0000696DA53F';
+        $acknowledgeMessage->messageId = '436381AA-C8C1-9749-2B05-000067CEA2CD';
+        $acknowledgeMessage->destination = null;
+        $acknowledgeMessage->timeToLive = 0;
+        $acknowledgeMessage->timestamp = '122766401600';
+        $acknowledgeMessage->body = $data;
+
+        $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
+
+        // serialize the data to an AMF output stream
+        $this->_response->setObjectEncoding(0x03);
+        $this->_response->addAmfBody($newBody);
+        $this->_response->finalize();
+        $testResponse = $this->_response->getResponse();
+
+        // Load the expected response.
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/domdocumentAmf3Response.bin');
+        
+        // Check that the response matches the expected serialized value
+        $this->assertEquals($mockResponse, $testResponse);
+    }
+    
+    /**
+     * Returning a SimpleXML object to AMF is serialized into a XMString ready for E4X
+     * 
+     * @group ZF-4999
+     */
+    public function testSimpleXmlSerializedToAmf3XmlString()
+    {
+        $sXML = '<root><element><key>a</key><value>b</value></element></root>';
+		$data = new DOMDocument();
+		$data->preserveWhiteSpace = false;
+		$data->loadXML($sXML);
+		$data = simplexml_import_dom($data);
+        
+		
+        // Create an acknowlege message for a response to a RemotingMessage
+        $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
+        $acknowledgeMessage->correlationId = 'B0B0E583-5A80-826B-C2D1-D67A63D2F5E1';
+        $acknowledgeMessage->clientId = '3D281DFB-FAC8-E368-3267-0000696DA53F';
+        $acknowledgeMessage->messageId = '436381AA-C8C1-9749-2B05-000067CEA2CD';
+        $acknowledgeMessage->destination = null;
+        $acknowledgeMessage->timeToLive = 0;
+        $acknowledgeMessage->timestamp = '122766401600';
+        $acknowledgeMessage->body = $data;
+        
+        $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
+
+        // serialize the data to an AMF output stream
+        $this->_response->setObjectEncoding(0x03);
+        $this->_response->addAmfBody($newBody);
+        $this->_response->finalize();
+        $testResponse = $this->_response->getResponse();
+
+        // Load the expected response.
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/domdocumentAmf3Response.bin');
+        
+        // Check that the response matches the expected serialized value
+        $this->assertEquals($mockResponse, $testResponse);
+    }
+    
+    
 
     /**
      * PHP string to Amf0 string
@@ -477,20 +556,6 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($mockResponse, $testResponse);
     }
 
-    public function testPhpMixedArraySerializedToAmf0Array()
-    {
-        $data = array("one", "two" => "two");
-        $newBody = new Zend_Amf_Value_MessageBody('/1/onResult',null,$data);
-        $this->_response->setObjectEncoding(0x00);
-        $this->_response->addAmfBody($newBody);
-        $this->_response->finalize();
-        $testResponse = $this->_response->getResponse();
-        // Load the expected response.
-        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/mixedArrayAmf0Response.bin');
-        // Check that the response matches the expected serialized value
-        $this->assertEquals($mockResponse, $testResponse);
-    }
-
     /**
      * Check to make sure that we can place arrays in arrays.
      *
@@ -510,20 +575,47 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($mockResponse, $testResponse);
 
     }
-
-    public function testPhpStringArraySerializedToAmf0MixedArray()
+    
+    /**
+     * Allow sparse arrays to be retruned to Actionscript without loosing the keys. 
+     * 
+     * @group ZF-5094
+     */
+    public function testPhpSparseArraySerializedToAmf0Array()
     {
-        $data = array("one" =>"one", "two" => "two");
+        $data = array(1 => 'foo', 5 => 'bar');
         $newBody = new Zend_Amf_Value_MessageBody('/1/onResult',null,$data);
         $this->_response->setObjectEncoding(0x00);
         $this->_response->addAmfBody($newBody);
         $this->_response->finalize();
         $testResponse = $this->_response->getResponse();
         // Load the expected response.
-        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/stringArrayAmf0Response.bin');
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/sparseArrayAmf0Response.bin');
         // Check that the response matches the expected serialized value
         $this->assertEquals($mockResponse, $testResponse);
+        
     }
+    
+    /**
+     * Test to convert string keyed arrays are converted to objects so that we do not loose
+     * the key refrence in the associative array. 
+     * 
+     * @group ZF-5094
+     */
+    public function testPhpStringKeyArrayToAmf0Object()
+    {
+        $data = array('foo' => 5, 'bar' => 23);
+        $newBody = new Zend_Amf_Value_MessageBody('/1/onResult',null,$data);
+        $this->_response->setObjectEncoding(0x00);
+        $this->_response->addAmfBody($newBody);
+        $this->_response->finalize();
+        $testResponse = $this->_response->getResponse();
+        // Load the expected response.
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/stringKeyArrayAmf0Response.bin');
+        // Check that the response matches the expected serialized value
+        $this->assertEquals($mockResponse, $testResponse);
+        
+    }   
 
 	/**
      * PHP Object to Amf0 Object

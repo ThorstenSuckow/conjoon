@@ -1,15 +1,15 @@
 <?php
 
 require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
-require_once 'Zend/Tool/Project/Context/System/ISystem.php';
-require_once 'Zend/Tool/Project/Context/System/ITopLevel.php';
-require_once 'Zend/Tool/Project/Context/System/INotOverwritable.php';
+require_once 'Zend/Tool/Project/Context/System/Interface.php';
+require_once 'Zend/Tool/Project/Context/System/TopLevelRestrictable.php';
+require_once 'Zend/Tool/Project/Context/System/NotOverwritable.php';
 
 class Zend_Tool_Project_Context_System_ProjectDirectory 
     extends Zend_Tool_Project_Context_Filesystem_Directory
-    implements Zend_Tool_Project_Context_System_ISystem,
-               Zend_Tool_Project_Context_System_INotOverwritable,
-               Zend_Tool_Project_Context_System_ITopLevel 
+    implements Zend_Tool_Project_Context_System_Interface,
+               Zend_Tool_Project_Context_System_NotOverwritable,
+               Zend_Tool_Project_Context_System_TopLevelRestrictable 
 {
     
     protected $_filesystemName = null;
@@ -36,6 +36,27 @@ class Zend_Tool_Project_Context_System_ProjectDirectory
         }
         
         $this->_baseDirectory = rtrim($projectDirectory, '\\/');
+    }
+    
+    public function create()
+    {
+        if (file_exists($this->getPath())) {
+            /*
+            foreach (new DirectoryIterator($this->getPath()) as $item) {
+                if (!$item->isDot()) {
+                    if (Zend_Tool_Framework_Registry::getInstance()->getClient()->isInteractive()) {
+                        // @todo prompt for override
+                    } else {
+                        require_once 'Zend/Tool/Project/Context/Exception.php';
+                        throw new Zend_Tool_Project_Context_Exception('This directory is not empty, project creation aborted.');
+                    }
+                    break;
+                }
+            }
+            */
+        }
+        
+        parent::create();
     }
     
 }

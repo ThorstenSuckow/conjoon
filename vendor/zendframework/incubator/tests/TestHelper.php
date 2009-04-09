@@ -17,7 +17,7 @@
  * @package    UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestHelper.php 13682 2009-01-17 22:13:23Z alexander $
+ * @version    $Id: TestHelper.php 14513 2009-03-27 13:44:05Z alexander $
  */
 
 /*
@@ -88,11 +88,14 @@ set_include_path(implode(PATH_SEPARATOR, $path));
  */
 if (TESTS_GENERATE_REPORT === true &&
     version_compare(PHPUnit_Runner_Version::id(), '3.1.6', '>=')) {
-    PHPUnit_Util_Filter::addDirectoryToWhitelist($zfCoreLibrary);
-    PHPUnit_Util_Filter::addDirectoryToWhitelist($zfIncLibrary);
+    PHPUnit_Util_Filter::addDirectoryToWhitelist($zfStandardTrunkLibrary);
+    PHPUnit_Util_Filter::addDirectoryToWhitelist($zfStandardIncubatorLibrary);
+    PHPUnit_Util_Filter::addDirectoryToFilter(sys_get_temp_dir());
+    PHPUnit_Util_Filter::addDirectoryToFilter(dirname(__FILE__));
 }
 
 /*
  * Unset global variables that are no longer needed.
  */
-unset($zfRoot, $zfIncLibrary, $zfIncTests, $zfCoreLibrary, $zfCoreTests, $path);
+unset($zfStandardIncubatorRoot, $zfStandardIncubatorLibrary, $zfStandardIncubatorTests,
+    $zfStandardTrunkRoot, $zfStandardTrunkLibrary, $zfStandardTrunkTests, $path);
