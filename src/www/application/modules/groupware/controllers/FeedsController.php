@@ -561,6 +561,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 $date = $pubDate;
             } else if ($pubDate = $item->pubDate()) {
                 $date = $pubDate;
+            } else if ($pubDate = $item->date()) {
+                $date = $pubDate;
             } else {
                 $date = new Zend_Date();
             }
