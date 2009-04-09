@@ -71,6 +71,12 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
      */
     emailRecord : null,
 
+    /**
+     * @type {String} _orgIconCls stores the original icon class that was used so that
+     * it can be restored with iconCls after the pending icon class was showed
+     */
+    _orgIconCls : null,
+
     initComponent : function()
     {
         this.addEvents(
@@ -98,9 +104,12 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             this.on('show', this._onShow, this);
         }
 
+        this.iconCls     = this.iconCls || 'com-conjoon-groupware-email-EmailView-Icon';
+        this._orgIconCls = this.iconCls;
+
         Ext.apply(this, {
             closable  : true,
-            iconCls   : this.iconCls || 'com-conjoon-groupware-email-EmailView-Icon',
+            iconCls   : this.iconCls,
             hideMode  : 'offsets'
             /**
              * @bug adding listeners via listeners property does not work in initComponent!!!
@@ -249,6 +258,8 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             com.conjoon.Gettext.gettext("Loading...")
         );
 
+        this.setIconClass('com-conjoon-groupware-pending-icon');
+
         this.emailRecord = null;
 
 
@@ -298,6 +309,7 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         this.emailRecord = record;
 
         this.setTitle((record.data.subject || '&#160;'));
+        this.setIconClass(this._orgIconCls);
         this.renderView();
 
         this.fireEvent('emailload', record);

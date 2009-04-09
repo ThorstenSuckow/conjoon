@@ -177,6 +177,9 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
             component.on('titlechange', function(){
                 item.setText(this.title);
             }, component);
+            component.on('iconchange', function(panel, newIconCls, oldIconCls){
+                item.setIconClass(newIconCls);
+            }, component);
             component.on('destroy', function() {
                 menu.remove(item);
             });

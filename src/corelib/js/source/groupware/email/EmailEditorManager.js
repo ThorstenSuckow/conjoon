@@ -143,7 +143,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             hideMode   : 'offsets',
             closable   : true,
             border     : false,
-            iconCls    : 'com-conjoon-groupware-email-EmailForm-icon',
+            iconCls    : 'com-conjoon-groupware-pending-icon',
             autoScroll : false
         });
 
@@ -345,8 +345,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         completeForm(options.panelId);
 
         Ext.getCmp(options.panelId).setTitle(getTitle(draft.subject));
+        Ext.getCmp(options.panelId).setIconClass(
+            'com-conjoon-groupware-email-EmailForm-icon'
+        );
     };
-
 
     /**
      * Helps IE to stay in sync with midas. If not used when changes in the dom
@@ -571,12 +573,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             return;
         }
 
-        // will throw an error in ext2.0, so catch it
-        try {
-            activePanel.setIconClass('com-conjoon-groupware-pending-icon');
-        } catch (e) {
-            // ignore
-        }
+        activePanel.setIconClass('com-conjoon-groupware-pending-icon');
 
         switch (subject) {
             case 'com.conjoon.groupware.email.Smtp.beforeEmailSent':
@@ -754,12 +751,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     {
         var panelId = activePanel ? activePanel.id : null;
 
-        try {
-            Ext.getCmp(id).setIconClass('com-conjoon-groupware-email-EmailForm-icon');
-        } catch (e) {
-            // @bug ext2.0
-            // ignore, buggy in ext 2.0
-        }
+        Ext.getCmp(id).setIconClass('com-conjoon-groupware-email-EmailForm-icon');
 
         formValues[id].state    = null;
         formValues[id].disabled = false;
