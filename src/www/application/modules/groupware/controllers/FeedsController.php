@@ -582,6 +582,9 @@ class Groupware_FeedsController extends Zend_Controller_Action {
 
     /**
      * Read out all feeds without the field 'content'
+     *
+     * @param integer $accountId the id of the account to fetch the feed items for,
+     * or null to fetch all feed items for the currently logged in user
      */
     private function _getFeedItems($accountId = null)
     {
