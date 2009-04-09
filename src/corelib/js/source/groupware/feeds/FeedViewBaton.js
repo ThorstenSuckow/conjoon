@@ -135,6 +135,11 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             id : item.id
         });
 
+        openedFeeds[options.panelId].view.setTitle(rec.get('title'));
+        openedFeeds[options.panelId].view.setIconClass(
+            'com-conjoon-groupware-feeds-FeedView-Icon'
+        );
+
         openedFeeds[options.panelId]['body'].update(rec.get('content'));
     };
 
@@ -173,8 +178,9 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
      *
      *
      * @param {com.conjoon.groupware.feeds.FeedItemRecord}
+     * @param {Boolean} loadFromServer
      */
-    var buildPanel = function(feedItemRecord)
+    var buildPanel = function(feedItemRecord, loadFromServer)
     {
         var accRec = AccountStore.getById(feedItemRecord.get('groupwareFeedsAccountsId'));
         var link   = accRec.get('link');
@@ -191,9 +197,13 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
         var view = new Ext.Panel({
             layout     : 'border',
             id         : idPrefix+feedItemRecord.id,
-            title      : feedItemRecord.get('title'),
+            title      : loadFromServer
+                         ? com.conjoon.Gettext.gettext("Loading...")
+                         : feedItemRecord.get('title'),
+            iconCls    : loadFromServer
+                         ? 'com-conjoon-groupware-pending-icon'
+                         : 'com-conjoon-groupware-feeds-FeedView-Icon',
             closable   : true,
-            iconCls    : 'com-conjoon-groupware-feeds-FeedView-Icon',
             hideMode   : 'offsets',
             items      : [{
                 region    : 'north',
@@ -285,7 +295,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                 contentPanel.setActiveTab(opened['view']);
                 return opened;
             } else {
-                buildPanel(feedItemRecord);
+                buildPanel(feedItemRecord, loadFromServer);
                 if (loadFromServer === true) {
                     loadFeedContents(
                         feedItemRecord.id,

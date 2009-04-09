@@ -203,9 +203,27 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.getChooseAccountButton().on('checkchange', this._onAccountButtonCheckChange, this);
 
         this.getChooseAccountButton().on('exitclick', this._onAccountButtonExitClick, this);
+
+        this.getChooseAccountButton().getManageAccountMenuItem().on(
+            'click',
+            this._onManageAccountMenuItemClick,
+            this
+        );
     },
 
 // -------- listeners
+
+    /**
+     * Listener for the "Manage Accounts" menu item of the chooseAccountButton.
+     * Default implementation opens up the dialog for managing the twitter accounts.
+     *
+     * @protected
+     */
+    _onManageAccountMenuItemClick : function()
+    {
+        var dialog = new com.conjoon.service.twitter.ManageAccountsDialog();
+        dialog.show();
+    },
 
     /**
      * Listener for the beforeload event of the recent tweet's store.
