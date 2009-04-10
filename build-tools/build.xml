@@ -54,7 +54,7 @@
    </target>
 
    <target name="build_license">
-    <copy file="./LICENSE"
+    <copy file="./LICENSE.txt"
           tofile="./build/htdocs/install/LICENSE.txt"
           overwrite="true"
      />
@@ -197,10 +197,10 @@
        <exclude name="**/*.css" />
        <exclude name="**/Thumbs.db" />
        <exclude name="**/.svn" />
-       <exclude name="**/README" />
-       <exclude name="**/LICENSE" />
-       <exclude name="**/CREDITS" />
-       <exclude name="**/CHANGELOG" />
+       <exclude name="**/README.txt" />
+       <exclude name="**/LICENSE.txt" />
+       <exclude name="**/CREDITS.txt" />
+       <exclude name="**/CHANGELOG.txt" />
      </fileset>
     </copy>
     <!-- as follows the subproject extensions for conjoon -->
@@ -267,10 +267,10 @@
      <copy todir="./build/htdocs/install/files/conjoon_application" includeemptydirs="true">
        <fileset dir="./src/www/application">
          <exclude name="**/.svn" />
-         <exclude name="**/README" />
-         <exclude name="**/LICENSE" />
-         <exclude name="**/CREDITS" />
-         <exclude name="**/CHANGELOG" />
+         <exclude name="**/README.txt" />
+         <exclude name="**/LICENSE.txt" />
+         <exclude name="**/CREDITS.txt" />
+         <exclude name="**/CHANGELOG.txt" />
        </fileset>
        <filterchain>
         <filterreader classname="filters.ProcessDevFragments" />
@@ -295,10 +295,10 @@
      <copy todir="./build/htdocs" includeemptydirs="true">
        <fileset dir="./src/www/htdocs">
          <exclude name="**/.svn" />
-         <exclude name="**/README" />
-         <exclude name="**/LICENSE" />
-         <exclude name="**/CREDITS" />
-         <exclude name="**/CHANGELOG" />
+         <exclude name="**/README.txt" />
+         <exclude name="**/LICENSE.txt" />
+         <exclude name="**/CREDITS.txt" />
+         <exclude name="**/CHANGELOG.txt" />
          <exclude name="**/config.ini.php" />
          <exclude name="**/ext-config.js" />
          <exclude name="**/startup.js" />

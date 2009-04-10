@@ -56,7 +56,7 @@
         <append destFile="${conjoon.cssmerge.tempfile}">
           <fileset dir="./src/corelib/js/resources/css">
             <exclude name="**/conjoon-all.css" />
-            <exclude name="**/README" />
+            <exclude name="**/README.txt" />
           </fileset>
         </append>
 
