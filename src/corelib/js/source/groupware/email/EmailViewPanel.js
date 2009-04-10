@@ -96,7 +96,9 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
         );
 
         if (this.emailItem) {
-            this.title = this.emailItem.data.subject || '&#160;';
+            this.title = this.autoLoad
+                         ? '&#160;'
+                         : (this.emailItem.data.subject || '&#160;');
         }
 
         if (this.refreshFrame === true && !Ext.isIE) {
@@ -104,12 +106,14 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             this.on('show', this._onShow, this);
         }
 
-        this.iconCls     = this.iconCls || 'com-conjoon-groupware-email-EmailView-Icon';
-        this._orgIconCls = this.iconCls;
+        this._orgIconCls = this.iconCls || 'com-conjoon-groupware-email-EmailView-Icon';
+        this.iconCls     = this.autoLoad
+                           ? 'com-conjoon-groupware-pending-icon'
+                           : (this.iconCls || 'com-conjoon-groupware-email-EmailView-Icon');
+
 
         Ext.apply(this, {
             closable  : true,
-            iconCls   : this.iconCls,
             hideMode  : 'offsets'
             /**
              * @bug adding listeners via listeners property does not work in initComponent!!!
