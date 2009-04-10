@@ -101,7 +101,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
                 text    : com.conjoon.Gettext.gettext("Statusbar"),
                 checked : true,
                 handler : function(item) {
-                    this.getSouthPanel().bbar.setVisible(!item.checked);
+                    this.getSouthPanel().setVisible(!item.checked);
                     this.doLayout();
                 },
                 scope : workbench

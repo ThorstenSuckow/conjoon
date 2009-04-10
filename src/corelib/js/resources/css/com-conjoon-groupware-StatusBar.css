@@ -20,10 +20,11 @@
     background-repeat:repeat-x;
     background-position:top;
     padding-left:4px !important;
+    height:16px!important;
 }
 
 .com-conjoon-groupware-StatusBar .ytb-sep {
-	background-image: url(../images/statusbar-separator.gif) !important;
+    background-image: url(../images/statusbar-separator.gif) !important;
 }
 
 .com-conjoon-groupware-statusbar-ConnectionInfo {

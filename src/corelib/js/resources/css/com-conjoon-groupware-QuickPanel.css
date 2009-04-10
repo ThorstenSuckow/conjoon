@@ -80,6 +80,10 @@
     border-top:none;
 }
 
+.com-conjoon-groupware-QuickPanel-itemPanel {
+    padding-bottom:3px;
+}
+
 .com-conjoon-groupware-QuickPanel-itemPanel .x-panel-header {
     color:#15428B;
     font-weight:bold;

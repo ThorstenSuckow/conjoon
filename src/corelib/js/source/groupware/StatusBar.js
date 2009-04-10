@@ -101,9 +101,11 @@ com.conjoon.groupware.StatusBar = function(){
 
     return {
 
-        getStatusBar : function()
+        getStatusBar : function(initConf)
         {
             if (_statusBar === null) {
+
+                initConf = initConf || {};
 
                 var pconf = {
                     cls   : 'com-conjoon-groupware-ProgressBar',
@@ -120,15 +122,12 @@ com.conjoon.groupware.StatusBar = function(){
                 t.className = "com-conjoon-groupware-statusbar-ConnectionInfo";
                 _connectionInfo = new Ext.Toolbar.Item(t);
 
-                _statusBar = new Ext.StatusBar({
-                    region:'south',
-                    height : 21,
+                var statusBarConf = Ext.apply({
                     defaultText : com.conjoon.Gettext.gettext("Ready"),
                     border : false,
                     id : 'com.conjoon.groupware.StatusBar',
                     cls: 'com-conjoon-groupware-StatusBar',
                     statusAlign: 'left',
-                    margins:'3 0 0 0',
                     items : [
                         new Ext.Toolbar.Separator(),
                         new Ext.Toolbar.Spacer(),
@@ -139,7 +138,9 @@ com.conjoon.groupware.StatusBar = function(){
                         _connectionInfo,
                         new Ext.Toolbar.Spacer()
                     ]
-                });
+                }, initConf);
+
+                _statusBar = new Ext.StatusBar(statusBarConf);
 
                 _statusBar.afterRender = _statusBar.afterRender.createSequence(
                     function() {
@@ -163,7 +164,6 @@ com.conjoon.groupware.StatusBar = function(){
 
             return _statusBar;
         }
-
 
     };
 

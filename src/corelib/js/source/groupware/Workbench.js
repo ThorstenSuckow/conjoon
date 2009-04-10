@@ -192,17 +192,9 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
      */
     _getSouthPanel  : function()
     {
-        /**
-         * @bug Ext2.2 We need to wrap the statusbar in another panel, otherwise
-         * IE7 will have problems calculating the size properly
-         */
-        return {
-            region   : 'south',
-            html     : '<div style=\'display:none\'></div>',
-            bbar     : com.conjoon.groupware.StatusBar.getStatusBar(),
-            border   : false,
-            margins  : '3 0 0 0'
-        };
+        return com.conjoon.groupware.StatusBar.getStatusBar({
+            region : 'south'
+        });
     },
 
     /**
