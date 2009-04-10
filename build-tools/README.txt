@@ -1,10 +1,10 @@
-This folder contains scripts for building deployable versions of the intrabuild
+This folder contains scripts for building deployable versions of the conjoon
 project.
 
 csscompressor.php
 =================
-cli script for compressing all css files used by intrabuild (except for vendor
-css files) into one file named "intrabuild-all.css". All paths used by the script
+cli script for compressing all css files used by conjoon (except for vendor
+css files) into one file named "conjoon-all.css". All paths used by the script
 depend on the directory layout as defined by the repository. Make sure you run
 this script out of its current folder.
 Note:
