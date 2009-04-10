@@ -129,6 +129,6 @@ Ext.extend(com.conjoon.layout.AccordionSplitBar, Ext.SplitBar, {
             }
 
         }
-    },
+    }
 
 });

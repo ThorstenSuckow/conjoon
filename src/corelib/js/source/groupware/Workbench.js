@@ -159,7 +159,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             this.getSouthPanel(),
             this.getCenterPanel(),
             this.getEastPanel(),
-            this.getWestPanel(),
+            this.getWestPanel()
         ];
     },
 
@@ -227,7 +227,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
         return new com.conjoon.dd.AccordionDropPanel({
             region       : 'west',
             layoutConfig : {
-                animate : true,
+                animate : true
             },
             split        : true,
             minSize      : 0,

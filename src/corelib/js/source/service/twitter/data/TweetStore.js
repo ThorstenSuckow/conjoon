@@ -35,7 +35,7 @@ com.conjoon.service.twitter.data.TweetStore = function(c){
             sortInfo   : {
                 field     : 'createdAt',
                 direction : 'DESC'
-            },
+            }
     }));
 };
 Ext.extend(com.conjoon.service.twitter.data.TweetStore, Ext.data.Store);

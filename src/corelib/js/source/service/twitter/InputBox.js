@@ -29,18 +29,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
      */
     autoEl :  {
         tag      : 'div',
-        cls      : 'com-conjoon-service-twitter-InputBox',
-        /*children : [{
-            tag : 'textarea',
-            cls : 'textArea'
-        }, {
-            tag  : 'div',
-            cls  : 'charCounter',
-            html : '140'
-        }, {
-            tag  : 'div',
-            cls  : 'buttonContainer'
-        }]*/
+        cls      : 'com-conjoon-service-twitter-InputBox'
     },
 
     /**

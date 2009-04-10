@@ -203,27 +203,9 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.getChooseAccountButton().on('checkchange', this._onAccountButtonCheckChange, this);
 
         this.getChooseAccountButton().on('exitclick', this._onAccountButtonExitClick, this);
-
-        this.getChooseAccountButton().getManageAccountMenuItem().on(
-            'click',
-            this._onManageAccountMenuItemClick,
-            this
-        );
     },
 
 // -------- listeners
-
-    /**
-     * Listener for the "Manage Accounts" menu item of the chooseAccountButton.
-     * Default implementation opens up the dialog for managing the twitter accounts.
-     *
-     * @protected
-     */
-    _onManageAccountMenuItemClick : function()
-    {
-        var dialog = new com.conjoon.service.twitter.ManageAccountsDialog();
-        dialog.show();
-    },
 
     /**
      * Listener for the beforeload event of the recent tweet's store.
@@ -1164,7 +1146,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         );
 
         var params = {
-            id : this._currentAccountId,
+            id : this._currentAccountId
         };
 
         if (type === 'status') {
@@ -1182,7 +1164,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             Ext.apply(params, {
                 userId : tweetRecord.get('userId')
                        ? tweetRecord.get('userId')
-                       : tweetRecord.get('id'),
+                       : tweetRecord.get('id')
             });
         } else {
             Ext.apply(params, {
