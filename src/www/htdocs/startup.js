@@ -65,8 +65,19 @@ Ext.onReady(function(){
         com.conjoon.util.PreLoader.load();
     });
 
+    /**
+     * Shows a confirm dialog when the user wants to leave conjoon.
+     */
+    window.onbeforeunload = function (evt) {
+        var message = com.conjoon.Gettext.gettext("conjoon\nAre you sure you want to exit your current session?");
+        if (typeof evt == "undefined") {
+            evt = window.event;
+        }
+        if (evt) {
+          evt.returnValue = message;
+        }
+        return message;
+    };
 
 
-
-
- });
+});
