@@ -1272,9 +1272,7 @@ com.conjoon.groupware.email.EmailForm = function(config){
     });
 
     this.grid = new Ext.grid.EditorGridPanel({
-        autoExpandColumn : 'address',
-        autoExpandMax : 4000,
-        autoExpandMin : 0,
+        hideHeaders : true,
         region  : 'center',
         margins : '2 5 2 5',
         style   : 'background:none',
@@ -1313,13 +1311,6 @@ com.conjoon.groupware.email.EmailForm = function(config){
     });
 
     this.grid.store.on('update', this.onUpdate, this);
-
-    this.grid.on('render', function(){
-        this.view.mainWrap.dom.firstChild.style.display = "none";
-        this.view.scroller.setStyle('overflow-x', 'hidden');
-        this.view.scroller.setStyle('overflow-y', 'scroll');
-    }, this.grid);
-
 
     this.subjectField = new Ext.form.TextField({
         name : 'subject',
@@ -1525,6 +1516,15 @@ com.conjoon.groupware.email.EmailForm = function(config){
     });
 
     this.loadMask = null;
+
+    this.grid.on('resize', function() {
+        var cm = this.getColumnModel();
+        var rem = this.getGridEl().getWidth(true)-this.view.scrollOffset
+                  - cm.getColumnWidth(0)-2;
+
+        cm.setColumnWidth(1, rem);
+        this.view.focusEl.setWidth(rem);
+    }, this.grid);
 
     com.conjoon.util.Registry.register('com.conjoon.groupware.email.EmailForm', this, true);
 };
