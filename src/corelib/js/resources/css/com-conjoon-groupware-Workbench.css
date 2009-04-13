@@ -12,6 +12,19 @@
  * $URL$
  */
 
+.com-conjoon-groupware-workbench-FocusLayer {
+    background-image : url(../s.gif);
+    width            : 100%;
+    height           : 100%;
+    position         : absolute;
+    top              : 0px;
+    left             : 0px;
+    z-index          : 99999999;
+}
+
+/**
+ * About dialog
+ */
 .com-conjoon-groupware-workbench-AboutDialog .x-window-body {
     background:#ffffff url(../images/about_bg.png) no-repeat left bottom;
 

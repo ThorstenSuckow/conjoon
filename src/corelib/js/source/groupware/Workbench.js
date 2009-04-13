@@ -53,6 +53,11 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
     _dropTargetWest : null,
 
     /**
+     * @type {Number} _focusTimeoutId
+     */
+    _focusTimeoutId : null,
+
+    /**
      * Inits this component.
      */
     initComponent : function()
@@ -65,10 +70,95 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
 
         this.getCenterPanel().on('resize', this.doLayout, this);
 
+        this.on('focus', this._onFocus, this);
+        this.on('blur',  this._onBlur, this);
+
         com.conjoon.groupware.Workbench.superclass.initComponent.call(this);
     },
 
+// -------- listeners
 
+    /**
+     * Listener for the focus event of the workbench.
+     *
+     * @param {Ext.Viewport}
+     * @param {HtmlElement}
+     */
+    _onBlur : function(viewport, lastActiveElement)
+    {
+        window.clearTimeout(this._focusTimeoutId);
+        this._focusTimeoutId = null;
+
+        if (!this._focusLayer) {
+            var div = document.createElement('div');
+            div.className = 'com-conjoon-groupware-workbench-FocusLayer';
+            document.body.appendChild(div);
+            Ext.fly(div).on('mousedown', function() {
+                if (lastActiveElement) {
+                    lastActiveElement.focus();
+                }
+                Ext.fly(this._focusLayer).removeAllListeners();
+                this._focusLayer.parentNode.removeChild(this._focusLayer);
+                this._focusLayer = null;
+            }, this);
+            this._focusLayer = div;
+        }
+    },
+
+    /**
+     * Listener for the focus event of the workbench.
+     *
+     * @param {Ext.Viewport}
+     * @param {HtmlElement}
+     */
+    _onFocus : function(viewport, lastActiveElement)
+    {
+        if (lastActiveElement != this._focusLayer) {
+            (function() {
+                try {lastActiveElement.focus();}catch(e){}
+            }).defer(100);
+        }
+
+        window.clearTimeout(this._focusTimeoutId);
+        this._focusTimeoutId = null;
+
+        this._focusTimeoutId = (function() {
+            if (this._focusLayer) {
+                Ext.fly(this._focusLayer).removeAllListeners();
+                this._focusLayer.parentNode.removeChild(this._focusLayer);
+                this._focusLayer = null;
+            }
+        }).defer(1000, this);
+
+    },
+
+    _onQuickPanelVisibilityChange : function(panel)
+    {
+        var region = null;
+
+        if (panel == this.getWestPanel()) {
+            region = 'west';
+        } else {
+            region = 'east';
+        }
+
+        var borderRegion = this.getLayout()['center'];
+        if (!borderRegion) {
+            return;
+        }
+
+        if (region == 'west') {
+            borderRegion.margins.left = panel.hidden ? 4 : 0;
+        } else {
+            borderRegion.margins.right =  panel.hidden ? 4 : 0;
+        }
+
+        // check if the panel is already rendered... just a hack
+        // otherwise doLayout will cause a few errors in other components
+        if (panel.items) {
+            this.doLayout();
+        }
+    },
 
 // -------- public API
 
@@ -236,35 +326,6 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             }
         });
     },
-
-    _onQuickPanelVisibilityChange : function(panel)
-    {
-        var region = null;
-
-        if (panel == this.getWestPanel()) {
-            region = 'west';
-        } else {
-            region = 'east';
-        }
-
-        var borderRegion = this.getLayout()['center'];
-        if (!borderRegion) {
-            return;
-        }
-
-        if (region == 'west') {
-            borderRegion.margins.left = panel.hidden ? 4 : 0;
-        } else {
-            borderRegion.margins.right =  panel.hidden ? 4 : 0;
-        }
-
-        // check if the panel is already rendered... just a hack
-        // otherwise doLayout will cause a few errors in other components
-        if (panel.items) {
-            this.doLayout();
-        }
-    },
-
 
     /**
      *
