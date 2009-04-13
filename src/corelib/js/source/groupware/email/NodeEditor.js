@@ -20,16 +20,6 @@ com.conjoon.groupware.email.NodeEditor = function(treePanel, config) {
     Ext.apply(this, config);
 
     /**
-     * @ext-bug beta1 cancelOnEsc is ignored in the onSpecialKey implementation
-     *                of the TreeEditor, make it custom
-     */
-    this.addEvents({
-        'escapekey'    : true,
-        'enterkey'     : true
-    });
-
-
-    /**
      * @ext-bug beta1 Applying these values in the config gets ignored
      */
     this.shadow        = 'drop';
@@ -58,8 +48,6 @@ com.conjoon.groupware.email.NodeEditor = function(treePanel, config) {
     // looks like we can skip the call to onbeforecomplete, since first the
     // beforehide will be called
     this.on('beforecomplete', this.onBeforeEditingComplete, this);
-    this.on('escapekey',      this.onEditorEscape, this);
-    this.on('enterkey',       this.onEditorEnter, this);
     this.on('complete',       this.onEditorComplete, this);
     this.on('show',           this.onEditorShow,  this);
     this.on('beforehide',     this.onBeforeHide,  this);
@@ -244,15 +232,6 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     },
 
     /**
-     *
-     */
-    onEditorEnter : function(field, e)
-    {
-         e.stopEvent();
-         this.completeEdit();
-    },
-
-    /**
      * When the user presses escapes he usually wants to revert any changes and
      * does not go into save mode. However, we hate to check if the node gets
      * edited or if it is a new node that needs to get saved.
@@ -285,10 +264,12 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
      */
     onSpecialKey : function(field, e)
     {
-        if (e.getKey() == e.ENTER && !e.hasModifier()) {
-            this.fireEvent('enterkey', field, e);
-        } else if (e.getKey() == e.ESC) {
-            this.fireEvent('escapekey', field, e);
+        var k = e.getKey();
+        if(k == e.ESC){
+            this.onEditorEscape(field, e);
+        }else if(k == e.ENTER && !e.hasModifier()){
+            e.stopEvent();
+            this.completeEdit();
         }
     }
 
