@@ -175,7 +175,7 @@ com.conjoon.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz.C
         });
 
         this.addressField = new Ext.form.TextField({
-            fieldLabel : com.conjoon.Gettext.gettext("Email addresse"),
+            fieldLabel : com.conjoon.Gettext.gettext("Email address"),
             allowBlank : false,
             validator  : Ext.form.VTypes.email,
             name       : 'address'
