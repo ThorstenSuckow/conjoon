@@ -264,7 +264,7 @@ com.conjoon.groupware.Reception = function() {
     {
         _buildLoginWindow({
             loginUrl      : './default/reception/process/format/json',
-            usernameValue : _user.emailAddress,
+            usernameValue : _user.userName,
             modal         : _applicationStarted,
             draggable     : true
         });
