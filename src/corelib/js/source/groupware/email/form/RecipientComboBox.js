@@ -73,15 +73,6 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
         com.conjoon.groupware.email.form.RecipientComboBox.superclass.initComponent.call(this);
     },
 
-    /**
-     * @bug Ext2.2
-     * see http://www.extjs.com/forum/showthread.php?t=51457&highlight=hideTrigger
-     */
-    afterRender: function()
-    {
-         Ext.form.TriggerField.superclass.afterRender.call(this);
-    },
-
     initEvents : function()
     {
         com.conjoon.groupware.email.form.RecipientComboBox.superclass.initEvents.call(this);
