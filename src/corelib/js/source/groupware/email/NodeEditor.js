@@ -134,14 +134,8 @@ Ext.extend(com.conjoon.groupware.email.NodeEditor, Ext.tree.TreeEditor, {
     triggerEdit : function(node, mode)
     {
         this.editMode = mode;
-        /**
-         * @ext-bug2.2
-         * see http://www.extjs.com/forum/showthread.php?t=41432
-         */
-        var as = this.tree.autoScroll;
-        this.tree.autoScroll = false;
+
         com.conjoon.groupware.email.NodeEditor.superclass.triggerEdit.call(this, node);
-        this.tree.autoScroll = as;
     },
 
     /**
