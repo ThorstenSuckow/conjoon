@@ -203,7 +203,6 @@ Ext.lib.Ajax.handleTransactionResponse = function(o, callback, isAbort) {
 /**
  * @bug Ext2 no setTooltip method for buttons
  */
-
 Ext.override(Ext.Button, {
 
     setTooltip:function(tooltip)
@@ -224,3 +223,64 @@ Ext.override(Ext.Button, {
     }
 
 });
+
+/**
+ * Adds focus/blur events to Ext.Viewport which generally translate to
+ * browser window focus/blur.
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ */
+Ext.Viewport.prototype.initComponent = Ext.Viewport.prototype.initComponent.createInterceptor(
+    function() {
+       this.addEvents(
+            /**
+             * @event blur
+             * Fires when the viewport loses its focus, i.e. when the browser window/tab
+             * loses its focus
+             * @param {Ext.Viewport}
+             * @param {HTMLElement} lastActiveElement
+             */
+            'blur',
+            /**
+             * @event focus
+             * @event blur
+             * Fires when the viewport gains focus, i.e. when the browser window/tab
+             * gains focus
+             * @param {Ext.Viewport}
+             * @param {HTMLElement} lastActiveElement
+             */
+            'focus'
+        );
+
+        var focusEl    = window;
+        var eventNames = ['focus', 'blur'];
+
+        if (Ext.isIE) {
+            focusEl    = document;
+            eventNames = ['focusin', 'focusout'];
+        }
+
+        Ext.EventManager.on(focusEl, eventNames[0], function(e) {
+            if (this._hasFocus) {
+                return;
+            }
+            this._hasFocus = true;
+            this.fireEvent('focus', this, this._activeElement);
+        }, this, {stopPropagation : true});
+
+        Ext.EventManager.on(focusEl, eventNames[1], function(e) {
+            if (this._activeElement != document.activeElement) {
+                this._activeElement = document.activeElement;
+                // ie detects focus loss if current activeElement
+                // equals to last active element
+                if (Ext.isIE) {
+                    return;
+                }
+            }
+            this._hasFocus = false;
+            this.fireEvent('blur', this, this._activeElement);
+        }, this, {stopPropagation : true});
+
+        this._activeElement = document.activeElement;
+    }
+);
