@@ -62,6 +62,20 @@ com.conjoon.groupware.Reception = function() {
     var _userLoadListeners = [];
 
     /**
+     * Listeners for a load failure of a user.
+     *
+     * @param {Object}
+     */
+    var _userLoadFailureListeners = [];
+
+    /**
+     * Listeners get called before the user gets loaded
+     *
+     * @param {Object}
+     */
+    var _userBeforeLoadListeners = [];
+
+    /**
      * The login window that will be shown to request user credentials
      * for logging into the application.
      *
@@ -97,6 +111,31 @@ com.conjoon.groupware.Reception = function() {
 
         for (var i = 0, len = _userLoadListeners.length; i < len; i++) {
             _userLoadListeners[i]['fn'].call(_userLoadListeners[i]['scope'], _user);
+        }
+    };
+
+    /**
+     * Callback for the receptions user load failure.
+     *
+     * @param {XmlHttpResponse}
+     * @param {Object} options
+     *
+     */
+    var _onUserLoadFailure = function(response, options)
+    {
+        for (var i = 0, len = _userLoadFailureListeners.length; i < len; i++) {
+            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope']);
+        }
+    };
+
+    /**
+     * Callback before the user gets loaded.
+     *
+     */
+    var _onBeforeUserLoad = function()
+    {
+        for (var i = 0, len = _userBeforeLoadListeners.length; i < len; i++) {
+            _userBeforeLoadListeners[i]['fn'].call(_userBeforeLoadListeners[i]['scope'], _user);
         }
     };
 
@@ -495,9 +534,31 @@ com.conjoon.groupware.Reception = function() {
         /**
          *
          */
+        onBeforeUserLoad : function(fn, scope)
+        {
+            _userBeforeLoadListeners.push({
+                fn    : fn,
+                scope : scope || window
+            });
+        },
+
+        /**
+         *
+         */
         onUserLoad : function(fn, scope)
         {
             _userLoadListeners.push({
+                fn    : fn,
+                scope : scope || window
+            });
+        },
+
+        /**
+         *
+         */
+        onUserLoadFailure : function(fn, scope)
+        {
+            _userLoadFailureListeners.push({
                 fn    : fn,
                 scope : scope || window
             });
@@ -510,12 +571,15 @@ com.conjoon.groupware.Reception = function() {
         {
             _applicationStarted = applicationStarted;
 
-           Ext.apply(_options, options || {});
+            Ext.apply(_options, options || {});
+
+            _onBeforeUserLoad();
 
             Ext.Ajax.request({
                 url            : './default/reception/get.user/format/json',
                 disableCaching : true,
-                success        : _onUserLoad
+                success        : _onUserLoad,
+                failure        : _onUserLoadFailure
             });
 
             // subscribe to the message bus and listen to failed responses
@@ -669,6 +733,16 @@ com.conjoon.groupware.Reception = function() {
         {
             return (_context === this.TYPE_UNLOCK
                     || _context === this.TYPE_AUTHENTICATE);
+        },
+
+        /**
+         * Removes all userload-related listeners from the reception.
+         */
+        removeAllListeners : function()
+        {
+            _userLoadListeners        = [];
+            _userLoadFailureListeners = [];
+            _userBeforeLoadListeners  = [];
         }
 
 
