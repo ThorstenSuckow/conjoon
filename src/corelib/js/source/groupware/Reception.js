@@ -246,6 +246,8 @@ com.conjoon.groupware.Reception = function() {
      */
     var _onLogoutSuccess = function(response, options)
     {
+        window.onbeforeunload = Ext.emptyFn;
+
         var json = com.conjoon.util.Json;
 
         if (json.isError(response.responseText)) {
@@ -569,6 +571,10 @@ com.conjoon.groupware.Reception = function() {
          */
         init : function(applicationStarted, options)
         {
+            if (applicationStarted !== false) {
+                window.onbeforeunload = this.confirmApplicationLeave();
+            }
+
             _applicationStarted = applicationStarted;
 
             Ext.apply(_options, options || {});
@@ -743,6 +749,24 @@ com.conjoon.groupware.Reception = function() {
             _userLoadListeners        = [];
             _userLoadFailureListeners = [];
             _userBeforeLoadListeners  = [];
+        },
+
+        /**
+         *
+         * @return {Function}
+         */
+        confirmApplicationLeave : function()
+        {
+            return function (evt) {
+                var message = com.conjoon.Gettext.gettext("conjoon\nAre you sure you want to exit your current session?");
+                if (typeof evt == "undefined") {
+                    evt = window.event;
+                }
+                if (evt) {
+                  evt.returnValue = message;
+                }
+                return message;
+            };
         }
 
 
