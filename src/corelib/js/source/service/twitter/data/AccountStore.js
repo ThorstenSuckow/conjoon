@@ -19,21 +19,38 @@ Ext.namespace('com.conjoon.service.twitter.data');
  * server.
  *
  * @class com.conjoon.service.twitter.data.AccountStore
- * @extends Ext.data.Store
+ * @singleton
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-com.conjoon.service.twitter.data.AccountStore = function(c){
+com.conjoon.service.twitter.data.AccountStore = function() {
 
-    com.conjoon.service.twitter.data.AccountStore.superclass.constructor.call(
-        this, Ext.apply(c || {}, {
+    var _store = null;
+
+    var _getStore = function() {
+        return new Ext.data.Store({
             autoLoad : false,
+            storeId  : Ext.id(),
             url      : './service/twitter/get.accounts/format/json',
             reader : new Ext.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'
             }, com.conjoon.service.twitter.data.AccountRecord)
-    }));
+        });
+    };
 
-};
-Ext.extend(com.conjoon.service.twitter.data.AccountStore, Ext.data.Store);
+
+    return {
+
+        getInstance : function()
+        {
+            if (!_store) {
+                _store = _getStore();
+            }
+
+            return _store;
+        }
+
+    }
+
+}();

@@ -67,6 +67,11 @@ com.conjoon.iphone.groupware.service.TwitterPanel = Ext.extend(com.conjoon.group
     _getHomePanel : function()
     {
         return new com.conjoon.iphone.service.twitter.HomePanel();
+    },
+
+    _onShow : function()
+    {
+        this.accountStore.load();
     }
 
 });

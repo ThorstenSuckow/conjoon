@@ -14,13 +14,14 @@
 
 Ext.onReady(function(){
 
-    var preLoader         = com.conjoon.util.PreLoader
-    var groupware         = com.conjoon.groupware;
-    var emailAccountStore = groupware.email.AccountStore.getInstance();
-    var feedsAccountStore = groupware.feeds.AccountStore.getInstance();
-    var registryStore     = groupware.Registry.getStore();
-    var feedsFeedStore    = groupware.feeds.FeedStore.getInstance();
-    var reception         = groupware.Reception
+    var preLoader           = com.conjoon.util.PreLoader
+    var groupware           = com.conjoon.groupware;
+    var emailAccountStore   = groupware.email.AccountStore.getInstance();
+    var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
+    var registryStore       = groupware.Registry.getStore();
+    var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
+    var reception           = groupware.Reception
+    var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
 
     var loadingCont = document.getElementById(
         'com.conjoon.groupware.Startup.loadingCont'
@@ -71,6 +72,10 @@ Ext.onReady(function(){
         var msg = "";
 
         switch (store) {
+            case twitterAccountStore:
+                msg = com.conjoon.Gettext.gettext("Loading Twitter accounts...");
+            break;
+
             case emailAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Email accounts...");
             break;
@@ -121,6 +126,7 @@ Ext.onReady(function(){
     preLoader.addStore(emailAccountStore);
     preLoader.addStore(feedsAccountStore);
     preLoader.addStore(registryStore);
+    preLoader.addStore(twitterAccountStore);
     preLoader.addStore(feedsFeedStore, {
         ignoreLoadException : true,
         loadAfterStore      : feedsAccountStore

@@ -78,7 +78,7 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
         });
 
         Ext.apply(this, {
-            accountStore      : new com.conjoon.service.twitter.data.AccountStore(),
+            accountStore      : com.conjoon.service.twitter.data.AccountStore.getInstance(),
             iconCls           : 'com-conjoon-service-twitter-twitterIcon',
             inputBox          : inputBox,
             userInfoBox       : userInfoBox,
@@ -113,10 +113,5 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
         this.getChooseAccountButton().resetAccountMenuItemStates(true);
     },
 
-    _onShow : function()
-    {
-        this.accountStore.load();
-    }
-
-
+    _onShow : Ext.emptyFn
 });
