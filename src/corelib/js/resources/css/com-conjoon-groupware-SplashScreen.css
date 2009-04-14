@@ -36,3 +36,18 @@
     background-repeat:no-repeat;
     height:20px;
 }
+
+.com-conjoon-groupware-SplashScreen-wrap .loadingCont .loading {
+    background-image:url(../images/loading-processing.gif);
+    background-repeat:no-repeat;
+    height:20px;
+    padding-left:20px;
+}
+
+.com-conjoon-groupware-SplashScreen-wrap .loadingCont .loading.done {
+    background-image:url(../images/16x16/actions/groupware-success.png);
+}
+
+.com-conjoon-groupware-SplashScreen-wrap .loadingCont .loading.fail {
+    background-image:url(../images/16x16/actions/groupware-failure.png);
+}
