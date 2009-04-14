@@ -21,9 +21,30 @@ com.conjoon.util.PreLoader = function() {
     var _kernel = function(){
         this.addEvents(
             /**
+             * @event load
              * Fired when all objects have been sucessfully loaded
              */
-            'load'
+            'load',
+            /**
+             * @event storeload
+             * Fired when a single store was loaded
+             * @param {Ext.data.Store} store
+             */
+            'storeload',
+            /**
+             * @event storeloadexception
+             * Fired when loading a single store failed
+             *
+             * @param {Ext.data.Store} store
+             */
+            'storeloadexception',
+            /**
+             * @event beforestoreload
+             * Fired before a single store is about to load
+             *
+             * @param {Ext.data.Store} store
+             */
+            'beforestoreload'
         );
     };
 
@@ -70,6 +91,11 @@ com.conjoon.util.PreLoader = function() {
             kernel.on(eventName, fn, scope, parameters);
         },
 
+        un : function(eventName, fn, scope, parameters)
+        {
+            kernel.un(eventName, fn, scope);
+        },
+
         /**
          * Adds a store to the preloader.
          *
@@ -100,7 +126,21 @@ com.conjoon.util.PreLoader = function() {
                 throw('com.conjoon.util.PreLoader: store with id '+id+' was already added.');
             }
 
-            store.on('load', storeLoaded, com.conjoon.util.PreLoader);
+            var preLoader = com.conjoon.util.PreLoader;
+
+            // add internal listeners
+            store.on('beforeload', function(store) {
+                kernel.fireEvent('beforestoreload', store);
+            }, preLoader,  {single : true});
+            store.on('loadexception', function(store){
+                kernel.fireEvent('storeloadexception', store);
+            }, preLoader,  {single : true});
+            store.on('load', function(store) {
+                kernel.fireEvent('storeload', store);
+            }, preLoader,  {single : true});
+
+
+            store.on('load', storeLoaded, preLoader);
 
             if (config.loadAfterStore) {
                 _loadsAfter.push({
@@ -110,7 +150,7 @@ com.conjoon.util.PreLoader = function() {
             }
 
             if (config.ignoreLoadException === true) {
-                store.on('loadexception', storeLoaded, com.conjoon.util.PreLoader, {single : true});
+                store.on('loadexception', storeLoaded, preLoader, {single : true});
             } else if (typeof config.exceptionCallback == "function") {
                 store.on(
                     'loadexception',
@@ -120,7 +160,7 @@ com.conjoon.util.PreLoader = function() {
                 );
             }
 
-            store.on('destroy', storeDestroyed, com.conjoon.util.PreLoader);
+            store.on('destroy', storeDestroyed, preLoader);
             stores[id] = store;
             storeCount++;
         },
