@@ -1,1 +1,14 @@
-Ext.data.ArrayReader=Ext.extend(Ext.data.JsonReader,{readRecords:function(c){var b=this.meta?this.meta.id:null;var h=this.recordType,q=h.prototype.fields;var e=[];var s=c;for(var m=0;m<s.length;m++){var d=s[m];var u={};var a=((b||b===0)&&d[b]!==undefined&&d[b]!==""?d[b]:null);for(var l=0,w=q.length;l<w;l++){var r=q.items[l];var g=r.mapping!==undefined&&r.mapping!==null?r.mapping:l;var t=d[g]!==undefined?d[g]:r.defaultValue;t=r.convert(t,d);u[r.name]=t}var p=new h(u,a);p.json=d;e[e.length]=p}return{records:e,totalRecords:e.length}}});
+/*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+
+Ext.data.ArrayReader=Ext.extend(Ext.data.JsonReader,{readRecords:function(o){this.arrayData=o;var s=this.meta;var sid=s?(s.idIndex||s.id):null;var recordType=this.recordType,fields=recordType.prototype.fields;var records=[];if(!this.getRoot){this.getRoot=s.root?this.getJsonAccessor(s.root):function(p){return p;};if(s.totalProperty){this.getTotal=this.getJsonAccessor(s.totalProperty);}}
+var root=this.getRoot(o);for(var i=0;i<root.length;i++){var n=root[i];var values={};var id=((sid||sid===0)&&n[sid]!==undefined&&n[sid]!==""?n[sid]:null);for(var j=0,jlen=fields.length;j<jlen;j++){var f=fields.items[j];var k=f.mapping!==undefined&&f.mapping!==null?f.mapping:j;var v=n[k]!==undefined?n[k]:f.defaultValue;v=f.convert(v,n);values[f.name]=v;}
+var record=new recordType(values,id);record.json=n;records[records.length]=record;}
+var totalRecords=records.length;if(s.totalProperty){var v=parseInt(this.getTotal(o),10);if(!isNaN(v)){totalRecords=v;}}
+return{records:records,totalRecords:totalRecords};}});

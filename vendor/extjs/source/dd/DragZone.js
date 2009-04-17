@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,8 +9,57 @@
 /**
  * @class Ext.dd.DragZone
  * @extends Ext.dd.DragSource
- * This class provides a container DD instance that proxies for multiple child node sources.<br />
- * By default, this class requires that draggable child nodes are registered with {@link Ext.dd.Registry}.
+ * <p>This class provides a container DD instance that allows dragging of multiple child source nodes.</p>
+ * <p>This class does not move the drag target nodes, but a proxy element which may contain
+ * any DOM structure you wish. The DOM element to show in the proxy is provided by either a
+ * provided implementation of {@link #getDragData}, or by registered draggables registered with {@link Ext.dd.Registry}</p>
+ * <p>If you wish to provide draggability for an arbitrary number of DOM nodes, each of which represent some
+ * application object (For example nodes in a {@link Ext.DataView DataView}) then use of this class
+ * is the most efficient way to "activate" those nodes.</p>
+ * <p>By default, this class requires that draggable child nodes are registered with {@link Ext.dd.Registry}.
+ * However a simpler way to allow a DragZone to manage any number of draggable elements is to configure
+ * the DragZone with  an implementation of the {@link #getDragData} method which interrogates the passed
+ * mouse event to see if it has taken place within an element, or class of elements. This is easily done
+ * by using the event's {@link Ext.EventObject#getTarget getTarget} method to identify a node based on a
+ * {@link Ext.DomQuery} selector. For example, to make the nodes of a DataView draggable, use the following
+ * technique. Knowledge of the use of the DataView is required:</p><pre><code>
+myDataView.on('render', function() {
+    myDataView.dragZone = new Ext.dd.DragZone(myDataView.getEl(), {
+
+//      On receipt of a mousedown event, see if it is within a DataView node.
+//      Return a drag data object if so.
+        getDragData: function(e) {
+
+//          Use the DataView's own itemSelector (a mandatory property) to
+//          test if the mousedown is within one of the DataView's nodes.
+            var sourceEl = e.getTarget(myDataView.itemSelector, 10);
+
+//          If the mousedown is within a DataView node, clone the node to produce
+//          a ddel element for use by the drag proxy. Also add application data
+//          to the returned data object.
+            if (sourceEl) {
+                d = sourceEl.cloneNode(true);
+                d.id = Ext.id();
+                return {
+                    ddel: d,
+                    sourceEl: sourceEl,
+                    repairXY: Ext.fly(sourceEl).getXY(),
+                    sourceStore: myDataView.store,
+                    draggedRecord: v.getRecord(sourceEl)
+                }
+            }
+        },
+
+//      Provide coordinates for the proxy to slide back to on failed drag.
+//      This is the original XY coordinates of the draggable element captured
+//      in the getDragData method.
+        getRepairXY: function() {
+            return this.dragData.repairXY;
+        }
+    });
+});</code></pre>
+ * See the {@link Ext.dd.DropZone DropZone} documentation for details about building a DropZone which
+ * cooperates with this DragZone.
  * @constructor
  * @param {Mixed} el The container element
  * @param {Object} config
@@ -23,6 +72,13 @@ Ext.dd.DragZone = function(el, config){
 };
 
 Ext.extend(Ext.dd.DragZone, Ext.dd.DragSource, {
+    /**
+     * This property contains the data representing the dragged object. This data is set up by the implementation
+     * of the {@link #getDragData} method. It must contain a <tt>ddel</tt> property, but can contain
+     * any other data according to the application's needs.
+     * @type Object
+     * @property dragData
+     */
     /**
      * @cfg {Boolean} containerScroll True to register this container with the Scrollmanager
      * for auto scrolling during drag operations.

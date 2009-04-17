@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -23,21 +23,19 @@ Ext.onReady(function(){
             xtype:"multiselect",
             fieldLabel:"Multiselect<br />(Required)",
             name:"multiselect",
-            dataFields:["code", "desc"], 
-            valueField:"code",
-            displayField:"desc",
             width:250,
             height:200,
             allowBlank:false,
-            data:[[123,"One Hundred Twenty Three"],
-                ["1", "One"], ["2", "Two"], ["3", "Three"], ["4", "Four"], ["5", "Five"],
-                ["6", "Six"], ["7", "Seven"], ["8", "Eight"], ["9", "Nine"]],
+            store: [[123,"One Hundred Twenty Three"],
+                    ["1", "One"], ["2", "Two"], ["3", "Three"], ["4", "Four"], ["5", "Five"],
+                    ["6", "Six"], ["7", "Seven"], ["8", "Eight"], ["9", "Nine"]],
             tbar:[{
                 text:"clear",
                 handler:function(){
 	                msForm.getForm().findField("multiselect").reset();
 	            }
-            }]
+            }],
+            ddReorder: true
         }],
         tbar:[{
             text: 'Options',
@@ -49,9 +47,12 @@ Ext.onReady(function(){
 	        },{
 	            text:"Toggle Enabled",
 	            handler: function(){
-	                var m=msForm.getForm().findField("multiselect");
-	                if (!m.disabled)m.disable();
-	                else m.enable();
+	                var m = msForm.getForm().findField("multiselect");
+	                if (!m.disabled) {
+	                    m.disable();
+	                } else {
+	                    m.enable();
+	                }
 	            }
             }]
         }],
@@ -68,6 +69,17 @@ Ext.onReady(function(){
     });
     
     
+    var ds = new Ext.data.ArrayStore({
+        data: [[123,"One Hundred Twenty Three"],
+            ["1", "One"], ["2", "Two"], ["3", "Three"], ["4", "Four"], ["5", "Five"],
+            ["6", "Six"], ["7", "Seven"], ["8", "Eight"], ["9", "Nine"]],
+        fields: ['value','text'],
+        sortInfo: {
+            field: 'value',
+            direction: 'ASC'
+        }
+    });
+    
     /*
      * Ext.ux.ItemSelector Example Code
      */
@@ -80,25 +92,24 @@ Ext.onReady(function(){
             xtype:"itemselector",
             name:"itemselector",
             fieldLabel:"ItemSelector",
-            dataFields:["code", "desc"],
-            toData:[["10", "Ten"]],
-            msWidth:250,
-            msHeight:200,
-            valueField:"code",
-            displayField:"desc",
-            imagePath:"images/",
-            toLegend:"Selected",
-            fromLegend:"Available",
-            fromData:[[123,"One Hundred Twenty Three"],
-                ["1", "One"], ["2", "Two"], ["3", "Three"], ["4", "Four"], ["5", "Five"],
-                ["6", "Six"], ["7", "Seven"], ["8", "Eight"], ["9", "Nine"]],
-            toTBar:[{
-                text:"Clear",
-                handler:function(){
-                    var i=isForm.getForm().findField("itemselector");
-                    i.reset.call(i);
-                }
-            }]
+            multiselects: [{
+                width: 250,
+                height: 200,
+                store: ds,
+                displayField: 'text',
+                valueField: 'value'
+            },{
+                width: 250,
+                height: 200,
+                store: [["10","Ten"]],
+                tbar:[{
+                    text:"clear",
+                    handler:function(){
+	                    isForm.getForm().findField("itemselector").reset();
+	                }
+                }]
+            }],
+            imagePath: 'images/'
         }],
         
         buttons: [{

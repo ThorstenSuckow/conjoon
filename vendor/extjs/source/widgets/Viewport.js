@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -75,6 +75,7 @@ new Ext.Viewport({
  * @constructor
  * Create a new Viewport
  * @param {Object} config The config object
+ * @xtype viewport
  */
 Ext.Viewport = Ext.extend(Ext.Container, {
 	/*

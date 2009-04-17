@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -27,23 +27,23 @@ new Ext.tree.TreeSorter(myTree, {
  */
 Ext.tree.TreeSorter = function(tree, config){
     /**
-	 * @cfg {Boolean} folderSort True to sort leaf nodes under non-leaf nodes (defaults to false)
+     * @cfg {Boolean} folderSort True to sort leaf nodes under non-leaf nodes (defaults to false)
      */
-	/** 
+    /** 
      * @cfg {String} property The named attribute on the node to sort by (defaults to "text").  Note that this 
      * property is only used if no {@link #sortType} function is specified, otherwise it is ignored.
      */
     /** 
-	 * @cfg {String} dir The direction to sort ("asc" or "desc," case-insensitive, defaults to "asc")
+     * @cfg {String} dir The direction to sort ("asc" or "desc," case-insensitive, defaults to "asc")
      */
     /** 
-	 * @cfg {String} leafAttr The attribute used to determine leaf nodes when {@link #folderSort} = true (defaults to "leaf")
+     * @cfg {String} leafAttr The attribute used to determine leaf nodes when {@link #folderSort} = true (defaults to "leaf")
      */
     /** 
-	 * @cfg {Boolean} caseSensitive true for case-sensitive sort (defaults to false)
+     * @cfg {Boolean} caseSensitive true for case-sensitive sort (defaults to false)
      */
     /** 
-	 * @cfg {Function} sortType A custom "casting" function used to convert node values before sorting.  The function
+     * @cfg {Function} sortType A custom "casting" function used to convert node values before sorting.  The function
      * will be called with a single parameter (the {@link Ext.tree.TreeNode} being evaluated) and is expected to return
      * the node's sort value cast to the specific data type required for sorting.  This could be used, for example, when
      * a node's text (or other attribute) should be sorted as a date or numeric value.  See the class description for 

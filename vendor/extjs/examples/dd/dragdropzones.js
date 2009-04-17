@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -17,7 +17,7 @@ Ext.onReady(function() {
         insuranceCode: '22222',
         name: 'Fred West',
         address: 'Cromwell Street',
-        telephone: '616 555 222'
+        telephone: '666 666 666'
     }, {
         insuranceCode: '33333',
         name: 'Fred Mercury',

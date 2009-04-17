@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -14,6 +14,7 @@
  * Creates a new TextItem
  * @param {Object/String} config If config is a string, it is used as the text to display, otherwise it
  * is applied as a config object (and should contain a <tt>text</tt> property).
+ * @xtype menutextitem
  */
 Ext.menu.TextItem = function(cfg){
     if(typeof cfg == 'string'){
@@ -44,3 +45,4 @@ Ext.extend(Ext.menu.TextItem, Ext.menu.BaseItem, {
         Ext.menu.TextItem.superclass.onRender.apply(this, arguments);
     }
 });
+Ext.reg('menutextitem', Ext.menu.TextItem);

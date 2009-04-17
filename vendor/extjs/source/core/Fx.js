@@ -1,29 +1,53 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
-
+(function(){
+	// contants
+	var NULL = null,
+		UNDEFINED = undefined,
+		TRUE = true,
+		FALSE = false,
+    	SETX = "setX",
+    	SETY = "setY",
+    	SETXY = "setXY",
+    	LEFT = "left",
+    	BOTTOM = "bottom",
+    	TOP = "top",
+    	RIGHT = "right",
+    	HEIGHT = "height",
+    	WIDTH = "width",
+    	POINTS = "points",
+    	HIDDEN = "hidden",
+    	ABSOLUTE = "absolute",
+    	VISIBLE = "visible",
+    	MOTION = "motion",
+    	POSITION = "position",
+    	EASEOUT = "easeOut";
+    	
 //Notifies Element that fx methods are available
-Ext.enableFx = true;
+Ext.enableFx = TRUE;
 
 /**
  * @class Ext.Fx
  * <p>A class to provide basic animation and visual effects support.  <b>Note:</b> This class is automatically applied
- * to the {@link Ext.Element} interface when included, so all effects calls should be performed via Element.
- * Conversely, since the effects are not actually defined in Element, Ext.Fx <b>must</b> be included in order for the 
- * Element effects to work.</p><br/>
- *
+ * to the {@link Ext.Element} interface when included, so all effects calls should be performed via {@link Ext.Element}.
+ * Conversely, since the effects are not actually defined in {@link Ext.Element}, Ext.Fx <b>must</b> be
+ * {@link Ext#enableFx included} in order for the Element effects to work.</p><br/>
+ * 
+ * <p><b><u>Method Chaining</u></b></p>
  * <p>It is important to note that although the Fx methods and many non-Fx Element methods support "method chaining" in that
  * they return the Element object itself as the method return value, it is not always possible to mix the two in a single
  * method chain.  The Fx methods use an internal effects queue so that each effect can be properly timed and sequenced.
  * Non-Fx methods, on the other hand, have no such internal queueing and will always execute immediately.  For this reason,
  * while it may be possible to mix certain Fx and non-Fx method calls in a single chain, it may not always provide the
- * expected results and should be done with care.</p><br/>
+ * expected results and should be done with care.  Also see <tt>{@link #callback}</tt>.</p><br/>
  *
+ * <p><b><u>Anchor Options for Motion Effects</u></b></p>
  * <p>Motion effects support 8-way anchoring, meaning that you can choose one of 8 different anchor points on the Element
  * that will serve as either the start or end point of the animation.  Following are all of the supported anchor positions:</p>
 <pre>
@@ -38,27 +62,62 @@ bl     The bottom left corner
 b      The center of the bottom edge
 br     The bottom right corner
 </pre>
- * <b>Although some Fx methods accept specific custom config parameters, the ones shown in the Config Options section
- * below are common options that can be passed to any Fx method.</b>
+ * <b>Note</b>: some Fx methods accept specific custom config parameters.  The options shown in the Config Options
+ * section below are common options that can be passed to any Fx method unless otherwise noted.</b>
  * 
  * @cfg {Function} callback A function called when the effect is finished.  Note that effects are queued internally by the
- * Fx class, so do not need to use the callback parameter to specify another effect -- effects can simply be chained together
- * and called in sequence (e.g., el.slideIn().highlight();).  The callback is intended for any additional code that should
- * run once a particular effect has completed. The Element being operated upon is passed as the first parameter.
- * @cfg {Object} scope The scope of the effect function
- * @cfg {String} easing A valid Easing value for the effect
+ * Fx class, so a callback is not required to specify another effect -- effects can simply be chained together
+ * and called in sequence (see note for <b><u>Method Chaining</u></b> above), for example:<pre><code>
+ * el.slideIn().highlight();
+ * </code></pre>
+ * The callback is intended for any additional code that should run once a particular effect has completed. The Element
+ * being operated upon is passed as the first parameter.
+ * 
+ * @cfg {Object} scope The scope of the <tt>{@link #callback}</tt> function
+ * 
+ * @cfg {String} easing A valid Ext.lib.Easing value for the effect:</p><div class="mdetail-params"><ul>
+ * <li><b><tt>backBoth</tt></b></li>
+ * <li><b><tt>backIn</tt></b></li>
+ * <li><b><tt>backOut</tt></b></li>
+ * <li><b><tt>bounceBoth</tt></b></li>
+ * <li><b><tt>bounceIn</tt></b></li>
+ * <li><b><tt>bounceOut</tt></b></li>
+ * <li><b><tt>easeBoth</tt></b></li>
+ * <li><b><tt>easeBothStrong</tt></b></li>
+ * <li><b><tt>easeIn</tt></b></li>
+ * <li><b><tt>easeInStrong</tt></b></li>
+ * <li><b><tt>easeNone</tt></b></li>
+ * <li><b><tt>easeOut</tt></b></li>
+ * <li><b><tt>easeOutStrong</tt></b></li>
+ * <li><b><tt>elasticBoth</tt></b></li>
+ * <li><b><tt>elasticIn</tt></b></li>
+ * <li><b><tt>elasticOut</tt></b></li>
+ * </ul></div>
+ *
  * @cfg {String} afterCls A css class to apply after the effect
  * @cfg {Number} duration The length of time (in seconds) that the effect should last
+ * 
+ * @cfg {Number} endOpacity Only applicable for {@link #fadeIn} or {@link #fadeOut}, a number between
+ * <tt>0</tt> and <tt>1</tt> inclusive to configure the ending opacity value.
+ *  
  * @cfg {Boolean} remove Whether the Element should be removed from the DOM and destroyed after the effect finishes
  * @cfg {Boolean} useDisplay Whether to use the <i>display</i> CSS property instead of <i>visibility</i> when hiding Elements (only applies to 
  * effects that end with the element being visually hidden, ignored otherwise)
- * @cfg {String/Object/Function} afterStyle A style specification string, e.g. "width:100px", or an object in the form {width:"100px"}, or
- * a function which returns such a specification that will be applied to the Element after the effect finishes
+ * @cfg {String/Object/Function} afterStyle A style specification string, e.g. <tt>"width:100px"</tt>, or an object
+ * in the form <tt>{width:"100px"}</tt>, or a function which returns such a specification that will be applied to the
+ * Element after the effect finishes.
  * @cfg {Boolean} block Whether the effect should block other effects from queueing while it runs
  * @cfg {Boolean} concurrent Whether to allow subsequently-queued effects to run at the same time as the current effect, or to ensure that they run in sequence
- * @cfg {Boolean} stopFx Whether subsequent effects should be stopped and removed after the current effect finishes
+ * @cfg {Boolean} stopFx Whether preceding effects should be stopped and removed before running current effect (only applies to non blocking effects)
  */
 Ext.Fx = {
+	
+	// private - calls the function taking arguments from the argHash based on the key.  Returns the return value of the function.
+	// 			 this is useful for replacing switch statements (for example).
+	switchStatements : function(key, fn, argHash){
+		return fn.apply(this, argHash[key]);
+	},
+	
 	/**
 	 * Slides the element into view.  An anchor point can be optionally passed to set the point of
 	 * origin for the slide effect.  This function automatically handles wrapping the element with
@@ -81,97 +140,91 @@ el.slideIn('t', {
 	 * @param {Object} options (optional) Object literal with any of the Fx config options
 	 * @return {Ext.Element} The Element
 	 */
-    slideIn : function(anchor, o){
-        var el = this.getFxEl();
+    slideIn : function(anchor, o){        
+	    var me = this,
+        	el = me.getFxEl(),
+        	r,
+			b,				
+			wrap,				
+			after,
+			st,
+        	args, 
+        	pt,
+        	bw,
+        	bh,
+        	xy = me.getXY(),
+            dom = me.dom;
+        	
         o = o || {};
+		anchor = anchor || "t";
 
-        el.queueFx(o, function(){
-
-            anchor = anchor || "t";
-
+        el.queueFx(o, function(){			
+			st = me.dom.style;				
+            	
             // fix display to visibility
-            this.fixDisplay();
-
+            me.fixDisplay();            
+            
             // restore values after effect
-            var r = this.getFxRestore();
-            var b = this.getBox();
+			r = me.getFxRestore();		
+            b = {x: xy[0], y: xy[1], 0: xy[0], 1: xy[1], width: dom.offsetWidth, height: dom.offsetHeight};
+            b.right = b.x + b.width;
+            b.bottom = b.y + b.height;
+            
             // fixed size for slide
-            this.setSize(b);
-
+            me.setWidth(b.width).setHeight(b.height);            
+            
             // wrap if needed
-            var wrap = this.fxWrap(r.pos, o, "hidden");
-
-            var st = this.dom.style;
-            st.visibility = "visible";
-            st.position = "absolute";
-
-            // clear out temp styles after slide and unwrap
-            var after = function(){
-                el.fxUnwrap(wrap, r.pos, o);
-                st.width = r.width;
-                st.height = r.height;
-                el.afterFx(o);
-            };
-            // time to calc the positions
-            var a, pt = {to: [b.x, b.y]}, bw = {to: b.width}, bh = {to: b.height};
-
-            switch(anchor.toLowerCase()){
-                case "t":
-                    wrap.setSize(b.width, 0);
-                    st.left = st.bottom = "0";
-                    a = {height: bh};
-                break;
-                case "l":
-                    wrap.setSize(0, b.height);
-                    st.right = st.top = "0";
-                    a = {width: bw};
-                break;
-                case "r":
-                    wrap.setSize(0, b.height);
-                    wrap.setX(b.right);
-                    st.left = st.top = "0";
-                    a = {width: bw, points: pt};
-                break;
-                case "b":
-                    wrap.setSize(b.width, 0);
-                    wrap.setY(b.bottom);
-                    st.left = st.top = "0";
-                    a = {height: bh, points: pt};
-                break;
-                case "tl":
-                    wrap.setSize(0, 0);
-                    st.right = st.bottom = "0";
-                    a = {width: bw, height: bh};
-                break;
-                case "bl":
-                    wrap.setSize(0, 0);
-                    wrap.setY(b.y+b.height);
-                    st.right = st.top = "0";
-                    a = {width: bw, height: bh, points: pt};
-                break;
-                case "br":
-                    wrap.setSize(0, 0);
-                    wrap.setXY([b.right, b.bottom]);
-                    st.left = st.top = "0";
-                    a = {width: bw, height: bh, points: pt};
-                break;
-                case "tr":
-                    wrap.setSize(0, 0);
-                    wrap.setX(b.x+b.width);
-                    st.left = st.bottom = "0";
-                    a = {width: bw, height: bh, points: pt};
-                break;
+            wrap = me.fxWrap(r.pos, o, HIDDEN);
+            
+            st.visibility = VISIBLE;
+            st.position = ABSOLUTE;
+            
+        	// clear out temp styles after slide and unwrap
+        	function after(){
+                 el.fxUnwrap(wrap, r.pos, o);
+                 st.width = r.width;
+                 st.height = r.height;
+                 el.afterFx(o);
             }
-            this.dom.style.visibility = "visible";
+            
+            // time to calculate the positions        
+        	pt = {to: [b.x, b.y]}; 
+        	bw = {to: b.width};
+        	bh = {to: b.height};
+            	
+			function argCalc(wrap, style, ww, wh, sXY, sXYval, s1, s2, w, h, p){	            	
+				var ret = {};
+            	wrap.setWidth(ww).setHeight(wh);
+            	if( wrap[sXY] )	wrap[sXY](sXYval);            		
+            	style[s1] = style[s2] = "0";	            	
+            	if(w) ret.width = w;
+            	if(h) ret.height = h;
+            	if(p) ret.points = p;
+            	return ret;
+        	};
+
+            args = me.switchStatements(anchor.toLowerCase(), argCalc, {
+		            t  : [wrap, st, b.width, 0, NULL, NULL, LEFT, BOTTOM, NULL, bh, NULL],
+		            l  : [wrap, st, 0, b.height, NULL, NULL, RIGHT, TOP, bw, NULL, NULL],
+		            r  : [wrap, st, 0, b.height, SETX, b.right, LEFT, TOP, bw, NULL, pt],
+		            b  : [wrap, st, b.width, 0, SETY, b.bottom, LEFT, TOP, NULL, bh, pt],
+		            tl : [wrap, st, 0, 0, NULL, NULL, RIGHT, BOTTOM, bw, NULL, pt],
+		            bl : [wrap, st, 0, 0, SETY, b.y + b.height, RIGHT, TOP, bw, bh, pt],
+		            br : [wrap, st, 0, 0, SETXY, [b.right, b.bottom], LEFT, TOP, bw, bh, pt],
+		            tr : [0, 0, SETX, b.x + b.width, LEFT, BOTTOM, bw, bh, pt]
+            	});
+            
+            st.visibility = VISIBLE;
             wrap.show();
 
-            arguments.callee.anim = wrap.fxanim(a,
+            arguments.callee.anim = wrap.fxanim(args,
                 o,
-                'motion',
+                MOTION,
                 .5,
-                'easeOut', after);
+                EASEOUT, 
+                after);
         });
-        return this;
+        return me;
     },
     
 	/**
@@ -201,87 +254,76 @@ el.slideOut('t', {
 	 * @return {Ext.Element} The Element
 	 */
     slideOut : function(anchor, o){
-        var el = this.getFxEl();
+	    var me = this,
+	    	el = me.getFxEl(),
+	    	xy = me.getXY(),
+            dom = me.dom,
+	    	wrap,
+	    	st,
+	    	r,
+	    	b,
+	    	a,
+	    	zero = {to: 0}; 
+	    		    
         o = o || {};
+        anchor = anchor || "t";
 
         el.queueFx(o, function(){
-
-            anchor = anchor || "t";
-
-            // restore values after effect
-            var r = this.getFxRestore();
-            
-            var b = this.getBox();
-            // fixed size for slide
-            this.setSize(b);
+	        // restore values after effect
+            r = me.getFxRestore(); 
+            b = {x: xy[0], y: xy[1], 0: xy[0], 1: xy[1], width: dom.offsetWidth, height: dom.offsetHeight};
+            b.right = b.x + b.width;
+            b.bottom = b.y + b.height;
+            	
+            // fixed size for slide            
+            me.setWidth(b.width).setHeight(b.height);
 
             // wrap if needed
-            var wrap = this.fxWrap(r.pos, o, "visible");
+            wrap = me.fxWrap(r.pos, o, VISIBLE);
+           	st = me.dom.style;
+           		
+            st.visibility = VISIBLE;
+            st.position = ABSOLUTE;
+            wrap.setWidth(b.width).setHeight(b.height);            
 
-            var st = this.dom.style;
-            st.visibility = "visible";
-            st.position = "absolute";
-
-            wrap.setSize(b);
-
-            var after = function(){
-                if(o.useDisplay){
-                    el.setDisplayed(false);
-                }else{
-                    el.hide();
-                }
-
+            function after(){
+	            o.useDisplay ? el.setDisplayed(FALSE) : el.hide();                
                 el.fxUnwrap(wrap, r.pos, o);
-
                 st.width = r.width;
                 st.height = r.height;
-
                 el.afterFx(o);
-            };
-
-            var a, zero = {to: 0};
-            switch(anchor.toLowerCase()){
-                case "t":
-                    st.left = st.bottom = "0";
-                    a = {height: zero};
-                break;
-                case "l":
-                    st.right = st.top = "0";
-                    a = {width: zero};
-                break;
-                case "r":
-                    st.left = st.top = "0";
-                    a = {width: zero, points: {to:[b.right, b.y]}};
-                break;
-                case "b":
-                    st.left = st.top = "0";
-                    a = {height: zero, points: {to:[b.x, b.bottom]}};
-                break;
-                case "tl":
-                    st.right = st.bottom = "0";
-                    a = {width: zero, height: zero};
-                break;
-                case "bl":
-                    st.right = st.top = "0";
-                    a = {width: zero, height: zero, points: {to:[b.x, b.bottom]}};
-                break;
-                case "br":
-                    st.left = st.top = "0";
-                    a = {width: zero, height: zero, points: {to:[b.x+b.width, b.bottom]}};
-                break;
-                case "tr":
-                    st.left = st.bottom = "0";
-                    a = {width: zero, height: zero, points: {to:[b.right, b.y]}};
-                break;
-            }
-
+            }            
+            
+            function argCalc(style, s1, s2, p1, v1, p2, v2, p3, v3){	            	
+	            var ret = {};
+	            
+            	style[s1] = style[s2] = "0";
+            	ret[p1] = v1;            	
+            	if(p2) ret[p2] = v2;            	
+            	if(p3) ret[p3] = v3;
+            	
+            	return ret;
+       		};
+       		
+       		a = me.switchStatements(anchor.toLowerCase(), argCalc, {
+	            t  : [st, LEFT, BOTTOM, HEIGHT, zero],
+	            l  : [st, RIGHT, TOP, WIDTH, zero],
+	            r  : [st, LEFT, TOP, WIDTH, zero, POINTS, {to : [b.right, b.y]}],
+	            b  : [st, LEFT, TOP, HEIGHT, zero, POINTS, {to : [b.x, b.bottom]}],
+	            tl : [st, RIGHT, BOTTOM, WIDTH, zero, HEIGHT, zero],
+	            bl : [st, RIGHT, TOP, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.X, b.bottom]}],
+	            br : [st, LEFT, TOP, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.x + b.width, b.bottom]}],
+	            tr : [st, LEFT, BOTTOM, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.right, b.y]}]
+            });
+            
             arguments.callee.anim = wrap.fxanim(a,
                 o,
-                'motion',
+                MOTION,
                 .5,
-                "easeOut", after);
+                EASEOUT, 
+                after);
         });
-        return this;
+        return me;
     },
 
 	/**
@@ -305,49 +347,46 @@ el.puff({
 	 * @return {Ext.Element} The Element
 	 */
     puff : function(o){
-        var el = this.getFxEl();
-        o = o || {};
+	    o = o || {};
+	    
+        var me = this,
+        	el = me.getFxEl(),
+        	r, 
+        	st = me.dom.style,
+        	width = me.getWidth(),
+        	height = me.getHeight();        	        
 
-        el.queueFx(o, function(){
-            this.clearOpacity();
-            this.show();
+        el.queueFx(o, function(){	        
+            me.clearOpacity();
+            me.show();
 
             // restore values after effect
-            var r = this.getFxRestore();
-            var st = this.dom.style;
-
-            var after = function(){
-                if(o.useDisplay){
-                    el.setDisplayed(false);
-                }else{
-                    el.hide();
-                }
-
-                el.clearOpacity();
-
+            r = me.getFxRestore();        	       	 
+        	
+            function after(){
+            	o.useDisplay ? el.setDisplayed(FALSE) : el.hide();	                
+                el.clearOpacity();	
                 el.setPositioning(r.pos);
                 st.width = r.width;
                 st.height = r.height;
                 st.fontSize = '';
                 el.afterFx(o);
-            };
+            }	
 
-            var width = this.getWidth();
-            var height = this.getHeight();
-
-            arguments.callee.anim = this.fxanim({
-                    width : {to: this.adjustWidth(width * 2)},
-                    height : {to: this.adjustHeight(height * 2)},
-                    points : {by: [-(width * .5), -(height * .5)]},
-                    opacity : {to: 0},
-                    fontSize: {to:200, unit: "%"}
+            arguments.callee.anim = me.fxanim({
+                    width : {to : me.adjustWidth(width * 2)},
+                    height : {to : me.adjustHeight(height * 2)},
+                    points : {by : [-width * .5, -height * .5]},
+                    opacity : {to : 0},
+                    fontSize: {to : 200, unit: "%"}
                 },
                 o,
-                'motion',
+                MOTION,
                 .5,
-                "easeOut", after);
+                EASEOUT,
+                 after);
         });
-        return this;
+        return me;
     },
 
 	/**
@@ -371,43 +410,48 @@ el.switchOff({
 	 * @return {Ext.Element} The Element
 	 */
     switchOff : function(o){
-        var el = this.getFxEl();
-        o = o || {};
+	    o = o || {};
+	    
+        var me = this,
+        	el = me.getFxEl();        
 
         el.queueFx(o, function(){
-            this.clearOpacity();
-            this.clip();
+	        me.clearOpacity();
+            me.clip();
 
             // restore values after effect
-            var r = this.getFxRestore();
-            var st = this.dom.style;
+            var r = me.getFxRestore(),
+            	st = me.dom.style,
+            	after = function(){
+	                o.useDisplay ? el.setDisplayed(FALSE) : el.hide();	
+	                el.clearOpacity();
+	                el.setPositioning(r.pos);
+	                st.width = r.width;
+	                st.height = r.height;	
+	                el.afterFx(o);
+	            };
 
-            var after = function(){
-                if(o.useDisplay){
-                    el.setDisplayed(false);
-                }else{
-                    el.hide();
-                }
-
-                el.clearOpacity();
-                el.setPositioning(r.pos);
-                st.width = r.width;
-                st.height = r.height;
-
-                el.afterFx(o);
-            };
-
-            this.fxanim({opacity:{to:0.3}}, null, null, .1, null, function(){
-                this.clearOpacity();
-                (function(){
-                    this.fxanim({
-                        height:{to:1},
-                        points:{by:[0, this.getHeight() * .5]}
-                    }, o, 'motion', 0.3, 'easeIn', after);
-                }).defer(100, this);
-            });
+            me.fxanim({opacity : {to : 0.3}}, 
+            	NULL, 
+            	NULL, 
+            	.1, 
+            	NULL, 
+            	function(){	            		            
+	                me.clearOpacity();
+		                (function(){			                
+		                    me.fxanim({
+		                        height : {to : 1},
+		                        points : {by : [0, me.getHeight() * .5]}
+		                    }, 
+		                    o, 
+		                    MOTION, 
+		                    0.3, 
+		                    'easeIn', 
+		                    after);
+		                }).defer(100);
+	            });
         });
-        return this;
+        return me;
     },
 
     /**
@@ -435,34 +479,31 @@ el.highlight("ffff9c", {
      * @return {Ext.Element} The Element
      */	
     highlight : function(color, o){
-        var el = this.getFxEl();
-        o = o || {};
+	    o = o || {};
+	    
+        var me = this,
+        	el = me.getFxEl(),
+        	attr = o.attr || "backgroundColor",
+        	a = {};
 
         el.queueFx(o, function(){
-            color = color || "ffff9c";
-            var attr = o.attr || "backgroundColor";
+            me.clearOpacity();
+            me.show();
 
-            this.clearOpacity();
-            this.show();
-
-            var origColor = this.getColor(attr);
-            var restoreColor = this.dom.style[attr];
-            var endColor = (o.endColor || origColor) || "ffffff";
-
-            var after = function(){
-                el.dom.style[attr] = restoreColor;
+            function after(){
+                el.dom.style[attr] = me.dom.style[attr];
                 el.afterFx(o);
-            };
-
-            var a = {};
-            a[attr] = {from: color, to: endColor};
-            arguments.callee.anim = this.fxanim(a,
+            }            
+            	
+            a[attr] = {from: color || "ffff9c", to: o.endColor || me.getColor(attr) || "ffffff"};
+            arguments.callee.anim = me.fxanim(a,
                 o,
                 'color',
                 1,
-                'easeIn', after);
+                'easeIn', 
+                after);
         });
-        return this;
+        return me;
     },
 
    /**
@@ -487,48 +528,52 @@ el.frame("C3DAF9", 1, {
     * @return {Ext.Element} The Element
     */
     frame : function(color, count, o){
-        var el = this.getFxEl();
+        var me = this,
+        	el = me.getFxEl();
+        	
         o = o || {};
 
         el.queueFx(o, function(){
-            color = color || "#C3DAF9";
+            color = color || "#C3DAF9"
             if(color.length == 6){
                 color = "#" + color;
-            }
+            }            
             count = count || 1;
-            var duration = o.duration || 1;
-            this.show();
+            me.show();
 
-            var b = this.getBox();
-            var animFn = function(){
-                var proxy = Ext.getBody().createChild({
+            var xy = me.getXY(),
+            	dom = me.dom,
+            	b = {x: xy[0], y: xy[1], 0: xy[0], 1: xy[1], width: dom.offsetWidth, height: dom.offsetHeight};
+            
+            
+            
+        	function animFn(){
+                var proxy = Ext.get(document.body || document.documentElement).createChild({
                      style:{
-                        visbility:"hidden",
-                        position:"absolute",
-                        "z-index":"35000", // yee haw
-                        border:"0px solid " + color
+                        visbility: HIDDEN,
+                        position : ABSOLUTE,
+                        "z-index": 35000, // yee haw
+                        border : "0px solid " + color
                      }
-                  });
-                var scale = Ext.isBorderBox ? 2 : 1;
+            	}),
+            	scale = Ext.isBorderBox ? 2 : 1;
                 proxy.animate({
-                    top:{from:b.y, to:b.y - 20},
-                    left:{from:b.x, to:b.x - 20},
-                    borderWidth:{from:0, to:10},
-                    opacity:{from:1, to:0},
-                    height:{from:b.height, to:(b.height + (20*scale))},
-                    width:{from:b.width, to:(b.width + (20*scale))}
-                }, duration, function(){
-                    proxy.remove();
-                    if(--count > 0){
-                         animFn();
-                    }else{
-                        el.afterFx(o);
-                    }
-                });
-            };
-            animFn.call(this);
+                    top : {from : b.y, to : b.y - 20},
+                    left : {from : b.x, to : b.x - 20},
+                    borderWidth : {from : 0, to : 10},
+                    opacity : {from : 1, to : 0},
+                    height : {from : b.height, to : b.height + 20 * scale},
+                    width : {from : b.width, to : b.width + 20 * scale}
+                }, 
+                o.duration || 1, 
+                function() {
+                	proxy.remove();
+                	--count > 0 ? animFn() : el.afterFx(o);
+            	});
+        	};
+            animFn.call(me);
         });
-        return this;
+        return me;
     },
 
    /**
@@ -543,11 +588,10 @@ el.pause(1);
     */
     pause : function(seconds){
         var el = this.getFxEl();
-        var o = {};
 
-        el.queueFx(o, function(){
+        el.queueFx({}, function(){
             setTimeout(function(){
-                el.afterFx(o);
+                el.afterFx({});
             }, seconds * 1000);
         });
         return this;
@@ -555,7 +599,7 @@ el.pause(1);
 
    /**
     * Fade an element in (from transparent to opaque).  The ending opacity can be specified
-    * using the "endOpacity" config option.
+    * using the <tt>{@link #endOpacity}</tt> config option.
     * Usage:
 <pre><code>
 // default: fade in from opacity 0 to 100%
@@ -575,28 +619,30 @@ el.fadeIn({
     * @return {Ext.Element} The Element
     */
     fadeIn : function(o){
-        var el = this.getFxEl();
+        var me = this,
+        	el = me.getFxEl();        
         o = o || {};
-        el.queueFx(o, function(){
-            this.setOpacity(0);
-            this.fixDisplay();
-            this.dom.style.visibility = 'visible';
+        
+        el.queueFx(o, function(){	        
+            me.setOpacity(0);
+            me.fixDisplay();
+            me.dom.style.visibility = VISIBLE;
             var to = o.endOpacity || 1;
-            arguments.callee.anim = this.fxanim({opacity:{to:to}},
-                o, null, .5, "easeOut", function(){
+            arguments.callee.anim = me.fxanim({opacity:{to:to}},
+                o, NULL, .5, EASEOUT, function(){
                 if(to == 1){
                     this.clearOpacity();
                 }
                 el.afterFx(o);
             });
         });
-        return this;
+        return me;
     },
 
    /**
     * Fade an element out (from opaque to transparent).  The ending opacity can be specified
-    * using the "endOpacity" config option.  Note that IE may require useDisplay:true in order
-    * to redisplay correctly.
+    * using the <tt>{@link #endOpacity}</tt> config option.  Note that IE may require
+    * <tt>{@link #useDisplay}:true</tt> in order to redisplay correctly.
     * Usage:
 <pre><code>
 // default: fade out from the element's current opacity to 0
@@ -618,39 +664,47 @@ el.fadeOut({
     * @return {Ext.Element} The Element
     */
     fadeOut : function(o){
-        var el = this.getFxEl();
-        o = o || {};
-        el.queueFx(o, function(){
-            var to = o.endOpacity || 0;
-            arguments.callee.anim = this.fxanim({opacity:{to:to}},
-                o, null, .5, "easeOut", function(){
-                if(to === 0){
-                    if(this.visibilityMode == Ext.Element.DISPLAY || o.useDisplay){
-                         this.dom.style.display = "none";
-                    }else{
-                         this.dom.style.visibility = "hidden";
-                    }
-                    this.clearOpacity();
-                }
-                el.afterFx(o);
+	    o = o || {};
+	    
+        var me = this,
+        	style = me.dom.style,
+        	el = me.getFxEl(),
+        	to = o.endOpacity || 0;        	
+        
+        el.queueFx(o, function(){                       
+            arguments.callee.anim = me.fxanim({ 
+	            opacity : {to : to}},
+                o, 
+                NULL, 
+                .5, 
+                EASEOUT, 
+                function(){
+	                if(to == 0){
+		               me.visibilityMode == Ext.Element.DISPLAY || o.useDisplay ? 
+		                	style.display = "none" :
+		                	style.visibility = HIDDEN;
+		                	
+	                    me.clearOpacity();
+                	}
+                	el.afterFx(o);
             });
         });
-        return this;
+        return me;
     },
 
    /**
     * Animates the transition of an element's dimensions from a starting height/width
-    * to an ending height/width.
+    * to an ending height/width.  This method is a convenience implementation of {@link shift}.
     * Usage:
 <pre><code>
 // change height and width to 100x100 pixels
 el.scale(100, 100);
 
 // common config options shown with default values.  The height and width will default to
-// the element's existing values if passed as null.
+// the element&#39;s existing values if passed as null.
 el.scale(
-    [element's width],
-    [element's height], {
+    [element&#39;s width],
+    [element&#39;s height], {
 	    easing: 'easeOut',
 	    duration: .35
 	}
@@ -662,11 +716,12 @@ el.scale(
     * @return {Ext.Element} The Element
     */
     scale : function(w, h, o){
-        this.shift(Ext.apply({}, o, {
+	    var me = this;
+        me.shift(Ext.apply({}, o, {
             width: w,
             height: h
         }));
-        return this;
+        return me;
     },
 
    /**
@@ -681,11 +736,11 @@ el.shift({ x: 200, height: 50, opacity: .8 });
 
 // common config options shown with default values.
 el.shift({
-    width: [element's width],
-    height: [element's height],
-    x: [element's x position],
-    y: [element's y position],
-    opacity: [element's opacity],
+    width: [element&#39;s width],
+    height: [element&#39;s height],
+    x: [element&#39;s x position],
+    y: [element&#39;s y position],
+    opacity: [element&#39;s opacity],
     easing: 'easeOut',
     duration: .35
 });
@@ -694,46 +749,38 @@ el.shift({
     * @return {Ext.Element} The Element
     */
     shift : function(o){
-        var el = this.getFxEl();
-        o = o || {};
+	    var me = this;
+	    o = o || {};
+        
+	    var	el = me.getFxEl();       	
         el.queueFx(o, function(){
-            var a = {}, w = o.width, h = o.height, x = o.x, y = o.y,  op = o.opacity;
-            if(w !== undefined){
-                a.width = {to: this.adjustWidth(w)};
+	        var a = {};	
+	        
+            for (var prop in o) {
+	            if (o[prop] != UNDEFINED) {		            			                    
+		            a[prop] = {to : o[prop]};	            	
+	            }
+            } 
+            
+         	a.width ? a.width.to = me.adjustWidth(o.width) : a;
+         	a.height ? a.height.to = me.adjustWidth(o.height) : a;   
+            
+            if (a.x || a.y || a.xy) {
+	            a.points = a.xy || 
+	            		   {to : [ a.x ? a.x.to : me.getX(),
+	            				   a.y ? a.y.to : me.getY()]};	            	
             }
-            if(h !== undefined){
-                a.height = {to: this.adjustHeight(h)};
-            }
-            if(o.left !== undefined){
-                a.left = {to: o.left};
-            }
-            if(o.top !== undefined){
-                a.top = {to: o.top};
-            }
-            if(o.right !== undefined){
-                a.right = {to: o.right};
-            }
-            if(o.bottom !== undefined){
-                a.bottom = {to: o.bottom};
-            }
-            if(x !== undefined || y !== undefined){
-                a.points = {to: [
-                    x !== undefined ? x : this.getX(),
-                    y !== undefined ? y : this.getY()
-                ]};
-            }
-            if(op !== undefined){
-                a.opacity = {to: op};
-            }
-            if(o.xy !== undefined){
-                a.points = {to: o.xy};
-            }
-            arguments.callee.anim = this.fxanim(a,
-                o, 'motion', .35, "easeOut", function(){
-                el.afterFx(o);
-            });
+
+            arguments.callee.anim = me.fxanim(a,
+                o, 
+                MOTION, 
+                .35, 
+                EASEOUT, 
+                function(){
+                	el.afterFx(o);
+            	});
         });
-        return this;
+        return me;
     },
 
 	/**
@@ -760,69 +807,54 @@ el.ghost('b', {
 	 * @return {Ext.Element} The Element
 	 */
     ghost : function(anchor, o){
-        var el = this.getFxEl();
+        var me = this,
+        	el = me.getFxEl();
+        	
         o = o || {};
+        anchor = anchor || "b";
 
         el.queueFx(o, function(){
-            anchor = anchor || "b";
-
             // restore values after effect
-            var r = this.getFxRestore();
-            var w = this.getWidth(),
-                h = this.getHeight();
-
-            var st = this.dom.style;
-
-            var after = function(){
-                if(o.useDisplay){
-                    el.setDisplayed(false);
-                }else{
-                    el.hide();
-                }
-
-                el.clearOpacity();
-                el.setPositioning(r.pos);
-                st.width = r.width;
-                st.height = r.height;
-
-                el.afterFx(o);
-            };
-
-            var a = {opacity: {to: 0}, points: {}}, pt = a.points;
-            switch(anchor.toLowerCase()){
-                case "t":
-                    pt.by = [0, -h];
-                break;
-                case "l":
-                    pt.by = [-w, 0];
-                break;
-                case "r":
-                    pt.by = [w, 0];
-                break;
-                case "b":
-                    pt.by = [0, h];
-                break;
-                case "tl":
-                    pt.by = [-w, -h];
-                break;
-                case "bl":
-                    pt.by = [-w, h];
-                break;
-                case "br":
-                    pt.by = [w, h];
-                break;
-                case "tr":
-                    pt.by = [w, -h];
-                break;
-            }
-
-            arguments.callee.anim = this.fxanim(a,
+            var r = me.getFxRestore(),
+            	w = me.getWidth(),
+                h = me.getHeight(),
+            	st = me.dom.style,
+            	after = function(){
+	                if(o.useDisplay){
+	                    el.setDisplayed(FALSE);
+	                }else{
+	                    el.hide();
+                	}
+                	
+	                el.clearOpacity();
+	                el.setPositioning(r.pos);
+	                st.width = r.width;
+	                st.width = r.width;
+	
+	                el.afterFx(o);
+	            },
+            	a = {opacity: {to: 0}, 
+            		 points: {}}, 
+            	pt = a.points;
+            	
+            	pt.by = me.switchStatements(anchor.toLowerCase(), function(v1,v2){ return [v1, v2];}, {
+	            	t  : [0, -h],
+	            	l  : [-w, 0],
+	            	r  : [w, 0],
+	            	b  : [0, h],
+	            	tl : [-w, -h],
+	            	bl : [-w, h],
+	            	br : [w, h],
+	            	tr : [w, -h]	
+            	});
+            	
+            arguments.callee.anim = me.fxanim(a,
                 o,
-                'motion',
+                MOTION,
                 .5,
-                "easeOut", after);
+                EASEOUT, after);
         });
-        return this;
+        return me;
     },
 
 	/**
@@ -831,12 +863,13 @@ el.ghost('b', {
 	 * @return {Ext.Element} The Element
 	 */
     syncFx : function(){
-        this.fxDefaults = Ext.apply(this.fxDefaults || {}, {
-            block : false,
-            concurrent : true,
-            stopFx : false
+	    var me = this;
+        me.fxDefaults = Ext.apply(me.fxDefaults || {}, {
+            block : FALSE,
+            concurrent : TRUE,
+            stopFx : FALSE
         });
-        return this;
+        return me;
     },
 
 	/**
@@ -845,16 +878,17 @@ el.ghost('b', {
 	 * @return {Ext.Element} The Element
 	 */
     sequenceFx : function(){
-        this.fxDefaults = Ext.apply(this.fxDefaults || {}, {
-            block : false,
-            concurrent : false,
-            stopFx : false
+	    var me = this;
+        me.fxDefaults = Ext.apply(me.fxDefaults || {}, {
+            block : FALSE,
+            concurrent : FALSE,
+            stopFx : FALSE
         });
-        return this;
+        return me;
     },
 
 	/* @private */
-    nextFx : function(){
+    nextFx : function(){	    
         var ef = this.fxQueue[0];
         if(ef){
             ef.call(this);
@@ -865,7 +899,7 @@ el.ghost('b', {
 	 * Returns true if the element has any effects actively running or queued, else returns false.
 	 * @return {Boolean} True if element has active effects, else false
 	 */
-    hasActiveFx : function(){
+    hasActiveFx : function(){	    
         return this.fxQueue && this.fxQueue[0];
     },
 
@@ -874,15 +908,16 @@ el.ghost('b', {
 	 * any additional effects that haven't started yet.
 	 * @return {Ext.Element} The Element
 	 */
-    stopFx : function(){
-        if(this.hasActiveFx()){
-            var cur = this.fxQueue[0];
-            if(cur && cur.anim && cur.anim.isAnimated()){
-                this.fxQueue = [cur]; // clear out others
-                cur.anim.stop(true);
+    stopFx : function(finish){
+	    var me = this;
+        if(me.hasActiveFx()){
+            var cur = me.fxQueue[0];
+            if(cur && cur.anim && cur.anim.isAnimated){
+                me.fxQueue = [cur]; // clear out others
+                cur.anim.stop(finish !== undefined ? finish : true);
             }
         }
-        return this;
+        return me;
     },
 
 	/* @private */
@@ -890,11 +925,11 @@ el.ghost('b', {
         if(this.hasActiveFx() && !o.concurrent){
            if(o.stopFx){
                this.stopFx();
-               return true;
+               return TRUE;
            }
-           return false;
+           return FALSE;
         }
-        return true;
+        return TRUE;
     },
 
 	/**
@@ -911,43 +946,45 @@ el.ghost('b', {
 
 	/* @private */
     queueFx : function(o, fn){
-        if(!this.fxQueue){
-            this.fxQueue = [];
+	    var me = this;
+        if(!me.fxQueue){
+            me.fxQueue = [];
         }
-        if(!this.hasFxBlock()){
-            Ext.applyIf(o, this.fxDefaults);
+        if(!me.hasFxBlock()){
+            Ext.applyIf(o, me.fxDefaults);
             if(!o.concurrent){
-                var run = this.beforeFx(o);
+                var run = me.beforeFx(o);
                 fn.block = o.block;
-                this.fxQueue.push(fn);
+                me.fxQueue.push(fn);
                 if(run){
-                    this.nextFx();
+                    me.nextFx();
                 }
             }else{
-                fn.call(this);
+                fn.call(me);
             }
         }
-        return this;
+        return me;
     },
 
 	/* @private */
-    fxWrap : function(pos, o, vis){
-        var wrap;
-        if(!o.wrap || !(wrap = Ext.get(o.wrap))){
-            var wrapXY;
+    fxWrap : function(pos, o, vis){	
+        var me = this,
+        	wrap,
+        	wrapXY;
+        if(!o.wrap || !(wrap = Ext.get(o.wrap))){            
             if(o.fixPosition){
-                wrapXY = this.getXY();
+                wrapXY = me.getXY();
             }
             var div = document.createElement("div");
             div.style.visibility = vis;
-            wrap = Ext.get(this.dom.parentNode.insertBefore(div, this.dom));
+            wrap = Ext.get(me.dom.parentNode.insertBefore(div, me.dom));
             wrap.setPositioning(pos);
-            if(wrap.getStyle("position") == "static"){
+            if(wrap.isStyle(POSITION, "static")){
                 wrap.position("relative");
             }
-            this.clearPositioning('auto');
+            me.clearPositioning('auto');
             wrap.clip();
-            wrap.dom.appendChild(this.dom);
+            wrap.dom.appendChild(me.dom);
             if(wrapXY){
                 wrap.setXY(wrapXY);
             }
@@ -956,36 +993,38 @@ el.ghost('b', {
     },
 
 	/* @private */
-    fxUnwrap : function(wrap, pos, o){
-        this.clearPositioning();
-        this.setPositioning(pos);
+    fxUnwrap : function(wrap, pos, o){	    
+	    var me = this;
+        me.clearPositioning();
+        me.setPositioning(pos);
         if(!o.wrap){
-            wrap.dom.parentNode.insertBefore(this.dom, wrap.dom);
+            wrap.dom.parentNode.insertBefore(me.dom, wrap.dom);
             wrap.remove();
         }
     },
 
 	/* @private */
     getFxRestore : function(){
-        var st = this.dom.style;
+        var	st = this.dom.style;
         return {pos: this.getPositioning(), width: st.width, height : st.height};
     },
 
 	/* @private */
     afterFx : function(o){
+	    var me = this;
         if(o.afterStyle){
-            this.applyStyles(o.afterStyle);
+	        me.setStyle(o.afterStyle);            
         }
         if(o.afterCls){
-            this.addClass(o.afterCls);
+            me.addClass(o.afterCls);
         }
-        if(o.remove === true){
-            this.remove();
+        if(o.remove == TRUE){
+            me.remove();
         }
-        Ext.callback(o.callback, o.scope, [this]);
+        if(o.callback) o.callback.call(o.scope, me);
         if(!o.concurrent){
-            this.fxQueue.shift();
-            this.nextFx();
+            me.fxQueue.shift();
+            me.nextFx();
         }
     },
 
@@ -999,22 +1038,22 @@ el.ghost('b', {
         animType = animType || 'run';
         opt = opt || {};
         var anim = Ext.lib.Anim[animType](
-            this.dom, args,
-            (opt.duration || defaultDur) || .35,
-            (opt.easing || defaultEase) || 'easeOut',
-            function(){
-                Ext.callback(cb, this);
-            },
-            this
-        );
+	            this.dom, 
+	            args,
+	            (opt.duration || defaultDur) || .35,
+	            (opt.easing || defaultEase) || EASEOUT,
+	            cb,	           
+	            this
+	        );
         opt.anim = anim;
         return anim;
     }
 };
 
-// backwords compat
+// backwards compat
 Ext.Fx.resize = Ext.Fx.scale;
 
 //When included, Ext.Fx is automatically applied to Element so that all basic
 //effects are available directly via the Element API
-Ext.apply(Ext.Element.prototype, Ext.Fx);
+Ext.Element.addMethods(Ext.Fx);
+})();

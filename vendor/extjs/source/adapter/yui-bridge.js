@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -58,7 +58,7 @@ Ext.lib.Dom = {
         if (el.getBoundingClientRect) {
             b = el.getBoundingClientRect();
             scroll = fly(document).getScroll();
-            return [b.left + scroll.left, b.top + scroll.top];
+            return [Math.round(b.left + scroll.left), Math.round(b.top + scroll.top)];
         }
         var x = 0, y = 0;
 

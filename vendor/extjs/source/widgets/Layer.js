@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,7 +12,7 @@
  * An extended {@link Ext.Element} object that supports a shadow and shim, constrain to viewport and
  * automatic maintaining of shadow/shim positions.
  * @cfg {Boolean} shim False to disable the iframe shim in browsers which need one (defaults to true)
- * @cfg {String/Boolean} shadow True to automatically create an {@link Ext.Shadow}, or a string indicating the 
+ * @cfg {String/Boolean} shadow True to automatically create an {@link Ext.Shadow}, or a string indicating the
  * shadow's display {@link Ext.Shadow#mode}. False to disable the shadow. (defaults to false)
  * @cfg {Object} dh DomHelper object config to create element with (defaults to {tag: "div", cls: "x-layer"}).
  * @cfg {Boolean} constrain False to disable constrain to viewport (defaults to true)
@@ -208,16 +208,17 @@ Ext.extend(Ext.Layer, Ext.Element, {
 
             var xy = this.getXY();
             var x = xy[0], y = xy[1];
-            var w = this.dom.offsetWidth+this.shadowOffset, h = this.dom.offsetHeight+this.shadowOffset;
+            var so = this.shadowOffset;
+            var w = this.dom.offsetWidth+so, h = this.dom.offsetHeight+so;
             // only move it if it needs it
             var moved = false;
             // first validate right/bottom
             if((x + w) > vw+s.left){
-                x = vw - w - this.shadowOffset;
+                x = vw - w - so;
                 moved = true;
             }
             if((y + h) > vh+s.top){
-                y = vh - h - this.shadowOffset;
+                y = vh - h - so;
                 moved = true;
             }
             // then make sure top/left isn't negative
@@ -242,6 +243,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
                 this.sync();
             }
         }
+        return this;
     },
 
     isVisible : function(){
@@ -303,6 +305,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
                 this.hideAction();
             }
         }
+        return this;
     },
 
     storeXY : function(xy){
@@ -339,18 +342,21 @@ Ext.extend(Ext.Layer, Ext.Element, {
         this.storeLeftTop(left, this.getTop(true));
         supr.setLeft.apply(this, arguments);
         this.sync();
+        return this;
     },
 
     setTop : function(top){
         this.storeLeftTop(this.getLeft(true), top);
         supr.setTop.apply(this, arguments);
         this.sync();
+        return this;
     },
 
     setLeftTop : function(left, top){
         this.storeLeftTop(left, top);
         supr.setLeftTop.apply(this, arguments);
         this.sync();
+        return this;
     },
 
     setXY : function(xy, a, d, c, e){
@@ -362,6 +368,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
         if(!a){
             cb();
         }
+        return this;
     },
 
     // private
@@ -379,11 +386,13 @@ Ext.extend(Ext.Layer, Ext.Element, {
     // overridden Element method
     setX : function(x, a, d, c, e){
         this.setXY([x, this.getY()], a, d, c, e);
+        return this;
     },
 
     // overridden Element method
     setY : function(y, a, d, c, e){
         this.setXY([this.getX(), y], a, d, c, e);
+        return this;
     },
 
     // overridden Element method
@@ -394,6 +403,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
         if(!a){
             cb();
         }
+        return this;
     },
 
     // overridden Element method
@@ -404,6 +414,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
         if(!a){
             cb();
         }
+        return this;
     },
 
     // overridden Element method
@@ -414,6 +425,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
         if(!a){
             cb();
         }
+        return this;
     },
 
     // overridden Element method
@@ -447,6 +459,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
         if(this.shim){
             this.shim.setStyle("z-index", zindex);
         }
+        return this;
     }
 });
 })();

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,6 +13,7 @@
  * @constructor
  * Creates a new CheckItem
  * @param {Object} config Configuration options
+ * @xtype menucheckitem
  */
 Ext.menu.CheckItem = function(config){
     Ext.menu.CheckItem.superclass.constructor.call(this, config);
@@ -112,3 +113,4 @@ Ext.extend(Ext.menu.CheckItem, Ext.menu.Item, {
        Ext.menu.CheckItem.superclass.handleClick.apply(this, arguments);
     }
 });
+Ext.reg('menucheckitem', Ext.menu.CheckItem);

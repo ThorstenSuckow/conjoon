@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -20,6 +20,7 @@ new Ext.form.TimeField({
  * @constructor
  * Create a new TimeField
  * @param {Object} config
+ * @xtype timefield
  */
 Ext.form.TimeField = Ext.extend(Ext.form.ComboBox, {
     /**
@@ -108,7 +109,7 @@ Ext.form.TimeField = Ext.extend(Ext.form.ComboBox, {
                 times.push([min.dateFormat(this.format)]);
                 min = min.add('mi', this.increment);
             }
-            this.store = new Ext.data.SimpleStore({
+            this.store = new Ext.data.ArrayStore({
                 fields: ['text'],
                 data : times
             });
@@ -124,7 +125,7 @@ Ext.form.TimeField = Ext.extend(Ext.form.ComboBox, {
 
     // inherited docs
     setValue : function(value){
-        Ext.form.TimeField.superclass.setValue.call(this, this.formatDate(this.parseDate(value)));
+        return Ext.form.TimeField.superclass.setValue.call(this, this.formatDate(this.parseDate(value)));
     },
 
     // private overrides

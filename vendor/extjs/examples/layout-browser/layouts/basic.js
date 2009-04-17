@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -163,8 +163,8 @@ var border = {
 /*
  * ================  CardLayout config (TabPanel)  =======================
  */
-// Note that the TabPanel component uses an internal CardLayout -- it's not
-// something you have to explicitly configure.  However, it's still a perfect
+// Note that the TabPanel component uses an internal CardLayout -- it is not
+// something you have to explicitly configure.  However, it is still a perfect
 // example of how this layout style can be used in a complex component.
 var cardTabs = {
 	xtype: 'tabpanel',

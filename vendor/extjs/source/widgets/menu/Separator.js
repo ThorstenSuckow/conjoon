@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,6 +13,7 @@
  * add one of these by using "-" in you call to add() or in your items config rather than creating one directly.
  * @constructor
  * @param {Object} config Configuration options
+ * @xtype menuseparator
  */
 Ext.menu.Separator = function(config){
     Ext.menu.Separator.superclass.constructor.call(this, config);
@@ -38,3 +39,4 @@ Ext.extend(Ext.menu.Separator, Ext.menu.BaseItem, {
         Ext.menu.Separator.superclass.onRender.apply(this, arguments);
     }
 });
+Ext.reg('menuseparator', Ext.menu.Separator);

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -32,14 +32,18 @@ Ext.extend(Ext.ux.TaskBar, Ext.util.Observable, {
             menu: this.startMenu,
             menuAlign: 'bl-tl',
             renderTo: 'ux-taskbar-start',
-            clickEvent:'mousedown',
+            clickEvent: 'mousedown',
             template: new Ext.Template(
-				'<table border="0" cellpadding="0" cellspacing="0" class="x-btn-wrap"><tbody><tr>',
-				'<td class="ux-startbutton-left"><i>&#160;</i></td><td class="ux-startbutton-center"><em unselectable="on"><button class="x-btn-text" type="{1}" style="height:30px;">{0}</button></em></td><td class="ux-startbutton-right"><i>&#160;</i></td>',
+				'<table cellspacing="0" class="x-btn {3}"><tbody><tr>',
+				'<td class="ux-startbutton-left"><i>&#160;</i></td>',
+                '<td class="ux-startbutton-center"><em class="{5} unselectable="on">',
+                    '<button class="x-btn-text {2}" type="{1}" style="height:30px;">{0}</button>',
+                '</em></td>',
+                '<td class="ux-startbutton-right"><i>&#160;</i></td>',
 				"</tr></tbody></table>")
         });
-        
-        var width = Ext.get('ux-startbutton').getWidth()+10;
+
+        var width = this.startBtn.getEl().getWidth()+10;
         
         var sbBox = new Ext.BoxComponent({
 			el: 'ux-taskbar-start',
@@ -400,9 +404,13 @@ Ext.ux.TaskBar.TaskButton = function(win, el){
         },
         clickEvent:'mousedown',
         template: new Ext.Template(
-			'<table border="0" cellpadding="0" cellspacing="0" class="x-btn-wrap"><tbody><tr>',
-			'<td class="ux-taskbutton-left"><i>&#160;</i></td><td class="ux-taskbutton-center"><em unselectable="on"><button class="x-btn-text" type="{1}" style="height:28px;">{0}</button></em></td><td class="ux-taskbutton-right"><i>&#160;</i></td>',
-			"</tr></tbody></table>")
+			'<table cellspacing="0" class="x-btn {3}"><tbody><tr>',
+			'<td class="ux-taskbutton-left"><i>&#160;</i></td>',
+            '<td class="ux-taskbutton-center"><em class="{5} unselectable="on">',
+                '<button class="x-btn-text {2}" type="{1}" style="height:28px;">{0}</button>',
+            '</em></td>',
+            '<td class="ux-taskbutton-right"><i>&#160;</i></td>',
+			"</tr></tbody></table>")            
     });
 };
 

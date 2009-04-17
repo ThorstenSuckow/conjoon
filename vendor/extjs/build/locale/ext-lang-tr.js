@@ -3,17 +3,20 @@
  * Thank you Mystix!
  *
  * Turkish translation by Alper YAZGAN
- * 2008-01-24 , 10:29 AM 
-*/
+ * 2008-01-24, 10:29 AM 
+ * 
+ * Updated to 2.2 by YargicX
+ * 2008-10-05, 06:22 PM
+ */
 
-Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">YÃ¼kleniyor ...</div>';
+Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Yükleniyor ...</div>';
 
 if(Ext.View){
   Ext.View.prototype.emptyText = "";
 }
 
-if(Ext.grid.GridPanel){
-  Ext.grid.GridPanel.prototype.ddText = "ÅžeÃ§ili satÄ±r sayÄ±sÄ± : {0}";
+if(Ext.grid.Grid){
+  Ext.grid.Grid.prototype.ddText = "Seçili satýr sayýsý : {0}";
 }
 
 if(Ext.TabPanelItem){
@@ -21,26 +24,26 @@ if(Ext.TabPanelItem){
 }
 
 if(Ext.form.Field){
-  Ext.form.Field.prototype.invalidText = "Bu alandaki deÄŸer geÃ§ersiz";
+  Ext.form.Field.prototype.invalidText = "Bu alandaki deðer geçersiz";
 }
 
 if(Ext.LoadMask){
-  Ext.LoadMask.prototype.msg = "YÃ¼kleniyor ...";
+  Ext.LoadMask.prototype.msg = "Yükleniyor ...";
 }
 
 Date.monthNames = [
   "Ocak",
-  "Åžubat",
+  "Þžubat",
   "Mart",
   "Nisan",
-  "MayÄ±s",
+  "Mayýs",
   "Haziran",
   "Temmuz",
-  "AÄŸustos",
-  "EylÃ¼l",
+  "Aðustos",
+  "Eylül",
   "Ekim",
-  "KasÄ±m",
-  "AralÄ±k"
+  "Kasým",
+  "Aralýk"
 ];
 
 Date.getShortMonthName = function(month) {
@@ -69,9 +72,9 @@ Date.getMonthNumber = function(name) {
 Date.dayNames = [
   "Pazar",
   "Pazartesi",
-  "SalÄ±",
-  "Ã‡arÅŸamba",
-  "PerÅŸembe",
+  "Salý",
+  "Ç‡arþŸamba",
+  "PerþŸembe",
   "Cuma",
   "Cumartesi"
 ];
@@ -80,8 +83,8 @@ Date.shortDayNames = [
   "Paz",
   "Pzt",
   "Sal",
-  "Ã‡rÅŸ",
-  "PrÅŸ",
+  "ÇrþŸ",
+  "Prþ",
   "Cum",
   "Cmt"
 ];
@@ -95,7 +98,7 @@ if(Ext.MessageBox){
     ok     : "Tamam",
     cancel : "Ä°ptal",
     yes    : "Evet",
-    no     : "HayÄ±r"
+    no     : "Hayýr"
   };
 }
 
@@ -109,17 +112,17 @@ if(Ext.util.Format){
 
 if(Ext.DatePicker){
   Ext.apply(Ext.DatePicker.prototype, {
-    todayText         : "BugÃ¼n",
-    minText           : "Bu tarih izin verilen en kÃ¼Ã§Ã¼k tarihten daha Ã¶nce",
-    maxText           : "Bu tarih izin verilen en bÃ¼yÃ¼k tarihten daha sonra",
+    todayText         : "Bugün",
+    minText           : "Bu tarih izin verilen en küçük tarihten daha önce",
+    maxText           : "Bu tarih izin verilen en büyük tarihten daha sonra",
     disabledDaysText  : "",
     disabledDatesText : "",
     monthNames        : Date.monthNames,
     dayNames          : Date.dayNames,
     nextText          : 'Gelecek Ay (Control+Right)',
     prevText          : 'Ã–nceki Ay (Control+Left)',
-    monthYearText     : 'Bir ay ÅŸeÃ§iniz (YÄ±lÄ± artÄ±rmak/azaltmak iÃ§in Control+Up/Down)',
-    todayTip          : "{0} (BoÅŸluk TuÅŸu - Spacebar)",
+    monthYearText     : 'Bir ay sŸeçiniz (Yýlý artýrmak/azaltmak için Control+Up/Down)',
+    todayTip          : "{0} (BoþŸluk TuþŸu - Spacebar)",
     format            : "d/m/Y",
     okText            : "&#160;Tamam&#160;",
     cancelText        : "Ä°ptal",
@@ -136,16 +139,16 @@ if(Ext.PagingToolbar){
     nextText       : "Sonraki Sayfa",
     lastText       : "Son Sayfa",
     refreshText    : "Yenile",
-    displayMsg     : "GÃ¶sterilen {0} - {1} / {2}",
-    emptyMsg       : 'GÃ¶sterilebilecek veri yok'
+    displayMsg     : "Gösterilen {0} - {1} / {2}",
+    emptyMsg       : 'Gösterilebilecek veri yok'
   });
 }
 
 if(Ext.form.TextField){
   Ext.apply(Ext.form.TextField.prototype, {
-    minLengthText : "Girilen verinin uzunluÄŸu en az {0} olabilir",
-    maxLengthText : "Girilen verinin uzunluÄŸu en fazla {0} olabilir",
-    blankText     : "Bu alan boÅŸ bÄ±rakÄ±lamaz",
+    minLengthText : "Girilen verinin uzunluðu en az {0} olabilir",
+    maxLengthText : "Girilen verinin uzunluðu en fazla {0} olabilir",
+    blankText     : "Bu alan boþŸ býrakýlamaz",
     regexText     : "",
     emptyText     : null
   });
@@ -154,8 +157,8 @@ if(Ext.form.TextField){
 if(Ext.form.NumberField){
   Ext.apply(Ext.form.NumberField.prototype, {
     minText : "En az {0} girilebilir",
-    maxText : "En Ã§ok {0} girilebilir",
-    nanText : "{0} geÃ§ersiz bir sayÄ±dÄ±r"
+    maxText : "En çok {0} girilebilir",
+    nanText : "{0} geçersiz bir sayýdýr"
   });
 }
 
@@ -163,9 +166,9 @@ if(Ext.form.DateField){
   Ext.apply(Ext.form.DateField.prototype, {
     disabledDaysText  : "Disabled",
     disabledDatesText : "Disabled",
-    minText           : "Bu tarih, {0} tarihinden daha sonra olmalÄ±dÄ±r", 
-    maxText           : "Bu tarih, {0} tarihinden daha Ã¶nce olmalÄ±dÄ±r",
-    invalidText       : "{0} geÃ§ersiz bir tarihdir - tarih formatÄ± {1} ÅŸeklinde olmalÄ±dÄ±r",
+    minText           : "Bu tarih, {0} tarihinden daha sonra olmalýdýr", 
+    maxText           : "Bu tarih, {0} tarihinden daha önce olmalýdýr",
+    invalidText       : "{0} geçersiz bir tarihdir - tarih formatý {1} þŸeklinde olmalýdýr",
     format            : "d/m/Y",
     altFormats        : "d.m.y|d.m.Y|d/m/y|d-m-Y|d-m-y|d.m|d/m|d-m|dm|dmY|dmy|d|Y.m.d|Y-m-d|Y/m/d"
   });
@@ -173,92 +176,90 @@ if(Ext.form.DateField){
 
 if(Ext.form.ComboBox){
   Ext.apply(Ext.form.ComboBox.prototype, {
-    loadingText       : "YÃ¼kleniyor ...",
+    loadingText       : "Yükleniyor ...",
     valueNotFoundText : undefined
   });
 }
 
 if(Ext.form.VTypes){
-  Ext.apply(Ext.form.VTypes, {
-    emailText    : 'Bu alan "user@domain.com" ÅŸeklinde elektronik posta formatÄ±nda olmalÄ±dÄ±r',
-    urlText      : 'Bu alan "http://www.domain.com" ÅŸeklinde URL adres formatÄ±nda olmalÄ±dÄ±r',
-    alphaText    : 'Bu alan sadece harf ve _ iÃ§ermeli',
-    alphanumText : 'Bu alan sadece harf, sayÄ± ve _ iÃ§ermeli'
-  });
+	Ext.form.VTypes["emailText"]='Bu alan "user@domain.com" þŸeklinde elektronik posta formatýnda olmalýdýr';
+	Ext.form.VTypes["urlText"]='Bu alan "http://www.domain.com" þŸeklinde URL adres formatýnda olmalýdýr';
+	Ext.form.VTypes["alphaText"]='Bu alan sadece harf ve _ içermeli';
+	Ext.form.VTypes["alphanumText"]='Bu alan sadece harf, sayý ve _ içermeli';
 }
 
 if(Ext.form.HtmlEditor){
   Ext.apply(Ext.form.HtmlEditor.prototype, {
-    createLinkText : 'LÃ¼tfen bu baÄŸlantÄ± iÃ§in gerekli URL adresini giriniz:',
+    createLinkText : 'Lütfen bu baðlantý için gerekli URL adresini giriniz:',
     buttonTips : {
       bold : {
-        title: 'KalÄ±n(Bold) (Ctrl+B)',
-        text: 'ÅžeÃ§ili yazÄ±yÄ± kalÄ±n yapar.',
+        title: 'Kalýn(Bold) (Ctrl+B)',
+        text: 'Þžeçili yazýyý kalýn yapar.',
         cls: 'x-html-editor-tip'
       },
       italic : {
         title: 'Ä°talik(Italic) (Ctrl+I)',
-        text: 'ÅžeÃ§ili yazÄ±yÄ± italik yapar.',
+        text: 'Þžeçili yazýyý italik yapar.',
         cls: 'x-html-editor-tip'
       },
       underline : {
         title: 'Alt Ã‡izgi(Underline) (Ctrl+U)',
-        text: 'ÅžeÃ§ili yazÄ±nÄ±n altÄ±nÄ± Ã§izer.',
+        text: 'Þžeçili yazýnýn altýný çizer.',
         cls: 'x-html-editor-tip'
       },
       increasefontsize : {
-        title: 'Fontu bÃ¼yÃ¼lt',
-        text: 'YazÄ± fontunu bÃ¼yÃ¼tÃ¼r.',
+        title: 'Fontu büyült',
+        text: 'Yazý fontunu büyütür.',
         cls: 'x-html-editor-tip'
       },
       decreasefontsize : {
-        title: 'Fontu kÃ¼Ã§Ã¼lt',
-        text: 'YazÄ± fontunu kÃ¼Ã§Ã¼ltÃ¼r.',
+        title: 'Fontu küçült',
+        text: 'Yazý fontunu küçültür.',
         cls: 'x-html-editor-tip'
       },
       backcolor : {
         title: 'Arka Plan Rengi',
-        text: 'SeÃ§ili yazÄ±nÄ±n arka plan rengini deÄŸiÅŸtir.',
+        text: 'Seçili yazýnýn arka plan rengini deðiþŸtir.',
         cls: 'x-html-editor-tip'
       },
       forecolor : {
-        title: 'YazÄ± Rengi',
-        text: 'SeÃ§ili yazÄ±nÄ±n rengini deÄŸiÅŸtir.',
+        title: 'Yazý Rengi',
+        text: 'Seçili yazýnýn rengini deðiþŸtir.',
         cls: 'x-html-editor-tip'
       },
       justifyleft : {
         title: 'Sola Daya',
-        text: 'YazÄ±yÄ± sola daya.',
+        text: 'Yazýyý sola daya.',
         cls: 'x-html-editor-tip'
       },
       justifycenter : {
         title: 'Ortala',
-        text: 'YazÄ±yÄ± editÃ¶rde ortala.',
+        text: 'Yazýyý editörde ortala.',
         cls: 'x-html-editor-tip'
       },
       justifyright : {
-        title: 'SaÄŸa daya',
-        text: 'YazÄ±yÄ± saÄŸa daya.',
+        title: 'Saða daya',
+        text: 'Yazýyý saða daya.',
         cls: 'x-html-editor-tip'
       },
       insertunorderedlist : {
-        title: 'NoktalÄ± Liste',
-        text: 'NoktalÄ± listeye baÅŸla.',
+        title: 'Noktalý Liste',
+        text: 'Noktalý listeye baþŸla.',
         cls: 'x-html-editor-tip'
       },
       insertorderedlist : {
-        title: 'NumaralÄ± Liste',
-        text: 'NumaralÄ± lisyeye baÅŸla.',
+        title: 'Numaralý Liste',
+        text: 'Numaralý lisyeye baþŸla.',
         cls: 'x-html-editor-tip'
       },
       createlink : {
         title: 'Web Adresi(Hyperlink)',
-        text: 'SeÃ§ili yazÄ±yÄ± web adresi(hyperlink) yap.',
+        text: 'Seçili yazýyý web adresi(hyperlink) yap.',
         cls: 'x-html-editor-tip'
       },
       sourceedit : {
-        title: 'Kaynak kodu DÃ¼zenleme',
-        text: 'Kaynak kodu dÃ¼zenleme moduna geÃ§.',
+        title: 'Kaynak kodu Düzenleme',
+        text: 'Kaynak kodu düzenleme moduna geç.',
         cls: 'x-html-editor-tip'
       }
     }
@@ -267,10 +268,10 @@ if(Ext.form.HtmlEditor){
 
 if(Ext.grid.GridView){
   Ext.apply(Ext.grid.GridView.prototype, {
-    sortAscText  : "Artan sÄ±rada sÄ±rala",
-    sortDescText : "Azalan sÄ±rada sÄ±rala",
+    sortAscText  : "Artan sýrada sýrala",
+    sortDescText : "Azalan sýrada sýrala",
     lockText     : "Kolonu kilitle",
-    unlockText   : "Kolon kilidini kaldÄ±r",
+    unlockText   : "Kolon kilidini kaldýr",
     columnsText  : "Kolonlar"
   });
 }
@@ -278,22 +279,22 @@ if(Ext.grid.GridView){
 if(Ext.grid.GroupingView){
   Ext.apply(Ext.grid.GroupingView.prototype, {
     emptyGroupText : '(Yok)',
-    groupByText    : 'Bu Alana GÃ¶re Grupla',
-    showGroupsText : 'Gruplar Halinde GÃ¶ster'
+    groupByText    : 'Bu Alana Göre Grupla',
+    showGroupsText : 'Gruplar Halinde Göster'
   });
 }
 
 if(Ext.grid.PropertyColumnModel){
   Ext.apply(Ext.grid.PropertyColumnModel.prototype, {
     nameText   : "Ad",
-    valueText  : "DeÄŸer",
+    valueText  : "Deðer",
     dateFormat : "d/m/Y"
   });
 }
 
-if(Ext.layout.BorderLayout && Ext.layout.BorderLayout.SplitRegion){
+if(Ext.layout.BorderLayout.SplitRegion){
   Ext.apply(Ext.layout.BorderLayout.SplitRegion.prototype, {
-    splitTip            : "Yeniden boyutlandÄ±rmak iÃ§in sÃ¼rÃ¼kle.",
-    collapsibleSplitTip : "Yeniden boyutlandÄ±rmak iÃ§in sÃ¼rÃ¼kle. Saklamak iÃ§in Ã§ift tÄ±kla."
+    splitTip            : "Yeniden boyutlandýrmak için sürükle.",
+    collapsibleSplitTip : "Yeniden boyutlandýrmak için sürükle. Saklamak için çift týkla."
   });
 }

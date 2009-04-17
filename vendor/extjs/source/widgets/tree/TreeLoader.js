@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -219,7 +219,7 @@ new Ext.tree.TreePanel({
         }
     }),
     ...
-}); 
+});
 </pre></code>
     * @param attr {Object} The attributes from which to create the new node.
     */
@@ -246,7 +246,7 @@ new Ext.tree.TreePanel({
     processResponse : function(response, node, callback){
         var json = response.responseText;
         try {
-            var o = eval("("+json+")");
+            var o = Ext.decode(json);
             node.beginUpdate();
             for(var i = 0, len = o.length; i < len; i++){
                 var n = this.createNode(o[i]);
@@ -266,7 +266,7 @@ new Ext.tree.TreePanel({
     handleResponse : function(response){
         this.transId = false;
         var a = response.argument;
-        this.processResponse(response, a.node, a.callback);
+        this.processResponse(response, a.node, a.callback);        
         this.fireEvent("load", this, a.node, response);
     },
 

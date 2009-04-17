@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,10 +9,10 @@
 /**
  * @class Ext.BoxComponent
  * @extends Ext.Component
- * <p>Base class for any visual {@link Ext.Component} that uses a box container.  BoxComponent provides automatic box
- * model adjustments for sizing and positioning and will work correctly withnin the Component rendering model.  All
- * container classes should subclass BoxComponent so that they will work consistently when nested within other Ext
- * layout containers.</p>
+ * <p>Base class for any {@link Ext.Component} that is to be sized as a box, using width and height. 
+ * BoxComponent provides automatic box model adjustments for sizing and positioning and will work correctly
+ * within the Component rendering model.  All {@link Ext.Container} Container classes should subclass
+ * BoxComponent so that they will work consistently when nested within other Ext layout containers.</p>
  * <p>A BoxComponent may be created as a custom Component which encapsulates any HTML element, either a pre-existing
  * element, or one that is created to your specifications at render time. Usually, to participate in layouts,
  * a Component will need to be a <b>Box</b>Component in order to have its width and height managed.</p>
@@ -33,8 +33,18 @@ var myImage = new Ext.BoxComponent({
 });</code></pre></p>
  * @constructor
  * @param {Ext.Element/String/Object} config The configuration options.
+ * @xtype box
  */
 Ext.BoxComponent = Ext.extend(Ext.Component, {
+
+	// Configs below are used for all Components when rendered by BorderLayout.
+    /**
+     * @cfg {String} region <p><b>Note</b>: this config is only used when this BoxComponent is rendered
+     * by a Container which has been configured to use the <b>{@link Ext.layout.BorderLayout BorderLayout}</b>
+     * layout manager (eg. specifying <tt>layout:'border'</tt>).</p><br>
+     * <p>See {@link Ext.layout.BorderLayout} also.</p>
+     */
+
     /**
      * @cfg {Number} x
      * The local x (left) coordinate for this component if contained within a positioning container.
@@ -109,10 +119,20 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
     deferHeight: false,
 
     /**
-     * Sets the width and height of the component.  This method fires the {@link #resize} event.  This method can accept
-     * either width and height as separate numeric arguments, or you can pass a size object like {width:10, height:20}.
-     * @param {Number/Object} width The new width to set, or a size object in the format {width, height}
-     * @param {Number} height The new height to set (not required if a size object is passed as the first arg)
+     * Sets the width and height of this BoxComponent. This method fires the {@link #resize} event. This method can accept
+     * either width and height as separate arguments, or you can pass a size object like <code>{width:10, height:20}</code>.
+     * @param {Mixed} width The new width to set. This may be one of:<div class="mdetail-params"><ul>
+     * <li>A Number specifying the new width in the {@link #getEl Element}'s {@link Ext.Element#defaultUnit}s (by default, pixels).</li>
+     * <li>A String used to set the CSS width style.</li>
+     * <li>A size object in the format <code>{width: widthValue, height: heightValue}</code>.</li>
+     * <li><code>undefined</code> to leave the width unchanged.</li>
+     * </ul></div>
+     * @param {Mixed} height The new height to set (not required if a size object is passed as the first arg).
+     * This may be one of:<div class="mdetail-params"><ul>
+     * <li>A Number specifying the new height in the {@link #getEl Element}'s {@link Ext.Element#defaultUnit}s (by default, pixels).</li>
+     * <li>A String used to set the CSS height style. Animation may <b>not</b> be used.</li>
+     * <li><code>undefined</code> to leave the height unchanged.</li>
+     * </ul></div>
      * @return {Ext.BoxComponent} this
      */
     setSize : function(w, h){
@@ -129,7 +149,7 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
         }
 
         // prevent recalcs when not needed
-        if(this.lastSize && this.lastSize.width == w && this.lastSize.height == h){
+        if(this.cacheSizes !== false && this.lastSize && this.lastSize.width == w && this.lastSize.height == h){
             return this;
         }
         this.lastSize = {width: w, height: h};
@@ -152,7 +172,10 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
 
     /**
      * Sets the width of the component.  This method fires the {@link #resize} event.
-     * @param {Number} width The new width to set
+     * @param {Number} width The new width to setThis may be one of:<div class="mdetail-params"><ul>
+     * <li>A Number specifying the new width in the {@link #getEl Element}'s {@link Ext.Element#defaultUnit}s (by default, pixels).</li>
+     * <li>A String used to set the CSS width style.</li>
+     * </ul></div>
      * @return {Ext.BoxComponent} this
      */
     setWidth : function(width){
@@ -161,7 +184,11 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
 
     /**
      * Sets the height of the component.  This method fires the {@link #resize} event.
-     * @param {Number} height The new height to set
+     * @param {Number} height The new height to set. This may be one of:<div class="mdetail-params"><ul>
+     * <li>A Number specifying the new height in the {@link #getEl Element}'s {@link Ext.Element#defaultUnit}s (by default, pixels).</li>
+     * <li>A String used to set the CSS height style.</li>
+     * <li><i>undefined</i> to leave the height unchanged.</li>
+     * </ul></div>
      * @return {Ext.BoxComponent} this
      */
     setHeight : function(height){
@@ -173,7 +200,33 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
      * @return {Object} An object containing the element's size {width: (element width), height: (element height)}
      */
     getSize : function(){
-        return this.el.getSize();
+        return this.getResizeEl().getSize();
+    },
+
+    /**
+     * Gets the current width of the component's underlying element.
+     * @return {Number}
+     */
+    getWidth : function(){
+        return this.getResizeEl().getWidth();
+    },
+
+    /**
+     * Gets the current height of the component's underlying element.
+     * @return {Number}
+     */
+    getHeight : function(){
+        return this.getResizeEl().getHeight();
+    },
+
+    /**
+     * Gets the current size of the component's underlying element, including space taken by its margins.
+     * @return {Object} An object containing the element's size {width: (element width + left/right margins), height: (element height + top/bottom margins)}
+     */
+    getOuterSize : function(){
+        var el = this.getResizeEl();
+        return {width: el.getWidth() + el.getMargins('lr'),
+                height: el.getHeight() + el.getMargins('tb')};
     },
 
     /**
@@ -182,10 +235,11 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
      * @return {Array} The XY position of the element (e.g., [100, 200])
      */
     getPosition : function(local){
+        var el = this.getPositionEl();
         if(local === true){
-            return [this.el.getLeft(true), this.el.getTop(true)];
+            return [el.getLeft(true), el.getTop(true)];
         }
-        return this.xy || this.el.getXY();
+        return this.xy || el.getXY();
     },
 
     /**
@@ -194,15 +248,10 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
      * @return {Object} box An object in the format {x, y, width, height}
      */
     getBox : function(local){
-        var s = this.el.getSize();
-        if(local === true){
-            s.x = this.el.getLeft(true);
-            s.y = this.el.getTop(true);
-        }else{
-            var xy = this.xy || this.el.getXY();
-            s.x = xy[0];
-            s.y = xy[1];
-        }
+        var pos = this.getPosition(local);
+        var s = this.getSize();
+        s.x = pos[0];
+        s.y = pos[1];
         return s;
     },
 
@@ -282,7 +331,7 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
         if(x === undefined || y === undefined){ // cannot translate undefined points
             return;
         }
-        var p = this.el.translatePoints(x, y);
+        var p = this.getPositionEl().translatePoints(x, y);
         this.setPosition(p.left, p.top);
         return this;
     },
@@ -316,7 +365,7 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
      */
     syncSize : function(){
         delete this.lastSize;
-        this.setSize(this.autoWidth ? undefined : this.el.getWidth(), this.autoHeight ? undefined : this.el.getHeight());
+        this.setSize(this.autoWidth ? undefined : this.getResizeEl().getWidth(), this.autoHeight ? undefined : this.getResizeEl().getHeight());
         return this;
     },
 
@@ -359,3 +408,16 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
     }
 });
 Ext.reg('box', Ext.BoxComponent);
+
+
+/**
+ * @class Ext.Spacer
+ * @extends Ext.BoxComponent
+ * <p>Used to provide a sizable space in a layout.</p>
+ * @constructor
+ * @param {Object} config
+ */
+Ext.Spacer = Ext.extend(Ext.BoxComponent, {
+    autoEl:'div'
+});
+Ext.reg('spacer', Ext.Spacer);

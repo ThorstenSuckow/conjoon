@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -58,7 +58,7 @@ Ext.extend(Ext.DataView.LabelEditor, Ext.Editor, {
 
 Ext.DataView.DragSelector = function(cfg){
     cfg = cfg || {};
-    var view, regions, proxy, tracker;
+    var view, proxy, tracker;
     var rs, bodyRegion, dragRegion = new Ext.lib.Region(0,0,0,0);
     var dragSafe = cfg.dragSafe === true;
 

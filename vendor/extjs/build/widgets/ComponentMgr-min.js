@@ -1,1 +1,10 @@
-Ext.ComponentMgr=function(){var b=new Ext.util.MixedCollection();var a={};return{register:function(d){b.add(d)},unregister:function(d){b.remove(d)},get:function(c){return b.get(c)},onAvailable:function(e,d,c){b.on("add",function(f,g){if(g.id==e){d.call(c||g,g);b.un("add",d,c)}})},all:b,registerType:function(d,c){a[d]=c;c.xtype=d},create:function(c,d){return new a[c.xtype||d](c)}}}();Ext.reg=Ext.ComponentMgr.registerType;
+/*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+
+Ext.ComponentMgr=function(){var all=new Ext.util.MixedCollection();var types={};var ptypes={};return{register:function(c){all.add(c);},unregister:function(c){all.remove(c);},get:function(id){return all.get(id);},onAvailable:function(id,fn,scope){all.on("add",function(index,o){if(o.id==id){fn.call(scope||o,o);all.un("add",fn,scope);}});},all:all,registerType:function(xtype,cls){types[xtype]=cls;cls.xtype=xtype;},create:function(config,defaultType){return config.render?config:new types[config.xtype||defaultType](config);},registerPlugin:function(ptype,cls){ptypes[ptype]=cls;cls.ptype=ptype;},createPlugin:function(config,defaultType){return new ptypes[config.ptype||defaultType](config);}};}();Ext.reg=Ext.ComponentMgr.registerType;Ext.preg=Ext.ComponentMgr.registerPlugin;Ext.create=Ext.ComponentMgr.create;

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -29,7 +29,7 @@ FeedWindow = function() {
                 '<em>{url}</em><strong>{text}</strong>',
                 '<div class="x-clear"></div>',
                 '</div></tpl>'),
-        store: new Ext.data.SimpleStore({
+        store: new Ext.data.ArrayStore({
             fields: ['url', 'text'],
             data : this.defaultFeeds
         })

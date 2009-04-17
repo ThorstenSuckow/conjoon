@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -54,6 +54,7 @@ action.setText('Something else');
  */
 Ext.Action = function(config){
     this.initialConfig = config;
+    this.itemId = config.itemId = (config.itemId || config.id || Ext.id());
     this.items = [];
 }
 
@@ -62,8 +63,18 @@ Ext.Action.prototype = {
      * @cfg {String} text The text to set for all components using this action (defaults to '').
      */
     /**
-     * @cfg {String} iconCls The icon CSS class for all components using this action (defaults to '').
-     * The class should supply a background image that will be used as the icon image.
+     * @cfg {String} iconCls
+     * The CSS class selector that specifies a background image to be used as the header icon for
+     * all components using this action (defaults to '').
+     * <p>An example of specifying a custom icon class would be something like:
+     * </p><code><pre>
+// specify the property in the config for the class:
+     ...
+     iconCls: 'do-something'
+
+// css class that specifies background image to be used as the icon image:
+.do-something { background-image: url(../images/my-icon.gif) 0 6px no-repeat !important; }
+</pre></code>
      */
     /**
      * @cfg {Boolean} disabled True to disable all components using this action, false to enable them (defaults to false).

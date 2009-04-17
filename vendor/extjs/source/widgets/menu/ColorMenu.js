@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,31 +9,40 @@
 /**
  * @class Ext.menu.ColorMenu
  * @extends Ext.menu.Menu
- * A menu containing a {@link Ext.menu.ColorItem} component (which provides a basic color picker).
- * @constructor
- * Creates a new ColorMenu
- * @param {Object} config Configuration options
+ * A menu containing a {@link Ext.ColorPalette} Component.
+ * @xtype colormenu
  */
-Ext.menu.ColorMenu = function(config){
-    Ext.menu.ColorMenu.superclass.constructor.call(this, config);
-    this.plain = true;
-    var ci = new Ext.menu.ColorItem(config);
-    this.add(ci);
+ Ext.menu.ColorMenu = Ext.extend(Ext.menu.Menu, {
+    /** 
+     * @cfg {Boolean} enableScrolling
+     * @hide 
+     */
+    enableScrolling: false,
+    /** 
+     * @cfg {Number} maxHeight
+     * @hide 
+     */
+    /** 
+     * @cfg {Number} scrollIncrement
+     * @hide 
+     */
     /**
-     * The {@link Ext.ColorPalette} instance for this ColorMenu
+     * @property palette
      * @type ColorPalette
+     * The {@link Ext.ColorPalette} instance for this ColorMenu
      */
-    this.palette = ci.palette;
-    /**
-     * @event select
-     * @param {ColorPalette} palette
-     * @param {String} color
-     */
-    this.relayEvents(ci, ["select"]);
-};
-Ext.extend(Ext.menu.ColorMenu, Ext.menu.Menu, {
-    //private
-    beforeDestroy: function(){
-        this.palette.destroy();
+    initComponent: function(){
+        Ext.apply(this, {
+            plain: true,
+            showSeparator: false,
+            items: this.palette = new Ext.ColorPalette(this.initialConfig)
+        });
+        Ext.menu.ColorMenu.superclass.initComponent.call(this);
+        this.relayEvents(this.palette, ['select']);
+    },
+
+    onClick: function() {
+        this.hide(true);
     }
 });
+Ext.reg('colormenu', Ext.menu.ColorMenu);

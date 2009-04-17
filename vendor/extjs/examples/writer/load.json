@@ -1,0 +1,8 @@
+{"success":true,"data":[
+	{"id":"1","email":"fred@flintstone.com","first":"Fred","last":"Flintstone"},
+	{"id":"2","email":"wilma@flintstone.com","first":"Wilma","last":"Flintstone"},
+	{"id":"3","email":"pebbles@flintstone.com","first":"Pebbles","last":"Flintstone"},
+	{"id":"4","email":"barney@rubble.com","first":"Barney","last":"Rubble"},
+	{"id":"5","email":"betty@rubble.com","first":"Betty","last":"Rubble"},
+	{"id":"6","email":"bambam@rubble.com","first":"BamBam","last":"Rubble"}
+]}

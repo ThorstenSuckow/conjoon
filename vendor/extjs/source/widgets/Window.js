@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,22 +9,26 @@
 /**
  * @class Ext.Window
  * @extends Ext.Panel
- * A specialized panel intended for use as an application window.  Windows are floated and draggable by default, and
- * also provide specific behavior like the ability to maximize and restore (with an event for minimizing, since the
- * minimize behavior is application-specific).  Windows can also be linked to a {@link Ext.WindowGroup} or managed
- * by the {@link Ext.WindowMgr} to provide grouping, activation, to front/back and other application-specific behavior.
+ * <p>A specialized panel intended for use as an application window.  Windows are floated, {@link #resizable}, and
+ * {@link #draggable} by default.  Windows can be maximized to fill the viewport, restored to their prior size, and
+ * can be {@link #minimize}d.</p>
+ * <p>Windows can also be linked to a {@link Ext.WindowGroup} or managed by the {@link Ext.WindowMgr} to provide 
+ * grouping, activation, to front, to back and other application-specific behavior.</p>
+ * <p>By default, Windows will be rendered to document.body. To {@link #constrain} a Window to another element
+ * specify {@link Ext.Component#renderTo renderTo}.</p>
  * @constructor
  * @param {Object} config The config object
+ * @xtype window
  */
 Ext.Window = Ext.extend(Ext.Panel, {
     /**
      * @cfg {Number} x
-     * The X position of the left edge of the Window on initial showing. Defaults to centering the Window within
+     * The X position of the left edge of the window on initial showing. Defaults to centering the Window within
      * the width of the Window's container {@link Ext.Element Element) (The Element that the Window is rendered to).
      */
     /**
      * @cfg {Number} y
-     * The Y position of the top edge of the Window on initial showing. Defaults to centering the Window within
+     * The Y position of the top edge of the window on initial showing. Defaults to centering the Window within
      * the height of the Window's container {@link Ext.Element Element) (The Element that the Window is rendered to).
      */
     /**
@@ -75,14 +79,14 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * @cfg {Boolean} resizable
      * True to allow user resizing at each edge and corner of the window, false to disable resizing (defaults to true).
      */
-    resizable:true,
+    resizable : true,
     /**
      * @cfg {Boolean} draggable
      * True to allow the window to be dragged by the header bar, false to disable dragging (defaults to true).  Note
      * that by default the window will be centered in the viewport, so if dragging is disabled the window may need
      * to be positioned programmatically after render (e.g., myWindow.setPosition(100, 100);).
      */
-    draggable:true,
+    draggable : true,
     /**
      * @cfg {Boolean} closable
      * <p>True to display the 'close' tool button and allow the user to close the window, false to
@@ -96,24 +100,26 @@ Ext.Window = Ext.extend(Ext.Panel, {
     closable : true,
     /**
      * @cfg {Boolean} constrain
-     * True to constrain the window to the viewport, false to allow it to fall outside of the viewport
+     * True to constrain the window within its containing element, false to allow it to fall outside of its
+     * containing element. By default the window will be rendered to document.body.  To render and constrain the 
+     * window within another element specify {@link #renderTo}.
      * (defaults to false).  Optionally the header only can be constrained using {@link #constrainHeader}.
      */
-    constrain:false,
+    constrain : false,
     /**
      * @cfg {Boolean} constrainHeader
-     * True to constrain the window header to the viewport, allowing the window body to fall outside of the viewport,
-     * false to allow the header to fall outside the viewport (defaults to false).  Optionally the entire window
-     * can be constrained using {@link #constrain}.
+     * True to constrain the window header within its containing element (allowing the window body to fall outside 
+     * of its containing element) or false to allow the header to fall outside its containing element (defaults to 
+     * false). Optionally the entire window can be constrained using {@link #constrain}.
      */
-    constrainHeader:false,
+    constrainHeader : false,
     /**
      * @cfg {Boolean} plain
      * True to render the window body with a transparent background so that it will blend into the framing
      * elements, false to add a lighter background color to visually highlight the body element and separate it
      * more distinctly from the surrounding frame (defaults to false).
      */
-    plain:false,
+    plain : false,
     /**
      * @cfg {Boolean} minimizable
      * True to display the 'minimize' tool button and allow the user to minimize the window, false to hide the button
@@ -134,18 +140,18 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * @cfg {Number} minHeight
      * The minimum height in pixels allowed for this window (defaults to 100).  Only applies when resizable = true.
      */
-    minHeight: 100,
+    minHeight : 100,
     /**
      * @cfg {Number} minWidth
      * The minimum width in pixels allowed for this window (defaults to 200).  Only applies when resizable = true.
      */
-    minWidth: 200,
+    minWidth : 200,
     /**
      * @cfg {Boolean} expandOnShow
      * True to always expand the window when it is displayed, false to keep it in its current state (which may be
      * {@link #collapsed}) when displayed (defaults to true).
      */
-    expandOnShow: true,
+    expandOnShow : true,
     /**
      * @cfg {String} closeAction
      * The action to take when the close button is clicked.  The default action is 'close' which will actually remove
@@ -153,26 +159,10 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * by setting visibility to hidden and applying negative offsets, keeping the window available to be redisplayed
      * via the {@link #show} method.
      */
-    closeAction: 'close',
-    /**
-     * @cfg {String} elements
-     * A comma-delimited list of panel elements to initialize when the window is rendered.  Normally, this list will be
-     * generated automatically based on the items added to the window at config time, but sometimes it might be useful to
-     * make sure a structural element is rendered even if not specified at config time (for example, you may want
-     * to add a button or toolbar dynamically after the window has been rendered).  Adding those elements to this
-     * list will allocate the required placeholders in the window when it is rendered.  Valid values are<ul>
-     * <li><b>header</b> (required)</li>
-     * <li><b>tbar</b> (top bar)</li>
-     * <li><b>body</b> (required)</li>
-     * <li><b>bbar</b> (bottom bar)</li>
-     * <li><b>footer</b><li>
-     * </ul>
-     * Defaults to 'header,body'.
-     */
-    elements: 'header,body',
+    closeAction : 'close',
 
     // inherited docs, same default
-    collapsible:false,
+    collapsible : false,
 
     // private
     initHidden : true,
@@ -181,10 +171,17 @@ Ext.Window = Ext.extend(Ext.Panel, {
     * This is automatically managed based on the value of constrain and constrainToHeader
     */
     monitorResize : true,
+
+    // The following configs are set to provide the basic functionality of a window.
+    // Changing them would require additional code to handle correctly and should
+    // usually only be done in subclasses that can provide custom behavior.  Changing them
+    // may have unexpected or undesirable results.
+    /** @cfg {String} elements @hide */
+    elements : 'header,body',
     /** @cfg {Boolean} frame @hide */
-    frame:true,
+    frame : true,
     /** @cfg {Boolean} floating @hide */
-    floating:true,
+    floating : true,
 
     // private
     initComponent : function(){
@@ -255,8 +252,9 @@ Ext.Window = Ext.extend(Ext.Panel, {
             this.mask = this.container.createChild({cls:"ext-el-mask"}, this.el.dom);
             this.mask.enableDisplayMode("block");
             this.mask.hide();
-            this.mask.on('click', this.focus, this);
+            this.mon(this.mask, 'click', this.focus, this);
         }
+        this.initTools();
     },
 
     // private
@@ -275,15 +273,13 @@ Ext.Window = Ext.extend(Ext.Panel, {
                 resizeElement : this.resizerAction
             });
             this.resizer.window = this;
-            this.resizer.on("beforeresize", this.beforeResize, this);
+            this.mon(this.resizer, 'beforeresize', this.beforeResize, this);
         }
 
         if(this.draggable){
             this.header.addClass("x-window-draggable");
         }
-        this.initTools();
-
-        this.el.on("mousedown", this.toFront, this);
+		this.mon(this.el, 'mousedown', this.toFront, this);
         this.manager = this.manager || Ext.WindowMgr;
         this.manager.register(this);
         this.hidden = true;
@@ -315,18 +311,20 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
     // private
     beforeDestroy : function(){
-        this.hide();
-        if(this.doAnchor){
-            Ext.EventManager.removeResizeListener(this.doAnchor, this);
-            Ext.EventManager.un(window, 'scroll', this.doAnchor, this);
+        if (this.rendered){
+            this.hide();
+		  if(this.doAnchor){
+		        Ext.EventManager.removeResizeListener(this.doAnchor, this);
+		      Ext.EventManager.un(window, 'scroll', this.doAnchor, this);
+            }
+            Ext.destroy(
+                this.focusEl,
+                this.resizer,
+                this.dd,
+                this.proxy,
+                this.mask
+            );
         }
-        Ext.destroy(
-            this.focusEl,
-            this.resizer,
-            this.dd,
-            this.proxy,
-            this.mask
-        );
         Ext.Window.superclass.beforeDestroy.call(this);
     },
 
@@ -356,7 +354,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
                 handler: this.restore.createDelegate(this, []),
                 hidden:true
             });
-            this.header.on('dblclick', this.toggleMaximize, this);
+            this.mon(this.header, 'dblclick', this.toggleMaximize, this);
         }
         if(this.closable){
             this.addTool({
@@ -413,14 +411,15 @@ Ext.Window = Ext.extend(Ext.Panel, {
     focus : function(){
         var f = this.focusEl, db = this.defaultButton, t = typeof db;
         if(t != 'undefined'){
-            if(t == 'number'){
-                f = this.buttons[db];
+            if(t == 'number' && this.fbar){
+                f = this.fbar.items.get(db);
             }else if(t == 'string'){
                 f = Ext.getCmp(db);
             }else{
                 f = db;
             }
         }
+        f = f || this.focusEl;
         f.focus.defer(10, f);
     },
 
@@ -459,9 +458,10 @@ Ext.Window = Ext.extend(Ext.Panel, {
     /**
      * Shows the window, rendering it first if necessary, or activates it and brings it to front if hidden.
      * @param {String/Element} animateTarget (optional) The target element or id from which the window should
-     * animate while opening (defaults to undefined with no animation)
+     * animate while opening (defaults to null with no animation)
      * @param {Function} callback (optional) A callback function to call after the window is displayed
      * @param {Object} scope (optional) The scope in which to execute the callback
+     * @return {Ext.Window} this
      */
     show : function(animateTarget, cb, scope){
         if(!this.rendered){
@@ -469,10 +469,10 @@ Ext.Window = Ext.extend(Ext.Panel, {
         }
         if(this.hidden === false){
             this.toFront();
-            return;
+            return this;
         }
         if(this.fireEvent("beforeshow", this) === false){
-            return;
+            return this;
         }
         if(cb){
             this.on('show', cb, scope, {single:true});
@@ -487,6 +487,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
         }else{
             this.afterShow();
         }
+        return this;
     },
 
     // private
@@ -538,14 +539,11 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * animate while hiding (defaults to null with no animation)
      * @param {Function} callback (optional) A callback function to call after the window is hidden
      * @param {Object} scope (optional) The scope in which to execute the callback
+     * @return {Ext.Window} this
      */
     hide : function(animateTarget, cb, scope){
-        if(this.activeGhost){ // drag active?
-            this.hide.defer(100, this, [animateTarget, cb, scope]);
-            return;
-        }
         if(this.hidden || this.fireEvent("beforehide", this) === false){
-            return;
+            return this;
         }
         if(cb){
             this.on('hide', cb, scope, {single:true});
@@ -554,12 +552,17 @@ Ext.Window = Ext.extend(Ext.Panel, {
         if(animateTarget !== undefined){
             this.setAnimateTarget(animateTarget);
         }
+        if(this.modal){
+            this.mask.hide();
+            Ext.getBody().removeClass("x-body-masked");
+        }
         if(this.animateTarget){
             this.animHide();
         }else{
             this.el.hide();
             this.afterHide();
         }
+        return this;
     },
 
     // private
@@ -567,10 +570,6 @@ Ext.Window = Ext.extend(Ext.Panel, {
         this.proxy.hide();
         if(this.monitorResize || this.modal || this.constrain || this.constrainHeader){
             Ext.EventManager.removeResizeListener(this.onWindowResize, this);
-        }
-        if(this.modal){
-            this.mask.hide();
-            Ext.getBody().removeClass("x-body-masked");
         }
         if(this.keyMap){
             this.keyMap.disable();
@@ -646,6 +645,9 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
     // private
     unghost : function(show, matchPosition){
+        if(!this.activeGhost) {
+            return;
+        }
         if(show !== false){
             this.el.show();
             this.focus();
@@ -665,9 +667,11 @@ Ext.Window = Ext.extend(Ext.Panel, {
      * Placeholder method for minimizing the window.  By default, this method simply fires the {@link #minimize} event
      * since the behavior of minimizing a window is application-specific.  To implement custom minimize behavior,
      * either the minimize event can be handled or this method can be overridden.
+     * @return {Ext.Window} this
      */
     minimize : function(){
         this.fireEvent('minimize', this);
+        return this;
     },
 
     /**
@@ -686,6 +690,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
     /**
      * Fits the window within its current container and automatically replaces the 'maximize' tool button with
      * the 'restore' tool button.
+     * @return {Ext.Window} this
      */
     maximize : function(){
         if(!this.maximized){
@@ -712,11 +717,13 @@ Ext.Window = Ext.extend(Ext.Panel, {
             this.fitContainer();
             this.fireEvent('maximize', this);
         }
+        return this;
     },
 
     /**
      * Restores a maximized window back to its original size and position prior to being maximized and also replaces
      * the 'restore' tool button with the 'maximize' tool button.
+     * @return {Ext.Window} this
      */
     restore : function(){
         if(this.maximized){
@@ -741,14 +748,16 @@ Ext.Window = Ext.extend(Ext.Panel, {
             this.doConstrain();
             this.fireEvent('restore', this);
         }
+        return this;
     },
 
     /**
      * A shortcut method for toggling between {@link #maximize} and {@link #restore} based on the current maximized
      * state of the window.
+     * @return {Ext.Window} this
      */
     toggleMaximize : function(){
-        this[this.maximized ? 'restore' : 'maximize']();
+        return this[this.maximized ? 'restore' : 'maximize']();
     },
 
     // private

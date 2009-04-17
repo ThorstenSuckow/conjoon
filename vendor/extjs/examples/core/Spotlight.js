@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,9 +12,11 @@ Ext.Spotlight = function(config){
 Ext.Spotlight.prototype = {
     active : false,
     animate : true,
-    animated : false,
     duration: .25,
     easing:'easeNone',
+
+    // private
+    animated : false,
 
     createElements : function(){
         var bd = Ext.getBody();

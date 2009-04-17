@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -15,6 +15,7 @@
  * @param {Ext.Element/String/Object} config The configuration options.  If an element is passed, it is set as the internal
  * element and its id used as the component id.  If a string is passed, it is assumed to be the id of an existing element
  * and is used as the component id.  Otherwise, it is assumed to be a standard config object and is applied to the component.
+ * @xtype label
  */
 Ext.form.Label = Ext.extend(Ext.BoxComponent, {
     /**

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -40,17 +40,32 @@ var myReader = new Ext.data.ArrayReader({
  */
 Ext.data.ArrayReader = Ext.extend(Ext.data.JsonReader, {
     /**
+     * @cfg {String} successProperty
+     * @hide
+     */
+     /**
      * Create a data block containing Ext.data.Records from an Array.
      * @param {Object} o An Array of row objects which represents the dataset.
      * @return {Object} data A data block which is used by an Ext.data.Store object as
      * a cache of Ext.data.Records.
      */
     readRecords : function(o){
-        var sid = this.meta ? this.meta.id : null;
+        this.arrayData = o;
+        var s = this.meta;
+        var sid = s ? (s.idIndex || s.id) : null;
     	var recordType = this.recordType, fields = recordType.prototype.fields;
     	var records = [];
-    	var root = o;
-	    for(var i = 0; i < root.length; i++){
+
+        if(!this.getRoot){
+            this.getRoot = s.root ? this.getJsonAccessor(s.root) : function(p){return p;};
+            if(s.totalProperty) {
+                this.getTotal = this.getJsonAccessor(s.totalProperty);
+            }
+        }
+
+        var root = this.getRoot(o);
+
+        for(var i = 0; i < root.length; i++){
 		    var n = root[i];
 	        var values = {};
 	        var id = ((sid || sid === 0) && n[sid] !== undefined && n[sid] !== "" ? n[sid] : null);
@@ -65,9 +80,19 @@ Ext.data.ArrayReader = Ext.extend(Ext.data.JsonReader, {
 	        record.json = n;
 	        records[records.length] = record;
 	    }
-	    return {
+
+        var totalRecords = records.length;
+
+        if(s.totalProperty){
+            var v = parseInt(this.getTotal(o), 10);
+            if(!isNaN(v)){
+                totalRecords = v;
+            }
+        }
+
+        return {
 	        records : records,
-	        totalRecords : records.length
+	        totalRecords : totalRecords
 	    };
     }
 });

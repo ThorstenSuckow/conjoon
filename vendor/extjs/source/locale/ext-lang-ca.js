@@ -3,7 +3,7 @@
  * December correction halkon_polako 11-12-2007
  *
  * Synchronized with 2.2 version of ext-lang-en.js (provided by Condor 8 aug 2008) 
- *     by halkon_polako 14-aug-2009
+ *     by halkon_polako 14-aug-2008
  */
 
 Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Carregant...</div>';

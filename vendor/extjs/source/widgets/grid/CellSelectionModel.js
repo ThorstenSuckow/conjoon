@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,23 +9,12 @@
 /**
  * @class Ext.grid.CellSelectionModel
  * @extends Ext.grid.AbstractSelectionModel
- * This class provides the basic implementation for single cell selection in a grid. The object stored
- * as the selection and returned by {@link getSelectedCell} contains the following properties:
+ * This class provides the basic implementation for <i>single</i> <b>cell</b> selection in a grid.
+ * The object stored as the selection contains the following properties:
  * <div class="mdetail-params"><ul>
- * <li><b>record</b> : Ext.data.record<p class="sub-desc">The {@link Ext.data.Record Record}
- * which provides the data for the row containing the selection</p></li>
- * <li><b>cell</b> : Ext.data.record<p class="sub-desc">An object containing the
- * following properties:
- * <div class="mdetail-params"><ul>
- * <li><b>rowIndex</b> : Number<p class="sub-desc">The index of the selected row</p></li>
- * <li><b>cellIndex</b> : Number<p class="sub-desc">The index of the selected cell<br>
- * <b>Note that due to possible column reordering, the cellIndex should not be used as an index into
- * the Record's data. Instead, the <i>name</i> of the selected field should be determined
- * in order to retrieve the data value from the record by name:</b><pre><code>
-    var fieldName = grid.getColumnModel().getDataIndex(cellIndex);
-    var data = record.get(fieldName);
-</code></pre></p></li>
- * </ul></div></p></li>
+ * <li><b>cell</b> : see {@link #getSelectedCell} 
+ * <li><b>record</b> : Ext.data.record The {@link Ext.data.Record Record}
+ * which provides the data for the row containing the selection</li>
  * </ul></div>
  * @constructor
  * @param {Object} config The object containing the configuration of this model.
@@ -56,11 +45,12 @@ Ext.grid.CellSelectionModel = function(config){
 	     * @event selectionchange
 	     * Fires when the active selection changes.
 	     * @param {SelectionModel} this
-	     * @param {Object} selection null for no selection or an object (o) with two properties
-	        <ul>
-	        <li>o.record: the record object for the row the selection is in</li>
-	        <li>o.cell: An array of [rowIndex, columnIndex]</li>
-	        </ul>
+	     * @param {Object} selection null for no selection or an object with two properties
+         * <div class="mdetail-params"><ul>
+         * <li><b>cell</b> : see {@link #getSelectedCell} 
+         * <li><b>record</b> : Ext.data.record<p class="sub-desc">The {@link Ext.data.Record Record}
+         * which provides the data for the row containing the selection</p></li>
+         * </ul></div>
 	     */
 	    "selectionchange"
     );
@@ -73,7 +63,7 @@ Ext.extend(Ext.grid.CellSelectionModel, Ext.grid.AbstractSelectionModel,  {
     /** @ignore */
     initEvents : function(){
         this.grid.on("cellmousedown", this.handleMouseDown, this);
-        this.grid.getGridEl().on(Ext.isIE || Ext.isSafari3 ? "keydown" : "keypress", this.handleKeyDown, this);
+        this.grid.getGridEl().on(Ext.isIE || Ext.isSafari3 || Ext.isChrome ? "keydown" : "keypress", this.handleKeyDown, this);
         var view = this.grid.view;
         view.on("refresh", this.onViewChange, this);
         view.on("rowupdated", this.onRowUpdated, this);
@@ -102,8 +92,21 @@ Ext.extend(Ext.grid.CellSelectionModel, Ext.grid.AbstractSelectionModel,  {
     },
 
 	/**
-	 * Returns the currently selected cell's row and column indexes as an array (e.g., [0, 0]).
-	 * @return {Array} An array containing the row and column indexes of the selected cell, or null if none selected.
+     * Returns an array containing the row and column indexes of the currently selected cell
+     * (e.g., [0, 0]), or null if none selected. The array has elements:
+     * <div class="mdetail-params"><ul>
+     * <li><b>rowIndex</b> : Number<p class="sub-desc">The index of the selected row</p></li>
+     * <li><b>cellIndex</b> : Number<p class="sub-desc">The index of the selected cell. 
+     * Due to possible column reordering, the cellIndex should <b>not</b> be used as an
+     * index into the Record's data. Instead, use the cellIndex to determine the <i>name</i>
+     * of the selected cell and use the field name to retrieve the data value from the record:<pre><code>
+// get name
+var fieldName = grid.getColumnModel().getDataIndex(cellIndex);
+// get data value based on name
+var data = record.get(fieldName);
+     * </code></pre></p></li>
+     * </ul></div>
+     * @return {Array} An array containing the row and column indexes of the selected cell, or null if none selected.
 	 */
     getSelectedCell : function(){
         return this.selection ? this.selection.cell : null;

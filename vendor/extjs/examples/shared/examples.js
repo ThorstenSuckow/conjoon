@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -30,6 +30,7 @@ Ext.example = function(){
         },
 
         init : function(){
+            /*
             var t = Ext.get('exttheme');
             if(!t){ // run locally?
                 return;
@@ -44,7 +45,7 @@ Ext.example = function(){
                 setTimeout(function(){
                     window.location.reload();
                 }, 250);
-            });
+            });*/
 
             var lb = Ext.get('lib-bar');
             if(lb){

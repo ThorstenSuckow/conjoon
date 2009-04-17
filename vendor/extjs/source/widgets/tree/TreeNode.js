@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -20,6 +20,7 @@
  * @cfg {String} iconCls A css class to be added to the nodes icon element for applying css background images
  * @cfg {String} href URL of the link used for the node (defaults to #)
  * @cfg {String} hrefTarget target frame for the link
+ * @cfg {Boolean} hidden True to render hidden. (Defaults to false).
  * @cfg {String} qtip An Ext QuickTip for the node
  * @cfg {Boolean} expandable If set to true, the node will always show a plus/minus icon, even when empty
  * @cfg {String} qtipCfg An Ext QuickTip config for the node (used instead of qtip)
@@ -30,6 +31,7 @@
  * @cfg {Boolean} draggable True to make this node draggable (defaults to false)
  * @cfg {Boolean} isTarget False to not allow this node to act as a drop target (defaults to true)
  * @cfg {Boolean} allowChildren False to not allow this node to have child nodes (defaults to true)
+ * @cfg {Boolean} editable False to not allow this node to be edited by an (@link Ext.tree.TreeEditor} (defaults to true)
  * @constructor
  * @param {Object/String} attributes The attributes/config for the node or just a string with the text for the node
  */
@@ -56,6 +58,11 @@ Ext.tree.TreeNode = function(attributes){
      * @type Boolean
      */
     this.disabled = attributes.disabled === true;
+    /**
+     * True if this node is hidden.
+     * @type Boolean
+     */
+    this.hidden = attributes.hidden === true;
 
     this.addEvents(
         /**
@@ -239,7 +246,7 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
         if(!node.render){ 
             node = this.getLoader().createNode(node);
         }
-        var newNode = Ext.tree.TreeNode.superclass.insertBefore.apply(this, arguments);
+        var newNode = Ext.tree.TreeNode.superclass.insertBefore.call(this, node, refNode);
         if(newNode && refNode && this.childrenRendered){
             node.render();
         }
@@ -512,14 +519,19 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
 
     destroy : function(){
         if(this.childNodes){
-	        for(var i = 0,l = this.childNodes.length; i < l; i++){
-	            this.childNodes[i].destroy();
-	        }
+            for(var i = 0,l = this.childNodes.length; i < l; i++){
+                this.childNodes[i].destroy();
+            }
             this.childNodes = null;
         }
         if(this.ui.destroy){
             this.ui.destroy();
         }
+    },
+    
+    // private
+    onIdChange: function(id){
+        this.ui.onIdChange(id);
     }
 });
 

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,7 +9,7 @@
 /**
  * @class Ext.Slider
  * @extends Ext.BoxComponent
- * Slider which supports vertical or horizontal orientation, keyboard adjustments, 
+ * Slider which supports vertical or horizontal orientation, keyboard adjustments,
  * configurable snapping, axis clicking and animation. Can be added as an item to
  * any container. Example usage:
 <pre><code>
@@ -37,8 +37,14 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
     minValue: 0,
 	/**
 	 * @cfg {Number} maxValue The maximum value for the Slider. Defaults to 100.
-	 */	
+	 */
     maxValue: 100,
+    /**
+     * @cfg {Number/Boolean} decimalPrecision.
+     * <p>The number of decimal places to which to round the Slider's value. Defaults to 0.</p>
+     * <p>To disable rounding, configure as <tt><b>false</b></tt>.</p>
+     */
+    decimalPrecision: 0,
 	/**
 	 * @cfg {Number} keyIncrement How many units to change the Slider when adjusting with keyboard navigation. Defaults to 1. If the increment config is larger, it will be used instead.
 	 */
@@ -70,17 +76,17 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
             this.value = this.minValue;
         }
         Ext.Slider.superclass.initComponent.call(this);
-        this.keyIncrement = Math.max(this.increment, this.keyIncrement); 
+        this.keyIncrement = Math.max(this.increment, this.keyIncrement);
         this.addEvents(
             /**
              * @event beforechange
-             * Fires before the slider value is changed. By returning false from an event handler, 
+             * Fires before the slider value is changed. By returning false from an event handler,
              * you can cancel the event and prevent the slider from changing.
 			 * @param {Ext.Slider} slider The slider
 			 * @param {Number} newValue The new value which the slider is being changed to.
 			 * @param {Number} oldValue The old value which the slider was previously.
-             */		
-			'beforechange', 
+             */
+			'beforechange',
 			/**
 			 * @event change
 			 * Fires when the slider value is changed.
@@ -101,14 +107,14 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 			 * @param {Ext.Slider} slider The slider
 			 * @param {Ext.EventObject} e The event fired from Ext.dd.DragTracker
 			 */
-			'dragstart', 
+			'dragstart',
 			/**
 			 * @event drag
              * Fires continuously during the drag operation while the mouse is moving.
 			 * @param {Ext.Slider} slider The slider
 			 * @param {Ext.EventObject} e The event fired from Ext.dd.DragTracker
 			 */
-			'drag', 
+			'drag',
 			/**
 			 * @event dragend
              * Fires after the drag operation has completed.
@@ -174,7 +180,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
             this.setValue(Math.round(this.reverseValue(local.left)), undefined, true);
         }
     },
-	
+
 	// private
     onKeyDown : function(e){
         if(this.disabled){e.preventDefault();return;}
@@ -202,7 +208,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
                 e.preventDefault();
         }
     },
-	
+
 	// private
     doSnap : function(value){
         if(!this.increment || this.increment == 1 || !value) {
@@ -210,16 +216,17 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
         }
         var newValue = value, inc = this.increment;
         var m = value % inc;
-        if(m > 0){
-            if(m > (inc/2)){
-                newValue = value + (inc-m);
-            }else{
-                newValue = value - m;
+        if(m != 0){
+            newValue -= m;
+            if(m * 2 > inc){
+                newValue += inc;
+            }else if(m * 2 < -inc){
+                newValue -= inc;
             }
         }
         return newValue.constrain(this.minValue,  this.maxValue);
     },
-	
+
 	// private
     afterRender : function(){
         Ext.Slider.superclass.afterRender.apply(this, arguments);
@@ -243,10 +250,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 
 	// private
     normalizeValue : function(v){
-       if(typeof v != 'number'){
-            v = parseInt(v);
-        }
-        v = Math.round(v);
+        v = Ext.util.Format.round(v, this.decimalPrecision);
         v = this.doSnap(v);
         v = v.constrain(this.minValue, this.maxValue);
         return v;
@@ -314,7 +318,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
         this.setValue(Math.round(this.reverseValue(pos.left)), false);
         this.fireEvent('drag', this, e);
     },
-	
+
 	// private
     onDragEnd: function(e){
         this.thumb.removeClass('x-slider-thumb-drag');
@@ -323,6 +327,12 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
         if(this.dragStartValue != this.value){
             this.fireEvent('changecomplete', this, this.value);
         }
+    },
+
+	// private
+    onResize : function(w, h){
+        this.innerEl.setWidth(w - (this.el.getPadding('l') + this.endEl.getPadding('r')));
+        this.syncThumb();
     },
     
     //private
@@ -355,12 +365,6 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
             this.syncThumb();
         }
     },
-
-    // private
-    onResize : function(w, h){
-        this.innerEl.setWidth(w - (this.el.getPadding('l') + this.endEl.getPadding('r')));
-        this.syncThumb();
-    },
     
     /**
      * Synchronizes the thumb position to the proper proportion of the total component width based
@@ -373,7 +377,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
             this.moveThumb(this.translateValue(this.value));
         }
     },
-	
+
 	/**
 	 * Returns the current value of the slider
 	 * @return {Number} The current value of the slider

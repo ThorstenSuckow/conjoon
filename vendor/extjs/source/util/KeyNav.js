@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -65,9 +65,6 @@ Ext.KeyNav.prototype = {
     prepareEvent : function(e){
         var k = e.getKey();
         var h = this.keyToHandler[k];
-        //if(h && this[h]){
-        //    e.stopPropagation();
-        //}
         if(Ext.isSafari2 && h && k >= 37 && k <= 40){
             e.stopEvent();
         }
@@ -124,7 +121,9 @@ Ext.KeyNav.prototype = {
 	 */
 	enable: function(){
 		if(this.disabled){
-            if(this.forceKeyDown || Ext.isIE || Ext.isSafari3 || Ext.isAir){
+            // ie won't do special keys on keypress, no one else will repeat keys with keydown
+            // the EventObject will normalize Safari automatically
+            if(this.isKeyDown()){
                 this.el.on("keydown", this.relay,  this);
             }else{
                 this.el.on("keydown", this.prepareEvent,  this);
@@ -139,7 +138,7 @@ Ext.KeyNav.prototype = {
 	 */
 	disable: function(){
 		if(!this.disabled){
-		    if(this.forceKeyDown || Ext.isIE || Ext.isSafari3 || Ext.isAir){
+		    if(this.isKeyDown()){
                 this.el.un("keydown", this.relay, this);
             }else{
                 this.el.un("keydown", this.prepareEvent, this);
@@ -147,5 +146,18 @@ Ext.KeyNav.prototype = {
             }
 		    this.disabled = true;
 		}
-	}
+	},
+    
+    /**
+     * Convenience function for setting disabled/enabled by boolean.
+     * @param {Boolean} disabled
+     */
+    setDisabled : function(disabled){
+        this[disabled ? "disable" : "enable"]();
+    },
+    
+    // private
+    isKeyDown: function(){
+        return this.forceKeyDown || Ext.isIE || Ext.isSafari3 || Ext.isChrome || Ext.isAir;
+    }
 };

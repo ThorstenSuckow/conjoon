@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -14,6 +14,7 @@
  * @constructor
  * Creates a new BaseItem
  * @param {Object} config Configuration options
+ * @xtype menubaseitem
  */
 Ext.menu.BaseItem = function(config){
     Ext.menu.BaseItem.superclass.constructor.call(this, config);
@@ -47,12 +48,21 @@ Ext.menu.BaseItem = function(config){
 
 Ext.extend(Ext.menu.BaseItem, Ext.Component, {
     /**
+     * @property parentMenu
+     * @type Ext.menu.Menu
+     * The parent Menu of this Item.
+     */
+    /**
      * @cfg {Function} handler
-     * A function that will handle the click event of this menu item (defaults to undefined)
+     * A function that will handle the click event of this menu item (optional).
+     * The handler is passed the following parameters:<div class="mdetail-params"><ul>
+     * <li><code>b</code> : Item<div class="sub-desc">This menu Item.</div></li>
+     * <li><code>e</code> : EventObject<div class="sub-desc">The click event.</div></li>
+     * </ul></div>
      */
     /**
      * @cfg {Object} scope
-     * The scope in which the handler function will be called.
+     * The scope (<tt><b>this</b></tt> reference) in which the handler function will be called.
      */
     /**
      * @cfg {Boolean} canActivate True if this item can be visually activated (defaults to false)
@@ -67,9 +77,9 @@ Ext.extend(Ext.menu.BaseItem, Ext.Component, {
      */
     hideOnClick : true,
     /**
-     * @cfg {Number} hideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 100)
+     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 100)
      */
-    hideDelay : 100,
+    clickHideDelay : 1,
 
     // private
     ctype: "Ext.menu.BaseItem",
@@ -78,24 +88,16 @@ Ext.extend(Ext.menu.BaseItem, Ext.Component, {
     actionMode : "container",
 
     // private
-    render : function(container, parentMenu){
-        /**
-         * The parent Menu of this Item.
-         * @property parentMenu
-         * @type Ext.menu.Menu
-         */
-        this.parentMenu = parentMenu;
-        Ext.menu.BaseItem.superclass.render.call(this, container);
-        this.container.menuItemId = this.id;
-    },
-
-    // private
     onRender : function(container, position){
-        this.el = Ext.get(this.el);
-        if(this.id){
-            this.el.id = this.id;
+        Ext.menu.BaseItem.superclass.onRender.apply(this, arguments);
+        if(this.ownerCt && this.ownerCt.isXType(Ext.menu.Menu)){
+            this.parentMenu = this.ownerCt;
+        }else{
+            this.container.addClass('x-menu-list-item');
+            this.mon(this.el, 'click', this.onClick, this);
+            this.mon(this.el, 'mouseenter', this.activate, this);
+            this.mon(this.el, 'mouseleave', this.deactivate, this);
         }
-        container.dom.appendChild(this.el.dom);
     },
 
     /**
@@ -114,7 +116,7 @@ Ext.extend(Ext.menu.BaseItem, Ext.Component, {
     // private
     onClick : function(e){
         if(!this.disabled && this.fireEvent("click", this, e) !== false
-                && this.parentMenu.fireEvent("itemclick", this, e) !== false){
+                && (this.parentMenu && this.parentMenu.fireEvent("itemclick", this, e) !== false)){
             this.handleClick(e);
         }else{
             e.stopEvent();
@@ -147,17 +149,14 @@ Ext.extend(Ext.menu.BaseItem, Ext.Component, {
     // private
     handleClick : function(e){
         if(this.hideOnClick){
-            this.parentMenu.hide.defer(this.hideDelay, this.parentMenu, [true]);
+            this.parentMenu.hide.defer(this.clickHideDelay, this.parentMenu, [true]);
         }
     },
 
-    // private
-    expandMenu : function(autoActivate){
-        // do nothing
-    },
+    // private. Do nothing
+    expandMenu : Ext.emptyFn,
 
-    // private
-    hideMenu : function(){
-        // do nothing
-    }
+    // private. Do nothing
+    hideMenu : Ext.emptyFn
 });
+Ext.reg('menubaseitem', Ext.menu.BaseItem);

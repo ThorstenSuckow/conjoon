@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -70,6 +70,14 @@ Ext.dd.DragDrop = function(id, sGroup, config) {
 };
 
 Ext.dd.DragDrop.prototype = {
+
+    /**
+     * Set to false to enable a DragDrop object to fire drag events while dragging
+     * over its own Element. Defaults to true - DragDrop objects do not by default
+     * fire drag events to themselves.
+     * @property ignoreSelf
+     * @type Boolean
+     */
 
     /**
      * The id of the element associated with this object.  This is what we
@@ -683,7 +691,7 @@ Ext.dd.DragDrop.prototype = {
 
     /**
      * Stores the initial placement of the linked element.
-     * @method setInitialPosition
+     * @method setInitPosition
      * @param {int} diffX   the X offset, default 0
      * @param {int} diffY   the Y offset, default 0
      */
@@ -1568,7 +1576,7 @@ Ext.dd.DragDropMgr = function() {
         getRelated: function(p_oDD, bTargetsOnly) {
             var oDDs = [];
             for (var i in p_oDD.groups) {
-                for (j in this.ids[i]) {
+                for (var j in this.ids[i]) {
                     var dd = this.ids[i][j];
                     if (! this.isTypeOfDD(dd)) {
                         continue;
@@ -1793,7 +1801,6 @@ Ext.dd.DragDropMgr = function() {
             if (! this.dragCurrent) {
                 return true;
             }
-
             // var button = e.which || e.button;
 
             // check for IE mouseup outside of page boundary
@@ -1882,7 +1889,7 @@ Ext.dd.DragDropMgr = function() {
                         continue;
                     }
 
-                    if (oDD.isTarget && !oDD.isLocked() && oDD != dc) {
+                    if (oDD.isTarget && !oDD.isLocked() && ((oDD != dc) || (dc.ignoreSelf === false))) {
                         if (this.isOverTarget(pt, oDD, this.mode)) {
                             // look for drop interactions
                             if (isDrop) {

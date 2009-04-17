@@ -1,1 +1,11 @@
-Ext.form.Radio=Ext.extend(Ext.form.Checkbox,{inputType:"radio",baseCls:"x-form-radio",getGroupValue:function(){var a=this.getParent().child("input[name="+this.el.dom.name+"]:checked",true);return a?a.value:null},getParent:function(){return this.el.up("form")||Ext.getBody()},toggleValue:function(){if(!this.checked){var a=this.getParent().select("input[name="+this.el.dom.name+"]");a.each(function(b){if(b.dom.id==this.id){this.setValue(true)}else{Ext.getCmp(b.dom.id).setValue(false)}},this)}},setValue:function(a){if(typeof a=="boolean"){Ext.form.Radio.superclass.setValue.call(this,a)}else{var b=this.getParent().child("input[name="+this.el.dom.name+"][value="+a+"]",true);if(b&&!b.checked){Ext.getCmp(b.id).toggleValue()}}},markInvalid:Ext.emptyFn,clearInvalid:Ext.emptyFn});Ext.reg("radio",Ext.form.Radio);
+/*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+
+Ext.form.Radio=Ext.extend(Ext.form.Checkbox,{inputType:'radio',markInvalid:Ext.emptyFn,clearInvalid:Ext.emptyFn,getGroupValue:function(){var p=this.el.up('form')||Ext.getBody();var c=p.child('input[name='+this.el.dom.name+']:checked',true);return c?c.value:null;},onClick:function(){if(this.el.dom.checked!=this.checked){var p=this.el.up('form')||Ext.getBody();var els=p.select('input[name='+this.el.dom.name+']');els.each(function(el){if(el.dom.id==this.id){this.setValue(true);}else{Ext.getCmp(el.dom.id).setValue(false);}},this);}},setValue:function(v){if(typeof v=='boolean'){Ext.form.Radio.superclass.setValue.call(this,v);}else{var r=this.el.up('form').child('input[name='+this.el.dom.name+'][value='+v+']',true);if(r){r.checked=true;};}
+return this;}});Ext.reg('radio',Ext.form.Radio);

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,8 +9,8 @@
 /**
  * @class Ext.layout.FitLayout
  * @extends Ext.layout.ContainerLayout
- * <p>This is a base class for layouts that contain a single item that automatically expands to fill the layout's
- * container.  This class is intended to be extended or created via the layout:'fit' {@link Ext.Container#layout}
+ * <p>This is a base class for layouts that contain <b>a single item</b> that automatically expands to fill the layout's
+ * container.  This class is intended to be extended or created via the <tt>layout:'fit'</tt> {@link Ext.Container#layout}
  * config, and should generally not need to be created directly via the new keyword.</p>
  * <p>FitLayout does not have any direct config options (other than inherited ones).  To fit a panel to a container
  * using FitLayout, simply set layout:'fit' on the container and add a single panel to it.  If the container has
@@ -35,7 +35,8 @@ Ext.layout.FitLayout = Ext.extend(Ext.layout.ContainerLayout, {
     onLayout : function(ct, target){
         Ext.layout.FitLayout.superclass.onLayout.call(this, ct, target);
         if(!this.container.collapsed){
-            this.setItemSize(this.activeItem || ct.items.itemAt(0), target.getStyleSize());
+            var sz = (Ext.isIE6 && Ext.isStrict && target.dom == document.body) ? target.getViewSize() : target.getStyleSize();
+            this.setItemSize(this.activeItem || ct.items.itemAt(0), sz);
         }
     },
 

@@ -1,1 +1,21 @@
-Ext.layout.ContainerLayout=function(a){Ext.apply(this,a)};Ext.layout.ContainerLayout.prototype={monitorResize:false,activeItem:null,layout:function(){var a=this.container.getLayoutTarget();this.onLayout(this.container,a);this.container.fireEvent("afterlayout",this.container,this)},onLayout:function(a,b){this.renderAll(a,b)},isValidParent:function(d,b){var a=d.getPositionEl?d.getPositionEl():d.getEl();return a.dom.parentNode==b.dom},renderAll:function(e,f){var b=e.items.items;for(var d=0,a=b.length;d<a;d++){var g=b[d];if(g&&(!g.rendered||!this.isValidParent(g,f))){this.renderItem(g,d,f)}}},renderItem:function(e,a,d){if(e&&!e.rendered){e.render(d,a);if(this.extraCls){var b=e.getPositionEl?e.getPositionEl():e;b.addClass(this.extraCls)}if(this.renderHidden&&e!=this.activeItem){e.hide()}}else{if(e&&!this.isValidParent(e,d)){if(this.extraCls){var b=e.getPositionEl?e.getPositionEl():e;b.addClass(this.extraCls)}if(typeof a=="number"){a=d.dom.childNodes[a]}d.dom.insertBefore(e.getEl().dom,a||null);if(this.renderHidden&&e!=this.activeItem){e.hide()}}}},onResize:function(){if(this.container.collapsed){return}var a=this.container.bufferResize;if(a){if(!this.resizeTask){this.resizeTask=new Ext.util.DelayedTask(this.layout,this);this.resizeBuffer=typeof a=="number"?a:100}this.resizeTask.delay(this.resizeBuffer)}else{this.layout()}},setContainer:function(a){if(this.monitorResize&&a!=this.container){if(this.container){this.container.un("resize",this.onResize,this)}if(a){a.on("resize",this.onResize,this)}}this.container=a},parseMargins:function(b){var c=b.split(" ");var a=c.length;if(a==1){c[1]=c[0];c[2]=c[0];c[3]=c[0]}if(a==2){c[2]=c[0];c[3]=c[1]}return{top:parseInt(c[0],10)||0,right:parseInt(c[1],10)||0,bottom:parseInt(c[2],10)||0,left:parseInt(c[3],10)||0}},destroy:Ext.emptyFn};Ext.Container.LAYOUTS.auto=Ext.layout.ContainerLayout;
+/*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+
+Ext.layout.ContainerLayout=function(config){Ext.apply(this,config);};Ext.layout.ContainerLayout.prototype={monitorResize:false,activeItem:null,layout:function(){var target=this.container.getLayoutTarget();this.onLayout(this.container,target);this.container.fireEvent('afterlayout',this.container,this);},onLayout:function(ct,target){this.renderAll(ct,target);},isValidParent:function(c,target){return target&&c.getDomPositionEl().dom.parentNode==(target.dom||target);},renderAll:function(ct,target){var items=ct.items.items;for(var i=0,len=items.length;i<len;i++){var c=items[i];if(c&&(!c.rendered||!this.isValidParent(c,target))){this.renderItem(c,i,target);}}},renderItem:function(c,position,target){if(c&&!c.rendered){c.render(target,position);if(this.extraCls){var t=c.getPositionEl?c.getPositionEl():c;t.addClass(this.extraCls);}
+if(this.renderHidden&&c!=this.activeItem){c.hide();}}else if(c&&!this.isValidParent(c,target)){if(this.extraCls){var t=c.getPositionEl?c.getPositionEl():c;t.addClass(this.extraCls);}
+if(typeof position=='number'){position=target.dom.childNodes[position];}
+target.dom.insertBefore(c.getDomPositionEl().dom,position||null);c.container=target;if(this.renderHidden&&c!=this.activeItem){c.hide();}}},onResize:function(){if(this.container.collapsed){return;}
+var b=this.container.bufferResize;if(b){if(!this.resizeTask){this.resizeTask=new Ext.util.DelayedTask(this.layout,this);this.resizeBuffer=typeof b=='number'?b:100;}
+this.resizeTask.delay(this.resizeBuffer);}else{this.layout();}},setContainer:function(ct){if(this.monitorResize&&ct!=this.container){if(this.container){this.container.un('resize',this.onResize,this);}
+if(ct){ct.on('resize',this.onResize,this);}}
+this.container=ct;},parseMargins:function(v){if(typeof v=='number'){v=v.toString();}
+var ms=v.split(' ');var len=ms.length;if(len==1){ms[1]=ms[0];ms[2]=ms[0];ms[3]=ms[0];}
+if(len==2){ms[2]=ms[0];ms[3]=ms[1];}
+if(len==3){ms[3]=ms[1];}
+return{top:parseInt(ms[0],10)||0,right:parseInt(ms[1],10)||0,bottom:parseInt(ms[2],10)||0,left:parseInt(ms[3],10)||0};},fieldTpl:(function(){var t=new Ext.Template('<div class="x-form-item {itemCls}" tabIndex="-1">','<label for="{id}" style="{labelStyle}" class="x-form-item-label">{label}{labelSeparator}</label>','<div class="x-form-element" id="x-form-el-{id}" style="{elementStyle}">','</div><div class="{clearCls}"></div>','</div>');t.disableFormats=true;return t.compile();})(),destroy:Ext.emptyFn};Ext.Container.LAYOUTS['auto']=Ext.layout.ContainerLayout;

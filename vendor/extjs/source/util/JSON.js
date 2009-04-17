@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -14,7 +14,8 @@
  * @singleton
  */
 Ext.util.JSON = new (function(){
-    var useHasOwn = !!{}.hasOwnProperty;
+    var useHasOwn = !!{}.hasOwnProperty,
+        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString == '[object JSON]';
 
     // crashes Safari in some instances
     //var validRE = /^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/;
@@ -84,7 +85,7 @@ Ext.util.JSON = new (function(){
      * @param {Mixed} o The variable to encode
      * @return {String} The JSON string
      */
-    this.encode = function(o){
+    this.encode = isNative ? JSON.stringify : function(o){
         if(typeof o == "undefined" || o === null){
             return "null";
         }else if(Ext.isArray(o)){
@@ -123,12 +124,12 @@ Ext.util.JSON = new (function(){
     };
 
     /**
-     * Decodes (parses) a JSON string to an object. If the JSON is invalid, this function throws a SyntaxError.
+     * Decodes (parses) a JSON string to an object. If the JSON is invalid, this function throws a SyntaxError unless the safe option is set.
      * @param {String} json The JSON string
      * @return {Object} The resulting object
      */
-    this.decode = function(json){
-        return eval("(" + json + ')');
+    this.decode = isNative ? JSON.stringify : function(json){
+        return eval("(" + json + ')');    
     };
 })();
 /**
@@ -142,6 +143,7 @@ Ext.encode = Ext.util.JSON.encode;
 /**
  * Shorthand for {@link Ext.util.JSON#decode}
  * @param {String} json The JSON string
+ * @param {Boolean} safe (optional) Whether to return null or throw an exception if the JSON is invalid.
  * @return {Object} The resulting object
  * @member Ext
  * @method decode

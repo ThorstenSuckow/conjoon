@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,11 +13,11 @@ Ext.tree.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
     
     onRender : function(){
         Ext.tree.ColumnTree.superclass.onRender.apply(this, arguments);
-        this.headers = this.body.createChild(
-            {cls:'x-tree-headers'},this.innerCt.dom);
+        this.headers = this.header.createChild({cls:'x-tree-headers'});
 
         var cols = this.columns, c;
         var totalWidth = 0;
+        var scrollOffset = 19; // similar to Ext.grid.GridView default
 
         for(var i = 0, len = cols.length; i < len; i++){
              c = cols[i];
@@ -33,7 +33,7 @@ Ext.tree.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
         }
         this.headers.createChild({cls:'x-clear'});
         // prevent floats from wrapping when clipped
-        this.headers.setWidth(totalWidth);
+        this.headers.setWidth(totalWidth+scrollOffset);
         this.innerCt.setWidth(totalWidth);
     }
 });

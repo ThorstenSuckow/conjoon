@@ -1,6 +1,14 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+/*
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -41,35 +49,29 @@
 
 Ext.namespace("Ext.ux");
 
-Ext.ux.StartMenu = function(config){
-	Ext.ux.StartMenu.superclass.constructor.call(this, config);
+Ext.ux.StartMenu = Ext.extend(Ext.menu.Menu, {
+    initComponent: function(config) {
+    	Ext.ux.StartMenu.superclass.initComponent.call(this, config);
+        
+        var tools = this.toolItems;
+        this.toolItems = new Ext.util.MixedCollection();
+        if(tools){
+            this.addTool.apply(this, tools);
+        }        
+    },
     
-    var tools = this.toolItems;
-    this.toolItems = new Ext.util.MixedCollection();
-    if(tools){
-        this.addTool.apply(this, tools);
-    }
-};
-
-Ext.extend(Ext.ux.StartMenu, Ext.menu.Menu, {
     // private
-    render : function(){
-        if(this.el){
-            return;
-        }
-        var el = this.el = new Ext.Layer({
-            cls: "x-menu ux-start-menu", // this might affect item click
-            shadow:this.shadow,
-            constrain: false,
-            parentEl: this.parentEl || document.body,
-            zindex:15000
-        });
+    onRender : function(ct, position){
+        Ext.ux.StartMenu.superclass.onRender.call(this, ct, position);        
+        var el = this.el.addClass('ux-start-menu');
         
         var header = el.createChild({
         	tag: "div",
         	cls: "x-window-header x-unselectable x-panel-icon "+this.iconCls
         });
+        
 		this.header = header;
+        
 		var headerText = header.createChild({
 			tag: "span",
 			cls: "x-window-header-text"
@@ -103,7 +105,7 @@ Ext.extend(Ext.ux.StartMenu, Ext.menu.Menu, {
 			tag: "div",
 			cls: "x-panel x-border-panel ux-start-menu-tools-panel"
 		});
-		
+        
 		var bwrap = ml.wrap({cls: "x-window-bwrap"});
 		var bc = bwrap.createChild({
 			tag: "div",
@@ -115,76 +117,36 @@ Ext.extend(Ext.ux.StartMenu, Ext.menu.Menu, {
 		var br = bc.wrap({
 			cls: "ux-start-menu-br"
 		});
-		
-        this.keyNav = new Ext.menu.MenuNav(this);
 
-        if(this.plain){
-            el.addClass("x-menu-plain");
-        }
-        if(this.cls){
-            el.addClass(this.cls);
-        }
-        // generic focus element
-        this.focusEl = el.createChild({
-            tag: "a",
-            cls: "x-menu-focus",
-            href: "#",
-            onclick: "return false;",
-            tabIndex:"-1"
-        });
+        this.ul.appendTo(this.menuPanel);
         
-        var ul = this.menuPanel.createChild({
-        	tag: "ul",
-        	cls: "x-menu-list"});
         var toolsUl = this.toolsPanel.createChild({
         	tag: "ul",
         	cls: "x-menu-list"
         });
+       
+        this.mon(toolsUl, 'click', this.onClick, this);
+        this.mon(toolsUl, 'mouseover', this.onMouseOver, this);
+        this.mon(toolsUl, 'mouseout', this.onMouseOut, this);
         
-        var ulListeners = {
-        	"click": {
-        		fn: this.onClick,
-        		scope: this
-        	},
-        	"mouseover": {
-        		fn: this.onMouseOver,
-        		scope: this
-        	},
-        	"mouseout": {
-        		fn: this.onMouseOut,
-        		scope: this
-        	}
-        };
-        
-        ul.on(ulListeners);
-        
-        this.items.each(
-        	function(item){
-	            var li = document.createElement("li");
-	            li.className = "x-menu-list-item";
-	            ul.dom.appendChild(li);
-	            item.render(li, this);
-	        }, this);
-
-        this.ul = ul;
-        this.autoWidth();
-
-        toolsUl.on(ulListeners);
+        this.items.each(function(item){
+            item.parentMenu = this;
+        }, this);
         
         this.toolItems.each(
         	function(item){
 	            var li = document.createElement("li");
 	            li.className = "x-menu-list-item";
 	            toolsUl.dom.appendChild(li);
-	            item.render(li, this);
+	            item.render(li);
+                item.parentMenu = this;
 	        }, this);
 	        
         this.toolsUl = toolsUl;
-        this.autoWidth();
-             
+           
         this.menuBWrap.setStyle('position', 'relative');  
-        this.menuBWrap.setHeight(this.height);
-        
+        this.menuBWrap.setHeight(this.height - 28);
+              
         this.menuPanel.setStyle({
         	padding: '2px',
         	position: 'absolute',
@@ -227,7 +189,6 @@ Ext.extend(Ext.ux.StartMenu, Ext.menu.Menu, {
 
         this.fireEvent("beforeshow", this);
         this.showAt(this.el.getAlignToXY(el, pos || this.defaultAlign), parentMenu, false);
-        
         var tPanelWidth = 100;      
         var box = this.menuBWrap.getBox();
         this.menuPanel.setWidth(box.width-tPanelWidth);

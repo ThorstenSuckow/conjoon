@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -71,7 +71,8 @@ Ext.extend(Ext.grid.RowSelectionModel, Ext.grid.AbstractSelectionModel,  {
 
 	/**
 	 * @cfg {Boolean} moveEditorOnEnter
-	 * False to turn off moving the editor to the next cell when the enter key is pressed
+	 * False to turn off moving the editor to the next row down when the enter key is pressed
+	 * or the next row up when shift + enter keys are pressed.
 	 */
     // private
     initEvents : function(){

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,8 +13,9 @@
  * @constructor
  * Create a new DatePicker
  * @param {Object} config The config object
+ * @xtype datepicker
  */
-Ext.DatePicker = Ext.extend(Ext.Component, {
+Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
     /**
      * @cfg {String} todayText
      * The text to display on the button that selects the current date (defaults to "Today")
@@ -61,11 +62,6 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
      * The tooltip text to display when the date falls on a disabled date (defaults to "Disabled")
      */
     disabledDatesText : "Disabled",
-    /**
-     * @cfg {Boolean} constrainToViewport
-     * <b>Deprecated</b> (not currently used). True to constrain the date picker to the viewport (defaults to true)
-     */
-    constrainToViewport : true,
     /**
      * @cfg {Array} monthNames
      * An array of textual month names which can be overriden for localization support (defaults to Date.monthNames)
@@ -278,21 +274,21 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
         this.el = Ext.get(el);
         this.eventEl = Ext.get(el.firstChild);
 
-        this.leftClickRpt = new Ext.util.ClickRepeater(this.el.child("td.x-date-left a"), {
+        new Ext.util.ClickRepeater(this.el.child("td.x-date-left a"), {
             handler: this.showPrevMonth,
             scope: this,
             preventDefault:true,
             stopDefault:true
         });
 
-        this.rightClickRpt = new Ext.util.ClickRepeater(this.el.child("td.x-date-right a"), {
+        new Ext.util.ClickRepeater(this.el.child("td.x-date-right a"), {
             handler: this.showNextMonth,
             scope: this,
             preventDefault:true,
             stopDefault:true
         });
 
-        this.eventEl.on("mousewheel", this.handleMouseWheel,  this);
+        this.mon(this.eventEl, "mousewheel", this.handleMouseWheel, this);
 
         this.monthPicker = this.el.down('div.x-date-mp');
         this.monthPicker.enableDisplayMode('block');
@@ -338,7 +334,7 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
             scope : this
         });
 
-        this.eventEl.on("click", this.handleDateClick,  this, {delegate: "a.x-date-date"});
+        this.mon(this.eventEl, "click", this.handleDateClick,  this, {delegate: "a.x-date-date"});
 
         this.el.unselectable();
         
@@ -350,9 +346,9 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
             tooltip: this.monthYearText,
             renderTo: this.el.child("td.x-date-middle", true)
         });
-
-        this.mbtn.on('click', this.showMonthPicker, this);
-        this.mbtn.el.child(this.mbtn.menuClassTarget).addClass("x-btn-with-menu");
+        
+		this.mon(this.mbtn, 'click', this.showMonthPicker, this);
+        this.mbtn.el.child('em').addClass("x-btn-arrow");
 
         if(this.showToday){
             this.todayKeyListener = this.eventEl.addKeyListener(Ext.EventObject.SPACE, this.selectToday,  this);
@@ -394,8 +390,9 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
                 '</table>'
             );
             this.monthPicker.update(buf.join(''));
-            this.monthPicker.on('click', this.onMonthClick, this);
-            this.monthPicker.on('dblclick', this.onMonthDblClick, this);
+            
+            this.mon(this.monthPicker, 'click', this.onMonthClick, this);
+            this.mon(this.monthPicker, 'dblclick', this.onMonthDblClick, this);
 
             this.mpMonths = this.monthPicker.select('td.x-date-mp-month');
             this.mpYears = this.monthPicker.select('td.x-date-mp-year');
@@ -560,8 +557,8 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
     // private
     selectToday : function(){
         if(this.todayBtn && !this.todayBtn.disabled){
-	        this.setValue(new Date().clearTime());
-	        this.fireEvent("select", this, this.value);
+            this.setValue(new Date().clearTime());
+            this.fireEvent("select", this, this.value);
         }
     },
 
@@ -612,7 +609,7 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
         var ddays = this.disabledDays ? this.disabledDays.join("") : false;
         var ddaysText = this.disabledDaysText;
         var format = this.format;
-        
+
         if(this.showToday){
             var td = new Date().clearTime();
             var disable = (td < min || td > max || 
@@ -622,7 +619,7 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
             this.todayBtn.setDisabled(disable);
             this.todayKeyListener[disable ? 'disable' : 'enable']();
         }
-
+        
         var setCellClass = function(cal, cell){
             cell.title = "";
             var t = d.getTime();

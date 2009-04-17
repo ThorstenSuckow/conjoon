@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -117,5 +117,16 @@ Ext.util.TextMetrics.Instance = function(bindTo, fixedWidth){
     return instance;
 };
 
-// backwards compat
-Ext.Element.measureText = Ext.util.TextMetrics.measure;
+Ext.Element.addMethods({
+    /**
+     * Returns the width in pixels of the passed text, or the width of the text in this Element.
+     * @param {String} text The text to measure. Defaults to the innerHTML of the element.
+     * @param {Number} min (Optional) The minumum value to return.
+     * @param {Number} max (Optional) The maximum value to return.
+     * @return {Number} The text width in pixels.
+     * @member Ext.Element getTextWidth
+     */
+    getTextWidth : function(text, min, max){
+        return (Ext.util.TextMetrics.measure(this.dom, Ext.value(text, this.dom.innerHTML, true)).width).constrain(min || 0, max || 1000000);
+    }
+});

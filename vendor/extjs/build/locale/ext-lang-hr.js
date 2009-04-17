@@ -2,9 +2,12 @@
  * Croatian translation
  * By Ylodi (utf8 encoding)
  * 8 May 2007
+ *
+ * By Stjepan at gmail dot com (utf8 encoding)
+ * 17 May 2008
  */
  
-Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Učitavanje...</div>';
+Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Ucitavanje...</div>';
 
 if(Ext.View){
    Ext.View.prototype.emptyText = "";
@@ -23,13 +26,13 @@ if(Ext.form.Field){
 }
 
 if(Ext.LoadMask){
-    Ext.LoadMask.prototype.msg = "Učitavanje...";
+    Ext.LoadMask.prototype.msg = "Ucitavanje...";
 }
 
 Date.monthNames = [
-   "Siječanj",
-   "Veljača",
-   "Ožujak",
+   "Sijecanj",
+   "Veljaca",
+   "O�ujak",
    "Travanj",
    "Svibanj",
    "Lipanj",
@@ -41,15 +44,42 @@ Date.monthNames = [
    "Prosinac"
 ];
 
+Date.getShortMonthName = function(month) {
+  return Date.monthNames[month].substring(0, 3);
+};
+
+Date.monthNumbers = {
+  Jan : 0,
+  Feb : 1,
+  Mar : 2,
+  Apr : 3,
+  May : 4,
+  Jun : 5,
+  Jul : 6,
+  Aug : 7,
+  Sep : 8,
+  Oct : 9,
+  Nov : 10,
+  Dec : 11
+};
+
+Date.getMonthNumber = function(name) {
+  return Date.monthNumbers[name.substring(0, 1).toUpperCase() + name.substring(1, 3).toLowerCase()];
+};
+
 Date.dayNames = [
    "Nedjelja",
    "Ponedjeljak",
    "Utorak",
    "Srijeda",
-   "Četvrtak",
+   "Cetvrtak",
    "Petak",
    "Subota"
 ];
+
+Date.getShortDayName = function(day) {
+  return Date.dayNames[day].substring(0, 3);
+};
 
 if(Ext.MessageBox){
    Ext.MessageBox.buttonText = {
@@ -72,16 +102,18 @@ if(Ext.DatePicker){
    Ext.apply(Ext.DatePicker.prototype, {
       todayText         : "Danas",
       minText           : "Taj datum je prije najmanjeg datuma",
-      maxText           : "Taj datum je poslije najvećeg datuma",
+      maxText           : "Taj datum je poslije najveceg datuma",
       disabledDaysText  : "",
       disabledDatesText : "",
       monthNames	: Date.monthNames,
       dayNames		: Date.dayNames,
-      nextText          : 'Slijedeći mjesec (Control+Desno)',
+      nextText          : 'Slijedeci mjesec (Control+Desno)',
       prevText          : 'Prethodni mjesec (Control+Lijevo)',
       monthYearText     : 'Odaberite mjesec (Control+Gore/Dolje za promjenu godine)',
       todayTip          : "{0} (Razmaknica)",
       format            : "d.m.y",
+      okText            : "&#160;U redu&#160;",
+      cancelText        : "Odustani",      
       startDay 		 : 1
    });
 }
@@ -92,7 +124,7 @@ if(Ext.PagingToolbar){
       afterPageText  : "od {0}",
       firstText      : "Prva stranica",
       prevText       : "Prethodna stranica",
-      nextText       : "Slijedeća stranica",
+      nextText       : "Slijedeca stranica",
       lastText       : "Posljednja stranica",
       refreshText    : "Obnovi",
       displayMsg     : "Prikazujem {0} - {1} od {2}",
@@ -102,8 +134,8 @@ if(Ext.PagingToolbar){
 
 if(Ext.form.TextField){
    Ext.apply(Ext.form.TextField.prototype, {
-      minLengthText : "Minimalna dužina za ovo polje je {0}",
-      maxLengthText : "Maksimalna dužina za ovo polje je {0}",
+      minLengthText : "Minimalna du�ina za ovo polje je {0}",
+      maxLengthText : "Maksimalna du�ina za ovo polje je {0}",
       blankText     : "Ovo polje je obavezno",
       regexText     : "",
       emptyText     : null
@@ -131,28 +163,114 @@ if(Ext.form.DateField){
 
 if(Ext.form.ComboBox){
    Ext.apply(Ext.form.ComboBox.prototype, {
-      loadingText       : "Učitavanje...",
+      loadingText       : "Ucitavanje...",
       valueNotFoundText : undefined
    });
 }
 
 if(Ext.form.VTypes){
    Ext.apply(Ext.form.VTypes, {
-      emailText    : 'Ovdje možete unijeti samo e-mail adresu u obliku "korisnik@domena.com"',
-      urlText      : 'Ovdje možete unijeti samo URL u obliku "http:/'+'/www.domena.com"',
-      alphaText    : 'Ovo polje može sadržavati samo slova i znak _',
-      alphanumText : 'Ovo polje može sadržavati samo slova, brojeve i znak _'
+      emailText    : 'Ovdje mo�ete unijeti samo e-mail adresu u obliku "korisnik@domena.com"',
+      urlText      : 'Ovdje mo�ete unijeti samo URL u obliku "http:/'+'/www.domena.com"',
+      alphaText    : 'Ovo polje mo�e sadr�avati samo slova i znak _',
+      alphanumText : 'Ovo polje mo�e sadr�avati samo slova, brojeve i znak _'
    });
+}
+
+if(Ext.form.HtmlEditor){
+  Ext.apply(Ext.form.HtmlEditor.prototype, {
+    createLinkText : 'Unesite URL za link:',
+    buttonTips : {
+      bold : {
+        title: 'Podebljano (Ctrl+B)',
+        text: 'Podebljavanje oznacenog teksta.',
+        cls: 'x-html-editor-tip'
+      },
+      italic : {
+        title: 'Kurziv (Ctrl+I)',
+        text: 'Pretvaranje oznacenog tekst u kurziv',
+        cls: 'x-html-editor-tip'
+      },
+      underline : {
+        title: 'Podcrtano (Ctrl+U)',
+        text: 'Potcrtavanje oznacenog teksta',
+        cls: 'x-html-editor-tip'
+      },
+      increasefontsize : {
+        title: 'Povecanje teksta',
+        text: 'Povecavanje velicine fonta.',
+        cls: 'x-html-editor-tip'
+      },
+      decreasefontsize : {
+        title: 'Smanjivanje teksta',
+        text: 'Smanjivanje velicine fonta.',
+        cls: 'x-html-editor-tip'
+      },
+      backcolor : {
+        title: 'Boja oznacenog teksta',
+        text: 'Promjena boje pozadine oznacenog teksta.',
+        cls: 'x-html-editor-tip'
+      },
+      forecolor : {
+        title: 'Boja fonta',
+        text: 'Promjena boje oznacenog teksta.',
+        cls: 'x-html-editor-tip'
+      },
+      justifyleft : {
+        title: 'Lijevo poravnanje teksta',
+        text: 'Poravnanje teksta na lijevu stranu.',
+        cls: 'x-html-editor-tip'
+      },
+      justifycenter : {
+        title: 'Centriranje teksta',
+        text: 'Centriranje teksta u uredivacu teksta.',
+        cls: 'x-html-editor-tip'
+      },
+      justifyright : {
+        title: 'Desno poravnanje teksta',
+        text: 'Poravnanje teksta na desnu stranu.',
+        cls: 'x-html-editor-tip'
+      },
+      insertunorderedlist : {
+        title: 'Oznacena lista',
+        text: 'Zapocinjanje oznacene liste.',
+        cls: 'x-html-editor-tip'
+      },
+      insertorderedlist : {
+        title: 'Numerirana lista',
+        text: 'Zapocinjanje numerirane liste.',
+        cls: 'x-html-editor-tip'
+      },
+      createlink : {
+        title: 'Hiperveza',
+        text: 'Stvaranje hiperveze od oznacenog teksta.',
+        cls: 'x-html-editor-tip'
+      },
+      sourceedit : {
+        title: 'Uredivanje izvornog koda',
+        text: 'Prebacivanje u nacin rada za uredivanje izvornog koda.',
+        cls: 'x-html-editor-tip'
+      }
+    }
+  });
 }
 
 if(Ext.grid.GridView){
    Ext.apply(Ext.grid.GridView.prototype, {
-      sortAscText  : "Sortiraj rastućim redoslijedom",
-      sortDescText : "Sortiraj padajućim redoslijedom",
-      lockText     : "Zaključaj stupac",
-      unlockText   : "Otključaj stupac",
+      sortAscText  : "Sortiraj rastucim redoslijedom",
+      sortDescText : "Sortiraj padajucim redoslijedom",
+      lockText     : "Zakljucaj stupac",
+      unlockText   : "Otkljucaj stupac",
       columnsText  : "Stupci"
    });
+}
+
+if(Ext.grid.GroupingView){
+  Ext.apply(Ext.grid.GroupingView.prototype, {
+    emptyGroupText : '(Ni�ta)',
+    groupByText    : 'Grupiranje po ovom polju',
+    showGroupsText : 'Prikaz u grupama'
+  });
 }
 
 if(Ext.grid.PropertyColumnModel){
@@ -163,9 +281,9 @@ if(Ext.grid.PropertyColumnModel){
    });
 }
 
-if(Ext.layout.BorderLayout && Ext.layout.BorderLayout.SplitRegion){
+if(Ext.layout.BorderLayout.SplitRegion){
    Ext.apply(Ext.layout.BorderLayout.SplitRegion.prototype, {
-      splitTip            : "Povuci za promjenu veličine.",
-      collapsibleSplitTip : "Povuci za promjenu veličine. Dvostruki klik za skrivanje."
+      splitTip            : "Povuci za promjenu velicine.",
+      collapsibleSplitTip : "Povuci za promjenu velicine. Dvostruki klik za skrivanje."
    });
 }

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,6 +13,7 @@
  * @constructor
  * Creates a new RadioGroup
  * @param {Object} config Configuration options
+ * @xtype radiogroup
  */
 Ext.form.RadioGroup = Ext.extend(Ext.form.CheckboxGroup, {
     /**

@@ -1,35 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project path="" name="Ext - JS Lib" author="Ext JS, LLC" version="2.2.1" copyright="Ext JS Library $version&#xD;&#xA;Copyright(c) 2006-2009, $author.&#xD;&#xA;licensing@extjs.com&#xD;&#xA;&#xD;&#xA;http://extjs.com/license" output="E:\apps\www\deploy\ext-2.2.1\" source="True" source-dir="$output\source" minify="True" min-dir="$output\build" doc="False" doc-dir="$output\docs" min-dair="$output\build">
+<project path="" name="Ext - JS Lib" author="Ext JS, LLC" version="3.0 RC1" copyright="Ext JS Library $version&#xD;&#xA;Copyright(c) 2006-2009, $author.&#xD;&#xA;licensing@extjs.com&#xD;&#xA;&#xD;&#xA;http://extjs.com/license" output="C:\apps\www\deploy\ext-3.0\" source="True" source-dir="$output\source" minify="True" min-dir="$output\build" doc="False" doc-dir="$output\docs" min-dair="$output\build">
   <directory name="" />
   <target name="Core" file="$output\ext-core.js" debug="True" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="core\DomHelper.js" />
-    <include name="core\Template.js" />
-    <include name="core\DomQuery.js" />
-    <include name="util\Observable.js" />
-    <include name="core\EventManager.js" />
-    <include name="core\Element.js" />
-    <include name="core\Fx.js" />
-    <include name="core\CompositeElement.js" />
-    <include name="data\Connection.js" />
-    <include name="core\UpdateManager.js" />
-    <include name="util\DelayedTask.js" />
+    <include name="core\core\Ext.js" />
+    <include name="adapter\core\ext-base-begin.js" />
+    <include name="adapter\core\ext-base-dom.js" />
+    <include name="adapter\core\ext-base-event.js" />
+    <include name="adapter\core\ext-base-ajax.js" />
+    <include name="adapter\core\ext-base-anim.js" />
+    <include name="adapter\core\ext-base-anim-extra.js" />
+    <include name="adapter\core\ext-base-end.js" />
+    <include name="core\core\DomHelper.js" />
+    <include name="core\core\Template.js" />
+    <include name="core\core\DomQuery.js" />
+    <include name="util\core\Observable.js" />
+    <include name="core\core\EventManager.js" />
+    <include name="core\core\Element.js" />
+    <include name="core\core\Element.traversal.js" />
+    <include name="core\core\Element.insertion.js" />
+    <include name="core\core\Element.style.js" />
+    <include name="core\core\Element.position.js" />
+    <include name="core\core\Element.scroll.js" />
+    <include name="core\core\Element.fx.js" />
+    <include name="core\core\Fx.js" />
+    <include name="core\core\CompositeElementLite.js" />
+    <include name="data\core\Connection.js" />
+    <include name="util\core\DelayedTask.js" />
+    <include name="util\core\JSON.js" />
+    <include name="util\core\TaskMgr.js" />
   </target>
   <target name="Everything" file="$output\ext-all.js" debug="True" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="core\DomHelper.js" />
-    <include name="core\Template.js" />
-    <include name="core\DomQuery.js" />
-    <include name="util\Observable.js" />
-    <include name="core\EventManager.js" />
-    <include name="core\Element.js" />
-    <include name="core\Fx.js" />
+    <include name="core\core\DomHelper.js" />
+    <include name="core\DomHelper-more.js" />
+    <include name="core\core\Template.js" />
+    <include name="core\Template-more.js" />
+    <include name="core\core\DomQuery.js" />
+    <include name="util\core\Observable.js" />
+    <include name="util\Observable-more.js" />
+    <include name="core\core\EventManager.js" />
+    <include name="core\EventManager-more.js" />
+    <include name="core\core\Element.js" />
+    <include name="core\Element-more.js" />
+    <include name="core\Element.alignment.js" />
+    <include name="core\core\Element.traversal.js" />
+    <include name="core\core\Element.insertion.js" />
+    <include name="core\Element.insertion-more.js" />
+    <include name="core\core\Element.style.js" />
+    <include name="core\Element.style-more.js" />
+    <include name="core\core\Element.position.js" />
+    <include name="core\Element.position-more.js" />
+    <include name="core\core\Element.scroll.js" />
+    <include name="core\Element.scroll-more.js" />
+    <include name="core\core\Element.fx.js" />
+    <include name="core\Element.fx-more.js" />
+    <include name="core\Element.dd.js" />
+    <include name="core\Element.legacy.js" />
+    <include name="core\Element.keys.js" />
+    <include name="core\core\Fx.js" />
+    <include name="core\core\CompositeElementLite.js" />
+    <include name="core\CompositeElementLite-more.js" />
     <include name="core\CompositeElement.js" />
-    <include name="data\Connection.js" />
-    <include name="core\UpdateManager.js" />
+    <include name="data\core\Connection.js" />
+    <include name="data\Connection-more.js" />
+    <include name="util\UpdateManager.js" />
     <include name="util\Date.js" />
-    <include name="util\DelayedTask.js" />
-    <include name="util\TaskMgr.js" />
+    <include name="util\core\DelayedTask.js" />
     <include name="util\MixedCollection.js" />
-    <include name="util\JSON.js" />
+    <include name="widgets\ComponentMgr.js" />
+    <include name="util\core\JSON.js" />
     <include name="util\Format.js" />
     <include name="util\XTemplate.js" />
     <include name="util\CSS.js" />
@@ -50,20 +88,33 @@
     <include name="data\Record.js" />
     <include name="data\StoreMgr.js" />
     <include name="data\Store.js" />
-    <include name="data\SimpleStore.js" />
+    <include name="data\DirectStore.js" />
     <include name="data\JsonStore.js" />
+    <include name="data\XmlStore.js" />
+    <include name="data\ArrayStore.js" />
     <include name="data\DataField.js" />
     <include name="data\DataReader.js" />
+    <include name="data\DataWriter.js" />
+    <include name="data\JsonWriter.js" />
     <include name="data\DataProxy.js" />
     <include name="data\MemoryProxy.js" />
     <include name="data\HttpProxy.js" />
     <include name="data\ScriptTagProxy.js" />
+    <include name="data\DirectProxy.js" />
     <include name="data\JsonReader.js" />
     <include name="data\XmlReader.js" />
     <include name="data\ArrayReader.js" />
+    <include name="direct\Direct.js" />
+    <include name="direct\Transaction.js" />
+    <include name="direct\Event.js" />
+    <include name="direct\Provider.js" />
+    <include name="direct\JsonProvider.js" />
+    <include name="direct\PollingProvider.js" />
+    <include name="direct\RemotingProvider.js" />
+    <include name="data\DirectProxy.js" />
+    <include name="data\DirectStore.js" />
     <include name="data\Tree.js" />
     <include name="data\GroupingStore.js" />
-    <include name="widgets\ComponentMgr.js" />
     <include name="widgets\Component.js" />
     <include name="widgets\Action.js" />
     <include name="widgets\Layer.js" />
@@ -82,6 +133,7 @@
     <include name="widgets\layout\TableLayout.js" />
     <include name="widgets\layout\AbsoluteLayout.js" />
     <include name="widgets\Viewport.js" />
+    <include name="widgets\layout\BoxLayout.js" />
     <include name="widgets\Panel.js" />
     <include name="widgets\Window.js" />
     <include name="widgets\WindowManager.js" />
@@ -90,6 +142,9 @@
     <include name="state\StateManager.js" />
     <include name="state\CookieProvider.js" />
     <include name="widgets\DataView.js" />
+    <include name="widgets\list\ListView.js" />
+    <include name="widgets\list\ColumnResizer.js" />
+    <include name="widgets\list\Sorter.js" />
     <include name="widgets\ColorPalette.js" />
     <include name="widgets\DatePicker.js" />
     <include name="widgets\TabPanel.js" />
@@ -135,6 +190,7 @@
     <include name="widgets\form\TextArea.js" />
     <include name="widgets\form\NumberField.js" />
     <include name="widgets\form\DateField.js" />
+    <include name="widgets\form\DisplayField.js" />
     <include name="widgets\form\Combo.js" />
     <include name="widgets\form\Checkbox.js" />
     <include name="widgets\form\CheckboxGroup.js" />
@@ -162,14 +218,19 @@
     <include name="widgets\grid\EditorGrid.js" />
     <include name="widgets\grid\GridEditor.js" />
     <include name="widgets\grid\PropertyGrid.js" />
+    <include name="widgets\grid\Column.js" />
     <include name="widgets\grid\RowNumberer.js" />
     <include name="widgets\grid\CheckboxSelectionModel.js" />
     <include name="widgets\LoadMask.js" />
     <include name="widgets\ProgressBar.js" />
-    <include name="widgets\Slider.js" />
-    <include name="widgets\StatusBar.js" />
-    <include name="util\History.js" />
     <include name="debug.js" />
+    <include name="widgets\chart\swfobject.js" />
+    <include name="widgets\chart\FlashComponent.js" />
+    <include name="widgets\chart\EventProxy.js" />
+    <include name="widgets\Slider.js" />
+    <include name="util\Cookies.js" />
+    <include name="widgets\chart\Chart.js" />
+    <include name="util\History.js" />
   </target>
   <file name="layout\LayoutRegionLite.js" path="layout" />
   <file name="DDScrollManager.js" path="" />
@@ -186,7 +247,6 @@
   <file name="JSON.js" path="" />
   <file name="MixedCollection.js" path="" />
   <file name="data\DataSource.js" path="data" />
-  <file name="license.txt" path="" />
   <file name="yui-ext-dl.jsb" path="" />
   <file name="yui-ext.jsb" path="" />
   <file name="form\FloatingEditor.js" path="form" />
@@ -281,12 +341,14 @@
   <file name="Template.js" path="" />
   <file name="UpdateManager.js" path="" />
   <file name="yutil.js" path="" />
+  <file name=".DS_Store" path="" />
   <file name="widgets\form\Select.js" path="widgets\form" />
   <file name="widgets\Notifier.js" path="widgets" />
   <file name="yui\dragdrop.js" path="yui" />
   <file name="yui-overrides.js" path="" />
   <target name="YUI" file="$output\adapter\yui\ext-yui-adapter.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="core\Ext.js" />
+    <include name="core\core\Ext.js" />
+    <include name="core\Ext-more.js" />
     <include name="adapter\yui-bridge.js" />
   </target>
   <target name="Menus" file="$output\package\menu\menus.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
@@ -361,13 +423,14 @@
     <include name="widgets\grid\PropertyGrid.js" />
   </target>
   <target name="JQUERY" file="$output\adapter\jquery\ext-jquery-adapter.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="core\Ext.js" />
+    <include name="core\core\Ext.js" />
+    <include name="core\Ext-more.js" />
     <include name="adapter\jquery-bridge.js" />
   </target>
   <target name="Utilities" file="$output\package\util.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="util\DelayedTask.js" />
+    <include name="util\core\DelayedTask.js" />
     <include name="util\MixedCollection.js" />
-    <include name="util\JSON.js" />
+    <include name="util\core\JSON.js" />
     <include name="util\Format.js" />
     <include name="util\CSS.js" />
     <include name="util\ClickRepeater.js" />
@@ -391,16 +454,21 @@
     <include name="data\StoreMgr.js" />
     <include name="data\Store.js" />
     <include name="data\SimpleStore.js" />
-    <include name="data\Connection.js" />
+    <include name="data\DirectStore.js" />
+    <include name="data\core\Connection.js" />
+    <include name="data\Connection-more.js" />
     <include name="data\DataField.js" />
     <include name="data\DataReader.js" />
     <include name="data\DataProxy.js" />
     <include name="data\MemoryProxy.js" />
     <include name="data\HttpProxy.js" />
     <include name="data\ScriptTagProxy.js" />
+    <include name="data\DirectProxy.js" />
     <include name="data\JsonReader.js" />
     <include name="data\XmlReader.js" />
     <include name="data\ArrayReader.js" />
+    <include name="data\DataWriter.js" />
+    <include name="data\JsonWriter.js" />
   </target>
   <target name="Widget Core" file="$output\package\widget-core.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
     <include name="widgets\ComponentMgr.js" />
@@ -440,7 +508,8 @@
   </target>
   <file name="widgets\Combo.js" path="widgets" />
   <target name="Prototype" file="$output\adapter\prototype\ext-prototype-adapter.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="core\Ext.js" />
+    <include name="core\core\Ext.js" />
+    <include name="core\Ext-more.js" />
     <include name="adapter\prototype-bridge.js" />
   </target>
   <file name="widgets\form\Validators.js" path="widgets\form" />
@@ -449,9 +518,12 @@
   <file name="experimental\prototype-bridge.js" path="experimental" />
   <file name="experimental\yui-bridge.js" path="experimental" />
   <file name="widgets\Frame.js" path="widgets" />
+  <file name="widgets\.DS_Store" path="widgets" />
   <file name="widgets\layout\AutoLayout.js" path="widgets\layout" />
   <file name="widgets\TabPanel2.js" path="widgets" />
   <file name="widgets\panel\ButtonPanel.js" path="widgets\panel" />
+  <file name="widgets\._.DS_Store" path="widgets" />
+  <file name="._.DS_Store" path="" />
   <file name="experimental\Ajax.js" path="experimental" />
   <file name="experimental\Anims.js" path="experimental" />
   <file name="experimental\BasicDialog2.js" path="experimental" />
@@ -488,8 +560,19 @@
   <file name="widgets\layout\ReaderLayout.js" path="widgets\layout" />
   <file name="widgets\layout\SplitLayoutRegion.js" path="widgets\layout" />
   <target name="Ext Base" file="$output\adapter\ext\ext-base.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
-    <include name="core\Ext.js" />
-    <include name="adapter\ext-base.js" />
+    <include name="core\core\Ext.js" />
+    <include name="core\Ext-more.js" />
+    <include name="util\core\TaskMgr.js" />
+    <include name="adapter\core\ext-base-begin.js" />
+    <include name="adapter\core\ext-base-dom.js" />
+    <include name="adapter\ext-base-dom-more.js" />
+    <include name="adapter\core\ext-base-event.js" />
+    <include name="adapter\core\ext-base-ajax.js" />
+    <include name="adapter\core\ext-base-region.js" />
+    <include name="adapter\core\ext-base-point.js" />
+    <include name="adapter\core\ext-base-anim.js" />
+    <include name="adapter\core\ext-base-anim-extra.js" />
+    <include name="adapter\core\ext-base-end.js" />
   </target>
   <file name="widgets\form\Editor.js" path="widgets\form" />
   <file name="experimental\ext-base.js" path="experimental" />
@@ -511,6 +594,7 @@
   <file name="widgets\layout\AbsoluteForm.js" path="widgets\layout" />
   <file name="widgets\layout\AbsoluteFormLayout.js" path="widgets\layout" />
   <file name="widgets\grid\GridColumn.js" path="widgets\grid" />
+  <file name="widgets\chart\Base.js" path="widgets\chart" />
   <file name="legacy\layout\BasicLayoutRegion.js" path="legacy\layout" />
   <file name="legacy\layout\BorderLayout.js" path="legacy\layout" />
   <file name="legacy\layout\BorderLayoutRegions.js" path="legacy\layout" />
@@ -526,27 +610,65 @@
   <file name="legacy\JsonView.js" path="legacy" />
   <file name="legacy\MasterTemplate.js" path="legacy" />
   <file name="legacy\View.js" path="legacy" />
-  <file name="widgets\grid\Column.js" path="widgets\grid" />
-  <file name="locale\ext-lang-en_UK.js" path="locale" />
+  <file name="widgets\chart\FlashPanel.js" path="widgets\chart" />
+  <file name="widgets\ListView.js" path="widgets" />
   <file name="ext.jsb" path="" />
-  <file name="adapter\ext-base.js" path="adapter" />
+  <file name="license.txt" path="" />
+  <file name="data\Direct.js" path="data" />
+  <file name="data\DirectProvider.js" path="data" />
+  <file name="data\SimpleStore.js" path="data" />
+  <file name="adapter\core\ext-base-begin.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-dom.js" path="adapter\core" />
+  <file name="adapter\ext-base-dom-more.js" path="adapter" />
+  <file name="adapter\core\ext-base-event.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-ajax.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-region.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-point.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-anim.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-anim-extra.js" path="adapter\core" />
+  <file name="adapter\core\ext-base-end.js" path="adapter\core" />
   <file name="adapter\jquery-bridge.js" path="adapter" />
   <file name="adapter\prototype-bridge.js" path="adapter" />
   <file name="adapter\yui-bridge.js" path="adapter" />
-  <file name="core\CompositeElement.js" path="core" />
-  <file name="core\DomHelper.js" path="core" />
-  <file name="core\DomQuery.js" path="core" />
-  <file name="core\Element.js" path="core" />
-  <file name="core\EventManager.js" path="core" />
-  <file name="core\Ext.js" path="core" />
-  <file name="core\Fx.js" path="core" />
-  <file name="core\Template.js" path="core" />
-  <file name="core\UpdateManager.js" path="core" />
+  <file name="core\core\CompositeElementLite.js" path="core\core" />
+  <file name="core\CompositeElementLite-more.js" path="core\" />
+  <file name="core\CompositeElement.js" path="core\" />
+  <file name="core\core\DomHelper.js" path="core\core" />
+  <file name="core\DomHelper-more.js" path="core" />
+  <file name="core\core\DomQuery.js" path="core" />
+  <file name="core\core\Element.js" path="core\core" />
+  <file name="core\Element-more.js" path="core" />
+  <file name="core\Element.alignment.js" path="core" />
+  <file name="core\core\Element.traversal.js" path="core\core" />
+  <file name="core\core\Element.insertion.js" path="core\core" />
+  <file name="core\Element.insertion-more.js" path="core" />
+  <file name="core\core\Element.style.js" path="core\core" />
+  <file name="core\Element.style-more.js" path="core" />
+  <file name="core\core\Element.position.js" path="core\core" />
+  <file name="core\Element.position-more.js" path="core" />
+  <file name="core\core\Element.scroll.js" path="core\core" />
+  <file name="core\Element.scroll-more.js" path="core" />
+  <file name="core\core\Element.fx.js" path="core\core" />
+  <file name="core\Element.fx-more.js" path="core" />
+  <file name="core\Element.dd.js" path="core" />
+  <file name="core\Element.legacy.js" path="core" />
+  <file name="core\Element.keys.js" path="core" />
+  <file name="core\core\EventManager.js" path="core\core" />
+  <file name="core\EventManager-more.js" path="core" />
+  <file name="core\core\Ext.js" path="core\core" />
+  <file name="core\Ext-more.js" path="core" />
+  <file name="core\core\Fx.js" path="core" />
+  <file name="core\core\Template.js" path="core\core" />
+  <file name="core\Template-more.js" path="core" />
   <file name="data\ArrayReader.js" path="data" />
-  <file name="data\Connection.js" path="data" />
+  <file name="data\ArrayStore.js" path="data" />
+  <file name="data\core\Connection.js" path="data\core" />
+  <file name="data\Connection-more.js" path="data" />
   <file name="data\DataField.js" path="data" />
   <file name="data\DataProxy.js" path="data" />
   <file name="data\DataReader.js" path="data" />
+  <file name="data\DirectProxy.js" path="data" />
+  <file name="data\DirectStore.js" path="data" />
   <file name="data\GroupingStore.js" path="data" />
   <file name="data\HttpProxy.js" path="data" />
   <file name="data\JsonReader.js" path="data" />
@@ -554,12 +676,12 @@
   <file name="data\MemoryProxy.js" path="data" />
   <file name="data\Record.js" path="data" />
   <file name="data\ScriptTagProxy.js" path="data" />
-  <file name="data\SimpleStore.js" path="data" />
   <file name="data\SortTypes.js" path="data" />
   <file name="data\Store.js" path="data" />
   <file name="data\StoreMgr.js" path="data" />
   <file name="data\Tree.js" path="data" />
   <file name="data\XmlReader.js" path="data" />
+  <file name="data\XmlStore.js" path="data" />
   <file name="dd\DDCore.js" path="dd" />
   <file name="dd\DragSource.js" path="dd" />
   <file name="dd\DragTracker.js" path="dd" />
@@ -569,6 +691,13 @@
   <file name="dd\Registry.js" path="dd" />
   <file name="dd\ScrollManager.js" path="dd" />
   <file name="dd\StatusProxy.js" path="dd" />
+  <file name="direct\Direct.js" path="direct" />
+  <file name="direct\Event.js" path="direct" />
+  <file name="direct\JsonProvider.js" path="direct" />
+  <file name="direct\PollingProvider.js" path="direct" />
+  <file name="direct\Provider.js" path="direct" />
+  <file name="direct\RemotingProvider.js" path="direct" />
+  <file name="direct\Transaction.js" path="direct" />
   <file name="locale\ext-lang-af.js" path="locale" />
   <file name="locale\ext-lang-bg.js" path="locale" />
   <file name="locale\ext-lang-ca.js" path="locale" />
@@ -600,6 +729,7 @@
   <file name="locale\ext-lang-pl.js" path="locale" />
   <file name="locale\ext-lang-pt.js" path="locale" />
   <file name="locale\ext-lang-pt_BR.js" path="locale" />
+  <file name="locale\ext-lang-pt_PT.js" path="locale" />
   <file name="locale\ext-lang-ro.js" path="locale" />
   <file name="locale\ext-lang-ru.js" path="locale" />
   <file name="locale\ext-lang-sk.js" path="locale" />
@@ -617,25 +747,34 @@
   <file name="state\Provider.js" path="state" />
   <file name="state\StateManager.js" path="state" />
   <file name="util\ClickRepeater.js" path="util" />
+  <file name="util\Cookies.js" path="util" />
   <file name="util\CSS.js" path="util" />
   <file name="util\Date.js" path="util" />
-  <file name="util\DelayedTask.js" path="util" />
+  <file name="util\core\DelayedTask.js" path="util\core" />
   <file name="util\Format.js" path="util" />
   <file name="util\History.js" path="util" />
-  <file name="util\JSON.js" path="util" />
+  <file name="util\core\JSON.js" path="util" />
   <file name="util\KeyMap.js" path="util" />
   <file name="util\KeyNav.js" path="util" />
   <file name="util\MixedCollection.js" path="util" />
-  <file name="util\Observable.js" path="util" />
-  <file name="util\TaskMgr.js" path="util" />
+  <file name="util\core\Observable.js" path="util\core" />
+  <file name="util\Observable-more.js" path="util" />
+  <file name="util\core\TaskMgr.js" path="util\core" />
+  <file name="util\TaskMgr-more.js" path="util" />
   <file name="util\TextMetrics.js" path="util" />
   <file name="util\XTemplate.js" path="util" />
+  <file name="util\UpdateManager.js" path="util" />
+  <file name="widgets\chart\Chart.js" path="widgets\chart" />
+  <file name="widgets\chart\EventProxy.js" path="widgets\chart" />
+  <file name="widgets\chart\FlashComponent.js" path="widgets\chart" />
+  <file name="widgets\chart\swfobject.js" path="widgets\chart" />
   <file name="widgets\form\Action.js" path="widgets\form" />
   <file name="widgets\form\BasicForm.js" path="widgets\form" />
   <file name="widgets\form\Checkbox.js" path="widgets\form" />
   <file name="widgets\form\CheckboxGroup.js" path="widgets\form" />
   <file name="widgets\form\Combo.js" path="widgets\form" />
   <file name="widgets\form\DateField.js" path="widgets\form" />
+  <file name="widgets\form\DisplayField.js" path="widgets\form" />
   <file name="widgets\form\Field.js" path="widgets\form" />
   <file name="widgets\form\FieldSet.js" path="widgets\form" />
   <file name="widgets\form\Form.js" path="widgets\form" />
@@ -653,6 +792,7 @@
   <file name="widgets\grid\AbstractSelectionModel.js" path="widgets\grid" />
   <file name="widgets\grid\CellSelectionModel.js" path="widgets\grid" />
   <file name="widgets\grid\CheckboxSelectionModel.js" path="widgets\grid" />
+  <file name="widgets\grid\Column.js" path="widgets\grid" />
   <file name="widgets\grid\ColumnDD.js" path="widgets\grid" />
   <file name="widgets\grid\ColumnModel.js" path="widgets\grid" />
   <file name="widgets\grid\ColumnSplitDD.js" path="widgets\grid" />
@@ -669,12 +809,16 @@
   <file name="widgets\layout\AccordionLayout.js" path="widgets\layout" />
   <file name="widgets\layout\AnchorLayout.js" path="widgets\layout" />
   <file name="widgets\layout\BorderLayout.js" path="widgets\layout" />
+  <file name="widgets\layout\BoxLayout.js" path="widgets\layout" />
   <file name="widgets\layout\CardLayout.js" path="widgets\layout" />
   <file name="widgets\layout\ColumnLayout.js" path="widgets\layout" />
   <file name="widgets\layout\ContainerLayout.js" path="widgets\layout" />
   <file name="widgets\layout\FitLayout.js" path="widgets\layout" />
   <file name="widgets\layout\FormLayout.js" path="widgets\layout" />
   <file name="widgets\layout\TableLayout.js" path="widgets\layout" />
+  <file name="widgets\list\ColumnResizer.js" path="widgets\list" />
+  <file name="widgets\list\ListView.js" path="widgets\list" />
+  <file name="widgets\list\Sorter.js" path="widgets\list" />
   <file name="widgets\menu\Adapter.js" path="widgets\menu" />
   <file name="widgets\menu\BaseItem.js" path="widgets\menu" />
   <file name="widgets\menu\CheckItem.js" path="widgets\menu" />
@@ -726,11 +870,13 @@
   <file name="widgets\Slider.js" path="widgets" />
   <file name="widgets\SplitBar.js" path="widgets" />
   <file name="widgets\SplitButton.js" path="widgets" />
-  <file name="widgets\StatusBar.js" path="widgets" />
   <file name="widgets\TabPanel.js" path="widgets" />
   <file name="widgets\Toolbar.js" path="widgets" />
   <file name="widgets\Viewport.js" path="widgets" />
   <file name="widgets\Window.js" path="widgets" />
   <file name="widgets\WindowManager.js" path="widgets" />
   <file name="debug.js" path="" />
+  <file name="data\DataWriter.js" path="data" />
+  <file name="data\JsonWriter.js" path="data" />
+  <file name="debug.css" path="" />
 </project>

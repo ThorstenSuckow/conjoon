@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,18 +12,28 @@
  * A base editor field that handles displaying/hiding on demand and has some built-in sizing and event handling logic.
  * @constructor
  * Create a new Editor
- * @param {Ext.form.Field} field The Field object (or descendant)
  * @param {Object} config The config object
+ * @xtype editor
  */
 Ext.Editor = function(field, config){
-    this.field = field;
+    if(field.field){
+        this.field = Ext.create(field.field, 'textfield');
+        config = Ext.apply({}, field); // copy so we don't disturb original config
+        delete config.field;
+    }else{
+        this.field = field;
+    }
     Ext.Editor.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Ext.Editor, Ext.Component, {
     /**
+    * @cfg {Ext.form.Field} field
+    * The Field object (or descendant) or config object for field
+    */
+    /**
      * @cfg {Boolean/String} autoSize
-     * True for the editor to automatically adopt the size of the underlying field, "width" to adopt the width only,
+     * True for the editor to automatically adopt the size of the element being edited, "width" to adopt the width only,
      * or "height" to adopt the height only (defaults to false)
      */
     /**
@@ -141,10 +151,13 @@ Ext.extend(Ext.Editor, Ext.Component, {
             cls: "x-editor",
             parentEl : ct,
             shim : this.shim,
-            shadowOffset:4,
+            shadowOffset: this.shadowOffset || 4,
             id: this.id,
             constrain: this.constrain
         });
+        if(this.zIndex){
+            this.el.setZIndex(this.zIndex);
+        }
         this.el.setStyle("overflow", Ext.isGecko ? "auto" : "hidden");
         if(this.field.msgTarget != 'title'){
             this.field.msgTarget = 'qtip';
@@ -154,14 +167,14 @@ Ext.extend(Ext.Editor, Ext.Component, {
         if(Ext.isGecko){
             this.field.el.dom.setAttribute('autocomplete', 'off');
         }
-        this.field.on("specialkey", this.onSpecialKey, this);
+        this.mon(this.field, "specialkey", this.onSpecialKey, this);
         if(this.swallowKeys){
             this.field.el.swallowEvent(['keydown','keypress']);
         }
         this.field.show();
-        this.field.on("blur", this.onBlur, this);
+        this.mon(this.field, "blur", this.onBlur, this);
         if(this.field.grow){
-            this.field.on("autosize", this.el.sync,  this.el, {delay:1});
+        	this.mon(this.field, "autosize", this.el.sync,  this.el, {delay:1});
         }
     },
 
@@ -233,10 +246,10 @@ Ext.extend(Ext.Editor, Ext.Component, {
         delete this.field.lastSize;
         this.field.setSize(w, h);
         if(this.el){
-	        if(Ext.isGecko2 || Ext.isOpera){
-	            // prevent layer scrollbars
-	            this.el.setSize(w, h);
-	        }
+            if(Ext.isGecko2 || Ext.isOpera){
+                // prevent layer scrollbars
+                this.el.setSize(w, h);
+            }
             this.el.sync();
         }
     },

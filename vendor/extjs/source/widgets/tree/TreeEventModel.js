@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -16,8 +16,8 @@ Ext.tree.TreeEventModel.prototype = {
         var el = this.tree.getTreeEl();
         el.on('click', this.delegateClick, this);
         if(this.tree.trackMouseOver !== false){
-            el.on('mouseover', this.delegateOver, this);
-            el.on('mouseout', this.delegateOut, this);
+            this.tree.innerCt.on('mouseover', this.delegateOver, this);
+            this.tree.innerCt.on('mouseout', this.delegateOut, this);
         }
         el.on('dblclick', this.delegateDblClick, this);
         el.on('contextmenu', this.delegateContextMenu, this);
@@ -62,6 +62,10 @@ Ext.tree.TreeEventModel.prototype = {
         if(!this.beforeEvent(e)){
             return;
         }
+        if(Ext.isGecko && !this.trackingDoc){ // prevent hanging in FF
+            Ext.getBody().on('mouseover', this.trackExit, this);
+            this.trackingDoc = true;
+        }
         if(this.lastEcOver){ // prevent hung highlight
             this.onIconOut(e, this.lastEcOver);
             delete this.lastEcOver;
@@ -72,6 +76,15 @@ Ext.tree.TreeEventModel.prototype = {
         }
         if(t = this.getNodeTarget(e)){
             this.onNodeOver(e, this.getNode(e));
+        }
+    },
+
+    trackExit : function(e){
+        if(this.lastOverNode && !e.within(this.lastOverNode.ui.getEl())){
+            this.onNodeOut(e, this.lastOverNode);
+            delete this.lastOverNode;
+            Ext.getBody().un('mouseover', this.trackExit, this);
+            this.trackingDoc = false;
         }
     },
 
@@ -108,6 +121,7 @@ Ext.tree.TreeEventModel.prototype = {
     },
 
     onNodeOver : function(e, node){
+        this.lastOverNode = node;
         node.ui.onOver(e);
     },
 

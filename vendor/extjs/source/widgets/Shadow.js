@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -70,14 +70,15 @@ Ext.Shadow = function(config){
 Ext.Shadow.prototype = {
     /**
      * @cfg {String} mode
-     * The shadow display mode.  Supports the following options:<br />
-     * sides: Shadow displays on both sides and bottom only<br />
-     * frame: Shadow displays equally on all four sides<br />
-     * drop: Traditional bottom-right drop shadow (default)
+     * The shadow display mode.  Supports the following options:<div class="mdetail-params"><ul>
+     * <li><b><tt>sides</tt></b> : Shadow displays on both sides and bottom only</li>
+     * <li><b><tt>frame</tt></b> : Shadow displays equally on all four sides</li>
+     * <li><b><tt>drop</tt></b> : Traditional bottom-right drop shadow</li>
+     * </ul></div>
      */
     /**
      * @cfg {String} offset
-     * The number of pixels to offset the shadow from the element (defaults to 4)
+     * The number of pixels to offset the shadow from the element (defaults to <tt>4</tt>)
      */
     offset: 4,
 

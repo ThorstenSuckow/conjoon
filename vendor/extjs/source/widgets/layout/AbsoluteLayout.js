@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,48 +9,72 @@
 /**
  * @class Ext.layout.AbsoluteLayout
  * @extends Ext.layout.AnchorLayout
- * <p>Inherits the anchoring of {@link Ext.layout.AnchorLayout} and adds the ability for x/y positioning using the
- * standard x and y component config options.</p>
+ * <p>This is a layout that inherits the anchoring of <b>{@link Ext.layout.AnchorLayout}</b> and adds the
+ * ability for x/y positioning using the standard x and y component config options.</p>
+ * <p>This class is intended to be extended or created via the <tt><b>{@link Ext.Container#layout layout}</b></tt>
+ * configuration property.  See <tt><b>{@link Ext.Container#layout}</b></tt> for additional details.</p>
+ * <p>Example usage:</p>
+ * <pre><code>
+var form = new Ext.form.FormPanel({
+    title: 'Absolute Layout',
+    layout:'absolute',
+    layoutConfig: {
+        // layout-specific configs go here
+        extraCls: 'x-abs-layout-item',
+    },
+    baseCls: 'x-plain',
+    url:'save-form.php',
+    defaultType: 'textfield',
+    items: [{
+        x: 0,
+        y: 5,
+        xtype:'label',
+        text: 'Send To:'
+    },{
+        x: 60,
+        y: 0,
+        name: 'to',
+        anchor:'100%'  // anchor width by percentage
+    },{
+        x: 0,
+        y: 35,
+        xtype:'label',
+        text: 'Subject:'
+    },{
+        x: 60,
+        y: 30,
+        name: 'subject',
+        anchor: '100%'  // anchor width by percentage
+    },{
+        x:0,
+        y: 60,
+        xtype: 'textarea',
+        name: 'msg',
+        anchor: '100% 100%'  // anchor width and height
+    }]
+});
+</code></pre>
  */
 Ext.layout.AbsoluteLayout = Ext.extend(Ext.layout.AnchorLayout, {
-    /**
-     * @cfg {String} extraCls
-     * An optional extra CSS class that will be added to the container (defaults to 'x-abs-layout-item').  This can be useful for
-     * adding customized styles to the container or any of its children using standard CSS rules.
-     */
+
     extraCls: 'x-abs-layout-item',
-    isForm: false,
-    // private
-    setContainer : function(ct){
-        Ext.layout.AbsoluteLayout.superclass.setContainer.call(this, ct);
-        if(ct.isXType('form')){
-            this.isForm = true;
-        }
-    },
 
     onLayout : function(ct, target){
-        if(this.isForm){ ct.body.position(); } else { target.position(); }
+        target.position();
+        this.paddingLeft = target.getPadding('l');
+        this.paddingTop = target.getPadding('t');
+
         Ext.layout.AbsoluteLayout.superclass.onLayout.call(this, ct, target);
     },
 
     // private
-    getAnchorViewSize : function(ct, target){
-        return this.isForm ? ct.body.getStyleSize() : Ext.layout.AbsoluteLayout.superclass.getAnchorViewSize.call(this, ct, target);
-    },
-
-    // private
-    isValidParent : function(c, target){
-        return this.isForm ? true : Ext.layout.AbsoluteLayout.superclass.isValidParent.call(this, c, target);
-    },
-
-    // private
     adjustWidthAnchor : function(value, comp){
-        return value ? value - comp.getPosition(true)[0] : value;
+        return value ? value - comp.getPosition(true)[0] + this.paddingLeft : value;
     },
 
     // private
     adjustHeightAnchor : function(value, comp){
-        return  value ? value - comp.getPosition(true)[1] : value;
+        return  value ? value - comp.getPosition(true)[1] + this.paddingTop : value;
     }
     /**
      * @property activeItem

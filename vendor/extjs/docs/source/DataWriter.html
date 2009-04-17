@@ -1,0 +1,122 @@
+<html>
+<head>
+  <title>The source code</title>
+    <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+</head>
+<body  onload="prettyPrint();">
+    <pre class="prettyprint lang-js"><div id="cls-Ext.data.DataWriter"></div>/**
+ * @class Ext.data.DataWriter
+ * Abstract base class for writing structured data from a data source and converting
+ * it into a JSON-string containing {@link Ext.data.Record} objects and metadata for use
+ * by an {@link Ext.data.Store}.  This class is intended to be extended and should not
+ * be created directly. For existing implementations, see {@link Ext.data.JsonWriter},
+ * @constructor Create a new DataWriter
+ * @param {Object} meta Metadata configuration options (implementation-specific)
+ * @param {Object} recordType Either an Array of field definition objects as specified
+ * in {@link Ext.data.Record#create}, or an {@link Ext.data.Record} object created
+ * using {@link Ext.data.Record#create}.
+ */
+Ext.data.DataWriter = function(config){
+    <div id="prop-Ext.data.DataWriter-meta"></div>/**
+     * This DataWriter's configured metadata as passed to the constructor.
+     * @type Mixed
+     * @property meta
+     */
+    Ext.apply(this, config);
+};
+
+Ext.data.DataWriter.prototype = {
+
+	meta : {},
+
+	<div id="cfg-Ext.data.DataWriter-dataProperty"></div>/**
+	 * @cfg {String} dataProperty The property-name in request-params where data will be written
+	 * (defaults to <tt>'data'</tt>).
+	 */
+	dataProperty : 'data',
+	<div id="cfg-Ext.data.DataWriter-writeAllFields"></div>/**
+	 * @cfg {Boolean} writeAllFields
+	 * <tt>true</tt> by default to have DataWriter return ALL fields of a modified
+	 * record -- not just those that changed.
+	 * <tt>false</tt> to have DataWriter only request modified fields from a record.
+	 */
+	writeAllFields : true,
+
+	<div id="method-Ext.data.DataWriter-write"></div>/**
+     * This method is only used by a DataProxy when writing to a remote server.
+     * @param {Array/Record} An array of records to save or a single Record
+     * @return {Mixed} The formatted data ready to send to server.
+     */
+    write : function(p, rs) {
+		if (Ext.isArray(rs)) {
+			var data = [];
+			for (var n=0,len=rs.length;n<len;n++) {
+				data.push(this.writeRecord(rs[n]));
+			}
+			return data;
+		}
+		else if (rs instanceof Ext.data.Record) {
+			return this.writeRecord(rs);
+		}
+		return false;
+    },
+
+	save : function(p, rs) {
+		if (Ext.isArray(rs)) {
+			var data = [];
+			var ids = [];
+			for (var n=0,len=rs.length;n<len;n++) {
+				ids.push(rs[n].id);
+				data.push(this.saveRecord(rs[n]));
+			}
+			p[this.meta.idProperty] = ids;
+			p[this.dataProperty] = data;
+		}
+		else if (rs instanceof Ext.data.Record) {
+			p[this.meta.idProperty] = rs.id;
+			p[this.dataProperty] = this.saveRecord(rs);
+		}
+		return false;
+	},
+
+	create : function(p, rec) {
+		return p[this.dataProperty] = this.createRecord(rec);
+	},
+
+	<div id="method-Ext.data.DataWriter-destroy"></div>/**
+	 * destroy
+	 * @param {Object} rec
+	 */
+	destroy : function(p, rs) {
+		if (Ext.isArray(rs)) {
+			var data = [];
+			var ids = [];
+			for (var i=0,len=rs.length;i<len;i++) {
+				data.push(this.destroyRecord(rs[i]));
+			}
+			p[this.dataProperty] = data;
+		} else if (rs instanceof Ext.data.Record) {
+			p[this.dataProperty] = this.destroyRecord(rs);
+		}
+		return false;
+	},
+
+	<div id="method-Ext.data.DataWriter-toHash"></div>/**
+	 * toHash
+	 * Converts a Record to a hash
+	 * @param {Object}
+	 */
+	toHash : function(rec) {
+		var map = rec.fields.map;
+		var data = {};
+		var raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data;
+		for (var k in raw) {
+			data[(map[k].mapping) ? map[k].mapping : map[k].name] = raw[k];
+		}
+		data[this.meta.idProperty] = rec.id;
+		return data;
+	}
+};</pre>    
+</body>
+</html>

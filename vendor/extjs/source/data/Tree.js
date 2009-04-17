@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -178,7 +178,7 @@ Ext.data.Node = function(attributes){
      */
     this.id = this.attributes.id;
     if(!this.id){
-        this.id = Ext.id(null, "ynode-");
+        this.id = Ext.id(null, "xnode-");
         this.attributes.id = this.id;
     }
     /**
@@ -513,7 +513,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
     },
 
     /**
-     * Removes this node from it's parent
+     * Removes this node from its parent
      * @return {Node} this
      */
     remove : function(){
@@ -587,7 +587,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
 
     // private
     setOwnerTree : function(tree){
-        // if it's move, we need to update everyone
+        // if it is a move, we need to update everyone
         if(tree != this.ownerTree){
             if(this.ownerTree){
                 this.ownerTree.unregisterNode(this);
@@ -602,6 +602,27 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             }
         }
     },
+    
+    /**
+     * Changes the id of this node.
+     * @param {String} id The new id for the node.
+     */
+    setId: function(id){
+        if(id !== this.id){
+            var t = this.ownerTree;
+            if(t){
+                t.unregisterNode(this);
+            }
+            this.id = id;
+            if(t){
+                t.registerNode(this);
+            }
+            this.onIdChange(id);
+        }
+    },
+    
+    // private
+    onIdChange: Ext.emptyFn,
 
     /**
      * Returns the path for this node. The path can be used to expand or select this node programmatically.
@@ -658,7 +679,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
     },
 
     /**
-     * Iterates the child nodes of this node, calling the specified function with each node. The scope (<i>this</i>) of
+     * Interates the child nodes of this node, calling the specified function with each node. The scope (<i>this</i>) of
      * function call will be the scope provided or the current node. The arguments to the function
      * will be the args provided or the current node. If the function returns false at any point,
      * the iteration stops.

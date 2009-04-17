@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -22,6 +22,7 @@ cp.on('select', function(palette, selColor){
  * @constructor
  * Create a new ColorPalette
  * @param {Object} config The config object
+ * @xtype colorpalette
  */
 Ext.ColorPalette = function(config){
     Ext.ColorPalette.superclass.constructor.call(this, config);
@@ -100,9 +101,9 @@ cp.colors = ["000000", "993300", "333300"];
         t.overwrite(el, this.colors);
         container.dom.insertBefore(el, position);
         this.el = Ext.get(el);
-        this.el.on(this.clickEvent, this.handleClick,  this, {delegate: "a"});
+        this.mon(this.el, this.clickEvent, this.handleClick, this, {delegate: 'a'});
         if(this.clickEvent != 'click'){
-            this.el.on('click', Ext.emptyFn,  this, {delegate: "a", preventDefault:true});
+        	this.mon(this.el, 'click', Ext.emptyFn, this, {delegate: 'a', preventDefault: true});
         }
     },
 

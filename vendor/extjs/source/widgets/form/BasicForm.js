@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,7 +13,8 @@
  * input field management, validation, submission, and form loading services.</p>
  * <p>By default, Ext Forms are submitted through Ajax, using an instance of {@link Ext.form.Action.Submit}.
  * To enable normal browser submission of an Ext Form, use the {@link #standardSubmit} config option.</p>
- * <p><h3>File Uploads</h3>{@link #fileUpload File uploads} are not performed using Ajax submission, that
+ * <p><b><u>File Uploads</u></b></p>
+ * <p>{@link #fileUpload File uploads} are not performed using Ajax submission, that
  * is they are <b>not</b> performed using XMLHttpRequests. Instead the form is submitted in the standard
  * manner with the DOM <tt>&lt;form></tt> element temporarily modified to have its
  * <a href="http://www.w3.org/TR/REC-html40/present/frames.html#adef-target">target</a> set to refer
@@ -38,11 +39,12 @@
 Ext.form.BasicForm = function(el, config){
     Ext.apply(this, config);
     /*
-     * The Ext.form.Field items in this form.
+     * @property items
+     * A {@link Ext.util.MixedCollection MixedCollection) containing all the Ext.form.Fields in this form.
      * @type MixedCollection
      */
     this.items = new Ext.util.MixedCollection(false, function(o){
-        return o.id || (o.id = Ext.id());
+        return o.itemId || o.id || (o.id = Ext.id());
     });
     this.addEvents(
         /**
@@ -99,7 +101,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      */
     /**
      * @cfg {String} url
-     * The URL to use for form actions if one isn't supplied in the action options.
+     * The URL to use for form actions if one isn't supplied in the {@link #doAction action} options.
      */
     /**
      * @cfg {Boolean} fileUpload
@@ -125,7 +127,8 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      */
     /**
      * @cfg {Object} baseParams
-     * Parameters to pass with all requests. e.g. baseParams: {id: '123', foo: 'bar'}.
+     * <p>Parameters to pass with all requests. e.g. baseParams: {id: '123', foo: 'bar'}.</p>
+     * <p>Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.</p>
      */
     /**
      * @cfg {Number} timeout Timeout for form actions in seconds (default is 30 seconds).
@@ -136,17 +139,56 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     activeAction : null,
 
     /**
-     * @cfg {Boolean} trackResetOnLoad If set to true, form.reset() resets to the last loaded
-     * or setValues() data instead of when the form was first created.
+     * @cfg {Boolean} trackResetOnLoad If set to <tt>true</tt>, {@link #reset}() resets to the last loaded
+     * or {@link #setValues}() data instead of when the form was first created.  Defaults to <tt>false</tt>.
      */
     trackResetOnLoad : false,
 
     /**
      * @cfg {Boolean} standardSubmit If set to true, standard HTML form submits are used instead of XHR (Ajax) style
      * form submissions. (defaults to false)<br>
-     * <p><b>Note:</b> When using standardSubmit, any the options to {@link #submit} are
-     * ignored because Ext's Ajax infrastracture is bypassed. To pass extra parameters, you will need to create
-     * hidden fields within the form.</p>
+     * <p><b>Note:</b> When using standardSubmit, the options to {@link #submit} are ignored because Ext's
+     * Ajax infrastracture is bypassed. To pass extra parameters (baseParams and params), you will need to
+     * create hidden fields within the form.</p>
+     * <p>The url config option is also bypassed, so set the action as well:</p>
+     * <pre><code>
+PANEL.getForm().getEl().dom.action = 'URL'
+     * </code></pre>
+     * An example encapsulating the above:
+     * <pre><code>
+new Ext.FormPanel({
+    standardSubmit: true,
+    baseParams: {
+        foo: 'bar'
+    },
+    url: "myProcess.php",
+    items: [{
+        xtype: "textfield",
+        name: "userName"
+    }],
+    buttons: [{
+        text: "Save",
+        handler: function(){
+            var O = this.ownerCt;
+            if (O.getForm().isValid()) {
+                if (O.url) 
+                    O.getForm().getEl().dom.action = O.url;
+                if (O.baseParams) {
+                    for (i in O.baseParams) {
+                        O.add({
+                            xtype: "hidden",
+                            name: i,
+                            value: O.baseParams[i]
+                        })
+                    }
+                    O.doLayout();
+                }
+                O.getForm().submit();
+            }
+        }
+    }]
+});
+     * </code></pre>
      */
     /**
      * By default wait messages are displayed with Ext.MessageBox.wait. You can target a specific
@@ -205,7 +247,10 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Returns true if any fields in this form have changed since their original load.
+     * <p>Returns true if any fields in this form have changed from their original values.</p>
+     * <p>Note that if this BasicForm was configured with {@link #trackResetOnLoad} then the
+     * Fields' <i>original values</i> are updated when the values are loaded by {@link #setValues}
+     * or {@link #loadRecord}.</p>
      * @return Boolean
      */
     isDirty : function(){
@@ -229,31 +274,41 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      * All of the config options listed below are supported by both the submit
      * and load actions unless otherwise noted (custom actions could also accept
      * other config options):<ul>
-     * <li><b>url</b> : String<p style="margin-left:1em">The url for the action (defaults
-     * to the form's url.)</p></li>
-     * <li><b>method</b> : String<p style="margin-left:1em">The form method to use (defaults
+     * <li><b>url</b> : String<p class="sub-desc">The url for the action (defaults
+     * to the form's {@link #url}.)</p></li>
+     * <li><b>method</b> : String<p class="sub-desc">The form method to use (defaults
      * to the form's method, or POST if not defined)</p></li>
-     * <li><b>params</b> : String/Object<p style="margin-left:1em">The params to pass
-     * (defaults to the form's baseParams, or none if not defined)</p></li>
-     * <li><b>headers</b> : Object<p style="margin-left:1em">Request headers to set for the action
+     * <li><b>params</b> : String/Object<div class="sub-desc"><p>The params to pass
+     * (defaults to the form's baseParams, or none if not defined)</p>
+     * <p>Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.</p></div></li>
+     * <li><b>headers</b> : Object<p class="sub-desc">Request headers to set for the action
      * (defaults to the form's default headers)</p></li>
-     * <li><b>success</b> : Function<p style="margin-left:1em">The callback that will
-     * be invoked after a successful response.  The function is passed the following parameters:<ul>
-     * <li><code>form</code> : Ext.form.BasicForm<div class="sub-desc">The form that requested the action</div></li>
-     * <li><code>action</code> : Ext.form.Action<div class="sub-desc">The {@link Ext.form.Action Action} object which performed the operation. The {@link Ext.form.Action#result result}
-     * property of this object may be examined to perform custom postprocessing.</div></li>
+     * <li><b>success</b> : Function<p class="sub-desc">The callback that will
+     * be invoked after a successful response. The function is passed the following parameters:<ul>
+     * <li><tt>form</tt> : Ext.form.BasicForm<div class="sub-desc">The form that requested the action</div></li>
+     * <li><tt>action</tt> : The {@link Ext.form.Action Action} object which performed the operation.
+     * <div class="sub-desc">The action object contains these properties of interest:<ul>
+     * <li><tt>{@link Ext.form.Action#response response}</tt></li>
+     * <li><tt>{@link Ext.form.Action#result result}</tt> : interrogate for custom postprocessing</li>
+     * <li><tt>{@link Ext.form.Action#type type}</tt></li>
      * </ul></p></li>
-     * <li><b>failure</b> : Function<p style="margin-left:1em">The callback that will
-     * be invoked after a failed transaction attempt.  The function
-     * is passed the following parameters:<ul>
-     * <li><code>form</code> : Ext.form.BasicForm<div class="sub-desc">The form that requested the action</div></li>
-     * <li><code>action</code> : Ext.form.Action<div class="sub-desc">The {@link Ext.form.Action Action} object which performed the operation. If an Ajax
-     * error ocurred, the failure type will be in {@link Ext.form.Action#failureType failureType}. The {@link Ext.form.Action#result result}
-     * property of this object may be examined to perform custom postprocessing.</div></li>
-     * </ul></p></li>
-     * <li><b>scope</b> : Object<p style="margin-left:1em">The scope in which to call the
+     * <li><b>failure</b> : Function
+     * <div class="sub-desc">
+     * <p>The callback that will be invoked after a failed transaction attempt. The function is
+     * passed the following parameters:</p><ul>
+     * <li><tt>form</tt> : The {@link Ext.form.BasicForm} that requested the action. 
+     * <div class="sub-desc"></div></li>
+     * <li><tt>action</tt> : The {@link Ext.form.Action Action} object which performed the operation.
+     * <div class="sub-desc">The action object contains these properties of interest:<ul>
+     * <li><tt>{@link Ext.form.Action#failureType failureType}</tt></li>
+     * <li><tt>{@link Ext.form.Action#response response}</tt></li>
+     * <li><tt>{@link Ext.form.Action#result result}</tt> : interrogate for custom postprocessing</li>
+     * <li><tt>{@link Ext.form.Action#type type}</tt></li>
+     * </ul></div></li></ul>
+     * </div></li>
+     * <li><b>scope</b> : Object<p class="sub-desc">The scope in which to call the
      * callback functions (The <tt>this</tt> reference for the callback functions).</p></li>
-     * <li><b>clientValidation</b> : Boolean<p style="margin-left:1em">Submit Action only.
+     * <li><b>clientValidation</b> : Boolean<p class="sub-desc">Submit Action only.
      * Determines whether a Form's fields are validated in a final call to
      * {@link Ext.form.BasicForm#isValid isValid} prior to submission. Set to <tt>false</tt>
      * to prevent this. If undefined, pre-submission field validation is performed.</p></li></ul>
@@ -271,7 +326,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Shortcut to do a submit action.
+     * Shortcut to {@link #doAction do} a {@link Ext.form.Action.Submit submit action}.
      * @param {Object} options The options to pass to the action (see {@link #doAction} for details).<br>
      * <p><b>Note:</b> this is ignored when using the {@link #standardSubmit} option.</p>
      * <p>The following code:</p><pre><code>
@@ -325,7 +380,7 @@ myFormPanel.getForm().submit({
     },
 
     /**
-     * Shortcut to do a load action.
+     * Shortcut to {@link #doAction do} a {@link Ext.form.Action.Load load action}.
      * @param {Object} options The options to pass to the action (see {@link #doAction} for details)
      * @return {BasicForm} this
      */
@@ -335,7 +390,7 @@ myFormPanel.getForm().submit({
     },
 
     /**
-     * Persists the values in this form into the passed Ext.data.Record object in a beginEdit/endEdit block.
+     * Persists the values in this form into the passed {@link Ext.data.Record} object in a beginEdit/endEdit block.
      * @param {Record} record The record to edit
      * @return {BasicForm} this
      */
@@ -353,7 +408,9 @@ myFormPanel.getForm().submit({
     },
 
     /**
-     * Loads an Ext.data.Record into this form.
+     * Loads an {@link Ext.data.Record} into this form by calling {@link #setValues} with the
+     * {@link Ext.data.Record#data record data}.
+     * See also {@link #trackResetOnLoad}.
      * @param {Record} record The record to load
      * @return {BasicForm} this
      */
@@ -404,13 +461,14 @@ myFormPanel.getForm().submit({
     },
 
     /**
-     * Find a Ext.form.Field in this form by id, dataIndex, name or hiddenName.
-     * @param {String} id The value to search for
+     * Find a {@link Ext.form.Field} in this form.
+     * @param {String} id The value to search for (specify either a {@link Ext.Component#id id},
+     * {@link Ext.grid.Column#dataIndex dataIndex}, {@link Ext.form.Field#getName name or hiddenName}).
      * @return Field
      */
     findField : function(id){
         var field = this.items.get(id);
-        if(!field){
+        if(!Ext.isObject(field)){
             this.items.each(function(f){
                 if(f.isFormField && (f.dataIndex == id || f.id == id || f.getName() == id)){
                     field = f;
@@ -439,7 +497,7 @@ myFormPanel.getForm().submit({
         }else{
             var field, id;
             for(id in errors){
-                if(typeof errors[id] != 'function' && (field = this.findField(id))){
+                if(!Ext.isFunction(errors[id]) && (field = this.findField(id))){
                     field.markInvalid(errors[id]);
                 }
             }
@@ -476,7 +534,7 @@ myFormPanel.getForm().submit({
         }else{ // object hash
             var field, id;
             for(id in values){
-                if(typeof values[id] != 'function' && (field = this.findField(id))){
+                if(!Ext.isFunction(values[id]) && (field = this.findField(id))){
                     field.setValue(values[id]);
                     if(this.trackResetOnLoad){
                         field.originalValue = field.getValue();
@@ -490,11 +548,10 @@ myFormPanel.getForm().submit({
     /**
      * <p>Returns the fields in this form as an object with key/value pairs as they would be submitted using a standard form submit.
      * If multiple fields exist with the same name they are returned as an array.</p>
-     *
      * <p><b>Note:</b> The values are collected from all enabled HTML input elements within the form, <u>not</u> from
-     * the Ext Field objects. This means that all returned values are Strings (or Arrays of Strings) and that the the
-     * value can potentionally be the emptyText of a field.</p>
-     * @param {Boolean} asString (optional) false to return the values as an object (defaults to returning as a string)
+     * the Ext Field objects. This means that all returned values are Strings (or Arrays of Strings) and that the
+     * value can potentially be the emptyText of a field.</p>
+     * @param {Boolean} asString (optional) Pass true to return the values as a string. (defaults to false, returning an Object)
      * @return {String/Object}
      */
     getValues : function(asString){
@@ -503,6 +560,14 @@ myFormPanel.getForm().submit({
             return fs;
         }
         return Ext.urlDecode(fs);
+    },
+
+    getFieldValues : function(){
+        var o = {};
+        this.items.each(function(f){
+           o[f.getName()] = f.getValue();
+        });
+        return o;
     },
 
     /**
@@ -590,6 +655,16 @@ myFormPanel.getForm().submit({
     applyIfToFields : function(o){
         this.items.each(function(f){
            Ext.applyIf(f, o);
+        });
+        return this;
+    },
+
+    callFieldMethod : function(fnName, args){
+        args = args || [];
+        this.items.each(function(f){
+            if(Ext.isFunction(f[fnName])){
+                f[fnName].apply(f, args);
+            }
         });
         return this;
     }

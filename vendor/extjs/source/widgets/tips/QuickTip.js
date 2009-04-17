@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -33,7 +33,8 @@ Ext.QuickTip = Ext.extend(Ext.ToolTip, {
         title : "qtitle",
         hide : "hide",
         cls : "qclass",
-        align : "qalign"
+        align : "qalign",
+        anchor : "anchor"
     },
 
     // private
@@ -99,9 +100,14 @@ Ext.QuickTip = Ext.extend(Ext.ToolTip, {
         if(t && this.targets[t.id]){
             this.activeTarget = this.targets[t.id];
             this.activeTarget.el = t;
+            this.anchor = this.activeTarget.anchor;
+            if(this.anchor){
+                this.anchorTarget = t;
+            }
             this.delayShow();
             return;
         }
+        
         var ttp, et = Ext.fly(t), cfg = this.tagConfig;
         var ns = cfg.namespace;
         if(this.interceptTitles && t.title){
@@ -122,7 +128,12 @@ Ext.QuickTip = Ext.extend(Ext.ToolTip, {
                 title: et.getAttributeNS(ns, cfg.title),
                 cls: et.getAttributeNS(ns, cfg.cls),
                 align: et.getAttributeNS(ns, cfg.align)
+                
             };
+            this.anchor = et.getAttributeNS(ns, cfg.anchor);
+            if(this.anchor){
+                this.anchorTarget = t;
+            }
             this.delayShow();
         }
     },
@@ -162,10 +173,12 @@ Ext.QuickTip = Ext.extend(Ext.ToolTip, {
                 this.el.addClass(t.cls);
                 this.lastCls = t.cls;
             }
-            if(t.align){ // TODO: this doesn't seem to work consistently
+            if(this.anchor){
+                this.constrainPosition = false;
+            }else if(t.align){ // TODO: this doesn't seem to work consistently
                 xy = this.el.getAlignToXY(t.el, t.align);
                 this.constrainPosition = false;
-            } else{
+            }else{
                 this.constrainPosition = true;
             }
         }

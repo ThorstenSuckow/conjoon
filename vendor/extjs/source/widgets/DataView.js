@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -62,6 +62,7 @@ panel.render(document.body);
  * @constructor
  * Create a new DataView
  * @param {Object} config The config object
+ * @xtype dataview
  */
 Ext.DataView = Ext.extend(Ext.BoxComponent, {
     /**
@@ -75,8 +76,9 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      */
     /**
      * @cfg {String} itemSelector
-     * <b>This is a required setting</b>. A simple CSS selector (e.g. div.some-class or span:first-child) that will be 
-     * used to determine what nodes this DataView will be working with.
+     * <b>This is a required setting</b>. A simple CSS selector (e.g. <tt>div.some-class</tt> or 
+     * <tt>span:first-child</tt>) that will be used to determine what nodes this DataView will be
+     * working with.
      */
     /**
      * @cfg {Boolean} multiSelect
@@ -126,11 +128,10 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
     //private
     last: false,
 
-
     // private
     initComponent : function(){
         Ext.DataView.superclass.initComponent.call(this);
-        if(typeof this.tpl == "string"){
+        if(typeof this.tpl == "string" || Ext.isArray(this.tpl)){
             this.tpl = new Ext.XTemplate(this.tpl);
         }
 
@@ -197,6 +198,13 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
              */
             "contextmenu",
             /**
+             * @event containercontextmenu
+             * Fires when a right click occurs that is not on a template node.
+             * @param {Ext.DataView} this
+             * @param {Ext.EventObject} e The raw event object
+             */
+            "containercontextmenu",
+            /**
              * @event selectionchange
              * Fires when the selected nodes change.
              * @param {Ext.DataView} this
@@ -219,19 +227,10 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
     },
 
     // private
-    onRender : function(){
-        if(!this.el){
-            this.el = document.createElement('div');
-            this.el.id = this.id;
-        }
-        Ext.DataView.superclass.onRender.apply(this, arguments);
-    },
-
-    // private
     afterRender : function(){
         Ext.DataView.superclass.afterRender.call(this);
 
-        this.el.on({
+		this.mon(this.getTemplateTarget(), {
             "click": this.onClick,
             "dblclick": this.onDblClick,
             "contextmenu": this.onContextMenu,
@@ -239,7 +238,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
         });
 
         if(this.overClass || this.trackOver){
-            this.el.on({
+            this.mon(this.getTemplateTarget(), {
                 "mouseover": this.onMouseOver,
                 "mouseout": this.onMouseOut,
                 scope:this
@@ -247,7 +246,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
         }
 
         if(this.store){
-            this.setStore(this.store, true);
+            this.bindStore(this.store, true);
         }
     },
 
@@ -256,19 +255,24 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      */
     refresh : function(){
         this.clearSelections(false, true);
-        this.el.update("");
+        var el = this.getTemplateTarget();
+        el.update("");
         var records = this.store.getRange();
         if(records.length < 1){
             if(!this.deferEmptyText || this.hasSkippedEmptyText){
-                this.el.update(this.emptyText);
+                el.update(this.emptyText);
             }
-            this.hasSkippedEmptyText = true;
             this.all.clear();
-            return;
+        }else{
+            this.tpl.overwrite(el, this.collectData(records, 0));
+            this.all.fill(Ext.query(this.itemSelector, el.dom));
+            this.updateIndexes(0);
         }
-        this.tpl.overwrite(this.el, this.collectData(records, 0));
-        this.all.fill(Ext.query(this.itemSelector, this.el.dom));
-        this.updateIndexes(0);
+        this.hasSkippedEmptyText = true;
+    },
+
+    getTemplateTarget: function(){
+        return this.el;
     },
 
     /**
@@ -291,7 +295,8 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * {@link Ext.XTemplate XTemplate} which uses <tt>'&lt;tpl for="."&gt;'</tt> to iterate over its supplied
      * data object as an Array. However, <i>named</i> properties may be placed into the data object to
      * provide non-repeating data such as headings, totals etc.</p>
-     * @param records {Array} An Array of {@link Ext.data.Record}s to be rendered into the DataView.
+     * @param {Array} records An Array of {@link Ext.data.Record}s to be rendered into the DataView.
+     * @param {Number} startIndex the index number of the Record being prepared for rendering.
      * @return {Array} An Array of data objects to be processed by a repeating XTemplate. May also
      * contain <i>named</i> properties.
      */
@@ -347,6 +352,9 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
         this.deselect(index);
         this.all.removeElement(index, true);
         this.updateIndexes(index);
+        if (this.store.getCount() == 0){
+            this.refresh();
+        }
     },
 
     /**
@@ -379,7 +387,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * Changes the data store bound to this view and refreshes it.
      * @param {Store} store The store to bind to this view
      */
-    setStore : function(store, initial){
+    bindStore : function(store, initial){
         if(!initial && this.store){
             this.store.un("beforeload", this.onBeforeLoad, this);
             this.store.un("datachanged", this.refresh, this);
@@ -387,6 +395,9 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
             this.store.un("remove", this.onRemove, this);
             this.store.un("update", this.onUpdate, this);
             this.store.un("clear", this.refresh, this);
+            if(store !== this.store && this.store.autoDestroy){
+                this.store.destroy();
+            }
         }
         if(store){
             store = Ext.StoreMgr.lookup(store);
@@ -409,12 +420,12 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * @return {HTMLElement} The template node
      */
     findItemFromChild : function(node){
-        return Ext.fly(node).findParent(this.itemSelector, this.el);
+        return Ext.fly(node).findParent(this.itemSelector, this.getTemplateTarget());
     },
 
     // private
     onClick : function(e){
-        var item = e.getTarget(this.itemSelector, this.el);
+        var item = e.getTarget(this.itemSelector, this.getTemplateTarget());
         if(item){
             var index = this.indexOf(item);
             if(this.onItemClick(item, index, e) !== false){
@@ -422,22 +433,28 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
             }
         }else{
             if(this.fireEvent("containerclick", this, e) !== false){
-                this.clearSelections();
+                this.onContainerClick(e);
             }
         }
     },
 
+    onContainerClick : function(e){
+        this.clearSelections();
+    },
+
     // private
     onContextMenu : function(e){
-        var item = e.getTarget(this.itemSelector, this.el);
+        var item = e.getTarget(this.itemSelector, this.getTemplateTarget());
         if(item){
             this.fireEvent("contextmenu", this, this.indexOf(item), item, e);
+        }else{
+            this.fireEvent("containercontextmenu", this, e)
         }
     },
 
     // private
     onDblClick : function(e){
-        var item = e.getTarget(this.itemSelector, this.el);
+        var item = e.getTarget(this.itemSelector, this.getTemplateTarget());
         if(item){
             this.fireEvent("dblclick", this, this.indexOf(item), item, e);
         }
@@ -445,7 +462,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     // private
     onMouseOver : function(e){
-        var item = e.getTarget(this.itemSelector, this.el);
+        var item = e.getTarget(this.itemSelector, this.getTemplateTarget());
         if(item && item !== this.lastItem){
             this.lastItem = item;
             Ext.fly(item).addClass(this.overClass);
@@ -622,9 +639,9 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
             for(var i = 0, len = nodeInfo.length; i < len; i++){
                 this.select(nodeInfo[i], true, true);
             }
-	        if(!suppressEvent){
-	            this.fireEvent("selectionchange", this, this.selected.elements);
-	        }
+            if(!suppressEvent){
+                this.fireEvent("selectionchange", this, this.selected.elements);
+            }
         } else{
             var node = this.getNode(nodeInfo);
             if(!keepExisting){
@@ -710,15 +727,21 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
     onBeforeLoad : function(){
         if(this.loadingText){
             this.clearSelections(false, true);
-            this.el.update('<div class="loading-indicator">'+this.loadingText+'</div>');
+            this.getTemplateTarget().update('<div class="loading-indicator">'+this.loadingText+'</div>');
             this.all.clear();
         }
     },
 
     onDestroy : function(){
         Ext.DataView.superclass.onDestroy.call(this);
-        this.setStore(null);
+        this.bindStore(null);
     }
 });
+
+/**
+ * Changes the data store bound to this view and refreshes it. (deprecated in favor of bindStore)
+ * @param {Store} store The store to bind to this view
+ */
+Ext.DataView.prototype.setStore = Ext.DataView.prototype.bindStore;
 
 Ext.reg('dataview', Ext.DataView);

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -88,7 +88,7 @@ Ext.History = (function () {
 
     function startUp() {
         currentToken = hiddenField.value ? hiddenField.value : getHash();
-        
+
         if (Ext.isIE) {
             checkIFrame();
         } else {
@@ -140,7 +140,7 @@ Ext.History = (function () {
                 return;
             }
             hiddenField = Ext.getDom(Ext.History.fieldId);
-			if (Ext.isIE) {
+            if (Ext.isIE) {
                 iframe = Ext.getDom(Ext.History.iframeId);
             }
             this.addEvents('ready', 'change');

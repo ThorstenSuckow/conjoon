@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,13 +9,13 @@
 /**
  * @class Ext.layout.CardLayout
  * @extends Ext.layout.FitLayout
- * <p>This layout contains multiple panels, each fit to the container, where only a single panel can be
+ * <p>This layout manages multiple child Components, each fitted to the Container, where only a single child Component can be
  * visible at any given time.  This layout style is most commonly used for wizards, tab implementations, etc.
  * This class is intended to be extended or created via the layout:'card' {@link Ext.Container#layout} config,
  * and should generally not need to be created directly via the new keyword.</p>
  * <p>The CardLayout's focal method is {@link #setActiveItem}.  Since only one panel is displayed at a time,
- * the only way to move from one panel to the next is by calling setActiveItem, passing the id or index of
- * the next panel to display.  The layout itself does not provide a mechanism for handling this navigation,
+ * the only way to move from one Component to the next is by calling setActiveItem, passing the id or index of
+ * the next panel to display.  The layout itself does not provide a user interface for handling this navigation,
  * so that functionality must be provided by the developer.</p>
  * <p>In the following example, a simplistic wizard setup is demonstrated.  A button bar is added
  * to the footer of the containing panel to provide navigation buttons.  The buttons will be handled by a
@@ -80,6 +80,12 @@ Ext.layout.CardLayout = Ext.extend(Ext.layout.FitLayout, {
      * true might improve performance.
      */
     deferredRender : false,
+    
+    /**
+     * @cfg {Boolean} layoutOnCardChange
+     * True to force a layout of the active item when the active card is changed.
+     */
+    layoutOnCardChange : false,
 
     // private
     renderHidden : true,
@@ -96,7 +102,10 @@ Ext.layout.CardLayout = Ext.extend(Ext.layout.FitLayout, {
             }
             this.activeItem = item;
             item.show();
-            this.layout();
+            this.container.doLayout();
+            if(this.layoutOnCardChange && item.doLayout){
+                item.doLayout();
+            }
         }
     },
 

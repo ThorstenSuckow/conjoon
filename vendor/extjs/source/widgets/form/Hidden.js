@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,6 +13,7 @@
  * @constructor
  * Create a new Hidden field.
  * @param {Object} config Configuration options
+ * @xtype hidden
  */
 Ext.form.Hidden = Ext.extend(Ext.form.Field, {
     // private

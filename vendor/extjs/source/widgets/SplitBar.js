@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -46,6 +46,11 @@ Ext.SplitBar = function(dragElement, resizingElement, orientation, placement, ex
      */
     this.orientation = orientation || Ext.SplitBar.HORIZONTAL;
     
+    /**
+     * The increment, in pixels by which to move this SplitBar. When <i>undefined</i>, the SplitBar moves smoothly.
+     * @type Number
+     * @property tickSize
+     */
     /**
      * The minimum size of the resizing element. (Defaults to 0)
      * @type Number
@@ -152,7 +157,8 @@ Ext.extend(Ext.SplitBar, Ext.util.Observable, {
             this.dd.resetConstraints();
             this.dd.setXConstraint(
                 this.placement == Ext.SplitBar.LEFT ? c1 : c2, 
-                this.placement == Ext.SplitBar.LEFT ? c2 : c1
+                this.placement == Ext.SplitBar.LEFT ? c2 : c1,
+                this.tickSize
             );
             this.dd.setYConstraint(0, 0);
         }else{
@@ -160,7 +166,8 @@ Ext.extend(Ext.SplitBar, Ext.util.Observable, {
             this.dd.setXConstraint(0, 0);
             this.dd.setYConstraint(
                 this.placement == Ext.SplitBar.TOP ? c1 : c2, 
-                this.placement == Ext.SplitBar.TOP ? c2 : c1
+                this.placement == Ext.SplitBar.TOP ? c2 : c1,
+                this.tickSize
             );
          }
         this.dragSpecs.startSize = size;

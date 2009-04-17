@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -232,12 +232,14 @@ Ext.MessageBox = function(){
          * @return {Ext.MessageBox} this
          */
         hide : function(){
-            var proxy = dlg.activeGhost;
-            if(this.isVisible() || proxy) {
+            var proxy = dlg ? dlg.activeGhost : null;
+            if(this.isVisible() || proxy){
                 dlg.hide();
                 handleHide();
-                if (proxy) {
-                    proxy.hide();
+                if (proxy){
+                    // unghost is a private function, but i saw no better solution
+                    // to fix the locking problem when dragging while it closes
+                    dlg.unghost(false, false);
                 } 
             }
             return this;
@@ -408,9 +410,11 @@ Ext.MessageBox.ERROR
             if(icon && icon != ''){
                 iconEl.removeClass('x-hidden');
                 iconEl.replaceClass(iconCls, icon);
+                bodyEl.addClass('x-dlg-icon');
                 iconCls = icon;
             }else{
                 iconEl.replaceClass(iconCls, 'x-hidden');
+                bodyEl.removeClass('x-dlg-icon');
                 iconCls = '';
             }
             return this;

@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 2.1
- * Copyright(c) 2006-2008, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
 /**
  * Greek translation
  * By thesilentman (utf8 encoding)
@@ -18,56 +10,56 @@
  * + added Ext.grid.GroupingView
  */
 
-Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Μεταφόρτωση δεδομένων...</div>';
+Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">?etaf??t?s? ded?�????...</div>';
 
 if(Ext.View){
    Ext.View.prototype.emptyText = "";
 }
 
 if(Ext.grid.GridPanel){
-   Ext.grid.GridPanel.prototype.ddText = "{0} Επιλεγμένες σειρές";
+   Ext.grid.GridPanel.prototype.ddText = "{0} ?p??e?�??e? se????";
 }
 
 if(Ext.TabPanelItem){
-   Ext.TabPanelItem.prototype.closeText = "Κλείστε το tab";
+   Ext.TabPanelItem.prototype.closeText = "??e?ste t? tab";
 }
 
 if(Ext.form.Field){
-   Ext.form.Field.prototype.invalidText = "Το περιεχόμενο του πεδίου δεν είναι αποδεκτό";
+   Ext.form.Field.prototype.invalidText = "?? pe??e??�e?? t?? ped??? de? e??a? ap?de?t?";
 }
 
 if(Ext.LoadMask){
-    Ext.LoadMask.prototype.msg = "Μεταφόρτωση δεδομένων...";
+    Ext.LoadMask.prototype.msg = "?etaf??t?s? ded?�????...";
 }
 
 Date.monthNames = [
-   "Ιανουάριος",
-   "Φεβρουάριος",
-   "Μάρτιος",
-   "Απρίλιος",
-   "Μάιος",
-   "Ιούνιος",
-   "Ιούλιος",
-   "Αύγουστος",
-   "Σεπτέμβριος",
-   "Οκτώβριος",
-   "Νοέμβριος",
-   "Δεκέμβριος"
+   "?a????????",
+   "Fe�????????",
+   "???t???",
+   "?p??????",
+   "?????",
+   "???????",
+   "???????",
+   "?????st??",
+   "Sept?��????",
+   "??t?�????",
+   "???��????",
+   "?e??��????"
 ];
 
 Date.shortMonthNames = [
-   "Ιαν",
-   "Φεβ",
-   "Μάρ",
-   "Απρ",
-   "Μάι",
-   "Ιού",
-   "Ιού",
-   "Αύγ",
-   "Σεπ",
-   "Οκτ",
-   "Νοέ",
-   "Δεκ"
+   "?a?",
+   "Fe�",
+   "???",
+   "?p?",
+   "???",
+   "???",
+   "???",
+   "???",
+   "Sep",
+   "??t",
+   "???",
+   "?e?"
 ];
 
 Date.getShortMonthName = function(month) {
@@ -95,21 +87,21 @@ Date.getMonthNumber = function(name) {
 
 
 Date.dayNames = [
-   "Κυριακή",
-   "Δευτέρα",
-   "Τρίτη",
-   "Τετάρτη",
-   "Πέμπτη",
-   "Παρασκευή",
-   "Σάββατο"
+   "????a??",
+   "?e?t??a",
+   "???t?",
+   "?et??t?",
+   "??�pt?",
+   "?a?as?e??",
+   "S?��at?"
 ];
 
 if(Ext.MessageBox){
    Ext.MessageBox.buttonText = {
       ok     : "OK",
-      cancel : "Άκυρο",
-      yes    : "Ναι",
-      no     : "Όχι"
+      cancel : "?????",
+      yes    : "?a?",
+      no     : "???"
    };
 }
 
@@ -123,40 +115,40 @@ if(Ext.util.Format){
 
 if(Ext.DatePicker){
    Ext.apply(Ext.DatePicker.prototype, {
-      todayText         : "Σήμερα",
-      minText           : "Η Ημερομηνία είναι προγενέστερη από την παλαιότερη αποδεκτή",
-      maxText           : "Η Ημερομηνία είναι μεταγενέστερη από την νεότερη αποδεκτή",
+      todayText         : "S?�e?a",
+      minText           : "? ?�e??�???a e??a? p???e??ste?? ap? t?? pa?a??te?? ap?de?t?",
+      maxText           : "? ?�e??�???a e??a? �eta?e??ste?? ap? t?? ?e?te?? ap?de?t?",
       disabledDaysText  : "",
       disabledDatesText : "",
       monthNames  : Date.monthNames,
       dayNames    : Date.dayNames,
-      nextText          : 'Επόμενος Μήνας (Control+Δεξί Βέλος)',
-      prevText          : 'Προηγούμενος Μήνας (Control + Αριστερό Βέλος)',
-      monthYearText     : 'Επιλογή Μηνός (Control + Επάνω/Κάτω Βέλος για μεταβολή ετών)',
-      todayTip          : "{0} (ΠΛήκτρο Διαστήματος)",
+      nextText          : '?p?�e??? ???a? (Control+?e?? ?????)',
+      prevText          : '???????�e??? ???a? (Control + ???ste?? ?????)',
+      monthYearText     : '?p????? ????? (Control + ?p???/??t? ????? ??a �eta�??? et??)',
+      todayTip          : "{0} (????t?? ??ast?�at??)",
       format            : "d/m/y"
    });
 }
 
 if(Ext.PagingToolbar){
    Ext.apply(Ext.PagingToolbar.prototype, {
-      beforePageText : "Σελίδα",
-      afterPageText  : "από {0}",
-      firstText      : "Πρώτη Σελίδα",
-      prevText       : "Προηγούμενη Σελίδα",
-      nextText       : "Επόμενη Σελίδα",
-      lastText       : "Τελευταία Σελίδα",
-      refreshText    : "Ανανέωση",
-      displayMsg     : "Εμφάνιση {0} - {1} από {2}",
-      emptyMsg       : 'Δεν υπάρχουν δεδομένα'
+      beforePageText : "Se??da",
+      afterPageText  : "ap? {0}",
+      firstText      : "???t? Se??da",
+      prevText       : "???????�e?? Se??da",
+      nextText       : "?p?�e?? Se??da",
+      lastText       : "?e?e?ta?a Se??da",
+      refreshText    : "??a???s?",
+      displayMsg     : "?�f???s? {0} - {1} ap? {2}",
+      emptyMsg       : '?e? ?p?????? ded?�??a'
    });
 }
 
 if(Ext.form.TextField){
    Ext.apply(Ext.form.TextField.prototype, {
-      minLengthText : "Το μικρότερο αποδεκτό μήκος για το πεδίο είναι {0}",
-      maxLengthText : "Το μεγαλύτερο αποδεκτό μήκος για το πεδίο είναι {0}",
-      blankText     : "Το πεδίο είναι υποχρεωτικό",
+      minLengthText : "?? �????te?? ap?de?t? �???? ??a t? ped?? e??a? {0}",
+      maxLengthText : "?? �e?a??te?? ap?de?t? �???? ??a t? ped?? e??a? {0}",
+      blankText     : "?? ped?? e??a? ?p???e?t???",
       regexText     : "",
       emptyText     : null
    });
@@ -164,111 +156,111 @@ if(Ext.form.TextField){
 
 if(Ext.form.NumberField){
    Ext.apply(Ext.form.NumberField.prototype, {
-      minText : "Η μικρότερη τιμή του πεδίου είναι {0}",
-      maxText : "Η μεγαλύτερη τιμή του πεδίου είναι {0}",
-      nanText : "{0} δεν είναι αποδεκτός αριθμός"
+      minText : "? �????te?? t?�? t?? ped??? e??a? {0}",
+      maxText : "? �e?a??te?? t?�? t?? ped??? e??a? {0}",
+      nanText : "{0} de? e??a? ap?de?t?? a???�??"
    });
 }
 
 if(Ext.form.DateField){
    Ext.apply(Ext.form.DateField.prototype, {
-      disabledDaysText  : "Ανενεργό",
-      disabledDatesText : "Ανενεργό",
-      minText           : "Η ημερομηνία αυτού του πεδίου πρέπει να είναι μετά την {0}",
-      maxText           : "Η ημερομηνία αυτού του πεδίου πρέπει να είναι πριν την {0}",
-      invalidText       : "{0} δεν είναι έγκυρη ημερομηνία - πρέπει να είναι στη μορφή {1}",
+      disabledDaysText  : "??e?e???",
+      disabledDatesText : "??e?e???",
+      minText           : "? ?�e??�???a a?t?? t?? ped??? p??pe? ?a e??a? �et? t?? {0}",
+      maxText           : "? ?�e??�???a a?t?? t?? ped??? p??pe? ?a e??a? p??? t?? {0}",
+      invalidText       : "{0} de? e??a? ?????? ?�e??�???a - p??pe? ?a e??a? st? �??f? {1}",
       format            : "d/m/y"
    });
 }
 
 if(Ext.form.ComboBox){
    Ext.apply(Ext.form.ComboBox.prototype, {
-      loadingText       : "Μεταφόρτωση δεδομένων...",
+      loadingText       : "?etaf??t?s? ded?�????...",
       valueNotFoundText : undefined
    });
 }
 
 if(Ext.form.VTypes){
    Ext.apply(Ext.form.VTypes, {
-      emailText    : 'Το πεδίο δέχεται μόνο διευθύνσεις Email σε μορφή "user@domain.com"',
-      urlText      : 'Το πεδίο δέχεται μόνο URL σε μορφή "http:/'+'/www.domain.com"',
-      alphaText    : 'Το πεδίο δέχεται μόνο χαρακτήρες και _',
-      alphanumText : 'Το πεδίο δέχεται μόνο χαρακτήρες, αριθμούς και _'
+      emailText    : '?? ped?? d??eta? �??? d?e????se?? Email se �??f? "user@domain.com"',
+      urlText      : '?? ped?? d??eta? �??? URL se �??f? "http:/'+'/www.domain.com"',
+      alphaText    : '?? ped?? d??eta? �??? ?a?a?t??e? ?a? _',
+      alphanumText : '?? ped?? d??eta? �??? ?a?a?t??e?, a???�??? ?a? _'
    });
 }
 
 if(Ext.form.HtmlEditor){
    Ext.apply(Ext.form.HtmlEditor.prototype, {
-        createLinkText : 'Δώστε τη διεύθυνση (URL) για το σύνδεσμο (link):',
+        createLinkText : '??ste t? d?e????s? (URL) ??a t? s??des�? (link):',
         buttonTips : {
             bold : {
-               title: 'Έντονα (Ctrl+B)',
-               text: 'Κάνετε το προεπιλεγμένο κείμενο έντονο.',
+               title: '??t??a (Ctrl+B)',
+               text: '???ete t? p??ep??e?�??? ?e?�e?? ??t???.',
                cls: 'x-html-editor-tip'
             },
             italic : {
-               title: 'Πλάγια (Ctrl+I)',
-               text: 'Κάνετε το προεπιλεγμένο κείμενο πλάγιο.',
+               title: '?????a (Ctrl+I)',
+               text: '???ete t? p??ep??e?�??? ?e?�e?? p?????.',
                cls: 'x-html-editor-tip'
             },
             underline : {
-               title: 'Υπογράμμιση (Ctrl+U)',
-               text: 'Υπογραμμίζετε το προεπιλεγμένο κείμενο.',
+               title: '?p????��?s? (Ctrl+U)',
+               text: '?p???a��??ete t? p??ep??e?�??? ?e?�e??.',
                cls: 'x-html-editor-tip'
            },
            increasefontsize : {
-               title: 'Μεγέθυνση κειμένου',
-               text: 'Μεγαλώνετε τη γραμματοσειρά.',
+               title: '?e?????s? ?e?�????',
+               text: '?e?a???ete t? ??a��at?se???.',
                cls: 'x-html-editor-tip'
            },
            decreasefontsize : {
-               title: 'Σμίκρυνση κειμένου',
-               text: 'Μικραίνετε τη γραμματοσειρά.',
+               title: 'S�?????s? ?e?�????',
+               text: '????a??ete t? ??a��at?se???.',
                cls: 'x-html-editor-tip'
            },
            backcolor : {
-               title: 'Χρώμα Φόντου Κειμένου',
-               text: 'Αλλάζετε το χρώμα στο φόντο του προεπιλεγμένου κειμένου.',
+               title: '???�a F??t?? ?e?�????',
+               text: '?????ete t? ???�a st? f??t? t?? p??ep??e?�???? ?e?�????.',
                cls: 'x-html-editor-tip'
            },
            forecolor : {
-               title: 'Χρώμα Γραμματοσειράς',
-               text: 'Αλλάζετε το χρώμα στη γραμματοσειρά του προεπιλεγμένου κειμένου.',               
+               title: '???�a G?a��at?se????',
+               text: '?????ete t? ???�a st? ??a��at?se??? t?? p??ep??e?�???? ?e?�????.',               
                cls: 'x-html-editor-tip'
            },
            justifyleft : {
-               title: 'Αριστερή Στοίχιση Κειμένου',
-               text: 'Στοιχίζετε το κείμενο στα αριστερά.',
+               title: '???ste?? St????s? ?e?�????',
+               text: 'St?????ete t? ?e?�e?? sta a??ste??.',
                cls: 'x-html-editor-tip'
            },
            justifycenter : {
-               title: 'Κεντράρισμα Κειμένου',
-               text: 'Στοιχίζετε το κείμενο στο κέντρο.',
+               title: '?e?t????s�a ?e?�????',
+               text: 'St?????ete t? ?e?�e?? st? ???t??.',
                cls: 'x-html-editor-tip'
            },
            justifyright : {
-               title: 'Δεξιά Στοίχιση Κειμένου',
-               text: 'Στοιχίζετε το κείμενο στα δεξιά.',
+               title: '?e??? St????s? ?e?�????',
+               text: 'St?????ete t? ?e?�e?? sta de???.',
                cls: 'x-html-editor-tip'
            },
            insertunorderedlist : {
-               title: 'Εισαγωγή Λίστας Κουκίδων',
-               text: 'Ξεκινήστε μια λίστα με κουκίδες.',
+               title: '??sa???? ??sta? ?????d??',
+               text: '?e????ste �?a ??sta �e ?????de?.',
                cls: 'x-html-editor-tip'
            },
            insertorderedlist : {
-               title: 'Εισαγωγή Λίστας Αρίθμησης',
-               text: 'Ξεκινήστε μια λίστα με αρίθμηση.',
+               title: '??sa???? ??sta? ????�?s??',
+               text: '?e????ste �?a ??sta �e a???�?s?.',
                cls: 'x-html-editor-tip'
            },
            createlink : {
                title: 'Hyperlink',
-               text: 'Μετατρέπετε το προεπιλεγμένο κείμενο σε Link.',
+               text: '?etat??pete t? p??ep??e?�??? ?e?�e?? se Link.',
                cls: 'x-html-editor-tip'
            },
            sourceedit : {
-               title: 'Επεξεργασία Κώδικα',
-               text: 'Μεταβαίνετε στη λειτουργία επεξεργασίας κώδικα.',
+               title: '?pe?e??as?a ??d??a',
+               text: '?eta�a??ete st? ?e?t?????a epe?e??as?a? ??d??a.',
                cls: 'x-html-editor-tip'
            }
         }
@@ -278,34 +270,34 @@ if(Ext.form.HtmlEditor){
 
 if(Ext.grid.GridView){
    Ext.apply(Ext.grid.GridView.prototype, {
-      sortAscText  : "Αύξουσα ταξινόμηση",
-      sortDescText : "Φθίνουσα ταξινόμηση",
-      lockText     : "Κλείδωμα στήλης",
-      unlockText   : "Ξεκλείδωμα στήλης",
-      columnsText  : "Στήλες"
+      sortAscText  : "?????sa ta????�?s?",
+      sortDescText : "F?????sa ta????�?s?",
+      lockText     : "??e?d?�a st????",
+      unlockText   : "?e??e?d?�a st????",
+      columnsText  : "St??e?"
    });
 }
 
 if(Ext.grid.GroupingView){
   Ext.apply(Ext.grid.GroupingView.prototype, {
-  emptyGroupText : '(Καμμία)',
-  groupByText    : 'Ομαδοποίηση βάσει αυτού του πεδίου',
-  showGroupsText : 'Να εμφανίζεται στις ομάδες'
+  emptyGroupText : '(?a��?a)',
+  groupByText    : '?�ad?p???s? �?se? a?t?? t?? ped???',
+  showGroupsText : '?a e�fa???eta? st?? ?�?de?'
   });
 }
 
 if(Ext.grid.PropertyColumnModel){
    Ext.apply(Ext.grid.PropertyColumnModel.prototype, {
-      nameText   : "Όνομα",
-      valueText  : "Περιεχόμενο",
+      nameText   : "???�a",
+      valueText  : "?e??e??�e??",
       dateFormat : "m/d/Y"
    });
 }
 
 if(Ext.layout.BorderLayout && Ext.layout.BorderLayout.SplitRegion){
    Ext.apply(Ext.layout.BorderLayout.SplitRegion.prototype, {
-      splitTip            : "Σύρετε για αλλαγή μεγέθους.",
-      collapsibleSplitTip : "Σύρετε για αλλαγή μεγέθους. Διπλό κλικ για απόκρυψη."
+      splitTip            : "S??ete ??a a??a?? �e??????.",
+      collapsibleSplitTip : "S??ete ??a a??a?? �e??????. ??p?? ???? ??a ap??????."
    });
 }
 

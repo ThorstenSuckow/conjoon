@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,15 +7,15 @@
  */
 
 /**
-* @class Ext.XTemplate
-* @extends Ext.Template
-* <p>A template class that supports advanced functionality like autofilling arrays, conditional processing with
-* basic comparison operators, sub-templates, basic math function support, special built-in template variables,
-* inline code execution and more.  XTemplate also provides the templating mechanism built into {@link Ext.DataView}.</p>
-* <p>XTemplate supports many special tags and built-in operators that aren't defined as part of the API, but are
-* supported in the templates that can be created.  The following examples demonstrate all of the supported features.
-* This is the data object used for reference in each code example:</p>
-* <pre><code>
+ * @class Ext.XTemplate
+ * @extends Ext.Template
+ * <p>A template class that supports advanced functionality like autofilling arrays, conditional processing with
+ * basic comparison operators, sub-templates, basic math function support, special built-in template variables,
+ * inline code execution and more.  XTemplate also provides the templating mechanism built into {@link Ext.DataView}.</p>
+ * <p>XTemplate supports many special tags and built-in operators that aren't defined as part of the API, but are
+ * supported in the templates that can be created.  The following examples demonstrate all of the supported features.
+ * This is the data object used for reference in each code example:</p>
+ * <pre><code>
 var data = {
     name: 'Jack Slocum',
     title: 'Lead Developer',
@@ -37,26 +37,37 @@ var data = {
         age:0
     }]
 };
-</code></pre>
-* <p><b>Auto filling of arrays and scope switching</b><br/>Using the <tt>tpl</tt> tag and the <tt>for</tt> operator,
-* you can switch to the scope of the object specified by <tt>for</tt> and access its members to populate the template.
-* If the variable in <tt>for</tt> is an array, it will auto-fill, repeating the template block inside the <tt>tpl</tt>
-* tag for each item in the array:</p>
-* <pre><code>
+ * </code></pre>
+ * <p><b>Auto filling of arrays</b><br/>The <tt>tpl</tt> tag and the <tt>for</tt> operator are used
+ * to process the provided data object. If <tt>for="."</tt> is specified, the data object provided
+ * is examined. If the variable in <tt>for</tt> is an array, it will auto-fill, repeating the template
+ * block inside the <tt>tpl</tt> tag for each item in the array:</p>
+ * <pre><code>
+var tpl = new Ext.XTemplate(
+    '&lt;p>Kids: ',
+    '&lt;tpl for=".">',
+        '&lt;p>{name}&lt;/p>',
+    '&lt;/tpl>&lt;/p>'
+);
+tpl.overwrite(panel.body, data.kids); // pass the kids property of the data object
+ * </code></pre>
+ * <p><b>Scope switching</b><br/>The <tt>for</tt> property can be leveraged to access specified members
+ * of the provided data object to populate the template:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>Name: {name}&lt;/p>',
     '&lt;p>Title: {title}&lt;/p>',
     '&lt;p>Company: {company}&lt;/p>',
     '&lt;p>Kids: ',
-    '&lt;tpl for="kids">',
+    '&lt;tpl <b>for="kids"</b>>', // interrogate the kids property within the data
         '&lt;p>{name}&lt;/p>',
     '&lt;/tpl>&lt;/p>'
 );
 tpl.overwrite(panel.body, data);
-</code></pre>
-* <p><b>Access to parent object from within sub-template scope</b><br/>When processing a sub-template, for example while
-* looping through a child array, you can access the parent object's members via the <tt>parent</tt> object:</p>
-* <pre><code>
+ * </code></pre>
+ * <p><b>Access to parent object from within sub-template scope</b><br/>When processing a sub-template, for example while
+ * looping through a child array, you can access the parent object's members via the <tt>parent</tt> object:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>Name: {name}&lt;/p>',
     '&lt;p>Kids: ',
@@ -69,10 +80,10 @@ var tpl = new Ext.XTemplate(
 );
 tpl.overwrite(panel.body, data);
 </code></pre>
-* <p><b>Array item index and basic math support</b> <br/>While processing an array, the special variable <tt>{#}</tt>
-* will provide the current array index + 1 (starts at 1, not 0). Templates also support the basic math operators
-* + - * and / that can be applied directly on numeric data values:</p>
-* <pre><code>
+ * <p><b>Array item index and basic math support</b> <br/>While processing an array, the special variable <tt>{#}</tt>
+ * will provide the current array index + 1 (starts at 1, not 0). Templates also support the basic math operators
+ * + - * and / that can be applied directly on numeric data values:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>Name: {name}&lt;/p>',
     '&lt;p>Kids: ',
@@ -86,10 +97,10 @@ var tpl = new Ext.XTemplate(
 );
 tpl.overwrite(panel.body, data);
 </code></pre>
-* <p><b>Auto-rendering of flat arrays</b> <br/>Flat arrays that contain values (and not objects) can be auto-rendered
-* using the special <tt>{.}</tt> variable inside a loop.  This variable will represent the value of
-* the array at the current index:</p>
-* <pre><code>
+ * <p><b>Auto-rendering of flat arrays</b> <br/>Flat arrays that contain values (and not objects) can be auto-rendered
+ * using the special <tt>{.}</tt> variable inside a loop.  This variable will represent the value of
+ * the array at the current index:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>{name}\'s favorite beverages:&lt;/p>',
     '&lt;tpl for="drinks">',
@@ -98,11 +109,11 @@ var tpl = new Ext.XTemplate(
 );
 tpl.overwrite(panel.body, data);
 </code></pre>
-* <p><b>Basic conditional logic</b> <br/>Using the <tt>tpl</tt> tag and the <tt>if</tt>
-* operator you can provide conditional checks for deciding whether or not to render specific parts of the template.
-* Note that there is no <tt>else</tt> operator &mdash; if needed, you should use two opposite <tt>if</tt> statements.
-* Properly-encoded attributes are required as seen in the following example:</p>
-* <pre><code>
+ * <p><b>Basic conditional logic</b> <br/>Using the <tt>tpl</tt> tag and the <tt>if</tt>
+ * operator you can provide conditional checks for deciding whether or not to render specific parts of the template.
+ * Note that there is no <tt>else</tt> operator &mdash; if needed, you should use two opposite <tt>if</tt> statements.
+ * Properly-encoded attributes are required as seen in the following example:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>Name: {name}&lt;/p>',
     '&lt;p>Kids: ',
@@ -114,18 +125,18 @@ var tpl = new Ext.XTemplate(
 );
 tpl.overwrite(panel.body, data);
 </code></pre>
-* <p><b>Ability to execute arbitrary inline code</b> <br/>In an XTemplate, anything between {[ ... ]}  is considered
-* code to be executed in the scope of the template. There are some special variables available in that code:
-* <ul>
-* <li><b><tt>values</tt></b>: The values in the current scope. If you are using scope changing sub-templates, you
-* can change what <tt>values</tt> is.</li>
-* <li><b><tt>parent</tt></b>: The scope (values) of the ancestor template.</li>
-* <li><b><tt>xindex</tt></b>: If you are in a looping template, the index of the loop you are in (1-based).</li>
-* <li><b><tt>xcount</tt></b>: If you are in a looping template, the total length of the array you are looping.</li>
-* <li><b><tt>fm</tt></b>: An alias for <tt>Ext.util.Format</tt>.</li>
-* </ul>
-* This example demonstrates basic row striping using an inline code block and the <tt>xindex</tt> variable:</p>
-* <pre><code>
+ * <p><b>Ability to execute arbitrary inline code</b> <br/>In an XTemplate, anything between {[ ... ]}  is considered
+ * code to be executed in the scope of the template. There are some special variables available in that code:
+ * <ul>
+ * <li><b><tt>values</tt></b>: The values in the current scope. If you are using scope changing sub-templates, you
+ * can change what <tt>values</tt> is.</li>
+ * <li><b><tt>parent</tt></b>: The scope (values) of the ancestor template.</li>
+ * <li><b><tt>xindex</tt></b>: If you are in a looping template, the index of the loop you are in (1-based).</li>
+ * <li><b><tt>xcount</tt></b>: If you are in a looping template, the total length of the array you are looping.</li>
+ * <li><b><tt>fm</tt></b>: An alias for <tt>Ext.util.Format</tt>.</li>
+ * </ul>
+ * This example demonstrates basic row striping using an inline code block and the <tt>xindex</tt> variable:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>Name: {name}&lt;/p>',
     '&lt;p>Company: {[values.company.toUpperCase() + ", " + values.title]}&lt;/p>',
@@ -138,9 +149,9 @@ var tpl = new Ext.XTemplate(
 );
 tpl.overwrite(panel.body, data);
 </code></pre>
-* <p><b>Template member functions</b> <br/>One or more member functions can be defined directly on the config
-* object passed into the XTemplate constructor for more complex processing:</p>
-* <pre><code>
+ * <p><b>Template member functions</b> <br/>One or more member functions can be defined directly on the config
+ * object passed into the XTemplate constructor for more complex processing:</p>
+ * <pre><code>
 var tpl = new Ext.XTemplate(
     '&lt;p>Name: {name}&lt;/p>',
     '&lt;p>Kids: ',
@@ -164,47 +175,57 @@ var tpl = new Ext.XTemplate(
 });
 tpl.overwrite(panel.body, data);
 </code></pre>
-* @constructor
-* @param {String/Array/Object} parts The HTML fragment or an array of fragments to join(""), or multiple arguments
-* to join("") that can also include a config object
-*/
+ * @constructor
+ * @param {String/Array/Object} parts The HTML fragment or an array of fragments to join(""), or multiple arguments
+ * to join("") that can also include a config object
+ */
 Ext.XTemplate = function(){
     Ext.XTemplate.superclass.constructor.apply(this, arguments);
-    var s = this.html;
+
+    var me = this,
+    	s = me.html,
+    	re = /<tpl\b[^>]*>((?:(?=([^<]+))\2|<(?!tpl\b[^>]*>))*?)<\/tpl>/,
+    	nameRe = /^<tpl\b[^>]*?for="(.*?)"/,
+    	ifRe = /^<tpl\b[^>]*?if="(.*?)"/,
+    	execRe = /^<tpl\b[^>]*?exec="(.*?)"/,
+    	m,
+    	id = 0,
+    	tpls = [],
+    	VALUES = 'values',
+    	PARENT = 'parent',
+    	XINDEX = 'xindex',
+    	XCOUNT = 'xcount',
+    	RETURN = 'return ',
+    	WITHVALUES = 'with(values){ ';
 
     s = ['<tpl>', s, '</tpl>'].join('');
 
-    var re = /<tpl\b[^>]*>((?:(?=([^<]+))\2|<(?!tpl\b[^>]*>))*?)<\/tpl>/;
-
-    var nameRe = /^<tpl\b[^>]*?for="(.*?)"/;
-    var ifRe = /^<tpl\b[^>]*?if="(.*?)"/;
-    var execRe = /^<tpl\b[^>]*?exec="(.*?)"/;
-    var m, id = 0;
-    var tpls = [];
-
     while(m = s.match(re)){
-       var m2 = m[0].match(nameRe);
-       var m3 = m[0].match(ifRe);
-       var m4 = m[0].match(execRe);
-       var exp = null, fn = null, exec = null;
-       var name = m2 && m2[1] ? m2[1] : '';
-       if(m3){
+       	var m2 = m[0].match(nameRe),
+			m3 = m[0].match(ifRe),
+       		m4 = m[0].match(execRe),
+       		exp = null,
+       		fn = null,
+       		exec = null,
+       		name = m2 && m2[1] ? m2[1] : '';
+
+       if (m3) {
            exp = m3 && m3[1] ? m3[1] : null;
            if(exp){
-               fn = new Function('values', 'parent', 'xindex', 'xcount', 'with(values){ return '+(Ext.util.Format.htmlDecode(exp))+'; }');
+               fn = new Function(VALUES, PARENT, XINDEX, XCOUNT, WITHVALUES + RETURN +(Ext.util.Format.htmlDecode(exp))+'; }');
            }
        }
-       if(m4){
+       if (m4) {
            exp = m4 && m4[1] ? m4[1] : null;
            if(exp){
-               exec = new Function('values', 'parent', 'xindex', 'xcount', 'with(values){ '+(Ext.util.Format.htmlDecode(exp))+'; }');
+               exec = new Function(VALUES, PARENT, XINDEX, XCOUNT, WITHVALUES +(Ext.util.Format.htmlDecode(exp))+'; }');
            }
        }
        if(name){
            switch(name){
-               case '.': name = new Function('values', 'parent', 'with(values){ return values; }'); break;
-               case '..': name = new Function('values', 'parent', 'with(values){ return parent; }'); break;
-               default: name = new Function('values', 'parent', 'with(values){ return '+name+'; }');
+               case '.': name = new Function(VALUES, PARENT, WITHVALUES + RETURN + VALUES + '; }'); break;
+               case '..': name = new Function(VALUES, PARENT, WITHVALUES + RETURN + PARENT + '; }'); break;
+               default: name = new Function(VALUES, PARENT, WITHVALUES + RETURN + name + '; }');
            }
        }
        tpls.push({
@@ -217,11 +238,11 @@ Ext.XTemplate = function(){
        s = s.replace(m[0], '{xtpl'+ id + '}');
        ++id;
     }
-    for(var i = tpls.length-1; i >= 0; --i){
-        this.compileTpl(tpls[i]);
-    }
-    this.master = tpls[tpls.length-1];
-    this.tpls = tpls;
+	Ext.each(tpls, function(t) {
+        me.compileTpl(t);
+    });
+    me.master = tpls[tpls.length-1];
+    me.tpls = tpls;
 };
 Ext.extend(Ext.XTemplate, Ext.Template, {
     // private
@@ -231,31 +252,35 @@ Ext.extend(Ext.XTemplate, Ext.Template, {
 
     // private
     applySubTemplate : function(id, values, parent, xindex, xcount){
-        var t = this.tpls[id];
-        if(t.test && !t.test.call(this, values, parent, xindex, xcount)){
+        var me = this,
+        	len,
+        	t = me.tpls[id],
+        	vs,
+        	buf = [];
+        if ((t.test && !t.test.call(me, values, parent, xindex, xcount)) ||
+            (t.exec && t.exec.call(me, values, parent, xindex, xcount))) {
             return '';
         }
-        if(t.exec && t.exec.call(this, values, parent, xindex, xcount)){
-            return '';
-        }
-        var vs = t.target ? t.target.call(this, values, parent) : values;
+        vs = t.target ? t.target.call(me, values, parent) : values;
+        len = vs.len;
         parent = t.target ? values : parent;
         if(t.target && Ext.isArray(vs)){
-            var buf = [];
-            for(var i = 0, len = vs.length; i < len; i++){
-                buf[buf.length] = t.compiled.call(this, vs[i], parent, i+1, len);
-            }
+	        Ext.each(vs, function(v, i) {
+                buf[buf.length] = t.compiled.call(me, v, parent, i+1, len);
+            });
             return buf.join('');
         }
-        return t.compiled.call(this, vs, parent, xindex, xcount);
+        return t.compiled.call(me, vs, parent, xindex, xcount);
     },
 
     // private
     compileTpl : function(tpl){
-        var fm = Ext.util.Format;
-        var useF = this.disableFormats !== true;
-        var sep = Ext.isGecko ? "+" : ",";
-        var fn = function(m, name, format, args, math){
+        var fm = Ext.util.Format,
+       		useF = this.disableFormats !== true,
+            sep = Ext.isGecko ? "+" : ",",
+            body;
+
+        function fn(m, name, format, args, math){
             if(name.substr(0, 4) == 'xtpl'){
                 return "'"+ sep +'this.applySubTemplate('+name.substr(4)+', values, parent, xindex, xcount)'+sep+"'";
             }
@@ -272,7 +297,7 @@ Ext.extend(Ext.XTemplate, Ext.Template, {
             if(math){
                 v = '(' + v + math + ')';
             }
-            if(format && useF){
+            if (format && useF) {
                 args = args ? ',' + args : "";
                 if(format.substr(0, 5) != "this."){
                     format = "fm." + format + '(';
@@ -280,16 +305,16 @@ Ext.extend(Ext.XTemplate, Ext.Template, {
                     format = 'this.call("'+ format.substr(5) + '", ';
                     args = ", values";
                 }
-            }else{
+            } else {
                 args= ''; format = "("+v+" === undefined ? '' : ";
             }
             return "'"+ sep + format + v + args + ")"+sep+"'";
         };
-        var codeFn = function(m, code){
+
+        function codeFn(m, code){
             return "'"+ sep +'('+code+')'+sep+"'";
         };
 
-        var body;
         // branched to use + in gecko and [].join() in others
         if(Ext.isGecko){
             body = "tpl.compiled = function(values, parent, xindex, xcount){ return '" +

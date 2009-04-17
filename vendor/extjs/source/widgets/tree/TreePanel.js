@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -16,26 +16,26 @@
  * @extends Ext.Panel
 
  * @cfg {Ext.tree.TreeNode} root The root node for the tree.
- * @cfg {Boolean} rootVisible false to hide the root node (defaults to true)
- * @cfg {Boolean} lines false to disable tree lines (defaults to true)
- * @cfg {Boolean} enableDD true to enable drag and drop
- * @cfg {Boolean} enableDrag true to enable just drag
- * @cfg {Boolean} enableDrop true to enable just drop
+ * @cfg {Boolean} rootVisible <tt>false</tt> to hide the root node (defaults to <tt>true</tt>)
+ * @cfg {Boolean} lines <tt>false</tt> to disable tree lines (defaults to <tt>true</tt>)
+ * @cfg {Boolean} enableDD <tt>true</tt> to enable drag and drop
+ * @cfg {Boolean} enableDrag <tt>true</tt> to enable just drag
+ * @cfg {Boolean} enableDrop <tt>true</tt> to enable just drop
  * @cfg {Object} dragConfig Custom config to pass to the {@link Ext.tree.TreeDragZone} instance
  * @cfg {Object} dropConfig Custom config to pass to the {@link Ext.tree.TreeDropZone} instance
  * @cfg {String} ddGroup The DD group this TreePanel belongs to
- * @cfg {String} ddAppendOnly True if the tree should only allow append drops (use for trees which are sorted)
- * @cfg {Boolean} ddScroll true to enable body scrolling
- * @cfg {Boolean} containerScroll true to register this container with ScrollManager
- * @cfg {Boolean} hlDrop false to disable node highlight on drop (defaults to the value of Ext.enableFx)
- * @cfg {String} hlColor The color of the node highlight (defaults to C3DAF9)
- * @cfg {Boolean} animate true to enable animated expand/collapse (defaults to the value of Ext.enableFx)
- * @cfg {Boolean} singleExpand true if only 1 node per branch may be expanded
- * @cfg {Boolean} selModel A tree selection model to use with this TreePanel (defaults to a {@link Ext.tree.DefaultSelectionModel})
- * @cfg {Boolean} trackMouseOver False to disable mouse over highlighting 
+ * @cfg {Boolean} ddAppendOnly <tt>true</tt> if the tree should only allow append drops (use for trees which are sorted)
+ * @cfg {Boolean} ddScroll <tt>true</tt> to enable body scrolling
+ * @cfg {Boolean} containerScroll <tt>true</tt> to register this container with ScrollManager
+ * @cfg {Boolean} hlDrop <tt>false</tt> to disable node highlight on drop (defaults to the value of {@link Ext#enableFx})
+ * @cfg {String} hlColor The color of the node highlight (defaults to <tt>'C3DAF9'</tt>)
+ * @cfg {Boolean} animate <tt>true</tt> to enable animated expand/collapse (defaults to the value of {@link Ext#enableFx})
+ * @cfg {Boolean} singleExpand <tt>true</tt> if only 1 node per branch may be expanded
+ * @cfg {Boolean} selModel A tree selection model to use with this TreePanel (defaults to an {@link Ext.tree.DefaultSelectionModel})
+ * @cfg {Boolean} trackMouseOver <tt>false</tt> to disable mouse over highlighting 
  * @cfg {Ext.tree.TreeLoader} loader A {@link Ext.tree.TreeLoader} for use with this TreePanel
- * @cfg {String} pathSeparator The token used to separate sub-paths in path strings (defaults to '/')
- * @cfg {Boolean} useArrows True to use Vista-style arrows in the tree (defaults to false)
+ * @cfg {String} pathSeparator The token used to separate sub-paths in path strings (defaults to <tt>'/'</tt>)
+ * @cfg {Boolean} useArrows <tt>true</tt> to use Vista-style arrows in the tree (defaults to <tt>false</tt>)
  *
  * @constructor
  * @param {Object} config
@@ -54,7 +54,7 @@ Ext.tree.TreePanel = Ext.extend(Ext.Panel, {
         if(!this.eventModel){
             this.eventModel = new Ext.tree.TreeEventModel(this);
         }
-        
+
         // initialize the loader
         var l = this.loader;
         if(!l){
@@ -74,8 +74,11 @@ Ext.tree.TreePanel = Ext.extend(Ext.Panel, {
         * @property root
         */
         if(this.root){
-           this.setRootNode(this.root);
+            var r = this.root;
+            delete this.root;
+            this.setRootNode(r);
         }
+
 
         this.addEvents(
 
@@ -391,11 +394,13 @@ new Ext.tree.TreePanel({
     },
 
     /**
-     * Sets the root node for this tree during initialization. 
+     * Sets the root node for this tree. If the TreePanel has already rendered a root node, the
+     * previous root node (and all of its descendants) are destroyed before the new root node is rendered. 
      * @param {Node} node
      * @return {Node}
      */
     setRootNode : function(node){
+        Ext.destroy(this.root);     
         if(!node.render){ // attributes passed
             node = this.loader.createNode(node);
         }
@@ -404,9 +409,13 @@ new Ext.tree.TreePanel({
         node.isRoot = true;
         this.registerNode(node);
         if(!this.rootVisible){
-        	var uiP = node.attributes.uiProvider;
-        	node.ui = uiP ? new uiP(node) : new Ext.tree.RootTreeNodeUI(node); 
-        }
+            var uiP = node.attributes.uiProvider;
+            node.ui = uiP ? new uiP(node) : new Ext.tree.RootTreeNodeUI(node); 
+        }        
+        if (this.innerCt) {
+            this.innerCt.update('');
+            this.afterRender();
+        }        
         return node;
     },
 
@@ -606,7 +615,8 @@ new Ext.tree.TreePanel({
         }
         if((this.enableDD || this.enableDrop) && !this.dropZone){
            /**
-            * The dropZone used by this tree if drop is enabled
+            * The dropZone used by this tree if drop is enabled (see {@link #enableDD} or {@link #enableDrop})
+            * @property dropZone
             * @type Ext.tree.TreeDropZone
             */
              this.dropZone = new Ext.tree.TreeDropZone(this, this.dropConfig || {
@@ -615,7 +625,8 @@ new Ext.tree.TreePanel({
         }
         if((this.enableDD || this.enableDrag) && !this.dragZone){
            /**
-            * The dragZone used by this tree if drag is enabled
+            * The dragZone used by this tree if drag is enabled (see {@link #enableDD} or {@link #enableDrag}) 
+            * @property dragZone
             * @type Ext.tree.TreeDragZone
             */
             this.dragZone = new Ext.tree.TreeDragZone(this, this.dragConfig || {
@@ -704,10 +715,6 @@ new Ext.tree.TreePanel({
      * @hide 
      */
     /** 
-     * @method add 
-     * @hide 
-     */
-    /** 
      * @method cascade 
      * @hide 
      */
@@ -757,6 +764,10 @@ new Ext.tree.TreePanel({
      */
     /** 
      * @event add 
+     * @hide 
+     */
+    /** 
+     * @method removeAll
      * @hide 
      */
     /** 

@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
 /**
  * Greek translation
  * By thesilentman (utf8 encoding)

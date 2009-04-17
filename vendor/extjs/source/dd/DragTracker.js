@@ -1,19 +1,53 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
+/**
+ * @class Ext.dd.DragTracker
+ * @extends Ext.util.Observable
+ */
 Ext.dd.DragTracker = function(config){
     Ext.apply(this, config);
     this.addEvents(
+        /**
+         * @event mousedown
+         * @param {Object} this
+         * @param {Object} e event object
+         */
         'mousedown',
+        /**
+         * @event mouseup
+         * @param {Object} this
+         * @param {Object} e event object
+         */
         'mouseup',
+        /**
+         * @event mousemove
+         * @param {Object} this
+         * @param {Object} e event object
+         */
         'mousemove',
+        /**
+         * @event dragstart
+         * @param {Object} this
+         * @param {Object} startXY the page coordinates of the event
+         */
         'dragstart',
+        /**
+         * @event dragend
+         * @param {Object} this
+         * @param {Object} e event object
+         */
         'dragend',
+        /**
+         * @event drag
+         * @param {Object} this
+         * @param {Object} e event object
+         */
         'drag'
     );
 
@@ -25,8 +59,21 @@ Ext.dd.DragTracker = function(config){
 }
 
 Ext.extend(Ext.dd.DragTracker, Ext.util.Observable,  {
+    /**
+     * @cfg {Boolean} active
+	 * Defaults to <tt>false</tt>.
+	 */	
     active: false,
+    /**
+     * @cfg {Number} tolerance
+	 * Defaults to <tt>5</tt>.
+	 */	
     tolerance: 5,
+    /**
+     * @cfg {Boolean/Number} autoStart
+	 * Defaults to <tt>false</tt>. Specify <tt>true</tt> to defer trigger start by 1000 ms.
+	 * Specify a Number for the number of milliseconds to defer trigger start.
+	 */	
     autoStart: false,
 
     initEl: function(el){
@@ -43,7 +90,9 @@ Ext.extend(Ext.dd.DragTracker, Ext.util.Observable,  {
         if(this.fireEvent('mousedown', this, e) !== false && this.onBeforeStart(e) !== false){
             this.startXY = this.lastXY = e.getXY();
             this.dragTarget = this.delegate ? target : this.el.dom;
-            e.preventDefault();
+            if(this.preventDefault !== false){
+                e.preventDefault();
+            }
             var doc = Ext.getDoc();
             doc.on('mouseup', this.onMouseUp, this);
             doc.on('mousemove', this.onMouseMove, this);
@@ -77,11 +126,14 @@ Ext.extend(Ext.dd.DragTracker, Ext.util.Observable,  {
         doc.un('selectstart', this.stopSelect, this);
         e.preventDefault();
         this.clearStart();
+        var wasActive = this.active;
         this.active = false;
         delete this.elRegion;
         this.fireEvent('mouseup', this, e);
-        this.onEnd(e);
-        this.fireEvent('dragend', this, e);
+        if(wasActive){
+            this.onEnd(e);
+            this.fireEvent('dragend', this, e);
+        }
     },
 
     triggerStart: function(isTimer){

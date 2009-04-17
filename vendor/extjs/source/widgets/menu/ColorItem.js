@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -8,19 +8,10 @@
 
 /**
  * @class Ext.menu.ColorItem
- * @extends Ext.menu.Adapter
- * A menu item that wraps the {@link Ext.ColorPalette} component.
+ * <b>Deprecated. This class simply creates an instance of Ext.ColorPalette
  * @constructor
- * Creates a new ColorItem
+ * Creates a new ColorPalette
  * @param {Object} config Configuration options
+ * @xtype colorpalette
  */
-Ext.menu.ColorItem = function(config){
-    Ext.menu.ColorItem.superclass.constructor.call(this, new Ext.ColorPalette(config), config);
-    /** The Ext.ColorPalette object @type Ext.ColorPalette */
-    this.palette = this.component;
-    this.relayEvents(this.palette, ["select"]);
-    if(this.selectHandler){
-        this.on('select', this.selectHandler, this.scope);
-    }
-};
-Ext.extend(Ext.menu.ColorItem, Ext.menu.Adapter);
+Ext.menu.ColorItem = Ext.ColorPalette;

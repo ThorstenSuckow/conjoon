@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -23,7 +23,7 @@ Ext.app.BookLoader = Ext.extend(Ext.ux.XmlTreeLoader, {
             // Override these values for our folder nodes because we are loading all data at once.  If we were
             // loading each node asynchronously (the default) we would not want to do this:
             attr.loaded = true;
-            //attr.expanded = true;
+            attr.expanded = true;
         }
         else if(attr.title){ // is it a book node?
             

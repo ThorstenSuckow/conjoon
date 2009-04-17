@@ -5,18 +5,18 @@
  * Updated by wm003 10-31-2007
  */
 
-Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">√úbertrage Daten ...</div>';
+Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">‹bertrage Daten ...</div>';
 
 if(Ext.View){
    Ext.View.prototype.emptyText = "";
 }
 
 if(Ext.grid.GridPanel){
-   Ext.grid.GridPanel.prototype.ddText = "{0} Zeile(n) ausgew√§hlt";
+   Ext.grid.GridPanel.prototype.ddText = "{0} Zeile(n) ausgew‰hlt";
 }
 
 if(Ext.TabPanelItem){
-   Ext.TabPanelItem.prototype.closeText = "Diesen Tab schlie√üen";
+   Ext.TabPanelItem.prototype.closeText = "Diesen Tab schlieﬂen";
 }
 
 if(Ext.form.BasicForm){
@@ -28,13 +28,13 @@ if(Ext.form.Field){
 }
 
 if(Ext.LoadMask){
-  Ext.LoadMask.prototype.msg = "√úbertrage Daten...";
+  Ext.LoadMask.prototype.msg = "‹bertrage Daten...";
 }
 
 Date.monthNames = [
    "Januar",
    "Februar",
-   "M√§rz",
+   "M‰rz",
    "April",
    "Mai",
    "Juni",
@@ -53,16 +53,16 @@ Date.getShortMonthName = function(month) {
 Date.monthNumbers = {
   Jan : 0,
   Feb : 1,
-  Mar : 2,
+  "M\u00e4r" : 2,
   Apr : 3,
-  May : 4,
+  Mai : 4,
   Jun : 5,
   Jul : 6,
   Aug : 7,
   Sep : 8,
-  Oct : 9,
+  Okt : 9,
   Nov : 10,
-  Dec : 11
+  Dez : 11
 };
 
 Date.getMonthNumber = function(name) {
@@ -103,15 +103,15 @@ if(Ext.util.Format){
 if(Ext.DatePicker){
    Ext.apply(Ext.DatePicker.prototype, {
       todayText         : "Heute",
-      minText           : "Dieses Datum liegt von dem erstm√∂glichen Datum",
-      maxText           : "Dieses Datum liegt nach dem letztm√∂glichen Datum",
+      minText           : "Dieses Datum liegt von dem erstmˆglichen Datum",
+      maxText           : "Dieses Datum liegt nach dem letztmˆglichen Datum",
       disabledDaysText  : "",
       disabledDatesText : "",
       monthNames	    : Date.monthNames,
       dayNames		    : Date.dayNames,
-      nextText          : "N√§chster Monat (Strg/Control + Rechts)",
+      nextText          : "N‰chster Monat (Strg/Control + Rechts)",
       prevText          : "Vorheriger Monat (Strg/Control + Links)",
-      monthYearText     : "Monat ausw√§hlen (Strg/Control + Hoch/Runter, um ein Jahr auszuw√§hlen)",
+      monthYearText     : "Monat ausw‰hlen (Strg/Control + Hoch/Runter, um ein Jahr auszuw‰hlen)",
       todayTip          : "Heute ({0}) (Leertaste)",
       format            : "d.m.Y",
       okText            : "&#160;OK&#160;",
@@ -126,7 +126,7 @@ if(Ext.PagingToolbar){
       afterPageText  : "von {0}",
       firstText      : "Erste Seite",
       prevText       : "vorherige Seite",
-      nextText       : "n√§chste Seite",
+      nextText       : "n‰chste Seite",
       lastText       : "letzte Seite",
       refreshText    : "Aktualisieren",
       displayMsg     : "Anzeige Eintrag {0} - {1} von {2}",
@@ -146,8 +146,8 @@ if(Ext.form.TextField){
 
 if(Ext.form.NumberField){
    Ext.apply(Ext.form.NumberField.prototype, {
-      minText : "Der Mindestwert f√ºr dieses Feld ist {0}",
-      maxText : "Der Maximalwert f√ºr dieses Feld ist {0}",
+      minText : "Der Mindestwert f¸r dieses Feld ist {0}",
+      maxText : "Der Maximalwert f¸r dieses Feld ist {0}",
       nanText : "{0} ist keine Zahl"
    });
 }
@@ -156,9 +156,9 @@ if(Ext.form.DateField){
    Ext.apply(Ext.form.DateField.prototype, {
       disabledDaysText  : "nicht erlaubt",
       disabledDatesText : "nicht erlaubt",
-      minText           : "Das Datum in diesem Feld mu√ü nach dem {0} liegen",
-      maxText           : "Das Datum in diesem Feld mu√ü vor dem {0} liegen",
-      invalidText       : "{0} ist kein valides Datum - es mu√ü im Format {1} eingegeben werden",
+      minText           : "Das Datum in diesem Feld muﬂ nach dem {0} liegen",
+      maxText           : "Das Datum in diesem Feld muﬂ vor dem {0} liegen",
+      invalidText       : "{0} ist kein valides Datum - es muﬂ im Format {1} eingegeben werden",
       format            : "d.m.Y",
       altFormats        : "d.m.Y|d/m/Y|d-m-y|d-m-Y|d/m|d-m|dm|dmy|dmY|d|Y-m-d"
    });
@@ -182,46 +182,46 @@ if(Ext.form.VTypes){
 
 if(Ext.form.HtmlEditor){
   Ext.apply(Ext.form.HtmlEditor.prototype, {
-    createLinkText : 'Bitte geben Sie die URL f√ºr den Link ein:',
+    createLinkText : 'Bitte geben Sie die URL f¸r den Link ein:',
     buttonTips : {
       bold : {
         title: 'Fett (Ctrl+B)',
-        text: 'Erstellt den ausgew√§hlten Text in Fettschrift.',
+        text: 'Erstellt den ausgew‰hlten Text in Fettschrift.',
         cls: 'x-html-editor-tip'
       },
       italic : {
         title: 'Kursiv (Ctrl+I)',
-        text: 'Erstellt den ausgew√§hlten Text in Schr√§gschrift.',
+        text: 'Erstellt den ausgew‰hlten Text in Schr‰gschrift.',
         cls: 'x-html-editor-tip'
       },
       underline : {
         title: 'Unterstrichen (Ctrl+U)',
-        text: 'Unterstreicht den ausgew√§hlten Text.',
+        text: 'Unterstreicht den ausgew‰hlten Text.',
         cls: 'x-html-editor-tip'
       },
       increasefontsize : {
-        title: 'Text verg√∂√üern',
-        text: 'Erh√∂ht die Schriftgr√∂√üe.',
+        title: 'Text vergˆﬂern',
+        text: 'Erhˆht die Schriftgrˆﬂe.',
         cls: 'x-html-editor-tip'
       },
       decreasefontsize : {
         title: 'Text verkleinern',
-        text: 'Verringert die Schriftgr√∂√üe.',
+        text: 'Verringert die Schriftgrˆﬂe.',
         cls: 'x-html-editor-tip'
       },
       backcolor : {
         title: 'Text farblich hervorheben',
-        text: 'Hintergrundfarbe des ausgew√§hlten Textes √§ndern.',
+        text: 'Hintergrundfarbe des ausgew‰hlten Textes ‰ndern.',
         cls: 'x-html-editor-tip'
       },
       forecolor : {
         title: 'Schriftfarbe',
-        text: 'Farbe des ausgew√§hlten Textes √§ndern.',
+        text: 'Farbe des ausgew‰hlten Textes ‰ndern.',
         cls: 'x-html-editor-tip'
       },
       justifyleft : {
-        title: 'Linksb√ºndig',
-        text: 'Setzt den Text linksb√ºndig.',
+        title: 'Linksb¸ndig',
+        text: 'Setzt den Text linksb¸ndig.',
         cls: 'x-html-editor-tip'
       },
       justifycenter : {
@@ -230,13 +230,13 @@ if(Ext.form.HtmlEditor){
         cls: 'x-html-editor-tip'
       },
       justifyright : {
-        title: 'Rechtsb√ºndig',
-        text: 'Setzt den Text rechtsb√ºndig.',
+        title: 'Rechtsb¸ndig',
+        text: 'Setzt den Text rechtsb¸ndig.',
         cls: 'x-html-editor-tip'
       },
       insertunorderedlist : {
-        title: 'Aufz√§hlungsliste',
-        text: 'Beginnt eine Aufz√§hlungsliste mit Spiegelstrichen.',
+        title: 'Aufz‰hlungsliste',
+        text: 'Beginnt eine Aufz‰hlungsliste mit Spiegelstrichen.',
         cls: 'x-html-editor-tip'
       },
       insertorderedlist : {
@@ -246,7 +246,7 @@ if(Ext.form.HtmlEditor){
       },
       createlink : {
         title: 'Hyperlink',
-        text: 'Erstellt einen Hyperlink aus dem ausgew√§hlten text.',
+        text: 'Erstellt einen Hyperlink aus dem ausgew‰hlten text.',
         cls: 'x-html-editor-tip'
       },
       sourceedit : {
@@ -286,8 +286,8 @@ if(Ext.grid.PropertyColumnModel){
 
 if(Ext.layout.BorderLayout && Ext.layout.BorderLayout.SplitRegion){
   Ext.apply(Ext.layout.BorderLayout.SplitRegion.prototype, {
-    splitTip            : "Ziehen, um Gr√∂√üe zu √§ndern.",
-    collapsibleSplitTip : "Ziehen, um Gr√∂√üe zu √§ndern. Doppelklick um Panel auszublenden."
+    splitTip            : "Ziehen, um Grˆﬂe zu ‰ndern.",
+    collapsibleSplitTip : "Ziehen, um Grˆﬂe zu ‰ndern. Doppelklick um Panel auszublenden."
   });
 }
 
@@ -295,7 +295,7 @@ if(Ext.form.TimeField){
    Ext.apply(Ext.form.TimeField.prototype, {
     minText : "Die Zeit muss gleich oder nach {0} liegen",
     maxText : "Die Zeit muss gleich oder vor {0} liegen",
-    invalidText : "{0} ist keine g√ºltige Zeit",
+    invalidText : "{0} ist keine g¸ltige Zeit",
     format : "H:i"
    });
 }

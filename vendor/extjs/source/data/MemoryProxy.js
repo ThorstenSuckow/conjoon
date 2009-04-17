@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -17,28 +17,34 @@
 Ext.data.MemoryProxy = function(data){
     Ext.data.MemoryProxy.superclass.constructor.call(this);
     this.data = data;
+
+	// Define the proxy api to satisfy DataProxy#doRequest
+	this.api = {
+		load: true
+	};
 };
 
 Ext.extend(Ext.data.MemoryProxy, Ext.data.DataProxy, {
     /**
      * @event loadexception
-     * Fires if an exception occurs in the Proxy during data loading. Note that this event is also relayed 
+     * Fires if an exception occurs in the Proxy during data loading. Note that this event is also relayed
      * through {@link Ext.data.Store}, so you can listen for it directly on any Store instance.
      * @param {Object} this
      * @param {Object} arg The callback's arg object passed to the {@link #load} function
      * @param {Object} null This parameter does not apply and will always be null for MemoryProxy
      * @param {Error} e The JavaScript Error object caught if the configured Reader could not read the data
      */
-    
-    /**
-     * Load data from the requested source (in this case an in-memory
-     * data object passed to the constructor), read the data object into
-     * a block of Ext.data.Records using the passed Ext.data.DataReader implementation, and
-     * process that block using the passed callback.
-     * @param {Object} params This parameter is not used by the MemoryProxy class.
+
+   	/**
+	 * MemoryProxy implementation of DataProxy#doRequest
+	 * @param {String} action
+	 * @param {Ext.data.Record/Ext.data.Record[]} rs If action is load, rs will be null
+     * @param {Object} params An object containing properties which are to be used as HTTP parameters
+     * for the request to the remote server.
      * @param {Ext.data.DataReader} reader The Reader object which converts the data
      * object into a block of Ext.data.Records.
-     * @param {Function} callback The function into which to pass the block of Ext.data.records.
+	 * @param {Ext.data.DataWriter} writer
+     * @param {Function} callback The function into which to pass the block of Ext.data.Records.
      * The function must be passed <ul>
      * <li>The Record block object</li>
      * <li>The "arg" argument from the load function</li>
@@ -46,22 +52,18 @@ Ext.extend(Ext.data.MemoryProxy, Ext.data.DataProxy, {
      * </ul>
      * @param {Object} scope The scope in which to call the callback
      * @param {Object} arg An optional argument which is passed to the callback as its second parameter.
-     */
-    load : function(params, reader, callback, scope, arg){
-        params = params || {};
+	 */
+	doRequest : function(action, rs, params, reader, writer, cb, scope, arg) {
+		// No implementation for CRUD in MemoryProxy.  Assumes all actions are 'load'
+		params = params || {};
         var result;
         try {
             result = reader.readRecords(this.data);
         }catch(e){
             this.fireEvent("loadexception", this, arg, null, e);
-            callback.call(scope, null, arg, false);
+            cb.call(scope, null, arg, false);
             return;
         }
-        callback.call(scope, result, arg, true);
-    },
-    
-    // private
-    update : function(params, records){
-        
-    }
+        cb.call(scope, result, arg, true);
+	}
 });

@@ -1,0 +1,53 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Editor Grid Example</title>
+
+<link rel="stylesheet" type="text/css" href="../../resources/css/ext-all.css" />
+
+    <!-- GC -->
+ 	<!-- LIBS -->
+ 	<script type="text/javascript" src="../../adapter/ext/ext-base.js"></script>
+ 	<!-- ENDLIBS -->
+
+    <script type="text/javascript" src="../../ext-all.js"></script>
+
+    <script type="text/javascript" src="writer.js"></script>
+	<script type="text/javascript" src="UserForm.js"></script>
+	<script type="text/javascript" src="UserGrid.js"></script>
+
+	<!-- Common Styles for the examples -->
+	<link rel="stylesheet" type="text/css" href="../shared/examples.css" />
+	<link rel="stylesheet" type="text/css" href="../shared/icons/silk.css" />
+</head>
+<body>
+<script type="text/javascript" src="../shared/examples.js"></script><!-- EXAMPLES -->
+<h1>Ext.data.DataWriter Example</h1>
+<p>This example shows how to implement a Writer for your Store.</p>
+<p>Note that the js is not minified so it is readable. See <a href="writer.js">writer.js</a>, <a href="UserForm.js">UserForm.js</a> and
+<a href="UserGrid.js">UserGrid.js</a>.</p>
+
+<p>The HttpProxy plugged into the store in this example uses the new <em>api</em> configuration instead of an <em>url</em>.
+Since we can't run server-side code in these examples, the api here points to static json files which represent simulated CRUD responses
+from the server.</p>
+
+<p>Take note of the requests being generated in Firebug as you interact with the Grid and Form.</p>
+
+<code><pre>
+var proxy = new Ext.data.HttpProxy({
+    prettyUrls: false,	// <-- prettyUrls for urls of the form /user/update/1 or /user/destroy/32
+    api: {
+        load : '<a href="load.json">load.json</a>',
+        create : '<a href="create.json">create.json</a>',
+        save: '<a href="update.json">update.json</a>',
+        destroy: '<a href="destroy.json">destroy.json</a>'
+    }
+});
+</pre></code>
+<div class="container" style="width:500px">
+	<div id="user-form"></div>
+	<div id="user-grid"></div>
+</div>
+
+</body>
+</html>

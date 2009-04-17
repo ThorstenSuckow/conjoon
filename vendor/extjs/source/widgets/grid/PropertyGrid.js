@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -214,6 +214,14 @@ Ext.extend(Ext.grid.PropertyColumnModel, Ext.grid.ColumnModel, {
         }else{
             return this.editors['string'];
         }
+    },
+    
+    // inherit docs
+    destroy : function(){
+        Ext.grid.PropertyColumnModel.superclass.destroy.call(this);
+        for(var ed in this.editors){
+            Ext.destroy(ed);
+        }
     }
 });
 
@@ -313,7 +321,7 @@ var grid = new Ext.grid.PropertyGrid({
         this.ds = store.store;
         Ext.grid.PropertyGrid.superclass.initComponent.call(this);
 
-        this.selModel.on('beforecellselect', function(sm, rowIndex, colIndex){
+		this.mon(this.selModel, 'beforecellselect', function(sm, rowIndex, colIndex){
             if(colIndex === 0){
                 this.startEditing.defer(200, this, [rowIndex, 1]);
                 return false;

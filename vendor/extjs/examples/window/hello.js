@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -14,31 +14,32 @@ Ext.onReady(function(){
         // create the window on the first click and reuse on subsequent clicks
         if(!win){
             win = new Ext.Window({
-                applyTo     : 'hello-win',
-                layout      : 'fit',
-                width       : 500,
-                height      : 300,
-                closeAction :'hide',
-                plain       : true,
-                items       : new Ext.TabPanel({
-                    applyTo        : 'hello-tabs',
-                    autoTabs       : true,
-                    activeTab      : 0,
-                    deferredRender : false,
-                    border         : false
+                el:'hello-win',
+                layout:'fit',
+                width:500,
+                height:300,
+                closeAction:'hide',
+                plain: true,
+                
+                items: new Ext.TabPanel({
+                    el: 'hello-tabs',
+                    autoTabs:true,
+                    activeTab:0,
+                    deferredRender:false,
+                    border:false
                 }),
 
                 buttons: [{
-                    text     : 'Submit',
-                    disabled : true
+                    text:'Submit',
+                    disabled:true
                 },{
-                    text     : 'Close',
-                    handler  : function(){
+                    text: 'Close',
+                    handler: function(){
                         win.hide();
                     }
                 }]
             });
         }
-        win.show(button);
+        win.show(this);
     });
 });

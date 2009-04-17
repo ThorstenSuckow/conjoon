@@ -44,20 +44,23 @@ Ext.extend(ApiPanel, Ext.tree.TreePanel, {
         if(cls){
             var parts = cls.split('.');
             var last = parts.length-1;
+            var res = [];
+            var pkg = [];
             for(var i = 0; i < last; i++){ // things get nasty - static classes can have .
                 var p = parts[i];
                 var fc = p.charAt(0);
                 var staticCls = fc.toUpperCase() == fc;
                 if(p == 'Ext' || !staticCls){
-                    parts[i] = 'pkg-'+p;
+                    pkg.push(p);
+                    res[i] = 'pkg-'+pkg.join('.');
                 }else if(staticCls){
                     --last;
-                    parts.splice(i, 1);
+                    res.splice(i, 1);
                 }
             }
-            parts[last] = cls;
+            res[last] = cls;
 
-            this.selectPath('/root/apidocs/'+parts.join('/'));
+            this.selectPath('/root/apidocs/'+res.join('/'));
         }
     }
 });
@@ -220,7 +223,7 @@ Ext.extend(MainPanel, Ext.TabPanel, {
 	        '<tpl for=".">',
 	        '<div class="search-item">',
 	            '<a class="member" ext:cls="{cls}" ext:member="{member}" href="output/{cls}.html">',
-				'<img src="../resources/images/default/s.gif" class="item-icon icon-{type}"/>{member}',
+				'<img src="resources/images/default/s.gif" class="item-icon icon-{type}"/>{member}',
 				'</a> ',
 				'<a class="cls" ext:cls="{cls}" href="output/{cls}.html">{cls}</a>',
 	            '<p>{doc}</p>',

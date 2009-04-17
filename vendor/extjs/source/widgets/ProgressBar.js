@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -22,6 +22,7 @@
  * @cfg {Mixed} textEl The element to render the progress text to (defaults to the progress
  * bar's internal text element)
  * @cfg {String} id The progress bar element's id (defaults to an auto-generated id)
+ * @xtype progress
  */
 Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
    /**
@@ -56,8 +57,6 @@ Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
 
     // private
     onRender : function(ct, position){
-        Ext.ProgressBar.superclass.onRender.call(this, ct, position);
-
         var tpl = new Ext.Template(
             '<div class="{cls}-wrap">',
                 '<div class="{cls}-inner">',
@@ -73,11 +72,10 @@ Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
             '</div>'
         );
 
-        if(position){
-            this.el = tpl.insertBefore(position, {cls: this.baseCls}, true);
-        }else{
-            this.el = tpl.append(ct, {cls: this.baseCls}, true);
-        }
+        this.el = position 
+        	? tpl.insertBefore(position, {cls: this.baseCls}, true)
+        	: tpl.append(ct, {cls: this.baseCls}, true);
+		        
         if(this.id){
             this.el.dom.id = this.id;
         }
@@ -100,14 +98,14 @@ Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
     },
     
     // private
-	afterRender : function(){
-		Ext.ProgressBar.superclass.afterRender.call(this);
-		if(this.value){
-			this.updateProgress(this.value, this.text);
-		}else{
-			this.updateText(this.text);
-		}
-	},
+    afterRender : function(){
+        Ext.ProgressBar.superclass.afterRender.call(this);
+        if(this.value){
+            this.updateProgress(this.value, this.text);
+        }else{
+            this.updateText(this.text);
+        }
+    },
 
     /**
      * Updates the progress bar value, and optionally its text.  If the text argument is not specified,
@@ -126,12 +124,12 @@ Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
             this.updateText(text);
         }
         if(this.rendered){
-	        var w = Math.floor(value*this.el.dom.firstChild.offsetWidth);
-	        this.progressBar.setWidth(w, animate === true || (animate !== false && this.animate));
-	        if(this.textTopEl){
-	            //textTopEl should be the same width as the bar so overflow will clip as the bar moves
-	            this.textTopEl.removeClass('x-hidden').setWidth(w);
-	        }
+            var w = Math.floor(value*this.el.dom.firstChild.offsetWidth);
+            this.progressBar.setWidth(w, animate === true || (animate !== false && this.animate));
+            if(this.textTopEl){
+                //textTopEl should be the same width as the bar so overflow will clip as the bar moves
+                this.textTopEl.removeClass('x-hidden').setWidth(w);
+            }
         }
         this.fireEvent('update', this, value, text);
         return this;

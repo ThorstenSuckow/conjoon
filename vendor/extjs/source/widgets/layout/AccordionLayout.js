@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,15 +7,13 @@
  */
 
 /**
- * @class Ext.layout.Accordion
+ * @class Ext.layout.AccordionLayout
  * @extends Ext.layout.FitLayout
- * <p>This is a layout that contains multiple panels in an expandable accordion style such that only one
- * panel can be open at any given time.  Each panel has built-in support for expanding and collapsing.
- * This class is intended to be extended or created via the layout:'accordion' {@link Ext.Container#layout}
- * config, and should generally not need to be created directly via the new keyword.</p>
- * <p>Note that when creating a layout via config, the layout-specific config properties must be passed in via
- * the {@link Ext.Container#layoutConfig} object which will then be applied internally to the layout.
- * Example usage:</p>
+ * <p>This is a layout that contains multiple panels in an expandable accordion style such that only
+ * <b>one panel can be open at any given time</b>.  Each panel has built-in support for expanding and collapsing.
+ * <p>This class is intended to be extended or created via the <tt><b>{@link Ext.Container#layout layout}</b></tt>
+ * configuration property.  See <tt><b>{@link Ext.Container#layout}</b></tt> for additional details.</p>
+ * <p>Example usage:</p>
  * <pre><code>
 var accordion = new Ext.Panel({
     title: 'Accordion Layout',
@@ -43,7 +41,7 @@ var accordion = new Ext.Panel({
 });
 </code></pre>
  */
-Ext.layout.Accordion = Ext.extend(Ext.layout.FitLayout, {
+Ext.layout.AccordionLayout = Ext.extend(Ext.layout.FitLayout, {
     /**
      * @cfg {Boolean} fill
      * True to adjust the active item's height to fill the available space in the container, false to use the
@@ -114,10 +112,10 @@ Ext.layout.Accordion = Ext.extend(Ext.layout.FitLayout, {
         }
         if(!this.activeItem && !c.collapsed){
             this.activeItem = c;
-        }else if(this.activeItem){
+        }else if(this.activeItem && this.activeItem != c){
             c.collapsed = true;
         }
-        Ext.layout.Accordion.superclass.renderItem.apply(this, arguments);
+        Ext.layout.AccordionLayout.superclass.renderItem.apply(this, arguments);
         c.header.addClass('x-accordion-hd');
         c.on('beforeexpand', this.beforeExpand, this);
     },
@@ -159,6 +157,25 @@ Ext.layout.Accordion = Ext.extend(Ext.layout.FitLayout, {
             size.height -= hh;
             item.setSize(size);
         }
+    },
+
+    /**
+     * Sets the active (expanded) item in the layout.
+     * @param {String/Number} item The string component id or numeric index of the item to activate
+     */
+    setActiveItem : function(item){
+        item = this.container.getComponent(item);
+        if(this.activeItem != item){
+            if(item.rendered && item.collapsed){
+                item.expand();
+            }else{
+                this.activeItem = c;
+            }
+        }
+
     }
 });
-Ext.Container.LAYOUTS['accordion'] = Ext.layout.Accordion;
+Ext.Container.LAYOUTS['accordion'] = Ext.layout.AccordionLayout;
+
+//backwards compat
+Ext.layout.Accordion = Ext.layout.AccordionLayout;

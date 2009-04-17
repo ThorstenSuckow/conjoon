@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -40,14 +40,20 @@ Ext.onReady(function(){
             reader: reader,
             data: xg.dummyData
         }),
-        cm: new xg.ColumnModel([
-            expander,
-            {id:'company',header: "Company", width: 40, sortable: true, dataIndex: 'company'},
-            {header: "Price", width: 20, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
-            {header: "Change", width: 20, sortable: true, dataIndex: 'change'},
-            {header: "% Change", width: 20, sortable: true, dataIndex: 'pctChange'},
-            {header: "Last Updated", width: 20, sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
-        ]),
+        cm: new xg.ColumnModel({
+			defaults: {
+				width: 20,
+				sortable: true
+			},
+			columns: [
+	            expander,
+	            {id:'company',header: "Company", width: 40, dataIndex: 'company'},
+	            {header: "Price", renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
+	            {header: "Change", dataIndex: 'change'},
+	            {header: "% Change", dataIndex: 'pctChange'},
+	            {header: "Last Updated", renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
+        	]
+		}),
         viewConfig: {
             forceFit:true
         },
@@ -70,14 +76,20 @@ Ext.onReady(function(){
             reader: reader,
             data: xg.dummyData
         }),
-        cm: new xg.ColumnModel([
-            sm,
-            {id:'company',header: "Company", width: 200, sortable: true, dataIndex: 'company'},
-            {header: "Price", width: 120, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
-            {header: "Change", width: 120, sortable: true, dataIndex: 'change'},
-            {header: "% Change", width: 120, sortable: true, dataIndex: 'pctChange'},
-            {header: "Last Updated", width: 135, sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
-        ]),
+        cm: new xg.ColumnModel({
+			defaults: {
+				width: 120,
+				sortable: true
+			},
+			columns: [
+	            sm,
+	            {id:'company',header: "Company", width: 200, dataIndex: 'company'},
+	            {header: "Price", renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
+	            {header: "Change", dataIndex: 'change'},
+	            {header: "% Change", dataIndex: 'pctChange'},
+	            {header: "Last Updated", width: 135, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
+	        ]
+		}),
         sm: sm,
         width:600,
         height:300,

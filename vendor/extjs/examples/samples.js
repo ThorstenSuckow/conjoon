@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -20,7 +20,10 @@ SamplePanel = Ext.extend(Ext.DataView, {
             '<dl>',
                 '<tpl for="samples">',
                     '<dd ext:url="{url}"><img src="shared/screens/{icon}"/>',
-                        '<div><h4>{text}</h4><p>{desc}</p></div>',
+                        '<div><h4>{text}',
+                            '<tpl if="values.isNew"><span class="new-sample"> (New)</span></tpl>',
+                            '<tpl if="values.isUpdated"><span class="updated-sample"> (Updated)</span></tpl>',
+                        '</h4><p>{desc}</p></div>',
                     '</dd>',
                 '</tpl>',
             '<div style="clear:left"></div></dl></div>',
@@ -87,6 +90,12 @@ Ext.EventManager.on(window, 'load', function(){
             icon: 'grid-edit.gif',
             desc: 'An editable grid loaded from XML that shows multiple types of grid editors as well as defining custom data records.'
         },{
+            text: 'Row Editor Grid',
+            url: 'grid/row-editor.html',
+            icon: 'grid-row-editor.gif',
+            desc: 'An editable grid which allows the user to make modifications to an entire record at once. Also demonstrates the Ext.chart package. ',
+            isNew: true
+        },{
             text: 'XML Grid',
             url: 'grid/xml-grid.html',
             icon: 'grid-xml.gif',
@@ -96,6 +105,17 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'grid/paging.html',
             icon: 'grid-paging.gif',
             desc: 'A grid with paging, cross-domain data loading and custom- rendered expandable row bodies.'
+        },{
+            text: 'Progress Bar Pager',
+            url: 'grid/progress-bar-pager.html',
+            icon: 'progress-bar-pager.gif',
+            desc: 'An example of how to integrate the Progress Bar with the Paging Toolbar using a custom plugin.',
+            isNew: true
+        },{
+            text: 'Sliding Pager',
+            url: 'grid/sliding-pager.html',
+            icon: 'slider-pager.gif',
+            desc: 'A demonstration on the integration of the Slider with the Paging Toolbar using a custom plugin.'
         },{
             text: 'Grouping',
             url: 'grid/grouping.html',
@@ -111,12 +131,12 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'grid/grid3.html',
             icon: 'grid-plugins.gif',
             desc: 'Multiple grids customized via plugins: expander rows, checkbox selection and row numbering.'
-        },{
+        }/*,{
             text: 'Grid Filtering',
             url: 'grid-filtering/grid-filter.html',
             icon: 'grid-filter.gif',
             desc: 'Grid plugins providing custom data filtering menus that support various data types.'
-        },{
+        }*/,{
             text: 'Grid From Markup',
             url: 'grid/from-markup.html',
             icon: 'grid-from-markup.gif',
@@ -131,6 +151,12 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'grid/binding-with-classes.html',
             icon: 'grid-data-binding.gif',
             desc: 'Refactoring the basic data binding example to use a class-based application design model.'
+        },{
+            text: 'Buffered GridView',
+            url: 'grid/buffer.html',
+            icon: 'grid-buffer.gif',
+            desc: 'GridView optimized for performance by rendering only visible rows.',
+            isNew: true
         }]
     },{
         title: 'Tabs',
@@ -144,6 +170,12 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'tabs/tabs-adv.html',
             icon: 'tabs-adv.gif',
             desc: 'Advanced tab features including tab scrolling, adding tabs programmatically and a context menu plugin.'
+        },{
+            text: 'TabPanel Scroller Menu',
+            url: 'tabs/tab-scroller-menu.html',
+            icon: 'tab-panel-scroller-menu.gif',
+            desc: 'An example of an overflow menu that appears to the right of the TabPanel tab strip',
+            isNew: true
         }]
     },{
         title: 'Windows',
@@ -192,7 +224,8 @@ Ext.EventManager.on(window, 'load', function(){
             text: 'Layout Browser',
             url: 'layout-browser/layout-browser.html',
             icon: 'layout-browser.gif',
-            desc: 'Includes examples for each standard Ext layout, several custom layouts and combination examples.'
+            desc: 'Includes examples for each standard Ext layout, several custom layouts and combination examples.',
+            isUpdated: true
         },{
             text: 'Border Layout',
             url: 'layout/complex.html',
@@ -271,7 +304,20 @@ Ext.EventManager.on(window, 'load', function(){
             text: 'Basic Toolbar',
             url: 'menu/menus.html',
             icon: 'toolbar.gif',
-            desc: 'Toolbar and menus that contain various components like date pickers, color pickers, sub-menus and more.'
+            desc: 'Toolbar and menus that contain various components like date pickers, color pickers, sub-menus and more.',
+            isUpdated: true
+        },{
+            text: 'Toolbar Overflow',
+            url: 'toolbar/overflow.html',
+            icon: 'toolbar-overflow.gif',
+            desc: 'Dynamic overflow of toolbar buttons into an Ext.menu.',
+            isNew: true
+        },{
+            text: 'Toolbar Button Groups',
+            url: 'toolbar/toolbars.html',
+            icon: 'toolbar-button-groups.gif',
+            desc: 'Group buttons together in the toolbar.',
+            isNew: true
         },{
             text: 'Ext Actions',
             url: 'menu/actions.html',
@@ -295,6 +341,12 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'view/chooser.html',
             icon: 'chooser.gif',
             desc: 'A more customized DataView supporting sorting and filtering with multiple templates.'
+        },{
+            text: 'ListView',
+            url: 'view/list-view.html',
+            icon: 'list-view.gif',
+            desc: 'A high performance tabular DataView to be used as a lightweight grid.',
+            isNew: true
         }]
     },{
 		title   : 'Drag and Drop',
@@ -326,7 +378,7 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'window/gmap.html',
             icon: 'gmap-panel.gif',
             desc: 'A Google Maps wrapper class that enables easy display of dynamic maps in Ext panels and windows.'
-        },{
+        },/*{
             text: 'StatusBar',
             url: 'statusbar/statusbar-demo.html',
             icon: 'statusbar.gif',
@@ -336,7 +388,7 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'statusbar/statusbar-advanced.html',
             icon: 'statusbar-plugin.gif',
             desc: 'Customizing the StatusBar via a plugin to provide automatic form validation monitoring and error linking.'
-       },{
+       },*/{
             text: 'Slider',
             url: 'slider/slider.html',
             icon: 'slider.gif',
@@ -345,7 +397,8 @@ Ext.EventManager.on(window, 'load', function(){
             text: 'QuickTips',
             url: 'simple-widgets/qtips.html',
             icon: 'qtips.gif',
-            desc: 'Various tooltip and quick tip configuration options including Ajax loading and mouse tracking.'
+            desc: 'Various tooltip and quick tip configuration options including Ajax loading and mouse tracking.',
+            isUpdated: true
         },{
             text: 'Progress Bar',
             url: 'simple-widgets/progress-bar.html',
@@ -355,7 +408,8 @@ Ext.EventManager.on(window, 'load', function(){
             text: 'Panels',
             url: 'panel/panels.html',
             icon: 'panel.gif',
-            desc: 'A basic collapsible panel example.'
+            desc: 'A basic collapsible panel example.',
+            isUpdated: true
         },{
             text: 'Resizable',
             url: 'resizable/basic.html',
@@ -365,7 +419,20 @@ Ext.EventManager.on(window, 'load', function(){
             text: 'Spotlight',
             url: 'core/spotlight.html',
             icon: 'spotlight.gif',
-            desc: 'A utility for masking everything except a single element on the page to visually highlight it.'
+            desc: 'A utility for masking everything except a single element on the page to visually highlight it.',
+            isNew: true
+        },{
+            text: 'Buttons',
+            url: 'button/buttons.html',
+            icon: 'buttons.gif',
+            desc: '',
+            isNew: true
+        },{
+            text: 'Debugging Console',
+            url: 'debug/debug-console.html',
+            icon: 'debug-console.gif',
+            desc: '',
+            isUpdated: true
         },{
             text: 'Localization (static)',
             url: 'locale/dutch-form.html',
@@ -376,6 +443,12 @@ Ext.EventManager.on(window, 'load', function(){
             url: 'locale/multi-lang.html',
             icon: 'locale-switch.gif',
             desc: 'Dynamically render various Ext components in different locales by selecting from a locale list.'
+        },{
+            text: 'Group Tabs',
+            url: 'grouptabs/',
+            icon: 'group-tabs.gif',
+            desc: 'A custom example on how to setup tab grouping using vertical tabs.',
+            isNew: true
         }]
     }];
 
@@ -432,5 +505,4 @@ Ext.EventManager.on(window, 'load', function(){
 		
 		});
     }, 250);
-
 });

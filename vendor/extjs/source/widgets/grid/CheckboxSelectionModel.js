@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -14,20 +14,30 @@
  * @param {Object} config The configuration options
  */
 Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
+
     /**
-     * @cfg {String} header Any valid text or HTML fragment to display in the header cell for the checkbox column
-     * (defaults to '&lt;div class="x-grid3-hd-checker">&#160;&lt;/div>').  The default CSS class of 'x-grid3-hd-checker'
-     * displays a checkbox in the header and provides support for automatic check all/none behavior on header click.
-     * This string can be replaced by any valid HTML fragment, including a simple text string (e.g., 'Select Rows'), but
-     * the automatic check all/none behavior will only work if the 'x-grid3-hd-checker' class is supplied.
+     * @cfg {Boolean} checkOnly <tt>true</tt> if rows can only be selected by clicking on the
+     * checkbox column (defaults to <tt>false</tt>).
+     */
+    /**
+     * @cfg {String} header Any valid text or HTML fragment to display in the header cell for the
+     * checkbox column.  Defaults to:<pre><code>
+     * '&lt;div class="x-grid3-hd-checker">&#38;#160;&lt;/div>'</tt>
+     * </code></pre>
+     * The default CSS class of <tt>'x-grid3-hd-checker'</tt> displays a checkbox in the header
+     * and provides support for automatic check all/none behavior on header click. This string
+     * can be replaced by any valid HTML fragment, including a simple text string (e.g.,
+     * <tt>'Select Rows'</tt>), but the automatic check all/none behavior will only work if the
+     * <tt>'x-grid3-hd-checker'</tt> class is supplied.
      */
     header: '<div class="x-grid3-hd-checker">&#160;</div>',
     /**
-     * @cfg {Number} width The default width in pixels of the checkbox column (defaults to 20).
+     * @cfg {Number} width The default width in pixels of the checkbox column (defaults to <tt>20</tt>).
      */
     width: 20,
     /**
-     * @cfg {Boolean} sortable True if the checkbox column is sortable (defaults to false).
+     * @cfg {Boolean} sortable <tt>true</tt> if the checkbox column is sortable (defaults to
+     * <tt>false</tt>).
      */
     sortable: false,
 
@@ -36,6 +46,14 @@ Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
     fixed:true,
     dataIndex: '',
     id: 'checker',
+
+    constructor: function(){
+        Ext.grid.CheckboxSelectionModel.superclass.constructor.apply(this, arguments);
+
+        if(this.checkOnly){
+            this.handleMouseDown = Ext.emptyFn;
+        }
+    },
 
     // private
     initEvents : function(){

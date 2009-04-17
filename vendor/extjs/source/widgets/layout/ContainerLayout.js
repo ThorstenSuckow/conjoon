@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -8,14 +8,14 @@
 
 /**
  * @class Ext.layout.ContainerLayout
- * <p>Every {@link Ext.Container Container} delegates the rendering of its child {@link Ext.Component Component}s
- * to a layout manager class which must be {@link Ext.Container#layout configured} into the Container.</p> Some
- * layouts also provide sizing and positioning of child Components/
- *
- * <p>The ContainerLayout class is the default layout manager used when no layout is configured into a Container.
- * It provides the basic foundation for all other layout classes in Ext. It simply renders all child Components
- * into the Container, performing no sizing os positioning services. This class is intended to be extended and should
- * generally not need to be created directly via the new keyword.
+ * <p>The ContainerLayout class is the default layout manager delegated by {@link Ext.Container} to
+ * render any child Components when no <tt>{@link Ext.Container#layout layout}</tt> is configured into
+ * a {@link Ext.Container Container}. ContainerLayout provides the basic foundation for all other layout
+ * classes in Ext. It simply renders all child Components into the Container, performing no sizing or
+ * positioning services. To utilize a layout that provides sizing and positioning of child Components,
+ * specify an appropriate <tt>{@link Ext.Container#layout layout}</tt>.</p>
+ * <p>This class is intended to be extended or created via the <tt><b>{@link Ext.Container#layout layout}</b></tt>
+ * configuration property.  See <tt><b>{@link Ext.Container#layout}</b></tt> for additional details.</p>
  */
 Ext.layout.ContainerLayout = function(config){
     Ext.apply(this, config);
@@ -24,8 +24,21 @@ Ext.layout.ContainerLayout = function(config){
 Ext.layout.ContainerLayout.prototype = {
     /**
      * @cfg {String} extraCls
-     * An optional extra CSS class that will be added to the container (defaults to '').  This can be useful for
-     * adding customized styles to the container or any of its children using standard CSS rules.
+     * <p>An optional extra CSS class that will be added to the container. This can be useful for adding
+     * customized styles to the container or any of its children using standard CSS rules. See
+     * {@link Ext.Component}.{@link Ext.Component#ctCls ctCls} also.</p>
+     * <p><b>Note</b>: <tt>extraCls</tt> defaults to <tt>''</tt> except for the following classes
+     * which assign a value by default:
+     * <div class="mdetail-params"><ul>
+     * <li>{@link Ext.layout.AbsoluteLayout Absolute Layout} : <tt>'x-abs-layout-item'</tt></li>
+     * <li>{@link Ext.layout.Box Box Layout} : <tt>'x-box-item'</tt></li>
+     * <li>{@link Ext.layout.ColumnLayout Column Layout} : <tt>'x-column'</tt></li>
+     * </ul></div>
+     * To configure the above Classes with an extra CSS class append to the default.  For example,
+     * for ColumnLayout:<pre><code>
+     * extraCls: 'x-column custom-class'
+     * </code></pre>
+     * </p>
      */
     /**
      * @cfg {Boolean} renderHidden
@@ -33,9 +46,11 @@ Ext.layout.ContainerLayout.prototype = {
      */
 
     /**
-     * A reference to the {@link Ext.Component} that is active.  For example,
-     * if(myPanel.layout.activeItem.id == 'item-1') { ... }.  activeItem only applies to layout styles that can
-     * display items one at a time (like {@link Ext.layout.Accordion}, {@link Ext.layout.CardLayout}
+     * A reference to the {@link Ext.Component} that is active.  For example, <pre><code>
+     * if(myPanel.layout.activeItem.id == 'item-1') { ... }
+     * </code></pre>
+     * <tt>activeItem</tt> only applies to layout styles that can display items one at a time
+     * (like {@link Ext.layout.AccordionLayout}, {@link Ext.layout.CardLayout}
      * and {@link Ext.layout.FitLayout}).  Read-only.  Related to {@link Ext.Container#activeItem}.
      * @type {Ext.Component}
      * @property activeItem
@@ -60,8 +75,7 @@ Ext.layout.ContainerLayout.prototype = {
 
     // private
     isValidParent : function(c, target){
-		var el = c.getPositionEl ? c.getPositionEl() : c.getEl();
-		return el.dom.parentNode == target.dom;
+		return target && c.getDomPositionEl().dom.parentNode == (target.dom || target);
     },
 
     // private
@@ -94,7 +108,8 @@ Ext.layout.ContainerLayout.prototype = {
             if(typeof position == 'number'){
                 position = target.dom.childNodes[position];
             }
-            target.dom.insertBefore(c.getEl().dom, position || null);
+            target.dom.insertBefore(c.getDomPositionEl().dom, position || null);
+            c.container = target;
             if (this.renderHidden && c != this.activeItem) {
                 c.hide();
             }
@@ -133,6 +148,9 @@ Ext.layout.ContainerLayout.prototype = {
 
     // private
     parseMargins : function(v){
+        if(typeof v == 'number'){
+            v = v.toString();
+        }
         var ms = v.split(' ');
         var len = ms.length;
         if(len == 1){
@@ -144,6 +162,9 @@ Ext.layout.ContainerLayout.prototype = {
             ms[2] = ms[0];
             ms[3] = ms[1];
         }
+        if(len == 3){
+            ms[3] = ms[1];
+        }
         return {
             top:parseInt(ms[0], 10) || 0,
             right:parseInt(ms[1], 10) || 0,
@@ -152,6 +173,26 @@ Ext.layout.ContainerLayout.prototype = {
         };
     },
 
+    /**
+     * @cfg {Ext.Template} fieldTpl
+     * A {@link Template Ext.Template} used by Field rendering layout classes (such as
+     * {@link Ext.layout.FormLayout}) to create the DOM structure of a fully wrapped,
+     * labeled and styled form Field. A default Template is supplied, but this may be
+     * overriden to create custom field structures. The template processes values returned from
+     * {@link Ext.form.FormLayout#getTemplateArgs}.
+     */
+    fieldTpl: (function() {
+        var t = new Ext.Template(
+            '<div class="x-form-item {itemCls}" tabIndex="-1">',
+                '<label for="{id}" style="{labelStyle}" class="x-form-item-label">{label}{labelSeparator}</label>',
+                '<div class="x-form-element" id="x-form-el-{id}" style="{elementStyle}">',
+                '</div><div class="{clearCls}"></div>',
+            '</div>'
+        );
+        t.disableFormats = true;
+        return t.compile();
+    })(),
+	
     /*
      * Destroys this layout. This is a template method that is empty by default, but should be implemented
      * by subclasses that require explicit destruction to purge event handlers or remove DOM nodes.

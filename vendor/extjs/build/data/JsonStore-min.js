@@ -1,1 +1,10 @@
-Ext.data.JsonStore=function(a){Ext.data.JsonStore.superclass.constructor.call(this,Ext.apply(a,{proxy:a.proxy||(!a.data?new Ext.data.HttpProxy({url:a.url}):undefined),reader:new Ext.data.JsonReader(a,a.fields)}))};Ext.extend(Ext.data.JsonStore,Ext.data.Store);
+/*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+
+Ext.data.JsonStore=Ext.extend(Ext.data.Store,{constructor:function(config){Ext.data.JsonStore.superclass.constructor.call(this,Ext.apply(config,{reader:new Ext.data.JsonReader(config)}));}});Ext.reg('jsonstore',Ext.data.JsonStore);

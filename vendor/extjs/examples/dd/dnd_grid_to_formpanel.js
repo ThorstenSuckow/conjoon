@@ -1,4 +1,12 @@
 /*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+/*
  * Ext JS Library 2.2.1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
@@ -8,7 +16,7 @@
 
 /*
  * Ext JS Library 2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license

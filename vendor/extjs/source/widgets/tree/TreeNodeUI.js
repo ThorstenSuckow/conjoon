@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -245,7 +245,7 @@ Ext.tree.TreeNodeUI.prototype = {
     onCheckChange : function(){
         var checked = this.checkbox.checked;
 		// fix for IE6
-		this.checkbox.defaultChecked = checked;
+		this.checkbox.defaultChecked = checked;		
         this.node.attributes.checked = checked;
         this.fireEvent('checkchange', this.node, checked);
     },
@@ -465,7 +465,7 @@ Ext.tree.TreeNodeUI.prototype = {
         if(cb){
             this.checkbox = cs[3];
 			// fix for IE6
-			this.checkbox.defaultChecked = this.checkbox.checked;			
+			this.checkbox.defaultChecked = this.checkbox.checked;						
             index++;
         }
         this.anchor = cs[index];
@@ -510,7 +510,8 @@ Ext.tree.TreeNodeUI.prototype = {
         if(this.rendered){
             var n = this.node, c1, c2;
             var cls = n.isLast() ? "x-tree-elbow-end" : "x-tree-elbow";
-            if(n.isExpandable()){
+            var hasChild = n.hasChildNodes();
+            if(hasChild || n.attributes.expandable){
                 if(n.expanded){
                     cls += "-minus";
                     c1 = "x-tree-node-collapsed";
@@ -541,6 +542,13 @@ Ext.tree.TreeNodeUI.prototype = {
                 this.ecNode.className = ecc;
                 this.ecc = ecc;
             }
+        }
+    },
+    
+    // private
+    onIdChange: function(id){
+        if(this.rendered){
+            this.elNode.setAttribute('ext:tree-node-id', id);
         }
     },
 

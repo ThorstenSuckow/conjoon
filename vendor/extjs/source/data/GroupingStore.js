@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -18,6 +18,13 @@
  * and read the data into Records.
  */
 Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
+    
+    //inherit docs
+    constructor: function(config){
+        Ext.data.GroupingStore.superclass.constructor.call(this, config);
+        this.applyGroupField();
+    },
+    
     /**
      * @cfg {String} groupField
      * The field name by which to sort the store's data (defaults to '').
@@ -36,6 +43,8 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
      */
     groupOnSort:false,
 
+	groupDir : 'ASC',
+	
     /**
      * Clears any existing grouping and refreshes the data using the default sort.
      */
@@ -58,31 +67,39 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
      * @param {Boolean} forceRegroup (optional) True to force the group to be refreshed even if the field passed
      * in is the same as the current grouping field, false to skip grouping on the same field (defaults to false)
      */
-    groupBy : function(field, forceRegroup){
-        if(this.groupField == field && !forceRegroup){
+    groupBy : function(field, forceRegroup, direction){
+		direction = direction ? (String(direction).toUpperCase() == 'DESC' ? 'DESC' : 'ASC') : this.groupDir;
+        if(this.groupField == field && this.groupDir == direction && !forceRegroup){
             return; // already grouped by this field
         }
         this.groupField = field;
-        if(this.remoteGroup){
-            if(!this.baseParams){
-                this.baseParams = {};
-            }
-            this.baseParams['groupBy'] = field;
-        }
+		this.groupDir = direction;
+        this.applyGroupField();
         if(this.groupOnSort){
-            this.sort(field);
+            this.sort(field, direction);
             return;
         }
         if(this.remoteGroup){
             this.reload();
         }else{
             var si = this.sortInfo || {};
-            if(si.field != field){
+            if(si.field != field || si.direction != direction){
                 this.applySort();
             }else{
-                this.sortData(field);
+                this.sortData(field, direction);
             }
             this.fireEvent('datachanged', this);
+        }
+    },
+    
+    // private
+    applyGroupField: function(){
+        if(this.remoteGroup){
+            if(!this.baseParams){
+                this.baseParams = {};
+            }
+            this.baseParams['groupBy'] = this.groupField;
+            this.baseParams['groupDir'] = this.groupDir;
         }
     },
 
@@ -91,8 +108,8 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
         Ext.data.GroupingStore.superclass.applySort.call(this);
         if(!this.groupOnSort && !this.remoteGroup){
             var gs = this.getGroupState();
-            if(gs && gs != this.sortInfo.field){
-                this.sortData(this.groupField);
+            if(gs && (gs != this.sortInfo.field || this.groupDir != this.sortInfo.direction)){
+                this.sortData(this.groupField, this.groupDir);
             }
         }
     },
@@ -100,7 +117,7 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
     // private
     applyGrouping : function(alwaysFireChange){
         if(this.groupField !== false){
-            this.groupBy(this.groupField, true);
+            this.groupBy(this.groupField, true, this.groupDir);
             return true;
         }else{
             if(alwaysFireChange === true){

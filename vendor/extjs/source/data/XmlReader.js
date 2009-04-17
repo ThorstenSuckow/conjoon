@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -18,7 +18,7 @@
  * Example code:
  * <pre><code>
 var Employee = Ext.data.Record.create([
-   {name: 'name', mapping: 'name'},     // "mapping" property not needed if it's the same as "name"
+   {name: 'name', mapping: 'name'},     // "mapping" property not needed if it is the same as "name"
    {name: 'occupation'}                 // This field will use "occupation" as the mapping.
 ]);
 var myReader = new Ext.data.XmlReader({
@@ -50,7 +50,7 @@ var myReader = new Ext.data.XmlReader({
  * paged from the remote server.
  * @cfg {String} record The DomQuery path to the repeated element which contains record information.
  * @cfg {String} success The DomQuery path to the success attribute used by forms.
- * @cfg {String} id The DomQuery path relative from the record element to the element that contains
+ * @cfg {String} idPath The DomQuery path relative from the record element to the element that contains
  * a record identifier value.
  * @constructor
  * Create a new XmlReader.
@@ -93,7 +93,7 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
         var root = doc.documentElement || doc;
     	var q = Ext.DomQuery;
     	var recordType = this.recordType, fields = recordType.prototype.fields;
-    	var sid = this.meta.id;
+    	var sid = this.meta.idPath || this.meta.id;
     	var totalRecords = 0, success = true;
     	if(this.meta.totalRecords){
     	    totalRecords = q.selectNumber(this.meta.totalRecords, root, 0);
@@ -111,7 +111,7 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
 	        var id = sid ? q.selectValue(sid, n) : undefined;
 	        for(var j = 0, jlen = fields.length; j < jlen; j++){
 	            var f = fields.items[j];
-                var v = q.selectValue(f.mapping || f.name, n, f.defaultValue);
+                var v = q.selectValue(Ext.value(f.mapping, f.name, true), n, f.defaultValue);
 	            v = f.convert(v, n);
 	            values[f.name] = v;
 	        }

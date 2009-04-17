@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -20,6 +20,7 @@ var TreeTest = function(){
                 loader: new Tree.TreeLoader({dataUrl:'get-nodes.php'}),
                 enableDD:true,
                 containerScroll: true,
+                border: false,
                 dropConfig: {appendOnly:true}
             });
             
@@ -52,6 +53,7 @@ var TreeTest = function(){
                     baseParams: {lib:'yui'} // custom http params
                 }),
                 containerScroll: true,
+                border: false,
                 enableDD:true,
                 dropConfig: {appendOnly:true}
             });

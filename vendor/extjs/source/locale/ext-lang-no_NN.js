@@ -1,7 +1,7 @@
 /**
  *
  * Norwegian translation (Nynorsk: no-NN)
- * By Tore Kjørsvik 21-January-2009
+ * By Tore Kjørsvik 21-January-2008
  *  
  */
 

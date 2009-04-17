@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.2.1
+ * Ext JS Library 3.0 RC1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -11,7 +11,7 @@ Ext.onReady(function(){
     // NOTE: This is an example showing simple state management. During development,
     // it is generally best to disable state management as dynamically-generated ids
     // can change across page loads, leading to unpredictable results.  The developer
-    // should ensure that stable state ids are set for stateful components in real apps.
+    // should ensure that stable state ids are set for stateful components in real apps.    
     Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
     var myData = [
@@ -42,7 +42,7 @@ Ext.onReady(function(){
         ['The Home Depot, Inc.',34.64,0.35,1.02,'9/1 12:00am'],
         ['The Procter & Gamble Company',61.91,0.01,0.02,'9/1 12:00am'],
         ['United Technologies Corporation',63.26,0.55,0.88,'9/1 12:00am'],
-        ['Verizon Communications',35.57,0.39,1.11,'9/1 12:00am'],
+        ['Verizon Communications',35.57,0.39,1.11,'9/1 12:00am'],            
         ['Wal-Mart Stores, Inc.',45.45,0.73,1.63,'9/1 12:00am']
     ];
 
@@ -67,7 +67,7 @@ Ext.onReady(function(){
     }
 
     // create the data store
-    var store = new Ext.data.SimpleStore({
+    var store = new Ext.data.ArrayStore({
         fields: [
            {name: 'company'},
            {name: 'price', type: 'float'},
@@ -94,6 +94,5 @@ Ext.onReady(function(){
         width:600,
         title:'Array Grid'
     });
-
     grid.render('grid-example');
 });

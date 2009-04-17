@@ -1,4 +1,12 @@
 /*
+ * Ext JS Library 3.0 RC1
+ * Copyright(c) 2006-2009, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+/*
  * Ext JS Library 2.2.1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
@@ -25,8 +33,6 @@
  * @param {Object} config Configuration options
  */
 Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
-    msWidth:200,
-    msHeight:300,
     hideNavIcons:false,
     imagePath:"",
     iconUp:"up2.gif",
@@ -41,90 +47,45 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
     drawRightIcon:true,
     drawTopIcon:true,
     drawBotIcon:true,
-    fromStore:null,
-    toStore:null,
-    fromData:null, 
-    toData:null,
-    displayField:0,
-    valueField:1,
-    switchToFrom:false,
-    allowDup:false,
-    focusClass:undefined,
     delimiter:',',
-    readOnly:false,
-    toLegend:null,
-    fromLegend:null,
-    toSortField:null,
-    fromSortField:null,
-    toSortDir:'ASC',
-    fromSortDir:'ASC',
-    toTBar:null,
-    fromTBar:null,
     bodyStyle:null,
     border:false,
     defaultAutoCreate:{tag: "div"},
+    /**
+     * @cfg {Array} multiselects An array of {@link Ext.ux.Multiselect} config objects, with at least all required parameters (e.g., store)
+     */
+    multiselects:null,
     
     initComponent: function(){
         Ext.ux.ItemSelector.superclass.initComponent.call(this);
         this.addEvents({
             'rowdblclick' : true,
             'change' : true
-        });         
+        });
     },
 
     onRender: function(ct, position){
         Ext.ux.ItemSelector.superclass.onRender.call(this, ct, position);
+        
+        // Internal default configuration for both multiselects
+        var msConfig = [{
+            legend: 'Available',
+            draggable: true,
+            droppable: true,
+            width: 100,
+            height: 100
+        },{
+            legend: 'Selected',
+            droppable: true,
+            draggable: true,
+            width: 100,
+            height: 100
+        }];
 
-        this.fromMultiselect = new Ext.ux.Multiselect({
-            legend: this.fromLegend,
-            delimiter: this.delimiter,
-            allowDup: this.allowDup,
-            copy: this.allowDup,
-            allowTrash: this.allowDup,
-            dragGroup: this.readOnly ? null : "drop2-"+this.el.dom.id,
-            dropGroup: this.readOnly ? null : "drop1-"+this.el.dom.id,
-            width: this.msWidth,
-            height: this.msHeight,
-            dataFields: this.dataFields,
-            data: this.fromData,
-            displayField: this.displayField,
-            valueField: this.valueField,
-            store: this.fromStore,
-            isFormField: false,
-            tbar: this.fromTBar,
-            appendOnly: true,
-            sortField: this.fromSortField,
-            sortDir: this.fromSortDir
-        });
+        this.fromMultiselect = new Ext.ux.Multiselect(Ext.applyIf(this.multiselects[0], msConfig[0]));
         this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
 
-        if (!this.toStore) {
-            this.toStore = new Ext.data.SimpleStore({
-                fields: this.dataFields,
-                data : this.toData
-            });
-        }
-        this.toStore.on('add', this.valueChanged, this);
-        this.toStore.on('remove', this.valueChanged, this);
-        this.toStore.on('load', this.valueChanged, this);
-
-        this.toMultiselect = new Ext.ux.Multiselect({
-            legend: this.toLegend,
-            delimiter: this.delimiter,
-            allowDup: this.allowDup,
-            dragGroup: this.readOnly ? null : "drop1-"+this.el.dom.id,
-            //dropGroup: this.readOnly ? null : "drop2-"+this.el.dom.id+(this.toSortField ? "" : ",drop1-"+this.el.dom.id),
-            dropGroup: this.readOnly ? null : "drop2-"+this.el.dom.id+",drop1-"+this.el.dom.id,
-            width: this.msWidth,
-            height: this.msHeight,
-            displayField: this.displayField,
-            valueField: this.valueField,
-            store: this.toStore,
-            isFormField: false,
-            tbar: this.toTBar,
-            sortField: this.toSortField,
-            sortDir: this.toSortDir
-        });
+        this.toMultiselect = new Ext.ux.Multiselect(Ext.applyIf(this.multiselects[1], msConfig[1]));
         this.toMultiselect.on('dblclick', this.onRowDblClick, this);
                 
         var p = new Ext.Panel({
@@ -133,13 +94,15 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
             layout:"table",
             layoutConfig:{columns:3}
         });
-        p.add(this.switchToFrom ? this.toMultiselect : this.fromMultiselect);
+        
+        p.add(this.fromMultiselect);
         var icons = new Ext.Panel({header:false});
         p.add(icons);
-        p.add(this.switchToFrom ? this.fromMultiselect : this.toMultiselect);
+        p.add(this.toMultiselect);
         p.render(this.el);
         icons.el.down('.'+icons.bwrapCls).remove();
 
+        // ICON HELL!!!
         if (this.imagePath!="" && this.imagePath.charAt(this.imagePath.length-1)!="/")
             this.imagePath+="/";
         this.iconUp = this.imagePath + (this.iconUp || 'up2.gif');
@@ -149,31 +112,23 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
         this.iconTop = this.imagePath + (this.iconTop || 'top2.gif');
         this.iconBottom = this.imagePath + (this.iconBottom || 'bottom2.gif');
         var el=icons.getEl();
-        if (!this.toSortField) {
-            this.toTopIcon = el.createChild({tag:'img', src:this.iconTop, style:{cursor:'pointer', margin:'2px'}});
-            el.createChild({tag: 'br'});
-            this.upIcon = el.createChild({tag:'img', src:this.iconUp, style:{cursor:'pointer', margin:'2px'}});
-            el.createChild({tag: 'br'});
-        }
-        this.addIcon = el.createChild({tag:'img', src:this.switchToFrom?this.iconLeft:this.iconRight, style:{cursor:'pointer', margin:'2px'}});
+        this.toTopIcon = el.createChild({tag:'img', src:this.iconTop, style:{cursor:'pointer', margin:'2px'}});
         el.createChild({tag: 'br'});
-        this.removeIcon = el.createChild({tag:'img', src:this.switchToFrom?this.iconRight:this.iconLeft, style:{cursor:'pointer', margin:'2px'}});
+        this.upIcon = el.createChild({tag:'img', src:this.iconUp, style:{cursor:'pointer', margin:'2px'}});
         el.createChild({tag: 'br'});
-        if (!this.toSortField) {
-            this.downIcon = el.createChild({tag:'img', src:this.iconDown, style:{cursor:'pointer', margin:'2px'}});
-            el.createChild({tag: 'br'});
-            this.toBottomIcon = el.createChild({tag:'img', src:this.iconBottom, style:{cursor:'pointer', margin:'2px'}});
-        }
-        if (!this.readOnly) {
-            if (!this.toSortField) {
-                this.toTopIcon.on('click', this.toTop, this);
-                this.upIcon.on('click', this.up, this);
-                this.downIcon.on('click', this.down, this);
-                this.toBottomIcon.on('click', this.toBottom, this);
-            }
-            this.addIcon.on('click', this.fromTo, this);
-            this.removeIcon.on('click', this.toFrom, this);
-        }
+        this.addIcon = el.createChild({tag:'img', src:this.iconRight, style:{cursor:'pointer', margin:'2px'}});
+        el.createChild({tag: 'br'});
+        this.removeIcon = el.createChild({tag:'img', src:this.iconLeft, style:{cursor:'pointer', margin:'2px'}});
+        el.createChild({tag: 'br'});
+        this.downIcon = el.createChild({tag:'img', src:this.iconDown, style:{cursor:'pointer', margin:'2px'}});
+        el.createChild({tag: 'br'});
+        this.toBottomIcon = el.createChild({tag:'img', src:this.iconBottom, style:{cursor:'pointer', margin:'2px'}});
+        this.toTopIcon.on('click', this.toTop, this);
+        this.upIcon.on('click', this.up, this);
+        this.downIcon.on('click', this.down, this);
+        this.toBottomIcon.on('click', this.toBottom, this);
+        this.addIcon.on('click', this.fromTo, this);
+        this.removeIcon.on('click', this.toFrom, this);
         if (!this.drawUpIcon || this.hideNavIcons) { this.upIcon.dom.style.display='none'; }
         if (!this.drawDownIcon || this.hideNavIcons) { this.downIcon.dom.style.display='none'; }
         if (!this.drawLeftIcon || this.hideNavIcons) { this.addIcon.dom.style.display='none'; }
@@ -186,8 +141,17 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
         p.body.removeClass();
         
         this.hiddenName = this.name;
-        var hiddenTag={tag: "input", type: "hidden", value: "", name:this.name};
+        var hiddenTag = {tag: "input", type: "hidden", value: "", name: this.name};
         this.hiddenField = this.el.createChild(hiddenTag);
+    },
+    
+    afterRender: function(){
+        Ext.ux.ItemSelector.superclass.afterRender.call(this);
+        
+        this.toStore = this.toMultiselect.store;
+        this.toStore.on('add', this.valueChanged, this);
+        this.toStore.on('remove', this.valueChanged, this);
+        this.toStore.on('load', this.valueChanged, this);
         this.valueChanged(this.toStore);
     },
     
@@ -299,9 +263,11 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
         }
         this.toMultiselect.view.refresh();
         this.fromMultiselect.view.refresh();
-        if(this.toSortField)this.toMultiselect.store.sort(this.toSortField, this.toSortDir);
-        if(this.allowDup)this.fromMultiselect.view.select(selectionsArray);
-        else this.toMultiselect.view.select(selectionsArray);
+        var si = this.toMultiselect.store.sortInfo;
+        if(si){
+            this.toMultiselect.store.sort(si.field, si.direction);
+        }
+        this.toMultiselect.view.select(selectionsArray);
     },
     
     toFrom : function() {
@@ -324,7 +290,10 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
         }
         this.fromMultiselect.view.refresh();
         this.toMultiselect.view.refresh();
-        if(this.fromSortField)this.fromMultiselect.store.sort(this.fromSortField, this.fromSortDir);
+        var si = this.fromMultiselect.store.sortInfo;
+        if (si){
+            this.fromMultiselect.store.sort(si.field, si.direction);
+        }
         this.fromMultiselect.view.select(selectionsArray);
     },
     
@@ -333,7 +302,7 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
         var values = [];
         for (var i=0; i<store.getCount(); i++) {
             record = store.getAt(i);
-            values.push(record.get(this.valueField));
+            values.push(record.get(this.toMultiselect.valueField));
         }
         this.hiddenField.dom.value = values.join(this.delimiter);
         this.fireEvent('change', this, this.getValue(), this.hiddenField.dom.value);
@@ -344,15 +313,21 @@ Ext.ux.ItemSelector = Ext.extend(Ext.form.Field,  {
     },
     
     onRowDblClick : function(vw, index, node, e) {
+        if (vw == this.toMultiselect.view){
+            this.toFrom();
+        } else if (vw == this.fromMultiselect.view) {
+            this.fromTo();
+        }
         return this.fireEvent('rowdblclick', vw, index, node, e);
     },
     
     reset: function(){
         range = this.toMultiselect.store.getRange();
         this.toMultiselect.store.removeAll();
-        if (!this.allowDup) {
-            this.fromMultiselect.store.add(range);
-            this.fromMultiselect.store.sort(this.displayField,'ASC');
+        this.fromMultiselect.store.add(range);
+        var si = this.fromMultiselect.store.sortInfo;
+        if (si){
+            this.fromMultiselect.store.sort(si.field, si.direction);
         }
         this.valueChanged(this.toMultiselect.store);
     }
