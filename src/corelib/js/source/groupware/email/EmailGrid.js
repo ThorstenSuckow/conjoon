@@ -19,7 +19,6 @@ com.conjoon.groupware.email.EmailGrid = function(config, controller) {
     Ext.apply(this, config);
 
     this.controller = controller;
-    this.enableHdMenu = false;
 
 // ------------------------- set up buffered grid ------------------------------
 
