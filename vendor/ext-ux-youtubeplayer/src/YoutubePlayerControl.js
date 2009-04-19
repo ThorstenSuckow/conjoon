@@ -224,8 +224,8 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
         var tb = Ext.Toolbar.Button;
 
         this.ejectButton = new tb({
-            iconCls : 'eject',
-            split:true
+            iconCls  : 'eject',
+            disabled : true
         });
 
         this.playButton = new tb({
@@ -303,6 +303,10 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
         Ext.ux.YoutubePlayer.Control.superclass.initComponent.call(this);
 
         this.on('beforerender', this._initListeners, this);
+
+        this.player.on('ready', function() {
+            this.ejectButton.setDisabled(false);
+        }, this);
     },
 
     /**

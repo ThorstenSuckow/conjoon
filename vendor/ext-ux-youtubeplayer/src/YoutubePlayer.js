@@ -612,7 +612,7 @@ var _onYouTubePlayerReady = function(playerId) {
         panel._setPlayer(player);
         player.addEventListener('onStateChange', "Ext.getCmp('"+panel.id+"')._delegateStateEvent");
         player.addEventListener('onError', "Ext.getCmp('"+panel.id+"')._delegateErrorEvent");
-        panel.adjustRatio(panel.getInnerWidth(), panel.getInnerHeight());
+        panel.adjustRatio(panel.getWidth(), panel.getHeight());
         panel.fireEvent('ready', panel, player);
     }
 };
@@ -620,7 +620,5 @@ var _onYouTubePlayerReady = function(playerId) {
 if (!window.onYouTubePlayerReady) {
     window.onYouTubePlayerReady = _onYouTubePlayerReady;
 } else {
-    window.onYouTubePlayerReady = window.onYouTubePlayerReady.createSequence(
-        _onYouTubePlayerReady
-    );
+    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.XoutubePlayer.")
 }

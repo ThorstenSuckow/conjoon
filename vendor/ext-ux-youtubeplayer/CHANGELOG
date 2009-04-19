@@ -1,3 +1,19 @@
+Version 0.3RC3
+18-April-2009
+
+- fixed: typo in jsbuilder config would not save the ext-ux-youtubeplayer-all.js
+under the given naming conventions
+
+Version 0.3RC2
+18-April-2009
+
+ - fixed: (YoutubePlayer.js) call to "getInnerWidth()" and "getInnerHeight()"
+replaced with "getWidth()"/"getHeight()" since the component does now extend Ext.FlashComponent
+ - enhancement: (YoutubePlayer.js) if method "onYoutubePlayerReady" is
+already defined in the window-scope, an exception will now be thrown
+ - enhancement: (YoutubePlayerControl.js) eject button is now disabled by
+default and gets enabled if the attached player fires the "ready" event
+
 Version 0.3RC1
 16-April-2009
 
