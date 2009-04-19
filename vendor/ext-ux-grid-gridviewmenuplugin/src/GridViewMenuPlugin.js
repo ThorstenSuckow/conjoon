@@ -27,9 +27,6 @@ Ext.namespace('Ext.ux.grid');
  * bound to. The menu items will represent the column model and hide/show
  * the columns on click.
  *
- * Note that you have to set the enableHdMenu-property of the bound grid to
- * "false" so this plugin does not interfere with the header menus of the grid's view.
- *
  * @class Ext.ux.grid.GridViewMenuPlugin
  * @extends Object
  * @constructor
@@ -37,6 +34,13 @@ Ext.namespace('Ext.ux.grid');
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
+
+    /**
+     * The {Ext.grid.GridPanel} this plugin is bound to.
+     * @type {Ext.grid.GridPanel}
+     * @protected
+     */
+    _grid : null,
 
     /**
      * The {Ext.grid.GridView} this plugin is bound to.
@@ -70,22 +74,45 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
     cm : null,
 
     /**
+     * If the bound view is an instance of {Ext.grid.GroupingView}, this
+     * property will hold the last column that was used as the group field.
+     * @type {String}
+     */
+    _lastGroupField : null,
+
+    /**
+     * If the bound view is an instance of {Ext.grid.GroupingView}, this
+     * menu will hold all fields to switch the grouping field.
+     * @type {Ext.menu.Menu}
+     */
+    _groupMenu : null,
+
+    /**
+     * An array with all menu items that should not be removed from the
+     * colMenu.
+     */
+    _keepItems : null,
+
+    /**
      * Inits this plugin.
      * Method is API-only. Will be called automatically from the grid this
      * plugin is bound to.
      *
      * @param {Ext.grid.GridPanel} grid
-     *
-     * @throws {Exception} throws an exception if the plugin recognizes the
-     * grid's "enableHdMenu" property to be set to "true"
      */
     init : function(grid)
     {
-        if (grid.enableHdMenu === true) {
-            throw("Ext.ux.grid.GridViewMenuPlugin - grid\"s \"enableHdMenu\" property has to be set to \"false\"");
+        if (grid.enableHdMenu === false) {
+            return;
         }
 
-        this._view = grid.view;
+        this._keepItems = [];
+
+        this._grid = grid;
+
+        grid.enableHdMenu = false;
+
+        this._view = grid.getView();
 
         this._view.initElements = this._view.initElements.createSequence(
             this.initElements,
@@ -102,12 +129,43 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
             this
         );
 
-        this.colMenu = new Ext.menu.Menu();
-        this.colMenu.on("beforeshow", this._beforeColMenuShow, this);
-        this.colMenu.on("itemclick",  this._handleHdMenuClick, this);
+        this.colMenu = new Ext.menu.Menu({
+            id           : grid.id + "-hcols-menu",
+            subMenuAlign : "tr-tl?"
+        });
+        this.colMenu.on("beforeshow",   this._beforeColMenuShow, this);
+        this.colMenu.on("beforeremove", this._beforeColMenuRemove, this);
+        this.colMenu.on("itemclick",    this._handleHdMenuClick, this);
+
+        /**
+         * @bug Ext3.0
+         * see http://www.extjs.com/forum/showthread.php?t=65931
+         */
+        this.colMenu.removeAll = function(autoDestroy){
+            this.initItems();
+            var item, items = [];
+            var ic = this.items.items.length-1;
+            while((item = this.items.get(ic--))){
+                items.unshift(this.remove(item, autoDestroy));
+            }
+            return items;
+        };
+
+
     },
 
 // -------- listeners
+
+    /**
+     * Called before any item gets removed from the colMenu. Will return
+     * false for any item that was registered in keepItems.
+     */
+    _beforeColMenuRemove : function(menu, item)
+    {
+        if (this._keepItems.indexOf(item) != -1) {
+            return false;
+        }
+    },
 
     /**
      * Callback for the itemclick event of the menu.
@@ -130,7 +188,9 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
     /**
      * Listener for the beforeshow-event of the menu.
      * Default implementation calls the view's beforeColMenuShow-method
-     * in the scope of this plugin.
+     * in the scope of this plugin. If the bound view is an instance of
+     * {Ext.grid.GroupingView}, additionally items will be rendered to
+     * control the grouping state of the grid.
      *
      * Overwrite this for custom behavior.
      *
@@ -140,7 +200,62 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
      */
     _beforeColMenuShow : function(menu)
     {
+        this.colMenu.suspendEvents();
+        for (var i = 0, len = this._keepItems.length; i < len; i++) {
+            this.colMenu.remove(this._keepItems[i], false);
+        }
+        this.colMenu.resumeEvents();
+
         this._view.beforeColMenuShow.call(this, menu);
+
+        if(this._view.enableGroupingMenu && this.colMenu){
+
+            if (!this._groupMenu) {
+                this._groupMenu = new Ext.menu.Menu({
+                    id : this._grid.id + "-hgroupcols-menu"
+                });
+                this._groupMenu.on("beforeshow", this._onBeforeGroupMenuShow, this);
+                this._groupMenu.on("itemclick", this._onGroupMenuItemClick, this);
+
+                var conf = {
+                    itemId       : 'showGroups',
+                    text         : this._view.showGroupsText,
+                    menu         : this._groupMenu
+                };
+
+                if(this._view.enableNoGroups) {
+                    var field = this._view.getGroupField();
+
+                    Ext.apply(conf, {
+                        checked      : !!field,
+                        checkHandler : function(menuItem, checked) {
+                            if(checked){
+                                this._grid.store.groupBy(this._lastGroupField);
+                            }else{
+                                this._grid.store.clearGrouping();
+                            }
+                        },
+                        scope : this
+                    });
+                }
+
+                var sep = new Ext.menu.Separator();
+                var gI  = this._view.enableNoGroups
+                          ? new Ext.menu.CheckItem(conf)
+                          : new Ext.menu.Item(conf);
+
+                this._keepItems.unshift(sep, gI);
+            }
+        }
+
+        for (var i = 0, len = this._keepItems.length; i < len; i++) {
+            this.colMenu.add(this._keepItems[i]);
+        }
+
+        if(this._view.enableNoGroups) {
+            this._keepItems[1].setChecked(!!this._view.getGroupField(), true);
+        }
+
     },
 
     /**
@@ -158,6 +273,49 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
             e.stopEvent();
             this.colMenu.show(t, "tr-br?");
         }
+    },
+
+    /**
+     * Listener for the beforeshow event of this plugin's group menu.
+     *
+     */
+    _onBeforeGroupMenuShow : function()
+    {
+        var cm       = this._view.cm,
+            colCount = cm.getColumnCount(),
+            field    = this._view.getGroupField();
+
+        this._groupMenu.removeAll();
+        for(var i = 0; i < colCount; i++){
+            this._groupMenu.add(new Ext.menu.CheckItem({
+                itemId      : "groupcol-"+cm.getColumnId(i),
+                text        : cm.getColumnHeader(i),
+                checked     : cm.getDataIndex(i) == field,
+                hideOnClick : true,
+                disabled    : cm.config[i].groupable === false
+            }));
+        }
+    },
+
+    /**
+     * Listener for the itemclick event of this plugin's group menu.
+     *
+     */
+    _onGroupMenuItemClick : function(item)
+    {
+        var cm     = this._view.cm,
+            index  = cm.getIndexById(item.itemId.substr(9)),
+            dIndex = cm.getDataIndex(index);
+
+        if(index != -1){
+            if(item.checked){
+                this._grid.store.clearGrouping();
+            } else {
+                this._grid.store.groupBy(dIndex);
+                this._lastGroupField = this._view.getGroupField();
+            }
+        }
+
     },
 
 // -------- helpers
@@ -183,12 +341,18 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
     },
 
     /**
-     * Sequenced function for storing the view's cm property,
+     * Sequenced function for storing the view's cm property and
+     * to initially set the last grouped field if the bound view is an
+     * instace of Ext.grid.GroupingView.
      * Called in the scope of this plugin.
      */
     initData : function()
     {
         this.cm = this._view.cm;
+
+        if (this._view.enableGroupingMenu) {
+            this._lastGroupField = this._view.getGroupField();
+        }
     },
 
     /**
@@ -213,10 +377,17 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
     _destroy : function()
     {
         if(this.colMenu){
-            this.colMenu.removeAll();
+            this.colMenu.un("beforeremove", this._beforeColMenuRemove, this);
+            this.colMenu.removeAll(true);
             Ext.menu.MenuMgr.unregister(this.colMenu);
             this.colMenu.getEl().remove();
             delete this.colMenu;
+        }
+
+        if(this._groupMenu){
+            this._groupMenu.removeAll(true);
+            Ext.menu.MenuMgr.unregister(this._groupMenu);
+            delete this._groupMenu;
         }
 
         if(this._menuBtn){

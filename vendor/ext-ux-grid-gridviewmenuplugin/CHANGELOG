@@ -1,2 +1,23 @@
-﻿Version 0.1
+﻿Version 0.2RC2
+19-April-2009
+
+ - fixed: typo in build file name
+ - enhancement: updated docs
+ - fixed: destroy method would not be able to remove all items from the col menu
+since the beforeremove listener would prevent it to remove items registered
+in _keepItems
+
+Version 0.2RC1
+18-April-2009
+
+ - enhancement: added examples for regular- and grouping-grid
+ - enhancement: added build tools for the project
+ - enhancement: added functionality to support Ext.grid.GroupingView
+ - fixed: view property would not be initialized at startup; changed to
+call "getView()" to make sure view is available when plugin is initialized
+ - enhancement: grid's "enableHdMenu" can now be used to disable rendering
+the plugin and does not throw an exception anymore if it is set to "true"
+ - enhancement: plugin now works with Ext >= 3.0RC1
+
+Version 0.1
 05-November-2008
