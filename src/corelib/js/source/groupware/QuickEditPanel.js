@@ -29,12 +29,10 @@ com.conjoon.groupware.QuickEditPanel = function(){
 
     var getYoutubePanel = function()
     {
-        var playerPanel = Ext.ux.YoutubePlayer.createPanel({
+        var playerPanel = new Ext.ux.YoutubePlayer({
             developerKey : "AI39si7YwEMBcpCOO8JzYSjB3WtaS2ODhBN-A4XAqVADfGWyK8-Nr9XwZzr_sdCnsKirffyPDBsvC0z7MdR2u0xeM4zLIDWLIQ",
             playerId     : 'myplayer',
-            border       : false,
             ratioMode    : 'strict',
-            autoScroll   : false,
             bgColor      : "#000000",
             bodyStyle    : 'background-color:#000000;'
         });
@@ -76,14 +74,12 @@ com.conjoon.groupware.QuickEditPanel = function(){
         ;
 
         var w = new Ext.Panel({
-            title        : 'Ytube',
-            layout       : 'fit',
-            hideMode     : 'offsets',
-            items        : [playerPanel],
-            bbar         : pControl,
-            listeners   : {
-                'resize'         : function(){this.bottomToolbar.fireEvent('resize')}
-            }});
+            title     : 'Ytube',
+            layout    : 'fit',
+            hideMode  : 'visibility',
+            items     : [playerPanel],
+            bbar      : pControl
+        });
 
         return w;
     };
