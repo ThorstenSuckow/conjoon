@@ -16,9 +16,87 @@ Ext.namespace('com.conjoon.groupware');
 
 com.conjoon.groupware.StatusBar = function(){
 
+    /**
+     * Since ext 3.0, Ext.StatusBar was removed from the repository.
+     * This method will assign the methods "setStatus" and "clearStatus"
+     * to the _statusBar property.
+     * The code is taken from the Ext 2.2.1 branch and modified slighty.
+     */
+    var _hookMethods = function() {
+
+        _statusBar.setStatus = function(o) {
+
+            o = o || {};
+
+            if(typeof o == 'string'){
+                o = {text:o};
+            }
+            if(o.text !== undefined){
+                _activeThreadId++;
+                _statusItem.setText(o.text);
+            }
+
+            if(o.clear){
+                var c        = o.clear,
+                    wait     = _autoClear,
+                    defaults = {useDefaults: true, anim: true};
+
+                if(typeof c == 'object'){
+                    c = Ext.applyIf(c, defaults);
+                    if(c.wait){
+                        wait = c.wait;
+                    }
+                }else if(typeof c == 'number'){
+                    wait = c;
+                    c = defaults;
+                }else if(typeof c == 'boolean'){
+                    c = defaults;
+                }
+
+                c.threadId = _activeThreadId;
+                this.clearStatus.defer(wait, this, [c]);
+            }
+            return this;
+        };
+
+        _statusBar.clearStatus = function(o){
+            o = o || {};
+
+            if(o.threadId && o.threadId !== _activeThreadId){
+                // this means the current call was made internally, but a newer
+                // thread has set a message since this call was deferred.  Since
+                // we don't want to overwrite a newer message just ignore.
+                return this;
+            }
+
+            _statusItem.el.fadeOut({
+                remove     : false,
+                useDisplay : true,
+                scope      : this,
+                callback   : function(){
+                    this.setStatus({
+                        text : _defaultText
+                    });
+                    _statusItem.el.show();
+                }
+            });
+
+            return this;
+        };
+
+    };
+
     var _messageBroadcaster = Ext.ux.util.MessageBus;
 
+    var _autoClear = 5000;
+
     var _statusBar = null;
+
+    var _defaultText = "";
+
+    var _activeThreadId = 0;
+
+    var _statusItem = null;
 
     var _progressBar = null;
 
@@ -118,17 +196,24 @@ com.conjoon.groupware.StatusBar = function(){
                 _progressBar = new Ext.ProgressBar(pconf);
 
                 var t = document.createElement('div');
+                t.id  = Ext.id();
                 t.innerHTML = '&#160;';
                 t.className = "com-conjoon-groupware-statusbar-ConnectionInfo";
                 _connectionInfo = new Ext.Toolbar.Item(t);
 
+                _defaultText = com.conjoon.Gettext.gettext("Ready");
+
+                _statusItem = new Ext.Toolbar.TextItem({
+                    text : _defaultText
+                });
+
                 var statusBarConf = Ext.apply({
-                    defaultText : com.conjoon.Gettext.gettext("Ready"),
-                    border : false,
-                    id : 'com.conjoon.groupware.StatusBar',
-                    cls: 'com-conjoon-groupware-StatusBar',
-                    statusAlign: 'left',
-                    items : [
+                    border      : false,
+                    id          : 'com.conjoon.groupware.StatusBar',
+                    cls         : 'com-conjoon-groupware-StatusBar',
+                    items       : [
+                        _statusItem,
+                        '->',
                         new Ext.Toolbar.Separator(),
                         new Ext.Toolbar.Spacer(),
                         _progressBar,
@@ -140,7 +225,9 @@ com.conjoon.groupware.StatusBar = function(){
                     ]
                 }, initConf);
 
-                _statusBar = new Ext.StatusBar(statusBarConf);
+                _statusBar = new Ext.Toolbar(statusBarConf);
+
+                _hookMethods();
 
                 _statusBar.afterRender = _statusBar.afterRender.createSequence(
                     function() {
