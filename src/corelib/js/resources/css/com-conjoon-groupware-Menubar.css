@@ -22,19 +22,21 @@
     border-bottom:1px solid #ACA899;
 }
 
-.com-conjoon-groupware-Menubar .x-btn-with-menu .x-btn-center em {
+.com-conjoon-groupware-Menubar .x-btn-mc em {
     padding-right:0px;
     background:none;
 }
 
-.com-conjoon-groupware-Menubar .x-btn-menu-active .x-btn-center,
-.com-conjoon-groupware-Menubar .x-btn-menu-active .x-btn-left,
-.com-conjoon-groupware-Menubar .x-btn-menu-active .x-btn-right,
-.com-conjoon-groupware-Menubar .x-btn-over .x-btn-center,
-.com-conjoon-groupware-Menubar .x-btn-over .x-btn-left,
-.com-conjoon-groupware-Menubar .x-btn-over .x-btn-right,
-.com-conjoon-groupware-Menubar .x-btn-over .x-btn-text,
-.com-conjoon-groupware-Menubar .x-btn-menu-active .x-btn-text {
+.com-conjoon-groupware-Menubar .x-btn-ml,
+.com-conjoon-groupware-Menubar .x-btn-mc,
+.com-conjoon-groupware-Menubar .x-btn-mr {
+    width:5px;
+}
+
+.com-conjoon-groupware-Menubar .x-btn-over td,
+.com-conjoon-groupware-Menubar .x-btn-over button,
+.com-conjoon-groupware-Menubar .x-btn-menu-active td,
+.com-conjoon-groupware-Menubar .x-btn-menu-active button {
     background:#316AC5;
-    color:white;
+    color:white!important;
 }
