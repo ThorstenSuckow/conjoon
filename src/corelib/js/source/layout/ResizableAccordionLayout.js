@@ -207,11 +207,13 @@ com.conjoon.layout.ResizableAccordionLayout = Ext.extend(Ext.layout.ContainerLay
             return;
         }
         if (suspend === true) {
-            p.suspendEvents();
+            p.un('collapse', this.onCollapse, this);
+            //p.suspendEvents();
         }
         p.collapse(false);
         if (suspend === true) {
-            p.resumeEvents();
+            p.on('collapse', this.onCollapse, this);
+            //p.resumeEvents();
         }
     },
 
