@@ -226,6 +226,8 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             this.view.clear();
         }
 
+        this.abortRequest();
+
         if (suspendAutoLoad === true) {
             return;
         }
