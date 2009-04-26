@@ -147,7 +147,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.friendsList.hideMode                     = 'visibility';
         this.getUsersRecentTweetsContainer().hideMode = 'visibility';
 
-
         Ext.apply(this, {
             title      : String.format(this.titleTpl,
                 com.conjoon.Gettext.gettext("choose account")
@@ -1487,7 +1486,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         return new Ext.Toolbar({
             items : [
-                this.getHomePanel(),
                 this.getShowRecentTweetsButton(),
                 this.getShowFriendsButton(),
                 '->',

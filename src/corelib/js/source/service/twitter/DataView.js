@@ -46,7 +46,7 @@ com.conjoon.service.twitter.DataView = Ext.extend(Ext.DataView, {
      * @param {Ext.data.Store} store
      * @param {Boolean} initial
      */
-    setStore : function(store, initial)
+    bindStore : function(store, initial)
     {
         if (!initial && this.store){
             this.store.un("load", this.onLoad, this);
@@ -57,7 +57,7 @@ com.conjoon.service.twitter.DataView = Ext.extend(Ext.DataView, {
             Ext.StoreMgr.lookup(store).on("loadexception", this._onLoadException, this);
         }
 
-        com.conjoon.service.twitter.DataView.superclass.setStore.call(this, store, initial);
+        com.conjoon.service.twitter.DataView.superclass.bindStore.call(this, store, initial);
     },
 
     /**
