@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -67,7 +67,7 @@ EXTUTIL.Observable.prototype = function(){
                 ce = me.events[ename],
                 q,
                 c;
-            if (me.eventsSuspended === TRUE) {            
+            if (me.eventsSuspended === TRUE) {
                 if (q = me.suspendedEventsQueue) {
                     q.push(a);
                 }
@@ -90,14 +90,14 @@ EXTUTIL.Observable.prototype = function(){
             }
             return ret;
         },
-    
+
         /**
-         * Appends an event handler to this component
-         * @param {String}   eventName The type of event to listen for
-         * @param {Function} handler The method the event invokes
+         * Appends an event handler to this object.
+         * @param {String}   eventName The type of event to listen for.
+         * @param {Function} handler The method the event invokes.
          * @param {Object}   scope (optional) The scope (<code><b>this</b></code> reference) in which the handler function is executed.
          * <b>If omitted, defaults to the object which fired the event.</b>
-         * @param {Object}   options (optional) An object containing handler configuration
+         * @param {Object}   options (optional) An object containing handler configuration.
          * properties. This may contain any of the following properties:<ul>
          * <li><b>scope</b> : Object<div class="sub-desc">The scope (<code><b>this</b></code> reference) in which the handler function is executed.
          * <b>If omitted, defaults to the object which fired the event.</b></div></li>
@@ -158,27 +158,27 @@ EXTUTIL.Observable.prototype = function(){
             ce;
             if (ISOBJECT(eventName)) {
                 o = eventName;
-                for (e in o){                    
+                for (e in o){
                     oe = o[e];
-                    if (!filterOptRe.test(e)) {                    
-                        me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);              
+                    if (!filterOptRe.test(e)) {
+                        me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);
                     }
-                }            
-            } else {            
+                }
+            } else {
                 eventName = toLower(eventName);
                 ce = me.events[eventName] || TRUE;
-                if (typeof ce == "boolean") {                
+                if (typeof ce == "boolean") {
                     me.events[eventName] = ce = new EXTUTIL.Event(me, eventName);
                 }
                 ce.addListener(fn, scope, ISOBJECT(o) ? o : {});
             }
         },
-    
+
         /**
-         * Removes a listener
-         * @param {String}   eventName     The type of event to listen for
-         * @param {Function} handler        The handler to remove
-         * @param {Object}   scope  (optional) The scope (this object) for the handler
+         * Removes an event handler.
+         * @param {String}   eventName     The type of event the handler was associated with.
+         * @param {Function} handler       The handler to remove. <b>This must be a reference to the function passed into the {@link #addListener} call.</b>
+         * @param {Object}   scope         (optional) The scope originally specified for the handler.
          */
         removeListener : function(eventName, fn, scope){
             var ce = this.events[toLower(eventName)];
@@ -186,30 +186,30 @@ EXTUTIL.Observable.prototype = function(){
                 ce.removeListener(fn, scope);
             }
         },
-    
+
         /**
          * Removes all listeners for this object
          */
         purgeListeners : function(){
             var events = this.events,
                 evt,
-                key;                
+                key;
             for(key in events){
                 evt = events[key];
                 if(ISOBJECT(evt)){
-                    evt.clearListeners();               
+                    evt.clearListeners();
                 }
             }
-        },        
-    
+        },
+
         /**
          * Used to define events on this Observable
          * @param {Object} object The object with the events defined
          */
         addEvents : function(o){
             var me = this;
-            me.events = me.events || {};        
-            if (typeof o == 'string') {            
+            me.events = me.events || {};
+            if (typeof o == 'string') {
                 EACH(arguments, function(a) {
                     me.events[a] = me.events[a] || TRUE;
                 });
@@ -217,7 +217,7 @@ EXTUTIL.Observable.prototype = function(){
                 Ext.applyIf(me.events, o);
             }
         },
-    
+
         /**
          * Checks to see if this object has any listeners for a specified event
          * @param {String} eventName The name of the event to check for
@@ -227,7 +227,7 @@ EXTUTIL.Observable.prototype = function(){
             var e = this.events[eventName];
             return ISOBJECT(e) && e.listeners.length > 0;
         },
-    
+
         /**
          * Suspend the firing of all events. (see {@link #resumeEvents})
          * @param queueSuspended {Boolean} Pass as true to queue up suspended events to be fired
@@ -236,10 +236,10 @@ EXTUTIL.Observable.prototype = function(){
         suspendEvents : function(queueSuspended){
             this.eventsSuspended = TRUE;
             if (queueSuspended){
-                this.suspendedEventsQueue = [];         
+                this.suspendedEventsQueue = [];
             }
         },
-    
+
         /**
          * Resume firing events. (see {@link #suspendEvents})
          * If events were suspended using the <tt><b>queueSuspended</b></tt> parameter, then all
@@ -247,30 +247,30 @@ EXTUTIL.Observable.prototype = function(){
          */
         resumeEvents : function(){
             var me = this;
-            me.eventsSuspended = !delete me.suspendedEventQueue;        
+            me.eventsSuspended = !delete me.suspendedEventQueue;
             EACH(me.suspendedEventsQueue, function(e) {
                 me.fireEvent.apply(me, e);
-            });     
+            });
         }
     }
 }();
 
 var OBSERVABLE = EXTUTIL.Observable.prototype;
 /**
- * Appends an event handler to this element (shorthand for addListener)
+ * Appends an event handler to this object (shorthand for {@link #addListener}.)
  * @param {String}   eventName     The type of event to listen for
- * @param {Function} handler        The method the event invokes
- * @param {Object}   scope (optional) The scope in which to execute the handler
- * function. The handler function's "this" context.
- * @param {Object}   options  (optional)
+ * @param {Function} handler       The method the event invokes
+ * @param {Object}   scope         (optional) The scope (<code><b>this</b></code> reference) in which the handler function is executed.
+ * <b>If omitted, defaults to the object which fired the event.</b>
+ * @param {Object}   options       (optional) An object containing handler configuration.
  * @method
  */
 OBSERVABLE.on = OBSERVABLE.addListener;
 /**
- * Removes a listener (shorthand for removeListener)
- * @param {String}   eventName     The type of event to listen for
- * @param {Function} handler        The handler to remove
- * @param {Object}   scope  (optional) The scope (this object) for the handler
+ * Removes an event handler (shorthand for {@link #removeListener}.)
+ * @param {String}   eventName     The type of event the handler was associated with.
+ * @param {Function} handler       The handler to remove. <b>This must be a reference to the function passed into the {@link #addListener} call.</b>
+ * @param {Object}   scope         (optional) The scope originally specified for the handler.
  * @method
  */
 OBSERVABLE.un = OBSERVABLE.removeListener;
@@ -359,7 +359,7 @@ EXTUTIL.Event.prototype = {
     },
 
     findListener : function(fn, scope){ 
-        var s, ret = -1                    
+        var s, ret = -1;
         EACH(this.listeners, function(l, i) {
             s = l.scope;
             if(l.fn == fn && (s == scope || s == this.obj)){
@@ -379,7 +379,7 @@ EXTUTIL.Event.prototype = {
         var index,
             me = this,
             ret = FALSE;
-        if((index = me.findListener(fn, scope)) != -1){                
+        if((index = me.findListener(fn, scope)) != -1){
             if (me.firing) {
                 me.listeners = me.listeners.slice(0);
             }
@@ -394,10 +394,10 @@ EXTUTIL.Event.prototype = {
     },
 
     fire : function(){
-        var me = this,                                
+        var me = this,
             args = TOARRAY(arguments),
-            ret = TRUE;                                                 
-        
+            ret = TRUE;
+
         EACH(me.listeners, function(l) {
             me.firing = TRUE;
             if (l.fireFn.apply(l.scope || me.obj || window, args) === FALSE) {

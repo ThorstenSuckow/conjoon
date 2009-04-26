@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -16,7 +16,7 @@ this.getRoot=s.root?this.getJsonAccessor(s.root):function(p){return p;};if(s.id|
 this.ef=[];for(var i=0;i<fl;i++){f=fi[i];var map=(f.mapping!==undefined&&f.mapping!==null)?f.mapping:f.name;this.ef[i]=this.getJsonAccessor(map);}}
 var root=this.getRoot(o),c=root.length,totalRecords=c,success=true;if(s.totalProperty){var v=parseInt(this.getTotal(o),10);if(!isNaN(v)){totalRecords=v;}}
 if(s.successProperty){var v=this.getSuccess(o);if(v===false||v==='false'){success=false;}}
-var records=[];for(var i=0;i<c;i++){var n=root[i];var values={};var id=this.getId(n);for(var j=0;j<fl;j++){f=fi[j];var v=this.ef[j](n);values[f.name]=f.convert((v!==undefined)?v:f.defaultValue,n);}
-var record=new Record(values,id);record.json=n;records[i]=record;}
-return{success:success,records:records,totalRecords:totalRecords};},readResponse:function(response){var json=response.responseText;var o=eval("("+json+")");if(!o){throw{message:"JsonReader.read: Json object not found"};}
+var records=[];for(var i=0;i<c;i++){var n=root[i];var record=new Record(this.extractValues(n,fi,fl),this.getId(n));record.json=n;records[i]=record;}
+return{success:success,records:records,totalRecords:totalRecords};},extractValues:function(data,items,len){var values={};for(var j=0;j<len;j++){f=items[j];var v=this.ef[j](data);values[f.name]=f.convert((v!==undefined)?v:f.defaultValue,data);}
+return values;},readResponse:function(response){var json=response.responseText;var o=Ext.decode(json);if(!o){throw{message:"JsonReader.read: Json object not found"};}
 return o;}});

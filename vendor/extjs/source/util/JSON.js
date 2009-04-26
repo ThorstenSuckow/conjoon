@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -15,7 +15,7 @@
  */
 Ext.util.JSON = new (function(){
     var useHasOwn = !!{}.hasOwnProperty,
-        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString == '[object JSON]';
+        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString() == '[object JSON]';
 
     // crashes Safari in some instances
     //var validRE = /^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/;
@@ -128,7 +128,7 @@ Ext.util.JSON = new (function(){
      * @param {String} json The JSON string
      * @return {Object} The resulting object
      */
-    this.decode = isNative ? JSON.stringify : function(json){
+    this.decode = isNative ? JSON.parse : function(json){
         return eval("(" + json + ')');    
     };
 })();

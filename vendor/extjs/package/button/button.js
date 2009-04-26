@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -8,7 +8,7 @@
 
 
 Ext.Button=Ext.extend(Ext.BoxComponent,{hidden:false,disabled:false,pressed:false,enableToggle:false,menuAlign:"tl-bl?",type:'button',menuClassTarget:'tr:nth(2)',clickEvent:'click',handleMouseEvents:true,tooltipType:'qtip',buttonSelector:"button:first-child",scale:'small',iconAlign:'left',arrowAlign:'right',initComponent:function(){Ext.Button.superclass.initComponent.call(this);this.addEvents("click","toggle",'mouseover','mouseout','menushow','menuhide','menutriggerover','menutriggerout');if(this.menu){this.menu=Ext.menu.MenuMgr.get(this.menu);}
-if(typeof this.toggleGroup==='string'){this.enableToggle=true;}},getTemplateArgs:function(){var cls=(this.cls||'');cls+=this.iconCls?(this.text?' x-btn-text-icon':' x-btn-icon'):' x-btn-noicon';if(this.pressed){cls+=' x-btn-pressed';}
+if(typeof this.toggleGroup==='string'){this.enableToggle=true;}},getTemplateArgs:function(){var cls=(this.cls||'');cls+=(this.iconCls||this.icon)?(this.text?' x-btn-text-icon':' x-btn-icon'):' x-btn-noicon';if(this.pressed){cls+=' x-btn-pressed';}
 return[this.text||'&#160;',this.type,this.iconCls||'',cls,'x-btn-'+this.scale+' x-btn-icon-'+this.scale+'-'+this.iconAlign,this.getMenuClass()];},getMenuClass:function(){return this.menu?(this.arrowAlign!='bottom'?'x-btn-arrow':'x-btn-arrow-bottom'):'';},onRender:function(ct,position){if(!this.template){if(!Ext.Button.buttonTemplate){Ext.Button.buttonTemplate=new Ext.Template('<table cellspacing="0" class="x-btn {3}"><tbody class="{4}">','<tr><td class="x-btn-tl"><i>&#160;</i></td><td class="x-btn-tc"></td><td class="x-btn-tr"><i>&#160;</i></td></tr>','<tr><td class="x-btn-ml"><i>&#160;</i></td><td class="x-btn-mc"><em class="{5}" unselectable="on"><button class="x-btn-text {2}" type="{1}">{0}</button></em></td><td class="x-btn-mr"><i>&#160;</i></td></tr>','<tr><td class="x-btn-bl"><i>&#160;</i></td><td class="x-btn-bc"></td><td class="x-btn-br"><i>&#160;</i></td></tr>',"</tbody></table>");Ext.Button.buttonTemplate.compile();}
 this.template=Ext.Button.buttonTemplate;}
 var btn,targs=this.getTemplateArgs();if(position){btn=this.template.insertBefore(position,targs,true);}else{btn=this.template.append(ct,targs,true);}

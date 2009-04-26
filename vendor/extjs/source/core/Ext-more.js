@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -27,7 +27,7 @@ Ext.apply(Ext, function(){
         /**
         * A reusable empty function
         * @property
-         * @type Function
+        * @type Function
         */
         emptyFn : function(){},
 
@@ -43,9 +43,9 @@ Ext.apply(Ext, function(){
         },
 
         /**
-        * Returns the current HTML document object as an {@link Ext.Element}.
-        * @return Ext.Element The document
-        */
+         * Returns the current HTML document object as an {@link Ext.Element}.
+         * @return Ext.Element The document
+         */
         getDoc : function(){
             return Ext.get(document);
         },
@@ -102,20 +102,20 @@ Ext.apply(Ext, function(){
 
         /**
          * Applies event listeners to elements by selectors when the document is ready.
-         * The event name is specified with an @ suffix.
-         <pre><code>
-         Ext.addBehaviors({
-           // add a listener for click on all anchors in element with id foo
-           '#foo a@click' : function(e, t){
-               // do something
-           },
-
-           // add the same listener to multiple selectors (separated by comma BEFORE the @)
-           '#foo a, #bar span.some-class@mouseover' : function(){
-               // do something
-           }
-         });
-         </code></pre>
+         * The event name is specified with an <tt>&#64;</tt> suffix.
+         * <pre><code>
+Ext.addBehaviors({
+    // add a listener for click on all anchors in element with id foo
+    '#foo a&#64;click' : function(e, t){
+        // do something
+    },
+    
+    // add the same listener to multiple selectors (separated by comma BEFORE the &#64;)
+    '#foo a, #bar span.some-class&#64;mouseover' : function(){
+        // do something
+    }
+});
+         * </code></pre> 
          * @param {Object} obj The list of behaviors to apply
          */
         addBehaviors : function(o){
@@ -160,20 +160,20 @@ Ext.apply(Ext, function(){
 
         /**
          * Copies a set of named properties fom the source object to the destination object.
+         * <p>example:<pre><code>
+ImageComponent = Ext.extend(Ext.BoxComponent, {
+    initComponent: function() {
+        this.autoEl = { tag: 'img' };
+        MyComponent.superclass.initComponent.apply(this, arguments);
+        this.initialBox = Ext.copyTo({}, this.initialConfig, 'x,y,width,height');
+    }
+});
+         * </code></pre> 
          * @param {Object} The destination object.
          * @param {Object} The source object.
          * @param {Array/String} Either an Array of property names, or a comma-delimited list
          * of property names to copy.
          * @return {Object} The modified object.
-         * <p>example:<pre><code>
-            ImageComponent = Ext.extend(Ext.BoxComponent, {
-            initComponent: function() {
-                this.autoEl = { tag: 'img' };
-                MyComponent.superclass.initComponent.apply(this, arguments);
-                this.initialBox = Ext.copyTo({}, this.initialConfig, 'x,y,width,height');
-            }
-        });
-        </code></pre>
         */
         copyTo : function(dest, source, names){
             if(typeof names == 'string'){
@@ -227,9 +227,9 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Removes null values
-         * @param {Array/NodeList}
-         * @returns {Array} Returns the modified array.
+         * Creates a copy of the passed Array with falsy values removed.
+         * @param {Array/NodeList} arr The Array from which to remove falsy values.
+         * @return {Array} The new, compressed Array.
          */
         clean : function(arr){
             var ret = [];
@@ -240,9 +240,9 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Filters the array for unique values
-         * @param {Array} The array to filter
-         * @returns {Array} Returns the unique array.
+         * Creates a copy of the passed Array, filtered to contain only unique values.
+         * @param {Array} arr The Array to filter
+         * @return {Array} The new Array containing unique values.
          */
         unique : function(arr){
             var ret = [],
@@ -258,9 +258,9 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Recursively flattens into 1-d array. Injects arrays inline.
-         * @param {Array} The array to flatten
-         * @returns {Array} Returns the modified array.
+         * Recursively flattens into 1-d Array. Injects Arrays inline.
+         * @param {Array} arr The array to flatten
+         * @return {Array} The new, flattened array.
          */
         flatten : function(arr){
             var worker = [];
@@ -274,11 +274,11 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Returns the minimum value in the array
-         * @param {Array|NodeList}
-         * @param {Function} comp (optional) a function to perform the comparision which determins minimization.
+         * Returns the minimum value in the Array.
+         * @param {Array|NodeList} arr The Array from which to select the minimum value.
+         * @param {Function} comp (optional) a function to perform the comparision which determines minimization.
          *                   If omitted the "<" operator will be used. Note: gt = 1; eq = 0; lt = -1
-         * @returns {Object} returns the minimum value in the set.
+         * @return {Object} The minimum value in the Array.
          */
         min : function(arr, comp){
             var ret = arr[0];
@@ -290,11 +290,11 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Returns the maximum  value in the array
-         * @param {Array|NodeList}
-         * @param {Function} comp (optional) a function to perform the comparision which determins minimization.
+         * Returns the maximum value in the Array
+         * @param {Array|NodeList} arr The Array from which to select the maximum value.
+         * @param {Function} comp (optional) a function to perform the comparision which determines maximization.
          *                   If omitted the ">" operator will be used. Note: gt = 1; eq = 0; lt = -1
-         * @returns {Object} returns the maximum value in the set.
+         * @return {Object} The maximum value in the Array.
          */
         max : function(arr, comp){
             var ret = arr[0];
@@ -306,13 +306,13 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Returns the median value in the set.
-         * @param {Array|NodeList} The array to filter
+         * Returns the median value in the Array.
+         * @param {Array|NodeList} arr The Array from which to select the median value.
          * @param {Function} sorter (optional) a function that will perform the sorting operation.
          * @param {Function} MedianOperator (optional) a function that will perform the median calculation in the
          *                   event that the length of the list is even. This is optional, but if it is not an array of
          *                   numbers and the length is even it is needed or an error will be thrown.
-         * @returns {Number} Returns the median value
+         * @return {Number} The median value.
          */
         median : function(arr, sorter, medCalc){
             var ret,
@@ -337,18 +337,18 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Calculates the mean of the set
-         * @param {Array} The array to calculate the mean value of.
-         * @returns {Number} The mean.
+         * Calculates the mean of the Array
+         * @param {Array} arr The Array to calculate the mean value of.
+         * @return {Number} The mean.
          */
         mean : function(arr){
            return Ext.sum(arr) / arr.length;
         },
 
         /**
-         * Returns the mode of the set.
-         * @param {Array} The array to compute the mode on.
-         * @returns {Number} The mode.
+         * Returns the mode of the Array.
+         * @param {Array} arr The Array to compute the mode on.
+         * @return {Number} The mode.
          */
         mode : function(arr){
             var collect = {},
@@ -362,9 +362,9 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Calculates the sum of the set
-         * @param {Array} The array to calculate the sum value of.
-         * @returns {Number} The sum.
+         * Calculates the sum of the Array
+         * @param {Array} arr The Array to calculate the sum value of.
+         * @return {Number} The sum.
          */
         sum : function(arr){
            var ret = 0;
@@ -392,10 +392,10 @@ Ext.partition(
 // true are those paragraph elements with a className of "class1",
 // false set are those that do not have that className.
          * </code></pre>
-         * @param {Array|NodeList} The array to partition
-         * @param {Function} truth (optional) a function to determine truth.  If this is omitted the element itself must be able to be
-         *                   evaluated for its truthfulness.
-         * @returns {Array} [true<Array>,false<Array>]
+         * @param {Array|NodeList} arr The array to partition
+         * @param {Function} truth (optional) a function to determine truth.  If this is omitted the element
+         *                   itself must be able to be evaluated for its truthfulness.
+         * @return {Array} [true<Array>,false<Array>]
          */
         partition : function(arr, truth){
             var ret = [[],[]];
@@ -406,23 +406,23 @@ Ext.partition(
         },
 
         /**
-         * Invokes a method on each item in the set.
+         * Invokes a method on each item in an Array.
          * <pre><code>
 // Example:
 Ext.invoke(Ext.query("p"), "getAttribute", "id");
 // [el1.getAttribute("id"), el2.getAttribute("id"), ..., elN.getAttribute("id")]
          * </code></pre>
-         * @param {Array|NodeList(not in IE)} The array of items to invoke the method on.
-         * @param {String} The method name to invode
-         * @param {Anything} Arguments to send into the method invocation.
-         * @returns {Array} The result of invoking the method on each item in the array.
+         * @param {Array|NodeList(not in IE)} arr The Array of items to invoke the method on.
+         * @param {String} methodName The method name to invoke.
+         * @param {Anything} ... Arguments to send into the method invocation.
+         * @return {Array} The results of invoking the method on each item in the array.
          */
-        invoke : function(arr, prop){
+        invoke : function(arr, methodName){
             var ret = [],
                 args = Array.prototype.slice.call(arguments, 2);
             Ext.each(arr, function(v,i) {
-                if (v && typeof v[prop] == "function") {
-                    ret.push(v[prop].apply(v, args));
+                if (v && typeof v[methodName] == "function") {
+                    ret.push(v[methodName].apply(v, args));
                 } else {
                     ret.push(undefined);
                 }
@@ -431,13 +431,14 @@ Ext.invoke(Ext.query("p"), "getAttribute", "id");
         },
 
         /**
-         * Plucks the value of a property from each item in the set
+         * Plucks the value of a property from each item in the Array
          * <pre><code>
 // Example:
 Ext.pluck(Ext.query("p"), "className"); // [el1.className, el2.className, ..., elN.className]
          * </code></pre>
-         * @param {Array|NodeList} The array of items to pluck the value from.
-         * @returns {Array} The value from each item in the set.
+         * @param {Array|NodeList} arr The Array of items to pluck the value from.
+         * @param {String} prop The property name to pluck from each element.
+         * @return {Array} The value from each item in the Array.
          */
         pluck : function(arr, prop){
             var ret = [];
@@ -462,9 +463,9 @@ Ext.zip(
     }
 ); // ["$+12.43", "$-10.15", "$+22.96"]
          * </code></pre>
-         * @param {Arrays|NodeLists} The array to calculate the sum value of.
-         * @param {Function} zipper (optional) this will drive how the items are zipped together.
-         * @returns {Array} The zipped set.
+         * @param {Arrays|NodeLists} arr This argument may be repeated. Array(s) to contribute values.
+         * @param {Function} zipper (optional) The last item in the argument list. This will drive how the items are zipped together.
+         * @return {Array} The zipped set.
          */
         zip : function(){
             var parts = Ext.partition(arguments, function( val ){ return typeof val != "function" }),
@@ -487,9 +488,9 @@ Ext.zip(
         },
 
         /**
-        * Shorthand for {@link Ext.ComponentMgr#get}
-        * @param {String} id
-        * @return Ext.Component
+         * Looks up an existing {@link Ext.Component Component} by {@link Ext.Component#id id}
+         * @param {String} id The component {@link Ext.Component#id id}
+         * @return Ext.Component The Component, or null if not found.
         */
         getCmp : function(id){
             return Ext.ComponentMgr.get(id);
@@ -625,9 +626,9 @@ Ext.applyIf(String, {
      * Pads the left side of a string with a specified character.  This is especially useful
      * for normalizing number and date strings.  Example usage:
      * <pre><code>
-        var s = String.leftPad('123', 5, '0');
-        // s now contains the string: '00123'
-        </code></pre>
+var s = String.leftPad('123', 5, '0');
+// s now contains the string: '00123'
+     * </code></pre>
      * @param {String} string The original string
      * @param {Number} size The total length of the output string
      * @param {String} char (optional) The character with which to pad the original string (defaults to empty string " ")

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -122,7 +122,7 @@ function(){
 	     * @return {Boolean}
 	     */
 	    isMasked : function(){	    
-	        return this.mask && this.mask.isVisible();
+	        return this._mask && this._mask.isVisible();
 	    },
 	    
 	    /**

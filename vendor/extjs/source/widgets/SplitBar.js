@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -274,14 +274,12 @@ Ext.extend(Ext.SplitBar, Ext.util.Observable, {
      * @param {Boolean} removeEl True to remove the element
      */
     destroy : function(removeEl){
-        if(this.shim){
-            this.shim.remove();
-        }
+		Ext.destroy(this.shim, Ext.get(this.proxy));
         this.dd.unreg();
-        Ext.destroy(Ext.get(this.proxy));
         if(removeEl){
             this.el.remove();
         }
+		this.purgeListeners();
     }
 });
 

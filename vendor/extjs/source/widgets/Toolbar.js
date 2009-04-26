@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -606,6 +606,7 @@ Ext.reg('toolbar', Ext.Toolbar);
 
 /**
  * @class Ext.Toolbar.Item
+ * @extends Ext.BoxComponent
  * The base class that other non-interacting Toolbar Item classes should extend in order to
  * get some basic common toolbar item functionality.
  * @constructor
@@ -776,15 +777,15 @@ var p = new Ext.Panel({
             cls: 'x-btn-as-arrow'
         },{
             xtype:'splitbutton',
-            text: 'Hideous',
+            text: 'Menu Button',
             scale: 'large',
             rowspan: 3,
             iconCls: 'add',
             iconAlign: 'top',
             arrowAlign:'bottom',
-            menu: [{text: 'Ribbons are hideous'}]
+            menu: [{text: 'Menu Item 1'}]
         },{
-            xtype:'splitbutton', text: 'Cut', iconCls: 'add16', menu: [{text: 'Hideousness'}]
+            xtype:'splitbutton', text: 'Cut', iconCls: 'add16', menu: [{text: 'Cut Menu Item'}]
         },{
             text: 'Copy', iconCls: 'add16'
         },{

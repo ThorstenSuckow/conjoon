@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -20,7 +20,6 @@ me.listeners.push(l);}},createListener:function(fn,scope,o){o=o||{},scope=scope|
 if(o.delay){h=createDelayed(h,o,scope);}
 if(o.single){h=createSingle(h,this,fn,scope);}
 if(o.buffer){h=createBuffered(h,o,scope);}
-l.fireFn=h;return l;},findListener:function(fn,scope){var s,ret=-1
-EACH(this.listeners,function(l,i){s=l.scope;if(l.fn==fn&&(s==scope||s==this.obj)){ret=i;return FALSE;}},this);return ret;},isListening:function(fn,scope){return this.findListener(fn,scope)!=-1;},removeListener:function(fn,scope){var index,me=this,ret=FALSE;if((index=me.findListener(fn,scope))!=-1){if(me.firing){me.listeners=me.listeners.slice(0);}
+l.fireFn=h;return l;},findListener:function(fn,scope){var s,ret=-1;EACH(this.listeners,function(l,i){s=l.scope;if(l.fn==fn&&(s==scope||s==this.obj)){ret=i;return FALSE;}},this);return ret;},isListening:function(fn,scope){return this.findListener(fn,scope)!=-1;},removeListener:function(fn,scope){var index,me=this,ret=FALSE;if((index=me.findListener(fn,scope))!=-1){if(me.firing){me.listeners=me.listeners.slice(0);}
 me.listeners.splice(index,1);ret=TRUE;}
 return ret;},clearListeners:function(){this.listeners=[];},fire:function(){var me=this,args=TOARRAY(arguments),ret=TRUE;EACH(me.listeners,function(l){me.firing=TRUE;if(l.fireFn.apply(l.scope||me.obj||window,args)===FALSE){return ret=me.firing=FALSE;}});me.firing=FALSE;return ret;}};})();

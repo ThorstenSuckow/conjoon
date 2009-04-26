@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -523,9 +523,13 @@ Ext.EventObject = function(){
          * @return {Number} The key code
          */
         getKey : function(){
-            var k = this.keyCode || this.charCode;
-            return Ext.isSafari ? (safariKeys[k] || k) : k;
+            return this.normalizeKey(this.keyCode || this.charCode)
         },
+		
+		// private
+		normalizeKey: function(k){
+			return Ext.isSafari ? (safariKeys[k] || k) : k; 
+		},
 
         /**
          * Gets the x coordinate of the event.

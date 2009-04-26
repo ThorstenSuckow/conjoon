@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -156,9 +156,6 @@ var $f = Date.formatCodeToRegex;
 
 Ext.apply(Date, {
     /**
-     * @property parseFunctions
-     * @static
-     * @type Object
      * <p>An object hash in which each property is a date parsing function. The property name is the
      * format string which that function parses.</p>
      * <p>This object is automatically populated with date parsing functions as
@@ -176,6 +173,9 @@ Date.parseFunctions['x-date-format'] = myDateParser;
      * </ul></div></p>
      * <p>To enable Dates to also be <i>formatted</i> according to that format, a corresponding
      * formatting function must be placed into the {@link #formatFunctions} property.
+     * @property parseFunctions
+     * @static
+     * @type Object
      */
     parseFunctions: {
         "M$": function(input, strict) {
@@ -189,9 +189,6 @@ Date.parseFunctions['x-date-format'] = myDateParser;
     parseRegexes: [],
 
     /**
-     * @property formatFunctions
-     * @static
-     * @type Object
      * <p>An object hash in which each property is a date formatting function. The property name is the
      * format string which corresponds to the produced formatted date string.</p>
      * <p>This object is automatically populated with date formatting functions as
@@ -205,6 +202,9 @@ Date.formatFunctions['x-date-format'] = myDateFormatter;
      * </ul></div></p>
      * <p>To enable date strings to also be <i>parsed</i> according to that format, a corresponding
      * parsing function must be placed into the {@link #parseFunctions} property.
+     * @property formatFunctions
+     * @static
+     * @type Object
      */
     formatFunctions: {
         "M$": function() {
@@ -507,7 +507,7 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
 </code></pre>
      * @param {String} input The raw date string.
      * @param {String} format The expected date string format.
-     * @param {Boolean} strict True to validate date strings while parsing (i.e. prevents javascript Date "rollover")
+     * @param {Boolean} strict (optional) True to validate date strings while parsing (i.e. prevents javascript Date "rollover")
                         (defaults to false). Invalid date strings will return null when parsed.
      * @return {Date} The parsed Date.
      * @static
@@ -610,7 +610,7 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
                 "}",
             "}",
             
-            "return v;",
+            "return v;"
         ].join('\n');
 
         return function(format) {

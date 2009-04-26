@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -386,9 +386,9 @@ function(el){
         },
         
         /**
-        * Returns the current document body as an {@link Ext.Element}.
-        * @return Ext.Element The document body
-        */
+         * Returns the current document body as an {@link Ext.Element}.
+         * @return Ext.Element The document body
+         */
         getBody : function(){
             return Ext.get(document.body || document.documentElement);
         },        
@@ -451,7 +451,7 @@ function(el){
          * @param {Mixed} value The value to test
          * @return {Boolean}
          */
-        isPrimitive: function(v){
+        isPrimitive : function(v){
             var t = typeof v;
             return t == 'string' || t == 'number' || t == 'boolean';
         },
@@ -562,7 +562,20 @@ function(el){
         isAir : isAir
     });
 
-    // in intellij using keyword "namespace" causes parsing errors
+    /**
+     * Creates namespaces to be used for scoping variables and classes so that they are not global.
+     * Specifying the last node of a namespace implicitly creates all other nodes. Usage:
+     * <pre><code>
+Ext.namespace('Company', 'Company.data');
+Ext.namespace('Company.data'); // equivalent and preferable to above syntax
+Company.Widget = function() { ... }
+Company.data.CustomStore = function(config) { ... }
+</code></pre>
+     * @param {String} namespace1
+     * @param {String} namespace2
+     * @param {String} etc
+     * @method namespace
+     */
     Ext.ns = Ext.namespace;
 })();
 
@@ -740,7 +753,7 @@ Ext.applyIf(String, {
 var cls = 'my-class', text = 'Some text';
 var s = String.format('&lt;div class="{0}">{1}&lt;/div>', cls, text);
 // s now contains the string: '&lt;div class="my-class">Some text&lt;/div>'
-</code></pre>
+     * </code></pre>
      * @param {String} string The tokenized string to be formatted
      * @param {String} value1 The value to replace token {0}
      * @param {String} value2 Etc...

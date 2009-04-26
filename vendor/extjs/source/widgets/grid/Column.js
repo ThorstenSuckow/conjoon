@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -45,7 +45,7 @@ Ext.grid.Column.prototype = {
      */
     /**
      * @cfg {String} id (optional) A name which identifies this column (defaults to the column's initial
-     * ordinal position. The <tt>id</tt> is used to create a CSS <b>class</b> name which is applied to all
+     * ordinal position.) The <tt>id</tt> is used to create a CSS <b>class</b> name which is applied to all
      * table cells (including headers) in that column (in this context the <tt>id</tt> does not need to be
      * unique). The class name takes the form of <pre>x-grid3-td-<b>id</b></pre>
      * Header cells will also receive this class name, but will also have the class <pre>x-grid3-hd</pre>
@@ -56,6 +56,12 @@ Ext.grid.Column.prototype = {
     /**
      * @cfg {String} header The header text to be used as innerHTML (html tags are accepted)
      * to display in the Grid view. 
+     */
+    /**
+     * @cfg {Boolean} groupable If the grid is being rendered by an {@link Ext.grid.GroupingView}, this option
+     * may be used to disable the header menu item to group by the column selected. Defaults to <tt>true</tt>,
+     * which enables the header menu group option.  Set to <tt>false</tt> to disable (but still show) the
+     * group option in the header menu for the column. See also <code>{@link #groupName}</code>.
      */
     /**
      * @cfg {String} groupName If the grid is being rendered by an {@link Ext.grid.GroupingView}, this option
@@ -69,8 +75,23 @@ Ext.grid.Column.prototype = {
      * specified, the column's index is used as an index into the Record's data Array.
      */
     /**
-     * @cfg {Number} width (optional) The initial width in pixels of the column. This is ignored if the
-     * Grid's {@link Ext.grid.GridView view} is configured with {@link Ext.grid.GridView#forceFit forceFit} true.
+     * @cfg {Number} width
+     * (optional) The initial width in pixels of the column.
+     * The width of each column can also be affected if any of the following are configured:
+     * <div class="mdetail-params"><ul>
+     * <li>{@link Ext.grid.GridPanel}.<tt>{@link Ext.grid.GridPanel#autoExpandColumn autoExpandColumn}</tt></li>
+     * <li>{@link Ext.grid.GridView}.<tt>{@link Ext.grid.GridView#forceFit forceFit}</tt>
+     * <div class="sub-desc">
+     * <p>By specifying <tt>forceFit:true</tt>, {@link #fixed non-fixed width} columns will be
+     * re-proportioned (based on the relative initial widths) to fill the width of the grid so
+     * that no horizontal scrollbar is shown.</p>
+     * </div></li>
+     * <li>{@link Ext.grid.GridView}.<tt>{@link Ext.grid.GridView#autoFill autoFill}</tt></li>
+     * <li>{@link Ext.grid.GridPanel}.<tt>{@link Ext.grid.GridPanel#minColumnWidth minColumnWidth}</tt></li>
+     * <br><p><b>Note</b>: when the width of each column is determined, a space on the right side
+     * is reserved for the vertical scrollbar.  The
+     * {@link Ext.grid.GridView}.<tt>{@link Ext.grid.GridView#scrollOffset scrollOffset}</tt>
+     * can be modified to reduce or eliminate the reserved offset.</p>
      */
     /**
      * @cfg {Boolean} sortable (optional) <tt>true</tt> if sorting is to be allowed on this column.
@@ -139,8 +160,8 @@ var companyColumn = {
      * @cfg {String} align (optional) Set the CSS text-align property of the column.  Defaults to undefined.
      */
     /**
-     * @cfg {String} css (optional) Set custom CSS for all table cells in the column (excluding headers).
-     * Defaults to undefined.
+     * @cfg {String} css (optional) An inline style definition string which is applied to all table cells in the column
+     * (excluding headers). Defaults to undefined.
      */
     /**
      * @cfg {Boolean} hideable (optional) Specify as <tt>false</tt> to prevent the user from hiding this column

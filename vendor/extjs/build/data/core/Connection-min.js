@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -11,7 +11,7 @@
 function handleFailure(response,e){this.transId=false;var options=response.argument.options;response.argument=options?options.argument:null;this.fireEvent(REQUESTEXCEPTION,this,response,options,e);if(options.failure)options.failure.call(options.scope,response,options);if(options.callback)options.callback.call(options.scope,options,false,response);}
 function doFormUpload(o,ps,url){var id=Ext.id(),doc=document,frame=doc.createElement('iframe'),form=Ext.getDom(o.form),hiddens=[],hd;frame.id=frame.name=id;frame.className='x-hidden';frame.src=Ext.SSL_SECURE_URL;doc.body.appendChild(frame);if(Ext.isIE){doc.frames[id].name=id;}
 form.target=id;form.method=POST;form.enctype=form.encoding='multipart/form-data';form.action=url||"";ps=Ext.urlDecode(ps,false);for(var k in ps){if(ps.hasOwnProperty(k)){hd=doc.createElement('input');hd.type='hidden';hd.value=ps[hd.name=k];form.appendChild(hd);hiddens.push(hd);}}
-function cb(){var me=this,r={responseText:'',responseXML:null,argument:o.argument},doc,firstChild;try{doc=frame.contentWindow.document||frame.contentDocument||WINDOW.frames[id].document;if(doc){if(doc.body){if(/textarea/i.test((firstChild=doc.body.firstChild||{}).tagName)){r.responseText=firstChild.value;}else{r.responseText=doc.body.innerHTML;}}else{responseXML=doc.XMLDocument||doc;}}}
+function cb(){var me=this,r={responseText:'',responseXML:null,argument:o.argument},doc,firstChild;try{doc=frame.contentWindow.document||frame.contentDocument||WINDOW.frames[id].document;if(doc){if(doc.body){if(/textarea/i.test((firstChild=doc.body.firstChild||{}).tagName)){r.responseText=firstChild.value;}else{r.responseText=doc.body.innerHTML;}}else{r.responseXML=doc.XMLDocument||doc;}}}
 catch(e){}
 Ext.EventManager.removeListener(frame,LOAD,cb,me);me.fireEvent(REQUESTCOMPLETE,me,r,o);Ext.callback(o.success,o.scope,[r,o]);Ext.callback(o.callback,o.scope,[o,true,r]);if(!me.debugUploads){setTimeout(function(){Ext.removeNode(frame);},100);}}
 Ext.EventManager.on(frame,LOAD,cb,this);form.submit();Ext.each(hiddens,function(h){Ext.removeNode(h);});}

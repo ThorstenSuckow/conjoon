@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -288,8 +288,7 @@ Ext.apply(Ext.EventObjectImpl.prototype, {
     /** @private */
     isNavKeyPress : function(){
         var me = this,
-        	k = me.keyCode;
-        k = Ext.isSafari ? (safariKeys[k] || k) : k;
+        	k = this.normalizeKey(me.keyCode);
         return (k >= 33 && k <= 40) || k == me.RETURN || k == me.TAB || k == me.ESC;
     },
 

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -39,7 +39,7 @@ Ext.extend(Ext.grid.SplitDragZone, Ext.dd.DDProxy, {
 
 
     handleMouseDown : function(e){
-        ev = Ext.EventObject.setEvent(e);
+        var ev = Ext.EventObject.setEvent(e);
         var t = this.fly(ev.getTarget());
         if(t.hasClass("x-grid-split")){
             this.cellIndex = this.view.getCellIndex(t.dom);

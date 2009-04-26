@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -148,7 +148,7 @@ Ext.layout.VBoxLayout = Ext.extend(Ext.layout.BoxLayout, {
             cm = c.margins;
             totalFlex += c.flex || 0;
             totalHeight += c.getHeight() + cm.top + cm.bottom;
-            maxWidth = Math.max(maxWidth, c.getWidth() + cm.left + cm.top);
+            maxWidth = Math.max(maxWidth, c.getWidth() + cm.left + cm.right);
         }
 
         var innerCtWidth = maxWidth + this.padding.left + this.padding.right;

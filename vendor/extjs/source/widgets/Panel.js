@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,14 +9,15 @@
 /**
  * @class Ext.Panel
  * @extends Ext.Container
- * <p>Panel is a container that has specific functionality and structural components that make it the perfect building
- * block for application-oriented user interfaces.</p>
- * <p>A Panel may contain {@link #bbar bottom} and {@link #tbar top} toolbars, along with separate header, footer and
- * body sections (see {@link #frame} for additional information).</p>
- * <p>Panel also provides built-in {@link #collapsible expandable and collapsible behavior}, along with a variety of
- * {@link #tools prebuilt tool buttons} that can be wired up to provide other customized behavior.  Panels can be
- * easily dropped into any {@link Ext.Container Container} or layout, and the layout and rendering pipeline is
- * {@link Ext.Container#add completely managed by the framework}.</p>
+ * <p>Panel is a container that has specific functionality and structural components that make
+ * it the perfect building block for application-oriented user interfaces.</p>
+ * <p>A Panel may contain {@link #bbar bottom} and {@link #tbar top} toolbars, along with separate
+ * {@link #header}, {@link #footer} and {@link #body} sections (see {@link #frame} for additional
+ * information).</p>
+ * <p>Panel also provides built-in {@link #collapsible expandable and collapsible behavior}, along with
+ * a variety of {@link #tools prebuilt tool buttons} that can be wired up to provide other customized
+ * behavior.  Panels can be easily dropped into any {@link Ext.Container Container} or layout, and the
+ * layout and rendering pipeline is {@link Ext.Container#add completely managed by the framework}.</p>
  * @constructor
  * @param {Object} config The config object
  * @xtype panel
@@ -43,43 +44,82 @@ Ext.Panel = Ext.extend(Ext.Container, {
      * @property body
      */
     /**
+     * The Panel's bwrap {@link Ext.Element Element} used to contain other Panel elements
+     * (tbar, body, bbar, footer). See {@link #bodyCfg}. Read-only.
+     * @type Ext.Element
+     * @property bwrap
+     */
+    /**
      * @cfg {Object} bodyCfg
-     * <p>A {@link Ext.DomHelper DomHelper} configuration object specifying the element structure
-     * of this Panel's {@link #body} Element.</p>
-     * <p>This may be used to force the body Element to use a different form of markup than is created
-     * automatically. An example of this might be to {@link Ext.Element#createChild create a child}
-     * Panel containing custom content, such as a header, or forcing centering of all Panel
-     * content by having the body be a &lt;center&gt; element:</p><code><pre>
+     * <p>A {@link Ext.DomHelper DomHelper} element specification object may be specified for any
+     * Panel Element.</p>
+     * <p>By default, the Default element in the table below will be used for the html markup to
+     * create a child element with the commensurate Default class name (<tt>baseCls</tt> will be
+     * replaced by <tt>{@link #baseCls}</tt>):</p>
+     * <pre>
+     * Panel      Default  Default             Custom      Additional       Additional
+     * Element    element  class               element     class            style
+     * ========   ==========================   =========   ==============   ===========
+     * {@link #header}     div      {@link #baseCls}+'-header'   {@link #headerCfg}   headerCssClass   headerStyle
+     * {@link #bwrap}      div      {@link #baseCls}+'-bwrap'     {@link #bwrapCfg}    bwrapCssClass    bwrapStyle
+     * + tbar     div      {@link #baseCls}+'-tbar'       {@link #tbarCfg}     tbarCssClass     tbarStyle
+     * + {@link #body}     div      {@link #baseCls}+'-body'       {@link #bodyCfg}     {@link #bodyCssClass}     {@link #bodyStyle}
+     * + bbar     div      {@link #baseCls}+'-bbar'       {@link #bbarCfg}     bbarCssClass     bbarStyle
+     * + {@link #footer}   div      {@link #baseCls}+'-footer'   {@link #footerCfg}   footerCssClass   footerStyle
+     * </pre>
+     * <p>Configuring a Custom element may be used, for example, to force the {@link #body} Element
+     * to use a different form of markup than is created by default. An example of this might be
+     * to {@link Ext.Element#createChild create a child} Panel containing a custom content, such as
+     * a header, or forcing centering of all Panel content by having the body be a &lt;center&gt;
+     * element:</p>
+     * <pre><code>
 new Ext.Panel({
-    title: 'New Message',
-    collapsible: true,
+    title: 'Message Title',
     renderTo: Ext.getBody(),
-    width: 400,
+    width: 200, height: 130,
     <b>bodyCfg</b>: {
         tag: 'center',
-        cls: 'x-panel-body'
+        cls: 'x-panel-body',  // Default class not applied if Custom element specified
+        html: 'Message'
     },
-    items: [{
-        border: false,
-        header: false,
-        <b>bodyCfg</b>: {tag: 'h2', html: 'Message'}
-    }, {
-        xtype: 'textarea',
-        style: {
-            width: '95%',
-            marginBottom: '10px'
-        }
+    {@link #footer}: true,
+    footerCfg: {
+        tag: 'h2',
+        cls: 'x-panel-footer'        // same as the Default class
+        html: 'footer html'
     },
-        new Ext.Button({
-            text: 'Send',
-            minWidth: '100',
-            style: {
-                marginBottom: '10px'
-            }
-        })
-    ]
-});</pre></code>
+    footerCssClass: 'custom-footer', // additional css class, see {@link Ext.element#addClass addClass}
+    footerStyle:    'background-color:red' // see {@link #bodyStyle}
+});
+     * </code></pre>
+     * <p>The example above also explicitly creates a <tt>{@link #footer}</tt> with custom markup and
+     * styling applied.</p>
      */
+    /**
+     * @cfg {Object} headerCfg
+     * <p>A {@link Ext.DomHelper DomHelper} element specification object specifying the element structure
+     * of this Panel's {@link #header} Element.  See <tt>{@link #bodyCfg}</tt> also.</p>
+     */
+    /**
+     * @cfg {Object} bwrapCfg
+     * <p>A {@link Ext.DomHelper DomHelper} element specification object specifying the element structure
+     * of this Panel's {@link #bwrap} Element.  See <tt>{@link #bodyCfg}</tt> also.</p>
+     */
+    /**
+     * @cfg {Object} tbarCfg
+     * <p>A {@link Ext.DomHelper DomHelper} element specification object specifying the element structure
+     * of this Panel's {@link #tbar} Element.  See <tt>{@link #bodyCfg}</tt> also.</p>
+     */
+    /**
+     * @cfg {Object} bbarCfg
+     * <p>A {@link Ext.DomHelper DomHelper} element specification object specifying the element structure
+     * of this Panel's {@link #bbar} Element.  See <tt>{@link #bodyCfg}</tt> also.</p>
+     */
+    /**
+     * @cfg {Object} footerCfg
+     * <p>A {@link Ext.DomHelper DomHelper} element specification object specifying the element structure
+     * of this Panel's {@link #footer} Element.  See <tt>{@link #bodyCfg}</tt> also.</p>
+     */    
     /**
      * @cfg {Boolean} closable
      * Panels themselves do not directly support being closed, but some Panel subclasses do (like
@@ -87,18 +127,8 @@ new Ext.Panel({
      * to enable closing in such situations. Defaults to <tt>false</tt>.
      */
     /**
-     * @cfg {Object} headerCfg
-     * <p>A {@link Ext.DomHelper DomHelper} configuration object specifying the element structure
-     * of this Panel's {@link #header} Element.</p>
-     */
-    /**
-     * @cfg {Object} footerCfg
-     * <p>A {@link Ext.DomHelper DomHelper} configuration object specifying the element structure
-     * of this Panel's {@link #footer} Element.</p>
-     */
-    /**
      * The Panel's footer {@link Ext.Element Element}. Read-only.
-     * <p>This Element is used to house the Panel's {@link #buttons}.</p>
+     * <p>This Element is used to house the Panel's <tt>{@link #buttons}</tt> or <tt>{@link #fbar}</tt>.</p>
      * <br><p><b>Note</b>: see the Note for <tt>{@link Ext.Component#el el} also.</p>
      * @type Ext.Element
      * @property footer
@@ -142,30 +172,67 @@ new Ext.Panel({
      * so are not scanned to collect form items. However, the values <b>will</b> be submitted because form
      * submission parameters are collected from the DOM tree.</p>
      */
+    /** @cfg {Object/Array} fbar
+     * <p>A {@link Ext.Toolbar Toolbar} object, a Toolbar config, or an array of
+     * {@link Ext.Button Button}s/{@link Ext.Button Button} configs, describing a {@link Ext.Toolbar Toolbar} to be rendered into this Panel's footer element.</p>
+     * <p>After render, the <code>fbar</code> property will be an {@link Ext.Toolbar Toolbar} instance.</p>
+     * <p>If <tt>{@link #buttons}</tt> are specified, they will supersede the <tt>fbar</tt> configuration property.</p>
+     * The Panel's <tt>{@link #buttonAlign}</tt> configuration affects the layout of these items, for example:
+     * <pre><code>
+var w = new Ext.Window({
+    height: 250,
+    width: 500,
+    bbar: new Ext.Toolbar({
+        items: [{
+            text: 'bbar Left'
+        },'->',{
+            text: 'bbar Right'
+        }]
+    }),
+    {@link #buttonAlign}: 'left', // anything but 'center' or 'right' and you can use "-", and "->" 
+                                  // to control the alignment of fbar items
+    fbar: [{
+        text: 'fbar Left'
+    },'->',{
+        text: 'fbar Right'
+    }]
+}).show();
+     * </code></pre>
+     * <p><b>Note:</b> Although a Toolbar may contain Field components, these will <b>not<b> be updated by a load
+     * of an ancestor FormPanel. A Panel's toolbars are not part of the standard Container->Component hierarchy, and
+     * so are not scanned to collect form items. However, the values <b>will</b> be submitted because form
+     * submission parameters are collected from the DOM tree.</p>
+     */
     /**
      * @cfg {Boolean} header
-     * True to create the Panel's header element explicitly, false to skip creating it.  By default, when header is not
-     * specified, if a {@link #title} is set the header will be created automatically, otherwise it will not.  If
-     * a title is set but header is explicitly set to false, the header will not be rendered.
+     * <tt>true</tt> to create the Panel's header element explicitly, <tt>false</tt> to skip creating
+     * it.  If a <tt>{@link #title}</tt> is set the header will be created automatically, otherwise it will not.
+     * If a <tt>{@link #title}</tt> is set but <tt>header</tt> is explicitly set to <tt>false</tt>, the header
+     * will not be rendered.
      */
     /**
      * @cfg {Boolean} footer
-     * True to create the footer element explicitly, false to skip creating it.  By default, when footer is not
-     * specified, if one or more {@link #buttons} have been added to the panel the footer will be created automatically,
-     * otherwise it will not.
+     * <tt>true</tt> to create the footer element explicitly, false to skip creating it. The footer
+     * will be created automatically if <tt>{@link #buttons}</tt> or a <tt>{@link #fbar}</tt> have
+     * been configured.  See <tt>{@link #bodyCfg}</tt> for an example. 
      */
     /**
      * @cfg {String} title
-     * The title text to be used as innerHTML (html tags are accepted) to display in the panel header (defaults to '').
-     * When a title is specified the header element will automatically be created and displayed unless {@link #header}
-     * is explicitly set to false.  If you do not want to specify a title at config time, but you may want one later,
-     * you must either specify a non-empty title (a blank space ' ' will do) or header:true so that the container
+     * The title text to be used as innerHTML (html tags are accepted) to display in the panel
+     * <tt>{@link #header}</tt> (defaults to ''). When a <tt>title</tt> is specified the
+     * <tt>{@link #header}</tt> element will automatically be created and displayed unless
+     * {@link #header} is explicitly set to <tt>false</tt>.  If you do not want to specify a
+     * <tt>title</tt> at config time, but you may want one later, you must either specify a non-empty
+     * <tt>title</tt> (a blank space ' ' will do) or <tt>header:true</tt> so that the container
      * element will get created.
      */
     /**
      * @cfg {Array} buttons
-     * An array of {@link Ext.Button}s or {@link Ext.Button} configs used to add buttons to the footer of this panel.
-     * See also <tt>{@link #minButtonWidth}</tt>.
+     * <tt>buttons</tt> will be used as <tt>{@link Ext.Container#items items}</tt> for the toolbar in
+     * the footer (<tt>{@link #fbar}</tt>). Typically the value of this configuration property will be
+     * an array of {@link Ext.Button}s or {@link Ext.Button} configuration objects.
+     * If an item is configured with <tt>minWidth</tt> or the Panel is configured with <tt>minButtonWidth</tt>,
+     * that width will be applied to the item.
      */
     /**
      * @cfg {Object/String/Function} autoLoad
@@ -219,9 +286,14 @@ new Ext.Panel({
      * as a 1px wide inset border, giving the entire body element an inset appearance.
      */
     /**
+     * @cfg {String/Object/Function} bodyCssClass
+     * Additional css class selector to be applied to the {@link #body} element in the format expected by
+     * {@link Ext.Element#addClass} (defaults to null). See {@link #bodyCfg}.
+     */
+    /**
      * @cfg {String/Object/Function} bodyStyle
-     * Custom CSS styles to be applied to the body element in the format expected by {@link Ext.Element#applyStyles}
-     * (defaults to null).
+     * Custom CSS styles to be applied to the {@link #body} element in the format expected by
+     * {@link Ext.Element#applyStyles} (defaults to null). See {@link #bodyCfg}.
      */
     /**
      * @cfg {String} iconCls
@@ -1149,7 +1221,7 @@ new Ext.Panel({
 
     // private
     afterRender : function(){
-        if(this.floating && !this.hidden && !this.initHidden){
+        if(this.floating && !this.hidden){
             this.el.show();
         }
         if(this.title){

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -24,7 +24,7 @@ return c;},onBeforeAdd:function(item){if(item.ownerCt){item.ownerCt.remove(item,
 if(this.hideBorders===true){item.border=(item.border===true);}},remove:function(comp,autoDestroy){this.initItems();var c=this.getComponent(comp);if(c&&this.fireEvent('beforeremove',this,c)!==false){this.items.remove(c);delete c.ownerCt;if(autoDestroy===true||(autoDestroy!==false&&this.autoDestroy)){c.destroy();}
 if(this.layout&&this.layout.activeItem==c){delete this.layout.activeItem;}
 this.fireEvent('remove',this,c);}
-return c;},removeAll:function(autoDestroy){this.initItems();var item,items=[];while((item=this.items.last())){items.unshift(this.remove(item,autoDestroy));}
+return c;},removeAll:function(autoDestroy){this.initItems();var item,rem=[],items=[];this.items.each(function(i){rem.push(i)});for(var i=0,len=rem.length;i<len;++i){item=rem[i];this.remove(item,autoDestroy);if(item.ownerCt!==this){items.push(item);}}
 return items;},getComponent:function(comp){if(typeof comp=='object'){return comp;}
 return this.items.get(comp);},lookupComponent:function(comp){if(typeof comp=='string'){return Ext.ComponentMgr.get(comp);}else if(!comp.events){return this.createComponent(comp);}
 return comp;},createComponent:function(config){return Ext.create(config,this.defaultType);},doLayout:function(shallow){var rendered=this.rendered;if(rendered&&this.layout){this.layout.layout();}

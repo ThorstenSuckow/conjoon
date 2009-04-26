@@ -1,4 +1,12 @@
 /*
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+
+/*
  * German translation
  * By schmidetzki and humpdi
  * 04-07-2007

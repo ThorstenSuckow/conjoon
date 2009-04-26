@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -54,7 +54,7 @@ if(this.bottomToolbar){this.bottomToolbar.doLayout();}
 if(this.fbar){this.fbar.doLayout();}},onShow:function(){if(this.floating){return this.el.show();}
 Ext.Panel.superclass.onShow.call(this);},onHide:function(){if(this.floating){return this.el.hide();}
 Ext.Panel.superclass.onHide.call(this);},createToolHandler:function(t,tc,overCls,panel){return function(e){t.removeClass(overCls);if(tc.stopEvent!==false){e.stopEvent();}
-if(tc.handler){tc.handler.call(tc.scope||t,e,t,panel,tc);}};},afterRender:function(){if(this.floating&&!this.hidden&&!this.initHidden){this.el.show();}
+if(tc.handler){tc.handler.call(tc.scope||t,e,t,panel,tc);}};},afterRender:function(){if(this.floating&&!this.hidden){this.el.show();}
 if(this.title){this.setTitle(this.title);}
 this.setAutoScroll();if(this.html){this.body.update(Ext.isObject(this.html)?Ext.DomHelper.markup(this.html):this.html);delete this.html;}
 if(this.contentEl){var ce=Ext.getDom(this.contentEl);Ext.fly(ce).removeClass(['x-hidden','x-hide-display']);this.body.dom.appendChild(ce);}

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -156,7 +156,7 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
      * @return {Object} data A data block which is used by an Ext.data.Store object as
      * a cache of Ext.data.Records.
      */
-    readRecords : function(o){
+	readRecords : function(o){
         /**
          * After any data loads, the raw JSON data is available for further custom processing.  If no data is
          * loaded or there is a load exception this property will be undefined.
@@ -211,18 +211,12 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
                 success = false;
             }
         }
+
         var records = [];
         for(var i = 0; i < c; i++){
             var n = root[i];
-            var values = {};
-            var id = this.getId(n);
-            for(var j = 0; j < fl; j++){
-                f = fi[j];
-                var v = this.ef[j](n);
-                values[f.name] = f.convert((v !== undefined) ? v : f.defaultValue, n);
-            }
-            var record = new Record(values, id);
-            record.json = n;
+			var record = new Record(this.extractValues(n, fi, fl), this.getId(n));
+			record.json = n;
             records[i] = record;
         }
         return {
@@ -232,6 +226,17 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         };
     },
 
+	// private extractValues
+    extractValues: function(data, items, len) {
+		var values = {};
+        for(var j = 0; j < len; j++){
+            f = items[j];
+            var v = this.ef[j](data);
+            values[f.name] = f.convert((v !== undefined) ? v : f.defaultValue, data);
+        }
+        return values;
+    },
+
 	/**
 	 * readResponse
 	 * decodes a json response from server
@@ -239,10 +244,11 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
 	 */
 	readResponse : function(response) {
 		var json = response.responseText;
-        var o = eval("("+json+")");
+        var o = Ext.decode(json);
         if(!o) {
             throw {message: "JsonReader.read: Json object not found"};
         }
 		return o;
 	}
+
 });

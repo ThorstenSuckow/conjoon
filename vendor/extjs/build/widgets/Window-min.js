@@ -1,18 +1,18 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
 
-Ext.Window=Ext.extend(Ext.Panel,{baseCls:'x-window',resizable:true,draggable:true,closable:true,constrain:false,constrainHeader:false,plain:false,minimizable:false,maximizable:false,minHeight:100,minWidth:200,expandOnShow:true,closeAction:'close',collapsible:false,initHidden:true,monitorResize:true,elements:'header,body',frame:true,floating:true,initComponent:function(){Ext.Window.superclass.initComponent.call(this);this.addEvents('resize','maximize','minimize','restore');},getState:function(){return Ext.apply(Ext.Window.superclass.getState.call(this)||{},this.getBox());},onRender:function(ct,position){Ext.Window.superclass.onRender.call(this,ct,position);if(this.plain){this.el.addClass('x-window-plain');}
+Ext.Window=Ext.extend(Ext.Panel,{baseCls:'x-window',resizable:true,draggable:true,closable:true,constrain:false,constrainHeader:false,plain:false,minimizable:false,maximizable:false,minHeight:100,minWidth:200,expandOnShow:true,closeAction:'close',collapsible:false,initHidden:true,monitorResize:true,elements:'header,body',frame:true,floating:true,initComponent:function(){Ext.Window.superclass.initComponent.call(this);this.addEvents('resize','maximize','minimize','restore');if(this.initHidden===false){this.show();}else{this.hidden=true;}},getState:function(){return Ext.apply(Ext.Window.superclass.getState.call(this)||{},this.getBox());},onRender:function(ct,position){Ext.Window.superclass.onRender.call(this,ct,position);if(this.plain){this.el.addClass('x-window-plain');}
 this.focusEl=this.el.createChild({tag:"a",href:"#",cls:"x-dlg-focus",tabIndex:"-1",html:"&#160;"});this.focusEl.swallowEvent('click',true);this.proxy=this.el.createProxy("x-window-proxy");this.proxy.enableDisplayMode('block');if(this.modal){this.mask=this.container.createChild({cls:"ext-el-mask"},this.el.dom);this.mask.enableDisplayMode("block");this.mask.hide();this.mon(this.mask,'click',this.focus,this);}
 this.initTools();},initEvents:function(){Ext.Window.superclass.initEvents.call(this);if(this.animateTarget){this.setAnimateTarget(this.animateTarget);}
 if(this.resizable){this.resizer=new Ext.Resizable(this.el,{minWidth:this.minWidth,minHeight:this.minHeight,handles:this.resizeHandles||"all",pinned:true,resizeElement:this.resizerAction});this.resizer.window=this;this.mon(this.resizer,'beforeresize',this.beforeResize,this);}
 if(this.draggable){this.header.addClass("x-window-draggable");}
-this.mon(this.el,'mousedown',this.toFront,this);this.manager=this.manager||Ext.WindowMgr;this.manager.register(this);this.hidden=true;if(this.maximized){this.maximized=false;this.maximize();}
+this.mon(this.el,'mousedown',this.toFront,this);this.manager=this.manager||Ext.WindowMgr;this.manager.register(this);if(this.maximized){this.maximized=false;this.maximize();}
 if(this.closable){var km=this.getKeyMap();km.on(27,this.onEsc,this);km.disable();}},initDraggable:function(){this.dd=new Ext.Window.DD(this);},onEsc:function(){this[this.closeAction]();},beforeDestroy:function(){if(this.rendered){this.hide();if(this.doAnchor){Ext.EventManager.removeResizeListener(this.doAnchor,this);Ext.EventManager.un(window,'scroll',this.doAnchor,this);}
 Ext.destroy(this.focusEl,this.resizer,this.dd,this.proxy,this.mask);}
 Ext.Window.superclass.beforeDestroy.call(this);},onDestroy:function(){if(this.manager){this.manager.unregister(this);}

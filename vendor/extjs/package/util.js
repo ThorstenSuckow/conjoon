@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -36,7 +36,7 @@ return-1;},createValueMatcher:function(value,anyMatch,caseSensitive){if(!value.e
 return value;},clone:function(){var r=new Ext.util.MixedCollection();var k=this.keys,it=this.items;for(var i=0,len=it.length;i<len;i++){r.add(k[i],it[i]);}
 r.getKey=this.getKey;return r;}});Ext.util.MixedCollection.prototype.get=Ext.util.MixedCollection.prototype.item;
 
-Ext.util.JSON=new(function(){var useHasOwn=!!{}.hasOwnProperty,isNative=Ext.USE_NATIVE_JSON&&JSON&&JSON.toString=='[object JSON]';var pad=function(n){return n<10?"0"+n:n;};var m={"\b":'\\b',"\t":'\\t',"\n":'\\n',"\f":'\\f',"\r":'\\r','"':'\\"',"\\":'\\\\'};var encodeString=function(s){if(/["\\\x00-\x1f]/.test(s)){return'"'+s.replace(/([\x00-\x1f\\"])/g,function(a,b){var c=m[b];if(c){return c;}
+Ext.util.JSON=new(function(){var useHasOwn=!!{}.hasOwnProperty,isNative=Ext.USE_NATIVE_JSON&&JSON&&JSON.toString()=='[object JSON]';var pad=function(n){return n<10?"0"+n:n;};var m={"\b":'\\b',"\t":'\\t',"\n":'\\n',"\f":'\\f',"\r":'\\r','"':'\\"',"\\":'\\\\'};var encodeString=function(s){if(/["\\\x00-\x1f]/.test(s)){return'"'+s.replace(/([\x00-\x1f\\"])/g,function(a,b){var c=m[b];if(c){return c;}
 c=b.charCodeAt();return"\\u00"+
 Math.floor(c/16).toString(16)+
 (c%16).toString(16);})+'"';}
@@ -49,7 +49,7 @@ pad(o.getHours())+":"+
 pad(o.getMinutes())+":"+
 pad(o.getSeconds())+'"';};this.encode=isNative?JSON.stringify:function(o){if(typeof o=="undefined"||o===null){return"null";}else if(Ext.isArray(o)){return encodeArray(o);}else if(Ext.isDate(o)){return Ext.util.JSON.encodeDate(o);}else if(typeof o=="string"){return encodeString(o);}else if(typeof o=="number"){return isFinite(o)?String(o):"null";}else if(typeof o=="boolean"){return String(o);}else{var a=["{"],b,i,v;for(i in o){if(!useHasOwn||o.hasOwnProperty(i)){v=o[i];switch(typeof v){case"undefined":case"function":case"unknown":break;default:if(b){a.push(',');}
 a.push(this.encode(i),":",v===null?"null":this.encode(v));b=true;}}}
-a.push("}");return a.join("");}};this.decode=isNative?JSON.stringify:function(json){return eval("("+json+')');};})();Ext.encode=Ext.util.JSON.encode;Ext.decode=Ext.util.JSON.decode;
+a.push("}");return a.join("");}};this.decode=isNative?JSON.parse:function(json){return eval("("+json+')');};})();Ext.encode=Ext.util.JSON.encode;Ext.decode=Ext.util.JSON.decode;
 
 Ext.util.Format=function(){var trimRe=/^\s+|\s+$/g;return{ellipsis:function(value,len,word){if(value&&value.length>len){if(word){var vs=value.substr(0,len-2);var index=Math.max(vs.lastIndexOf(' '),vs.lastIndexOf('.'),vs.lastIndexOf('!'),vs.lastIndexOf('?'));if(index==-1||index<(len-15)){return value.substr(0,len-3)+"...";}else{return vs.substr(0,index)+"...";}}else{return value.substr(0,len-3)+"...";}}
 return value;},undef:function(value){return value!==undefined?value:"";},defaultValue:function(value,defaultValue){return value!==undefined&&value!==''?value:defaultValue;},htmlEncode:function(value){return!value?value:String(value).replace(/&/g,"&amp;").replace(/>/g,"&gt;").replace(/</g,"&lt;").replace(/"/g,"&quot;");},htmlDecode:function(value){return!value?value:String(value).replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&quot;/g,'"').replace(/&amp;/g,"&");},trim:function(value){return String(value).replace(trimRe,"");},substr:function(value,start,length){return String(value).substr(start,length);},lowercase:function(value){return String(value).toLowerCase();},uppercase:function(value){return String(value).toUpperCase();},capitalize:function(value){return!value?value:value.charAt(0).toUpperCase()+value.substr(1).toLowerCase();},call:function(value,fn){if(arguments.length>2){var args=Array.prototype.slice.call(arguments,2);args.unshift(value);return eval(fn).apply(window,args);}else{return eval(fn).call(window,value);}},usMoney:function(v){v=(Math.round((v-0)*100))/100;v=(v==Math.floor(v))?v+".00":((v*10==Math.floor(v*10))?v+"0":v);v=String(v);var ps=v.split('.');var whole=ps[0];var sub=ps[1]?'.'+ps[1]:'.00';var r=/(\d+)(\d{3})/;while(r.test(whole)){whole=whole.replace(r,'$1'+','+'$2');}

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -10,7 +10,7 @@
 Ext.layout.BoxLayout=Ext.extend(Ext.layout.ContainerLayout,{monitorResize:true,scrollOffset:0,extraCls:'x-box-item',ctCls:'x-box-layout-ct',innerCls:'x-box-inner',defaultMargins:{left:0,top:0,right:0,bottom:0},padding:'0',pack:'start',isValidParent:function(c,target){return c.getEl().dom.parentNode==this.innerCt.dom;},onLayout:function(ct,target){var cs=ct.items.items,len=cs.length,c,i,last=len-1,cm;if(!this.innerCt){target.addClass(this.ctCls);this.innerCt=target.createChild({cls:this.innerCls});this.padding=this.parseMargins(this.padding);}
 this.renderAll(ct,this.innerCt);},renderItem:function(c){if(typeof c.margins=='string'){c.margins=this.parseMargins(c.margins);}else if(!c.margins){c.margins=this.defaultMargins;}
 Ext.layout.BoxLayout.superclass.renderItem.apply(this,arguments);},getTargetSize:function(target){return(Ext.isIE6&&Ext.isStrict&&target.dom==document.body)?target.getStyleSize():target.getViewSize();}});Ext.layout.VBoxLayout=Ext.extend(Ext.layout.BoxLayout,{align:'left',pack:'start',onLayout:function(ct,target){Ext.layout.VBoxLayout.superclass.onLayout.call(this,ct,target);var cs=ct.items.items,len=cs.length,c,i,last=len-1,cm;var size=this.getTargetSize(target);var w=size.width-target.getPadding('lr')-this.scrollOffset,h=size.height-target.getPadding('tb'),l=this.padding.left,t=this.padding.top;if((Ext.isIE&&!Ext.isStrict)&&(w<1||h<1)){return;}else if(w<1&&h<1){return;}
-var stretchWidth=w-(this.padding.left+this.padding.right);var totalFlex=0;var totalHeight=0;var maxWidth=0;for(i=0;i<len;i++){c=cs[i];cm=c.margins;totalFlex+=c.flex||0;totalHeight+=c.getHeight()+cm.top+cm.bottom;maxWidth=Math.max(maxWidth,c.getWidth()+cm.left+cm.top);}
+var stretchWidth=w-(this.padding.left+this.padding.right);var totalFlex=0;var totalHeight=0;var maxWidth=0;for(i=0;i<len;i++){c=cs[i];cm=c.margins;totalFlex+=c.flex||0;totalHeight+=c.getHeight()+cm.top+cm.bottom;maxWidth=Math.max(maxWidth,c.getWidth()+cm.left+cm.right);}
 var innerCtWidth=maxWidth+this.padding.left+this.padding.right;switch(this.align){case'stretch':this.innerCt.setSize(w,h);break;case'stretchmax':case'left':case'center':this.innerCt.setSize(w=Math.max(w,innerCtWidth),h);break;}
 var extraHeight=h-totalHeight-this.padding.top-this.padding.bottom;var allocated=0;var cw,ch,cl,availableWidth=w-this.padding.left-this.padding.right;if(this.pack=='center'){t+=extraHeight?extraHeight/2:0;}else if(this.pack=='end'){t+=extraHeight;}
 for(i=0;i<len;i++){c=cs[i];cm=c.margins;cw=c.getWidth();ch=c.getHeight();t+=cm.top;if(this.align!='center'){cl=l+cm.left;}else{var diff=availableWidth-(cw+cm.left+cm.right);if(diff==0){cl=l+cm.left;}else{cl=l+cm.left+(diff/2);}}

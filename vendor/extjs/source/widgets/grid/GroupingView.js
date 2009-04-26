@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,28 +9,43 @@
 /**
  * @class Ext.grid.GroupingView
  * @extends Ext.grid.GridView
- * Adds the ability for single level grouping to the grid.
- *<pre><code>var grid = new Ext.grid.GridPanel({
+ * Adds the ability for single level grouping to the grid. A {@link Ext.data.GroupingStore GroupingStore}
+ * must be used to enable grouping.  Some grouping characteristics may also be configured at the
+ * {@link Ext.grid.Column Column level} (<code>{@link Ext.grid.Column#groupable groupable}</code>,
+ * <code>{@link Ext.grid.Column#groupName groupName}</code>, and
+ * <code>{@link Ext.grid.Column#groupRender groupRender}</code>).  
+ * <pre><code>
+var grid = new Ext.grid.GridPanel({
     // A groupingStore is required for a GroupingView
-    store: new Ext.data.GroupingStore({
+    store: new {@link Ext.data.GroupingStore}({
+        autoDestroy: true,
         reader: reader,
         data: xg.dummyData,
-        sortInfo:{field: 'company', direction: "ASC"},
-        groupField:'industry'
+        sortInfo: {field: 'company', direction: "ASC"},
+        {@link Ext.data.GroupingStore#groupOnSort groupOnSort}: true,
+        {@link Ext.data.GroupingStore#remoteGroup remoteGroup}: true,
+        {@link Ext.data.GroupingStore#groupField groupField}: 'industry'
+    }),
+    colModel: new {@link Ext.grid.ColumnModel}({
+        columns:[
+            {id:'company',header: "Company", width: 60, dataIndex: 'company'},
+            // {@link Ext.grid.Column#groupable groupable}, {@link Ext.grid.Column#groupName groupName}, {@link Ext.grid.Column#groupRender groupRender} are also configurable at column level
+            {header: "Price", renderer: Ext.util.Format.usMoney, dataIndex: 'price', {@link Ext.grid.Column#groupable groupable}: false},
+            {header: "Change", dataIndex: 'change', renderer: Ext.util.Format.usMoney},
+            {header: "Industry", dataIndex: 'industry'},
+            {header: "Last Updated", renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
+        ],
+        defaults: {
+            sortable: true,
+            menuDisabled: false,
+            width: 20
+        }
     }),
 
-    columns: [
-        {id:'company',header: "Company", width: 60, sortable: true, dataIndex: 'company'},
-        {header: "Price", width: 20, sortable: true, renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
-        {header: "Change", width: 20, sortable: true, dataIndex: 'change', renderer: Ext.util.Format.usMoney},
-        {header: "Industry", width: 20, sortable: true, dataIndex: 'industry'},
-        {header: "Last Updated", width: 20, sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
-    ],
-
     view: new Ext.grid.GroupingView({
-        forceFit:true,
+        {@link Ext.grid.GridView#forceFit forceFit}: true,
         // custom grouping text template to display the number of items per group
-        groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
+        {@link #groupTextTpl}: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
     }),
 
     frame:true,
@@ -41,7 +56,8 @@
     title: 'Grouping Example',
     iconCls: 'icon-grid',
     renderTo: document.body
-});</code></pre>
+});
+ * </code></pre>
  * @constructor
  * @param {Object} config
  */

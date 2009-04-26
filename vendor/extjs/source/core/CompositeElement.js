@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -119,9 +119,18 @@ Ext.Element.select = function(selector, unique, root){
         throw "Invalid selector";
     }
 
-    if(unique === true) {
-        return new Ext.CompositeElement(els);
-    } else {
-        return new Ext.CompositeElementLite(els);
-    }
+    return (unique === true) ? new Ext.CompositeElement(els) : new Ext.CompositeElementLite(els);
 };
+
+/**
+ * Selects elements based on the passed CSS selector to enable {@link Ext.Element Element} methods
+ * to be applied to many related elements in one statement through the returned {@link Ext.CompositeElement CompositeElement} or
+ * {@link Ext.CompositeElementLite CompositeElementLite} object.
+ * @param {String/Array} selector The CSS selector or an array of elements
+ * @param {Boolean} unique (optional) true to create a unique Ext.Element for each element (defaults to a shared flyweight object)
+ * @param {HTMLElement/String} root (optional) The root element of the query or id of the root
+ * @return {CompositeElementLite/CompositeElement}
+ * @member Ext.Element
+ * @method select
+ */
+Ext.select = Ext.Element.select;

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -29,102 +29,146 @@ Ext.data.DataWriter = function(config){
 
 Ext.data.DataWriter.prototype = {
 
-	meta : {},
-	/**
-	 * @cfg {String} dataProperty The property-name in request-params where data will be written
-	 * (defaults to <tt>'data'</tt>).
-	 */
-	dataProperty : 'data',
-	/**
-	 * @cfg {Boolean} writeAllFields
-	 * <tt>false</tt> by default.  Set <tt>true</tt> to have DataWriter return ALL fields of a modified
-	 * record -- not just those that changed.
-	 * <tt>false</tt> to have DataWriter only request modified fields from a record.
-	 */
-	writeAllFields : false,
+    meta : {},
+    /**
+     * @cfg {Boolean} writeAllFields
+     * <tt>false</tt> by default.  Set <tt>true</tt> to have DataWriter return ALL fields of a modified
+     * record -- not just those that changed.
+     * <tt>false</tt> to have DataWriter only request modified fields from a record.
+     */
+    writeAllFields : false,
 
-	/**
-	 * save
-	 * @param {Object} p Params-hash to apply result to.
-	 * @param {Record/Record[]} rs Record(s) to write
-	 */
-	save : function(p, rs) {
-		if (Ext.isArray(rs)) {
-			var data = [];
-			var ids = [];
-			for (var n=0,len=rs.length;n<len;n++) {
-				ids.push(rs[n].id);
-				data.push(this.saveRecord(rs[n]));
-			}
-			p[this.meta.idProperty] = ids;
-			p[this.dataProperty] = data;
-		}
-		else if (rs instanceof Ext.data.Record) {
-			p[this.meta.idProperty] = rs.id;
-			p[this.dataProperty] = this.saveRecord(rs);
-		}
-		return false;
-	},
+    /**
+     * Writes data in preparation for server-write action.  Simply proxies to DataWriter#update, DataWriter#create
+     * DataWriter#destroy.
+     * @param {String} action [CREATE|UPDATE|DESTROY]
+     * @param {Object} params The params-hash to write-to
+     * @param {Record/Record[]} rs The recordset write.
+     */
+    write : function(action, params, rs) {
+        var data = null;
+        switch (action) {
+            case Ext.data.Api.CREATE:
+               data = this.create(rs);
+               break;
+            case Ext.data.Api.UPDATE:
+               data = this.update(rs);
+               break;
+            case Ext.data.Api.DESTROY:
+               data = this.destroy(rs);
+               break;
+        }
+        this.render(action, rs, params, data);
+    },
 
-	/**
+    /**
+     * abstract method meant to be overridden by all DataWriter extensions.  It's the extension's job to apply the "data" to the "params".
+     * The data-object provided to render is populated with data according to the meta-info defined in the user's DataReader config,
+     * @param {String} action [Ext.data.Api.CREATE|READ|UPDATE|DESTROY]
+     * @param {Record[]} rs Store recordset
+     * @param {Object} params Http params to be sent to server.
+     * @param {Object} data object populated according to DataReader meta-data.
+     */
+    render : Ext.emptyFn,
+
+    /**
+     * update
+     * @param {Object} p Params-hash to apply result to.
+     * @param {Record/Record[]} rs Record(s) to write
+     * @private
+     */
+    update : function(rs) {
+        var params = {};
+        if (Ext.isArray(rs)) {
+            var data = [];
+            var ids = [];
+            for (var n=0,len=rs.length;n<len;n++) {
+                ids.push(rs[n].id);
+                data.push(this.updateRecord(rs[n]));
+            }
+            params[this.meta.idProperty] = ids;
+            params[this.meta.root] = data;
+        }
+        else if (rs instanceof Ext.data.Record) {
+            params[this.meta.idProperty] = rs.id;
+            params[this.meta.root] = this.updateRecord(rs);
+        }
+        return params;
+    },
+
+    /**
      * @cfg {Function} saveRecord Abstract method that should be implemented in all subclasses
      * (eg: {@link Ext.data.JsonWriter#saveRecord JsonWriter.saveRecord}
      */
-	saveRecord : Ext.emptyFn,
+    updateRecord : Ext.emptyFn,
 
-	/**
-	 * create
-	 * @param {Object} p Params-hash to apply result to.
-	 * @param {Record/Record[]} rs Record(s) to write
-	 */
-	create : function(p, rec) {
-		return p[this.dataProperty] = this.createRecord(rec);
-	},
+    /**
+     * create
+     * @param {Object} p Params-hash to apply result to.
+     * @param {Record/Record[]} rs Record(s) to write
+     * @private
+     */
+    create : function(rs) {
+        var params = {};
+        if (Ext.isArray(rs)) {
+            var data = [];
+            for (var n=0,len=rs.length;n<len;n++) {
+                data.push(this.createRecord(rs[n]));
+            }
+            params[this.meta.root] = data;
+        }
+        else if (rs instanceof Ext.data.Record) {
+            params[this.meta.root] = this.createRecord(rs);
+        }
+        return params;
+    },
 
-	/**
+    /**
      * @cfg {Function} createRecord Abstract method that should be implemented in all subclasses
      * (eg: {@link Ext.data.JsonWriter#createRecord JsonWriter.createRecord}
      */
-	createRecord : Ext.emptyFn,
+    createRecord : Ext.emptyFn,
 
-	/**
-	 * destroy
-	 * @param {Object} p Params-hash to apply result to.
-	 * @param {Record/Record[]} rs Record(s) to write
-	 */
-	destroy : function(p, rs) {
-		if (Ext.isArray(rs)) {
-			var data = [];
-			var ids = [];
-			for (var i=0,len=rs.length;i<len;i++) {
-				data.push(this.destroyRecord(rs[i]));
-			}
-			p[this.dataProperty] = data;
-		} else if (rs instanceof Ext.data.Record) {
-			p[this.dataProperty] = this.destroyRecord(rs);
-		}
-		return false;
-	},
+    /**
+     * destroy
+     * @param {Object} p Params-hash to apply result to.
+     * @param {Record/Record[]} rs Record(s) to write
+     * @private
+     */
+    destroy : function(rs) {
+        var params = {};
+        if (Ext.isArray(rs)) {
+            var data = [];
+            var ids = [];
+            for (var i=0,len=rs.length;i<len;i++) {
+                data.push(this.destroyRecord(rs[i]));
+            }
+            params[this.meta.root] = data;
+        } else if (rs instanceof Ext.data.Record) {
+            params[this.meta.root] = this.destroyRecord(rs);
+        }
+        return params;
+    },
 
-	/**
+    /**
      * @cfg {Function} destroyRecord Abstract method that should be implemented in all subclasses
      * (eg: {@link Ext.data.JsonWriter#destroyRecord JsonWriter.destroyRecord}
      */
-	destroyRecord : Ext.emptyFn,
+    destroyRecord : Ext.emptyFn,
 
-	/**
-	 * toHash
-	 * Converts a Record to a hash
-	 * @param {Record}
-	 */
-	toHash : function(rec) {
-		var map = rec.fields.map;
-		var data = {};
-		var raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data;
-		for (var k in raw) {
-			data[(map[k].mapping) ? map[k].mapping : map[k].name] = raw[k];
-		}
-		data[this.meta.idProperty] = rec.id;
-		return data;
-	}
+    /**
+     * toHash
+     * Converts a Record to a hash
+     * @param {Record}
+     */
+    toHash : function(rec) {
+        var map = rec.fields.map;
+        var data = {};
+        var raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data;
+        for (var k in raw) {
+            data[(map[k].mapping) ? map[k].mapping : map[k].name] = raw[k];
+        }
+        data[this.meta.idProperty] = rec.id;
+        return data;
+    }
 };

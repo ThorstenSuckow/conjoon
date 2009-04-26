@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -1260,7 +1260,7 @@ EXTUTIL.Observable.prototype = function(){
                 ce = me.events[ename],
                 q,
                 c;
-            if (me.eventsSuspended === TRUE) {            
+            if (me.eventsSuspended === TRUE) {
                 if (q = me.suspendedEventsQueue) {
                     q.push(a);
                 }
@@ -1283,7 +1283,7 @@ EXTUTIL.Observable.prototype = function(){
             }
             return ret;
         },
-    
+
         
         addListener : function(eventName, fn, scope, o){
             var me = this,
@@ -1293,22 +1293,22 @@ EXTUTIL.Observable.prototype = function(){
             ce;
             if (ISOBJECT(eventName)) {
                 o = eventName;
-                for (e in o){                    
+                for (e in o){
                     oe = o[e];
-                    if (!filterOptRe.test(e)) {                    
-                        me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);              
+                    if (!filterOptRe.test(e)) {
+                        me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);
                     }
-                }            
-            } else {            
+                }
+            } else {
                 eventName = toLower(eventName);
                 ce = me.events[eventName] || TRUE;
-                if (typeof ce == "boolean") {                
+                if (typeof ce == "boolean") {
                     me.events[eventName] = ce = new EXTUTIL.Event(me, eventName);
                 }
                 ce.addListener(fn, scope, ISOBJECT(o) ? o : {});
             }
         },
-    
+
         
         removeListener : function(eventName, fn, scope){
             var ce = this.events[toLower(eventName)];
@@ -1316,25 +1316,25 @@ EXTUTIL.Observable.prototype = function(){
                 ce.removeListener(fn, scope);
             }
         },
-    
+
         
         purgeListeners : function(){
             var events = this.events,
                 evt,
-                key;                
+                key;
             for(key in events){
                 evt = events[key];
                 if(ISOBJECT(evt)){
-                    evt.clearListeners();               
+                    evt.clearListeners();
                 }
             }
-        },        
-    
+        },
+
         
         addEvents : function(o){
             var me = this;
-            me.events = me.events || {};        
-            if (typeof o == 'string') {            
+            me.events = me.events || {};
+            if (typeof o == 'string') {
                 EACH(arguments, function(a) {
                     me.events[a] = me.events[a] || TRUE;
                 });
@@ -1342,28 +1342,28 @@ EXTUTIL.Observable.prototype = function(){
                 Ext.applyIf(me.events, o);
             }
         },
-    
+
         
         hasListener : function(eventName){
             var e = this.events[eventName];
             return ISOBJECT(e) && e.listeners.length > 0;
         },
-    
+
         
         suspendEvents : function(queueSuspended){
             this.eventsSuspended = TRUE;
             if (queueSuspended){
-                this.suspendedEventsQueue = [];         
+                this.suspendedEventsQueue = [];
             }
         },
-    
+
         
         resumeEvents : function(){
             var me = this;
-            me.eventsSuspended = !delete me.suspendedEventQueue;        
+            me.eventsSuspended = !delete me.suspendedEventQueue;
             EACH(me.suspendedEventsQueue, function(e) {
                 me.fireEvent.apply(me, e);
-            });     
+            });
         }
     }
 }();
@@ -1454,7 +1454,7 @@ EXTUTIL.Event.prototype = {
     },
 
     findListener : function(fn, scope){ 
-        var s, ret = -1                    
+        var s, ret = -1;
         EACH(this.listeners, function(l, i) {
             s = l.scope;
             if(l.fn == fn && (s == scope || s == this.obj)){
@@ -1474,7 +1474,7 @@ EXTUTIL.Event.prototype = {
         var index,
             me = this,
             ret = FALSE;
-        if((index = me.findListener(fn, scope)) != -1){                
+        if((index = me.findListener(fn, scope)) != -1){
             if (me.firing) {
                 me.listeners = me.listeners.slice(0);
             }
@@ -1489,10 +1489,10 @@ EXTUTIL.Event.prototype = {
     },
 
     fire : function(){
-        var me = this,                                
+        var me = this,
             args = TOARRAY(arguments),
-            ret = TRUE;                                                 
-        
+            ret = TRUE;
+
         EACH(me.listeners, function(l) {
             me.firing = TRUE;
             if (l.fireFn.apply(l.scope || me.obj || window, args) === FALSE) {
@@ -2051,9 +2051,13 @@ Ext.EventObject = function(){
 
         
         getKey : function(){
-            var k = this.keyCode || this.charCode;
-            return Ext.isSafari ? (safariKeys[k] || k) : k;
+            return this.normalizeKey(this.keyCode || this.charCode)
         },
+		
+		// private
+		normalizeKey: function(k){
+			return Ext.isSafari ? (safariKeys[k] || k) : k; 
+		},
 
         
         getPageX : function(){
@@ -2371,8 +2375,7 @@ Ext.apply(Ext.EventObjectImpl.prototype, {
     
     isNavKeyPress : function(){
         var me = this,
-        	k = me.keyCode;
-        k = Ext.isSafari ? (safariKeys[k] || k) : k;
+        	k = this.normalizeKey(me.keyCode);
         return (k >= 33 && k <= 40) || k == me.RETURN || k == me.TAB || k == me.ESC;
     },
 
@@ -3935,7 +3938,7 @@ Ext.Element.addMethods(function(){
 	    getMargins : function(side){
 		    var me = this,
 		    	key,
-		    	hash = {t:"top", l:"left", r:"right", b: "bottom"};
+		    	hash = {t:"top", l:"left", r:"right", b: "bottom"},
 		    	o = {};
 		    	
 		    if (!side) {
@@ -4607,7 +4610,7 @@ function(){
 	
 	    
 	    isMasked : function(){	    
-	        return this.mask && this.mask.isVisible();
+	        return this._mask && this._mask.isVisible();
 	    },
 	    
 	    
@@ -5668,13 +5671,11 @@ Ext.Element.select = function(selector, unique, root){
         throw "Invalid selector";
     }
 
-    if(unique === true) {
-        return new Ext.CompositeElement(els);
-    } else {
-        return new Ext.CompositeElementLite(els);
-    }
+    return (unique === true) ? new Ext.CompositeElement(els) : new Ext.CompositeElementLite(els);
 };
 
+
+Ext.select = Ext.Element.select;
 (function(){
 	var BEFOREREQUEST = "beforerequest",
 		REQUESTCOMPLETE = "requestcomplete",
@@ -5773,7 +5774,7 @@ Ext.Element.select = function(selector, unique, root){
 	                        r.responseText = doc.body.innerHTML;
 	                    }
 	            	} else {
-		            	responseXML = doc.XMLDocument || doc;
+		            	r.responseXML = doc.XMLDocument || doc;
 		           	}
                 }
             }
@@ -6503,7 +6504,7 @@ Ext.apply(Date, {
                 "}",
             "}",
             
-            "return v;",
+            "return v;"
         ].join('\n');
 
         return function(format) {
@@ -7442,11 +7443,13 @@ Ext.ComponentMgr = function(){
             return config.render ? config : new types[config.xtype || defaultType](config);
         },
 
+        
         registerPlugin : function(ptype, cls){
             ptypes[ptype] = cls;
             cls.ptype = ptype;
         },
 
+        
         createPlugin : function(config, defaultType){
             return new ptypes[config.ptype || defaultType](config);
         }
@@ -7455,13 +7458,14 @@ Ext.ComponentMgr = function(){
 
 
 Ext.reg = Ext.ComponentMgr.registerType; // this will be called a lot internally, shorthand to keep the bytes down
+
 Ext.preg = Ext.ComponentMgr.registerPlugin;
 Ext.create = Ext.ComponentMgr.create;
 
 
 Ext.util.JSON = new (function(){
     var useHasOwn = !!{}.hasOwnProperty,
-        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString == '[object JSON]';
+        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString() == '[object JSON]';
 
     // crashes Safari in some instances
     //var validRE = /^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/;
@@ -7566,7 +7570,7 @@ Ext.util.JSON = new (function(){
     };
 
     
-    this.decode = isNative ? JSON.stringify : function(json){
+    this.decode = isNative ? JSON.parse : function(json){
         return eval("(" + json + ')');    
     };
 })();
@@ -11276,6 +11280,51 @@ Ext.extend(Ext.dd.DropZone, Ext.dd.DropTarget, {
     }  
 });
 
+Ext.data.Api = (function() {
+
+    return {
+        
+        CREATE  : 'create',
+        
+        READ    : 'load',
+        
+        UPDATE  : 'save',
+        
+        DESTROY : 'destroy',
+
+        
+        getVerbs : function(){
+            return [this.CREATE, this.READ, this.UPDATE, this.DESTROY];
+        },
+        
+        isVerb : function(action, crud) {
+            var found = false;
+            crud = crud || this.getVerbs();
+            for (var n=0,len=crud.length;n<len;n++) {
+                if (crud[n] == action) {
+                   found = true;
+                   break;
+                }
+            }
+            return found;
+        },
+        
+        isValid : function(api){
+            var invalid = [];
+            var crud = this.getVerbs(); // <-- cache a copy of teh verbs.
+            for (var action in api) {
+                if (!this.isVerb(action, crud)) {   // <-- send cache of verbs into isVerb.  This call is only reason for isVerb to accept 2nd param.
+                    invalid.push(action);
+                }
+            }
+            return (!invalid.length) ? true : invalid;
+        }
+    }
+})();
+
+
+
+
 
 Ext.data.SortTypes = {
     
@@ -11328,8 +11377,8 @@ Ext.data.SortTypes = {
 };
 
 Ext.data.Record = function(data, id){
-	// if no id, call the auto id method
-	this.id = (id || id === 0) ? id : Ext.data.Record.id(this);
+    // if no id, call the auto id method
+    this.id = (id || id === 0) ? id : Ext.data.Record.id(this);
     this.data = data;
 };
 
@@ -11358,8 +11407,8 @@ Ext.data.Record.COMMIT = 'commit';
 
 
 Ext.data.Record.id = function(rec) {
-	rec.phantom = true;
-	return [Ext.data.Record.PREFIX, '-', Ext.data.Record.AUTO_ID++].join('');
+    rec.phantom = true;
+    return [Ext.data.Record.PREFIX, '-', Ext.data.Record.AUTO_ID++].join('');
 }
 
 Ext.data.Record.prototype = {
@@ -11372,8 +11421,8 @@ Ext.data.Record.prototype = {
     error: null,
     
     modified: null,
-	
-	phantom : false,
+    
+    phantom : false,
 
     // private
     join : function(store){
@@ -11398,24 +11447,6 @@ Ext.data.Record.prototype = {
             this.afterEdit();
         }
     },
-
-	
-	realize : function(data, id) {
-		if (!id) {
-			// TODO:  Make better exception message
-			throw new Error("Second paramater to Record#realize must be provided");
-		}
-		this.editing = true;	// <-- prevent unwanted afterEdit calls by record.
-		this.phantom = false;	// <-- The purpose of this method is to "un-phantom" a record
-		this.id = id;
-		this.fields.each(function(f) {	// <-- update record fields with data from server if was sent
-            if (data[f.name] || data[f.mapping]) {
-                this.set(f.name, (f.mapping) ? data[f.mapping] : data[f.name]);
-            }
-        },this);
-		this.commit();
-		this.editing = false;
-	},
 
     // private
     afterEdit: function(){
@@ -11520,22 +11551,22 @@ Ext.data.Record.prototype = {
         return !!(this.modified && this.modified.hasOwnProperty(fieldName));
     },
 
-	
-	isValid : function() {
-		return this.fields.find(function(f) {
-			return (f.allowBlank == false && Ext.isEmpty(this.data[f.name])) ? true : false;
-		},this) ? false : true;
-	},
+    
+    isValid : function() {
+        return this.fields.find(function(f) {
+            return (f.allowBlank == false && Ext.isEmpty(this.data[f.name])) ? true : false;
+        },this) ? false : true;
+    },
 
-	
+    
     markDirty : function(){
         this.dirty = true;
         if(!this.modified){
             this.modified = {};
         }
         this.fields.each(function(f) {
-			this.modified[f.name] = this.data[f.name];
-		},this);
+            this.modified[f.name] = this.data[f.name];
+        },this);
     }
 };
 
@@ -11574,6 +11605,10 @@ Ext.data.Store = function(config){
     };
     
     this.baseParams = {};
+
+    // temporary removed-records cache
+    this.removed = [];
+
     
     this.paramNames = {
         "start" : "start",
@@ -11627,39 +11662,25 @@ Ext.data.Store = function(config){
         
         'clear',
         
-        'beforeload',
+        'before'+Ext.data.Api.READ,
         
-        'load',
+        Ext.data.Api.READ,
         
-        'loadexception',
+        Ext.data.Api.READ+'exception',
         
-        'beforesave',
+        'beforewrite',
         
-        'save',
+        'write',
         
-        'saveexception',
-        
-        'beforedestroy',
-        
-        'destroy',
-        
-        'destroyexception',
-        
-        'beforecreate',
-        
-        'create',
-        
-        'createexception',
-		
-		'event'
+        'writeexception'
     );
 
     if(this.proxy){
-        this.relayEvents(this.proxy,  ["loadexception"]);
+        this.relayEvents(this.proxy,  [Ext.data.Api.READ+"exception"]);
     }
     // With a writer installed into the Store, we want to listen to add/remove events to remotely create/destroy records.
     if (this.writer) {
-        this.relayEvents(this.proxy, ["saveexception", "createexception", "destroyexception"]);
+        this.relayEvents(this.proxy, ["writeexception"]);
         this.on('add', this.createRecords.createDelegate(this));
         this.on('remove', this.destroyRecord.createDelegate(this));
         this.on('update', this.updateRecord.createDelegate(this));
@@ -11715,9 +11736,6 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
 
     
     batchSave : false,
-
-    // private destroy temporary cache
-    removed : [],
 
     
     destroy : function(){
@@ -11834,36 +11852,31 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
             options.params[pn["sort"]] = this.sortInfo.field;
             options.params[pn["dir"]] = this.sortInfo.direction;
         }
-        return this.execute('load', null, options);
+        try {
+            return this.execute(Ext.data.Api.READ, null, options); // <-- null represents rs.  No rs for load actions.
+        } catch(e) {
+            this.handleException(e);
+            return false;
+        }
     },
 
     
     updateRecord : function(store, record, action) {
-        if (action != Ext.data.Record.EDIT || this.batchSave) {
-            return;
-        }
-        if (!record.phantom || (record.phantom && record.isValid)) {
-            this.save(record);
+        if (action == Ext.data.Record.EDIT && this.batchSave !== true && (!record.phantom || (record.phantom && record.isValid))) {
+            this.save();
         }
     },
 
     
     createRecords : function(store, rs, index) {
-        if (this.batchSave == false) {
-            for (var i = 0, len = rs.length; i < len; i++) {
-                if (rs[i].phantom && rs[i].isValid()) {
-                    rs[i].markDirty();	// <-- Mark new records dirty
-                    this.execute('create', rs[i]);
-                }
+        for (var i = 0, len = rs.length; i < len; i++) {
+            if (rs[i].phantom && rs[i].isValid()) {
+                rs[i].markDirty();  // <-- Mark new records dirty
+                this.modified.push(rs[i]);  // <-- add to modified
             }
         }
-        else {
-            for (var i = 0, len = rs.length; i < len; i++) {
-                if (rs[i].phantom && rs[i].isValid()) {
-                    rs[i].markDirty();	// <-- Mark new records dirty
-                    this.modified.push(rs[i]);
-                }
-            }
+        if (this.batchSave === false) {
+            this.save();
         }
     },
 
@@ -11872,155 +11885,187 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
         if (this.modified.indexOf(record) != -1) {	// <-- handled already if @cfg pruneModifiedRecords == true
             this.modified.remove(record);
         }
-        if (record.phantom === true) {
-            return;
-        }
-
-		// since the record has already been removed from the store but the server request has not yet been executed,
-		// must keep track of the last known index this record existed.  If a server error occurs, the record can be
-		// put back into the store.  @see Store#createCallback where the record is returned when response status === false
-		record.lastIndex = index;
-
-        if (!this.batchSave) {
-            this.execute('destroy', record);
-        }
-        else {
+        if (!record.phantom) {
             this.removed.push(record);
+
+            // since the record has already been removed from the store but the server request has not yet been executed,
+            // must keep track of the last known index this record existed.  If a server error occurs, the record can be
+            // put back into the store.  @see Store#createCallback where the record is returned when response status === false
+            record.lastIndex = index;
+
+            if (this.batchSave === false) {
+                this.save();
+            }
         }
     },
 
     
     execute : function(action, rs, options) {
-        if (action != 'load' && !this.writer) {	// TODO: define actions as CONSTANTS
-            // blow up if trying to execute 'create', 'destroy', 'save' without a Writer installed.
-            throw new Error('Store attempted to execute the remote action "' + action + '" without a DataWriter installed.');
+        // blow up if action not Ext.data.CREATE, READ, UPDATE, DESTROY
+        if (!Ext.data.Api.isVerb(action)) {
+            throw new Error('Store#execute attempted to execute an unknown action "' + action + '".  Valid API actions are "' + Ext.data.Api.getVerbs().join(', '));
         }
-        options = options || {};
-        if (this.fireEvent('before'+action, this, rs||options)) {	// <-- if action is load, rs will be null
-            var p = Ext.apply(options.params || {}, this.baseParams, {xaction: action});
-            if (this.writer && typeof(this.writer[action]) == 'function') {
-                this.writer[action](p, rs);// <-- call writer if action-method exists (ie: it won't for load action; will for create, destroy, save)
-            }
-            this.proxy.request(action, rs, p, this.reader, this.writer, this.createCallback(action, rs), this, options);
-            return true;
+
+        // make sure options has a params key
+        options = Ext.applyIf(options||{}, {
+            params: {}
+        });
+
+        // have to separate before-events since load has a different signature than create,destroy and save events since load does not
+        // include the rs (record resultset) parameter.  Capture return values from the beforeaction into doRequest flag.
+        var doRequest = true;
+        if (action === Ext.data.Api.READ) {// TODO: define actions as CONSTANTS
+            doRequest = this.fireEvent('before'+action, this, options);
         }
         else {
-            return false;
+            // if rs has just a single recoractiond, shift it off so that Writer writes data as "{}" rather than "[{}]"
+            rs = (rs.length > 1) ? rs : rs.shift();
+
+            // Write the action to options.params
+            if (doRequest = this.fireEvent('beforewrite', this, action, rs, options) !== false) {
+                this.writer.write(action, options.params, rs);
+            }
         }
+        if (doRequest !== false) {
+            // Send request to proxy.  The big Ext.apply as 3rd arg here is simply building the request-params
+            // and applying the xaction parameter.
+            // @TODO: let writer write xaction param as well rather than here in store.  DataWriter needs to expose more hooks.
+            this.proxy.request(action, rs, Ext.apply(options.params || {}, this.baseParams, {xaction: action}), this.reader, this.createCallback(action, rs), this, options);
+        }
+        return doRequest;
     },
 
     
-    save : function(rs) {
-        rs = rs || this.getModifiedRecords();
-        if (!rs.length && !rs instanceof Ext.data.Record && !this.removed.length) {
-            return false;
+    save : function() {
+        if (!this.writer) {
+            throw new Error('Store#save called without a DataWriter installed!  Unable to execute remote-actions.  See docs for Ext.data.Api, Ext.data.DataWriter, Ext.data.JsonWriter.');
         }
-        var action = 'save';
+
+        // First check for removed records.  Records in this.removed are guaranteed non-phantoms.  @see Store#remove
         if (this.removed.length) {
             try {
-                this.execute('destroy', this.removed);
-            }
-            catch (e) {
-                throw e;	// <-- just re-throw it for now...
-            }
-        }
-        try {
-            if (Ext.isArray(rs)) {
-                for (var i = rs.length-1; i >= 0; i--) {
-                    if (rs[i].phantom === true) {
-                        var rec = rs.splice(i, 1).shift();
-                        if (rec.isValid()) {
-                            this.execute('create', rec);
-                        }
-                    }
-                }
-            }
-            else if (rs.phantom) {
-                if (!rs.isValid()) {
-                    return false;
-                }
-                action = 'create';
-            }
-            if (Ext.isArray(rs) && rs.length == 1) {
-                rs = rs[0];
-            }
-            if (rs instanceof Ext.data.Record || rs.length > 0) {
-                this.execute(action, rs);
-                return true;
-            }
-            else {
-                // no more actions to execute.  They may have been spliced-out by create actions above.  just return true.
-                return true;
+                this.execute(Ext.data.Api.DESTROY, this.removed);
+            } catch (e) {
+                this.handleException(e);
             }
         }
-        catch (e) {
-            throw e;
+
+        // Check for modified records.  Bail-out if empty...
+        var rs = this.getModifiedRecords();
+        if (!rs.length) {
+            return true;
+        }
+
+        // Next check for phantoms within rs.  splice-off and execute create.
+        var phantoms = [];
+        for (var i = rs.length-1; i >= 0; i--) {
+            if (rs[i].phantom === true) {
+                var rec = rs.splice(i, 1).shift();
+                if (rec.isValid()) {
+                    phantoms.push(rec);
+                }
+            }
+            else if (!rs[i].isValid()) { // <-- while we're here, splice-off any !isValid real records
+                rs.splice(i,1);
+            }
+        }
+        // If we have valid phantoms, create them...
+        if (phantoms.length) {
+            try {
+                this.execute(Ext.data.Api.CREATE, phantoms);
+            } catch (e) {
+                this.handleException(e);
+            }
+        }
+
+        // And finally, if we're still here after splicing-off phantoms and !isValid real records, update the rest...
+        if (rs.length) {
+            try {
+                this.execute(Ext.data.Api.UPDATE, rs);
+            } catch (e) {
+                this.handleException(e);
+            }
         }
         return true;
     },
 
     // private callback-handler for remote CRUD actions
-	// TODO:  refactor.  place destroy fail switch into its own method perhaps?  Maybe remove the if (success === true) check
-	// and let each onAction method check for success?  Notice that both the destroy-fail case and onDestroyRecords each
-	// set this.removed = [].
+    // Do not override -- override loadRecords, onCreateRecords, onDestroyRecords and onUpdateRecords instead.
     createCallback : function(action, rs) {
-        return (action == 'load') ? this.loadRecords : function(data, response, success) {
-            if (success === true) {
-                switch (action) {
-                    case 'create':
-                        this.onCreateRecord(rs, data);
-                        break;
-                    case 'destroy':
-                        this.onDestroyRecords(rs, data);
-                        break;
-                    case 'save':
-                        this.onSaveRecords(rs, data);
-                        break;
-                }
-                this.fireEvent(action, this, data, response);
+        return (action == Ext.data.Api.READ) ? this.loadRecords : function(data, response, success) {
+            switch (action) {
+                case Ext.data.Api.CREATE:
+                    this.onCreateRecords(success, rs, data);
+                    break;
+                case Ext.data.Api.DESTROY:
+                    this.onDestroyRecords(success, rs, data);
+                    break;
+                case Ext.data.Api.UPDATE:
+                    this.onUpdateRecords(success, rs, data);
+                    break;
             }
-			else {
-				switch (action) {
-					case 'destroy':
-						// put records back into store if remote destroy fails.
-						if (rs instanceof Ext.data.Record) {
-							rs = [rs];
-						}
-						for (var i=0,len=rs.length;i<len;i++) {
-							this.insert(rs[i].lastIndex, rs[i]);	// <-- lastIndex set in Store#destroyRecord
-						}
-						this.removed = [];
-
-						break;
-				}
-			}
-			// fire on 'create', 'destroy', 'save'
-			this.fireEvent('event', this, data, response);
+            // fire catch-all "write" event for CREATE, DESTROY, UPDATE
+            this.fireEvent('write', this, action, data, response, rs);
         }
     },
 
-    // private onCreateRecord proxy callback for create action
-    onCreateRecord : function(record, data) {
-        // TODO: raise exception if server didn't send a database pk back?
-        if (record.phantom && data[this.reader.meta.idProperty]) {
-			record.realize(data, data[this.reader.meta.idProperty]);
+    // protected onCreateRecord proxy callback for create action
+    onCreateRecords : function(success, rs, data) {
+        if (success === true) {
+            try {
+                this.reader.realize(rs, data);
+            }
+            catch (e) {
+                this.handleException(e);
+                if (Ext.isArray(rs)) {
+                    // Recurse to run back into the try {}.  DataReader#realize splices-off the rs until empty.
+                    this.onCreateRecords(success, rs, data);
+                }
+            }
         }
     },
 
-    // private, onSaveRecords proxy callback for update action
-    onSaveRecords : function(rs, data) {
-        if (!Ext.isArray(rs)) {
-            rs = [rs];
-        }
-        // maybe just commit row changes?
-        for (var i=rs.length-1;i>=0;i--) {
-            rs[i].commit();
+    // protected, onUpdateRecords proxy callback for update action
+    onUpdateRecords : function(success, rs, data) {
+        if (success === true) {
+            try {
+                this.reader.update(rs, data);
+            }
+            catch (e) {
+                this.handleException(e);
+                if (Ext.isArray(rs)) {
+                    // Recurse to run back into the try {}.  DataReader#update splices-off the rs until empty.
+                    this.onUpdateRecords(success, rs, data);
+                }
+            }
         }
     },
 
-    // private onDestroyRecords proxy callback for destroy action
-    onDestroyRecords : function(rs, data) {
+    // protected onDestroyRecords proxy callback for destroy action
+    onDestroyRecords : function(success, rs, data) {
         this.removed = [];
+        if (success === true) {
+            // nothing to do so far...invert the logic?
+        } else {
+            // put records back into store if remote destroy fails.
+            // @TODO: Might want to let developer decide.
+            if (rs instanceof Ext.data.Record) {
+                rs = [rs];
+            }
+            for (var i=0,len=rs.length;i<len;i++) {
+                this.insert(rs[i].lastIndex, rs[i]);    // <-- lastIndex set in Store#destroyRecord
+            }
+        }
+    },
+
+    // protected handleException.  Possibly temporary until Ext framework has an exception-handler.
+    handleException : function(e) {
+        if (typeof(console) == 'object' && typeof(console.error) == 'function') {
+            console.error(e);
+        }
+        else {
+            alert(e);   // <-- ugh.  fix this before official release.
+        }
     },
 
     
@@ -12033,7 +12078,7 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     loadRecords : function(o, options, success){
         if(!o || success === false){
             if(success !== false){
-                this.fireEvent("load", this, [], options);
+                this.fireEvent(Ext.data.Api.READ, this, [], options);
             }
             if(options.callback){
                 options.callback.call(options.scope || this, [], options, false);
@@ -12061,7 +12106,7 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
             this.totalLength = Math.max(t, this.data.length+r.length);
             this.add(r);
         }
-        this.fireEvent("load", this, r, options);
+        this.fireEvent(Ext.data.Api.READ, this, r, options);
         if(options.callback){
             options.callback.call(options.scope || this, r, options, true);
         }
@@ -12486,12 +12531,72 @@ Ext.data.Field.prototype = {
 Ext.data.DataReader = function(meta, recordType){
     
     this.meta = meta;
-    this.recordType = Ext.isArray(recordType) ? 
+    this.recordType = Ext.isArray(recordType) ?
         Ext.data.Record.create(recordType) : recordType;
 };
 
 Ext.data.DataReader.prototype = {
+
     
+    realize: function(rs, data){
+        if (Ext.isArray(rs)) {
+            for (var i = rs.length - 1; i >= 0; i--) {
+                // recurse
+                if (Ext.isArray(data)) {
+                    this.realize(rs.splice(i,1).shift(), data.splice(i,1).shift());
+                }
+                else {
+                    // weird...rs is an array but data isn't??  recurse but just send in the whole invalid data object.
+                    // the else clause below will detect !this.isData and throw exception.
+                    this.realize(rs.splice(i,1).shift(), data);
+                }
+            }
+        }
+        else {
+            if (!this.isData(data)) {
+                // TODO: create custom Exception class to return record in thrown exception.  Allow exception-handler the choice
+                // to commit or not rather than blindly rs.commit() here.
+                rs.commit();
+                throw new Error("DataReader#realize was called with invalid remote-data.  Please see the docs for DataReader#realize and review your DataReader configuration.");
+            }
+            var values = this.extractValues(data, rs.fields.items, rs.fields.items.length);
+            rs.phantom = false; // <-- That's what it's all about
+            rs.id = data[this.meta.idProperty];
+            rs.data = values;
+            rs.commit();
+        }
+    },
+
+    
+    update : function(rs, data) {
+        if (Ext.isArray(rs)) {
+            for (var i=rs.length-1; i >= 0; i--) {
+                if (Ext.isArray(data)) {
+                    this.update(rs.splice(i,1).shift(), data.splice(i,1).shift());
+                }
+                else {
+                    // weird...rs is an array but data isn't??  recurse but just send in the whole data object.
+                    // the else clause below will detect !this.isData and throw exception.
+                    this.update(rs.splice(i,1).shift(), data);
+                }
+            }
+        }
+        else {
+            if (!this.isData(data)) {
+                // TODO: create custom Exception class to return record in thrown exception.  Allow exception-handler the choice
+                // to commit or not rather than blindly rs.commit() here.
+                rs.commit();
+                throw new Error("DataReader#update received invalid data from server.  Please see docs for DataReader#update");
+            }
+            rs.data = this.extractValues(data, rs.fields.items, rs.fields.items.length);
+            rs.commit();
+        }
+    },
+
+    
+    isData : function(data) {
+        return (data && typeof(data) == 'object' && !Ext.isEmpty(data[this.meta.idProperty])) ? true : false
+    }
 };
 
 Ext.data.DataWriter = function(config){
@@ -12501,322 +12606,384 @@ Ext.data.DataWriter = function(config){
 
 Ext.data.DataWriter.prototype = {
 
-	meta : {},
-	
-	dataProperty : 'data',
-	
-	writeAllFields : false,
+    meta : {},
+    
+    writeAllFields : false,
 
-	
-	save : function(p, rs) {
-		if (Ext.isArray(rs)) {
-			var data = [];
-			var ids = [];
-			for (var n=0,len=rs.length;n<len;n++) {
-				ids.push(rs[n].id);
-				data.push(this.saveRecord(rs[n]));
-			}
-			p[this.meta.idProperty] = ids;
-			p[this.dataProperty] = data;
-		}
-		else if (rs instanceof Ext.data.Record) {
-			p[this.meta.idProperty] = rs.id;
-			p[this.dataProperty] = this.saveRecord(rs);
-		}
-		return false;
-	},
+    
+    write : function(action, params, rs) {
+        var data = null;
+        switch (action) {
+            case Ext.data.Api.CREATE:
+               data = this.create(rs);
+               break;
+            case Ext.data.Api.UPDATE:
+               data = this.update(rs);
+               break;
+            case Ext.data.Api.DESTROY:
+               data = this.destroy(rs);
+               break;
+        }
+        this.render(action, rs, params, data);
+    },
 
-	
-	saveRecord : Ext.emptyFn,
+    
+    render : Ext.emptyFn,
 
-	
-	create : function(p, rec) {
-		return p[this.dataProperty] = this.createRecord(rec);
-	},
+    
+    update : function(rs) {
+        var params = {};
+        if (Ext.isArray(rs)) {
+            var data = [];
+            var ids = [];
+            for (var n=0,len=rs.length;n<len;n++) {
+                ids.push(rs[n].id);
+                data.push(this.updateRecord(rs[n]));
+            }
+            params[this.meta.idProperty] = ids;
+            params[this.meta.root] = data;
+        }
+        else if (rs instanceof Ext.data.Record) {
+            params[this.meta.idProperty] = rs.id;
+            params[this.meta.root] = this.updateRecord(rs);
+        }
+        return params;
+    },
 
-	
-	createRecord : Ext.emptyFn,
+    
+    updateRecord : Ext.emptyFn,
 
-	
-	destroy : function(p, rs) {
-		if (Ext.isArray(rs)) {
-			var data = [];
-			var ids = [];
-			for (var i=0,len=rs.length;i<len;i++) {
-				data.push(this.destroyRecord(rs[i]));
-			}
-			p[this.dataProperty] = data;
-		} else if (rs instanceof Ext.data.Record) {
-			p[this.dataProperty] = this.destroyRecord(rs);
-		}
-		return false;
-	},
+    
+    create : function(rs) {
+        var params = {};
+        if (Ext.isArray(rs)) {
+            var data = [];
+            for (var n=0,len=rs.length;n<len;n++) {
+                data.push(this.createRecord(rs[n]));
+            }
+            params[this.meta.root] = data;
+        }
+        else if (rs instanceof Ext.data.Record) {
+            params[this.meta.root] = this.createRecord(rs);
+        }
+        return params;
+    },
 
-	
-	destroyRecord : Ext.emptyFn,
+    
+    createRecord : Ext.emptyFn,
 
-	
-	toHash : function(rec) {
-		var map = rec.fields.map;
-		var data = {};
-		var raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data;
-		for (var k in raw) {
-			data[(map[k].mapping) ? map[k].mapping : map[k].name] = raw[k];
-		}
-		data[this.meta.idProperty] = rec.id;
-		return data;
-	}
+    
+    destroy : function(rs) {
+        var params = {};
+        if (Ext.isArray(rs)) {
+            var data = [];
+            var ids = [];
+            for (var i=0,len=rs.length;i<len;i++) {
+                data.push(this.destroyRecord(rs[i]));
+            }
+            params[this.meta.root] = data;
+        } else if (rs instanceof Ext.data.Record) {
+            params[this.meta.root] = this.destroyRecord(rs);
+        }
+        return params;
+    },
+
+    
+    destroyRecord : Ext.emptyFn,
+
+    
+    toHash : function(rec) {
+        var map = rec.fields.map;
+        var data = {};
+        var raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data;
+        for (var k in raw) {
+            data[(map[k].mapping) ? map[k].mapping : map[k].name] = raw[k];
+        }
+        data[this.meta.idProperty] = rec.id;
+        return data;
+    }
 };
 
 Ext.data.JsonWriter = Ext.extend(Ext.data.DataWriter, {
-	
-	returnJson : true,
+    
+    returnJson : true,
 
-	
-	writeRecord : function(rec) {
-		var data = this.toHash(rec);
-		return (this.returnJson === true) ? Ext.encode(data) : data;
-	},
+    
+    render : function(action, rs, params, data) {
+        Ext.apply(params, data);
+        if (this.returnJson) {
+            if (Ext.isArray(rs) && data[this.meta.idProperty]) {
+                params[this.meta.idProperty] = Ext.encode(params[this.meta.idProperty]);
+            }
+            params[this.meta.root] = Ext.encode(params[this.meta.root]);
+        }
+    },
+    
+    createRecord : function(rec) {
+        return this.toHash(rec);
+    },
+    
+    updateRecord : function(rec) {
+        return this.toHash(rec);
 
-	createRecord : function(rec) {
-		var data = this.toHash(rec);
-		delete data[this.meta.idProperty];
-		return (this.returnJson === true) ? Ext.encode(data) : data;
-	},
-
-	save : function(p, rs) {
-		Ext.data.JsonWriter.superclass.save.apply(this, arguments);
-		if (this.returnJson) {
-			if (Ext.isArray(rs)) {
-				p[this.meta.idProperty] = Ext.encode(p[this.meta.idProperty]);
-			}
-			p[this.dataProperty] = Ext.encode(p[this.dataProperty]);
-		}
-	},
-
-	saveRecord : function(rec) {
-		return this.toHash(rec);
-
-	},
-
-	destroy : function(p, rs) {
-		Ext.data.JsonWriter.superclass.destroy.apply(this, arguments);
-		if (this.returnJson) {
-			p[this.dataProperty] = Ext.encode(p[this.dataProperty]);
-		}
-
-	},
-
-	destroyRecord : function(rec) {
-		return rec.id
-	}
+    },
+    
+    destroyRecord : function(rec) {
+        return rec.id
+    }
 });
 
-Ext.data.DataProxy = function(){
+Ext.data.DataProxy = function(conn){
+    // make sure we have a config object here to support ux proxies.
+    // All proxies should now send config into superclass constructor.
+    conn = conn || {};
+
+    Ext.apply(this, conn);
+
+    
+
+    // Verify valid api or define if not set.
+    if (conn.api) {
+       var valid = Ext.data.Api.isValid(conn.api);
+       if (valid !== true) {
+           throw new Error('Ext.data.DataProxy#constructor recieved an invalid API-configuration "' + valid.join(', ') + '".  Please ensure your proxy API-configuration contains only the actions "' + Ext.data.Api.getVerbs().join(', '));
+       }
+    }
+    else {
+        this.api = {};
+        this.api[Ext.data.Api.CREATE]     = undefined;
+        this.api[Ext.data.Api.READ]       = undefined;
+        this.api[Ext.data.Api.UPDATE]     = undefined;
+        this.api[Ext.data.Api.DESTROY]    = undefined;
+    }
 
     this.addEvents(
         
-        'beforeload',
+        'before'+Ext.data.READ,
         
-        'load',
+        Ext.data.READ,
         
-        'beforesave',
+        'beforewrite',
         
-        'save',
-        
-        'beforedestroy',
-        
-        'destroy',
-        
-        'beforecreate',
-        
-        'create'
+        'write'
+
+
     );
     Ext.data.DataProxy.superclass.constructor.call(this);
 };
 
 Ext.extend(Ext.data.DataProxy, Ext.util.Observable, {
-    
 
     
-    request : function(action, rs, params, reader, writer, cb, scope, options) {
-		if (!this.api[action]) {
-			if (this.url) {	// <-- if an url was defined, set the appropriate api action to this url
-				this.api[action] = this.url;
-			}
-			else if (typeof(this[action]) != 'function') {	// <-- To keep pre3.0 proxies working, look for a method matching the action (ie: 'load')
-				throw new Error('No proxy url defined for api action "' + action + '"');
-			}
-		}
-		if (this.fireEvent("before" + action, this, params) !== false) {
-			this.doRequest.apply(this, arguments);
-		}
-		else {
-			cb.call(scope || this, null, arg, false);
-		}
+    setApi : function() {
+        if (arguments.length == 1) {
+            var valid = Ext.data.Api.isValid(arguments[0]);
+            if (valid === true) {
+                this.api = arguments[0];
+            }
+            else {
+                throw new Error('Ext.data.DataProxy#setApi received invalid API action(s) "' + valid.join(', ') + '".  Valid API actions are: ' + Ext.data.Api.getVerbs().join(', '));
+            }
+        }
+        else if (arguments.length == 2) {
+            if (!Ext.data.Api.isVerb(arguments[0])) {
+                throw new Error('Ext.data.DataProxy#setApi received an invalid API action "' + arguments[0] + '".  Valid API actions are: ' + Ext.data.Api.getVerbs().join(', '))
+            }
+            this.api[arguments[0]] = arguments[1];
+        }
     },
 
     
-    doRequest : function(action, rs, params, reader, writer, cb, scope, options) {
-		// default implementation of doRequest for backwards compatibility with 2.0 proxies.
-		// If we're executing here, the action is probably "load".
-		// Call with the pre-3.0 method signature.
-		this[action](params, reader, cb, scope, options);
-	}
-});
+    request : function(action, rs, params, reader, callback, scope, options) {
+        params = params || {};
+        if ((action == Ext.data.Api.READ) ? this.fireEvent("before"+action, this, params, options) : this.fireEvent("beforewrite", this, action, params, options) !== false) {
+            this.doRequest.apply(this, arguments);
+        }
+        else {
+            callback.call(scope || this, null, arg, false);
+        }
+    },
 
+    
+    load : function(params, reader, callback, scope, arg) {
+        this.doRequest(Ext.data.READ, null, params, reader, callback, scope, arg);
+    },
+
+    
+    doRequest : function(action, rs, params, reader, callback, scope, options) {
+        // default implementation of doRequest for backwards compatibility with 2.0 proxies.
+        // If we're executing here, the action is probably "load".
+        // Call with the pre-3.0 method signature.
+        this[action](params, reader, callback, scope, options);
+    }
+});
 
 Ext.data.MemoryProxy = function(data){
     Ext.data.MemoryProxy.superclass.constructor.call(this);
     this.data = data;
 
-	// Define the proxy api to satisfy DataProxy#doRequest
-	this.api = {
-		load: true
-	};
+    // Define the proxy api to satisfy DataProxy#doRequest
+    this.api = {
+        load: true
+    };
 };
 
 Ext.extend(Ext.data.MemoryProxy, Ext.data.DataProxy, {
     
 
-   	
-	doRequest : function(action, rs, params, reader, writer, cb, scope, arg) {
-		// No implementation for CRUD in MemoryProxy.  Assumes all actions are 'load'
-		params = params || {};
+       
+    doRequest : function(action, rs, params, reader, writer, callback, scope, arg) {
+        // No implementation for CRUD in MemoryProxy.  Assumes all actions are 'load'
+        params = params || {};
         var result;
         try {
             result = reader.readRecords(this.data);
         }catch(e){
             this.fireEvent("loadexception", this, arg, null, e);
-            cb.call(scope, null, arg, false);
+            callback.call(scope, null, arg, false);
             return;
         }
-        cb.call(scope, result, arg, true);
-	}
+        callback.call(scope, result, arg, true);
+    }
 });
 
 Ext.data.HttpProxy = function(conn){
-    Ext.data.HttpProxy.superclass.constructor.call(this);
+    Ext.data.HttpProxy.superclass.constructor.call(this, conn);
 
     
     this.conn = conn;
 
-	// I think this code should be moved to DataProxy but we must first send
-	// config object into superclass (not sure why it's not).  Set default api if not set.
-	// We have to take care setting the api since it's a complex object.  Ext.apply doesn't
-	// do it properly!
-	this.api = conn.api || {
-		load: undefined,
-		save: undefined,
-		create: undefined,
-		destroy: undefined
-	};
-	Ext.copyTo(this, conn, 'url,prettyUrls');
+    // nullify the connection url.  The url param has been copied to "this" above.  The connection
+    // url will be set during each execution of doRequest when buildUrl is called.  This makes it easier for users to override the
+    // connection url during beforeaction events (ie: beforeload, beforesave, etc).  The connection url will be nullified
+    // after each request as well.  Url is always re-defined during doRequest.
+    this.conn.url = null;
 
     this.useAjax = !conn || !conn.events;
+
+    //private.  A hash containing active requests, keyed on action [Ext.data.Api.CREATE|READ|UPDATE|DESTROY]
+    this.activeRequest = {};
+    var verbs = Ext.data.Api.getVerbs();
+    for (var n=0,len=verbs.length;n<len;n++) {
+        this.activeRequest[verbs[n]] = undefined; // <-- initialize availale activeRequest verbs.
+    }
 
     
 };
 
 Ext.extend(Ext.data.HttpProxy, Ext.data.DataProxy, {
-	
-	prettyUrls : false,
+    
+    prettyUrls : false,
 
     
     getConnection : function(){
         return this.useAjax ? Ext.Ajax : this.conn;
     },
 
-	
-	doRequest : function(action, rs, params, reader, writer, cb, scope, arg) {
-		var  o = {
+    
+    setUrl : function(url, makePermanent) {
+        this.conn.url = url;
+        if (makePermanent === true) {
+            this.url = url;
+        }
+    },
+
+    
+    buildUrl : function(action, record) {
+        record = record || null;
+        var url = (this.api[action]) ? this.api[action] : this.url;
+
+        // if we have no url here, throw an exception.
+        if (typeof(url) == 'undefined') {
+            throw new Error('HttpProxy tried to build an url for the action "' + action + '" but could not find an api definition for this action or an url to fall-back to.  Please review your proxy configuration.');
+        }
+
+        if (this.prettyUrls === true && record instanceof Ext.data.Record && !record.phantom) {
+            url += '/' + record.id;
+        }
+        return url;
+    },
+
+    
+    doRequest : function(action, rs, params, reader, cb, scope, arg) {
+        var  o = {
             params : params || {},
             request: {
                 callback : cb,
                 scope : scope,
                 arg : arg
             },
-			reader: reader,
+            reader: reader,
             callback : this.createCallback(action),
             scope: this
         };
         if(this.useAjax){
-			this.conn.url = this.buildUrl(action, rs);
-			Ext.applyIf(o, this.conn);
-			// We don't want to abort requests anymore since proxy can do full CRUD, not just load.
-			// Do we want to throw our requests into a buffer and deal with each after they return?
-            //if(this.activeRequest){
-            //    Ext.Ajax.abort(this.activeRequest);
-            //}
-            this.activeRequest = Ext.Ajax.request(o);
+            // Set the connection url.  If this.conn.url is not null here,
+            // the user may have overridden the url during a beforeaction event-handler.
+            // this.conn.url is nullified after each request.
+            if (this.conn.url === null) {
+                this.conn.url = this.buildUrl(action, rs);
+            }
+            else if (this.prettyUrls === true && rs instanceof Ext.data.Record && !rs.phantom) {
+                this.conn.url += '/' + rs.id;
+            }
+
+            Ext.applyIf(o, this.conn);
+
+            // If a currently running request is found for this action, abort it.
+            if (this.activeRequest[action]) {
+                Ext.Ajax.abort(this.activeRequest[action]);
+            }
+            this.activeRequest[action] = Ext.Ajax.request(o);
+
+            // request is sent, nullify the connection url in preparation for the next request
+            this.conn.url = null;
+
         }else{
             this.conn.request(o);
         }
-	},
+    },
 
-	
-	buildUrl : function(action, record) {
-		record = record || null;
-		var url = (this.api[action]) ? this.api[action] : this.url;
-		if (this.prettyUrls === true && record instanceof Ext.data.Record && !record.phantom) {
-			url += '/' + record.id
-		}
-		return url;
-	},
-
-	
-	createCallback : function(action) {
-		return (action == 'load')
-			// special case for load callback
-			? function(o, success, response){
-				// removed while implementing Writer.  @see doRequest
-				//delete this.activeRequest;
-		        if(!success){
-		            this.fireEvent("loadexception", this, o, response);
-		            o.request.callback.call(o.request.scope, null, o.request.arg, false);
-		            return;
-		        }
-		        var result;
-		        try {
-		            result = o.reader.read(response);
-		        }catch(e){
-		            this.fireEvent("loadexception", this, o, response, e);
-		            o.request.callback.call(o.request.scope, null, o.request.arg, false);
-		            return;
-		        }
-		        this.fireEvent("load", this, o, o.request.arg);
-		        o.request.callback.call(o.request.scope, result, o.request.arg, true);
-			}
-			// callbacks for all others:  create, save, destroy
-			: function(o, success, response) {
-				var reader = o.reader;
-				var res = reader.readResponse(response);
-				if(!res[reader.meta.successProperty] === true){
-					this.fireEvent(action+"exception", this, o, res);
-					o.request.callback.call(o.request.scope, null, res, false);
-					return;
-				}
-				// should we read from the Writer config instead of reader.meta.root?
-		        this.fireEvent(action, this, res[reader.meta.root], res, o.request.arg );
-		        o.request.callback.call(o.request.scope, res[reader.meta.root], res, true);
-			}
-	}
+    
+    createCallback : function(action) {
+        return (action == Ext.data.Api.READ)
+            // special case for load callback
+            ? function(o, success, response){
+                this.activeRequest[action] = undefined;
+                if(!success){
+                    this.fireEvent(action+"exception", this, o, response);
+                    o.request.callback.call(o.request.scope, null, o.request.arg, false);
+                    return;
+                }
+                var result;
+                try {
+                    result = o.reader.read(response);
+                }catch(e){
+                    this.fireEvent(action+"exception", this, o, response, e);
+                    o.request.callback.call(o.request.scope, null, o.request.arg, false);
+                    return;
+                }
+                this.fireEvent(action, this, o, o.request.arg);
+                o.request.callback.call(o.request.scope, result, o.request.arg, true);
+            }
+            // callbacks for all others:  create, save, destroy
+            : function(o, success, response) {
+                this.activeRequest[action] = undefined;
+                var reader = o.reader;
+                var res = reader.readResponse(response);
+                if(!res[reader.meta.successProperty] === true){
+                    this.fireEvent("writeexception", this, action, o, res);
+                    o.request.callback.call(o.request.scope, null, res, false);
+                    return;
+                }
+                this.fireEvent("write", this, action, res[reader.meta.root], res, o.request.arg );
+                o.request.callback.call(o.request.scope, res[reader.meta.root], res, true);
+            }
+    }
 });
 
 Ext.data.ScriptTagProxy = function(config){
-    Ext.data.ScriptTagProxy.superclass.constructor.call(this);
-    Ext.apply(this, config);
-
-	// I think this code should be moved to DataProxy but we must first send
-	// config object into superclass (not sure why it's not).  Set default api if not set.
-	// We have to take care setting the api since it's a complex object.  Ext.apply doesn't
-	// do it properly.
-	this.api = config.api || {
-		load: undefined,
-		save: undefined,
-		create: undefined,
-		destroy: undefined
-	};
+    Ext.data.ScriptTagProxy.superclass.constructor.call(this, config);
 
     this.head = document.getElementsByTagName("head")[0];
 
@@ -12835,11 +13002,11 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
     nocache : true,
 
     
-    doRequest : function(action, rs, params, reader, writer, cb, scope, arg) {
+    doRequest : function(action, rs, params, reader, callback, scope, arg) {
         var p = Ext.urlEncode(Ext.apply(params, this.extraParams));
 
-        var url = this.api[action];
-		url += (url.indexOf("?") != -1 ? "&" : "?") + p;
+        var url = this.url || this.api[action];
+        url += (url.indexOf("?") != -1 ? "&" : "?") + p;
 
         if(this.nocache){
             url += "&_dc=" + (new Date().getTime());
@@ -12847,12 +13014,13 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
         var transId = ++Ext.data.ScriptTagProxy.TRANS_ID;
         var trans = {
             id : transId,
+            action: action,
             cb : "stcCallback"+transId,
             scriptId : "stcScript"+transId,
             params : params,
             arg : arg,
             url : url,
-            callback : cb,
+            callback : callback,
             scope : scope,
             reader : reader
         };
@@ -12873,36 +13041,35 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
         this.trans = trans;
     },
 
-	// @private createCallback
-	createCallback : function(action, trans) {
-		var conn = this;
-		return (action == 'load')
-			? function(res) {
-            	conn.trans = false;
-		        conn.destroyTrans(trans, true);
-		        var result;
-		        try {
-		            result = trans.reader.readRecords(res);
-		        }catch(e){
-		            conn.fireEvent("loadexception", conn, res, trans.arg, e);
-		            trans.callback.call(trans.scope||window, null, trans.arg, false);
-		            return;
-		        }
-		        conn.fireEvent("load", conn, res, trans.arg);
-		        trans.callback.call(trans.scope||window, result, trans.arg, true);
-			}
-			: function(res) {
-				var reader = trans.reader;
-				if(!res[reader.meta.successProperty] === true){
-					conn.fireEvent(action+"exception", conn, trans, res);
-					trans.callback.call(trans.scope, null, res, false);
-					return;
-				}
-				// should we read from the Writer config instead of reader.meta.root?
-		        conn.fireEvent(action, conn, res[reader.meta.root], res, trans.arg );
-		        trans.callback.call(trans.scope||window, res[reader.meta.root], res, true);
-			}
-	},
+    // @private createCallback
+    createCallback : function(action, trans) {
+        var conn = this;
+        return (action == Ext.data.Api.READ)
+            ? function(res) {
+                conn.trans = false;
+                conn.destroyTrans(trans, true);
+                var result;
+                try {
+                    result = trans.reader.readRecords(res);
+                }catch(e){
+                    conn.fireEvent(Ext.data.Api.READ+"exception", conn, res, trans.arg, e);
+                    trans.callback.call(trans.scope||window, null, trans.arg, false);
+                    return;
+                }
+                conn.fireEvent(Ext.data.Api.READ, conn, res, trans.arg);
+                trans.callback.call(trans.scope||window, result, trans.arg, true);
+            }
+            : function(res) {
+                var reader = trans.reader;
+                if(!res[reader.meta.successProperty] === true){
+                    conn.fireEvent("writeexception", action, conn, trans, res);
+                    trans.callback.call(trans.scope, null, res, false);
+                    return;
+                }
+                conn.fireEvent("write", action, conn, res[reader.meta.root], res, trans.arg );
+                trans.callback.call(trans.scope||window, res[reader.meta.root], res, true);
+            }
+    },
 
     // private
     isLoading : function(){
@@ -12940,93 +13107,96 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
     handleFailure : function(trans){
         this.trans = false;
         this.destroyTrans(trans, false);
-        this.fireEvent("loadexception", this, null, trans.arg);
+        if (trans.action === Ext.data.Api.READ) {
+            this.fireEvent(Ext.data.Api.READ+"exception", this, null, trans.arg);
+        }
+        else {
+            this.fireEvent("writeexception", this, trans.action, null, trans.arg);
+        }
         trans.callback.call(trans.scope||window, null, trans.arg, false);
     }
 });
 
 Ext.data.DirectProxy = function(config){
-    Ext.apply(this, config);
-
-	// I think this code should be moved to DataProxy but we must first send
-	// config object into superclass (not sure why it's not).  Set default api if not set.
-	// We have to take care setting the api since it's a complex object.  Ext.apply doesn't
-	// do it properly.
-	this.api = config.api || {
-		load: undefined,
-		save: undefined,
-		create: undefined,
-		destroy: undefined
-	};
 
     if(typeof this.paramOrder == 'string'){
         this.paramOrder = this.paramOrder.split(/[\s,|]/);
     }
-    Ext.data.DirectProxy.superclass.constructor.call(this);
+    Ext.data.DirectProxy.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Ext.data.DirectProxy, Ext.data.DataProxy, {
-	
-	paramOrder: undefined,
+    
+    paramOrder: undefined,
 
-	
-	paramsAsHash: true,
+    
+    paramsAsHash: true,
 
-	// protected
-	doRequest : function(action, rs, params, reader, writer, cb, scope, options) {
-		var args = [];
-		var directFn = this.api[action];
-		switch (action) {
-			case 'save':
-				args.push(params[reader.meta.idProperty]);	// <-- save(Integer/Integer[], Hash/Hash[])
-				args.push(params[writer.dataProperty]);
-				break;
-			case 'destroy':
-				args.push(params[writer.dataProperty]);		// <-- destroy(Int/Int[])
-				break;
-			case 'create':
-				args.push(params[writer.dataProperty]);		// <-- create(Hash)
-				break;
-			case 'load':
-				args.push(params);							// <-- load(Hash)
-				break;
-		}
-		args.push(this.createCallback(action, reader, cb, scope, options));
-		directFn.apply(window, args);
-	},
+    
+    directFn : undefined,
 
-	// private
-	createCallback : function(action, reader, cb, scope, arg) {
-		return {
-			callback: (action == 'load') ? function(result, e){
-				if (!e.status) {
-					this.fireEvent(action+"exception", this, e, result);
-					cb.call(scope, null, arg, false);
-					return;
-				}
-				var records;
-				try {
-					records = reader.readRecords(result);
-				}
-				catch (ex) {
-					this.fireEvent(action+"exception", this, e, result, ex);
-					cb.call(scope, null, arg, false);
-					return;
-				}
-				this.fireEvent(action, this, e, arg);
-				cb.call(scope, records, arg, true);
-			} : function(result, e){
-				if(!e.status){
-					this.fireEvent(action+"exception", this, e);
-        			cb.call(scope, null, e, false);
-        			return;
-				}
-		        this.fireEvent(action, this, result, e, arg);
-		        cb.call(scope, result, e, true);
-			},
-			scope: this
-		}
-	}
+    // protected
+    doRequest : function(action, rs, params, reader, callback, scope, options) {
+        var args = [];
+
+        var directFn = this.api[action] || this.directFn;
+        switch (action) {
+            case Ext.data.Api.CREATE:
+                args.push(params[reader.meta.root]);		// <-- create(Hash)
+                break;
+            case Ext.data.Api.READ:
+                if(this.paramOrder){
+                    for(var i = 0, len = this.paramOrder.length; i < len; i++){
+                        args.push(params[this.paramOrder[i]]);
+                    }
+                }else if(this.paramsAsHash){
+                    args.push(params);
+                }
+                break;
+            case Ext.data.Api.UPDATE:
+                args.push(params[reader.meta.idProperty]);  // <-- save(Integer/Integer[], Hash/Hash[])
+                args.push(params[reader.meta.root]);
+                break;
+            case Ext.data.Api.DESTROY:
+                args.push(params[reader.meta.root]);        // <-- destroy(Int/Int[])
+                break;
+        }
+        args.push(this.createCallback(action, reader, callback, scope, options));
+        directFn.apply(window, args);
+    },
+
+    // private
+    createCallback : function(action, reader, callback, scope, arg) {
+        return {
+            callback: (action == Ext.data.Api.READ) ? function(result, e){
+                if (!e.status) {
+                    this.fireEvent(action+"exception", this, e, result);
+                    callback.call(scope, null, arg, false);
+                    return;
+                }
+                var records;
+                try {
+                    records = reader.readRecords(result);
+                }
+                catch (ex) {
+                    this.fireEvent("writeexception", this, action, e, result, ex);
+                    callback.call(scope, null, arg, false);
+                    return;
+                }
+                this.fireEvent("write", this, action, e, arg);
+                callback.call(scope, records, arg, true);
+            } : function(result, e){
+                if(!e.status){
+                    this.fireEvent("writeexception", this, action, e);
+                    callback.call(scope, null, e, false);
+                    return;
+                }
+                this.fireEvent("write", this, action, result, e, arg);
+                callback.call(scope, result, e, true);
+            },
+            scope: this
+        }
+    }
 });
 
 
@@ -13072,7 +13242,7 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
     }(),
 
     
-    readRecords : function(o){
+	readRecords : function(o){
         
         this.jsonData = o;
         if(o.metaData){
@@ -13123,18 +13293,12 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
                 success = false;
             }
         }
+
         var records = [];
         for(var i = 0; i < c; i++){
             var n = root[i];
-            var values = {};
-            var id = this.getId(n);
-            for(var j = 0; j < fl; j++){
-                f = fi[j];
-                var v = this.ef[j](n);
-                values[f.name] = f.convert((v !== undefined) ? v : f.defaultValue, n);
-            }
-            var record = new Record(values, id);
-            record.json = n;
+			var record = new Record(this.extractValues(n, fi, fl), this.getId(n));
+			record.json = n;
             records[i] = record;
         }
         return {
@@ -13144,15 +13308,27 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         };
     },
 
+	// private extractValues
+    extractValues: function(data, items, len) {
+		var values = {};
+        for(var j = 0; j < len; j++){
+            f = items[j];
+            var v = this.ef[j](data);
+            values[f.name] = f.convert((v !== undefined) ? v : f.defaultValue, data);
+        }
+        return values;
+    },
+
 	
 	readResponse : function(response) {
 		var json = response.responseText;
-        var o = eval("("+json+")");
+        var o = Ext.decode(json);
         if(!o) {
             throw {message: "JsonReader.read: Json object not found"};
         }
 		return o;
 	}
+
 });
 
 Ext.data.XmlReader = function(meta, recordType){
@@ -13825,101 +14001,6 @@ Ext.direct.RemotingProvider = Ext.extend(Ext.direct.JsonProvider, {
     }
 });
 Ext.Direct.PROVIDERS['remoting'] = Ext.direct.RemotingProvider;
-
-Ext.data.DirectProxy = function(config){
-    Ext.apply(this, config);
-
-	// I think this code should be moved to DataProxy but we must first send
-	// config object into superclass (not sure why it's not).  Set default api if not set.
-	// We have to take care setting the api since it's a complex object.  Ext.apply doesn't
-	// do it properly.
-	this.api = config.api || {
-		load: undefined,
-		save: undefined,
-		create: undefined,
-		destroy: undefined
-	};
-
-    if(typeof this.paramOrder == 'string'){
-        this.paramOrder = this.paramOrder.split(/[\s,|]/);
-    }
-    Ext.data.DirectProxy.superclass.constructor.call(this);
-};
-
-Ext.extend(Ext.data.DirectProxy, Ext.data.DataProxy, {
-	
-	paramOrder: undefined,
-
-	
-	paramsAsHash: true,
-
-	// protected
-	doRequest : function(action, rs, params, reader, writer, cb, scope, options) {
-		var args = [];
-		var directFn = this.api[action];
-		switch (action) {
-			case 'save':
-				args.push(params[reader.meta.idProperty]);	// <-- save(Integer/Integer[], Hash/Hash[])
-				args.push(params[writer.dataProperty]);
-				break;
-			case 'destroy':
-				args.push(params[writer.dataProperty]);		// <-- destroy(Int/Int[])
-				break;
-			case 'create':
-				args.push(params[writer.dataProperty]);		// <-- create(Hash)
-				break;
-			case 'load':
-				args.push(params);							// <-- load(Hash)
-				break;
-		}
-		args.push(this.createCallback(action, reader, cb, scope, options));
-		directFn.apply(window, args);
-	},
-
-	// private
-	createCallback : function(action, reader, cb, scope, arg) {
-		return {
-			callback: (action == 'load') ? function(result, e){
-				if (!e.status) {
-					this.fireEvent(action+"exception", this, e, result);
-					cb.call(scope, null, arg, false);
-					return;
-				}
-				var records;
-				try {
-					records = reader.readRecords(result);
-				}
-				catch (ex) {
-					this.fireEvent(action+"exception", this, e, result, ex);
-					cb.call(scope, null, arg, false);
-					return;
-				}
-				this.fireEvent(action, this, e, arg);
-				cb.call(scope, records, arg, true);
-			} : function(result, e){
-				if(!e.status){
-					this.fireEvent(action+"exception", this, e);
-        			cb.call(scope, null, e, false);
-        			return;
-				}
-		        this.fireEvent(action, this, result, e, arg);
-		        cb.call(scope, result, e, true);
-			},
-			scope: this
-		}
-	}
-});
-
-
-Ext.data.DirectStore = function(c){
-	Ext.data.DirectStore.superclass.constructor.call(this, Ext.apply(c, {
-        proxy: (typeof(c.proxy) == 'undefined') ? new Ext.data.DirectProxy(Ext.copyTo({}, c, 'paramOrder,paramsAsHash,directFn,api')) : c.proxy,
-        reader: (typeof(c.reader) == 'undefined' && typeof(c.fields) == 'object') ? new Ext.data.JsonReader(Ext.copyTo({}, c, 'totalProperty,root,idProperty'), c.fields) : c.reader
-    }));
-};
-Ext.extend(Ext.data.DirectStore, Ext.data.Store);
-Ext.reg('directstore', Ext.data.DirectStore);
-
 
 Ext.data.Tree = function(root){
    this.nodeHash = {};
@@ -14643,6 +14724,7 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     
     
     
+    
 
     
     autoEl : 'div',
@@ -14746,6 +14828,7 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     initRef : function(){
+        
         if(this.ref){
             var levels = this.ref.split('/');
             var last = levels.length, i = 0;
@@ -15108,7 +15191,7 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
             }, this, {single: true});
         }
 		
-        if(typeof ename == "object"){
+        if(Ext.isObject(ename)){
         	var propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/;
         	
             var o = ename;
@@ -15116,7 +15199,7 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
                 if(propRe.test(e)){
                     continue;
                 }
-                if(typeof o[e] == "function"){
+                if(Ext.isFunction(o[e])){
                     // shared options
 			        this.mons.push({
 			            item: item, ename: e, fn: o[e], scope: o.scope
@@ -15138,6 +15221,21 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
             item: item, ename: ename, fn: fn, scope: scope
         });        
         item.on(ename, fn, scope, opt);
+    },
+    
+    // protected, opposite of mon
+    mun: function(item, ename, fn, scope){
+        var found, mon;
+        for(var i = 0, len = this.mons.length; i < len; ++i){
+            mon = this.mons[i];
+            if(item === mon.item && ename == mon.ename && fn === mon.fn && scope === mon.scope){
+                this.mons.splice(i, 1);
+                item.un(ename, fn, scope);
+                found = true;
+                break;
+            }
+        }
+        return found;
     },
 
     
@@ -16304,14 +16402,12 @@ Ext.extend(Ext.SplitBar, Ext.util.Observable, {
     
     
     destroy : function(removeEl){
-        if(this.shim){
-            this.shim.remove();
-        }
+		Ext.destroy(this.shim, Ext.get(this.proxy));
         this.dd.unreg();
-        Ext.destroy(Ext.get(this.proxy));
         if(removeEl){
             this.el.remove();
         }
+		this.purgeListeners();
     }
 });
 
@@ -16616,9 +16712,16 @@ Ext.Container = Ext.extend(Ext.BoxComponent, {
     
     removeAll: function(autoDestroy){
         this.initItems();
-        var item, items = [];
-        while((item = this.items.last())){
-            items.unshift(this.remove(item, autoDestroy));
+        var item, rem = [], items = [];
+        this.items.each(function(i){
+            rem.push(i)
+        });
+        for (var i = 0, len = rem.length; i < len; ++i){
+            item = rem[i];
+            this.remove(item, autoDestroy);
+            if(item.ownerCt !== this){
+                items.push(item);
+            }
         }
         return items;
     },
@@ -18412,7 +18515,7 @@ Ext.layout.VBoxLayout = Ext.extend(Ext.layout.BoxLayout, {
             cm = c.margins;
             totalFlex += c.flex || 0;
             totalHeight += c.getHeight() + cm.top + cm.bottom;
-            maxWidth = Math.max(maxWidth, c.getWidth() + cm.left + cm.top);
+            maxWidth = Math.max(maxWidth, c.getWidth() + cm.left + cm.right);
         }
 
         var innerCtWidth = maxWidth + this.padding.left + this.padding.right;
@@ -18594,6 +18697,12 @@ Ext.Panel = Ext.extend(Ext.Container, {
     
     
     
+    
+    
+    
+    
+    
+        
     
     
     
@@ -19113,7 +19222,7 @@ Ext.Panel = Ext.extend(Ext.Container, {
 
     // private
     afterRender : function(){
-        if(this.floating && !this.hidden && !this.initHidden){
+        if(this.floating && !this.hidden){
             this.el.show();
         }
         if(this.title){
@@ -19582,7 +19691,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
     // inherited docs, same default
     collapsible : false,
 
-    // private
+    
     initHidden : true,
     
     monitorResize : true,
@@ -19613,6 +19722,11 @@ Ext.Window = Ext.extend(Ext.Panel, {
             
             'restore'
         );
+		if(this.initHidden === false){
+			this.show();
+		}else{
+			this.hidden = true;
+		}
     },
 
     // private
@@ -19671,7 +19785,6 @@ Ext.Window = Ext.extend(Ext.Panel, {
 		this.mon(this.el, 'mousedown', this.toFront, this);
         this.manager = this.manager || Ext.WindowMgr;
         this.manager.register(this);
-        this.hidden = true;
         if(this.maximized){
             this.maximized = false;
             this.maximize();
@@ -22981,7 +23094,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
 
     getTemplateArgs : function(){
         var cls = (this.cls || '');
-        cls += this.iconCls ? (this.text ? ' x-btn-text-icon' : ' x-btn-icon') : ' x-btn-noicon';
+        cls += (this.iconCls || this.icon) ? (this.text ? ' x-btn-text-icon' : ' x-btn-icon') : ' x-btn-noicon';
         if(this.pressed){
             cls += ' x-btn-pressed';
         }
@@ -24168,80 +24281,73 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
     
     
     
-    
-    // private
-    constructor: function(config) {
-	    var pagingItems = [this.first = new T.Button({
-	        tooltip: this.firstText,
-	        iconCls: "x-tbar-page-first",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), this.prev = new T.Button({
-	        tooltip: this.prevText,
-	        iconCls: "x-tbar-page-prev",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), '-', this.beforePageText,
-	    this.inputItem = new T.Item({
-	    	height: 18,
-	    	autoEl: {
-		        tag: "input",
-		        type: "text",
-		        size: "3",
-		        value: "1",
-		        cls: "x-tbar-page-number"
-		    }
-	    }), this.afterTextItem = new T.TextItem({
-	    	text: String.format(this.afterPageText, 1)
-	    }), '-', this.next = new T.Button({
+
+    initComponent: function(){
+        var pagingItems = [this.first = new T.Button({
+            tooltip: this.firstText,
+            iconCls: "x-tbar-page-first",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), this.prev = new T.Button({
+            tooltip: this.prevText,
+            iconCls: "x-tbar-page-prev",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), '-', this.beforePageText,
+        this.inputItem = new T.Item({
+            height: 18,
+            autoEl: {
+                tag: "input",
+                type: "text",
+                size: "3",
+                value: "1",
+                cls: "x-tbar-page-number"
+            }
+        }), this.afterTextItem = new T.TextItem({
+            text: String.format(this.afterPageText, 1)
+        }), '-', this.next = new T.Button({
             tooltip: this.nextText,
-	        iconCls: "x-tbar-page-next",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), this.last = new T.Button({
-	        tooltip: this.lastText,
-	        iconCls: "x-tbar-page-last",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), '-', this.refresh = new T.Button({
-	        tooltip: this.refreshText,
-	        iconCls: "x-tbar-loading",
-	        handler: this.onClick,
-	        scope: this
-	    })];
+            iconCls: "x-tbar-page-next",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), this.last = new T.Button({
+            tooltip: this.lastText,
+            iconCls: "x-tbar-page-last",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), '-', this.refresh = new T.Button({
+            tooltip: this.refreshText,
+            iconCls: "x-tbar-loading",
+            handler: this.onClick,
+            scope: this
+        })];
 
 
-        var userItems = config.items || config.buttons || [];
-        if (config.prependButtons) {
-            config.items = userItems.concat(pagingItems);
+        var userItems = this.items || this.buttons || [];
+        if (this.prependButtons) {
+            this.items = userItems.concat(pagingItems);
         }else{
-            config.items = pagingItems.concat(userItems);
+            this.items = pagingItems.concat(userItems);
         }
-	    delete config.buttons;
-	    if(config.displayInfo){
-            config.items.push('->');
-            config.items.push(this.displayItem = new T.TextItem({}));
+        delete this.buttons;
+        if(this.displayInfo){
+            this.items.push('->');
+            this.items.push(this.displayItem = new T.TextItem({}));
         }
-	    Ext.PagingToolbar.superclass.constructor.apply(this, arguments);
-
+        Ext.PagingToolbar.superclass.initComponent.call(this);
         this.addEvents(
             
             'change',
             
             'beforechange'
         );
-
+        this.on('afterlayout', this.onFirstLayout, this, {single: true});
         this.cursor = 0;
         this.bindStore(this.store);
-	},
-    
-    initComponent: function(){
-        Ext.PagingToolbar.superclass.initComponent.call(this);
-        this.on('afterlayout', this.onFirstLayout, this, {single: true});
     },
 
     // private
@@ -31729,6 +31835,8 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
     
     selectedClass : 'x-combo-selected',
     
+    listEmptyText: '',
+    
     triggerClass : 'x-form-arrow-trigger',
     
     shadow : 'sides',
@@ -31801,7 +31909,7 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
                 for(var i = 0, len = opts.length;i < len; i++){
                     var o = opts[i];
                     var value = (o.hasAttribute ? o.hasAttribute('value') : o.getAttribute('value') !== null) ? o.value : o.text;
-                    if(o.selected && !Ext.isEmpty(this.value, true)) {
+                    if(o.selected && Ext.isEmpty(this.value, true)) {
                         this.value = value;
                     }
                     d.push([value, o.text]);
@@ -31940,7 +32048,8 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
                 tpl: this.tpl,
                 singleSelect: true,
                 selectedClass: this.selectedClass,
-                itemSelector: this.itemSelector || '.' + cls + '-item'
+                itemSelector: this.itemSelector || '.' + cls + '-item',
+                emptyText: this.listEmptyText
             });
 			
             this.mon(this.view, 'click', this.onViewClick, this);
@@ -34838,57 +34947,53 @@ Ext.form.VTypes = function(){
 
 Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    ddText : "{0} selected row{1}",
-    
-    minColumnWidth : 25,
-    
-    trackMouseOver : true,
-    
-    enableDragDrop : false,
-    
-    enableColumnMove : true,
-    
-    enableColumnHide : true,
-    
-    enableHdMenu : true,
-    
-    stripeRows : false,
-    
     autoExpandColumn : false,
-    
-    autoExpandMin : 50,
     
     autoExpandMax : 1000,
     
-    view : null,
-    
-    loadMask : false,
-
+    autoExpandMin : 50,
     
     columnLines : false,
-
+    
+    
+    
+    
+    ddText : "{0} selected row{1}",
     
     deferRowRender : true,
+    
+    
+    
+    enableColumnHide : true,
+    
+    enableColumnMove : true,
+    
+    enableDragDrop : false,
+    
+    enableHdMenu : true,
+    
+    
+    loadMask : false,
+    
+    
+    minColumnWidth : 25,
+    
+    
+    
+    
+    stripeRows : false,
+    
+    trackMouseOver : true,
+    
+    stateEvents : ["columnmove", "columnresize", "sortchange"],
+    
+    view : null,
+    
 
     // private
     rendered : false,
     // private
-    viewReady: false,
-    
-    stateEvents: ["columnmove", "columnresize", "sortchange"],
+    viewReady : false,
 
     // private
     initComponent : function(){
@@ -34991,14 +35096,14 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
         var view = this.getView();
         view.init(this);
 
-		this.mon(c, {
-			mousedown: this.onMouseDown,
-			click: this.onClick,
-			dblclick: this.onDblClick,
-			contextmenu: this.onContextMenu,
-			keydown: this.onKeyDown,
-			scope: this
-		})
+        this.mon(c, {
+            mousedown: this.onMouseDown,
+            click: this.onClick,
+            dblclick: this.onDblClick,
+            contextmenu: this.onContextMenu,
+            keydown: this.onKeyDown,
+            scope: this
+        })
 
         this.relayEvents(c, ["mousedown","mouseup","mouseover","mouseout","keypress"]);
 
@@ -35331,13 +35436,13 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
     
     
     
-    deferEmptyText: true,
+    deferEmptyText : true,
     
-    scrollOffset: 19,
+    scrollOffset : 19,
     
-    autoFill: false,
+    autoFill : false,
     
-    forceFit: false,
+    forceFit : false,
     
     sortClasses : ["sort-asc", "sort-desc"],
     
@@ -35348,23 +35453,23 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
     columnsText : "Columns",
 
     
-    selectedRowClass: "x-grid3-row-selected",
+    selectedRowClass : "x-grid3-row-selected",
 
     // private
-    borderWidth: 2,
-    tdClass: 'x-grid3-cell',
-    hdCls: 'x-grid3-hd',
-    markDirty: true,
+    borderWidth : 2,
+    tdClass : 'x-grid3-cell',
+    hdCls : 'x-grid3-hd',
+    markDirty : true,
 
     
-    cellSelectorDepth: 4,
+    cellSelectorDepth : 4,
     
-    rowSelectorDepth: 10,
+    rowSelectorDepth : 10,
 
     
-    cellSelector: 'td.x-grid3-cell',
+    cellSelector : 'td.x-grid3-cell',
     
-    rowSelector: 'div.x-grid3-row',
+    rowSelector : 'div.x-grid3-row',
 
     
 
@@ -35780,7 +35885,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
         }
     },
 
-    afterRender: function(){
+    afterRender : function(){
         if(!this.ds || !this.cm){
             return;
         }
@@ -35934,7 +36039,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
 
     
     // private
-    init: function(grid){
+    init : function(grid){
         this.grid = grid;
 
         this.initTemplates();
@@ -35948,7 +36053,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
     },
     
     // private 
-    getOffsetWidth: function() {
+    getOffsetWidth : function() {
         return (this.cm.getTotalWidth() + this.scrollOffset) + 'px';
     },
 
@@ -37440,7 +37545,7 @@ Ext.extend(Ext.grid.SplitDragZone, Ext.dd.DDProxy, {
 
 
     handleMouseDown : function(e){
-        ev = Ext.EventObject.setEvent(e);
+        var ev = Ext.EventObject.setEvent(e);
         var t = this.fly(ev.getTarget());
         if(t.hasClass("x-grid-split")){
             this.cellIndex = this.view.getCellIndex(t.dom);
@@ -38852,6 +38957,7 @@ Ext.grid.Column = function(config){
 Ext.grid.Column.AUTO_ID = 0;
 
 Ext.grid.Column.prototype = {
+    
     
     
     

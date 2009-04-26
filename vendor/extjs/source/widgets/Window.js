@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -164,7 +164,10 @@ Ext.Window = Ext.extend(Ext.Panel, {
     // inherited docs, same default
     collapsible : false,
 
-    // private
+    /**
+     * @cfg {Boolean} initHidden
+     * True to hide the window until show() is explicitly called (defaults to true).
+     */
     initHidden : true,
     /**
     * @cfg {Boolean} monitorResize @hide
@@ -224,6 +227,11 @@ Ext.Window = Ext.extend(Ext.Panel, {
              */
             'restore'
         );
+		if(this.initHidden === false){
+			this.show();
+		}else{
+			this.hidden = true;
+		}
     },
 
     // private
@@ -282,7 +290,6 @@ Ext.Window = Ext.extend(Ext.Panel, {
 		this.mon(this.el, 'mousedown', this.toFront, this);
         this.manager = this.manager || Ext.WindowMgr;
         this.manager.register(this);
-        this.hidden = true;
         if(this.maximized){
             this.maximized = false;
             this.maximize();

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -81,8 +81,7 @@ Ext.ComponentMgr = function(){
          * subclasses of {@link Ext.Component} so that lazy instantiation may be used when specifying
          * child Components.
          * see {@link Ext.Container#items}</p>
-         * @param {String} xtype The mnemonic string by which the Component class
-         * may be looked up.
+         * @param {String} xtype The mnemonic string by which the Component class may be looked up.
          * @param {Constructor} cls The new Component class.
          */
         registerType : function(xtype, cls){
@@ -95,18 +94,35 @@ Ext.ComponentMgr = function(){
          * config object's {@link Ext.component#xtype xtype} to determine the class to instantiate.
          * @param {Object} config A configuration object for the Component you wish to create.
          * @param {Constructor} defaultType The constructor to provide the default Component type if
-         * the config object does not contain an xtype. (Optional if the config contains an xtype).
+         * the config object does not contain a <tt>xtype</tt>. (Optional if the config contains a <tt>xtype</tt>).
          * @return {Ext.Component} The newly instantiated Component.
          */
         create : function(config, defaultType){
             return config.render ? config : new types[config.xtype || defaultType](config);
         },
 
+        /**
+         * <p>Registers a new Plugin constructor, keyed by a new
+         * {@link Ext.Component#ptype}.</p>
+         * <p>Use this method (or its alias {@link Ext#preg Ext.preg}) to register new
+         * plugins for {@link Ext.Component}s so that lazy instantiation may be used when specifying
+         * Plugins.</p>
+         * @param {String} ptype The mnemonic string by which the Plugin class may be looked up.
+         * @param {Constructor} cls The new Plugin class.
+         */
         registerPlugin : function(ptype, cls){
             ptypes[ptype] = cls;
             cls.ptype = ptype;
         },
 
+        /**
+         * Creates a new Plugin from the specified config object using the
+         * config object's {@link Ext.component#ptype ptype} to determine the class to instantiate.
+         * @param {Object} config A configuration object for the Plugin you wish to create.
+         * @param {Constructor} defaultType The constructor to provide the default Plugin type if
+         * the config object does not contain a <tt>ptype</tt>. (Optional if the config contains a <tt>ptype</tt>).
+         * @return {Ext.Component} The newly instantiated Plugin.
+         */
         createPlugin : function(config, defaultType){
             return new ptypes[config.ptype || defaultType](config);
         }
@@ -122,5 +138,13 @@ Ext.ComponentMgr = function(){
  * @method reg
  */
 Ext.reg = Ext.ComponentMgr.registerType; // this will be called a lot internally, shorthand to keep the bytes down
+/**
+ * Shorthand for {@link Ext.ComponentMgr#registerPlugin}
+ * @param {String} ptype The {@link Ext.component#ptype mnemonic string} by which the Plugin class
+ * may be looked up.
+ * @param {Constructor} cls The new Plugin class.
+ * @member Ext
+ * @method reg
+ */
 Ext.preg = Ext.ComponentMgr.registerPlugin;
 Ext.create = Ext.ComponentMgr.create;

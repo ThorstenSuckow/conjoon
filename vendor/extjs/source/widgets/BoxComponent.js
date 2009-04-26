@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,10 +9,9 @@
 /**
  * @class Ext.BoxComponent
  * @extends Ext.Component
- * <p>Base class for any {@link Ext.Component} that is to be sized as a box, using width and height. 
- * BoxComponent provides automatic box model adjustments for sizing and positioning and will work correctly
- * within the Component rendering model.  All {@link Ext.Container} Container classes should subclass
- * BoxComponent so that they will work consistently when nested within other Ext layout containers.</p>
+ * <p>Base class for any {@link Ext.Component Component} that is to be sized as a box, using width and height.</p>
+ * <p>BoxComponent provides automatic box model adjustments for sizing and positioning and will work correctly
+ * within the Component rendering model.</p>
  * <p>A BoxComponent may be created as a custom Component which encapsulates any HTML element, either a pre-existing
  * element, or one that is created to your specifications at render time. Usually, to participate in layouts,
  * a Component will need to be a <b>Box</b>Component in order to have its width and height managed.</p>

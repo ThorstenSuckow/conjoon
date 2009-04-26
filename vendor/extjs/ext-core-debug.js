@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -262,7 +262,7 @@ Ext.apply = function(o, c, defaults){
         },
         
         
-        isPrimitive: function(v){
+        isPrimitive : function(v){
             var t = typeof v;
             return t == 'string' || t == 'number' || t == 'boolean';
         },
@@ -312,7 +312,7 @@ Ext.apply = function(o, c, defaults){
         isAir : isAir
     });
 
-    // in intellij using keyword "namespace" causes parsing errors
+    
     Ext.ns = Ext.namespace;
 })();
 
@@ -406,6 +406,100 @@ Ext.applyIf(Array.prototype, {
     }
 });
 
+
+Ext.util.TaskRunner = function(interval){
+    interval = interval || 10;
+    var tasks = [], 
+    	removeQueue = [],
+    	id = 0,
+    	running = false,
+
+    	// private
+    	stopThread = function(){
+	        running = false;
+	        clearInterval(id);
+	        id = 0;
+	    },
+
+    	// private
+    	startThread = function(){
+	        if(!running){
+	            running = true;
+	            id = setInterval(runTasks, interval);
+	        }
+	    },
+
+    	// private
+    	removeTask = function(t){
+	        removeQueue.push(t);
+	        if(t.onStop){
+	            t.onStop.apply(t.scope || t);
+	        }
+	    },
+	    
+    	// private
+    	runTasks = function(){
+	    	var rqLen = removeQueue.length,
+	    		now = new Date().getTime();	    			    		
+	    
+	        if(rqLen > 0){
+	            for(var i = 0; i < rqLen; i++){
+	                tasks.remove(removeQueue[i]);
+	            }
+	            removeQueue = [];
+	            if(tasks.length < 1){
+	                stopThread();
+	                return;
+	            }
+	        }	        
+	        for(var i = 0, t, itime, rt, len = tasks.length; i < len; ++i){
+	            t = tasks[i];
+	            itime = now - t.taskRunTime;
+	            if(t.interval <= itime){
+	                rt = t.run.apply(t.scope || t, t.args || [++t.taskRunCount]);
+	                t.taskRunTime = now;
+	                if(rt === false || t.taskRunCount === t.repeat){
+	                    removeTask(t);
+	                    return;
+	                }
+	            }
+	            if(t.duration && t.duration <= (now - t.taskStartTime)){
+	                removeTask(t);
+	            }
+	        }
+	    };
+
+    
+    this.start = function(task){
+        tasks.push(task);
+        task.taskStartTime = new Date().getTime();
+        task.taskRunTime = 0;
+        task.taskRunCount = 0;
+        startThread();
+        return task;
+    };
+
+    
+    this.stop = function(task){
+        removeTask(task);
+        return task;
+    };
+
+    
+    this.stopAll = function(){
+        stopThread();
+        for(var i = 0, len = tasks.length; i < len; i++){
+            if(tasks[i].onStop){
+                tasks[i].onStop();
+            }
+        }
+        tasks = [];
+        removeQueue = [];
+    };
+};
+
+
+Ext.TaskMgr = new Ext.util.TaskRunner();
 (function(){
 	var libFlyweight;
 	
@@ -1988,6 +2082,285 @@ Ext.lib.Event = function() {
         window.attachEvent("onunload", fnCleanUp);
     }
 })();
+(function(){
+
+var EXTUTIL = Ext.util, 
+    TOARRAY = Ext.toArray, 
+    EACH = Ext.each, 
+    ISOBJECT = Ext.isObject,
+    TRUE = true,
+    FALSE = false;
+
+EXTUTIL.Observable = function(){
+    
+    var me = this, e = me.events;
+    if(me.listeners){
+        me.on(me.listeners);
+        delete me.listeners;
+    }
+    me.events = e || {};
+};
+
+EXTUTIL.Observable.prototype = function(){
+    var filterOptRe = /^(?:scope|delay|buffer|single)$/, toLower = function(s){
+        return s.toLowerCase();    
+    };
+        
+    return {
+        
+    
+        fireEvent : function(){
+            var a = TOARRAY(arguments),
+                ename = toLower(a[0]),
+                me = this,
+                ret = TRUE,
+                ce = me.events[ename],
+                q,
+                c;
+            if (me.eventsSuspended === TRUE) {
+                if (q = me.suspendedEventsQueue) {
+                    q.push(a);
+                }
+            }
+            else if(ISOBJECT(ce) && ce.bubble){
+                if(ce.fire.apply(ce, a.slice(1)) === FALSE) {
+                    return FALSE;
+                }
+                c = me.getBubbleTarget && me.getBubbleTarget();
+                if(c && c.enableBubble) {
+                    c.enableBubble(ename);
+                    return c.fireEvent.apply(c, a);
+                }
+            }
+            else {            
+                if (ISOBJECT(ce)) {
+                    a.shift();
+                    ret = ce.fire.apply(ce, a);
+                }
+            }
+            return ret;
+        },
+
+        
+        addListener : function(eventName, fn, scope, o){
+            var me = this,
+                e,
+                oe,
+                isF,
+            ce;
+            if (ISOBJECT(eventName)) {
+                o = eventName;
+                for (e in o){
+                    oe = o[e];
+                    if (!filterOptRe.test(e)) {
+                        me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);
+                    }
+                }
+            } else {
+                eventName = toLower(eventName);
+                ce = me.events[eventName] || TRUE;
+                if (typeof ce == "boolean") {
+                    me.events[eventName] = ce = new EXTUTIL.Event(me, eventName);
+                }
+                ce.addListener(fn, scope, ISOBJECT(o) ? o : {});
+            }
+        },
+
+        
+        removeListener : function(eventName, fn, scope){
+            var ce = this.events[toLower(eventName)];
+            if (ISOBJECT(ce)) {
+                ce.removeListener(fn, scope);
+            }
+        },
+
+        
+        purgeListeners : function(){
+            var events = this.events,
+                evt,
+                key;
+            for(key in events){
+                evt = events[key];
+                if(ISOBJECT(evt)){
+                    evt.clearListeners();
+                }
+            }
+        },
+
+        
+        addEvents : function(o){
+            var me = this;
+            me.events = me.events || {};
+            if (typeof o == 'string') {
+                EACH(arguments, function(a) {
+                    me.events[a] = me.events[a] || TRUE;
+                });
+            } else {
+                Ext.applyIf(me.events, o);
+            }
+        },
+
+        
+        hasListener : function(eventName){
+            var e = this.events[eventName];
+            return ISOBJECT(e) && e.listeners.length > 0;
+        },
+
+        
+        suspendEvents : function(queueSuspended){
+            this.eventsSuspended = TRUE;
+            if (queueSuspended){
+                this.suspendedEventsQueue = [];
+            }
+        },
+
+        
+        resumeEvents : function(){
+            var me = this;
+            me.eventsSuspended = !delete me.suspendedEventQueue;
+            EACH(me.suspendedEventsQueue, function(e) {
+                me.fireEvent.apply(me, e);
+            });
+        }
+    }
+}();
+
+var OBSERVABLE = EXTUTIL.Observable.prototype;
+
+OBSERVABLE.on = OBSERVABLE.addListener;
+
+OBSERVABLE.un = OBSERVABLE.removeListener;
+
+
+EXTUTIL.Observable.releaseCapture = function(o){
+    o.fireEvent = OBSERVABLE.fireEvent;
+};
+
+function createTargeted(h, o, scope){
+    return function(){
+        if(o.target == arguments[0]){
+            h.apply(scope, TOARRAY(arguments));
+        }
+    };
+};
+
+function createBuffered(h, o, scope){
+    var task = new EXTUTIL.DelayedTask();
+    return function(){
+        task.delay(o.buffer, h, scope, TOARRAY(arguments));
+    };
+}
+    
+function createSingle(h, e, fn, scope){
+    return function(){
+        e.removeListener(fn, scope);
+        return h.apply(scope, arguments);
+    };
+}
+    
+function createDelayed(h, o, scope){
+    return function(){
+        var args = TOARRAY(arguments);
+        (function(){
+            h.apply(scope, args);
+        }).defer(o.delay || 10);
+    };
+};
+
+EXTUTIL.Event = function(obj, name){
+    this.name = name;
+    this.obj = obj;
+    this.listeners = [];
+};
+
+EXTUTIL.Event.prototype = {
+    addListener : function(fn, scope, options){
+        var me = this,
+            l;
+        scope = scope || me.obj;
+        if(!me.isListening(fn, scope)){
+            l = me.createListener(fn, scope, options);
+            if(me.firing){ // if we are currently firing this event, don't disturb the listener loop                                    
+                me.listeners = me.listeners.slice(0);                
+            }
+            me.listeners.push(l);
+        }
+    },
+
+    createListener: function(fn, scope, o){
+        o = o || {}, scope = scope || this.obj;
+        var l = {
+            fn: fn,
+            scope: scope,
+            options: o
+        }, h = fn;
+        if(o.target){
+            h = createTargeted(h, o, scope);
+        }
+        if(o.delay){
+            h = createDelayed(h, o, scope);
+        }
+        if(o.single){
+            h = createSingle(h, this, fn, scope);
+        }
+        if(o.buffer){
+            h = createBuffered(h, o, scope);
+        }
+        l.fireFn = h;
+        return l;
+    },
+
+    findListener : function(fn, scope){ 
+        var s, ret = -1;
+        EACH(this.listeners, function(l, i) {
+            s = l.scope;
+            if(l.fn == fn && (s == scope || s == this.obj)){
+                ret = i;
+                return FALSE;
+            }
+        },
+        this);
+        return ret;
+    },
+
+    isListening : function(fn, scope){
+        return this.findListener(fn, scope) != -1;
+    },
+
+    removeListener : function(fn, scope){
+        var index,
+            me = this,
+            ret = FALSE;
+        if((index = me.findListener(fn, scope)) != -1){
+            if (me.firing) {
+                me.listeners = me.listeners.slice(0);
+            }
+            me.listeners.splice(index, 1);
+            ret = TRUE;
+        }
+        return ret;
+    },
+
+    clearListeners : function(){
+        this.listeners = [];
+    },
+
+    fire : function(){
+        var me = this,
+            args = TOARRAY(arguments),
+            ret = TRUE;
+
+        EACH(me.listeners, function(l) {
+            me.firing = TRUE;
+            if (l.fireFn.apply(l.scope || me.obj || window, args) === FALSE) {
+                return ret = me.firing = FALSE;
+            }
+        });
+        me.firing = FALSE;
+        return ret;
+    }
+};
+})();
 
 Ext.DomHelper = function(){
     var tempTableEl = null,
@@ -2991,285 +3364,6 @@ Ext.DomQuery = function(){
 
 Ext.query = Ext.DomQuery.select;
 
-(function(){
-
-var EXTUTIL = Ext.util, 
-    TOARRAY = Ext.toArray, 
-    EACH = Ext.each, 
-    ISOBJECT = Ext.isObject,
-    TRUE = true,
-    FALSE = false;
-
-EXTUTIL.Observable = function(){
-    
-    var me = this, e = me.events;
-    if(me.listeners){
-        me.on(me.listeners);
-        delete me.listeners;
-    }
-    me.events = e || {};
-};
-
-EXTUTIL.Observable.prototype = function(){
-    var filterOptRe = /^(?:scope|delay|buffer|single)$/, toLower = function(s){
-        return s.toLowerCase();    
-    };
-        
-    return {
-        
-    
-        fireEvent : function(){
-            var a = TOARRAY(arguments),
-                ename = toLower(a[0]),
-                me = this,
-                ret = TRUE,
-                ce = me.events[ename],
-                q,
-                c;
-            if (me.eventsSuspended === TRUE) {            
-                if (q = me.suspendedEventsQueue) {
-                    q.push(a);
-                }
-            }
-            else if(ISOBJECT(ce) && ce.bubble){
-                if(ce.fire.apply(ce, a.slice(1)) === FALSE) {
-                    return FALSE;
-                }
-                c = me.getBubbleTarget && me.getBubbleTarget();
-                if(c && c.enableBubble) {
-                    c.enableBubble(ename);
-                    return c.fireEvent.apply(c, a);
-                }
-            }
-            else {            
-                if (ISOBJECT(ce)) {
-                    a.shift();
-                    ret = ce.fire.apply(ce, a);
-                }
-            }
-            return ret;
-        },
-    
-        
-        addListener : function(eventName, fn, scope, o){
-            var me = this,
-                e,
-                oe,
-                isF,
-            ce;
-            if (ISOBJECT(eventName)) {
-                o = eventName;
-                for (e in o){                    
-                    oe = o[e];
-                    if (!filterOptRe.test(e)) {                    
-                        me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);              
-                    }
-                }            
-            } else {            
-                eventName = toLower(eventName);
-                ce = me.events[eventName] || TRUE;
-                if (typeof ce == "boolean") {                
-                    me.events[eventName] = ce = new EXTUTIL.Event(me, eventName);
-                }
-                ce.addListener(fn, scope, ISOBJECT(o) ? o : {});
-            }
-        },
-    
-        
-        removeListener : function(eventName, fn, scope){
-            var ce = this.events[toLower(eventName)];
-            if (ISOBJECT(ce)) {
-                ce.removeListener(fn, scope);
-            }
-        },
-    
-        
-        purgeListeners : function(){
-            var events = this.events,
-                evt,
-                key;                
-            for(key in events){
-                evt = events[key];
-                if(ISOBJECT(evt)){
-                    evt.clearListeners();               
-                }
-            }
-        },        
-    
-        
-        addEvents : function(o){
-            var me = this;
-            me.events = me.events || {};        
-            if (typeof o == 'string') {            
-                EACH(arguments, function(a) {
-                    me.events[a] = me.events[a] || TRUE;
-                });
-            } else {
-                Ext.applyIf(me.events, o);
-            }
-        },
-    
-        
-        hasListener : function(eventName){
-            var e = this.events[eventName];
-            return ISOBJECT(e) && e.listeners.length > 0;
-        },
-    
-        
-        suspendEvents : function(queueSuspended){
-            this.eventsSuspended = TRUE;
-            if (queueSuspended){
-                this.suspendedEventsQueue = [];         
-            }
-        },
-    
-        
-        resumeEvents : function(){
-            var me = this;
-            me.eventsSuspended = !delete me.suspendedEventQueue;        
-            EACH(me.suspendedEventsQueue, function(e) {
-                me.fireEvent.apply(me, e);
-            });     
-        }
-    }
-}();
-
-var OBSERVABLE = EXTUTIL.Observable.prototype;
-
-OBSERVABLE.on = OBSERVABLE.addListener;
-
-OBSERVABLE.un = OBSERVABLE.removeListener;
-
-
-EXTUTIL.Observable.releaseCapture = function(o){
-    o.fireEvent = OBSERVABLE.fireEvent;
-};
-
-function createTargeted(h, o, scope){
-    return function(){
-        if(o.target == arguments[0]){
-            h.apply(scope, TOARRAY(arguments));
-        }
-    };
-};
-
-function createBuffered(h, o, scope){
-    var task = new EXTUTIL.DelayedTask();
-    return function(){
-        task.delay(o.buffer, h, scope, TOARRAY(arguments));
-    };
-}
-    
-function createSingle(h, e, fn, scope){
-    return function(){
-        e.removeListener(fn, scope);
-        return h.apply(scope, arguments);
-    };
-}
-    
-function createDelayed(h, o, scope){
-    return function(){
-        var args = TOARRAY(arguments);
-        (function(){
-            h.apply(scope, args);
-        }).defer(o.delay || 10);
-    };
-};
-
-EXTUTIL.Event = function(obj, name){
-    this.name = name;
-    this.obj = obj;
-    this.listeners = [];
-};
-
-EXTUTIL.Event.prototype = {
-    addListener : function(fn, scope, options){
-        var me = this,
-            l;
-        scope = scope || me.obj;
-        if(!me.isListening(fn, scope)){
-            l = me.createListener(fn, scope, options);
-            if(me.firing){ // if we are currently firing this event, don't disturb the listener loop                                    
-                me.listeners = me.listeners.slice(0);                
-            }
-            me.listeners.push(l);
-        }
-    },
-
-    createListener: function(fn, scope, o){
-        o = o || {}, scope = scope || this.obj;
-        var l = {
-            fn: fn,
-            scope: scope,
-            options: o
-        }, h = fn;
-        if(o.target){
-            h = createTargeted(h, o, scope);
-        }
-        if(o.delay){
-            h = createDelayed(h, o, scope);
-        }
-        if(o.single){
-            h = createSingle(h, this, fn, scope);
-        }
-        if(o.buffer){
-            h = createBuffered(h, o, scope);
-        }
-        l.fireFn = h;
-        return l;
-    },
-
-    findListener : function(fn, scope){ 
-        var s, ret = -1                    
-        EACH(this.listeners, function(l, i) {
-            s = l.scope;
-            if(l.fn == fn && (s == scope || s == this.obj)){
-                ret = i;
-                return FALSE;
-            }
-        },
-        this);
-        return ret;
-    },
-
-    isListening : function(fn, scope){
-        return this.findListener(fn, scope) != -1;
-    },
-
-    removeListener : function(fn, scope){
-        var index,
-            me = this,
-            ret = FALSE;
-        if((index = me.findListener(fn, scope)) != -1){                
-            if (me.firing) {
-                me.listeners = me.listeners.slice(0);
-            }
-            me.listeners.splice(index, 1);
-            ret = TRUE;
-        }
-        return ret;
-    },
-
-    clearListeners : function(){
-        this.listeners = [];
-    },
-
-    fire : function(){
-        var me = this,                                
-            args = TOARRAY(arguments),
-            ret = TRUE;                                                 
-        
-        EACH(me.listeners, function(l) {
-            me.firing = TRUE;
-            if (l.fireFn.apply(l.scope || me.obj || window, args) === FALSE) {
-                return ret = me.firing = FALSE;
-            }
-        });
-        me.firing = FALSE;
-        return ret;
-    }
-};
-})();
 
 Ext.EventManager = function(){
     var docReadyEvent, 
@@ -3674,9 +3768,13 @@ Ext.EventObject = function(){
 
         
         getKey : function(){
-            var k = this.keyCode || this.charCode;
-            return Ext.isSafari ? (safariKeys[k] || k) : k;
+            return this.normalizeKey(this.keyCode || this.charCode)
         },
+		
+		// private
+		normalizeKey: function(k){
+			return Ext.isSafari ? (safariKeys[k] || k) : k; 
+		},
 
         
         getPageX : function(){
@@ -5913,7 +6011,7 @@ Ext.select = Ext.Element.select;
 	                        r.responseText = doc.body.innerHTML;
 	                    }
 	            	} else {
-		            	responseXML = doc.XMLDocument || doc;
+		            	r.responseXML = doc.XMLDocument || doc;
 		           	}
                 }
             }
@@ -6109,7 +6207,7 @@ Ext.util.DelayedTask = function(fn, scope, args){
 
 Ext.util.JSON = new (function(){
     var useHasOwn = !!{}.hasOwnProperty,
-        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString == '[object JSON]';
+        isNative = Ext.USE_NATIVE_JSON && JSON && JSON.toString() == '[object JSON]';
 
     // crashes Safari in some instances
     //var validRE = /^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/;
@@ -6214,7 +6312,7 @@ Ext.util.JSON = new (function(){
     };
 
     
-    this.decode = isNative ? JSON.stringify : function(json){
+    this.decode = isNative ? JSON.parse : function(json){
         return eval("(" + json + ')');    
     };
 })();
@@ -6223,97 +6321,3 @@ Ext.encode = Ext.util.JSON.encode;
 
 Ext.decode = Ext.util.JSON.decode;
 
-
-Ext.util.TaskRunner = function(interval){
-    interval = interval || 10;
-    var tasks = [], 
-    	removeQueue = [],
-    	id = 0,
-    	running = false,
-
-    	// private
-    	stopThread = function(){
-	        running = false;
-	        clearInterval(id);
-	        id = 0;
-	    },
-
-    	// private
-    	startThread = function(){
-	        if(!running){
-	            running = true;
-	            id = setInterval(runTasks, interval);
-	        }
-	    },
-
-    	// private
-    	removeTask = function(t){
-	        removeQueue.push(t);
-	        if(t.onStop){
-	            t.onStop.apply(t.scope || t);
-	        }
-	    },
-	    
-    	// private
-    	runTasks = function(){
-	    	var rqLen = removeQueue.length,
-	    		now = new Date().getTime();	    			    		
-	    
-	        if(rqLen > 0){
-	            for(var i = 0; i < rqLen; i++){
-	                tasks.remove(removeQueue[i]);
-	            }
-	            removeQueue = [];
-	            if(tasks.length < 1){
-	                stopThread();
-	                return;
-	            }
-	        }	        
-	        for(var i = 0, t, itime, rt, len = tasks.length; i < len; ++i){
-	            t = tasks[i];
-	            itime = now - t.taskRunTime;
-	            if(t.interval <= itime){
-	                rt = t.run.apply(t.scope || t, t.args || [++t.taskRunCount]);
-	                t.taskRunTime = now;
-	                if(rt === false || t.taskRunCount === t.repeat){
-	                    removeTask(t);
-	                    return;
-	                }
-	            }
-	            if(t.duration && t.duration <= (now - t.taskStartTime)){
-	                removeTask(t);
-	            }
-	        }
-	    };
-
-    
-    this.start = function(task){
-        tasks.push(task);
-        task.taskStartTime = new Date().getTime();
-        task.taskRunTime = 0;
-        task.taskRunCount = 0;
-        startThread();
-        return task;
-    };
-
-    
-    this.stop = function(task){
-        removeTask(task);
-        return task;
-    };
-
-    
-    this.stopAll = function(){
-        stopThread();
-        for(var i = 0, len = tasks.length; i < len; i++){
-            if(tasks[i].onStop){
-                tasks[i].onStop();
-            }
-        }
-        tasks = [];
-        removeQueue = [];
-    };
-};
-
-
-Ext.TaskMgr = new Ext.util.TaskRunner();

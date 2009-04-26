@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -619,9 +619,16 @@ tb.{@link #doLayout}();             // refresh the layout
      */
     removeAll: function(autoDestroy){
         this.initItems();
-        var item, items = [];
-        while((item = this.items.last())){
-            items.unshift(this.remove(item, autoDestroy));
+        var item, rem = [], items = [];
+        this.items.each(function(i){
+            rem.push(i)
+        });
+        for (var i = 0, len = rem.length; i < len; ++i){
+            item = rem[i];
+            this.remove(item, autoDestroy);
+            if(item.ownerCt !== this){
+                items.push(item);
+            }
         }
         return items;
     },

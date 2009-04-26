@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,57 +9,53 @@
 /**
  * @class Ext.data.JsonWriter
  * @extends Ext.data.DataWriter
- * Data reader class to create an Array of {@link Ext.data.Record} objects from a JSON response
+ * DataWriter extension for writing an array or single {@link Ext.data.Record} object(s) in preparation for executing a remote CRUD action.
  */
 Ext.data.JsonWriter = Ext.extend(Ext.data.DataWriter, {
-	/**
-	 * @cfg {Boolean} returnJson <tt>false</tt> to {@link Ext.util.JSON#encode encode} the
-	 * {@link Ext.data.DataWriter#toHash hashed data}. Defaults to <tt>false</tt>, returning
-	 * the hashed data without encoding.  When using {@link Ext.data.DirectProxy}, set this to <tt>true</tt>
-	 * since Ext.Direct will perform its own json-encoding.
-	 */
-	returnJson : true,
+    /**
+     * @cfg {Boolean} returnJson <tt>true</tt> to {@link Ext.util.JSON#encode encode} the
+     * {@link Ext.data.DataWriter#toHash hashed data}. Defaults to <tt>true</tt>.  When using
+     * {@link Ext.data.DirectProxy}, set this to <tt>false</tt> since Ext.Direct.JsonProvider will perform
+     * its own json-encoding.
+     */
+    returnJson : true,
 
-	/**
-	 * writeRecord
-	 * @param {Ext.data.Record} rec
-	 * @return {Object}
-	 */
-	writeRecord : function(rec) {
-		var data = this.toHash(rec);
-		return (this.returnJson === true) ? Ext.encode(data) : data;
-	},
+    /**
+     * Final action of a write event.  Apply the written data-object to params.
+     * @param {String} action [Ext.data.Api.CREATE|READ|UPDATE|DESTROY]
+     * @param {Record[]} rs
+     * @param {Object} http params
+     * @param {Object} data object populated according to DataReader meta-data "root" and "idProperty"
+     */
+    render : function(action, rs, params, data) {
+        Ext.apply(params, data);
+        if (this.returnJson) {
+            if (Ext.isArray(rs) && data[this.meta.idProperty]) {
+                params[this.meta.idProperty] = Ext.encode(params[this.meta.idProperty]);
+            }
+            params[this.meta.root] = Ext.encode(params[this.meta.root]);
+        }
+    },
+    /**
+     * createRecord
+     * @param {Ext.data.Record} rec
+     */
+    createRecord : function(rec) {
+        return this.toHash(rec);
+    },
+    /**
+     * updateRecord
+     * @param {Ext.data.Record} rec
+     */
+    updateRecord : function(rec) {
+        return this.toHash(rec);
 
-	createRecord : function(rec) {
-		var data = this.toHash(rec);
-		delete data[this.meta.idProperty];
-		return (this.returnJson === true) ? Ext.encode(data) : data;
-	},
-
-	save : function(p, rs) {
-		Ext.data.JsonWriter.superclass.save.apply(this, arguments);
-		if (this.returnJson) {
-			if (Ext.isArray(rs)) {
-				p[this.meta.idProperty] = Ext.encode(p[this.meta.idProperty]);
-			}
-			p[this.dataProperty] = Ext.encode(p[this.dataProperty]);
-		}
-	},
-
-	saveRecord : function(rec) {
-		return this.toHash(rec);
-
-	},
-
-	destroy : function(p, rs) {
-		Ext.data.JsonWriter.superclass.destroy.apply(this, arguments);
-		if (this.returnJson) {
-			p[this.dataProperty] = Ext.encode(p[this.dataProperty]);
-		}
-
-	},
-
-	destroyRecord : function(rec) {
-		return rec.id
-	}
+    },
+    /**
+     * destroyRecord
+     * @param {Ext.data.Record} rec
+     */
+    destroyRecord : function(rec) {
+        return rec.id
+    }
 });

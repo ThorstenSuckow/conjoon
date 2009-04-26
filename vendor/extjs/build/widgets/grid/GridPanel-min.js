@@ -1,13 +1,13 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
 
-Ext.grid.GridPanel=Ext.extend(Ext.Panel,{ddText:"{0} selected row{1}",minColumnWidth:25,trackMouseOver:true,enableDragDrop:false,enableColumnMove:true,enableColumnHide:true,enableHdMenu:true,stripeRows:false,autoExpandColumn:false,autoExpandMin:50,autoExpandMax:1000,view:null,loadMask:false,columnLines:false,deferRowRender:true,rendered:false,viewReady:false,stateEvents:["columnmove","columnresize","sortchange"],initComponent:function(){Ext.grid.GridPanel.superclass.initComponent.call(this);if(this.columnLines){this.cls=(this.cls||'')+' x-grid-with-col-lines';}
+Ext.grid.GridPanel=Ext.extend(Ext.Panel,{autoExpandColumn:false,autoExpandMax:1000,autoExpandMin:50,columnLines:false,ddText:"{0} selected row{1}",deferRowRender:true,enableColumnHide:true,enableColumnMove:true,enableDragDrop:false,enableHdMenu:true,loadMask:false,minColumnWidth:25,stripeRows:false,trackMouseOver:true,stateEvents:["columnmove","columnresize","sortchange"],view:null,rendered:false,viewReady:false,initComponent:function(){Ext.grid.GridPanel.superclass.initComponent.call(this);if(this.columnLines){this.cls=(this.cls||'')+' x-grid-with-col-lines';}
 this.autoScroll=false;this.autoWidth=false;if(Ext.isArray(this.columns)){this.colModel=new Ext.grid.ColumnModel(this.columns);delete this.columns;}
 if(this.ds){this.store=this.ds;delete this.ds;}
 if(this.cm){this.colModel=this.cm;delete this.cm;}

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -50,8 +50,8 @@ var myBorderPanel = new Ext.Panel({
     },{
         {@link Ext.Panel#title title}: 'Center Region',
         {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}: 'center',     // center region is required, no width/height specified
-    	{@link Ext.Component#xtype xtype}: 'container',
-    	{@link Ext.Container#layout layout}: 'fit',
+        {@link Ext.Component#xtype xtype}: 'container',
+        {@link Ext.Container#layout layout}: 'fit',
         {@link Ext.layout.BorderLayout.Region#margins margins}: '5 5 0 0'
     }]
 });
@@ -63,28 +63,25 @@ var myBorderPanel = new Ext.Panel({
  * <li>Any child items with a region of <tt>west</tt> or <tt>east</tt> must have <tt>width</tt> defined
  * (an integer representing the number of pixels that the region should take up).</li>
  * <li>Any child items with a region of <tt>north</tt> or <tt>south</tt> must have <tt>height</tt> defined.</li>
- * <li>The regions of a BorderLayout are <b>fixed at render time</b> and thereafter.  Containers
- * <b>directly</b> managed by BorderLayout may not be removed or added</b>.  To add/remove
- * Containers within a BorderLayout have them wrapped by an additional Container which is directly
+ * <li>The regions of a BorderLayout are <b>fixed at render time</b> and thereafter, its child Components may not be removed or added</b>.  To add/remove
+ * Components within a BorderLayout, have them wrapped by an additional Container which is directly
  * managed by the BorderLayout.  If the region is to be collapsible, the Container used directly
  * by the BorderLayout manager should be a Panel.  In the following example a Container (an Ext.Panel)
  * is added to the west region:
- * <pre><code>
+ * <div style="margin-left:16px"><pre><code>
 wrc = {@link Ext#getCmp Ext.getCmp}('west-region-container');
-wrc.{@link Ext.Panel#collapse collapse}();
+wrc.{@link Ext.Panel#removeAll removeAll}();
 wrc.{@link Ext.Container#add add}({
     title: 'Added Panel',
     html: 'Some content'
 });
 wrc.{@link Ext.Container#doLayout doLayout}();
-wrc.{@link Ext.Panel#expand expand}();
- * </code></pre>
+ * </code></pre></div>
  * </li>
  * <li> To reference a {@link Ext.layout.BorderLayout.Region Region}:
- * <pre><code>
+ * <div style="margin-left:16px"><pre><code>
 wr = myBorderPanel.layout.west;
-
- * </code></pre>
+ * </code></pre></div>
  * </li>
  * </ul></div>
  */

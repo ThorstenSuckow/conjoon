@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -1662,6 +1662,8 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
     
     selectedClass : 'x-combo-selected',
     
+    listEmptyText: '',
+    
     triggerClass : 'x-form-arrow-trigger',
     
     shadow : 'sides',
@@ -1734,7 +1736,7 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
                 for(var i = 0, len = opts.length;i < len; i++){
                     var o = opts[i];
                     var value = (o.hasAttribute ? o.hasAttribute('value') : o.getAttribute('value') !== null) ? o.value : o.text;
-                    if(o.selected && !Ext.isEmpty(this.value, true)) {
+                    if(o.selected && Ext.isEmpty(this.value, true)) {
                         this.value = value;
                     }
                     d.push([value, o.text]);
@@ -1873,7 +1875,8 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
                 tpl: this.tpl,
                 singleSelect: true,
                 selectedClass: this.selectedClass,
-                itemSelector: this.itemSelector || '.' + cls + '-item'
+                itemSelector: this.itemSelector || '.' + cls + '-item',
+                emptyText: this.listEmptyText
             });
 			
             this.mon(this.view, 'click', this.onViewClick, this);

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -167,66 +167,64 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
      * @type Number
      * @property cursor
      */
-    
-    // private
-    constructor: function(config) {
-	    var pagingItems = [this.first = new T.Button({
-	        tooltip: this.firstText,
-	        iconCls: "x-tbar-page-first",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), this.prev = new T.Button({
-	        tooltip: this.prevText,
-	        iconCls: "x-tbar-page-prev",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), '-', this.beforePageText,
-	    this.inputItem = new T.Item({
-	    	height: 18,
-	    	autoEl: {
-		        tag: "input",
-		        type: "text",
-		        size: "3",
-		        value: "1",
-		        cls: "x-tbar-page-number"
-		    }
-	    }), this.afterTextItem = new T.TextItem({
-	    	text: String.format(this.afterPageText, 1)
-	    }), '-', this.next = new T.Button({
+
+    initComponent: function(){
+        var pagingItems = [this.first = new T.Button({
+            tooltip: this.firstText,
+            iconCls: "x-tbar-page-first",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), this.prev = new T.Button({
+            tooltip: this.prevText,
+            iconCls: "x-tbar-page-prev",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), '-', this.beforePageText,
+        this.inputItem = new T.Item({
+            height: 18,
+            autoEl: {
+                tag: "input",
+                type: "text",
+                size: "3",
+                value: "1",
+                cls: "x-tbar-page-number"
+            }
+        }), this.afterTextItem = new T.TextItem({
+            text: String.format(this.afterPageText, 1)
+        }), '-', this.next = new T.Button({
             tooltip: this.nextText,
-	        iconCls: "x-tbar-page-next",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), this.last = new T.Button({
-	        tooltip: this.lastText,
-	        iconCls: "x-tbar-page-last",
-	        disabled: true,
-	        handler: this.onClick,
-	        scope: this
-	    }), '-', this.refresh = new T.Button({
-	        tooltip: this.refreshText,
-	        iconCls: "x-tbar-loading",
-	        handler: this.onClick,
-	        scope: this
-	    })];
+            iconCls: "x-tbar-page-next",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), this.last = new T.Button({
+            tooltip: this.lastText,
+            iconCls: "x-tbar-page-last",
+            disabled: true,
+            handler: this.onClick,
+            scope: this
+        }), '-', this.refresh = new T.Button({
+            tooltip: this.refreshText,
+            iconCls: "x-tbar-loading",
+            handler: this.onClick,
+            scope: this
+        })];
 
 
-        var userItems = config.items || config.buttons || [];
-        if (config.prependButtons) {
-            config.items = userItems.concat(pagingItems);
+        var userItems = this.items || this.buttons || [];
+        if (this.prependButtons) {
+            this.items = userItems.concat(pagingItems);
         }else{
-            config.items = pagingItems.concat(userItems);
+            this.items = pagingItems.concat(userItems);
         }
-	    delete config.buttons;
-	    if(config.displayInfo){
-            config.items.push('->');
-            config.items.push(this.displayItem = new T.TextItem({}));
+        delete this.buttons;
+        if(this.displayInfo){
+            this.items.push('->');
+            this.items.push(this.displayItem = new T.TextItem({}));
         }
-	    Ext.PagingToolbar.superclass.constructor.apply(this, arguments);
-
+        Ext.PagingToolbar.superclass.initComponent.call(this);
         this.addEvents(
             /**
              * @event change
@@ -258,14 +256,9 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
              */
             'beforechange'
         );
-
+        this.on('afterlayout', this.onFirstLayout, this, {single: true});
         this.cursor = 0;
         this.bindStore(this.store);
-	},
-    
-    initComponent: function(){
-        Ext.PagingToolbar.superclass.initComponent.call(this);
-        this.on('afterlayout', this.onFirstLayout, this, {single: true});
     },
 
     // private

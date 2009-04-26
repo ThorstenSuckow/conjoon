@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -36,5 +36,5 @@ me.browserEvent=e;if(e){me.button=e.button?btnMap[e.button]:(e.which?e.which-1:-
 me.type=e.type;me.shiftKey=e.shiftKey;me.ctrlKey=e.ctrlKey||e.metaKey;me.altKey=e.altKey;me.keyCode=e.keyCode;me.charCode=e.charCode;me.target=E.getTarget(e);me.xy=E.getXY(e);}else{me.button=-1;me.shiftKey=false;me.ctrlKey=false;me.altKey=false;me.keyCode=0;me.charCode=0;me.target=null;me.xy=[0,0];}
 return me;},stopEvent:function(){var me=this;if(me.browserEvent){if(me.browserEvent.type=='mousedown'){Ext.EventManager.stoppedMouseDownEvent.fire(me);}
 E.stopEvent(me.browserEvent);}},preventDefault:function(){if(this.browserEvent){E.preventDefault(this.browserEvent);}},stopPropagation:function(){var me=this;if(me.browserEvent){if(me.browserEvent.type=='mousedown'){Ext.EventManager.stoppedMouseDownEvent.fire(me);}
-E.stopPropagation(me.browserEvent);}},getCharCode:function(){return this.charCode||this.keyCode;},getKey:function(){var k=this.keyCode||this.charCode;return Ext.isSafari?(safariKeys[k]||k):k;},getPageX:function(){return this.xy[0];},getPageY:function(){return this.xy[1];},getXY:function(){return this.xy;},getTarget:function(selector,maxDepth,returnEl){return selector?Ext.fly(this.target).findParent(selector,maxDepth,returnEl):(returnEl?Ext.get(this.target):this.target);},getRelatedTarget:function(){return this.browserEvent?E.getRelatedTarget(this.browserEvent):null;},getWheelDelta:function(){var e=this.browserEvent;var delta=0;if(e.wheelDelta){delta=e.wheelDelta/120;}else if(e.detail){delta=-e.detail/3;}
+E.stopPropagation(me.browserEvent);}},getCharCode:function(){return this.charCode||this.keyCode;},getKey:function(){return this.normalizeKey(this.keyCode||this.charCode)},normalizeKey:function(k){return Ext.isSafari?(safariKeys[k]||k):k;},getPageX:function(){return this.xy[0];},getPageY:function(){return this.xy[1];},getXY:function(){return this.xy;},getTarget:function(selector,maxDepth,returnEl){return selector?Ext.fly(this.target).findParent(selector,maxDepth,returnEl):(returnEl?Ext.get(this.target):this.target);},getRelatedTarget:function(){return this.browserEvent?E.getRelatedTarget(this.browserEvent):null;},getWheelDelta:function(){var e=this.browserEvent;var delta=0;if(e.wheelDelta){delta=e.wheelDelta/120;}else if(e.detail){delta=-e.detail/3;}
 return delta;},within:function(el,related,allowEl){var t=this[related?"getRelatedTarget":"getTarget"]();return t&&((allowEl?(t==Ext.getDom(el)):false)||Ext.fly(el).contains(t));}};return new Ext.EventObjectImpl();}();

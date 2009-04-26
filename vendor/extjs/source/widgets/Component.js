@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 RC1
- * Copyright(c) 2006-2009, Ext JS, LLC.
+ * Ext JS Library 3.0 Pre-alpha
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -18,6 +18,8 @@
  * {@link Ext#getCmp}, passing the {@link #id}.</p>
  * <p>All user-developed visual widgets that are required to participate in automated lifecycle and size management should subclass Component (or
  * {@link Ext.BoxComponent} if managed box model handling is required, ie height and width management).</p>
+ * <p>See the <a href="http://extjs.com/learn/Tutorial:Creating_new_UI_controls">Creating new UI controls</a> tutorial for details on how
+ * and to either extend or augment ExtJs base classes to create custom Components.</p>
  * <p>Every component has a specific xtype, which is its Ext-specific type name, along with methods for checking the
  * xtype like {@link #getXType} and {@link #isXType}. This is the list of all valid xtypes:</p>
  * <pre>
@@ -469,16 +471,28 @@ p2 = p1.{@link #ownerCt}.{@link Ext.Container#getComponent getComponent}('p2'); 
      */
     /**
      * @cfg {String} xtype
-     * The registered xtype to create. This config option is not used when passing
+     * The registered <tt>xtype</tt> to create. This config option is not used when passing
      * a config object into a constructor. This config option is used only when
      * lazy instantiation is being used, and a child item of a Container is being
      * specified not as a fully instantiated Component, but as a <i>Component config
-     * object</i>. The xtype will be looked up at render time up to determine what
+     * object</i>. The <tt>xtype</tt> will be looked up at render time up to determine what
      * type of child Component to create.<br><br>
      * The predefined xtypes are listed {@link Ext.Component here}.
      * <br><br>
      * If you subclass Components to create your own Components, you may register
      * them using {@link Ext.ComponentMgr#registerType} in order to be able to
+     * take advantage of lazy instantiation and rendering.
+     */
+    /**
+     * @cfg {String} ptype
+     * The registered <tt>ptype</tt> to create. This config option is not used when passing
+     * a config object into a constructor. This config option is used only when
+     * lazy instantiation is being used, and a Plugin is being
+     * specified not as a fully instantiated Component, but as a <i>Component config
+     * object</i>. The <tt>ptype</tt> will be looked up at render time up to determine what
+     * type of Plugin to create.<br><br>
+     * If you create your own Plugins, you may register them using
+     * {@link Ext.ComponentMgr#registerPlugin} in order to be able to
      * take advantage of lazy instantiation and rendering.
      */
     /**
@@ -496,6 +510,29 @@ p2 = p1.{@link #ownerCt}.{@link Ext.Container#getComponent getComponent}('p2'); 
      * @cfg {String} style
      * A custom style specification to be applied to this component's Element.  Should be a valid argument to
      * {@link Ext.Element#applyStyles}.
+     * <pre><code>
+new Ext.Panel({
+    title: 'Some Title',
+    renderTo: Ext.getBody(),
+    width: 400, height: 300,
+    layout: 'form',
+    items: [{
+        xtype: 'textarea',
+        style: {
+            width: '95%',
+            marginBottom: '10px'
+        }
+    },
+        new Ext.Button({
+            text: 'Send',
+            minWidth: '100',
+            style: {
+                marginBottom: '10px'
+            }
+        })
+    ]
+});
+     * </code></pre>
      */
     /**
      * @cfg {String} ctCls
@@ -853,6 +890,34 @@ Ext.Foo = Ext.extend(Ext.Bar, {
     },
 
     initRef : function(){
+        /**
+         * @cfg {String} ref
+         * <p>A path specification, relative to the Component's {@link #ownerCt} specifying into which
+         * ancestor Container to place a named reference to this Component.</p>
+         * <p>The ancestor axis can be traversed by using '/' characters in the path.
+         * For example, to put a reference to a Toolbar Button into <i>the Panel which owns the Toolbar</i>:</p><pre><code>
+var myGrid = new Ext.grid.EditorGridPanel({
+    title: 'My EditorGridPanel',
+    store: myStore,
+    colModel: myColModel,
+    tbar: [{
+        text: 'Save',
+        handler: saveChanges,
+        disabled: true,
+        ref: '../saveButton'
+    }],
+    listeners: {
+        afteredit: function() {
+//          The button reference is in the GridPanel
+            myGrid.saveButton.enable();
+        }
+    }
+});
+</code></pre>
+         * <p>In the code above, if the ref had been <code>'saveButton'</code> the reference would
+         * have been placed into the Toolbar. Each '/' in the ref moves up one level from the
+         * Component's {@link #ownerCt}.</p>
+         */
         if(this.ref){
             var levels = this.ref.split('/');
             var last = levels.length, i = 0;
@@ -1336,7 +1401,7 @@ alert(t.getXTypes());  // alerts 'component/box/field/textfield'
             }, this, {single: true});
         }
 		
-        if(typeof ename == "object"){
+        if(Ext.isObject(ename)){
         	var propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/;
         	
             var o = ename;
@@ -1344,7 +1409,7 @@ alert(t.getXTypes());  // alerts 'component/box/field/textfield'
                 if(propRe.test(e)){
                     continue;
                 }
-                if(typeof o[e] == "function"){
+                if(Ext.isFunction(o[e])){
                     // shared options
 			        this.mons.push({
 			            item: item, ename: e, fn: o[e], scope: o.scope
@@ -1366,6 +1431,21 @@ alert(t.getXTypes());  // alerts 'component/box/field/textfield'
             item: item, ename: ename, fn: fn, scope: scope
         });        
         item.on(ename, fn, scope, opt);
+    },
+    
+    // protected, opposite of mon
+    mun: function(item, ename, fn, scope){
+        var found, mon;
+        for(var i = 0, len = this.mons.length; i < len; ++i){
+            mon = this.mons[i];
+            if(item === mon.item && ename == mon.ename && fn === mon.fn && scope === mon.scope){
+                this.mons.splice(i, 1);
+                item.un(ename, fn, scope);
+                found = true;
+                break;
+            }
+        }
+        return found;
     },
 
     /**
@@ -1398,7 +1478,7 @@ alert(t.getXTypes());  // alerts 'component/box/field/textfield'
 
     /**
      * Provides the link for Observable's fireEvent method to bubble up the ownership hierarchy.
-     * @return the Container which owns this Component.
+     * @return {Ext.Container} the Container which owns this Component.
      */
     getBubbleTarget : function(){
         return this.ownerCt;
