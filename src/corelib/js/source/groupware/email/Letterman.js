@@ -257,7 +257,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
                 });
             }
 
-            if (store.proxy.activeRequest) {
+            if (store.proxy.activeRequest[Ext.data.Api.READ]) {
                 return;
             }
 

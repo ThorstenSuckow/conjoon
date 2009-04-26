@@ -1503,8 +1503,8 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         this.clkNodeId = null;
         this.gridPanel.loadMask.hide();
         var proxy = this.gridPanel.store.proxy;
-        if (proxy.activeRequest) {
-            proxy.getConnection().abort(proxy.activeRequest);
+        if (proxy.activeRequest[Ext.data.Api.READ]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
         }
         this.gridPanel.store.removeAll();
     },
@@ -1514,8 +1514,8 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         this.clkNodeId = null;
         this.gridPanel.loadMask.hide();
         var proxy = this.gridPanel.store.proxy;
-        if (proxy.activeRequest) {
-            proxy.getConnection().abort(proxy.activeRequest);
+        if (proxy.activeRequest[Ext.data.Api.READ]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
         }
         this.gridPanel.store.removeAll();
     },
@@ -1557,7 +1557,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         var folderId = record.data.groupwareEmailFoldersId;
 
         if (this.clkNodeId && (this.clkNodeId == folderId
-            && !this.gridPanel.store.proxy.activeRequest)) {
+            && !this.gridPanel.store.proxy.activeRequest[Ext.data.Api.READ])) {
             var pendingStore  = this.treePanel.pendingItemStore;
             var pendingRecord = pendingStore.getById(folderId);
             if (pendingRecord) {
@@ -1680,7 +1680,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
             }
         }
 
-        if (this.gridPanel.store.proxy.activeRequest) {
+        if (this.gridPanel.store.proxy.activeRequest[Ext.data.Api.READ]) {
             this.clearPending();
             return;
         }
