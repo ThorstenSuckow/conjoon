@@ -33,6 +33,10 @@ com.conjoon.groupware.workbench.PanelDragSource = function() {
 
                 b4StartDrag: function(x, y)
                 {
+                    var psibl = this.panel.previousSibling();
+                    if (psibl && psibl.splitEl) {
+                        psibl.splitEl.setVisible(false);
+                    }
                     this.panel._wasExpanded = !this.panel.collapsed;
                     this.panel.ownerCt.getLayout().collapse(this.panel, true);
                     this.proxy.show();
@@ -45,6 +49,10 @@ com.conjoon.groupware.workbench.PanelDragSource = function() {
 
                 endDrag : function(e)
                 {
+                    var psibl = this.panel.previousSibling();
+                    if (psibl && psibl.splitEl) {
+                        psibl.splitEl.setVisible(true);
+                    }
                     var workbench = com.conjoon.util.Registry.get('com.conjoon.groupware.Workbench')
 
                     workbench.checkIfCollapsible(this.dragData.dragSourceContainer);
