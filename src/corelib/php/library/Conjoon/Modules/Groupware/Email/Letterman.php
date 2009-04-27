@@ -618,13 +618,32 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
             $emailItem['attachments'] = array();
             $emailItem['userId']      = $userId;
-            $emailItem['from']        = $message->from;
+
+            try {
+                $emailItem['from'] = $message->from;
+            } catch (Zend_Mail_Exception $e) {
+                // may be changed to localized header values by anti vir programs
+                $emailItem['from'] = $message->von;
+            }
+
+            if (!isset($emailItem['from'])) {
+                throw new Zend_Mail_Exception("No header with the name \"from\" found. Please check if you have an anti virus program runnning in the background. Some are known to change the header values to localized derivates.");
+            }
+
+            $emailItem['subject'] = "";
 
             // very few emails will come in without a subject.
             try {
                 $emailItem['subject'] = $message->subject;
+            } catch (Zend_Mail_Exception $e) {
+                try {
+                    // may be changed to localized header values by anti vir programs
+                    $emailItem['subject'] = $message->betreff;
+                } catch (Zend_Mail_exception $e) {
+                    // ignore
+                }
             } catch (Zend_Mail_exception $e) {
-                $emailItem['subject'] = "";
+                // ignore
             }
 
             $emailItem['date'] = "";
@@ -643,6 +662,15 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 } catch (Zend_Mail_Exception $e) {
                     // ignore
                 }
+
+                if (!$emailItem['date']) {
+                    try {
+                        // may be changed to localized header values by anti vir programs
+                        $emailItem['date'] = $message->datum;
+                    } catch (Zend_Mail_Exception $e) {
+                        // ignore
+                    }
+                }
             }
 
             try {
@@ -651,6 +679,15 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 // "to" might not be used, instead "cc" will be probably available
                 // then
                 $emailItem['to'] = "";
+            }
+
+            if (!$emailItem['to']) {
+                try {
+                    // may be changed to localized header values by anti vir programs
+                    $emailItem['to'] = $message->an;
+                } catch (Zend_Mail_Exception $e) {
+                    // ignore
+                }
             }
 
             try {
@@ -725,8 +762,6 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             if (!isset($emailItem['contentTextHtml'])) {
                 $emailItem['contentTextHtml'] = '';
             }
-
-
 
             $this->_assignJunkStatus($userId, $emailItem);
             $this->_assignFolderId($userId, $emailItem);
