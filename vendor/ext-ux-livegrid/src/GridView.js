@@ -118,6 +118,14 @@ Ext.ux.grid.livegrid.GridView = function(config) {
      */
     this.loadMask = false;
 
+    /**
+     * @type {Boolean} _checkEmptyBody Since Ext 3.0, &nbsp; would initially added to the mainBody
+     * as the first child if there are no rows to render. This element has to be removed when
+     * the first rows get added so the UI does not crash. This property is here to determine if
+     * this element was already removed, so we don't have to query innerHTML all the time.
+     */
+    this._checkEmptyBody = true;
+
     Ext.apply(this, config);
 
     this.templates = {};
@@ -128,8 +136,8 @@ Ext.ux.grid.livegrid.GridView = function(config) {
     this.templates.master = new Ext.Template(
         '<div class="x-grid3" hidefocus="true"><div class="ext-ux-livegrid-liveScroller"><div></div></div>',
             '<div class="x-grid3-viewport"">',
-                '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset">{header}</div></div><div class="x-clear"></div></div>',
-                '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
+                '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset" style="{ostyle}">{header}</div></div><div class="x-clear"></div></div>',
+                '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body" style="{bstyle}">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
             "</div>",
             '<div class="x-grid3-resize-marker">&#160;</div>',
             '<div class="x-grid3-resize-proxy">&#160;</div>',
@@ -312,6 +320,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     },
 
 // {{{ ------------adjusted methods for applying custom behavior----------------
+
     /**
      * Overwritten so the {@link Ext.ux.grid.livegrid.DragZone} can be used
      * with this view implementation.
@@ -485,6 +494,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         if(g.autoHeight){
             this.scroller.dom.style.overflow = 'visible';
+            if(Ext.isWebKit){
+                this.scroller.dom.style.position = 'static';
+            }
         }else{
             this.el.setSize(csize.width, csize.height);
 
@@ -597,7 +609,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
-        this.addRowClass(row, "x-grid3-row-selected");
+        this.addRowClass(row, this.selectedRowClass);
     },
 
     /**
@@ -612,7 +624,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
-        this.removeRowClass(row, "x-grid3-row-selected");
+        this.removeRowClass(row, this.selectedRowClass);
     },
 
 
@@ -732,6 +744,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     // private
     onAdd : function(ds, records, index)
     {
+        if (this._checkEmptyBody) {
+            if (this.mainBody.dom.innerHTML == '&nbsp;') {
+                this.mainBody.dom.innerHTML = '';
+            }
+            this._checkEmptyBody = false;
+        }
+
         var recordLen = records.length;
 
         // values of index which equal to Number.MIN_VALUE or Number.MAX_VALUE

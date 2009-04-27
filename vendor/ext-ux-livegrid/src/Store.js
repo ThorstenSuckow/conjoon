@@ -390,7 +390,7 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     {
         var max_i = ranges.length;
 
-        if(max_i > 0 && !this.selectionsProxy.activeRequest
+        if(max_i > 0 && !this.selectionsProxy.activeRequest[Ext.data.Api.READ]
            && this.fireEvent("beforeselectionsload", this, ranges) !== false){
 
             var lParams = this.lastOptions.params;
