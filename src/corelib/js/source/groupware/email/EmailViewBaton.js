@@ -43,7 +43,6 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
 
             var sendNowButton = new Ext.Toolbar.Button({
                 cls     : 'x-btn-text-icon',
-                hidden  : true,
                 iconCls : 'com-conjoon-groupware-email-EmailView-toolbar-sendNowButton-icon',
                 text    : '&#160;'+com.conjoon.Gettext.gettext("Send now"),
                 handler : function() {
@@ -51,9 +50,7 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
                 },
                 scope   : com.conjoon.groupware.email.EmailViewBaton
             });
-            var sendNowSeparator = new Ext.Toolbar.Separator({
-                hidden : true
-            });
+            var sendNowSeparator = new Ext.Toolbar.Separator();
 
             var forwardButton = new Ext.Toolbar.Button({
                 id       : 'com.conjoon.groupware.email.EmailView.toolbar.ForwardButton',
@@ -78,9 +75,7 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
                 scope    : this
             });
 
-            var separator = new Ext.Toolbar.Separator({
-                hidden : true
-            });
+            var separator = new Ext.Toolbar.Separator();
 
             var editDraftButton = new Ext.Toolbar.Button({
                 id       : 'com.conjoon.groupware.email.EmailView.toolbar.EditDraftButton',
@@ -101,15 +96,6 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
                 separator,
                 editDraftButton
             ]));
-
-            var func = function(td){
-                this.td = td;
-                td.appendChild(this.el);
-                td.style.display = "none";
-            };
-
-            sendNowSeparator.render = func;
-            separator.render        = func;
 
             tbarManager.register('com.conjoon.groupware.email.EmailView.toolbar', toolbar);
         }
