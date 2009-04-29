@@ -743,7 +743,6 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         if (btn instanceof Ext.Toolbar.SplitButton) {
             if (btn.pressed) {
                 var previewMenu = Ext.menu.MenuMgr.get('com.conjoon.groupware.email.emailPreviewMenu');
-                previewMenu.render();
                 var items = previewMenu.items.items;
                 var b = items[0], r = items[1], h = items[2];
 
@@ -780,7 +779,6 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
             }
         } else {
             var previewMenu = Ext.menu.MenuMgr.get('com.conjoon.groupware.email.emailPreviewMenu');
-            previewMenu.render();
             var items = previewMenu.items.items;
             var b = items[0], r = items[1], h = items[2];
             if (b.checked) {
