@@ -792,7 +792,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
     /**
      * @todo
      */
-    private function _getEmail($groupwareEmailItemsId)
+    private function _getEmail($groupwareEmailItemsId, $refreshCache = false)
     {
         /**
          * @see Conjoon_Keys
@@ -807,13 +807,22 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
 
-        return Conjoon_Builder_Factory::getBuilder(
+        $builder = Conjoon_Builder_Factory::getBuilder(
             Conjoon_Keys::CACHE_EMAIL_MESSAGE,
             Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->get(array(
+        );
+
+        if ($refreshCache === true) {
+            $builder->remove(array(
                 'groupwareEmailItemsId' => $groupwareEmailItemsId,
                 'userId'                => $userId
-               ));
+            ));
+        }
+
+        return $builder->get(array(
+            'groupwareEmailItemsId' => $groupwareEmailItemsId,
+            'userId'                => $userId
+        ));
 
     }
 
@@ -1637,7 +1646,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
             return;
         }
 
-        $emailRecord = $this->_getEmail($item->id);
+        $emailRecord = $this->_getEmail($item->id, true);
 
         $this->view->error       = null;
         $this->view->success     = true;
