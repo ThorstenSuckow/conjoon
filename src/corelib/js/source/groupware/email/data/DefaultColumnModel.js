@@ -94,18 +94,24 @@ com.conjoon.groupware.email.data.DefaultColumnModel = function(config) {
 Ext.extend(com.conjoon.groupware.email.data.DefaultColumnModel, Ext.grid.ColumnModel, {
 
     /**
+     * @type {Boolean} usePlainHeaders Set this to true to let the getColumnHeader()
+     * method return a textual representation of the column, even if the header uses
+     * html.
+     */
+    usePlainHeaders : false,
+
+
+    /**
      * Returns the header for the specified column.
      * Overriden so the custom headers can return a string.
      *
      * @param {Number} col The column index
-     * @param {Boolean} plain true for returning a textual representation
-     * of the header
      *
      * @return {String}
      */
-    getColumnHeader : function(col, plain)
+    getColumnHeader : function(col)
     {
-        if (plain !== true) {
+        if (this.usePlainHeaders !== true) {
             return this.config[col].header;
         }
 

@@ -24,21 +24,14 @@ Ext.namespace('com.conjoon.groupware.email.view');
 com.conjoon.groupware.email.view.GridViewMenuPlugin = Ext.extend(Ext.ux.grid.GridViewMenuPlugin, {
 
 
-    _beforeColMenuShow : function()
+    _beforeColMenuShow : function(menu)
     {
-        var cm = this.cm,  colCount = cm.getColumnCount();
-        this.colMenu.removeAll();
-        for(var i = 0; i < colCount; i++){
-            if(cm.config[i].fixed !== true && cm.config[i].hideable !== false){
-                this.colMenu.add(new Ext.menu.CheckItem({
-                    id          : "col-"+cm.getColumnId(i),
-                    text        : cm.getColumnHeader(i, true),
-                    checked     : !cm.isHidden(i),
-                    hideOnClick : false,
-                    disabled    : cm.config[i].hideable === false
-                }));
-            }
-        }
+        var cm = this._view.cm;
+        cm.usePlainHeaders = true;
+
+        com.conjoon.groupware.email.view.GridViewMenuPlugin.superclass._beforeColMenuShow.call(this, menu);
+
+        cm.usePlainHeaders = false;
     }
 
 });
