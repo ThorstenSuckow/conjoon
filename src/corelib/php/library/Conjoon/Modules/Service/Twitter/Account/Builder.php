@@ -29,6 +29,17 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
     protected $_validGetOptions = array('userId');
 
     /**
+     *
+     * @param array $options An associative array with the following
+     * key value/pairs:
+     *   - userId: the id of the user to fetch al twitter accounts for
+     */
+    protected function _buildId(Array $options)
+    {
+        return (string)$options['userId'];
+    }
+
+    /**
      * Returns either a cahced list of twitter accounts for a user, or
      * the accounts out of the database which will immediately be validated
      * against the twitter service (network access)
@@ -45,7 +56,7 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
     {
         $userId = $options['userId'];
 
-        $cacheId = (string)$userId;
+        $cacheId = $this->_buildId($options);
 
         $cache = $this->_cache;
 
