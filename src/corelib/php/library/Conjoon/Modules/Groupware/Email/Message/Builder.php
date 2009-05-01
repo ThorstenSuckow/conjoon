@@ -40,6 +40,12 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
      */
     protected function _get(Array $options)
     {
+        // prevent serialized PHP_IMCOMPLETE_CLASS
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Message_Dto
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Message/Dto.php';
+
         $groupwareEmailItemsId = $options['groupwareEmailItemsId'];
         $userId                = $options['userId'];
 

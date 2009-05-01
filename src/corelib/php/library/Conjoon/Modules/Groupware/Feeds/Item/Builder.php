@@ -38,6 +38,12 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
      */
     protected function _get(Array $options)
     {
+        // prevent serialized PHP_IMCOMPLETE_CLASS
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Dto
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Dto.php';
+
         $id = $options['id'];
 
         $cacheId = (string)$id;
