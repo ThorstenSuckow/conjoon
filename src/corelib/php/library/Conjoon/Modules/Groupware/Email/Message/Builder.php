@@ -33,8 +33,19 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
      * @param array $options An associative array with the following
      * key value/pairs:
      *   - groupwareEmailItemsId: The id of the email message to return
-     *   - userId: the id of the user to whom this email message belongs
+     *   - userId: the id of the user to whom this email message belongs @param Array $options
+     */
+    protected function _buildId(Array $options)
+    {
+        return $options['groupwareEmailItemsId'] . '_' . $options['userId'];
+    }
+
+    /**
      *
+     * @param array $options An associative array with the following
+     * key value/pairs:
+     *   - groupwareEmailItemsId: The id of the email message to return
+     *   - userId: the id of the user to whom this email message belongs @param Array $options
      *
      * @return Conjoon_Modules_Groupware_Email_Message_Dto
      */
@@ -46,10 +57,10 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
          */
         require_once 'Conjoon/Modules/Groupware/Email/Message/Dto.php';
 
+        $cacheId = $this->_buildId($options);
+
         $groupwareEmailItemsId = $options['groupwareEmailItemsId'];
         $userId                = $options['userId'];
-
-        $cacheId = $groupwareEmailItemsId . '_' . $userId;
 
         $cache = $this->_cache;
 

@@ -81,6 +81,16 @@ abstract class Conjoon_Builder {
     }
 
     /**
+     * Removes an object from the cache, if available.
+     *
+     * @param array $options An array of options which will be considered in buildId
+     */
+    public function remove(Array $options)
+    {
+        $this->_cache->remove($this->buildId($options));
+    }
+
+    /**
      * Checks whether the keys specified in $_validGetOptions are available in
      * $options. Throws an exception if that is not the case, otherwise calls the
      * concrete implementation of _get.
@@ -96,6 +106,61 @@ abstract class Conjoon_Builder {
      */
     public function get(Array $options)
     {
+        $this->_checkValidGetOptions($options);
+        return $this->_get($options);
+    }
+
+    /**
+     * An abstract function which concrete implementation has to be provided
+     * in the classes deriving from Conjoon_Builder.
+     * It's purpose is to return an object specified via a list of arguments.
+     * The cache should be used to look up the object in the cache and return it,
+     * or to model the object, store it in the cache and return it afterwards.
+     * Objects returned by this instance should be serializable.
+     *
+     * @param array $options
+     *
+     * @return mixed
+     */
+    protected abstract function _get(Array $options);
+
+    /**
+     * An abstract function which returns an id that can be used to identify
+     * cache objects.
+     *
+     * @param Array $options a hash with key/value pairs which can be used to build an
+     * id
+     *
+     * @return String
+     */
+    protected abstract function _buildId(Array $options);
+
+    /**
+     * A function which returns an id under which an object in the cache can be identified.
+     * The returned key will be used to identify objects in the clean() and get() method of
+     * this class.
+     *
+     * @param array $options An associative array of options to use. If the
+     * _validGetOptions property is specified, the options will be checked against
+     * this property.
+     *
+     * @return String
+     */
+    public function buildId(Array $options)
+    {
+        $this->_checkValidGetOptions($options);
+        return $this->_buildId($options);
+    }
+
+    /**
+     * Validates the keys of the passed array against the whitelist of keys
+     * specified in $_validGetOptions.
+     * Throws an exception if there is a key missing in the passed argument that was
+     * specified in $_validGetOptions.
+     *
+     */
+    protected function _checkValidGetOptions(Array $options)
+    {
         if (!empty($this->_validGetOptions)) {
             for ($i = 0, $len = count($this->_validGetOptions); $i < $len; $i++) {
                 if (!isset($options[$this->_validGetOptions[$i]])) {
@@ -110,26 +175,5 @@ abstract class Conjoon_Builder {
                 }
             }
         }
-
-
-        return $this->_get($options);
     }
-
-    /**
-     * An abstract function which concrete implementation has to be provided
-     * in the classes deriving from Conjoon_Builder.
-     * It's purpose is to return an object specified via a list of arguments.
-     * The cache should be used to look up the object in the cache and return it,
-     * or to model the object, store it in the cache and return it afterwards.
-     * Objects returned by this instance should be serializable.
-     *
-     * @param array $options An associative array of options to use. If the
-     * _validGetOptions property is specified, the options will be checked against
-     * this property.
-     *
-     * @return mixed
-     */
-    protected abstract function _get(Array $options);
-
-
 }

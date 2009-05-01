@@ -33,6 +33,17 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
      * @param array $options An associative array with the following
      * key value/pairs:
      *   - id: The id of the feed item to return
+     */
+    protected function _buildId(Array $options)
+    {
+        return (string)$options['id'];
+    }
+
+    /**
+     *
+     * @param array $options An associative array with the following
+     * key value/pairs:
+     *   - id: The id of the feed item to return
      *
      * @return Conjoon_Modules_Groupware_Feeds_Item_Dto
      */
@@ -46,7 +57,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
 
         $id = $options['id'];
 
-        $cacheId = (string)$id;
+        $cacheId = $this->_buildId($options);
 
         $cache = $this->_cache;
 
