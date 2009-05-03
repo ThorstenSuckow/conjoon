@@ -79,7 +79,6 @@ com.conjoon.groupware.workbench.ToolbarController = function(){
                         "-",
                         com.conjoon.Gettext.gettext("Search"),
                         {
-                            cls     : 'x-btn-icon',
                             iconCls : 'com-conjoon-groupware-Toolbar-searchMenu-email-icon',
                             menu : [
                                 {text: com.conjoon.Gettext.gettext("Contacts")},
@@ -91,7 +90,6 @@ com.conjoon.groupware.workbench.ToolbarController = function(){
                         new Ext.form.TextField({
                             emptyText : com.conjoon.Gettext.gettext("<search in Emails>")
                         }), {
-                            cls     : 'x-btn-icon',
                             iconCls : 'com-conjoon-groupware-Toolbar-startSearchButton-icon'
                         }
                     ]

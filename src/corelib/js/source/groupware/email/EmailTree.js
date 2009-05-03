@@ -81,13 +81,11 @@ com.conjoon.groupware.email.EmailTree = function(config) {
      * @param {Ext.Toolbar}
      */
     this.tbar = [{
-        cls     : 'x-btn-icon',
         iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
         tooltip : com.conjoon.Gettext.gettext("Show all folders"),
         handler : function(){ this.root.expand(true); },
         scope   : this
       },'-',{
-        cls     : 'x-btn-icon',
         iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
         tooltip : com.conjoon.Gettext.gettext("Hide all folders"),
         handler : function(){ this.root.collapse(true); },

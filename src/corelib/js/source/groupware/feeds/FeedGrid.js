@@ -97,7 +97,6 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
 
 
     this.tbar = new Ext.Toolbar([{
-        cls     : 'x-btn-icon',
         iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
         handler : function(){
             var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({
@@ -107,7 +106,6 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
         },
         scope : this
       },{
-        cls     : 'x-btn-icon',
         iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon',
         handler : function(){
             this.clkRow    = null;
@@ -117,7 +115,6 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
         scope: this
       },{
         id      : 'displayOptions',
-        cls     : 'x-btn-icon',
         iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon',
         menu    : displayOptionsMenu
       }
