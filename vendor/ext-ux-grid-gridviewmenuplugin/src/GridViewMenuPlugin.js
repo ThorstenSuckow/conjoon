@@ -136,22 +136,6 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
         this.colMenu.on("beforeshow",   this._beforeColMenuShow, this);
         this.colMenu.on("beforeremove", this._beforeColMenuRemove, this);
         this.colMenu.on("itemclick",    this._handleHdMenuClick, this);
-
-        /**
-         * @bug Ext3.0
-         * see http://www.extjs.com/forum/showthread.php?t=65931
-         */
-        this.colMenu.removeAll = function(autoDestroy){
-            this.initItems();
-            var item, items = [];
-            var ic = this.items.items.length-1;
-            while((item = this.items.get(ic--))){
-                items.unshift(this.remove(item, autoDestroy));
-            }
-            return items;
-        };
-
-
     },
 
 // -------- listeners

@@ -1,4 +1,9 @@
-﻿Version 0.2RC2
+﻿
+03-May-2009
+ - enhancement: removed workaround for an Ext JS 3.0RC1 issue that was resolved in
+the main dev branch by them
+
+Version 0.2RC2
 19-April-2009
 
  - fixed: typo in build file name
