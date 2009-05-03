@@ -22,20 +22,7 @@ Ext.namespace('com.conjoon.groupware.workbench');
 com.conjoon.groupware.workbench.BookmarkController = function() {
 
     var _container = null;
-    var _toolbar   = null;
     var _button    = null;
-
-    var _getToolbar = function()
-    {
-        if (!_toolbar) {
-            _toolbar = new Ext.Toolbar({
-                cls      : 'com-conjoon-groupware-Bookmarks',
-                renderTo : 'DOM:com.conjoon.groupware.Bookmarks.container'
-            });
-        }
-
-        return _toolbar;
-    };
 
     return {
 
@@ -50,8 +37,7 @@ com.conjoon.groupware.workbench.BookmarkController = function() {
                     },
                     listeners : {
                         render : function() {
-                            _getToolbar();
-                            _toolbar.add(com.conjoon.groupware.workbench.BookmarkController.getButton());
+                            com.conjoon.groupware.workbench.BookmarkController.getButton().render('DOM:com.conjoon.groupware.Bookmarks.container');
                         }
                     }
                 });
@@ -68,7 +54,6 @@ com.conjoon.groupware.workbench.BookmarkController = function() {
                 var contentPanel = reg.get('com.conjoon.groupware.ContentPanel');
 
                 _button = new Ext.Toolbar.Button({
-                    cls     : 'x-btn-icon',
                     iconCls : 'com-conjoon-groupware-Bookmark-toolbar-bookmarkButton-icon',
                     menu    : [{
                         text    : com.conjoon.Gettext.gettext("Home"),

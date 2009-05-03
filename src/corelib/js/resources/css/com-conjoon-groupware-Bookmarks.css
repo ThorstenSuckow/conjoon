@@ -22,14 +22,20 @@
     position:absolute;
 }
 
-.com-conjoon-groupware-Bookmarks {
-    background:none;
-    border:none;
+.com-conjoon-groupware-Bookmarks-container td {
+    background-image:url(../images/s.gif);
 }
 
-.com-conjoon-groupware-Bookmarks .x-btn-with-menu .x-btn-center em {
-    padding-right:0px;
-    background:none;
+.com-conjoon-groupware-Bookmarks-container .x-btn-over td,
+.com-conjoon-groupware-Bookmarks-container .x-btn-over button,
+.com-conjoon-groupware-Bookmarks-container .x-btn-menu-active td,
+.com-conjoon-groupware-Bookmarks-container .x-btn-menu-active button {
+    background-image:url(../images/btn.gif);
+}
+
+.com-conjoon-groupware-Bookmarks-container em {
+    padding-right:2px!important;
+    background:none!important;
 }
 
 .com-conjoon-groupware-Bookmark-toolbar-bookmarkButton-icon {
