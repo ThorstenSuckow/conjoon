@@ -203,4 +203,17 @@ class Conjoon_Mail extends Zend_Mail {
         }
     }
 
+    /**
+     * Creates the Message-ID
+     * Overriden to return the message id encasulated in two angle brackets.
+     *
+     * @return string
+     */
+    public function createMessageId()
+    {
+        $id = parent::createMessageId();
+
+        return '<' . $id . '>';
+    }
+
 }

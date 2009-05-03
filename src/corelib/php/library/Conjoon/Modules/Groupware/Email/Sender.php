@@ -39,11 +39,6 @@ require_once 'Conjoon/Version.php';
 require_once 'Conjoon/Mail/Sent.php';
 
 /**
- * @see Conjoon_Mail_Util
- */
-require_once 'Conjoon/Mail/Util.php';
-
-/**
  * A utility class for sending emails.
  *
  * @category   Email
@@ -95,11 +90,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
             $mail->addBcc($address->getAddress(), $address->getName());
         }
 
-        $mail->setMessageId(
-            Conjoon_Mail_Util::generateMessageId(
-                Conjoon_Mail_Util::getHostFromAddress($account->getAddress())
-            )
-        );
+        $mail->setMessageId(true);
 
         // set sender
         $mail->setFrom($account->getAddress(), $account->getUserName());
