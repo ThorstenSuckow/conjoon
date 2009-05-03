@@ -931,6 +931,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     liveBufferUpdate : function(records, options, success)
     {
         if (success === true) {
+            this.adjustBufferInset();
+
             this.fireEvent('buffer', this, this.ds, this.rowIndex,
                 Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                 this.ds.totalLength,
@@ -1356,7 +1358,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         if (this.isBuffering) {
             if (this.isPrebuffering) {
                 if (inRange) {
-                    this.replaceLiveRows(index);
+                    this.replaceLiveRows(index, forceRepaint);
                 } else {
                     this.showLoadMask(true);
                 }
@@ -1453,10 +1455,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         var opts = {
-            forceRepaint : forceRepaint,
-            callback     : this.liveBufferUpdate,
-            scope        : this,
-            params       : params
+            forceRepaint     : forceRepaint,
+            callback         : this.liveBufferUpdate,
+            scope            : this,
+            params           : params,
+            suspendLoadEvent : true
         };
 
         this.fireEvent('beforebuffer', this, this.ds, index,
@@ -1678,8 +1681,9 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         this.visibleRows = visibleRows;
 
-        // skip recalculating the row index if we are currently buffering.
-        if (this.isBuffering) {
+        // skip recalculating the row index if we are currently buffering, but not if we
+        // are just pre-buffering
+        if (this.isBuffering && !this.isPrebuffering) {
             return;
         }
 

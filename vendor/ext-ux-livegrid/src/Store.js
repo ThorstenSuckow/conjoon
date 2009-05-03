@@ -559,7 +559,13 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
             ];
         }
 
+        if (options.suspendLoadEvent === true) {
+            this.suspendEvents();
+        }
         Ext.ux.grid.livegrid.Store.superclass.loadRecords.call(this, o, options, success);
+        if (options.suspendLoadEvent === true) {
+            this.resumeEvents();
+        }
     },
 
     /**
