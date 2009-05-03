@@ -125,7 +125,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         var accountGridPanel = new Ext.grid.GridPanel({
             cls            : 'com-conjoon-groupware-email-EmailAccountDialog-accountGrid',
-            height         : 245,
+            height         : 235,
             border         : true,
             sortInfo       : {field: 'name', direction: "DESC"},
             store          : this.accountStore,
