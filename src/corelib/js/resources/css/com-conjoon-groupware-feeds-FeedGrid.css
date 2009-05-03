@@ -12,12 +12,8 @@
  * $URL$
  */
 
-.com-conjoon-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon {
-    background-image:url(../images/16x16/actions/groupware-feeds-configure.png);
-}
-
-.com-conjoon-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon {
-    background-image:url(../images/16x16/actions/groupware-feeds-display.png)!important ;
+.com-conjoon-groupware-feeds-FeedGrid-toolbar-configureItem-icon {
+    background-image:url(../images/16x16/actions/groupware-feeds-configure.png)!important;
 }
 
 .com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon {

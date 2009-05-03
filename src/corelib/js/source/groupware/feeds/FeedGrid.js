@@ -114,9 +114,11 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
             this.store.reload();},
         scope: this
       },{
-        id      : 'displayOptions',
-        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-displayOptionsButton-icon',
-        menu    : displayOptionsMenu
+        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-configureItem-icon',
+        handler : function() {
+            var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
+            optDialog.show();
+        }
       }
     ]);
 
@@ -144,18 +146,6 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
 
     this.on('contextmenu', this.onContextClick, this);
     this.on('rowcontextmenu', this.onRowContextClick, this);
-    displayOptionsMenu.on('beforeshow', this.onBeforeShow, this);
-
-    /**
-     * @ext-bug
-     * setChecked neeeds to supress the event and compare the groupfield
-     * width the field the clicked column represents. This seems buggy in Ext2.0 Alpha
-     */
-    this.view.beforeMenuShow = function(){
-        var field = this.getGroupField();
-        this.hmenu.items.get('groupBy').setDisabled(this.cm.config[this.hdCtxIndex].groupable === false);
-        this.hmenu.items.get('showGroups').setChecked(field == this.cm.getDataIndex(this.hdCtxIndex), true);
-    }
 };
 
 Ext.extend(com.conjoon.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
@@ -163,26 +153,6 @@ Ext.extend(com.conjoon.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
     clkRow          : null,
     clkRecord       : null,
     cellClickActive : false,
-
-    /**
-     * Checks the group state and checks/unchecks the "show feeds grouped" items
-     * as needed.
-     */
-    onBeforeShow : function()
-    {
-        if (this.view.getGroupField() != 'name') {
-            this.getTopToolbar().items.get('displayOptions').menu.items.get('groupFeeds').setChecked(false, true);
-        }
-    },
-
-    toggleGroupView : function(item, checked)
-    {
-        if (!checked) {
-            this.store.clearGrouping();
-        } else {
-            this.store.groupBy('name', true);
-        }
-    },
 
     // within this function "this" is actually the GridView
     applyRowClass: function(record, rowIndex, p, ds)
