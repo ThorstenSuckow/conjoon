@@ -43,9 +43,8 @@ class Conjoon_Mail extends Zend_Mail {
     public function setReplyTo($replyTo)
     {
         if ($this->_replyTo === null) {
-            $replyTo = strtr($replyTo, "\r\n\t", '???');
             $this->_replyTo = $replyTo;
-            $this->_storeHeader('Reply-To', $replyTo, false);
+            $this->addHeader('Reply-To', $replyTo);
         } else {
             /**
              * @see Zend_Mail_Exception
@@ -90,9 +89,8 @@ class Conjoon_Mail extends Zend_Mail {
     public function setReferences($references)
     {
         if ($this->_references === null) {
-            $references = strtr($references, "\r\n\t", '???');
             $this->_references = $references;
-            $this->_storeHeader('References', $references, false);
+            $this->addHeader('References', $references, false);
         } else {
             /**
              * @see Zend_Mail_Exception
@@ -127,44 +125,6 @@ class Conjoon_Mail extends Zend_Mail {
         return $headers['References'];
     }
 
-    /**
-     * Sets the Message-id header for an email
-     *
-     * @param  string    $messageId
-     * @return Zend_Mail Provides fluent interface
-     * @throws Zend_Mail_Exception if set multiple times
-     */
-    public function setMessageId($messageId)
-    {
-        if ($this->_messageId === null) {
-            $this->_messageId = $messageId;
-            $this->_storeHeader('Message-ID', $messageId, false);
-        } else {
-            /**
-             * @see Zend_Mail_Exception
-             */
-            require_once 'Zend/Mail/Exception.php';
-            throw new Zend_Mail_Exception('Message-ID Header set twice');
-        }
-        return $this;
-    }
-
-
-    /**
-     * Returns the Message-ID header field.
-     *
-     * @return string
-     */
-    public function getMessageId()
-    {
-        if ($this->_messageId === null) {
-            return null;
-        }
-
-        $headers = $this->getHeaders();
-
-        return $headers['Message-ID'];
-    }
 
     /**
      * Sets the in-reply-to header for an email
@@ -176,9 +136,8 @@ class Conjoon_Mail extends Zend_Mail {
     public function setInReplyTo($inReplyTo)
     {
         if ($this->_inReplyTo === null) {
-            $inReplyTo = strtr($inReplyTo, "\r\n\t", '???');
             $this->_inReplyTo = $inReplyTo;
-            $this->_storeHeader('In-Reply-To', $inReplyTo, false);
+            $this->addHeader('In-Reply-To', $inReplyTo);
         } else {
             /**
              * @see Zend_Mail_Exception
@@ -214,96 +173,34 @@ class Conjoon_Mail extends Zend_Mail {
     }
 
     /**
-     * Fix for ZF1688
-     * Encode header fields
+     * Formats e-mail address.
+     * Overwritten so we can strip previously added single quotes as a replacement
+     * for double quotes.
+     * single quotes will only be stripped if there are only single quotes at the start
+     * and the end of the string.
      *
-     * Encodes header content according to RFC1522 if it contains non-printable
-     * characters.
-     *
-     * @param  string $value
+     * @param string $email
+     * @param string $name
      * @return string
      */
-    protected function _encodeHeader($value)
+    protected function _formatAddress($email, $name)
     {
-        if (Zend_Mime::isPrintable($value)) {
-            return $value;
+        if ($name === '' || $name === null || $name === $email) {
+            return $email;
         } else {
 
-            $mimePrefs = array(
-                'scheme'           => 'Q',
-                'input-charset'    => $this->_charset,
-                'output-charset'   => $this->_charset,
-                'line-length'      => 74,
-                'line-break-chars' => "\n"
-            );
-
-            $value = iconv_mime_encode('DUMMY', $value, $mimePrefs);
-            $value = preg_replace("#^DUMMY\:\ #", "", $value);
-
-            return $value;
-        }
-    }
-
-    /**
-     * Helper function for adding a recipient and the corresponding header
-     * Overriden since ZF1.6.1 would add quotes to the name of the recipient
-     * no matter what. Since the conjoon framework passes names to an
-     * instance of this class already quoted (even with escaped quotes if
-     * necessary, this implementation checks first if quotes need to be used
-     * and quotes after that accordingly.     *
-     *
-     * @param string $headerName
-     * @param string $name
-     * @param string $email
-     */
-    protected function _addRecipientAndHeader($headerName, $name, $email)
-    {
-        $email = strtr($email,"\r\n\t",'???');
-        $this->_addRecipient($email, ('To' == $headerName) ? true : false);
-        if ($name != '') {
-            $name = $this->_quoteIfNecessary($name) . ' ';
-        }
-
-        $this->_storeHeader($headerName, $name .'<'. $email . '>', true);
-    }
-
-    /**
-     * Sets From-header and sender of the message
-     * Overidden to check if the name of the sender is already quoted, so the name
-     * part would not accidently be quoted again.
-     *
-     *
-     * @param  string    $email
-     * @param  string    $name
-     * @return Zend_Mail Provides fluent interface
-     * @throws Zend_Mail_Exception if called subsequent times
-     */
-    public function setFrom($email, $name = '')
-    {
-        if ($this->_from === null) {
-            $email = strtr($email,"\r\n\t",'???');
-            $this->_from = $email;
-            if ($name != '') {
-                $name = $this->_quoteIfNecessary($name). ' ';
+            if (substr($name, 0, 1) == "'" && substr($name, -1) == "'" && substr_count($name, "'") == 2) {
+                $name = trim($name, "'");
             }
-            $this->_storeHeader('From', $name.'<'.$email.'>', true);
-        } else {
-            /**
-             * @see Zend_Mail_Exception
-             */
-            require_once 'Zend/Mail/Exception.php';
-            throw new Zend_Mail_Exception('From Header set twice');
-        }
-        return $this;
-    }
 
-    protected function _quoteIfNecessary($value)
-    {
-        if (substr($value, 0, 1) != '"' || substr($value, -1) != '"') {
-            $value = '"' . $this->_encodeHeader($value) . '"';
+            $encodedName = $this->_encodeHeader($name);
+            if ($encodedName === $name && strpos($name, ',') !== false) {
+                $format = '"%s" <%s>';
+            } else {
+                $format = '%s <%s>';
+            }
+            return sprintf($format, $encodedName, $email);
         }
-
-        return $value;
     }
 
 }
