@@ -118,17 +118,20 @@ com.conjoon.groupware.email.Letterman = function(config) {
     var called = false;
 
     /**
-     * Overrides proxy's loadResponse to check for error
+     * Overrides proxy's createCallback to check for error
      *
      */
-    var proxyResponse = function(o, success, response)
+    var createCallback = function(action)
     {
-        var json = com.conjoon.util.Json;
-        if (json.isError(response.responseText)) {
-            com.conjoon.groupware.email.Letterman.onRequestFailure(this, o, response);
-        }
+        return function(o, success, response) {
+            var json = com.conjoon.util.Json;
 
-        return Ext.data.HttpProxy.prototype.loadResponse.call(this, o, success, response);
+            if (json.isError(response.responseText)) {
+                com.conjoon.groupware.email.Letterman.onRequestFailure(this, o, response);
+            }
+
+            Ext.data.HttpProxy.prototype.createCallback.call(this, action).call(this, o, success, response);
+        };
 
     };
 
@@ -164,7 +167,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             store.on('beforeload',    _onBeforeLoad,         this);
             store.on('loadexception', this.onRequestFailure, this);
             store.on('load',          this.onLoad, this);
-            store.proxy.loadResponse = proxyResponse;
+            store.proxy.createCallback = createCallback;
             return this;
         },
 
