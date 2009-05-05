@@ -33,6 +33,7 @@ com.conjoon.groupware.QuickEditPanel = function(){
             developerKey : "AI39si7YwEMBcpCOO8JzYSjB3WtaS2ODhBN-A4XAqVADfGWyK8-Nr9XwZzr_sdCnsKirffyPDBsvC0z7MdR2u0xeM4zLIDWLIQ",
             playerId     : 'myplayer',
             ratioMode    : 'strict',
+            hideMode     : 'offsets',
             bgColor      : "#000000",
             bodyStyle    : 'background-color:#000000;'
         });
@@ -71,13 +72,12 @@ com.conjoon.groupware.QuickEditPanel = function(){
             style    : 'border:none;'
         });
 
-        ;
-
         var w = new Ext.Panel({
             title     : 'Ytube',
             layout    : 'fit',
-            hideMode  : 'visibility',
-            items     : [playerPanel],
+            items     : [
+                playerPanel
+            ],
             bbar      : pControl
         });
 
@@ -97,7 +97,7 @@ com.conjoon.groupware.QuickEditPanel = function(){
                 tabPosition : 'bottom',
                 activeTab   : 0,
                 bodyStyle   : 'background:#DFE8F6;',
-                resizable   : false,
+                //resizable   : false,
                 collapsed   : false,
                 title       : com.conjoon.Gettext.gettext("Quickpanel"),
                 height      : 205,
@@ -111,7 +111,7 @@ com.conjoon.groupware.QuickEditPanel = function(){
                 ],
                 listeners : {
                     /**
-                     * @bug (?) Ext 2.2 Rendering titles in the headers is disabled by default
+                     * @bug (?) Ext 3.0 Rendering titles in the headers is disabled by default
                      * since headerAstext defaults to false for TabPanels
                      */
                     render : function(p) {
