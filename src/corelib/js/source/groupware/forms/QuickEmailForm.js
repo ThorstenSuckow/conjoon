@@ -40,8 +40,6 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
             }
 
             var decorate  = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
-            _submitButton = decorate(new Ext.Button(_buttonConfig.save));
-            _cancelButton = decorate(new Ext.Button(_buttonConfig.cancel));
 
             _form = new Ext.FormPanel({
                 labelWidth: 0,
