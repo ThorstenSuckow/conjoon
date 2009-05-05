@@ -76,6 +76,14 @@ class Conjoon_Modules_Groupware_Email_Sender {
         // let everyone know...
         $mail->addHeader('X-MailGenerator', 'Conjoon ' . Conjoon_Version::VERSION);
 
+        /**
+         * Some clients need the MIME-Version header field. For example,
+         * Outlook might have problems with decoding a message if no mime-version
+         * is specified.
+         */
+        $mail->addHeader('MIME-Version', '1.0');
+
+
         // add recipients
         $to  = $draft->getTo();
         $cc  = $draft->getCc();
