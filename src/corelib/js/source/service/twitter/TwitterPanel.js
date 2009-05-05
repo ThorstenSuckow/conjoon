@@ -435,14 +435,12 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         var insp = com.conjoon.groupware.ResponseInspector;
 
-        var encResponse = insp.isSuccess(response);
-
         if (!insp.isSuccess(response)) {
             this._onFavoriteTweetFailure(response, options);
             return;
         }
 
-        Ext.fly(options.item).removeClass('pending');
+        Ext.fly(options.target).removeClass('pending');
 
         var json          = com.conjoon.util.Json;
         var responseValue = json.getResponseValues(response.responseText);
@@ -474,7 +472,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
     _onFavoriteTweetFailure : function(response, options)
     {
-        Ext.fly(options.item).removeClass('pending');
+        Ext.fly(options.target).removeClass('pending');
         com.conjoon.groupware.ResponseInspector.handleFailure(response);
     },
 
@@ -493,7 +491,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         var insp = com.conjoon.groupware.ResponseInspector;
 
-        var encResponse = insp.isSuccess(response);
         if (!insp.isSuccess(response)) {
             this._onDeleteTweetFailure(response, options);
             return;
@@ -541,7 +538,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         var insp = com.conjoon.groupware.ResponseInspector;
 
-        var encResponse = insp.isSuccess(response);
         if (!insp.isSuccess(response)) {
             this._onUpdateFailure(response, options);
             return;
@@ -882,12 +878,12 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         Ext.fly(e.getTarget()).addClass('pending');
 
         Ext.Ajax.request({
-            item   : item,
+            target : e.getTarget(),
             url    : './service/twitter/favorite.tweet/format/json',
             params : {
                 accountId : this._currentAccountId,
                 tweetId   : selRec.id,
-                favorite  : favorite
+                favorite  : favorite ? 1 : 0,
             },
             success : this._onFavoriteTweetSuccess,
             failure : this._onFavoriteTweetFailure,
@@ -944,7 +940,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         var insp = com.conjoon.groupware.ResponseInspector;
 
-        var encResponse = insp.isSuccess(response);
         if (!insp.isSuccess(response)) {
             this._onSwitchFriendshipFailure(response, options);
             return;

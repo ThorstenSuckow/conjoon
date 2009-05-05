@@ -475,9 +475,9 @@ class Service_TwitterController extends Zend_Controller_Action {
         /**
          * @todo Filter!!!
          */
-        $favorite   = $this->_request->getParam('favorite') == 'false'
-                      ? false
-                      : true;
+        $favorite = !$this->_request->getParam('favorite')
+                    ? false
+                    : true;
 
         if ($accountId <= 0 || $tweetId <= 0) {
             $errorDto = Conjoon_Error_Factory::createError(
