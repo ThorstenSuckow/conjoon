@@ -27,10 +27,16 @@ com.conjoon.groupware.QuickEditPanel = function(){
 
     var _panel = null;
 
-    var getYoutubePanel = function()
+    var getYoutubePanel = function(config)
     {
+        config = config || {};
+
+        if (!config.apiKey) {
+            throw("No API Key for Youtube Chromeless API provided");
+        }
+
         var playerPanel = new Ext.ux.YoutubePlayer({
-            developerKey : "AI39si7YwEMBcpCOO8JzYSjB3WtaS2ODhBN-A4XAqVADfGWyK8-Nr9XwZzr_sdCnsKirffyPDBsvC0z7MdR2u0xeM4zLIDWLIQ",
+            developerKey : config.apiKey,
             playerId     : 'myplayer',
             ratioMode    : 'strict',
             hideMode     : 'offsets',
@@ -93,22 +99,32 @@ com.conjoon.groupware.QuickEditPanel = function(){
                 return _panel;
             }
 
+            var items = [
+                com.conjoon.groupware.forms.QuickContactForm.getComponent(),
+                com.conjoon.groupware.forms.QuickEmailForm.getComponent()
+            ];
+
+            var apiKey = com.conjoon.groupware.Registry.get('/service/youtube/chromeless/api-key');
+            if (apiKey) {
+                items.push(
+                    getYoutubePanel({
+                        apiKey : apiKey
+                    })
+                );
+            }
+
             var initConfig = {
-                tabPosition : 'bottom',
-                activeTab   : 0,
-                bodyStyle   : 'background:#DFE8F6;',
-                //resizable   : false,
-                collapsed   : false,
-                title       : com.conjoon.Gettext.gettext("Quickpanel"),
-                height      : 205,
-                cls         : 'com-conjoon-groupware-QuickPanel-editPanel',
-                iconCls     : 'com-conjoon-groupware-quickpanel-NewIcon',
-                headerAsText  : true,
-                items       : [
-                    com.conjoon.groupware.forms.QuickContactForm.getComponent(),
-                    com.conjoon.groupware.forms.QuickEmailForm.getComponent(),
-                    getYoutubePanel()
-                ],
+                tabPosition  : 'bottom',
+                activeTab    : 0,
+                bodyStyle    : 'background:#DFE8F6;',
+                resizable    : false,
+                collapsed    : false,
+                title        : com.conjoon.Gettext.gettext("Quickpanel"),
+                height       : 205,
+                cls          : 'com-conjoon-groupware-QuickPanel-editPanel',
+                iconCls      : 'com-conjoon-groupware-quickpanel-NewIcon',
+                headerAsText : true,
+                items        : items,
                 listeners : {
                     /**
                      * @bug (?) Ext 3.0 Rendering titles in the headers is disabled by default
