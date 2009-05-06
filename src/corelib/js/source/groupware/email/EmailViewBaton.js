@@ -155,7 +155,7 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
 
         com.conjoon.groupware.email.Dispatcher.sendPendingEmails(
             [emailItem],
-            ((new Date()).getTime()/1000)
+            Math.floor(((new Date()).getTime()/1000))
         );
     };
 

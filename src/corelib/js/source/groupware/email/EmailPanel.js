@@ -859,7 +859,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
         com.conjoon.groupware.email.Dispatcher.sendPendingEmails(
             [record],
-            ((new Date()).getTime()/1000)
+            Math.floor(((new Date()).getTime()/1000))
         );
     },
 

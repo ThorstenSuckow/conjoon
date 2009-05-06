@@ -723,7 +723,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             type         : fValues.type,
             inReplyTo    : fValues.inReplyTo,
             references   : fValues.references,
-            date         : (new Date().getTime())/1000,
+            date         : Math.floor((new Date().getTime())/1000),
             subject      : subjectField.getValue(),
             message      : htmlEditor.getValue(),
             to           : to.length  > 0 ? Ext.encode(to)  : '',

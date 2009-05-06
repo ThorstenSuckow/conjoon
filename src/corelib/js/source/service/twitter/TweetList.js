@@ -260,8 +260,8 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
     _getTimeString : function(record)
     {
         // compute the time difference
-        var now     = ((new Date()).getTime()/1000);
-        var posted  = (record.get('createdAt').getTime()/1000);
+        var now     = Math.floor(((new Date()).getTime()/1000));
+        var posted  = Math.floor((record.get('createdAt').getTime()/1000));
         var minutes = (now-posted)/60;
         var when    = "";
 

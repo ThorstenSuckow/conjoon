@@ -46,7 +46,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
                       ),
         sortInfo   : {field: 'id', direction: 'DESC'},
         baseParams : {
-            minDate : Math.round(new Date().getTime()/1000)
+            minDate : Math.floor(new Date().getTime()/1000)
         },
         listeners   : {
             remove : function (store, record, index) {
