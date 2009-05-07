@@ -90,6 +90,7 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_Item extends Conjoon_Filter_In
          ),
          'date' => array(
             'StringTrim',
+            'SanitizeDate',
             'DateIso8601'
          ),
          'subject' => array(
