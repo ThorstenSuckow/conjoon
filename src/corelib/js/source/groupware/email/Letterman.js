@@ -87,6 +87,10 @@ com.conjoon.groupware.email.Letterman = function(config) {
 
     store.loadRecords = function(o, options, success)
     {
+        /**
+         * Adds lastLoadingDate property to the store to be able to determine
+         * when the store was last loaded.
+         */
         this.lastLoadingDate = (new Date()).getTime();
 
         Ext.data.Store.prototype.loadRecords.call(this, o, options, success);
