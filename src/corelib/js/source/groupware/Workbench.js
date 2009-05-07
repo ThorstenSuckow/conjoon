@@ -98,6 +98,9 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
                     lastActiveElement.focus();
                 }
                 (function(){
+                    if (!this._focusLayer) {
+                        return;
+                    }
                     Ext.fly(this._focusLayer).removeAllListeners();
                     this._focusLayer.parentNode.removeChild(this._focusLayer);
                     this._focusLayer = null;
