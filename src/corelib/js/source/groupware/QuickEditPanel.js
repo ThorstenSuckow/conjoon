@@ -21,9 +21,6 @@ Ext.namespace('com.conjoon.groupware');
  */
 com.conjoon.groupware.QuickEditPanel = function(){
 
-    // shorthands
-
-
 
     var _panel = null;
 
@@ -81,11 +78,11 @@ com.conjoon.groupware.QuickEditPanel = function(){
         var w = new Ext.Panel({
             title     : 'Ytube',
             layout    : 'fit',
-            items     : [
-                playerPanel
-            ],
+            hideMode  : 'offsets',
             bbar      : pControl
         });
+
+        com.conjoon.groupware.util.FlashControl.register(playerPanel, w);
 
         return w;
     };
