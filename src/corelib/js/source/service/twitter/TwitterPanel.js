@@ -883,7 +883,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             params : {
                 accountId : this._currentAccountId,
                 tweetId   : selRec.id,
-                favorite  : favorite ? 1 : 0,
+                favorite  : favorite ? 1 : 0
             },
             success : this._onFavoriteTweetSuccess,
             failure : this._onFavoriteTweetFailure,
