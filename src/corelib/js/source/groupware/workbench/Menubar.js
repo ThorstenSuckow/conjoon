@@ -66,7 +66,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
             this.setDisabled(false);
         }, showWestPanelItem);
 
-        westPanel.on('add', function() {
+        eastPanel.on('add', function() {
             this.setDisabled(false);
         }, showEastPanelItem);
 
