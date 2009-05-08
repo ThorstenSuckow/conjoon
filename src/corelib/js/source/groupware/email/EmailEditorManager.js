@@ -348,6 +348,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         Ext.getCmp(options.panelId).setIconClass(
             'com-conjoon-groupware-email-EmailForm-icon'
         );
+
+        // mark form as clean, as it was just loaded from the server.
+        formValues[options.panelId].dirty = false;
     };
 
     /**
