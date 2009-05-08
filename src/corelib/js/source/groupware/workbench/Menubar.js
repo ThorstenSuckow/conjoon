@@ -70,6 +70,18 @@ com.conjoon.groupware.workbench.Menubar = function(){
             this.setDisabled(false);
         }, showEastPanelItem);
 
+        eastPanel.on('remove', function(panel) {
+            if (panel.items.items.length == 0) {
+                this.setDisabled(true);
+            }
+        }, showEastPanelItem);
+
+        westPanel.on('remove', function(panel) {
+            if (panel.items.items.length == 0) {
+                this.setDisabled(true);
+            }
+        }, showWestPanelItem);
+
         westPanel.on('show', function() {
             this.setChecked(true, true);
         }, showWestPanelItem);
