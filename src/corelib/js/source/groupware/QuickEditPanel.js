@@ -21,8 +21,17 @@ Ext.namespace('com.conjoon.groupware');
  */
 com.conjoon.groupware.QuickEditPanel = function(){
 
+    var _onReadyAttached = false;
+
+    var _videoQueue = null;
 
     var _panel = null;
+
+    var _youtubeControl = null;
+
+    var _playerContainer = null
+
+    var _last = null;
 
     var getYoutubePanel = function(config)
     {
@@ -54,12 +63,7 @@ com.conjoon.groupware.QuickEditPanel = function(){
                                     if (btn != 'ok') {
                                        return;
                                     }
-                                    var id = control._parseVideoId(text);
-                                    if (id) {
-                                        control.player.stopVideo();
-                                        control.player.clearVideo();
-                                        control.player.cueVideoById(id);
-                                    }
+                                    com.conjoon.groupware.QuickEditPanel.loadYoutubeVideo(text);
                                   },
                         icon    : msg.QUESTION,
                         cls     :'com-conjoon-msgbox-prompt',
@@ -68,27 +72,80 @@ com.conjoon.groupware.QuickEditPanel = function(){
             }
         });
 
-        pControl =  new tyt({
+        _youtubeControl =  new tyt({
             player   : playerPanel,
             border   : false,
             id       : 'control',
             style    : 'border:none;'
         });
 
-        var w = new Ext.Panel({
+        _playerContainer = new Ext.Panel({
             title     : 'Ytube',
             layout    : 'fit',
             hideMode  : 'offsets',
-            bbar      : pControl
+            bbar      : _youtubeControl
         });
 
-        com.conjoon.groupware.util.FlashControl.register(playerPanel, w);
+        com.conjoon.groupware.util.FlashControl.register(playerPanel, _playerContainer);
 
-        return w;
+        return _playerContainer;
+    };
+
+    var _playQueue = function() {
+        var player = _youtubeControl.player;
+
+        if (player.videoId) {
+            player.stopVideo();
+            player.clearVideo();
+        }
+
+        // this is needed in case the user double clicks a link.
+        // the flash movie obviously seems some defer time to init itself,
+        // otherwise an empty video_id will be send to the youtube servers which
+        // cannot be influenced by the server
+        if (_last == _videoQueue) {
+            return;
+        }
+
+        _last = _videoQueue;
+
+        (function(){
+            player.loadVideoById(_videoQueue);
+            _last = null;
+        }).defer(1000);
     };
 
     return {
 
+        loadYoutubeVideo : function(url)
+        {
+            if (!_youtubeControl) {
+                return;
+            }
+
+            var player = _youtubeControl.player;
+
+            if (_panel.ownerCt.hidden) {
+                _panel.ownerCt.setVisible(true);
+            }
+
+            _panel.setActiveTab(_playerContainer);
+
+            var id = _youtubeControl._parseVideoId(url);
+            if (id) {
+                _videoQueue = id;
+                if (!player.playerAvailable()) {
+                    if (!_onReadyAttached) {
+                        player.on('ready', function() {
+                            _playQueue();
+                        });
+                        _onReadyAttached = true;
+                    }
+                } else {
+                    _playQueue();
+                }
+            }
+        },
 
         getComponent : function(config)
         {

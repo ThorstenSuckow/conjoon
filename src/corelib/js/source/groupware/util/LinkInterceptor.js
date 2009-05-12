@@ -34,6 +34,10 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
                     name    : t.firstChild.data,
                     address : href.substr(7)
                 });
+            } else if (href &&  (href.indexOf('http://www.youtube.com') == 0 ||
+                       href.indexOf('http://youtube.com') == 0)) {
+                com.conjoon.groupware.QuickEditPanel.loadYoutubeVideo(href);
+
             } else {
                 window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(href));
             }
