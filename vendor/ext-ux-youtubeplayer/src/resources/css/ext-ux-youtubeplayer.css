@@ -1,3 +1,11 @@
 .ext-ux-youtubeplayer {
     background-color:#000000;
 }
+
+.ext-ux-youtubeplayer.strict embed{
+    position:relative;
+}
+
+.ext-ux-youtubeplayer.stretch embed{
+    position:normal;
+}

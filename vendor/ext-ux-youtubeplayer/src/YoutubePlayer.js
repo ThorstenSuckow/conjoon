@@ -12,9 +12,7 @@ Ext.namespace('Ext.ux.YoutubePlayer');
  *
  * When loading the file into your application, the function "onYouTubePlayerReady"
  * will be added automatically into the window's scope. If a function with the same
- * name within that scope already exists, a function-sequence will be created using
- * "createSequence". The function expects as a first parameter the id of the flash-object
- * that called the function. See the YouTube chromeless API for more information.
+ * name within that scope already exists, an exception will be thrown.
  *
  * Flaws: Mozilla https://bugzilla.mozilla.org/show_bug.cgi?id=262354
  *
@@ -50,7 +48,7 @@ Ext.namespace('Ext.ux.YoutubePlayer');
  * @class Ext.ux.YoutubePlayer
  * @extends Ext.FlashComponent
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @version 0.3RC1
+ * @version 0.3
  */
 Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
 
@@ -141,7 +139,9 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
 
         Ext.apply(this, {
             ratioMode : this.ratioMode || 'normal',
-            swfId     : this.playerId
+            swfId     : this.playerId,
+            style     : this.ratioMode == 'strict' ? 'position:relative'
+                                                   : 'position:normal'
         });
 
         Ext.applyIf(this, {
@@ -150,7 +150,7 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
                         this.playerId,
             start     : false,
             controls  : false,
-            cls       : 'ext-ux-youtubeplayer',
+            cls       : 'ext-ux-youtubeplayer '+this.ratioMode,
             scripting : 'always',
             params    : {
                 wmode   : 'opaque',
@@ -266,12 +266,10 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
                 pStyle.width  = width+'px';
                 pStyle.top  = '50%';
                 pStyle.left = '50%';
-                pStyle.position = 'relative';
                 this.setPlayerSize(width, height);
             break;
 
             case 'stretch':
-                pStyle.position = 'normal';
                 pStyle.margin   = 'auto';
                 pStyle.height   = height+'px';
                 pStyle.width    = width+'px';
@@ -299,8 +297,8 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
      */
     loadVideoById : function(videoId, startSeconds)
     {
-        this.videoId = videoId;
         this.player.loadVideoById(videoId, startSeconds);
+        this.videoId = videoId;
     },
 
     /**
@@ -317,8 +315,8 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
      */
     cueVideoById : function(videoId, startSeconds)
     {
-        this.videoId = videoId;
         this.player.cueVideoById(videoId, startSeconds);
+        this.videoId = videoId;
     },
 
     /**
@@ -388,6 +386,7 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
         if (!this.playerAvailable()) {
             return;
         }
+        this.videoId = null;
         this.player.clearVideo();
     },
 
