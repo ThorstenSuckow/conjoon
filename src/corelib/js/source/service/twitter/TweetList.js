@@ -232,15 +232,6 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
             el.removeClass('even');
             el.removeClass('odd');
             el.addClass((i % 2 === 0) ? 'even' : 'odd');
-
-            // returns a composite element
-            /**
-             * @todo think about performance enhancement
-             */
-            el.select('p span a.when').update(
-                this._getTimeString(this.store.getAt(i))
-            );
-
             i++;
             el = all.item(i);
         }
@@ -340,6 +331,10 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
      * triggered the updateempty event, so the contents can be refreshed in a
      * frequent interval.
      *
+     * Developers note:
+     * The implementation will be used in other methods in this class without calling
+     * this method directly. If you change anything here, make sure you update/refactore
+     * other implementation too.
      */
     updateMetaInfo : function()
     {

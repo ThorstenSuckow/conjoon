@@ -136,6 +136,18 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _toolbar : null,
 
     /**
+     * @type {Object} _metaTaskConfig Configuration object for the task that updates
+     * meta information on the recent tweets list in a frequent interval.
+     */
+    _metaTaskConfig : null,
+
+    /**
+     * @type {Object} _metaTask The current task that updates the meta information on the
+     * current tweet list in a frequent interval.
+     */
+    _metaTask : null,
+
+    /**
      * Inits this component.
      *
      */
@@ -194,8 +206,6 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 
         this.recentTweets.store.on('beforeload', this._onRecentTweetBeforeLoad, this);
         this.recentTweets.store.on('load',       this._onRecentTweetLoad,       this);
-
-        this.tweetPoller.on('updateempty', this._onTweetPollerUpdateEmpty, this);
 
         this.inputBox.getUpdateButton().on('click', this._onUpdateButtonClick, this);
 
@@ -268,24 +278,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
     _onRecentTweetBeforeLoad : function(store, options)
     {
+        this.stopMetaTask();
         this.tweetPoller.stopPolling();
-    },
-
-    /**
-     * Called when the tweet poller finished loading and no additional records
-     * have been added to the tweetPoller's updateStore (which should be the store
-     * of the current recentTweets).
-     * This implementation will force the recentTweets to update its meta information,
-     * e.g. informations which can be calculated and displayed using the current set
-     * of records in the recentTweets store, such as a posted timestamp.
-     *
-     * @param {com.conjoon.service.twitter.data.TweetPoller} tweetPoller
-     *
-     * @protected
-     */
-    _onTweetPollerUpdateEmpty : function(tweetPoller)
-    {
-        this.recentTweets.updateMetaInfo();
     },
 
     /**
@@ -303,6 +297,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             return;
         }
 
+        this.startMetaTask();
         this.tweetPoller.startPolling(
             options.params.id,
             rec.get('updateInterval')
@@ -749,6 +744,38 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
 // -------- public API
 
     /**
+     * Stops the task that is responsible for updating a tweets list meta information
+     * in a frequent interval.
+     *
+     */
+    stopMetaTask : function()
+    {
+        if (this._metaTask) {
+            this._metaTask.stop(this._metaTaskConfig);
+        }
+
+        this._task = null;
+    },
+
+    /**
+     * Starts the task that is responsible for updating a tweets list meta information
+     * in a frequent interval.
+     */
+    startMetaTask : function()
+    {
+        this.stopMetaTask();
+
+        this._metaTaskConfig = {
+            run      : this.recentTweets.updateMetaInfo,
+            scope    : this.recentTweets,
+            interval : 60000
+        };
+
+        this._metaTask = new Ext.util.TaskRunner();
+        this._metaTask.start(this._metaTaskConfig);
+    },
+
+    /**
      * Returns the currently used account. Return sa value equal or less to 0
      * if there is currently no account chosen.
      *
@@ -788,6 +815,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this._currentAccountId = -1;
         this._currentTwitterId = -1;
 
+        this.stopMetaTask();
         this.tweetPoller.stopPolling();
 
         if (this.inputBox.rendered) {
