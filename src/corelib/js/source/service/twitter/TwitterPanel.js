@@ -556,7 +556,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.getToolbar().setDisabled(false);
         this.inputBox.setMessage("");
         this.recentTweets.store.insert(0, [rec]);
-        this.showInputBox(false);
+        this.getShowInputButton().toggle(false);
     },
 
     /**
