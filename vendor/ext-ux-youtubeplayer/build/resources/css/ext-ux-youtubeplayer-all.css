@@ -11,6 +11,14 @@
     background-color:#000000;
 }
 
+.ext-ux-youtubeplayer.strict embed{
+    position:relative;
+}
+
+.ext-ux-youtubeplayer.stretch embed{
+    position:normal;
+}
+
 .ext-ux-youtubeplayer-control .play {
     background-image:url(../images/control_play_blue.png) !important;
 }
