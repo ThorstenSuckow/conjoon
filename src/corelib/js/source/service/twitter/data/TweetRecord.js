@@ -29,9 +29,10 @@ Ext.namespace('com.conjoon.service.twitter.data');
 com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
 
     /**
-     * @type {Number} id The id of the tweet, as managed by the Twitter service.
+     * @type {String} id The id of the tweet, as managed by the Twitter service.
+     * This should not be converted to an integer, see http://www.twitpocalypse.com/
      */
-    {name : 'id',              type : 'int'},
+    {name : 'id',              type : 'string'},
 
     /**
      * @type {String} text The actual text of the status update.
@@ -127,10 +128,11 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
     {name : 'isFollowing',  type : 'bool'},
 
     /**
-     * @type {Number} inReplyToStatusId The id of the tweet this tweet referrs to, as managed
-     * by the Twitter service. May be null.
+     * @type {String} inReplyToStatusId The id of the tweet this tweet referrs to, as managed
+     * by the Twitter service. May be null. This should not be converted to an integer. See
+     * http://www.twitpocalypse.com/
      */
-    {name : 'inReplyToStatusId',  type : 'int'},
+    {name : 'inReplyToStatusId',  type : 'string'},
 
     /**
      * @type {Number} inReplyToUserId The id of the user of the tweet this tweet
