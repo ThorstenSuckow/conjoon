@@ -539,6 +539,20 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             // compute message list based on messages already in the db
         }
 
+        // this is to prevent undefined indexes when the count of uidl
+        // differs from the number of emails fetched. This is a very rare error
+        // that occures now and then - see http://wiki.conjoon.org/ticket/189
+        if (count($uidl) != $mailCount) {
+            return array(
+                'fetched' => $fetchedEmailIds,
+                'errors'  => array(
+                    'Could not retrieve messages - number of items in unique id list ' .
+                    'differs from total number of emails on the server: '.
+                    'Number of unique ids: '.count($uidl).'; number of messages: '.$mailCount
+                )
+            );
+        }
+
         $messagesToRemove = array();
 
         for ($oo = 1; $oo < $mailCount+1; $oo++) {
