@@ -61,9 +61,6 @@ com.conjoon.util.Json = function() {
             options = options || {};
 
             if (error === null) {
-                console.log(response);
-                    console.log("------");
-                    console.log(response.responseText);
                 return {
                     message   : '<b>'
                                 +com.conjoon.Gettext.gettext("An unexpected error occured. The server returned an empty response, most likely due to a response timeout:")
