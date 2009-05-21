@@ -216,7 +216,10 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
     {
         if ($this->_context == self::CONTEXT_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE) {
 
-            $this->_filters['title'] = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
+            $this->_filters['title'] = array(
+                array('StripTags')//,
+              //  new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8')
+            );
 
             $this->_filters['description'] = array(
                 array('StripTags',
