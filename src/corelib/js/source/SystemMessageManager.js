@@ -55,7 +55,16 @@ com.conjoon.SystemMessageManager = function() {
             }
         });
 
-        if (_context == 'iphone') {
+        // this will recompute the position on the screen based on the heigth/width
+        // properties as specified in the css
+        if (_context != 'iphone') {
+            dlg.on('show', function(){
+                var xy = dlg.el.getAlignToXY(document.body, 'c-c');
+                var pos = dlg.el.translatePoints(xy[0], xy[1]);
+
+                dlg.el.setLeftTop(pos.left, pos.top);
+            });
+        } else {
             // we will set a default height for the iphone
             // to 200 px for each Ext.MessageBox
             dlg.height = 200;
