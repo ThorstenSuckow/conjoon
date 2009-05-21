@@ -17,34 +17,6 @@
  * behavior as wished.
  */
 
-Ext.MessageBox.CRITICAL = 'ext-mb-error';
-
-/**
- * @ext-request beta1 Can we have a onHide method in MessageBox so "handleHide"
- *                    gets called when the dialog gets hidden? Because I have
- *                    changing custom cls for each type of message box (i.e.
- *                    question, info etc. and the cls property gets appended to the
- *                    cls that was already created when the first call to show()
- *                    was made.
- */
-var dlg = Ext.MessageBox.getDialog();
-dlg.on('hide', function(){
-    dlg.el.removeClass([
-        'de-intrabuild-msgbox-warning',
-        'de-intrabuild-msgbox-prompt',
-        'de-intrabuild-msgbox-question',
-        'de-intrabuild-msgbox-info',
-        'de-intrabuild-msgbox-error',
-        'de-intrabuild-msgbox-critical'
-    ]);
-});
-
-dlg.on('show', function(){
-    var xy = dlg.el.getAlignToXY(document.body, 'c-c');
-    var pos = dlg.el.translatePoints(xy[0], xy[1]);
-
-    dlg.el.setLeftTop(pos.left, pos.top);
-});
 
 // **********************
 /**

@@ -43,6 +43,18 @@ com.conjoon.SystemMessageManager = function() {
             ]);
         });
 
+        Ext.MessageBox.CRITICAL         = 'ext-mb-error';
+        Ext.MessageBox.MISSING_RESPONSE = 'ext-mb-error';
+
+        // sets the default to com-conjoon-msgbox-error if no additional class was
+        // specified
+        dlg.on('show', function(){
+            if (dlg.el.dom.className.indexOf('com-conjoon-msgbox') == -1) {
+                dlg.el.addClass('com-conjoon-msgbox-error');
+                Ext.MessageBox.setIcon(Ext.MessageBox.ERROR);
+            }
+        });
+
         // this will recompute the position on the screen based on the heigth/width
         // properties as specified in the css
         if (_context != 'iphone') {
@@ -61,14 +73,51 @@ com.conjoon.SystemMessageManager = function() {
 
     return {
 
+
+
         /**
          * Sets the application context for the SystemMessageManager.
+         * This is usually called upon application startup and only once during
+         * application lifetime.
          *
          * @param {String} context
          */
         setContext : function(context)
         {
+            if (!_initDone) {
+                _init();
+                _initDone = true;
+            }
+
             _context = context;
+        },
+
+        /**
+         * Shows a prompt dialog.
+         *
+         *
+         */
+        prompt : function(message, options)
+        {
+            var msg = Ext.MessageBox;
+
+            var c = {};
+
+            Ext.apply(c, message);
+
+            c.msg = c.text;
+            delete c.text;
+
+            Ext.apply(c, {
+                prompt : true,
+                buttons : msg.OKCANCEL,
+                icon    : msg.QUESTION,
+                cls     :'com-conjoon-msgbox-prompt',
+                width   : 375
+            });
+
+            Ext.apply(c, options);
+            this.show(c);
         },
 
         /**
@@ -108,11 +157,6 @@ com.conjoon.SystemMessageManager = function() {
          */
         show : function(config)
         {
-            if (!_initDone) {
-                _init();
-                _initDone = true;
-            }
-
             switch (_context) {
                 case 'iphone':
                     Ext.apply(config, {
@@ -126,6 +170,5 @@ com.conjoon.SystemMessageManager = function() {
 
             Ext.Msg.show(config);
         }
-
     };
 }();
