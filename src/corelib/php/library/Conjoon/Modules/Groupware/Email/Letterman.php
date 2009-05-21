@@ -581,6 +581,14 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 $this->_maxMemory = Conjoon_Util_Format::convertToBytes(ini_get('memory_limit'));
             }
             $s = $mail->getSize($messageNum);
+
+            if ($s == 0) {
+                $fetchedEmailErrors[] = 'Could not save message No. '
+                                        .$messageNum
+                                        .' - message size seems to be 0 bytes';
+                continue;
+            }
+
             if ($this->_maxMemory / $s <= 17) {
                 $fetchedEmailErrors[] = 'Could not save message No. '
                                         .$messageNum
