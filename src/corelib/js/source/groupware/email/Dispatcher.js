@@ -26,7 +26,7 @@ com.conjoon.groupware.email.Dispatcher = function() {
     {
         var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
 
-        if (data == null) {
+        if (!data) {
             _onBulkSendFailure(response, options);
             return;
         }
@@ -80,7 +80,7 @@ com.conjoon.groupware.email.Dispatcher = function() {
     {
         var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
 
-        if (data == null) {
+        if (!data) {
             _onManageDraftFailure(response, options, type);
             return;
         }
@@ -170,24 +170,50 @@ com.conjoon.groupware.email.Dispatcher = function() {
         });
     };
 
-    var _manageDraft = function(draft, referencedItem, options, type)
+    var _manageDraft = function(draft, referencedItem, options, type, checkSubject)
     {
         // check if any valid email-addresses have been submitted
-        if ((type == 'send' || type == 'outbox') &&
-            (draft.get('to') == '' && draft.get('cc') == '' && draft.get('bcc') == '')) {
-            var msg  = Ext.MessageBox;
+        if (type == 'send' || type == 'outbox') {
 
-            msg.show({
-                title   : com.conjoon.Gettext.gettext("Error - specify recipient(s)"),
-                msg     : com.conjoon.Gettext.gettext("Please specify one or more recipients for this message."),
-                buttons : msg.OK,
-                icon    : msg.WARNING,
-                scope   : this,
-                cls     :'com-conjoon-msgbox-warning',
-                width   : 400
-            });
+            if (draft.get('to') == '' && draft.get('cc') == '' && draft.get('bcc') == '') {
+                var msg  = Ext.MessageBox;
 
-            return;
+                msg.show({
+                    title   : com.conjoon.Gettext.gettext("Error - specify recipient(s)"),
+                    msg     : com.conjoon.Gettext.gettext("Please specify one or more recipients for this message."),
+                    buttons : msg.OK,
+                    icon    : msg.WARNING,
+                    scope   : this,
+                    cls     :'com-conjoon-msgbox-warning',
+                    width   : 400
+                });
+
+                return;
+            }
+
+            // check if subject is available
+            if (draft.get('subject').trim() == "" && checkSubject !== false) {
+                var msg = new com.conjoon.SystemMessage({
+                    title : com.conjoon.Gettext.gettext("Missing subject"),
+                    text  : com.conjoon.Gettext.gettext("You did not specify a subject for this message. If you want to specify a subject, you can do so now."),
+                    type  : com.conjoon.SystemMessage.TYPE_PROMPT
+                });
+
+                com.conjoon.SystemMessageManager.prompt(msg, {
+                    value : com.conjoon.Gettext.gettext("(no subject)"),
+                    fn    : function(button, text) {
+                        if (button != 'ok') {
+                            return;
+                        }
+                        text = text == undefined ? "" : text+"";
+                        draft.set('subject', text);
+                        com.conjoon.groupware.email.EmailEditorManager.setSubject(text, options.panelId);
+                        _manageDraft(draft, referencedItem, options, type, false);
+                    }
+                });
+
+                return;
+            }
         }
 
         var subject     = '';
@@ -288,8 +314,9 @@ com.conjoon.groupware.email.Dispatcher = function() {
          * @param {com.conjoon.groupware.email.EmailItemRecord} referencedItem
          * @param {Object} options additional set of options to be used for the
          * Ext.Ajax.request.
+         *`@param {Boolean} checkSubject Whether to check for a missing subject
          */
-        sendEmail : function(draft, referencedItem, options)
+        sendEmail : function(draft, referencedItem, options, checkSubject)
         {
             _manageDraft(draft, referencedItem, options, 'send');
         },
@@ -301,10 +328,11 @@ com.conjoon.groupware.email.Dispatcher = function() {
          * @param {com.conjoon.groupware.email.EmailItemRecord} referencedItem
          * @param {Object} options additional set of options to be used for the
          * Ext.Ajax.request.
+         *`@param {Boolean} checkSubject Whether to check for a missing subject
          */
-        moveDraftToOutbox : function(draft, referencedItem, options)
+        moveDraftToOutbox : function(draft, referencedItem, options, checkSubject)
         {
-            _manageDraft(draft, referencedItem, options, 'outbox');
+            _manageDraft(draft, referencedItem, options, 'outbox', checkSubject);
         },
 
         /**

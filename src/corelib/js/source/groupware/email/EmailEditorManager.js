@@ -274,7 +274,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
 
-        if (data === null) {
+        if (!data) {
             return onDraftLoadException(response, options);
         }
 
@@ -878,23 +878,31 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var getTitle = function(value)
     {
-        var str = subjectField.getValue().trim();
+        value = (value != undefined ? value+"" : "").trim();
 
-        str = (str == "" && value != undefined) ? value : str;
-
-        if (str == "") {
-            str = com.conjoon.Gettext.gettext("(no subject)");
+        if (value == "") {
+            value = com.conjoon.Gettext.gettext("(no subject)");
         } else {
-            str = Ext.util.Format.htmlEncode(str);
+            value = Ext.util.Format.htmlEncode(value);
         }
 
-        return str;
+        return value;
     };
 
-    var onSubjectValueChange = function()
+    /**
+     * Listener for the key events of the subject input field.
+     * Sets the title of the currently active panel to the html encoded value
+     * of the subject text field.
+     *
+     * @param {Ext.form.TextField}
+     * @param {Ext.Eventobject} eventObject
+     */
+    var onSubjectValueChange = function(textField, eventObject)
     {
+        var panelId = activePanel.id;
+
         formValues[activePanel.id].dirty = true;
-        activePanel.setTitle(getTitle());
+        activePanel.setTitle(getTitle(subjectField.getValue().trim()));
     }
 
     /**
@@ -1160,6 +1168,30 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
 
     return {
+
+        /**
+         * Sets the subject for the specified panel id.
+         *
+         *
+         * @param {String} subject
+         * @param {String} panelId
+         */
+        setSubject : function(subject, panelId)
+        {
+            if (activePanel && activePanel.getId() == panelId) {
+                form.subjectField.setValue(subject);
+            }
+
+            var m = Ext.getCmp(panelId);
+            if (m) {
+                m.setTitle(getTitle(subject));
+            }
+
+            if (formValues[panelId]) {
+                formValues[panelId].subject = subject;
+                formValues[panelId].dirty   = true;
+            }
+        },
 
         /**
          * Creates a new panel to create/edit an email.
