@@ -301,7 +301,7 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
     onEmailLoadSuccess : function(response, parameters)
     {
         var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
-        if (data === null || (data && !data.item)) {
+        if (!data || (data && !data.item)) {
             this.onEmailLoadFailure(response, parameters);
             return;
         }

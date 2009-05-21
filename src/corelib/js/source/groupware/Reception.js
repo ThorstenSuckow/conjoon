@@ -103,7 +103,7 @@ com.conjoon.groupware.Reception = function() {
         var inspector = com.conjoon.groupware.ResponseInspector;
 
         var data = inspector.isSuccess(response);
-        if (data === null) {
+        if (!data) {
             return inspector.handleFailure(response, options);
         }
 

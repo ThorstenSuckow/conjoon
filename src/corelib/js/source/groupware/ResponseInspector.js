@@ -117,6 +117,8 @@ com.conjoon.groupware.ResponseInspector = function() {
          * type is String, the method will try to json-decode the string.
          * Throws an error if that fails.
          * This method must only be called when inspecting ajax-responses.
+         * The method assumes that no authorization failure is present,
+         * if any error occurres while trying to decode the response.
          *
          * @param {Object|String} response The response to inspect for an
          * authentication failure.
@@ -130,7 +132,15 @@ com.conjoon.groupware.ResponseInspector = function() {
          */
         isAuthenticationFailure : function(response)
         {
-            var obj = _tryDecode(response);
+            if (response && response.responseText) {
+                response = response.responseText;
+            }
+
+            try {
+                var obj = _tryDecode(response);
+            } catch (e) {
+                return false;
+            }
 
             if (obj.authorized === false) {
                 return true;
@@ -220,6 +230,8 @@ com.conjoon.groupware.ResponseInspector = function() {
 
                 if (resp.success === true) {
                     return resp;
+                } else if (resp.success === false) {
+                    return false;
                 }
             } catch (e) {
                 // ignore
@@ -269,6 +281,8 @@ com.conjoon.groupware.ResponseInspector = function() {
         {
             var resp = response;
 
+            options = options || {};
+
             try {
                 if (resp) {
                     if (resp.responseText) {
@@ -282,16 +296,14 @@ com.conjoon.groupware.ResponseInspector = function() {
             }
 
             // check if the response send an authentication failure
-            if (options) {
-                if (options.onLogin && com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
-                    var ol = options.onLogin;
-                    com.conjoon.groupware.Reception.onLogin(
-                        ol.fn, ol.scope
-                    );
-                } else if (options.onGeneral) {
-                    var ol = options.onGeneral;
-                    ol.fn.call(ol.scope);
-                }
+            if (options.onLogin && com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
+                var ol = options.onLogin;
+                com.conjoon.groupware.Reception.onLogin(
+                    ol.fn, ol.scope
+                );
+            } else if (options.onGeneral) {
+                var ol = options.onGeneral;
+                ol.fn.call(ol.scope);
             }
 
             var json = com.conjoon.util.Json;
@@ -301,7 +313,7 @@ com.conjoon.groupware.ResponseInspector = function() {
             var opt = {};
 
             if (!resp.error) {
-                error = json.forceErrorDecode(resp);
+                error = json.forceErrorDecode(resp, options);
                 opt = {
                     title   : error.title,
                     message : error.message
@@ -309,8 +321,10 @@ com.conjoon.groupware.ResponseInspector = function() {
             } else {
                 error = resp.error;
                 opt = {
-                    title   : Ext.util.Format.htmlEncode(error.title),
-                    message : Ext.util.Format.htmlEncode(error.message)
+                    title   : Ext.util.Format.htmlEncode(error.title) || options.title,
+                    message : options.message
+                              ? options.message + "<br />" + Ext.util.Format.htmlEncode(error.message)
+                              : Ext.util.Format.htmlEncode(error.message)
                 };
             }
 

@@ -116,7 +116,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
 
         var data = inspector.isSuccess(response);
 
-        if (data === null || (data && !data.item)) {
+        if (!data || (data && !data.item)) {
             onFeedLoadFailure(response, options);
             return;
         }
@@ -151,25 +151,38 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
      */
     var onFeedLoadFailure = function(response, options)
     {
-        var panel = openedFeeds[options.panelId];
-        if (panel && panel.view) {
-            panel.view.ownerCt.remove(panel.view);
-        }
+        var responseInspector = com.conjoon.groupware.ResponseInspector;
 
         _requestIds[options.panelId] = null;
         delete _requestIds[options.panelId];
 
-        Ext.ux.util.MessageBus.publish(
-            'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadFailure',
-            {id : options.params.id}
-        );
+        var succ        = responseInspector.isSuccess(response);
+        var authFailure = responseInspector.isAuthenticationFailure(response);
+        // success is eitehr false or null
+        // if succ is null, the no response was returned or response
+        // could not be decoded, if success === false, then the item was
+        // not found on the server
+        if (!succ && !authFailure) {
+            var panel = openedFeeds[options.panelId];
+            if (panel && panel.view) {
+                panel.view.ownerCt.remove(panel.view);
+            }
 
-        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
+            if (succ === false) {
+                Ext.ux.util.MessageBus.publish(
+                    'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadFailure',
+                    {id : options.params.id}
+                );
+            }
+        }
+
+        responseInspector.handleFailure(response, {
             onLogin : {
                 fn : function(){
                     loadFeedContents(options.params.id, options.panelId);
                 }
-            }
+            },
+            title   : com.conjoon.Gettext.gettext("Error while loading feed item")
         });
 
     };

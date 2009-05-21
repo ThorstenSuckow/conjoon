@@ -278,20 +278,30 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
 
     var onLoadFailure = function(response, options)
     {
-        Ext.ux.util.MessageBus.publish(
-            'com.conjoon.groupware.feeds.FeedPreview.onLoadFailure',
-            {id : options.params.id}
-        );
+        var responseInspector = com.conjoon.groupware.ResponseInspector;
 
-        com.conjoon.groupware.ResponseInspector.handleFailure(response, {
+        var success     = responseInspector.isSuccess(response);
+        var authFailure = responseInspector.isAuthenticationFailure(response);
+
+        if (success === false && !authFailure) {
+            Ext.ux.util.MessageBus.publish(
+                'com.conjoon.groupware.feeds.FeedPreview.onLoadFailure',
+                {id : options.params.id}
+            );
+        }
+        responseInspector.handleFailure(response, {
             onLogin: {
                 fn : function(){
                     decoratePreviewPanel();
                 }
-            }
+            },
+            title   :  com.conjoon.Gettext.gettext("Error while loading feed item")
         });
-        previewPanel.close();
-        loadMask.hide();
+
+        if (!authFailure) {
+            previewPanel.close();
+            loadMask.hide();
+        }
     };
 
     /**
