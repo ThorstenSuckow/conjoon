@@ -192,7 +192,9 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
      */
     var onHide = function(skipAlign)
     {
-        previewPanel.getUpdater().abort();
+        if (requestId !== null) {
+            Ext.Ajax.abort(requestId);
+        }
         previewPanel.setTitle(com.conjoon.Gettext.gettext("Loading..."));
         previewPanel.body.update("");
         if (!skipAlign) {
@@ -468,7 +470,9 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
             if (previewPanel !== null) {
                 // preview panel can be reused for previewing another feed.
                 // abort all pending operations
-                previewPanel.getUpdater().abort();
+                if (requestId !== null) {
+                    Ext.Ajax.abort(requestId);
+                }
 
                 previewPanel.el.stopFx();
 
