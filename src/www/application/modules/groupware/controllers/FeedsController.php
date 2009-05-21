@@ -462,9 +462,18 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         )->get(array('id' => $id));
 
         if ($item == null) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
             $this->view->success = false;
             $this->view->item    = null;
-            $this->view->error   = null;
+            $this->view->error   = Conjoon_Error_Factory::createError(
+                "The requested feed item was not found on the server.",
+                Conjoon_Error::LEVEL_ERROR,
+                Conjoon_Error::DATA
+            )->getDto();
         } else {
             $this->view->success = true;
             $this->view->item    = $item;
