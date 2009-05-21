@@ -16,13 +16,14 @@ Ext.namespace('com.conjoon.groupware');
 
 com.conjoon.groupware.NotificationManager = function(){
 
+    var gettext = com.conjoon.Gettext.gettext;
+
     var _subscribe = function()
     {
         Ext.ux.util.MessageBus.subscribe(
             'com.conjoon.groupware.feeds.AccountStore.update',
             _accountStoreUpdated
         );
-
     };
 
     var _accountStoreUpdated = function(subject, message)
@@ -35,8 +36,6 @@ com.conjoon.groupware.NotificationManager = function(){
         );
 
         if (maxExecutionTime <= requestTimeout) {
-
-            var gettext = com.conjoon.Gettext.gettext;
 
             var text = String.format(
                 gettext("The computed overall request timeout of {0} seconds exceeds PHP's <i>max_execution_time</i>-setting of {1} seconds."),
