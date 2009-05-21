@@ -36,6 +36,7 @@ class Conjoon_Error implements Conjoon_BeanContext, Serializable {
     const INPUT         = 'CONJOON_ERROR_INPUT';
     const AUTHORIZATION = 'CONJOON_ERROR_AUTHORIZATION';
     const LOCKED        = 'CONJOON_ERROR_LOCKED';
+    const DATA          = 'CONJOON_ERROR_DATA';
 
     const LEVEL_CRITICAL = 'critical';
     const LEVEL_WARNING  = 'warning';
