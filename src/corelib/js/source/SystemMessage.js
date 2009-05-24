@@ -75,3 +75,8 @@ com.conjoon.SystemMessage.TYPE_CONFIRM = 32;
  * @const {Number} TYPE_PROMPT
  */
 com.conjoon.SystemMessage.TYPE_PROMPT = 64;
+
+/**
+ * @const {Number} TYPE_WAIT
+ */
+com.conjoon.SystemMessage.TYPE_WAIT = 128;

@@ -39,7 +39,8 @@ com.conjoon.SystemMessageManager = function() {
                 'com-conjoon-msgbox-question',
                 'com-conjoon-msgbox-info',
                 'com-conjoon-msgbox-error',
-                'com-conjoon-msgbox-critical'
+                'com-conjoon-msgbox-critical',
+                'com-conjoon-msgbox-wait'
             ]);
         });
 
@@ -47,12 +48,19 @@ com.conjoon.SystemMessageManager = function() {
         Ext.MessageBox.MISSING_RESPONSE = 'ext-mb-error';
 
         // sets the default to com-conjoon-msgbox-error if no additional class was
-        // specified
+        // specified, and adjusts the class of the used progressbar to the cls as
+        // defined by the conjoon project
         dlg.on('show', function(){
             if (dlg.el.dom.className.indexOf('com-conjoon-msgbox') == -1) {
                 dlg.el.addClass('com-conjoon-msgbox-error');
                 Ext.MessageBox.setIcon(Ext.MessageBox.ERROR);
             }
+
+            var el = Ext.DomQuery.selectNode('div[class=x-progress-wrap]');
+            if (el) {
+                Ext.fly(el).addClass('com-conjoon-groupware-ProgressBar');
+            }
+
         });
 
         // this will recompute the position on the screen based on the heigth/width
@@ -121,6 +129,37 @@ com.conjoon.SystemMessageManager = function() {
         },
 
         /**
+         * Shows a dialog with an infinite loading progress bar.
+         *
+         * @param {com.conjoon.SystemMessage} message
+         * @param {Object} options
+         */
+        wait : function(message, options)
+        {
+            var msg = Ext.MessageBox;
+
+            var c = {};
+
+            Ext.apply(c, message);
+
+            c.msg = c.text;
+            delete c.text;
+
+            Ext.apply(c, {
+                buttons   : false,
+                cls       : 'com-conjoon-msgbox-wait',
+                wait      : true,
+                draggable : false,
+                progress  : true,
+                closable  : false,
+                width     : 300
+            });
+
+            Ext.apply(c, options);
+            this.show(c);
+        },
+
+        /**
          * Shows a confirm dialog.
          *
          * @param {com.conjoon.SystemMessage} message
@@ -146,6 +185,14 @@ com.conjoon.SystemMessageManager = function() {
 
             Ext.apply(c, options);
             this.show(c);
+        },
+
+        /**
+         * Hides any open dialog.
+         */
+        hide : function()
+        {
+            Ext.MessageBox.hide();
         },
 
         /**
