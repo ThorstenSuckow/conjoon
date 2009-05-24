@@ -322,3 +322,10 @@ ALTER TABLE `groupware_feeds_accounts` ADD `request_timeout` TINYINT NOT NULL DE
 `update_interval` INT UNSIGNED NOT NULL ,
 PRIMARY KEY ( `id` )
 ) ENGINE = MYISAM  DEFAULT CHARSET=utf8;
+
+ALTER TABLE `groupware_email_items_references` DROP INDEX `references` ,
+ADD INDEX `references` ( `reference_items_id` , `is_pending` , `user_id` );
+
+ALTER TABLE `groupware_email_items_inbox` CHANGE `fetched_timestamp` `fetched_timestamp` INT( 11 ) UNSIGNED NOT NULL;
+
+ALTER TABLE `service_twitter_accounts` ADD INDEX `user_id` ( `id` )
