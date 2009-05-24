@@ -137,11 +137,11 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
      */
     loadUser : function(record, suspendEvents)
     {
-        this._loadedUser = record.copy();
-
         if (!record) {
             throw("com.conjoon.service.twitter.UserInfoBox.loadUser: record was undefined");
         }
+
+        this._loadedUser = record.copy();
 
         var data = Ext.apply({}, record.data);
 
