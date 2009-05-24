@@ -186,8 +186,9 @@ com.conjoon.groupware.StatusBar = function(){
                 initConf = initConf || {};
 
                 var pconf = {
-                    cls   : 'com-conjoon-groupware-ProgressBar',
-                    width : 80
+                    cls     : 'com-conjoon-groupware-ProgressBar',
+                    width   : 80,
+                    hidden  : true
                 };
                 if (Ext.isIE) {
                     pconf.style = 'margin-top:1px;';
