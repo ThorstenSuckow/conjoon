@@ -204,6 +204,14 @@ com.conjoon.groupware.Reception = function() {
     var _logout = function(buttonType)
     {
         if (buttonType == 'yes') {
+
+            com.conjoon.SystemMessageManager.wait(
+                new com.conjoon.SystemMessage({
+                    text : com.conjoon.Gettext.gettext("Please wait, signing out..."),
+                    type : com.conjoon.SystemMessage.TYPE_WAIT
+                })
+            );
+
             Ext.Ajax.request({
                 url            : './default/reception/logout/format/json',
                 success        : _onLogoutSuccess,
@@ -233,7 +241,16 @@ com.conjoon.groupware.Reception = function() {
     var _restart = function(buttonType)
     {
         if (buttonType == 'yes') {
-            window.location.replace('./');
+            com.conjoon.SystemMessageManager.wait(
+                new com.conjoon.SystemMessage({
+                    text : com.conjoon.Gettext.gettext("Restarting application..."),
+                    type : com.conjoon.SystemMessage.TYPE_WAIT
+                })
+            );
+            (function() {
+                window.onbeforeunload = Ext.emptyFn;
+                window.location.replace('./');
+            }).defer(500, window);
         }
     };
 
@@ -267,6 +284,8 @@ com.conjoon.groupware.Reception = function() {
      */
     var _onLogoutFailure = function(response, options)
     {
+        com.conjoon.SystemMessageManager.hide();
+
         var json = com.conjoon.util.Json;
         var msg  = Ext.MessageBox;
 
@@ -486,6 +505,7 @@ com.conjoon.groupware.Reception = function() {
      */
     var _lockWorkbench = function()
     {
+        com.conjoon.SystemMessageManager.hide();
         this.showLogin(this.TYPE_UNLOCK);
     };
 
@@ -626,11 +646,21 @@ com.conjoon.groupware.Reception = function() {
                 );
             }
 
+            com.conjoon.SystemMessageManager.wait(
+                new com.conjoon.SystemMessage({
+                    text : com.conjoon.Gettext.gettext("Please wait, locking workbench..."),
+                    type : com.conjoon.SystemMessage.TYPE_WAIT
+                })
+            );
+
             Ext.Ajax.request({
                 url            : './default/reception/lock/format/json',
                 disableCaching : true,
                 success        : _lockWorkbench,
-                failure        : com.conjoon.groupware.ResponseInspector.handleFailure,
+                failure        : function() {
+                    com.conjoon.SystemMessageManager.hide();
+                    com.conjoon.groupware.ResponseInspector.handleFailure(response, options);
+                },
                 scope          : this
             });
         },
