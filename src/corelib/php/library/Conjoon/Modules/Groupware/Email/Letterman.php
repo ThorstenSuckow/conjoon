@@ -283,6 +283,40 @@ class Conjoon_Modules_Groupware_Email_Letterman {
     }
 
     /**
+     * Strategyfor computing the chunk size for _cacheUidl.
+     * Depending on the passed argument, the returned value will be either
+     * a larger number to reduce calls to the database table.
+     *
+     * @param integer $number
+     *
+     * @return integer
+     */
+    private function _computeChunkSize($number)
+    {
+        $number = (int)$number;
+
+        switch (true) {
+
+            case ($number <= 20) :
+                return 20;
+            break;
+
+            case ($number <= 100) :
+                return 100;
+            break;
+
+            case ($number <= 500) :
+                return 150;
+            break;
+
+            case ($number <= 1000) :
+                return 200;
+            break;
+        }
+
+    }
+
+    /**
      * Caches the uid list as returned by the server, by querying chunks of values
      * against the db to look up already stored uids.
      * The uid-list is an assoc array with the key being the message number, and
@@ -535,20 +569,24 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         if ($hasUniqueId) {
             $uidl = $mail->getUniqueId();
-            $this->_cacheUidl($uidl, $accountId);
+            $this->_cacheUidl($uidl, $accountId, $this->_computeChunkSize($mailCount));
             // compute message list based on messages already in the db
         }
 
         // this is to prevent undefined indexes when the count of uidl
         // differs from the number of emails fetched. This is a very rare error
         // that occures now and then - see http://wiki.conjoon.org/ticket/189
+        // it's assumed its related to connection aborts during communication
+        // with the mail server
         if (count($uidl) != $mailCount) {
             return array(
                 'fetched' => $fetchedEmailIds,
                 'errors'  => array(
                     'Could not retrieve messages - number of items in unique id list ' .
-                    'differs from total number of emails on the server: '.
-                    'Number of unique ids: '.count($uidl).'; number of messages: '.$mailCount
+                    'differs from total number of emails on the server: ' .
+                    'Number of unique ids: '.count($uidl).'; number of messages: '.$mailCount .'; ' .
+                    'This is possibly related to a connection abort while attempting to fetch ' .
+                    'messages from a server. Please try again.'
                 )
             );
         }
