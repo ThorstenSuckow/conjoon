@@ -570,25 +570,24 @@ class Conjoon_Modules_Groupware_Email_Letterman {
         if ($hasUniqueId) {
             $uidl = $mail->getUniqueId();
             $this->_cacheUidl($uidl, $accountId, $this->_computeChunkSize($mailCount));
-            // compute message list based on messages already in the db
-        }
 
-        // this is to prevent undefined indexes when the count of uidl
-        // differs from the number of emails fetched. This is a very rare error
-        // that occures now and then - see http://wiki.conjoon.org/ticket/189
-        // it's assumed its related to connection aborts during communication
-        // with the mail server
-        if (count($uidl) != $mailCount) {
-            return array(
-                'fetched' => $fetchedEmailIds,
-                'errors'  => array(
-                    'Could not retrieve messages - number of items in unique id list ' .
-                    'differs from total number of emails on the server: ' .
-                    'Number of unique ids: '.count($uidl).'; number of messages: '.$mailCount .'; ' .
-                    'This is possibly related to a connection abort while attempting to fetch ' .
-                    'messages from a server. Please try again.'
-                )
-            );
+            // this is to prevent undefined indexes when the count of uidl
+            // differs from the number of emails fetched. This is a very rare error
+            // that occures now and then - see http://wiki.conjoon.org/ticket/189
+            // it's assumed its related to connection aborts during communication
+            // with the mail server
+            if (count($uidl) != $mailCount) {
+                return array(
+                    'fetched' => $fetchedEmailIds,
+                    'errors'  => array(
+                        'Could not retrieve messages - number of items in unique id list ' .
+                        'differs from total number of emails on the server: ' .
+                        'Number of unique ids: '.count($uidl).'; number of messages: '.$mailCount .'; ' .
+                        'This is possibly related to a connection abort while attempting to fetch ' .
+                        'messages from a server. Please try again.'
+                    )
+                );
+            }
         }
 
         $messagesToRemove = array();
