@@ -301,7 +301,14 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
 
         require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
 
-        $select = Conjoon_Modules_Groupware_Email_Item_Model_Item::getItemBaseQuery($userId, $sortInfo);
+        $select = Conjoon_Modules_Groupware_Email_Item_Model_Item::getItemBaseQuery(
+            $userId,
+            $sortInfo,
+            array(
+                'name' => array('inbox' => 'groupware_email_items_inbox'),
+                'cols' => array()
+            )
+        );
         $select = $select
                   ->join(
                     array('accounts' => 'groupware_email_accounts'),
@@ -315,16 +322,13 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
                     'foldersaccounts.groupware_email_accounts_id=accounts.id',
                     array()
                   )
-                  ->join(
-                    array('inbox' => 'groupware_email_items_inbox'),
+                  ->where(
+                    'items.groupware_email_folders_id=foldersaccounts.groupware_email_folders_id'.
+                    ' AND ' .
                     '`inbox`.`groupware_email_items_id`=`items`.`id`'.
                     ' AND '.
-                    $adapter->quoteInto('`inbox`.`fetched_timestamp` >= ?', $minDate, 'INTEGER') .
-                    ' AND '.
-                    'items.groupware_email_folders_id=foldersaccounts.groupware_email_folders_id',
-                    array()
+                    $adapter->quoteInto('`inbox`.`fetched_timestamp` >= ?', $minDate, 'INTEGER')
                   );
-
 
         $rows = $adapter->fetchAll($select);
 

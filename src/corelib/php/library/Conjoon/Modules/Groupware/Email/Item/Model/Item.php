@@ -223,9 +223,18 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
     /**
      * Returns the base query for email-items
      *
+     * For some queries it can be crucial to add tables which get joined at the beginning
+     * of the statement. The optional argument $addTable allows for adding INNER JOIN sources
+     * to the beginning of the statement. It keys are "name" which holds a value as specified
+     * in the "from" method from Zend_Db_Select, and "cols".
+     *
+     * @param integer $userId
+     * @param array $sortInfo
+     * @param array $addTable
+     *
      * @return Zend_Db_Table_Select
      */
-    public static function getItemBaseQuery($userId, array $sortInfo = null)
+    public static function getItemBaseQuery($userId, array $sortInfo = null, $addTable = null)
     {
         if ($sortInfo === null) {
             $sortInfo = array();
@@ -242,7 +251,21 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                       'sender',
                       'date',
                       'groupware_email_folders_id'
-                ))
+                ));
+
+        if (is_array($addTable)) {
+            $select = $select->from($addTable['name'], $addTable['cols']);
+        }
+
+        $select =
+                $select->join(
+                    array('folders' => 'groupware_email_folders'),
+                    '`folders`.`id` = `items`.`groupware_email_folders_id`',
+                    array(
+                        'is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'),
+                        'is_outbox_pending' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'outbox', 'STRING')
+                    )
+                )
                 ->join(
                     array('flag' => 'groupware_email_items_flags'),
                     '`flag`.`groupware_email_items_id` = `items`.`id`' .
@@ -262,17 +285,9 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                         array('referenced_as_types' => 'GROUP_CONCAT(DISTINCT reference.reference_type SEPARATOR \',\')' )
                  )
                 ->joinLeft(
-                    array('folders' => 'groupware_email_folders'),
-                    '`folders`.`id` = `items`.`groupware_email_folders_id`',
-                    array(
-                        'is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'),
-                        'is_outbox_pending' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'outbox', 'STRING')
-                    )
-                )
-                ->joinLeft(
                     array('attachments' => 'groupware_email_items_attachments'),
                     '`attachments`.`groupware_email_items_id` = `items`.`id`',
-                    array('is_attachment' => '(COUNT(DISTINCT `attachments`.`id`) > 0)')
+                    array('is_attachment' => 'IF(`attachments`.`id` IS NULL, 0, 1)')
                 )
                 ->group('items.id');
 
