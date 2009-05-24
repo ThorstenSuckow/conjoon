@@ -22,6 +22,20 @@
     background-position:right top;
 }
 
+.com-conjoon-groupware-ProgressBar .x-progress-text,
+.com-conjoon-groupware-ProgressBar .x-progress-text-back {
+    font-weight:normal;
+    color:#000000;
+}
+
+.com-conjoon-groupware-ProgressBar .x-progress-text {
+    line-height:11px;
+}
+
+.com-conjoon-groupware-ProgressBar .x-progress-text-back {
+    line-height:15px;
+}
+
 .com-conjoon-groupware-ProgressBar .x-progress-inner {
     height:17px;
     overflow:hidden;
