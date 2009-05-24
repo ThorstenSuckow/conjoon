@@ -57,9 +57,15 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
             /**
              * @event userload
              * @param {com.conjoon.service.twitter.UserInfoBox} userInfoBox
-             * @param micced tweetRecord or TwitterUserRecord
+             * @param mixed tweetRecord or TwitterUserRecord
              */
-            'userload'
+            'userload',
+            /**
+             * @event userloadfailed
+             * @param {com.conjoon.service.twitter.UserInfoBox} userInfoBox
+             * @param
+             */
+            'userloadfailed'
         );
 
         Ext.applyIf(this, {
@@ -138,7 +144,8 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
     loadUser : function(record, suspendEvents)
     {
         if (!record) {
-            throw("com.conjoon.service.twitter.UserInfoBox.loadUser: record was undefined");
+            this.fireEvent('userloadfailed', this);
+            return;
         }
 
         this._loadedUser = record.copy();

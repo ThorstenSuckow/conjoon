@@ -148,6 +148,12 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _metaTask : null,
 
     /**
+     * @type {String} _lastRequestedUser The sreen name for the user which tweets were most
+     * recently requested.
+     */
+    _lastRequestedUser : null,
+
+    /**
      * Inits this component.
      *
      */
@@ -195,7 +201,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.friendsList.on('click',  this._onFriendsListClick, this);
 
         this.userInfoBox.tweetStore.on('beforeload', this._onBeforeUsersRecentTweetStoreLoad, this);
-        this.userInfoBox.on('userload', this._onUserLoad, this);
+        this.userInfoBox.on('userload',       this._onUserLoad, this);
+        this.userInfoBox.on('userloadfailed', this._onUserLoadFailed, this);
 
         this.on('resize', function() {
             this.inputBox.setWidth(this.el.getSize().width);
@@ -225,6 +232,27 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     _onBeforeUsersRecentTweetStoreLoad : function()
     {
         this.getSwitchFriendshipButton().setVisible(false);
+    },
+
+    /**
+     * Listener for the userloadfailed event.
+     *
+     * @param {com.conjoon.service.twitter.userInfoBox} userInfoBox
+     */
+    _onUserLoadFailed : function()
+    {
+        this.handleSystemMessage(
+            new com.conjoon.SystemMessage({
+                title : com.conjoon.Gettext.gettext("Error while loading recent tweets"),
+                text  : String.format(
+                    com.conjoon.Gettext.gettext("Loading recent tweets for user \"{0}\" failed, due to an internal error triggered by the Twitter API."),
+                    this._lastRequestedUser
+                ),
+                type  : com.conjoon.SystemMessage.TYPE_ERROR
+            })
+        );
+
+        this.getShowRecentTweetsButton().toggle(true);
     },
 
     /**
@@ -1182,13 +1210,14 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         }
 
         if ((typeof tweetRecord) != 'string') {
-            this.userInfoBox.loadUser(tweetRecord);
+            this._lastRequestedUser = tweetRecord.get('screenName');
             Ext.apply(params, {
-                userId : tweetRecord.get('userId')
-                       ? tweetRecord.get('userId')
-                       : tweetRecord.get('id')
+                userId     : tweetRecord.get('userId')
+                           ? tweetRecord.get('userId')
+                           : tweetRecord.get('id')
             });
         } else {
+            this._lastRequestedUser = tweetRecord;
             Ext.apply(params, {
                 userName : tweetRecord
             });
