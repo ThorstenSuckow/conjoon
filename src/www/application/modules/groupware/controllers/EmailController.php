@@ -151,27 +151,51 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $len = count($emails);
         if ($len > 0) {
+            /**
+             * @see Conjoon_BeanContext_Decorator
+             */
             require_once 'Conjoon/BeanContext/Decorator.php';
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse
+             */
             require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
+            $max = 150;
+
+            if ($len >= $max) {
+                $modelClass = 'Conjoon_Modules_Groupware_Email_Item_Model_Inbox';
+            } else {
+                $modelClass = 'Conjoon_Modules_Groupware_Email_Item_Model_Item';
+            }
+
             $decoratedModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Item_Model_Inbox',
+                $modelClass,
                 new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
                     array(),
                     Conjoon_Filter_Input::CONTEXT_RESPONSE
                 )
             );
 
-            $emails = $decoratedModel->getLatestEmailItemsForAsDto(
-                $userId,
-                $time,
-                array(
-                    'start' => 0,
-                    'limit' => $len,
-                    'dir'   => 'ASC',
-                    'sort'  => 'id'
-                )
-            );
+            if ($len >= $max) {
+                $emails = $decoratedModel->getLatestEmailItemsForAsDto(
+                    $userId, $time,
+                    array(
+                        'start' => 0,
+                        'limit' => $len,
+                        'dir'   => 'ASC',
+                        'sort'  => 'id'
+                    )
+                );
+            } else {
+                $emails = $decoratedModel->getItemsForUserAsDto(
+                    $emails, $userId,
+                    array(
+                        'dir'   => 'ASC',
+                        'sort'  => 'id'
+                    )
+                );
+            }
         }
 
         $this->view->success    = true;
@@ -652,7 +676,6 @@ class Groupware_EmailController extends Zend_Controller_Action {
                 $itemModel,
                 $itemResponseFilter
             );
-
 
             $rows = $decoratedModel->getEmailItemsForAsDto(
                 $userId,
