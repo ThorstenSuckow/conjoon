@@ -187,6 +187,58 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
     }
 
     /**
+     * Returns the email items with the specified ids for the specified user.
+     *
+     * @param array $itemIds A numeric array with all ids of the email items to
+     * fetch
+     * @param integer $userId The id of the user
+     * @param array $sortInfo optional, an array with sort configuration
+     *
+     * @return array
+     */
+    public function getItemsForUser(Array $itemIds, $userId, Array $sortInfo = array())
+    {
+
+        $itemIds = empty($itemIds) ? false : $itemIds;
+        $userId  = (int)$userId;
+
+        if (!$itemIds || $userId <= 0) {
+            return array();
+        }
+
+        $sanitizedItemIds = array();
+
+        for ($i = 0, $len = count($itemIds); $i < $len; $i++) {
+            $id = (int)$itemIds[$i];
+
+            if ($id <= 0) {
+                continue;
+            }
+
+            $sanitizedItemIds[] = $id;
+        }
+
+        $sanitizedItemIds = array_unique($sanitizedItemIds);
+
+        if (count($sanitizedItemIds) == 0) {
+            return array();
+        }
+
+        $adapter = $this->getAdapter();
+
+        $select = self::getItemBaseQuery($userId, $sortInfo)
+                  ->where('items.id IN ('.implode(',', $sanitizedItemIds).')');
+
+        $rows = $adapter->fetchAll($select);
+
+        if ($rows != false) {
+            return $rows;
+        }
+
+        return array();
+    }
+
+    /**
      * Returns a single item with the specified id for the specified user.
      * Returns an empty array if entry was not found.
      *
@@ -292,8 +344,11 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 ->group('items.id');
 
         if (!empty($sortInfo)) {
-            return $select->order(self::getTableWithSortField($sortInfo['sort']).' '.$sortInfo['dir'])
-                          ->limit($sortInfo['limit'], $sortInfo['start']);
+            $select = $select->order(self::getTableWithSortField($sortInfo['sort']).' '.$sortInfo['dir']);
+
+            if (isset($sortInfo['limit']) && isset($sortInfo['start'])) {
+                $select = $select->limit($sortInfo['limit'], $sortInfo['start']);
+            }
         }
 
         return $select;
@@ -1034,6 +1089,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             'getReferencedItem',
             'getEmailItemsFor',
             'getItemForUser',
+            'getItemsForUser',
             'moveDraftToOutbox',
             'saveSentEmail',
             'saveDraft'
