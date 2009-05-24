@@ -14,10 +14,14 @@
  */
 
 /**
- * Conjoon_BeanContext
+ * @see Conjoon_BeanContext
  */
 require_once 'Conjoon/BeanContext.php';
 
+/**
+ * @see Conjoon_Modules_Groupware_Email_Draft_Dto
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Draft/Dto.php';
 
 /**
  * Class modelling an email draft, i.e. a message that is about to be send.
@@ -125,8 +129,6 @@ class Conjoon_Modules_Groupware_Email_Draft implements Conjoon_BeanContext, Seri
      */
     public function getDto()
     {
-        require_once 'Draft/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Groupware_Email_Draft_Dto();

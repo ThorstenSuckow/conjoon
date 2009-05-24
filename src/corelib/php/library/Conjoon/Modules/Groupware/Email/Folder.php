@@ -14,10 +14,14 @@
  */
 
 /**
- * Conjoon_BeanContext
+ * @see Conjoon_BeanContext
  */
 require_once 'Conjoon/BeanContext.php';
 
+/**
+ * @see Conjoon_Modules_Groupware_Email_Folder_Dto
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Folder/Dto.php';
 
 /**
  * An email folder represents an abstract storage location for email-items. It defines itself as
@@ -119,8 +123,6 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
      */
     public function getDto()
     {
-        require_once 'Folder/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Groupware_Email_Folder_Dto();

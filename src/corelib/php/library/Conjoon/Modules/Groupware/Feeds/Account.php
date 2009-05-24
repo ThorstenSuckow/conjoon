@@ -14,9 +14,14 @@
  */
 
 /**
- * Conjoon_BeanContext
+ * @see Conjoon_BeanContext
  */
 require_once 'Conjoon/BeanContext.php';
+
+/**
+ * @see Conjoon_Modules_Groupware_Feeds_Account_Dto
+ */
+require_once 'Conjoon/Modules/Groupware/Feeds/Account/Dto.php';
 
 
 /**
@@ -120,8 +125,6 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
      */
     public function getDto()
     {
-        require_once 'Account/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Groupware_Feeds_Account_Dto();

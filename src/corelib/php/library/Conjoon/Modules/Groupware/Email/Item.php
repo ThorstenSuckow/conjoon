@@ -18,6 +18,10 @@
  */
 require_once 'Conjoon/BeanContext.php';
 
+/**
+ * @see Conjoon_Modules_Groupware_Email_Item_Dto
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Item/Dto.php';
 
 /**
  * An email item defines itself as a collection of data from the emails header,
@@ -137,8 +141,6 @@ class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Seria
      */
     public function getDto()
     {
-        require_once 'Item/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Groupware_Email_Item_Dto();

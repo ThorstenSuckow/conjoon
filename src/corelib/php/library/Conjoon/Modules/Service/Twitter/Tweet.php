@@ -14,10 +14,14 @@
  */
 
 /**
- * Conjoon_BeanContext
+ * @see Conjoon_BeanContext
  */
 require_once 'Conjoon/BeanContext.php';
 
+/**
+ * @see Conjoon_Modules_Service_Twitter_Tweet_Dto
+ */
+require_once 'Conjoon/Modules/Service/Twitter/Tweet/Dto.php';
 
 /**
  * A class representing a Tweet.
@@ -146,8 +150,6 @@ class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Seri
      */
     public function getDto()
     {
-        require_once 'Tweet/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Service_Twitter_Tweet_Dto();

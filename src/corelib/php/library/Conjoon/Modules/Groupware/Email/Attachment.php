@@ -14,9 +14,14 @@
  */
 
 /**
- * Conjoon_BeanContext
+ * @see Conjoon_BeanContext
  */
 require_once 'Conjoon/BeanContext.php';
+
+/**
+ * @see Conjoon_Modules_Groupware_Email_Attachment_Dto
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Attachment/Dto.php';
 
 
 /**
@@ -94,8 +99,6 @@ class Conjoon_Modules_Groupware_Email_Attachment implements Conjoon_BeanContext,
      */
     public function getDto()
     {
-        require_once 'Attachment/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Groupware_Email_Attachment_Dto();

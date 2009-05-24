@@ -14,9 +14,14 @@
  */
 
 /**
- * Conjoon_BeanContext
+ * @see Conjoon_BeanContext
  */
 require_once 'Conjoon/BeanContext.php';
+
+/**
+ * @see Conjoon_Modules_Groupware_Email_Address_Dto
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Address/Dto.php';
 
 
 /**
@@ -98,12 +103,10 @@ class Conjoon_Modules_Groupware_Email_Address implements Conjoon_BeanContext, Se
     /**
      * Returns a Dto for an instance of this class.
      *
-     * @return Conjoon_Groupware_Email_Recipient_Dto
+     * @return Conjoon_Modules_Groupware_Email_Address_Dto
      */
     public function getDto()
     {
-        require_once 'Address/Dto.php';
-
         $data = $this->toArray();
 
         $dto = new Conjoon_Modules_Groupware_Email_Address_Dto();
