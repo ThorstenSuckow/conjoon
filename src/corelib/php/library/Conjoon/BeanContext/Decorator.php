@@ -195,6 +195,8 @@ final class Conjoon_BeanContext_Decorator {
         // array
         if (!Conjoon_Util_Array::isAssociative($values)) {
             $data = array();
+
+            $TYPE_DTO = $type == self::TYPE_DTO;
             for ($i = 0; $i < $len; $i++) {
                 Conjoon_Util_Array::camelizeKeys($values[$i]);
 
@@ -209,7 +211,7 @@ final class Conjoon_BeanContext_Decorator {
                     $values[$i],
                     !$this->_strict
                 );
-                if ($type == self::TYPE_DTO) {
+                if ($TYPE_DTO) {
                     $data[$i] = $data[$i]->getDto();
                 }
             }
