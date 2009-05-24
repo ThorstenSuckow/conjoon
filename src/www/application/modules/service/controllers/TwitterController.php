@@ -227,7 +227,7 @@ class Service_TwitterController extends Zend_Controller_Action {
 
     /**
      * Sends a list of recent tweets for a Twitter user which id is specified
-     * in the request parameter "userIdd". the account which triggered this request
+     * in the request parameter "userId". the account which triggered this request
      * is specified in the request parameter "id".
      * If the parameter statusId is supplied, only this single entry will be returned.
      *
