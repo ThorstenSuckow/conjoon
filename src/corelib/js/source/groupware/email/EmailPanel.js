@@ -1627,9 +1627,8 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
     onPendingStoreAdd : function(store, records, index)
     {
         for (var i = 0, len = records.length; i < len; i++) {
-            this.pendingRecordsDate[records[i].id] = records[i].get('date');
+            this.pendingRecordsDate[records[i].id] = (new Date()).getTime();
         }
-
     },
 
     /**
