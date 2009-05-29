@@ -694,7 +694,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
     {
         if (show) {
             if (this.loadMask == null) {
-                this.loadMask = new Ext.LoadMask(this.body, {msg : "Schreibe, bitte warten..."});
+                this.loadMask = new Ext.LoadMask(this.body, {
+                    msg : com.conjoon.Gettext.gettext("Saving, please wait...")
+                });
             }
             this.loadMask.show();
         } else {
