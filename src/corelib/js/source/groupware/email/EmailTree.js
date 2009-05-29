@@ -75,22 +75,23 @@ com.conjoon.groupware.email.EmailTree = function(config) {
         }
     });
 
+    var actionDecorator = com.conjoon.groupware.email.decorator.AccountActionComp;
 
     /**
      * The top toolbar for the tree panel
      * @param {Ext.Toolbar}
      */
-    this.tbar = [{
+    this.tbar = [actionDecorator.decorate(new Ext.Toolbar.Button({
         iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
         tooltip : com.conjoon.Gettext.gettext("Show all folders"),
         handler : function(){ this.root.expand(true); },
         scope   : this
-      },'-',{
+      })),'-', actionDecorator.decorate(new Ext.Toolbar.Button({
         iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
         tooltip : com.conjoon.Gettext.gettext("Hide all folders"),
         handler : function(){ this.root.collapse(true); },
         scope   : this
-    }];
+    }))];
 
 
     /**
