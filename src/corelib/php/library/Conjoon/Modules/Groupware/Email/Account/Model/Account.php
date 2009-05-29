@@ -161,6 +161,15 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             return 0;
         }
 
+        // check here if there is currently a standard account
+        // configured for the user - if none could be found, set this
+        // account as standard
+        $standardId = $this->getStandardAccountIdForUser($userId);
+
+        if ($standardId == 0) {
+            $addData['is_standard'] = 1;
+        }
+
         $addData['user_id'] = $userId;
 
         $id = $this->insert($addData);
