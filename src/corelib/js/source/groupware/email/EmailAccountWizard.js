@@ -113,13 +113,13 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 
         // fetch the response values
         var responseValues = json.getResponseValues(response.responseText);
-        var account = responseValues.account;
-        var accountStore = com.conjoon.groupware.email.AccountStore.getInstance();
+        var account        = responseValues.account;
+        var accountStore   = com.conjoon.groupware.email.AccountStore.getInstance();
 
-        var rec = new com.conjoon.groupware.email.AccountRecord(
-            account
+        var rec = com.conjoon.util.Record.convertTo(
+            com.conjoon.groupware.email.AccountRecord,
+            account, account.id
         );
-        rec.id = account.id;
 
         accountStore.addSorted(rec);
 
