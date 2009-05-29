@@ -1039,16 +1039,28 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $processedData = $filter->getProcessedData();
             $data = $processedData;
             Conjoon_Util_Array::underscoreKeys($data);
-            $processedData['id']     = $model->addAccount($userId, $data);
-            $processedData['userId'] = $userId;
-            $processedData['passwordInbox']  = str_pad("", strlen($processedData['passwordInbox']), '*');
-            if ($processedData['isOutboxAuth']) {
-                $processedData['passwordOutbox'] = str_pad("", strlen($processedData['passwordOutbox']), '*');
+            $addedId = $model->addAccount($userId, $data);
+
+            /**
+             * @see Conjoon_BeanContext_Decorator
+             */
+            require_once 'Conjoon/BeanContext/Decorator.php';
+
+            $decoratedModel = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Account_Model_Account'
+            );
+
+            $dto = $decoratedModel->getAccountAsDto($addedId, $userId);
+
+            if (!$dto->isOutboxAuth) {
+                $dto->usernameOutbox = "";
+                $dto->passwordOutbox = "";
             }
-            $this->view->account = Conjoon_BeanContext_Inspector::create(
-                $classToCreate,
-                $processedData
-            )->getDto();
+            $dto->passwordOutbox = str_pad("", strlen($dto->passwordOutbox), '*');
+            $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
+
+            $this->view->account = $dto;
+
         } catch (Zend_Filter_Exception $e) {
             require_once 'Conjoon/Error.php';
             $error = Conjoon_Error::fromFilter($filter, $e);
