@@ -707,7 +707,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                       'id'
                   ))->join(
                         array('accounts' => 'groupware_email_accounts'),
-                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER') .
+                        ' AND ' .
+                        'accounts.is_deleted=0',
                         array()
                   )->join(
                       array('accounts_folders' => 'groupware_email_folders_accounts'),
@@ -813,9 +815,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                    )
                    ->join(
                        array('accounts' => 'groupware_email_accounts'),
-                       'accounts.id=foldersaccounts.groupware_email_accounts_id'
-                       . ' AND '
-                       . $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                       'accounts.id=foldersaccounts.groupware_email_accounts_id' .
+                       ' AND ' .
+                       'accounts.is_deleted=0' .
+                       ' AND ' .
+                       $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
                        array()
                    )
                    ->where('folders.type=?', 'root')
@@ -968,7 +972,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                         array('accounts' => 'groupware_email_accounts'),
                         $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
                         ' AND ' .
-                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER') .
+                        ' AND '.
+                        'accounts.is_deleted=0',
                         array())
                   ->join(
                         array('folders_accounts' => 'groupware_email_folders_accounts'),
