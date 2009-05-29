@@ -1,0 +1,103 @@
+/**
+ * conjoon
+ * (c) 2002-2009 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author: T. Suckow $
+ * $Id: com-conjoon-groupware-email-EmailView.css 324 2008-12-08 21:26:43Z T. Suckow $
+ * $Date: 2008-12-08 22:26:43 +0100 (Mo, 08 Dez 2008) $
+ * $Revision: 324 $
+ * $LastChangedDate: 2008-12-08 22:26:43 +0100 (Mo, 08 Dez 2008) $
+ * $LastChangedBy: T. Suckow $
+ * $URL: file:///F:/live/vs170240.vserver.de/svn_repository/conjoon/trunk/src/corelib/js/resources/css/com-conjoon-groupware-email-EmailView.css $
+ */
+
+.com-conjoon-groupware-email-view-IntroductionPanel {
+    border:1px solid #99bbe8;
+    background:white;
+    overflow:auto;
+    padding:20px;
+    font-family:Tahoma,verdana, Helvetica, Arial;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel .head {
+    background:#ffffff url(../images/groupware-email-introductionpanelhead.png) no-repeat left top;
+    padding-left:64px;
+    height:100px;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel .head .names {
+    font-size:22px;
+    font-weight:bold;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel .head .quest {
+    color:#787878;
+    font-size:18px;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel .list {
+    width:500px;
+    margin-left:64px;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel .list li h2 {
+    background:transparent url(../images/groupware-email-introductionheadbg.png) repeat-x left bottom;
+    color:#393939;
+    font-size:18px;
+    padding:4px 0 4px 20px;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.reademail {
+    background:transparent url(../images/32x32/actions/groupware-email-mailread.png) no-repeat left bottom;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.writeemail {
+    background:transparent url(../images/32x32/actions/groupware-email-mailnew.png) no-repeat left bottom;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.accountnew {
+    background:transparent url(../images/32x32/actions/groupware-email-accountnew.png) no-repeat left bottom;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.accountsettings {
+    background:transparent url(../images/32x32/actions/groupware-email-accountsettings.png) no-repeat left bottom;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.mailsearch {
+    background:transparent url(../images/32x32/actions/groupware-email-mailsearch.png) no-repeat left bottom;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.filternew {
+    background:transparent url(../images/32x32/actions/groupware-email-filternew.png) no-repeat left bottom;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.warning {
+    background:transparent url(../images/32x32/actions/groupware-email-accountnotfound.png) no-repeat left 50%;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.reademail,
+.com-conjoon-groupware-email-view-IntroductionPanel li.writeemail,
+.com-conjoon-groupware-email-view-IntroductionPanel li.accountnew,
+.com-conjoon-groupware-email-view-IntroductionPanel li.accountsettings,
+.com-conjoon-groupware-email-view-IntroductionPanel li.mailsearch,
+.com-conjoon-groupware-email-view-IntroductionPanel li.warning,
+.com-conjoon-groupware-email-view-IntroductionPanel li.filternew {
+    margin:16px 0 0;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li.optionlist {
+    margin-bottom:28px;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li a {
+    color:#4B4B4B;
+    font-size:14px;
+    padding:8px 0 8px 48px;
+    display:block;
+    text-decoration:none;
+}
+
+.com-conjoon-groupware-email-view-IntroductionPanel li a:hover {
+    text-decoration:underline;
+}

@@ -76,16 +76,14 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
 
     this.gridPanel.on('rowdblclick', this.openEmailView, this);
 
-    this.items = [
-        this.treePanel
-      ,{
-        region : 'center',
-        layout : 'border',
-        border:false,
+    this.introductionPanel = new com.conjoon.groupware.email.view.IntroductionPanel();
+
+    this.mainContentPanel = new Ext.Container({
+        layout   : 'border',
+        border   : false,
         hideMode : 'offsets',
-        items:[
-            this.gridPanel
-            ,{
+        items    : [
+            this.gridPanel, {
             id:'com.conjoon.groupware.email.rightPreview',
             layout:'fit',
             hideMode : 'offsets',
@@ -93,7 +91,7 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
             width:350,
             split: true,
             hidden:true
-          },{
+        },{
             id:'com.conjoon.groupware.email.bottomPreview',
             layout:'fit',
             items:this.preview,
@@ -101,8 +99,25 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
             height: 250,
             split: true,
             region:'south'
-          }]
-    }];
+        }]
+    });
+
+    this.centerPanel = new Ext.Container({
+        region     : 'center',
+        layout     : 'card',
+        border     : false,
+        activeItem : 0,
+        hideMode   : 'offsets',
+        items:[
+            this.introductionPanel,
+            this.mainContentPanel
+        ]
+    });
+
+    this.items = [
+        this.treePanel,
+        this.centerPanel
+    ];
 
     /**
      * Top toolbar
@@ -192,23 +207,11 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
         scope    : this
     }));
 
-    this.controlBar = new Ext.Toolbar([
-        new com.conjoon.groupware.email.FetchMenuButton(),
-        this.newButton ,
-        '-',
-        this.sendNowButton,
-        this.replyButton,
-        this.replyAllButton,
-        this.forwardButton,
-        '-',
-        this.deleteButton,
-        this.spamButton,
-        this.noSpamButton,
-        this.editDraftButton,
-        '->', {
+    this.previewButton = new Ext.Toolbar.SplitButton({
         id           : 'com.conjoon.groupware.email.previewButton',
         split        : true,
         enableToggle : true,
+        hidden       : true,
         pressed      : true,
         handler      : this.hidePreview,
         scope        : this,
@@ -240,8 +243,23 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
             checkHandler : this.hidePreview,
             scope        : this
         }]}
-      }
+    });
 
+    this.controlBar = new Ext.Toolbar([
+        new com.conjoon.groupware.email.FetchMenuButton(),
+        this.newButton ,
+        '-',
+        this.sendNowButton,
+        this.replyButton,
+        this.replyAllButton,
+        this.forwardButton,
+        '-',
+        this.deleteButton,
+        this.spamButton,
+        this.noSpamButton,
+        this.editDraftButton,
+        '->',
+        this.previewButton
     ]);
 
     var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
@@ -288,7 +306,12 @@ com.conjoon.groupware.email.EmailPanel = function(config) {
 
     var tp = this.treePanel;
     tp.on('movenode', this.onMoveNode, this);
-    tp.on('render', function(){this.treePanel.getSelectionModel().on('selectionchange', this.onNodeSelectionChange, this);}, this);
+    tp.on('render', function(){
+        var sm = this.treePanel.getSelectionModel();
+        sm.on('selectionchange', this.onNodeSelectionChange, this);
+        sm.on('selectionchange', this.introductionPanel._onNodeSelectionChange, this.introductionPanel);
+    }, this, {single : true});
+
     tp.on('nodedrop', this.onNodeDrop, this);
     tp.on('remove', this.onNodeRemove, this);
     tp.pendingItemStore.on('add', this.onPendingStoreAdd, this);
@@ -379,7 +402,14 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
     clkNodeId : null,
 
+    /**
+     * @type {Number} lastClkNodeId Caches the id of the node that was last clicked
+     * before it gets set to null
+     */
+    lastClkNodeId : null,
+
 // ------------------------------- Methods -------------------------------------
+
     /**
      * Moves the specified records either to the trashbin or deletes them, if they
      * are already in the trashbin.
@@ -738,7 +768,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
     {
         var right  = Ext.getCmp('com.conjoon.groupware.email.rightPreview');
         var bot    = Ext.getCmp('com.conjoon.groupware.email.bottomPreview');
-        var button = Ext.getCmp('com.conjoon.groupware.email.previewButton');
+        var button = this.previewButton;
 
         if (btn instanceof Ext.Toolbar.SplitButton) {
             if (btn.pressed) {
@@ -1493,18 +1523,26 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
         if (node && node.attributes.type && (node.attributes.type != 'root' && node.attributes.type != 'accounts_root')) {
             this.clkNodeId = node.id;
-            this.gridPanel.store.removeAll();
-            this.gridPanel.view.reset(true);
+            if (this.clkNodeId != this.lastClkNodeId) {
+                this.gridPanel.store.removeAll();
+                this.gridPanel.view.reset(true);
+                this.lastClkNodeId = this.clkNodeId;
+            }
+            this.previewButton.show();
+            this.centerPanel.getLayout().setActiveItem(1);
             return;
         }
 
+        this.lastClkNodeId = this.clkNodeId;
         this.clkNodeId = null;
         this.gridPanel.loadMask.hide();
-        var proxy = this.gridPanel.store.proxy;
+        /*var proxy = this.gridPanel.store.proxy;
         if (proxy.activeRequest[Ext.data.Api.READ]) {
             proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
-        }
-        this.gridPanel.store.removeAll();
+        }*/
+        //this.gridPanel.store.removeAll();
+        this.previewButton.hide();
+        this.centerPanel.getLayout().setActiveItem(0);
     },
 
     onNodeRemove : function(tree, parent, node)
@@ -1554,13 +1592,13 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
         var folderId = record.data.groupwareEmailFoldersId;
 
-        if (this.clkNodeId && (this.clkNodeId == folderId
+        if (this.lastClkNodeId && (this.lastClkNodeId == folderId
             && !this.gridPanel.store.proxy.activeRequest[Ext.data.Api.READ])) {
             var pendingStore  = this.treePanel.pendingItemStore;
             var pendingRecord = pendingStore.getById(folderId);
             if (pendingRecord) {
                 pendingRecord.set('pending', pendingRecord.data.pending+1);
-                this.pendingRecords[this.clkNodeId]--;
+                this.pendingRecords[this.lastClkNodeId]--;
             }
             var ds = this.gridPanel.store;
             var index = 0;
@@ -1591,6 +1629,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         // the actual timestamp
         var ts = (new Date()).getTime();
         var folderId = options.params.groupwareEmailFoldersId;
+
         if (this.pendingRecordsDate[folderId] > ts) {
             return;
         }
@@ -1668,7 +1707,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
         for (var folderId in this.pendingRecords) {
             this.pendingRecordsDate[folderId] = ts;
-            if (folderId != this.clkNodeId) {
+            if (folderId != this.lastClkNodeId) {
                 pendingRecord = pendingStore.getById(folderId);
                 if (pendingRecord) {
                     pendingRecord.set('pending', pendingRecord.data.pending+this.pendingRecords[folderId]);

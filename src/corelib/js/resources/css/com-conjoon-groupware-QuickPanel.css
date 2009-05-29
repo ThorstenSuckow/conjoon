@@ -84,6 +84,10 @@
     padding-bottom:3px;
 }
 
+.com-conjoon-groupware-QuickPanel-itemPanel .x-panel-body {
+    background:#eef5fe url(../images/quickpanel-bg.png) repeat-x scroll 0 bottom;
+}
+
 .com-conjoon-groupware-QuickPanel-itemPanel .x-panel-header {
     color:#15428B;
     font-weight:bold;
