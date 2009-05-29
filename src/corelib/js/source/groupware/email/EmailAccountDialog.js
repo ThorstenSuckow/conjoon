@@ -964,7 +964,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             this.rejectChanges(deletedFailed, updatedFailed);
             var msg  = Ext.MessageBox;
             msg.show({
-                title   : 'Fehler',
+                title   : com.conjoon.Gettext.gettext("Error"),
                 msg     : message,
                 buttons : msg.OK,
                 icon    : msg.WARNING,
