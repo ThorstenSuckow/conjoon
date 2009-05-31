@@ -1,4 +1,12 @@
-﻿03.05.2009
+﻿31.05.2009
+==========
+ - fixed: dialog would be closable even if teh dialog state would be set to "disabled";
+added "beforeclose"-listener to prevent closing the dialog in case the dialog is busy
+ - fixed: loadmask-msg would not be rendered due to accessing an object property quoted
+ - fixed: typo in Header.js (closes google issue #1)
+ - enhancement: converted tabs to spaces
+
+03.05.2009
 ==========
  - enhancement: Updated component to work with Ext JS 3.0 while keeping backwards
 compatibility to Ext 2.*
