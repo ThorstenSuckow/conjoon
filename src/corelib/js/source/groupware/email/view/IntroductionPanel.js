@@ -162,7 +162,6 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
                 {
                     tag : 'li',
                     cls : 'optionlist',
-                    disabled : true,
                     cn  : [{
                         tag  : 'h2',
                         html : com.conjoon.Gettext.gettext("Miscellaneous")
@@ -191,7 +190,6 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
                 {
                     tag : 'li',
                     cls : 'optionlist',
-                    disabled : true,
                     cn  : [{
                         tag  : 'h2',
                         cls  : 'warning',
