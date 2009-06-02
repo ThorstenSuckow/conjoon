@@ -40,6 +40,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     private $userName;
     private $isRoot;
     private $authToken;
+    private $lastLogin;
 
 
     /**
@@ -60,6 +61,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     public function getEmailAddress(){return $this->emailAddress;}
     public function getUserName(){return $this->userName;}
     public function getAuthToken(){return $this->authToken;}
+    public function getlastLogin(){return $this->lastLogin;}
     public function isRoot(){return $this->isRoot;}
 
     public function setId($id){$this->id = $id;}
@@ -69,6 +71,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     public function setLastname($lastname){$this->lastname = $lastname;}
     public function setEmailAddress($emailAddress){$this->emailAddress = $emailAddress;}
     public function setUserName($userName){$this->userName = $userName;}
+    public function setLastLogin($lastLogin){$this->lastLogin = $lastLogin;}
     public function setRoot($isRoot){$this->isRoot = $isRoot;}
 
 // -------- helper
@@ -87,6 +90,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
             'userName'     => $this->userName,
             'isRoot'       => $this->isRoot,
             'emailAddress' => $this->emailAddress,
+            'lastLogin'    => $this->lastLogin,
             'authToken'    => $this->authToken
         );
     }
@@ -157,6 +161,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
             'userName: '.$data['userName'].', '.
             'isRoot: '.$data['isRoot'].', '.
             'authToken: '.$data['authToken'].', '.
+            'lastLogin: '.$data['lastLogin'].', '.
             'emailAddress: '.$data['emailAddress'].';';
     }
 }

@@ -113,6 +113,9 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
             );
         }
 
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
         require_once 'Conjoon/BeanContext/Decorator.php';
         $decorator = new Conjoon_BeanContext_Decorator($userTable);
         $user = $decorator->getUserForUserNameCredentialsAsEntity($userName, md5($password));
@@ -130,9 +133,15 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
         // we have a match - generate a token and store it into the database
         $token = md5(uniqid(rand(), true));
         $where = $userTable->getAdapter()->quoteInto('id = ?', $user->getId());
+        $time = time();
         $userTable->update(array(
-            'auth_token' => $token
+            'auth_token' => $token,
+            'last_login' => $time
         ), $where);
+
+        if (!$user->getLastLogin()) {
+            $user->setLastLogin(-1);
+        }
 
         $user->setAuthToken($token);
 

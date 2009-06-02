@@ -22,5 +22,6 @@ class Conjoon_Modules_Default_User_Dto {
     public $userName;
     public $isRoot;
     public $authToken;
+    public $lastLogin;
 
 }
