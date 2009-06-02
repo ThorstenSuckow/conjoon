@@ -129,6 +129,12 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
             return;
         }
 
+        // user wants to log out - okay
+        if ($request->action == 'logout' && $request->controller == 'reception' &&
+            $request->module == 'default') {
+            return;
+        }
+
         // the application needs to query the registry. That's okay since no secret data will
         // be transported if the registry sees that there's no login
         if ($request->action == 'get.entries' && $request->controller == 'registry' &&
