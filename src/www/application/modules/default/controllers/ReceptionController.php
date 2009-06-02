@@ -61,7 +61,14 @@ class ReceptionController extends Zend_Controller_Action {
      */
     public function getUserAction()
     {
+        /**
+         * @see Zend_Registry
+         */
         require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
 
         $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
@@ -74,9 +81,10 @@ class ReceptionController extends Zend_Controller_Action {
          */
         unset($user->authToken);
 
-        $this->view->success = true;
-        $this->view->error   = null;
-        $this->view->user    = $user;
+        $this->view->success   = true;
+        $this->view->error     = null;
+        $this->view->timestamp = time();
+        $this->view->user      = $user;
     }
 
     /**
@@ -285,6 +293,8 @@ class ReceptionController extends Zend_Controller_Action {
     /**
      * Logout action of the controller.
      * Logs a user completely out of the application.
+     * This method may also be called if there is currently no session active/no
+     * user logged in.
      */
     public function logoutAction()
     {
@@ -301,8 +311,62 @@ class ReceptionController extends Zend_Controller_Action {
         /**
          * @todo Filter username and password!
          */
-        $username = $this->_getParam('username');
-        $password = $this->_getParam('password');
+        $username        = $this->_getParam('username');
+        $password        = $this->_getParam('password');
+        $lastUserRequest = (int)$this->_getParam('lastUserRequest');
+
+        // Special case - the app was started and the user wants to re-login
+        // since his session was lost. Check if the user object as returned by the
+        // data storage has a property lastLogin which may not be greater than
+        // the "lastUserRequest"-parameter - if that is teh case, most likely another
+        // user has logged in so the user has to completely restart the application -
+        // a redirect to the base url will happen
+        if ($lastUserRequest) {
+            /**
+             * @see Conjoon_Modules_Default_User_Model_User
+             */
+            require_once 'Conjoon/Modules/Default/User/Model/User.php';
+            $userTable = new Conjoon_Modules_Default_User_Model_User();
+
+            /**
+             * @see Conjoon_BeanContext_Decorator
+             */
+            require_once 'Conjoon/BeanContext/Decorator.php';
+            $decorator = new Conjoon_BeanContext_Decorator($userTable);
+            $userDto = $decorator->getUserForUserNameCredentialsAsDto($username, md5($password));
+
+            if ($userDto && $lastUserRequest <= $userDto->lastLogin) {
+                // special case - send an auth token failure with the response
+                $this->_response->setHttpResponseCode(401);
+
+                /**
+                 * @see Conjoon_Error
+                 */
+                require_once 'Conjoon/Error.php';
+                $error = new Conjoon_Error();
+
+                $error->setCode(-1);
+                $error->setLevel(Conjoon_Error::LEVEL_ERROR);
+                $error->setFile(__FILE__);
+                $error->setLine(__LINE__);
+
+                $error->setMessage("Someone has signed in with your user credentials. Please sign in again.");
+                $error->setType(Conjoon_Error::TOKEN_FAILURE);
+                $this->view->tokenFailure = true;
+
+                /**
+                 * @todo create filter
+                 */
+                unset($userDto->authToken);
+
+                $this->view->user = $userDto;
+
+                $this->view->success    = false;
+                $this->view->error      = $error->getDto();
+
+                return;
+            }
+        }
 
         $auth        = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $authAdapter = new Conjoon_Auth_Adapter_Db($username, $password);

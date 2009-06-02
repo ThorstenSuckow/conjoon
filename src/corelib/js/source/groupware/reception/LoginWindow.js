@@ -31,6 +31,11 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
      */
 
     /**
+     * @cfg {Number} lastUserRequest The timestamp of the last successfull call
+     * to retrieve a user obejct of the current logged in user
+     */
+
+    /**
      * @cfg {String} defaultFocusField
      * Which field to focus when the dialog gets rendered. Can be either
      * 'username' or 'password'. Defaults to 'username'.
@@ -481,11 +486,17 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             return;
         }
 
+        var params = {
+            username : username,
+            password : this._passwordField.getValue()
+        };
+
+        if (this.lastUserRequest) {
+            params.lastUserRequest = this.lastUserRequest;
+        }
+
         this._formPanel.form.submit({
-            params  : {
-                username : username,
-                password : this._passwordField.getValue()
-            },
+            params  : params,
             success : this._onLoginSuccess,
             failure : this._onLoginFailure,
             scope   : this

@@ -30,6 +30,11 @@ com.conjoon.groupware.Reception = function() {
         loginWindowClass : com.conjoon.groupware.reception.LoginWindow
     };
 
+    /**
+     * @param {Number} The unix timestamp from the server, marked when the
+     * last user request successfully processed
+     */
+    var _lastUserRequest = null;
 
     /**
      * @param {Object}
@@ -108,6 +113,8 @@ com.conjoon.groupware.Reception = function() {
         }
 
         _user = data.user;
+
+        _lastUserRequest = data.timestamp;
 
         for (var i = 0, len = _userLoadListeners.length; i < len; i++) {
             _userLoadListeners[i]['fn'].call(_userLoadListeners[i]['scope'], _user);
@@ -378,10 +385,11 @@ com.conjoon.groupware.Reception = function() {
     var _authenticate = function()
     {
         _buildLoginWindow({
-            loginUrl      : './default/reception/process/format/json',
-            usernameValue : _user.userName,
-            modal         : _applicationStarted,
-            draggable     : true
+            loginUrl        : './default/reception/process/format/json',
+            usernameValue   : _user.userName,
+            modal           : _applicationStarted,
+            lastUserRequest : _lastUserRequest ? _lastUserRequest : 0,
+            draggable       : true
         });
 
         loginWindow.setFormIntroLabel(
