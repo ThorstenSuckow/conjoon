@@ -94,6 +94,11 @@
 
 .com-conjoon-groupware-reception-LoginWindow-formPanel {
     width:300px;
+    margin:10px 0 0 75px;
+}
+
+.com-conjoon-groupware-reception-LoginWindow .formIntro {
+    width:300px;
     margin:-10px 0 0 75px;
 }
 

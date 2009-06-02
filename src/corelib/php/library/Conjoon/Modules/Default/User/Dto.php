@@ -21,5 +21,6 @@ class Conjoon_Modules_Default_User_Dto {
     public $emailAddress;
     public $userName;
     public $isRoot;
+    public $authToken;
 
 }

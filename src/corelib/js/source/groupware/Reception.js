@@ -223,10 +223,30 @@ com.conjoon.groupware.Reception = function() {
 
     /**
      * Listener for the login window's exit button.
+     * This will either show the "logout" conform dialog or redirect
+     * to the logout action on server side if the Reception indicated a
+     * token failure.
+     *
      */
     var _onExit = function()
     {
-        _logout('yes');
+        if (_context == this.TYPE_TOKEN_FAILURE) {
+            com.conjoon.SystemMessageManager.wait(
+                new com.conjoon.SystemMessage({
+                    text : com.conjoon.Gettext.gettext("Please wait, signing out..."),
+                    type : com.conjoon.SystemMessage.TYPE_WAIT
+                })
+            );
+
+            Ext.Ajax.request({
+                url            : './default/reception/logout/format/json',
+                success        : _onLogoutSuccess,
+                failure        : _onLogoutFailure,
+                disableCaching : true
+            });
+        } else {
+            _logout('yes');
+        }
     };
 
     /**
@@ -310,9 +330,44 @@ com.conjoon.groupware.Reception = function() {
             loginUrl : './default/reception/process/format/json',
             modal    : _applicationStarted
         });
+
+        loginWindow.setFormIntroLabel(
+            com.conjoon.Gettext.gettext("Login")
+        );
+
         loginWindow.setFormIntroText(
             com.conjoon.Gettext.gettext("Please sign in with your username and your password. Press &quot;Login&quot; when ready.")
         );
+    };
+
+    /**
+     * Builds up the window for signing out. No input fields will be rendered.
+     */
+    var _tokenFailureSignOut = function()
+    {
+        _buildLoginWindow({
+            loginUrl      : './',
+            showExit      : true,
+            modal         : _applicationStarted
+        });
+
+        loginWindow.setFormIntroLabel(
+            com.conjoon.Gettext.gettext("Sign out")
+        );
+
+        loginWindow.setFormIntroText(
+            String.format(
+                com.conjoon.Gettext.gettext("Sorry, the application is unable to process your request. <br />Someone else has signed in with your user credentials (username: \"{0}\"). Please sign out first, then sign in again to access the application.<br />Clicking the \"Exit\"-button will invoke the sign-out process and redirect you to the login-page."),
+                _user.userName
+            )
+        );
+
+        loginWindow.getStateIndicator().setErrorMessage(
+            com.conjoon.Gettext.gettext("Authorization Token Failure")
+        );
+
+        loginWindow.showFormPanel(false);
+        loginWindow.showLoginButton(false);
     };
 
     /**
@@ -328,6 +383,11 @@ com.conjoon.groupware.Reception = function() {
             modal         : _applicationStarted,
             draggable     : true
         });
+
+        loginWindow.setFormIntroLabel(
+            com.conjoon.Gettext.gettext("Login")
+        );
+
         loginWindow.setFormIntroText(
             com.conjoon.Gettext.gettext("Your request could not be processed. Most likely did your session expire. Please sign in again and retry your last action.")
         );
@@ -355,6 +415,11 @@ com.conjoon.groupware.Reception = function() {
         } else {
             msg = com.conjoon.Gettext.gettext("The workbench has been locked. Please sign in again to unlock the workbench. Press the &quot;exit&quot;-button to log the previous user out and to login with a new account.");
         }
+
+        loginWindow.setFormIntroLabel(
+            com.conjoon.Gettext.gettext("Login")
+        );
+
         loginWindow.setFormIntroText(msg);
     };
 
@@ -488,6 +553,15 @@ com.conjoon.groupware.Reception = function() {
                 this.lockWorkbench();
             break;
 
+            case inspector.FAILURE_TOKEN:
+                // failure token error type  will send the user object of the
+                // currently signed in user, to indicate which user's auth token
+                // is invalid
+                var data = Ext.decode(rawResponse.responseText);
+                _user    = data.user;
+                this.showLogin(this.TYPE_TOKEN_FAILURE);
+            break;
+
             default:
                 throw(
                     'com.conjoon.groupware.Reception._handleAuthFailure: '
@@ -541,6 +615,13 @@ com.conjoon.groupware.Reception = function() {
          * was started and the user lcoked the workbench.
          */
         TYPE_UNLOCK : 8,
+
+        /**
+         * @param {Number}
+         * The type of context the login procedure is in. States that the app
+         * cannot be loaded since the auth token is erroneous.
+         */
+        TYPE_TOKEN_FAILURE : 16,
 
         /**
          *
@@ -657,7 +738,7 @@ com.conjoon.groupware.Reception = function() {
                 url            : './default/reception/lock/format/json',
                 disableCaching : true,
                 success        : _lockWorkbench,
-                failure        : function() {
+                failure        : function(response, options) {
                     com.conjoon.SystemMessageManager.hide();
                     com.conjoon.groupware.ResponseInspector.handleFailure(response, options);
                 },
@@ -728,12 +809,19 @@ com.conjoon.groupware.Reception = function() {
          * but null, the method will do nothing and return.
          * The context is stored in the _context property and set when the method
          * is called, and unset in the loginsuccessfull-listener.
+         * Special treatment for the failure token context, though, as this
+         * login window will be shown even if the context is already set, thus usually
+         * preventing from showing another login window for the given context.
          *
          */
         showLogin : function(contextType)
         {
-            if (_context !== null){
+            if (_context !== null && contextType != this.TYPE_TOKEN_FAILURE){
                 return;
+            }
+
+            if (loginWindow && contextType != _context) {
+                loginWindow.close();
             }
 
             switch (contextType) {
@@ -748,6 +836,10 @@ com.conjoon.groupware.Reception = function() {
                 case this.TYPE_UNLOCK:
                     _context = contextType;
                     _unlock();
+                break;
+                case this.TYPE_TOKEN_FAILURE:
+                    _context = contextType;
+                    _tokenFailureSignOut();
                 break;
                 default:
                     throw(

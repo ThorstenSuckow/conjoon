@@ -135,8 +135,7 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
 
         this._formPanel = this._createFormPanel(
             this._usernameField,
-            this._passwordField,
-            this._formIntro
+            this._passwordField
         );
 
         Ext.applyIf(this, {
@@ -161,6 +160,7 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
                     tag  : 'div',
                     html : this.editionLabel
             }},
+                this._formIntro,
                 this._formPanel,
                 this._stateIndicator, {
                 xtype  :'box',
@@ -373,6 +373,37 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     },
 
 // -------- helper
+
+    /**
+     * Returns the state indicator used by this dialog.
+     *
+     * @return {com.conjoon.groupware.reception.StateIndicator}
+     */
+    getStateIndicator : function()
+    {
+        return this._stateIndicator;
+    },
+
+    /**
+     * Hides or shows the login input button.
+     *
+     * @param {Boolean} show
+     */
+    showLoginButton : function(show)
+    {
+        this._loginButton.setVisible(show);
+    },
+
+    /**
+     * Hides or shows the formPanel
+     *
+     * @param {Boolean} show
+     */
+    showFormPanel : function(show)
+    {
+        this._formPanel.setVisible(show);
+    },
+
     /**
      * Returns a {com.conjoon.groupware.reception.StateIndicator} for showing the
      * current login process and possible error messages that occured during login
@@ -393,6 +424,16 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     setFormIntroText : function(text)
     {
        this._formIntro.setText(text);
+    },
+
+    /**
+     * Sets the label for the form intro.
+     *
+     * @param {String}
+     */
+    setFormIntroLabel : function(text)
+    {
+       this._formIntro.setLabel(text);
     },
 
     /**
@@ -547,7 +588,7 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createFormIntro : function()
     {
         return new com.conjoon.groupware.util.FormIntro({
-            style   : 'margin:0px 0 10px 0;',
+            cls     : 'formIntro',
             label   : com.conjoon.Gettext.gettext("Login"),
             text    : com.conjoon.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
         });
@@ -580,7 +621,6 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             },
             border   : false,
             items    : [
-                formIntro,
                 usernameField,
                 passwordField
             ],

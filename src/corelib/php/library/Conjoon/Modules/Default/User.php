@@ -39,6 +39,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     private $emailAddress;
     private $userName;
     private $isRoot;
+    private $authToken;
 
 
     /**
@@ -58,9 +59,11 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
     public function getLastname(){return $this->lastname;}
     public function getEmailAddress(){return $this->emailAddress;}
     public function getUserName(){return $this->userName;}
+    public function getAuthToken(){return $this->authToken;}
     public function isRoot(){return $this->isRoot;}
 
     public function setId($id){$this->id = $id;}
+    public function setAuthToken($token){$this->authToken = $token;}
     public function setPassword($password){$this->_password = $password;}
     public function setFirstname($firstname){$this->firstname = $firstname;}
     public function setLastname($lastname){$this->lastname = $lastname;}
@@ -83,7 +86,8 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
             'lastname'     => $this->lastname,
             'userName'     => $this->userName,
             'isRoot'       => $this->isRoot,
-            'emailAddress' => $this->emailAddress
+            'emailAddress' => $this->emailAddress,
+            'authToken'    => $this->authToken
         );
     }
 
@@ -152,6 +156,7 @@ class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable 
             'lastname: '.$data['lastname'].', '.
             'userName: '.$data['userName'].', '.
             'isRoot: '.$data['isRoot'].', '.
+            'authToken: '.$data['authToken'].', '.
             'emailAddress: '.$data['emailAddress'].';';
     }
 }

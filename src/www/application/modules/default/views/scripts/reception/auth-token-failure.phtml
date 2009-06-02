@@ -44,14 +44,6 @@ Ext.onReady(function(){
         com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
             '/client/environment/device'
         ));
-
-        <?php if ($this->locked === true) { ?>
-            reception.onUserLoad(function(){
-                reception.showLogin(reception.TYPE_UNLOCK);
-            });
-        <?php } else { ?>
-            reception.showLogin(reception.TYPE_LOGIN);
-        <?php } ?>
     });
 
     com.conjoon.util.PreLoader.load();

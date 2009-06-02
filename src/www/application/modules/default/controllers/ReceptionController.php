@@ -47,10 +47,11 @@ class ReceptionController extends Zend_Controller_Action {
                           self::CONTEXT_JSON,
                           self::CONTEXT_IPHONE,
                       ))
-                      ->addActionContext('ping',     self::CONTEXT_JSON)
-                      ->addActionContext('lock',     self::CONTEXT_JSON)
-                      ->addActionContext('unlock',   self::CONTEXT_JSON)
-                      ->addActionContext('get.user', self::CONTEXT_JSON)
+                      ->addActionContext('ping',               self::CONTEXT_JSON)
+                      ->addActionContext('lock',               self::CONTEXT_JSON)
+                      ->addActionContext('unlock',             self::CONTEXT_JSON)
+                      ->addActionContext('auth.token.failure', self::CONTEXT_JSON)
+                      ->addActionContext('get.user',           self::CONTEXT_JSON)
                       ->initContext();
     }
 
@@ -66,9 +67,16 @@ class ReceptionController extends Zend_Controller_Action {
         $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $user = $auth->getIdentity();
 
+        $user = $user->getDto();
+
+        /**
+         * @todo create filter
+         */
+        unset($user->authToken);
+
         $this->view->success = true;
         $this->view->error   = null;
-        $this->view->user    = $user->getDto();
+        $this->view->user    = $user;
     }
 
     /**
@@ -157,6 +165,66 @@ class ReceptionController extends Zend_Controller_Action {
     }
 
     /**
+     * Special action if the auth pre-dispatcher has found two different auth
+     * tokens.
+     * Will send a 401 error and force the user to completely restart the
+     * application.
+     *
+     */
+    public function authTokenFailureAction()
+    {
+        $this->_response->setHttpResponseCode(401);
+
+        /**
+         * @see Conjoon_Error
+         */
+        require_once 'Conjoon/Error.php';
+        $error = new Conjoon_Error();
+
+        $error->setCode(-1);
+        $error->setLevel(Conjoon_Error::LEVEL_ERROR);
+        $error->setFile(__FILE__);
+        $error->setLine(__LINE__);
+
+        $error->setMessage("Someone has signed in with your user credentials. Please sign in again.");
+        $error->setType(Conjoon_Error::TOKEN_FAILURE);
+        $this->view->tokenFailure = true;
+
+        /**
+         * @see Conjoon_Modules_Default_Registry
+         */
+        require_once 'Conjoon/Modules/Default/Registry.php';
+
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
+
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        // send the current logged in username with the response
+        $auth = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
+        $user = $auth->getIdentity()->getDto();
+
+        /**
+         * @todo create filter
+         */
+        unset($user->authToken);
+
+        $this->view->user = $user;
+
+        $this->view->success    = false;
+        $this->view->error      = $error->getDto();
+    }
+
+    /**
      * Index action of the controller.
      * This action will be called whenever the application recognizes that the
      * user is not logged in anymore. This can be upon start, when the user has
@@ -217,7 +285,6 @@ class ReceptionController extends Zend_Controller_Action {
     /**
      * Logout action of the controller.
      * Logs a user completely out of the application.
-     *
      */
     public function logoutAction()
     {

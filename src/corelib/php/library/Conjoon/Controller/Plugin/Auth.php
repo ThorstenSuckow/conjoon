@@ -64,7 +64,11 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
      * {@link Zend_Controller_Request_Abstract::setDispatched() setDispatched(false)}),
      * the current action may be skipped.
      *
-     * The method checks for an authenticated user.
+     * The method checks for an authenticated user. It does also compare the
+     * authToken property of teh user with the auth_token field in the db - if the
+     * authToken is set in the db and does not equal to the authToken in the session,
+     * then it is assumed that another user has signed in with the same credentials, and
+     * the user's current session will be invalidated.
      *
      * @param  Zend_Controller_Request_Abstract $request
      * @return void
@@ -73,6 +77,48 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
     {
         // check here if the user's authentity is already set
         if ($this->auth->hasIdentity()) {
+
+            // identity is set. Now check for auth token equality
+            $currentUser = $this->auth->getIdentity();
+
+            /**
+             * @see Conjoon_BeanContext_Decorator
+             */
+            require_once 'Conjoon/BeanContext/Decorator.php';
+
+            /**
+             * @see Conjoon_Modules_Default_User_Model_User
+             */
+            require_once 'Conjoon/Modules/Default/User/Model/User.php';
+
+            $decorator   = new Conjoon_BeanContext_Decorator(new Conjoon_Modules_Default_User_Model_User());
+            $tokenedUser = $decorator->getUserAsDto($currentUser->getId());
+
+            // check whether the token in the DB equals to the token in the session
+            if ($tokenedUser->authToken != $currentUser->getAuthToken()) {
+
+                // the application needs to query the registry. That's okay since no secret data will
+                // be transported if the registry sees that there's no login
+                if ($request->action == 'get.entries' && $request->controller == 'registry' &&
+                    $request->module == 'default') {
+                    return;
+                }
+
+                // user wants to log out - this is needed to sign in again since the
+                // active session will prevent from continue with using the app
+                if ($request->action == 'logout' && $request->controller == 'reception' &&
+                    $request->module == 'default') {
+                    return;
+                }
+
+                // does not equal - someone has logged in currently
+                // with the same user credentials.
+                // redirect to appropriate controller action
+                $request->setModuleName('default');
+                $request->setControllerName('reception');
+                $request->setActionName('auth.token.failure');
+            }
+
             return;
         }
 

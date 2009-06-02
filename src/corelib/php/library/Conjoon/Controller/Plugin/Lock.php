@@ -81,6 +81,8 @@ class Conjoon_Controller_Plugin_Lock extends Zend_Controller_Plugin_Abstract {
                     case 'get.user':
                     // the frontend needs to keep the user's session alive!
                     case 'ping':
+                    // auth token failure? let him pass
+                    case 'auth.token.failure':
                     return;
                 }
             }

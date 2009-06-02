@@ -58,9 +58,16 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
     }
 
     /**
+     * This emthod will authenticate a user against a database table.
+     * It will also generate a login token that is generated during the
+     * login process and will be stored in the db table. The token should then
+     * be written into the session - before dispatching any request, it is advised
+     * to check whether the session stored token still equals to the token stored
+     * in the database - if not, it is likely that another login occured with
+     * this user credentials.
      * We assume that the controller set the default adapter
      * for all database operations, thus is available without futher specifying
-     * it .
+     * it.
      *
      * @return Zend_Auth_Result
      *
@@ -81,6 +88,9 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
              );
         }
 
+        /**
+         * @see Conjoon_Modules_Default_User_Model_User
+         */
         require_once 'Conjoon/Modules/Default/User/Model/User.php';
         $userTable = new Conjoon_Modules_Default_User_Model_User();
 
@@ -116,6 +126,15 @@ class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
                 array('Supplied credential is invalid.')
             );
         }
+
+        // we have a match - generate a token and store it into the database
+        $token = md5(uniqid(rand(), true));
+        $where = $userTable->getAdapter()->quoteInto('id = ?', $user->getId());
+        $userTable->update(array(
+            'auth_token' => $token
+        ), $where);
+
+        $user->setAuthToken($token);
 
         // anything else from here on matches.
         return new Zend_Auth_Result(

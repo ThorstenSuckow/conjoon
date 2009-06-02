@@ -93,6 +93,13 @@ com.conjoon.groupware.ResponseInspector = function() {
     return {
 
         /**
+         * Failure type indicating response said "not authorized", since someone has
+         * logged in with the same user credentials
+         * @param {Number}
+         */
+        FAILURE_TOKEN : 8,
+
+        /**
          * Failure type indicating response said "not authorized"
          * @param {Number}
          */
@@ -195,6 +202,10 @@ com.conjoon.groupware.ResponseInspector = function() {
                 } else {
                     resp = _tryDecode(response);
                 }
+            }
+
+            if (resp.tokenFailure === true) {
+                return this.FAILURE_TOKEN;
             }
 
             if (resp.authorized === false) {

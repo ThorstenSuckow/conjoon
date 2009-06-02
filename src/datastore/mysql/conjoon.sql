@@ -328,4 +328,6 @@ ADD INDEX `references` ( `reference_items_id` , `is_pending` , `user_id` );
 
 ALTER TABLE `groupware_email_items_inbox` CHANGE `fetched_timestamp` `fetched_timestamp` INT( 11 ) UNSIGNED NOT NULL;
 
-ALTER TABLE `service_twitter_accounts` ADD INDEX `user_id` ( `id` )
+ALTER TABLE `service_twitter_accounts` ADD INDEX `user_id` ( `id` );
+
+ALTER TABLE `users` ADD `auth_token` VARCHAR( 32 ) NOT NULL ;
