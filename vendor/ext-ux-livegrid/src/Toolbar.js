@@ -217,11 +217,13 @@ Ext.ux.grid.livegrid.Toolbar = Ext.extend(Ext.Toolbar, {
     {
         Ext.PagingToolbar.superclass.onRender.call(this, ct, position);
 
-        this.loading = this.addButton({
+        this.loading = new Ext.Toolbar.Button({
             tooltip : this.refreshText,
             iconCls : "x-tbar-loading",
             handler : this.onClick.createDelegate(this, ["refresh"])
         });
+
+        this.addButton(this.loading);
 
         this.addSeparator();
 
