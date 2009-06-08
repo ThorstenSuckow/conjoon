@@ -113,12 +113,6 @@ Ext.ux.grid.livegrid.GridView = function(config) {
     this.horizontalScrollOffset = 17;
 
     /**
-     * @cfg {Object} loadMaskConfig The config of the load mask that will be shown
-     * by the view if a request for new data is underway.
-     */
-    this.loadMask = false;
-
-    /**
      * @type {Boolean} _checkEmptyBody Since Ext 3.0, &nbsp; would initially added to the mainBody
      * as the first child if there are no rows to render. This element has to be removed when
      * the first rows get added so the UI does not crash. This property is here to determine if
@@ -254,12 +248,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     requestQueue : -1,
 
     /**
-     * The view's own load mask that will be shown when a request to data was made
+     * An {@Ext.LoadMask} config that will be shown when a request to data was made
      * and there are no rows in the buffer left to render.
-     * @see {loadMaskConfig}
-     * @param {Ext.LoadMask}
+     * @param {Object}
      */
-    loadMask : null,
+    loadMask : false,
 
     /**
      * Set to <tt>true</tt> if a request for new data has been made while there
@@ -1479,17 +1472,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      */
     showLoadMask : function(show)
     {
-        if (this.loadMask == null) {
-            if (show) {
-                this.loadMask = new Ext.LoadMask(
-                    this.mainBody.dom.parentNode.parentNode,
-                    this.loadMaskConfig
-                );
-            } else {
-                return;
-            }
-        }
-
         if (show) {
             this.loadMask.show();
             this.liveScroller.setStyle('zIndex', this._maskIndex);
