@@ -167,6 +167,16 @@ Ext.extend(com.conjoon.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel
         });
     },
 
+    initEvents : function()
+    {
+        com.conjoon.groupware.email.EmailGrid.superclass.initEvents.call(this);
+
+        if (this.loadMask) {
+            this.store.un('beforeload', this.loadMask.onBeforeLoad, this.loadMask);
+            this.store.on('beforeload', this.loadMask.onBeforeLoad, this.loadMask, {delay : 1});
+        }
+    },
+
     onBeforeSelectionsLoad : function()
     {
         this.createContextMenu();
