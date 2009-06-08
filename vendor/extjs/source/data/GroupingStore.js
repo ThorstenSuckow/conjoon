@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -16,6 +16,7 @@
  * Creates a new GroupingStore.
  * @param {Object} config A config object containing the objects needed for the Store to access data,
  * and read the data into Records.
+ * @xtype groupingstore
  */
 Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
     
@@ -53,6 +54,10 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
         if(this.remoteGroup){
             if(this.baseParams){
                 delete this.baseParams.groupBy;
+            }
+            var lo = this.lastOptions;
+            if(lo && lo.params){
+                delete lo.params.groupBy;
             }
             this.reload();
         }else{
@@ -98,8 +103,8 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
             if(!this.baseParams){
                 this.baseParams = {};
             }
-            this.baseParams['groupBy'] = this.groupField;
-            this.baseParams['groupDir'] = this.groupDir;
+            this.baseParams.groupBy = this.groupField;
+            this.baseParams.groupDir = this.groupDir;
         }
     },
 
@@ -133,3 +138,4 @@ Ext.data.GroupingStore = Ext.extend(Ext.data.Store, {
                (this.sortInfo ? this.sortInfo.field : undefined) : this.groupField;
     }
 });
+Ext.reg('groupingstore', Ext.data.GroupingStore);

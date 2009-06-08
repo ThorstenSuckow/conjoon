@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -288,24 +288,20 @@ Ext.apply(Ext.EventObjectImpl.prototype, {
     /** @private */
     isNavKeyPress : function(){
         var me = this,
-        	k = this.normalizeKey(me.keyCode);
-        return (k >= 33 && k <= 40) || k == me.RETURN || k == me.TAB || k == me.ESC;
+        	k = this.normalizeKey(me.keyCode);		
+        return (k >= 33 && k <= 40) ||  // Page Up/Down, End, Home, Left, Up, Right, Down
+		k == me.RETURN ||
+		k == me.TAB ||
+		k == me.ESC;
     },
 
     isSpecialKey : function(){
-        var k = this.keyCode;
-        return (this.type == 'keypress' && 
-        		this.ctrlKey) ||
-        		k == 9 || 
-        		k == 13  || 
-        		k == 40 || 
-        		k == 27 ||
-	            (k == 16) || 
-	            (k == 17) ||
-	            (k >= 18 && k <= 20) ||
-	            (k >= 33 && k <= 35) ||
-	            (k >= 36 && k <= 39) ||
-	            (k >= 44 && k <= 45);
+        var k = this.normalizeKey(this.keyCode);
+        return (this.type == 'keypress' && this.ctrlKey) ||
+		this.isNavKeyPress() ||
+        (k == this.BACKSPACE) || // Backspace
+		(k >= 16 && k <= 20) || // Shift, Ctrl, Alt, Pause, Caps Lock
+		(k >= 44 && k <= 45);   // Print Screen, Insert
     },
 	
 	getPoint : function(){

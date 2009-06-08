@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -326,6 +326,7 @@ dateField.setValue('2006-05-04');
                 hideOnClick: false
             });
         }
+        this.onFocus();
         Ext.apply(this.menu.picker,  {
             minDate : this.minValue,
             maxDate : this.maxValue,
@@ -357,7 +358,7 @@ dateField.setValue('2006-05-04');
     },
     
     onMenuHide: function(){
-        this.focus.defer(10, this);
+        this.focus(false, 60);
         this.menuEvents('un');
     },
 

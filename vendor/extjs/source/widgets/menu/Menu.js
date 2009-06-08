@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,6 +9,7 @@
 /**
  * @class Ext.layout.MenuLayout
  * @extends Ext.layout.ContainerLayout
+ * <p>Layout manager used by {@link Ext.menu.Menu}. Generally this class should not need to be used directly.</p>
  */
  Ext.layout.MenuLayout = Ext.extend(Ext.layout.ContainerLayout, {
     renderItem : function(c, position, target){
@@ -153,7 +154,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      */
     scrollIncrement: 24,
     /**
-     * @cfg {Boolean} useIcons True to show the icon separator. (defaults to true).
+     * @cfg {Boolean} showSeparator True to show the icon separator. (defaults to true).
      */
     showSeparator: true,
 
@@ -172,8 +173,8 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     autoLayout: true,       // Provided for backwards compat
 
     initComponent: function(){
-        if(Ext.isArray(this.initalConfig)){
-            Ext.apply(this, {items:this.initalConfig});
+        if(Ext.isArray(this.initialConfig)){
+            Ext.apply(this, {items:this.initialConfig});
         }
         this.addEvents(
             /**
@@ -309,6 +310,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             }else{
                 if(t.menu && this.ignoreParentClicks){
                     t.expandMenu();
+                    e.preventDefault();
                 }else if(t.onClick){
                     t.onClick(e);
                     this.fireEvent("click", this, t, e);
@@ -342,7 +344,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             }else{
                 a.deactivate();
             }
-            this.activeItem = null;
+            delete this.activeItem;
         }
     },
 
@@ -420,6 +422,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         this.parentMenu = parentMenu;
         if(!this.el){
             this.render();
+            this.doLayout(false, true);
         }
         this.fireEvent("beforeshow", this);
         this.showAt(this.el.getAlignToXY(el, pos || this.defaultAlign), parentMenu, false);
@@ -439,12 +442,12 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             this.fireEvent("beforeshow", this);
             xy = this.el.adjustForConstraints(xy);
         }
-        Ext.menu.Menu.superclass.onShow.call(this);
         this.el.setXY(xy);
         if(this.enableScrolling){
             this.constrainScroll(xy[1]);     
         }
         this.el.show();
+        Ext.menu.Menu.superclass.onShow.call(this);
         if(Ext.isIE){
            this.layout.doAutoSize();
         }
@@ -479,12 +482,12 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
                 top: this.el.insertFirst({
                     tag: 'div',
                     cls: 'x-menu-scroller x-menu-scroller-top',
-                    html: '&nbsp;'
+                    html: '&#160;'
                 }),
                 bottom: this.el.createChild({
                     tag: 'div',
                     cls: 'x-menu-scroller x-menu-scroller-bottom',
-                    html: '&nbsp;'
+                    html: '&#160;'
                 })
             };
             this.scroller.top.hover(this.onScrollerIn, this.onScrollerOut, this);
@@ -499,6 +502,18 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
                     click: this.onScroll.createDelegate(this, [null, this.scroller.bottom], false)
                 }
             });
+        }
+    },
+    
+    onLayout: function(){
+        if(this.isVisible()){
+            if(this.enableScrolling){
+                this.constrainScroll(this.el.getTop());
+            }
+            if(Ext.isIE){
+              this.layout.doAutoSize();
+            }
+            this.el.sync();
         }
     },
 

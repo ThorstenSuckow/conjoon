@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -13,5 +13,5 @@ function createDom(o,parentNode){var el,doc=document,useSet,attr,val,cn;if(Ext.i
 pub.applyStyles(el,o.style);if(cn=o.children||o.cn){createDom(cn,el);}else if(o.html){el.innerHTML=o.html;}}
 if(parentNode){parentNode.appendChild(el);}
 return el;};pub={createTemplate:function(o){var html=Ext.DomHelper.createHtml(o);return new Ext.Template(html);},useDom:false,applyStyles:function(el,styles){if(styles){var i=0,len,style;el=Ext.fly(el);if(Ext.isFunction(styles)){styles=styles.call();}
-if(typeof styles=="string"){styles=styles.split(/:|;/g);for(len=styles.length;i<len;){el.setStyle(styles[i++],styles[i++]);}}else if(Ext.isObject(styles)){el.setStyle(styles);}}},insertBefore:function(el,o,returnElement){return doInsert(el,o,returnElement,beforebegin);},insertAfter:function(el,o,returnElement){return doInsert(el,o,returnElement,afterend,"nextSibling");},insertFirst:function(el,o,returnElement){return doInsert(el,o,returnElement,afterbegin,"firstChild");},append:function(el,o,returnElement){return doInsert(el,o,returnElement,beforeend,"",true);},createDom:createDom}
+if(typeof styles=="string"){styles=styles.trim().split(/\s*(?::|;)\s*/);for(len=styles.length;i<len;){el.setStyle(styles[i++],styles[i++]);}}else if(Ext.isObject(styles)){el.setStyle(styles);}}},insertBefore:function(el,o,returnElement){return doInsert(el,o,returnElement,beforebegin);},insertAfter:function(el,o,returnElement){return doInsert(el,o,returnElement,afterend,"nextSibling");},insertFirst:function(el,o,returnElement){return doInsert(el,o,returnElement,afterbegin,"firstChild");},append:function(el,o,returnElement){return doInsert(el,o,returnElement,beforeend,"",true);},createDom:createDom}
 return pub;}());

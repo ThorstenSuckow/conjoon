@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -29,7 +29,6 @@ Ext.data.DataWriter = function(config){
 
 Ext.data.DataWriter.prototype = {
 
-    meta : {},
     /**
      * @cfg {Boolean} writeAllFields
      * <tt>false</tt> by default.  Set <tt>true</tt> to have DataWriter return ALL fields of a modified
@@ -37,6 +36,12 @@ Ext.data.DataWriter.prototype = {
      * <tt>false</tt> to have DataWriter only request modified fields from a record.
      */
     writeAllFields : false,
+    /**
+     * @cfg {Boolean} listful
+     * <tt>false</tt> by default.  Set <tt>true</tt> to have the DataWriter <b>always</b> write HTTP params as a list,
+     * even when acting upon a single record.
+     */
+    listful : false,    // <-- listful is actually not used internally here in DataWriter.  @see Ext.data.Store#execute.
 
     /**
      * Writes data in preparation for server-write action.  Simply proxies to DataWriter#update, DataWriter#create
@@ -46,25 +51,13 @@ Ext.data.DataWriter.prototype = {
      * @param {Record/Record[]} rs The recordset write.
      */
     write : function(action, params, rs) {
-        var data = null;
-        switch (action) {
-            case Ext.data.Api.CREATE:
-               data = this.create(rs);
-               break;
-            case Ext.data.Api.UPDATE:
-               data = this.update(rs);
-               break;
-            case Ext.data.Api.DESTROY:
-               data = this.destroy(rs);
-               break;
-        }
-        this.render(action, rs, params, data);
+        this.render(action, rs, params, this[action](rs));
     },
 
     /**
      * abstract method meant to be overridden by all DataWriter extensions.  It's the extension's job to apply the "data" to the "params".
      * The data-object provided to render is populated with data according to the meta-info defined in the user's DataReader config,
-     * @param {String} action [Ext.data.Api.CREATE|READ|UPDATE|DESTROY]
+     * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
      * @param {Record[]} rs Store recordset
      * @param {Object} params Http params to be sent to server.
      * @param {Object} data object populated according to DataReader meta-data.
@@ -160,6 +153,7 @@ Ext.data.DataWriter.prototype = {
      * toHash
      * Converts a Record to a hash
      * @param {Record}
+     * @private
      */
     toHash : function(rec) {
         var map = rec.fields.map;

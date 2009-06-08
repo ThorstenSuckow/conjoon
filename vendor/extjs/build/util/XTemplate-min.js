@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -12,7 +12,7 @@ if(m4){exp=m4&&m4[1]?m4[1]:null;if(exp){exec=new Function(VALUES,PARENT,XINDEX,X
 if(name){switch(name){case'.':name=new Function(VALUES,PARENT,WITHVALUES+RETURN+VALUES+'; }');break;case'..':name=new Function(VALUES,PARENT,WITHVALUES+RETURN+PARENT+'; }');break;default:name=new Function(VALUES,PARENT,WITHVALUES+RETURN+name+'; }');}}
 tpls.push({id:id,target:name,exec:exec,test:fn,body:m[1]||''});s=s.replace(m[0],'{xtpl'+id+'}');++id;}
 Ext.each(tpls,function(t){me.compileTpl(t);});me.master=tpls[tpls.length-1];me.tpls=tpls;};Ext.extend(Ext.XTemplate,Ext.Template,{re:/\{([\w-\.\#]+)(?:\:([\w\.]*)(?:\((.*?)?\))?)?(\s?[\+\-\*\\]\s?[\d\.\+\-\*\\\(\)]+)?\}/g,codeRe:/\{\[((?:\\\]|.|\n)*?)\]\}/g,applySubTemplate:function(id,values,parent,xindex,xcount){var me=this,len,t=me.tpls[id],vs,buf=[];if((t.test&&!t.test.call(me,values,parent,xindex,xcount))||(t.exec&&t.exec.call(me,values,parent,xindex,xcount))){return'';}
-vs=t.target?t.target.call(me,values,parent):values;len=vs.len;parent=t.target?values:parent;if(t.target&&Ext.isArray(vs)){Ext.each(vs,function(v,i){buf[buf.length]=t.compiled.call(me,v,parent,i+1,len);});return buf.join('');}
+vs=t.target?t.target.call(me,values,parent):values;len=vs.length;parent=t.target?values:parent;if(t.target&&Ext.isArray(vs)){Ext.each(vs,function(v,i){buf[buf.length]=t.compiled.call(me,v,parent,i+1,len);});return buf.join('');}
 return t.compiled.call(me,vs,parent,xindex,xcount);},compileTpl:function(tpl){var fm=Ext.util.Format,useF=this.disableFormats!==true,sep=Ext.isGecko?"+":",",body;function fn(m,name,format,args,math){if(name.substr(0,4)=='xtpl'){return"'"+sep+'this.applySubTemplate('+name.substr(4)+', values, parent, xindex, xcount)'+sep+"'";}
 var v;if(name==='.'){v='values';}else if(name==='#'){v='xindex';}else if(name.indexOf('.')!=-1){v=name;}else{v="values['"+name+"']";}
 if(math){v='('+v+math+')';}

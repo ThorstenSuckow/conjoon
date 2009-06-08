@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -63,8 +63,8 @@
         width: 100
     },
     listeners: {
-        widthchange: function(cm, colIndex, width) {
-            saveConfig(colIndex, width);
+        {@link #hiddenchange}: function(cm, colIndex, hidden) {
+            saveConfig(colIndex, hidden);
         }
     }
 });
@@ -107,7 +107,10 @@ Ext.grid.ColumnModel = function(config){
     this.addEvents(
         /**
          * @event widthchange
-         * Fires when the width of a column changes.
+         * Fires when the width of a column is programmaticially changed using
+         * <code>{@link #setColumnWidth}</code>.
+         * Note internal resizing suppresses the event from firing. See also
+         * {@link Ext.grid.GridPanel}.<code>{@link #columnresize}</code>.
          * @param {ColumnModel} this
          * @param {Number} columnIndex The column index
          * @param {Number} newWidth The new width
@@ -168,18 +171,6 @@ Ext.extend(Ext.grid.ColumnModel, Ext.util.Observable, {
      * @cfg {Object} defaults Object literal which will be used to apply {@link Ext.grid.Column}
      * configuration options to all <tt><b>{@link #columns}</b></tt>.  Configuration options specified with
      * individual {@link Ext.grid.Column column} configs will supersede these <tt><b>{@link #defaults}</b></tt>.
-     */
-    /**
-     * @cfg {String} xtype (optional) A String which references a predefined {@link Ext.grid.Column} subclass
-     * type which is preconfigured with an appropriate {@link Ext.grid.Column#renderer renderer} to be easily
-     * configured into a ColumnModel. The predefined {@link Ext.grid.Column} subclass types are:
-     * <div class="mdetail-params"><ul>
-     * <li><b><tt>gridcolumn</tt></b> : {@link Ext.grid.Column} (<b>Default</b>)<p class="sub-desc"></p></li>
-     * <li><b><tt>booleancolumn</tt></b> : {@link Ext.grid.BooleanColumn}<p class="sub-desc"></p></li>
-     * <li><b><tt>numbercolumn</tt></b> : {@link Ext.grid.NumberColumn}<p class="sub-desc"></p></li>
-     * <li><b><tt>datecolumn</tt></b> : {@link Ext.grid.DateColumn}<p class="sub-desc"></p></li>
-     * <li><b><tt>templatecolumn</tt></b> : {@link Ext.grid.TemplateColumn}<p class="sub-desc"></p></li>
-     * </ul></div>
      */
 
     /**
@@ -381,6 +372,8 @@ var columns = grid.getColumnModel().getColumnsBy(function(c){
      * Sets the width for a column.
      * @param {Number} col The column index
      * @param {Number} width The new width
+     * @param {Boolean} suppressEvent True to suppress firing the <code>{@link #widthchange}</code>
+     * event. Defaults to false. 
      */
     setColumnWidth : function(col, width, suppressEvent){
         this.config[col].width = width;

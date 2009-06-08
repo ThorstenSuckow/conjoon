@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -12,8 +12,8 @@ if(pub.defaultHeaders){setTheHeaders(conn,pub.defaultHeaders);}
 if(pub.headers){setTheHeaders(conn,pub.headers);pub.headers=null;}}
 function createExceptionObject(tId,callbackArg,isAbort,isTimeout){return{tId:tId,status:isAbort?-1:0,statusText:isAbort?'transaction aborted':'communication failure',isAbort:true,isTimeout:true,argument:callbackArg};}
 function initHeader(label,value){(pub.headers=pub.headers||{})[label]=value;}
-function createResponseObject(o,callbackArg){var headerObj={},headerStr,conn=o.conn;try{headerStr=o.conn.getAllResponseHeaders();Ext.each(headerStr.split('\n'),function(v){var t=v.split(':');headerObj[t[0]]=t[1];});}catch(e){}
-return{tId:o.tId,status:conn.status,statusText:conn.statusText,getResponseHeader:headerObj,getAllResponseHeaders:headerStr,responseText:conn.responseText,responseXML:conn.responseXML,argument:callbackArg};}
+function createResponseObject(o,callbackArg){var headerObj={},headerStr,conn=o.conn;try{headerStr=o.conn.getAllResponseHeaders();Ext.each(headerStr.split('\n'),function(v){var t=v.indexOf(':');headerObj[v.substr(0,t)]=v.substr(t+1);});}catch(e){}
+return{tId:o.tId,status:conn.status,statusText:conn.statusText,getResponseHeader:function(header){return headerObj[header];},getAllResponseHeaders:function(){return headerStr},responseText:conn.responseText,responseXML:conn.responseXML,argument:callbackArg};}
 function releaseObject(o){o.conn=null;o=null;}
 function handleTransactionResponse(o,callback,isAbort,isTimeout){if(!callback){releaseObject(o);return;}
 var httpStatus,responseObject;try{if(o.conn.status!==undefined&&o.conn.status!=0){httpStatus=o.conn.status;}

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -68,9 +68,7 @@ Ext.grid.EditorGridPanel = Ext.extend(Ext.grid.GridPanel, {
         if(!this.selModel){
             /**
              * @cfg {Object} selModel Any subclass of AbstractSelectionModel that will provide the selection model for
-             * the grid (defaults to {@link Ext.grid.CellSelectionModel} if not specified). Note that the SelectionModel
-             * must be compatible with the model of selecting cells individually, and should support a method named
-             * <tt>getSelectedCell</tt> (for these reasons, {@link Ext.grid.RowSelectionModel} is not compatible).
+             * the grid (defaults to {@link Ext.grid.CellSelectionModel} if not specified).
              */
             this.selModel = new Ext.grid.CellSelectionModel();
         }

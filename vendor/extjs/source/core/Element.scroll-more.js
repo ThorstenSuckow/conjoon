@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -85,36 +85,28 @@ Ext.Element.addMethods({
      * was scrolled as far as it could go.
      */
      scroll : function(direction, distance, animate){
-         if(this.isScrollable()){
-	         var el = this.dom,
-	         	l = el.scrollLeft, t = el.scrollTop,
-	         	w = el.scrollWidth, h = el.scrollHeight,
-	         	cw = el.clientWidth, ch = el.clientHeight,
-	         	scrolled = false,	         		         	
-	         	l = Math.min(l + distance, w-cw),
-	         	r = Math.max(l - distance, 0),
-	         	t = Math.max(t - distance, 0),
-	         	b = Math.min(t + distance, h-ch),
-	         	hash = {
-		        	l : l,
-		        	left : l,
-		        	r : r,
-		        	right : r,
-		        	t : t,
-		        	top : t,
-		        	up : t,
-		        	b : b, 
-		        	bottom : b,
-		        	down : b 		
-	         	};
-	         	
-	         direction = direction.toLowerCase();
-	         
-	         if (v = hash[direction]) {
-			     this.scrollTo("left", v, this.preanim(arguments, 2));
-		         scrolled = true;
-         	 }
-	         return scrolled;
+         if(!this.isScrollable()){
+             return;
          }
+         var el = this.dom,
+            l = el.scrollLeft, t = el.scrollTop,
+            w = el.scrollWidth, h = el.scrollHeight,
+            cw = el.clientWidth, ch = el.clientHeight,
+            scrolled = false, v,
+            hash = {
+                l: Math.min(l + distance, w-cw),
+                r: v = Math.max(l - distance, 0),
+                t: Math.max(t - distance, 0),
+                b: Math.min(t + distance, h-ch)
+            };
+            hash.d = hash.b
+            hash.u = hash.t;
+            
+         direction = direction.substr(0, 1);
+         if((v = hash[direction]) > -1){
+            scrolled = true;
+            this.scrollTo(direction == 'l' || direction == 'r' ? 'left' : 'top', v, this.preanim(arguments, 2));
+         }
+         return scrolled;
     }
 });

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -358,9 +358,13 @@ Ext.onReady = Ext.EventManager.onDocumentReady;
                 Ext.isIE ? "ext-ie " + (Ext.isIE6 ? 'ext-ie6' : (Ext.isIE7 ? 'ext-ie7' : 'ext-ie8'))
                 : Ext.isGecko ? "ext-gecko " + (Ext.isGecko2 ? 'ext-gecko2' : 'ext-gecko3')
                 : Ext.isOpera ? "ext-opera"
-                : Ext.isWebKit ? "ext-webkit"
-                : Ext.isSafari ? "ext-safari"
-                : Ext.isChrome ? "ext-chrome" : ""];
+                : Ext.isWebKit ? "ext-webkit" : ""];
+
+        if(Ext.isSafari){
+            cls.push("ext-safari " + (Ext.isSafari2 ? 'ext-safari2' : (Ext.isSafari3 ? 'ext-safari3' : 'ext-safari4')));
+        }else if(Ext.isChrome){
+            cls.push("ext-chrome");
+        }
 
         if(Ext.isMac){
             cls.push("ext-mac");
@@ -624,8 +628,11 @@ Ext.EventObject = function(){
 		 * @return {Boolean}
 		 */
 		within : function(el, related, allowEl){
-			var t = this[related ? "getRelatedTarget" : "getTarget"]();
-			return t && ((allowEl ? (t == Ext.getDom(el)) : false) || Ext.fly(el).contains(t));
+            if(el){
+			    var t = this[related ? "getRelatedTarget" : "getTarget"]();
+			    return t && ((allowEl ? (t == Ext.getDom(el)) : false) || Ext.fly(el).contains(t));
+            }
+            return false;
 		}
 	 };
 

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -11,8 +11,8 @@ Ext.Container=Ext.extend(Ext.BoxComponent,{autoDestroy:true,defaultType:'panel',
 this.initItems();this.layout=layout;layout.setContainer(this);},render:function(){Ext.Container.superclass.render.apply(this,arguments);if(this.layout){if(typeof this.layout=='object'&&!this.layout.layout){this.layoutConfig=this.layout;this.layout=this.layoutConfig.type;}
 if(typeof this.layout=='string'){this.layout=new Ext.Container.LAYOUTS[this.layout.toLowerCase()](this.layoutConfig);}
 this.setLayout(this.layout);if(this.activeItem!==undefined){var item=this.activeItem;delete this.activeItem;this.layout.setActiveItem(item);}}
-if(!this.ownerCt){this.doLayout();}
-if(this.monitorResize===true){Ext.EventManager.onWindowResize(this.doLayout,this,[false]);}},getLayoutTarget:function(){return this.el;},getComponentId:function(comp){return comp.itemId||comp.id;},add:function(comp){this.initItems();var a=arguments,len=a.length;if(len>1){for(var i=0;i<len;i++){Ext.Container.prototype.add.call(this,a[i]);}
+if(!this.ownerCt){this.doLayout(false,true);}
+if(this.monitorResize===true){Ext.EventManager.onWindowResize(this.doLayout,this,[false]);}},getLayoutTarget:function(){return this.el;},getComponentId:function(comp){return comp.getItemId();},add:function(comp){this.initItems();var a=arguments,len=a.length;if(len>1){for(var i=0;i<len;i++){this.add(a[i]);}
 return;}
 var c=this.lookupComponent(this.applyDefaults(comp));var pos=this.items.length;if(this.fireEvent('beforeadd',this,c,pos)!==false&&this.onBeforeAdd(c)!==false){this.items.add(c);c.ownerCt=this;this.fireEvent('add',this,c,pos);}
 return c;},insert:function(index,comp){this.initItems();var a=arguments,len=a.length;if(len>2){for(var i=len-1;i>=1;--i){this.insert(index,a[i]);}
@@ -27,10 +27,10 @@ this.fireEvent('remove',this,c);}
 return c;},removeAll:function(autoDestroy){this.initItems();var item,rem=[],items=[];this.items.each(function(i){rem.push(i)});for(var i=0,len=rem.length;i<len;++i){item=rem[i];this.remove(item,autoDestroy);if(item.ownerCt!==this){items.push(item);}}
 return items;},getComponent:function(comp){if(typeof comp=='object'){return comp;}
 return this.items.get(comp);},lookupComponent:function(comp){if(typeof comp=='string'){return Ext.ComponentMgr.get(comp);}else if(!comp.events){return this.createComponent(comp);}
-return comp;},createComponent:function(config){return Ext.create(config,this.defaultType);},doLayout:function(shallow){var rendered=this.rendered;if(rendered&&this.layout){this.layout.layout();}
-if(shallow!==false&&this.items){var cs=this.items.items;for(var i=0,len=cs.length;i<len;i++){var c=cs[i];if(c.doLayout){c.doLayout();}}}
-if(rendered){this.onLayout(shallow)}
-return this;},onLayout:Ext.emptyFn,getLayout:function(){if(!this.layout){var layout=new Ext.layout.ContainerLayout(this.layoutConfig);this.setLayout(layout);}
+return comp;},createComponent:function(config){return Ext.create(config,this.defaultType);},doLayout:function(shallow,force){var rendered=this.rendered;if(!this.isVisible()||this.collapsed){if(!force){this.deferLayout=this.deferLayout||!shallow;return;}else{delete this.deferLayout;}}
+shallow=shallow&&!this.deferLayout;delete this.deferLayout;if(rendered&&this.layout){this.layout.layout();}
+if(shallow!==true&&this.items){var cs=this.items.items;for(var i=0,len=cs.length;i<len;i++){var c=cs[i];if(c.doLayout){c.doLayout();}}}
+if(rendered){this.onLayout(shallow,force);}},onLayout:Ext.emptyFn,onShow:function(){Ext.Container.superclass.onShow.call(this);if(this.deferLayout!==undefined){this.doLayout(true);}},getLayout:function(){if(!this.layout){var layout=new Ext.layout.ContainerLayout(this.layoutConfig);this.setLayout(layout);}
 return this.layout;},beforeDestroy:function(){if(this.items){Ext.destroy.apply(Ext,this.items.items);}
 if(this.monitorResize){Ext.EventManager.removeResizeListener(this.doLayout,this);}
 Ext.destroy(this.layout);Ext.Container.superclass.beforeDestroy.call(this);},bubble:function(fn,scope,args){var p=this;while(p){if(fn.apply(scope||p,args||[p])===false){break;}

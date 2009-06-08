@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -21,59 +21,59 @@ Ext.grid.GridView = function(config){
     Ext.apply(this, config);
     // These events are only used internally by the grid components
     this.addEvents(
-      /**
+        /**
          * @event beforerowremoved
          * Internal UI Event. Fired before a row is removed.
          * @param {Ext.grid.GridView} view
          * @param {Number} rowIndex The index of the row to be removed.
          * @param {Ext.data.Record} record The Record to be removed
-       */
-      "beforerowremoved",
-      /**
+         */
+        "beforerowremoved",
+        /**
          * @event beforerowsinserted
          * Internal UI Event. Fired before rows are inserted.
          * @param {Ext.grid.GridView} view
          * @param {Number} firstRow The index of the first row to be inserted.
          * @param {Number} lastRow The index of the last row to be inserted.
-       */
-      "beforerowsinserted",
-      /**
+         */
+        "beforerowsinserted",
+        /**
          * @event beforerefresh
          * Internal UI Event. Fired before the view is refreshed.
          * @param {Ext.grid.GridView} view
-       */
-      "beforerefresh",
-      /**
+         */
+        "beforerefresh",
+        /**
          * @event rowremoved
          * Internal UI Event. Fired after a row is removed.
          * @param {Ext.grid.GridView} view
          * @param {Number} rowIndex The index of the row that was removed.
          * @param {Ext.data.Record} record The Record that was removed
-       */
-      "rowremoved",
-      /**
+         */
+        "rowremoved",
+        /**
          * @event rowsinserted
          * Internal UI Event. Fired after rows are inserted.
          * @param {Ext.grid.GridView} view
          * @param {Number} firstRow The index of the first inserted.
          * @param {Number} lastRow The index of the last row inserted.
-       */
-      "rowsinserted",
-      /**
+         */
+        "rowsinserted",
+        /**
          * @event rowupdated
          * Internal UI Event. Fired after a row has been updated.
          * @param {Ext.grid.GridView} view
          * @param {Number} firstRow The index of the row updated.
          * @param {Ext.data.record} record The Record backing the row updated.
-       */
-      "rowupdated",
-      /**
+         */
+        "rowupdated",
+        /**
          * @event refresh
          * Internal UI Event. Fired after the GridView's body has been refreshed.
          * @param {Ext.grid.GridView} view
-       */
-      "refresh"
-  );
+         */
+        "refresh"
+    );
     Ext.grid.GridView.superclass.constructor.call(this);
 };
 
@@ -204,7 +204,7 @@ viewConfig: {
      * facets (like text) use something like:
     <pre><code>
     .x-grid3-row-selected .x-grid3-cell-inner {
-    	color: #FFCC00;
+        color: #FFCC00;
     }
     </code></pre>
      * @type String
@@ -681,7 +681,7 @@ viewConfig: {
         if(!this.ds || !this.cm){
             return;
         }
-        this.mainBody.dom.innerHTML = this.renderRows() || '&nbsp;';
+        this.mainBody.dom.innerHTML = this.renderRows() || '&#160;';
         this.processRows(0, true);
 
         if(this.deferEmptyText !== true){
@@ -693,7 +693,7 @@ viewConfig: {
     renderUI : function(){
 
         var header = this.renderHeaders();
-        var body = this.templates.body.apply({rows:'&nbsp;'});
+        var body = this.templates.body.apply({rows:'&#160;'});
 
 
         var html = this.templates.master.apply({
@@ -711,9 +711,12 @@ viewConfig: {
 
         // get mousedowns early
         Ext.fly(this.innerHd).on("click", this.handleHdDown, this);
-        this.mainHd.on("mouseover", this.handleHdOver, this);
-        this.mainHd.on("mouseout", this.handleHdOut, this);
-        this.mainHd.on("mousemove", this.handleHdMove, this);
+        this.mainHd.on({
+            scope: this,
+            mouseover: this.handleHdOver,
+            mouseout: this.handleHdOut,
+            mousemove: this.handleHdMove
+        })
 
         this.scroller.on('scroll', this.syncScroll,  this);
         if(g.enableColumnResize !== false){
@@ -733,8 +736,11 @@ viewConfig: {
             );
             if(g.enableColumnHide !== false){
                 this.colMenu = new Ext.menu.Menu({id:g.id + "-hcols-menu"});
-                this.colMenu.on("beforeshow", this.beforeColMenuShow, this);
-                this.colMenu.on("itemclick", this.handleHdMenuClick, this);
+                this.colMenu.on({
+                    scope: this,
+                    beforeshow: this.beforeColMenuShow,
+                    itemclick: this.handleHdMenuClick
+                });
                 this.hmenu.add('-', {
                     itemId:"columns",
                     hideOnClick: false,
@@ -747,8 +753,11 @@ viewConfig: {
         }
 
         if(g.trackMouseOver){
-             this.mainBody.on("mouseover", this.onRowOver, this);
-             this.mainBody.on("mouseout", this.onRowOut, this);
+            this.mainBody.on({
+                scope: this,
+                mouseover: this.onRowOver,
+                mouseout: this.onRowOut
+            });
         }
 
         if(g.enableDragDrop || g.enableDrag){
@@ -912,7 +921,7 @@ viewConfig: {
      * @param {Number} col The column index
      */
     focusCell : function(row, col, hscroll){
-		this.syncFocusEl(this.ensureVisible(row, col, hscroll));
+        this.syncFocusEl(this.ensureVisible(row, col, hscroll));
         if(Ext.isGecko){
             this.focusEl.focus();
         }else{
@@ -920,8 +929,8 @@ viewConfig: {
         }
     },
 
-	resolveCell : function(row, col, hscroll){
-		if(typeof row != "number"){
+    resolveCell : function(row, col, hscroll){
+        if(typeof row != "number"){
             row = row.rowIndex;
         }
         if(!this.ds){
@@ -940,35 +949,35 @@ viewConfig: {
             cellEl = this.getCell(row, col);
         }
 
-		return {row: rowEl, cell: cellEl};
-	},
+        return {row: rowEl, cell: cellEl};
+    },
 
-	getResolvedXY : function(resolved){
-		if(!resolved){
-			return null;
-		}
-		var s = this.scroller.dom, c = resolved.cell, r = resolved.row;
-		return c ? Ext.fly(c).getXY() : [this.el.getX(), Ext.fly(r).getY()];
-	},
+    getResolvedXY : function(resolved){
+        if(!resolved){
+            return null;
+        }
+        var s = this.scroller.dom, c = resolved.cell, r = resolved.row;
+        return c ? Ext.fly(c).getXY() : [this.el.getX(), Ext.fly(r).getY()];
+    },
 
-	syncFocusEl : function(row, col, hscroll){
-		var xy = row;
-		if(!Ext.isArray(xy)){
-			row = Math.min(row, Math.max(0, this.getRows().length-1));
-        	xy = this.getResolvedXY(this.resolveCell(row, col, hscroll));
-		}
+    syncFocusEl : function(row, col, hscroll){
+        var xy = row;
+        if(!Ext.isArray(xy)){
+            row = Math.min(row, Math.max(0, this.getRows().length-1));
+            xy = this.getResolvedXY(this.resolveCell(row, col, hscroll));
+        }
         this.focusEl.setXY(xy||this.scroller.getXY());
     },
 
-	ensureVisible : function(row, col, hscroll){
+    ensureVisible : function(row, col, hscroll){
         var resolved = this.resolveCell(row, col, hscroll);
-		if(!resolved || !resolved.row){
-			return;
-		}
+        if(!resolved || !resolved.row){
+            return;
+        }
 
-		var rowEl = resolved.row, cellEl = resolved.cell;
+        var rowEl = resolved.row, cellEl = resolved.cell;
 
-		var c = this.scroller.dom;
+        var c = this.scroller.dom;
 
         var ctop = 0;
         var p = rowEl, stop = this.el.dom;
@@ -984,7 +993,7 @@ viewConfig: {
         var stop = parseInt(c.scrollTop, 10);
         var sbot = stop + ch;
 
-		if(ctop < stop){
+        if(ctop < stop){
           c.scrollTop = ctop;
         }else if(cbot > sbot){
             c.scrollTop = cbot-ch;
@@ -1185,7 +1194,7 @@ viewConfig: {
 
     // private
     renderBody : function(){
-        var markup = this.renderRows() || '&nbsp;';
+        var markup = this.renderRows() || '&#160;';
         return this.templates.body.apply({rows: markup});
     },
 
@@ -1345,12 +1354,15 @@ viewConfig: {
             }
         }
         if(ds){
-            ds.on("load", this.onLoad, this);
-            ds.on("datachanged", this.onDataChange, this);
-            ds.on("add", this.onAdd, this);
-            ds.on("remove", this.onRemove, this);
-            ds.on("update", this.onUpdate, this);
-            ds.on("clear", this.onClear, this);
+            ds.on({
+                scope: this,
+                load: this.onLoad,
+                datachanged: this.onDataChange,
+                add: this.onAdd,
+                remove: this.onRemove,
+                update: this.onUpdate,
+                clear: this.onClear
+            });
         }
         this.ds = ds;
 
@@ -1360,16 +1372,17 @@ viewConfig: {
             this.cm.un("headerchange", this.onHeaderChange, this);
             this.cm.un("hiddenchange", this.onHiddenChange, this);
             this.cm.un("columnmoved", this.onColumnMove, this);
-            this.cm.un("columnlockchange", this.onColumnLock, this);
         }
         if(cm){
             delete this.lastViewWidth;
-            cm.on("configchange", this.onColConfigChange, this);
-            cm.on("widthchange", this.onColWidthChange, this);
-            cm.on("headerchange", this.onHeaderChange, this);
-            cm.on("hiddenchange", this.onHiddenChange, this);
-            cm.on("columnmoved", this.onColumnMove, this);
-            cm.on("columnlockchange", this.onColumnLock, this);
+            cm.on({
+                scope: this,
+                configchange: this.onColConfigChange,
+                widthchange: this.onColWidthChange,
+                headerchange: this.onHeaderChange,
+                hiddenchange: this.onHiddenChange,
+                columnmoved: this.onColumnMove
+            });
         }
         this.cm = cm;
     },

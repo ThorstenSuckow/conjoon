@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -147,7 +147,7 @@ Ext.menu.MenuMgr = function(){
            }else if(typeof menu.length == 'number'){ // array of menu items?
                return new Ext.menu.Menu({items:menu});
            }else{ // otherwise, must be a config
-               return new Ext.menu.Menu(menu);
+               return Ext.create(menu, 'menu');
            }
        },
 

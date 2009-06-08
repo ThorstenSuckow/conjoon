@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -564,7 +564,7 @@ Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
 
     // private
     update : function(date, forceRefresh){
-        var vd = this.activeDate;
+        var vd = this.activeDate, vis = this.isVisible();
         this.activeDate = date;
         if(!forceRefresh && vd && this.el){
             var t = date.getTime();
@@ -573,9 +573,9 @@ Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
                 this.cells.each(function(c){
                    if(c.dom.firstChild.dateValue == t){
                        c.addClass("x-date-selected");
-                       setTimeout(function(){
-                            try{c.dom.firstChild.focus();}catch(e){}
-                       }, 50);
+                       if(vis){
+                           Ext.fly(c.dom.firstChild).focus(50);
+                       }
                        return false;
                    }
                 });
@@ -630,9 +630,9 @@ Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
             }
             if(t == sel){
                 cell.className += " x-date-selected";
-                setTimeout(function(){
-                    try{cell.firstChild.focus();}catch(e){}
-                }, 50);
+                if(vis){
+                    Ext.fly(cell.firstChild).focus(50);
+                }
             }
             // disabling
             if(t < min) {

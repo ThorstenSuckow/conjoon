@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -107,6 +107,7 @@ Store xtypes
 ---------------------------------------
 arraystore       {@link Ext.data.ArrayStore}
 directstore      {@link Ext.data.DirectStore}
+groupingstore    {@link Ext.data.GroupingStore}
 jsonstore        {@link Ext.data.JsonStore}
 simplestore      {@link Ext.data.SimpleStore}      (deprecated; use arraystore)
 store            {@link Ext.data.Store}
@@ -1051,7 +1052,7 @@ var myGrid = new Ext.grid.EditorGridPanel({
 
     // private
     getAutoCreate : function(){
-        var cfg = typeof this.autoCreate == "object" ?
+        var cfg = Ext.isObject(this.autoCreate) ?
                       this.autoCreate : Ext.apply({}, this.defaultAutoCreate);
         if(this.id && !cfg.id){
             cfg.id = this.id;
@@ -1227,12 +1228,7 @@ new Ext.Panel({
 
     // private
     onShow : function(){
-        if(this.hideParent){
-            this.container.removeClass('x-hide-' + this.hideMode);
-        }else{
-            this.getActionEl().removeClass('x-hide-' + this.hideMode);
-        }
-
+        this.getVisibiltyEl().removeClass('x-hide-' + this.hideMode);
     },
 
     /**
@@ -1252,11 +1248,12 @@ new Ext.Panel({
 
     // private
     onHide : function(){
-        if(this.hideParent){
-            this.container.addClass('x-hide-' + this.hideMode);
-        }else{
-            this.getActionEl().addClass('x-hide-' + this.hideMode);
-        }
+        this.getVisibiltyEl().addClass('x-hide-' + this.hideMode);
+    },
+    
+    // private
+    getVisibiltyEl: function(){
+        return this.hideParent ? this.container : this.getActionEl();    
     },
 
     /**
@@ -1273,7 +1270,7 @@ new Ext.Panel({
      * @return {Boolean} True if this component is visible, false otherwise.
      */
     isVisible : function(){
-        return this.rendered && this.getActionEl().isVisible();
+        return this.rendered && this.getVisibiltyEl().isVisible();
     },
 
     /**
@@ -1388,17 +1385,28 @@ alert(t.getXTypes());  // alerts 'component/box/field/textfield'
     getDomPositionEl : function(){
         return this.getPositionEl ? this.getPositionEl() : this.getEl();
     },
+    
+    // private
+    purgeListeners: function(){
+        Ext.Component.superclass.purgeListeners.call(this);
+        if(this.mons){
+            this.on('beforedestroy', this.clearMons, this, {single: true});
+        }
+    },
+    
+    // private
+    clearMons: function(){
+        Ext.each(this.mons, function(m){
+            m.item.un(m.ename, m.fn, m.scope);
+        }, this);
+        this.mons = [];
+    },
 
     // internal function for auto removal of assigned event handlers on destruction
     mon : function(item, ename, fn, scope, opt){
         if(!this.mons){
             this.mons = [];
-            this.on('beforedestroy', function(){
-                for(var i= 0, len = this.mons.length; i < len; i++){
-                    var m = this.mons[i];
-                    m.item.un(m.ename, m.fn, m.scope);
-                }
-            }, this, {single: true});
+            this.on('beforedestroy', this.clearMons, this, {single: true});
         }
 		
         if(Ext.isObject(ename)){

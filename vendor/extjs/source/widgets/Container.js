@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -54,7 +54,7 @@ var embeddedColumns = new Ext.Container({
  * <p><u><b>Layout</b></u></p> 
  * <p>Every Container delegates the rendering of its child Components to a layout manager class which must be
  * configured into the Container using the <tt><b>{@link #layout}</b></tt> configuration property.</p>
- * <p>When either specifying child {@link #items} of a Container, or dynamically {@link #add adding} components
+ * <p>When either specifying child {@link #items} of a Container, or dynamically {@link #add adding} Components
  * to a Container, remember to consider how you wish the Container to arrange those child elements, and whether
  * those child elements need to be sized using one of Ext's built-in <tt><b>{@link #layout}</b></tt> schemes. By
  * default, Containers use the {@link Ext.layout.ContainerLayout ContainerLayout} scheme. This simply renders
@@ -96,8 +96,8 @@ Ext.Ajax.request({
     url: 'gen-invoice-grid.php',
     // send additional parameters to instruct server script
     params: {
-        startDate = Ext.getCmp('start-date').getValue(),
-        endDate = Ext.getCmp('end-date').getValue()
+        startDate: Ext.getCmp('start-date').getValue(),
+        endDate: Ext.getCmp('end-date').getValue()
     },
     // process the response object to add it to the TabPanel:
     success: function(xhr) {
@@ -407,7 +407,8 @@ items: [
             }
         }
         if(!this.ownerCt){
-            this.doLayout();
+            // force a layout if no ownerCt is set
+            this.doLayout(false, true);
         }
         if(this.monitorResize === true){
             Ext.EventManager.onWindowResize(this.doLayout, this, [false]);
@@ -427,7 +428,7 @@ items: [
 
     // private - used as the key lookup function for the items collection
     getComponentId : function(comp){
-        return comp.itemId || comp.id;
+        return comp.getItemId();
     },
 
     /**
@@ -505,8 +506,8 @@ tb.{@link #doLayout}();             // refresh the layout
         this.initItems();
         var a = arguments, len = a.length;
         if(len > 1){
-            for(var i = 0; i < len; i++) {
-                Ext.Container.prototype.add.call(this, a[i]);
+            for(var i = 0; i < len; i++){
+                this.add(a[i]);
             }
             return;
         }
@@ -665,30 +666,47 @@ tb.{@link #doLayout}();             // refresh the layout
      * to an already rendered container, or possibly after changing sizing/position properties of child components.
      * @param {Boolean} shallow (optional) True to only calc the layout of this component, and let child components auto
      * calc layouts as required (defaults to false, which calls doLayout recursively for each subcontainer)
+     * @param {Boolean} force (optional) True to force a layout to occur, even if the item is hidden.
      * @return {Ext.Container} this
      */
-    doLayout : function(shallow){
+    doLayout: function(shallow, force){
         var rendered = this.rendered;
+        if(!this.isVisible() || this.collapsed){
+            if(!force){
+                this.deferLayout = this.deferLayout || !shallow;
+                return;
+            }else{
+                delete this.deferLayout;
+            }
+        }
+        shallow = shallow && !this.deferLayout;
+        delete this.deferLayout;
         if(rendered && this.layout){
             this.layout.layout();
         }
-        if(shallow !== false && this.items){
+        if(shallow !== true && this.items){
             var cs = this.items.items;
-            for(var i = 0, len = cs.length; i < len; i++) {
-                var c  = cs[i];
+            for(var i = 0, len = cs.length; i < len; i++){
+                var c = cs[i];
                 if(c.doLayout){
                     c.doLayout();
                 }
             }
         }
         if(rendered){
-            this.onLayout(shallow)
+            this.onLayout(shallow, force);
         }
-        return this;
     },
     
     //private
     onLayout: Ext.emptyFn,
+    
+    onShow: function(){
+        Ext.Container.superclass.onShow.call(this);
+        if(this.deferLayout !== undefined){
+            this.doLayout(true);
+        }
+    },
 
     /**
      * Returns the layout currently in use by the container.  If the container does not currently have a layout

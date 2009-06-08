@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -8,7 +8,7 @@
 
 
 Ext.tree.TreePanel=Ext.extend(Ext.Panel,{rootVisible:true,animate:Ext.enableFx,lines:true,enableDD:false,hlDrop:Ext.enableFx,pathSeparator:"/",initComponent:function(){Ext.tree.TreePanel.superclass.initComponent.call(this);if(!this.eventModel){this.eventModel=new Ext.tree.TreeEventModel(this);}
-var l=this.loader;if(!l){l=new Ext.tree.TreeLoader({dataUrl:this.dataUrl});}else if(typeof l=='object'&&!l.load){l=new Ext.tree.TreeLoader(l);}
+var l=this.loader;if(!l){l=new Ext.tree.TreeLoader({dataUrl:this.dataUrl,requestMethod:this.requestMethod});}else if(typeof l=='object'&&!l.load){l=new Ext.tree.TreeLoader(l);}
 this.loader=l;this.nodeHash={};if(this.root){var r=this.root;delete this.root;this.setRootNode(r);}
 this.addEvents("append","remove","movenode","insert","beforeappend","beforeremove","beforemovenode","beforeinsert","beforeload","load","textchange","beforeexpandnode","beforecollapsenode","expandnode","disabledchange","collapsenode","beforeclick","click","checkchange","dblclick","contextmenu","beforechildrenrendered","startdrag","enddrag","dragdrop","beforenodedrop","nodedrop","nodedragover");if(this.singleExpand){this.on("beforeexpandnode",this.restrictExpand,this);}},proxyNodeEvent:function(ename,a1,a2,a3,a4,a5,a6){if(ename=='collapse'||ename=='expand'||ename=='beforecollapse'||ename=='beforeexpand'||ename=='move'||ename=='beforemove'){ename=ename+'node';}
 return this.fireEvent(ename,a1,a2,a3,a4,a5,a6);},getRootNode:function(){return this.root;},setRootNode:function(node){Ext.destroy(this.root);if(!node.render){node=this.loader.createNode(node);}

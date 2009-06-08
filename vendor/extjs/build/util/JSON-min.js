@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -18,6 +18,6 @@ pad(o.getMonth()+1)+"-"+
 pad(o.getDate())+"T"+
 pad(o.getHours())+":"+
 pad(o.getMinutes())+":"+
-pad(o.getSeconds())+'"';};this.encode=isNative?JSON.stringify:function(o){if(typeof o=="undefined"||o===null){return"null";}else if(Ext.isArray(o)){return encodeArray(o);}else if(Ext.isDate(o)){return Ext.util.JSON.encodeDate(o);}else if(typeof o=="string"){return encodeString(o);}else if(typeof o=="number"){return isFinite(o)?String(o):"null";}else if(typeof o=="boolean"){return String(o);}else{var a=["{"],b,i,v;for(i in o){if(!useHasOwn||o.hasOwnProperty(i)){v=o[i];switch(typeof v){case"undefined":case"function":case"unknown":break;default:if(b){a.push(',');}
+pad(o.getSeconds())+'"';};this.encode=isNative?JSON.stringify:function(o){if(typeof o=="undefined"||o===null){return"null";}else if(Ext.isArray(o)){return encodeArray(o);}else if(Object.prototype.toString.apply(o)==='[object Date]'){return Ext.util.JSON.encodeDate(o);}else if(typeof o=="string"){return encodeString(o);}else if(typeof o=="number"){return isFinite(o)?String(o):"null";}else if(typeof o=="boolean"){return String(o);}else{var a=["{"],b,i,v;for(i in o){if(!useHasOwn||o.hasOwnProperty(i)){v=o[i];switch(typeof v){case"undefined":case"function":case"unknown":break;default:if(b){a.push(',');}
 a.push(this.encode(i),":",v===null?"null":this.encode(v));b=true;}}}
 a.push("}");return a.join("");}};this.decode=isNative?JSON.parse:function(json){return eval("("+json+')');};})();Ext.encode=Ext.util.JSON.encode;Ext.decode=Ext.util.JSON.decode;

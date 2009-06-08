@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -30,7 +30,7 @@ t[levels[--i]]=this;}},initState:function(config){if(Ext.state.Manager){var id=t
 return this;},removeClass:function(cls){if(this.el){this.el.removeClass(cls);}else if(this.cls){this.cls=this.cls.split(' ').remove(cls).join(' ');}
 return this;},onRender:function(ct,position){if(!this.el&&this.autoEl){if(typeof this.autoEl=='string'){this.el=document.createElement(this.autoEl);}else{var div=document.createElement('div');Ext.DomHelper.overwrite(div,this.autoEl);this.el=div.firstChild;}
 if(!this.el.id){this.el.id=this.getId();}}
-if(this.el){this.el=Ext.get(this.el);if(this.allowDomMove!==false){ct.dom.insertBefore(this.el.dom,position);}}},getAutoCreate:function(){var cfg=typeof this.autoCreate=="object"?this.autoCreate:Ext.apply({},this.defaultAutoCreate);if(this.id&&!cfg.id){cfg.id=this.id;}
+if(this.el){this.el=Ext.get(this.el);if(this.allowDomMove!==false){ct.dom.insertBefore(this.el.dom,position);}}},getAutoCreate:function(){var cfg=Ext.isObject(this.autoCreate)?this.autoCreate:Ext.apply({},this.defaultAutoCreate);if(this.id&&!cfg.id){cfg.id=this.id;}
 return cfg;},afterRender:Ext.emptyFn,destroy:function(){if(this.fireEvent("beforedestroy",this)!==false){this.beforeDestroy();if(this.rendered){this.el.removeAllListeners();this.el.remove();if(this.actionMode=="container"||this.removeMode=="container"){this.container.remove();}}
 this.onDestroy();Ext.ComponentMgr.unregister(this);this.fireEvent("destroy",this);this.purgeListeners();}},beforeDestroy:Ext.emptyFn,onDestroy:Ext.emptyFn,getEl:function(){return this.el;},getId:function(){return this.id||(this.id="ext-comp-"+(++Ext.Component.AUTO_ID));},getItemId:function(){return this.itemId||this.getId();},focus:function(selectText,delay){if(delay){this.focus.defer(typeof delay=='number'?delay:10,this,[selectText,false]);return;}
 if(this.rendered){this.el.focus();if(selectText===true){this.el.dom.select();}}
@@ -40,12 +40,12 @@ this.disabled=true;this.fireEvent("disable",this);return this;},onDisable:functi
 this.disabled=false;this.fireEvent("enable",this);return this;},onEnable:function(){this.getActionEl().removeClass(this.disabledClass);this.el.dom.disabled=false;},setDisabled:function(disabled){return this[disabled?"disable":"enable"]();},show:function(){if(this.fireEvent("beforeshow",this)!==false){this.hidden=false;if(this.autoRender){this.render(typeof this.autoRender=='boolean'?Ext.getBody():this.autoRender);}
 if(this.rendered){this.onShow();}
 this.fireEvent("show",this);}
-return this;},onShow:function(){if(this.hideParent){this.container.removeClass('x-hide-'+this.hideMode);}else{this.getActionEl().removeClass('x-hide-'+this.hideMode);}},hide:function(){if(this.fireEvent("beforehide",this)!==false){this.hidden=true;if(this.rendered){this.onHide();}
+return this;},onShow:function(){this.getVisibiltyEl().removeClass('x-hide-'+this.hideMode);},hide:function(){if(this.fireEvent("beforehide",this)!==false){this.hidden=true;if(this.rendered){this.onHide();}
 this.fireEvent("hide",this);}
-return this;},onHide:function(){if(this.hideParent){this.container.addClass('x-hide-'+this.hideMode);}else{this.getActionEl().addClass('x-hide-'+this.hideMode);}},setVisible:function(visible){return this[visible?"show":"hide"]();},isVisible:function(){return this.rendered&&this.getActionEl().isVisible();},cloneConfig:function(overrides){overrides=overrides||{};var id=overrides.id||Ext.id();var cfg=Ext.applyIf(overrides,this.initialConfig);cfg.id=id;return new this.constructor(cfg);},getXType:function(){return this.constructor.xtype;},isXType:function(xtype,shallow){if(typeof xtype=='function'){xtype=xtype.xtype;}else if(typeof xtype=='object'){xtype=xtype.constructor.xtype;}
+return this;},onHide:function(){this.getVisibiltyEl().addClass('x-hide-'+this.hideMode);},getVisibiltyEl:function(){return this.hideParent?this.container:this.getActionEl();},setVisible:function(visible){return this[visible?"show":"hide"]();},isVisible:function(){return this.rendered&&this.getVisibiltyEl().isVisible();},cloneConfig:function(overrides){overrides=overrides||{};var id=overrides.id||Ext.id();var cfg=Ext.applyIf(overrides,this.initialConfig);cfg.id=id;return new this.constructor(cfg);},getXType:function(){return this.constructor.xtype;},isXType:function(xtype,shallow){if(typeof xtype=='function'){xtype=xtype.xtype;}else if(typeof xtype=='object'){xtype=xtype.constructor.xtype;}
 return!shallow?('/'+this.getXTypes()+'/').indexOf('/'+xtype+'/')!=-1:this.constructor.xtype==xtype;},getXTypes:function(){var tc=this.constructor;if(!tc.xtypes){var c=[],sc=this;while(sc&&sc.constructor.xtype){c.unshift(sc.constructor.xtype);sc=sc.constructor.superclass;}
 tc.xtypeChain=c;tc.xtypes=c.join('/');}
-return tc.xtypes;},findParentBy:function(fn){for(var p=this.ownerCt;(p!=null)&&!fn(p,this);p=p.ownerCt);return p||null;},findParentByType:function(xtype){return typeof xtype=='function'?this.findParentBy(function(p){return p.constructor===xtype;}):this.findParentBy(function(p){return p.constructor.xtype===xtype;});},getDomPositionEl:function(){return this.getPositionEl?this.getPositionEl():this.getEl();},mon:function(item,ename,fn,scope,opt){if(!this.mons){this.mons=[];this.on('beforedestroy',function(){for(var i=0,len=this.mons.length;i<len;i++){var m=this.mons[i];m.item.un(m.ename,m.fn,m.scope);}},this,{single:true});}
+return tc.xtypes;},findParentBy:function(fn){for(var p=this.ownerCt;(p!=null)&&!fn(p,this);p=p.ownerCt);return p||null;},findParentByType:function(xtype){return typeof xtype=='function'?this.findParentBy(function(p){return p.constructor===xtype;}):this.findParentBy(function(p){return p.constructor.xtype===xtype;});},getDomPositionEl:function(){return this.getPositionEl?this.getPositionEl():this.getEl();},purgeListeners:function(){Ext.Component.superclass.purgeListeners.call(this);if(this.mons){this.on('beforedestroy',this.clearMons,this,{single:true});}},clearMons:function(){Ext.each(this.mons,function(m){m.item.un(m.ename,m.fn,m.scope);},this);this.mons=[];},mon:function(item,ename,fn,scope,opt){if(!this.mons){this.mons=[];this.on('beforedestroy',this.clearMons,this,{single:true});}
 if(Ext.isObject(ename)){var propRe=/^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/;var o=ename;for(var e in o){if(propRe.test(e)){continue;}
 if(Ext.isFunction(o[e])){this.mons.push({item:item,ename:e,fn:o[e],scope:o.scope});item.on(e,o[e],o.scope,o);}else{this.mons.push({item:item,ename:e,fn:o[e],scope:o.scope});item.on(e,o[e]);}}
 return;}

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -12,4 +12,5 @@ if(typeof this.maxValue=="string"){this.maxValue=this.parseDate(this.maxValue);}
 if(!this.store){var min=this.parseDate(this.minValue);if(!min){min=new Date(this.initDate).clearTime();}
 var max=this.parseDate(this.maxValue);if(!max){max=new Date(this.initDate).clearTime().add('mi',(24*60)-1);}
 var times=[];while(min<=max){times.push([min.dateFormat(this.format)]);min=min.add('mi',this.increment);}
-this.store=new Ext.data.ArrayStore({fields:['text'],data:times});this.displayField='text';}},getValue:function(){var v=Ext.form.TimeField.superclass.getValue.call(this);return this.formatDate(this.parseDate(v))||'';},setValue:function(value){return Ext.form.TimeField.superclass.setValue.call(this,this.formatDate(this.parseDate(value)));},validateValue:Ext.form.DateField.prototype.validateValue,parseDate:Ext.form.DateField.prototype.parseDate,formatDate:Ext.form.DateField.prototype.formatDate,beforeBlur:function(){var v=this.parseDate(this.getRawValue());if(v){this.setValue(v.dateFormat(this.format));}}});Ext.reg('timefield',Ext.form.TimeField);
+this.store=new Ext.data.ArrayStore({fields:['text'],data:times});this.displayField='text';}},getValue:function(){var v=Ext.form.TimeField.superclass.getValue.call(this);return this.formatDate(this.parseDate(v))||'';},setValue:function(value){return Ext.form.TimeField.superclass.setValue.call(this,this.formatDate(this.parseDate(value)));},validateValue:Ext.form.DateField.prototype.validateValue,parseDate:Ext.form.DateField.prototype.parseDate,formatDate:Ext.form.DateField.prototype.formatDate,beforeBlur:function(){var v=this.parseDate(this.getRawValue());if(v){this.setValue(v.dateFormat(this.format));}
+Ext.form.TimeField.superclass.beforeBlur.call(this);}});Ext.reg('timefield',Ext.form.TimeField);

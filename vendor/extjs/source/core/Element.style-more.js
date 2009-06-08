@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -193,17 +193,16 @@ Ext.get("foo").boxWrap().addClass("x-box-blue");
 	     * @param {String} className
 	     * @return {Ext.Element} this
 	     */
-	    addClassOnOver : function(className){
-		    var me = this;	    	
-	        me.hover(
+	    addClassOnOver : function(className){	    	
+	        this.hover(
 	            function(){
-	                Ext.fly(me, INTERNAL).addClass(className);
+	                Ext.fly(this, INTERNAL).addClass(className);
 	            },
 	            function(){
-	                Ext.fly(me, INTERNAL).removeClass(className);
+	                Ext.fly(this, INTERNAL).removeClass(className);
 	            }			   
 	        );
-	        return me;
+	        return this;
 	    },
 	
 	    /**
@@ -212,14 +211,13 @@ Ext.get("foo").boxWrap().addClass("x-box-blue");
 	     * @return {Ext.Element} this
 	     */
 	    addClassOnFocus : function(className){
-		    var me = this;
-	        me.on("focus", function(){
-	            Ext.fly(me, INTERNAL).addClass(className);
-	        }, me.dom);
-	        me.on("blur", function(){
-	            Ext.fly(me, INTERNAL).removeClass(className);
-	        }, me.dom);
-	        return me;
+		this.on("focus", function(){
+		    Ext.fly(this, INTERNAL).addClass(className);
+		}, this.dom);
+		this.on("blur", function(){
+		    Ext.fly(this, INTERNAL).removeClass(className);
+		}, this.dom);
+		return this;
 	    },
 	    
 	    /**

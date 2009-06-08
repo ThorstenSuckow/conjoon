@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -16,7 +16,8 @@ return false;},hasNext:function(){return this.last!==false&&(this.last+1)<this.g
 return true;},clearSelections:function(fast){if(this.isLocked())return;if(fast!==true){var ds=this.grid.store;var s=this.selections;s.each(function(r){this.deselectRow(ds.indexOfId(r.id));},this);s.clear();}else{this.selections.clear();}
 this.last=false;},selectAll:function(){if(this.isLocked())return;this.selections.clear();for(var i=0,len=this.grid.store.getCount();i<len;i++){this.selectRow(i,true);}},hasSelection:function(){return this.selections.length>0;},isSelected:function(index){var r=typeof index=="number"?this.grid.store.getAt(index):index;return(r&&this.selections.key(r.id)?true:false);},isIdSelected:function(id){return(this.selections.key(id)?true:false);},handleMouseDown:function(g,rowIndex,e){if(e.button!==0||this.isLocked()){return;};var view=this.grid.getView();if(e.shiftKey&&!this.singleSelect&&this.last!==false){var last=this.last;this.selectRange(last,rowIndex,e.ctrlKey);this.last=last;view.focusRow(rowIndex);}else{var isSelected=this.isSelected(rowIndex);if(e.ctrlKey&&isSelected){this.deselectRow(rowIndex);}else if(!isSelected||this.getCount()>1){this.selectRow(rowIndex,e.ctrlKey||e.shiftKey);view.focusRow(rowIndex);}}},selectRows:function(rows,keepExisting){if(!keepExisting){this.clearSelections();}
 for(var i=0,len=rows.length;i<len;i++){this.selectRow(rows[i],true);}},selectRange:function(startRow,endRow,keepExisting){if(this.isLocked())return;if(!keepExisting){this.clearSelections();}
-if(startRow<=endRow){for(var i=startRow;i<=endRow;i++){this.selectRow(i,true);}}else{for(var i=startRow;i>=endRow;i--){this.selectRow(i,true);}}},deselectRange:function(startRow,endRow,preventViewNotify){if(this.isLocked())return;for(var i=startRow;i<=endRow;i++){this.deselectRow(i,preventViewNotify);}},selectRow:function(index,keepExisting,preventViewNotify){if(this.isLocked()||(index<0||index>=this.grid.store.getCount())||this.isSelected(index))return;var r=this.grid.store.getAt(index);if(r&&this.fireEvent("beforerowselect",this,index,keepExisting,r)!==false){if(!keepExisting||this.singleSelect){this.clearSelections();}
+if(startRow<=endRow){for(var i=startRow;i<=endRow;i++){this.selectRow(i,true);}}else{for(var i=startRow;i>=endRow;i--){this.selectRow(i,true);}}},deselectRange:function(startRow,endRow,preventViewNotify){if(this.isLocked())return;for(var i=startRow;i<=endRow;i++){this.deselectRow(i,preventViewNotify);}},selectRow:function(index,keepExisting,preventViewNotify){if(this.isLocked()||(index<0||index>=this.grid.store.getCount())||(keepExisting&&this.isSelected(index))){return;}
+var r=this.grid.store.getAt(index);if(r&&this.fireEvent("beforerowselect",this,index,keepExisting,r)!==false){if(!keepExisting||this.singleSelect){this.clearSelections();}
 this.selections.add(r);this.last=this.lastActive=index;if(!preventViewNotify){this.grid.getView().onRowSelect(index);}
 this.fireEvent("rowselect",this,index,r);this.fireEvent("selectionchange",this);}},deselectRow:function(index,preventViewNotify){if(this.isLocked())return;if(this.last==index){this.last=false;}
 if(this.lastActive==index){this.lastActive=false;}

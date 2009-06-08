@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -93,6 +93,7 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
 .x-unselectable, .x-unselectable * {
     -moz-user-select: none;
     -khtml-user-select: none;
+    -webkit-user-select:ignore;
 }
 
 .x-repaint {
@@ -691,6 +692,10 @@ ul.x-tab-strip li.x-tab-edge {
     margin: 0 0 0 0;
 }
 
+.ext-webkit *:focus{
+    outline: none !important;
+}
+
 
 .x-form-text, textarea.x-form-field{
     padding:1px 3px;
@@ -726,7 +731,11 @@ textarea.x-form-field {
     margin-bottom:-2px; 
 }
 
-.ext-gecko .x-form-text {
+.ext-strict .ext-ie8 .x-form-text, .ext-strict .ext-ie8 textarea.x-form-field {
+	margin-bottom: 1px;
+}
+
+.ext-gecko .x-form-text , .ext-ie8 .x-form-text {
     padding-top:2px; 
     padding-bottom:0;
 }
@@ -784,15 +793,11 @@ textarea {
     top:0;
 }
 
-.ext-safari .x-form-field-wrap .x-form-trigger{
-    height:21px; 
-}
-
 .x-form-field-wrap .x-form-date-trigger, .x-form-field-wrap .x-form-clear-trigger, .x-form-field-wrap .x-form-search-trigger{
     cursor:pointer;
 }
 
-.ext-safari .x-form-field-wrap .x-form-trigger,.ext-gecko .x-form-field-wrap .x-form-trigger{
+.ext-safari .x-form-field-wrap .x-form-trigger{
     right:0;
 }
 
@@ -1009,6 +1014,8 @@ textarea {
     height:19px;
 }
 
+.ext-webkit .x-small-editor .x-form-text{padding-top:3px;font-size:100%;}
+
 .x-form-clear {
     clear:both;
     height:0;
@@ -1030,6 +1037,19 @@ textarea {
     clear:none !important;
     display:inline !important;
     margin-left:4px;
+    top: -2px;
+}
+
+.ext-gecko2 .x-form-cb-label{
+    top: -1px;
+}
+
+.ext-strict .ext-ie8 .x-form-cb-label {
+    top: -3px;
+}
+
+.ext-opera .x-form-cb-label, .ext-safari3 .x-form-cb-label, .ext-ie7 .x-form-cb-label, .ext-ie6 .x-form-cb-label {
+    top: 0;
 }
 
 .x-form-column {
@@ -1167,11 +1187,6 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 
 .ext-ie .x-fieldset-bwrap {
     zoom:1;
-}
-
-.ext-ie .x-toolbar .x-form-text {
-    position:relative;
-    top:-1px;
 }
 
 .x-fieldset-noborder {
@@ -1850,7 +1865,6 @@ div.x-toolbar-no-items {
 
 
 .ext-border-box .x-toolbar-cell .x-form-text {
-    margin-top:1px !important;
     margin-bottom:-1px !important;
 }
 
@@ -1860,6 +1874,28 @@ div.x-toolbar-no-items {
 
 .ext-ie .x-toolbar-cell .x-form-field-wrap {
     height:21px;
+}
+
+.ext-ie .x-toolbar-cell .x-form-text {
+    position:relative;
+    top:-1px;
+}
+
+.ext-ie8 .x-toolbar-cell .x-form-field-trigger-wrap .x-form-text, .ext-strict .ext-ie .x-toolbar-cell .x-form-text {
+    top: 0px;
+}
+
+.x-toolbar-right td .x-form-field-trigger-wrap{
+    text-align: left;
+}
+
+.x-toolbar-cell .x-form-checkbox, .x-toolbar-cell .x-form-radio{
+    vertical-align: top;
+    margin-top: 3px;
+}
+
+.x-toolbar-cell .x-form-check-wrap label{
+    vertical-align: bottom;
 }
 
 
@@ -2059,6 +2095,14 @@ div.x-toolbar-no-items {
 	padding-left:1px;
     padding-right:1px;
     -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
+}
+
+.x-grid3-cell{
+    -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 }
 
 .x-grid3-hd-row td {
@@ -2119,7 +2163,7 @@ div.x-toolbar-no-items {
 
 .x-grid3-row {
 	cursor: default;
-    border:1px solid;
+    border: 1px solid;
     width:100%;
 }
 
@@ -2166,6 +2210,7 @@ div.x-toolbar-no-items {
     outline:0 none;
     -moz-user-select: text;
     -khtml-user-select: text;
+    -webkit-user-select:ignore;
 }
 
 
@@ -2255,6 +2300,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 	padding: 3px 5px 3px 5px;
 	-moz-user-select: none;
 	-khtml-user-select: none;
+    -webkit-user-select:ignore;
 }
 
 .x-grid3-split {
@@ -2367,6 +2413,8 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 
 .x-grid3-hd {
     -moz-user-select:none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 }
 
 .x-grid3-hd-btn {
@@ -2554,12 +2602,16 @@ a.x-grid3-hd-btn:hover {
     position:relative;
 }
 
+.ext-ie6 .x-grid3-header {
+    position: relative;
+}
 
 
 .x-grid-with-col-lines .x-grid3-row td.x-grid3-cell {
     padding-right:0;
     border-right:1px solid;
 }
+
 .x-dd-drag-proxy{
 	position:absolute;
 	left:0;
@@ -2750,6 +2802,7 @@ input.x-tree-node-cb {
 	text-decoration:none;
 	-khtml-user-select:none;
 	-moz-user-select:none;
+    -webkit-user-select:ignore;
     -kthml-user-focus:normal;
     -moz-user-focus:normal;
     -moz-outline: 0 none;
@@ -3244,7 +3297,8 @@ td.x-date-mp-sep {
 .x-menu-list-item{
     white-space: nowrap;
     -moz-user-select: none;
-	-khtml-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 	display:block;
 	padding:1px;
 }
@@ -3272,8 +3326,9 @@ td.x-date-mp-sep {
     font-size:1px;
     -moz-outline:0 none;
     outline:0 none;
-    -moz-user-select: text;
-    -khtml-user-select: text;
+    -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
     overflow:hidden;
     display:block;
 }
@@ -3292,6 +3347,8 @@ a.x-menu-item {
 }
 
 .x-menu-item-active {
+    background-repeat: repeat-x;
+    background-position: left bottom;
     border-style:solid;
     border-width: 1px 0;
     margin:0 1px;
@@ -4282,6 +4339,12 @@ a.x-menu-item {
 	top:0;
 	left:0;
 }
+
+.ext-webkit .x-dlg-focus{
+    width: 1px;
+    height: 1px;
+}
+
 .x-dlg-mask{
     z-index:10000;
     display:none;
@@ -4872,8 +4935,9 @@ body.ext-ie6.x-body-masked .x-window select {
     font-size:1px;
     -moz-outline:0 none;
     outline:0 none;
-    -moz-user-select: text;
-    -khtml-user-select: text;
+    -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 	display:block;
 	overflow:hidden;  
 }

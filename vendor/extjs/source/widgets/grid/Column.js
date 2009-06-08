@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -116,8 +116,10 @@ Ext.grid.Column.prototype = {
      * header's HTML title attribute. Defaults to ''.
      */
     /**
-     * @cfg {Mixed} renderer <p>(optional) An "interceptor" method which can be used transform data 
-     * (value, appearance, etc.) before it is rendered). This may be specified in either of three ways:
+     * @cfg {Mixed} renderer
+     * <p>For an alternative to specifying a renderer see <code>{@link #xtype}</code></p>
+     * <p>(optional) A renderer is an "interceptor" method which can be used transform data (value,
+     * appearance, etc.) before it is rendered). This may be specified in either of three ways:
      * <div class="mdetail-params"><ul>
      * <li>A renderer function used to return HTML markup for a cell given the cell's data value.</li>
      * <li>A string which references a property name of the {@link Ext.util.Format} class which
@@ -151,6 +153,36 @@ var companyColumn = {
 }     
      * </code></pre>
      * See also {@link #scope}.     
+     */
+    /**
+     * @cfg {String} xtype (optional) A String which references a predefined {@link Ext.grid.Column} subclass
+     * type which is preconfigured with an appropriate <code>{@link #renderer}</code> to be easily
+     * configured into a ColumnModel. The predefined {@link Ext.grid.Column} subclass types are:
+     * <div class="mdetail-params"><ul>
+     * <li><b><tt>gridcolumn</tt></b> : {@link Ext.grid.Column} (<b>Default</b>)<p class="sub-desc"></p></li>
+     * <li><b><tt>booleancolumn</tt></b> : {@link Ext.grid.BooleanColumn}<p class="sub-desc"></p></li>
+     * <li><b><tt>numbercolumn</tt></b> : {@link Ext.grid.NumberColumn}<p class="sub-desc"></p></li>
+     * <li><b><tt>datecolumn</tt></b> : {@link Ext.grid.DateColumn}<p class="sub-desc"></p></li>
+     * <li><b><tt>templatecolumn</tt></b> : {@link Ext.grid.TemplateColumn}<p class="sub-desc"></p></li>
+     * </ul></div>
+     * <p>Configuration properties for the specified <code>xtype</code> may be specified with
+     * the Column configuration properties, for example:</p>
+     * <pre><code>
+var grid = new Ext.grid.GridPanel({
+    ...
+    columns: [{
+        header: "Last Updated",
+        dataIndex: 'lastChange',
+        width: 85,
+        sortable: true,
+        //renderer: Ext.util.Format.dateRenderer('m/d/Y'), 
+        xtype: 'datecolumn', // use xtype instead of renderer
+        format: 'M/d/Y' // configuration property for {@link Ext.grid.DateColumn} 
+    }, {
+        ...
+    }]
+});
+     * </code></pre>
      */
     /**
      * @cfg {Object} scope (optional) The scope (<tt><b>this</b></tt> reference) in which to execute the

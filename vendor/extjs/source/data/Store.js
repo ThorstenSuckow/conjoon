@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,40 +9,48 @@
 /**
  * @class Ext.data.Store
  * @extends Ext.util.Observable
- * The Store class encapsulates a client side cache of {@link Ext.data.Record Record}
+ * <p>The Store class encapsulates a client side cache of {@link Ext.data.Record Record}
  * objects which provide input data for Components such as the {@link Ext.grid.GridPanel GridPanel},
  * the {@link Ext.form.ComboBox ComboBox}, or the {@link Ext.DataView DataView}.</p>
- * <p>A Store object uses its {@link #proxy configured} implementation of {@link Ext.data.DataProxy DataProxy}
- * to access a data object unless you call {@link #loadData} directly and pass in your data.</p>
- * <p>A Store object has no inherent knowledge of the format of the data returned by the Proxy (the data object
- * could be an Array, XML, or JSON). A Store object uses an appropriate {@link #reader configured} implementation
+ * <p><u>Retrieving Data</u></p>
+ * <p>A Store object may access a data object using:<div class="mdetail-params"><ul>
+ * <li>{@link #proxy configured implementation} of {@link Ext.data.DataProxy DataProxy}</li>
+ * <li>{@link #data} to automatically pass in data</li>
+ * <li>{@link #loadData} to manually pass in data</li>
+ * </ul></div></p>
+ * <p><u>Reading Data</u></p>
+ * <p>A Store object has no inherent knowledge of the format of the data object (it could be
+ * an Array, XML, or JSON). A Store object uses an appropriate {@link #reader configured implementation}
  * of a {@link Ext.data.DataReader DataReader} to create {@link Ext.data.Record Record} instances from the data
- * object. These generated Records are cached and made available through accessor functions. The following
- * examples illustrate explicit and implicit creation of the DataReader used by the Store.</p>
- * <p>Option 1: use the generic store and then explicitly create a reader</p>
+ * object.</p>
+ * <p><u>Store Types</u></p>
+ * <p>There are several implementations of Store available which are customized for use with
+ * a specific DataReader implementation.  Here is an example using an ArrayStore which implicitly
+ * creates a reader commensurate to an Array data object.</p>
  * <pre><code>
-
+var myStore = new Ext.data.ArrayStore({
+    fields: ['fullname', 'first'],
+    idIndex: 0 // id for each record will be the first element
+});
+ * </code></pre>
+ * <p>For custom implementations create a basic {@link Ext.data.Store} configured as needed:</p>
+ * <pre><code>
+// create a {@link Ext.data.Record Record} constructor:
 var rt = Ext.data.Record.create([
     {name: 'fullname'},
     {name: 'first'}
 ]);
 var myStore = new Ext.data.Store({
+    // explicitly create reader
     reader: new Ext.data.ArrayReader(
         {
-            id: 0  // id for the record will be the first element
+            idIndex: 0  // id for each record will be the first element
         },
         rt // recordType
     )
 });
  * </code></pre>
- * <p>Option 2: choose a store that implicitly creates a reader commensurate to the data object.</p>
- * <pre><code>
-var myStore = new Ext.data.ArrayStore({
-    fields: ['fullname', 'first'],
-    id: 0          // id for the record will be the first element
-});
- * </code></pre>
- * Load some data into store (note the data object is an array which corresponds to the reader):
+ * <p>Load some data into store (note the data object is an array which corresponds to the reader):</p>
  * <pre><code>
 var myData = [
     [1, 'Fred Flintstone', 'Fred'],  // note that id for the record is the first element
@@ -50,7 +58,8 @@ var myData = [
 ];
 myStore.loadData(myData);
  * </code></pre>
- * Adding a record to the store:
+ * <p>Records are cached and made available through accessor functions.  An example of adding
+ * a record to the store:</p>
  * <pre><code>
 var defaultData = {
     fullname: 'Full Name',
@@ -117,6 +126,12 @@ Ext.data.Store = function(config){
     if(this.url && !this.proxy){
         this.proxy = new Ext.data.HttpProxy({url: this.url});
     }
+    // If Store is RESTful, so too is the DataProxy
+    if (this.restful === true) {
+        // When operating RESTfully, a unique transaction is generated for each record.
+        this.batch = false;
+        Ext.data.Api.restify(this.proxy);
+    }
 
     if(this.reader){ // reader passed
         if(!this.recordType){
@@ -135,8 +150,8 @@ Ext.data.Store = function(config){
      * The {@link Ext.data.Record Record} constructor as supplied to (or created by) the
      * {@link Ext.data.DataReader Reader}. Read-only.
      * <p>If the Reader was constructed by passing in an Array of {@link Ext.data.Field} definition objects,
-     * instead of a created Record constructor it will implicitly create a constructor from that Array, see
-     * {@link Ext.data.Record}.{@link Ext.data.Record#create create} for additional details.</p>
+     * instead of a Record constructor, it will implicitly create a Record constructor from that Array (see
+     * {@link Ext.data.Record}.{@link Ext.data.Record#create create} for additional details).</p>
      * <p>This property may be used to create new Records of the type held in this Store, for example:</p><pre><code>
 // create the data store
 var store = new Ext.data.ArrayStore({
@@ -195,6 +210,7 @@ var grid = new Ext.grid.EditorGridPanel({
      * @property recordType
      * @type Function
      */
+
     if(this.recordType){
         /**
          * A {@link Ext.util.MixedCollection MixedCollection} containing the defined {@link Ext.data.Field Field}s
@@ -257,62 +273,126 @@ var grid = new Ext.grid.EditorGridPanel({
          */
         'clear',
         /**
-         * @event beforeload (before+Ext.data.Api.READ)
+         * @event exception
+         * <p>Fires if an exception occurs in the Proxy during a remote request.
+         * (Note that this event is also relayed through {@link Ext.data.DataProxy}).
+         * This event can be fired for one of two reasons:</p>
+         * <div class="mdetail-params"><ul>
+         * <li>remote-request <b>failed</b> : <div class="sub-desc">
+         * The server did not return status === 200.
+         * </div></li>
+         * <li>remote-request <b>succeeded</b> : <div class="sub-desc">
+         * The remote-request succeeded but the reader could not read the response.
+         * This means the server returned data, but the configured Reader threw an
+         * error while reading the response.  In this case, this event will be
+         * raised and the caught error will be passed along into this event.
+         * </div></li>
+         * </ul></div>
+         * <br><p>This event fires with two different contexts based upon the 2nd
+         * parameter <tt>type [remote|response]</tt>.  The first four parameters
+         * are identical between the two contexts -- only the final two parameters
+         * differ.</p>
+         * @param {DataProxy} sender
+         * @param {String} type
+         * <p>The value of this parameter will be either <tt>"response"</tt> or <tt>"remote"</tt>.</p>
+         * <div class="mdetail-params"><ul>
+         * <li><b><tt>"response"</tt></b> : <div class="sub-desc">
+         * <p>An <b>invalid</b> response from the server was returned: either 404,
+         * 500 or the response meta-data does not match that defined in the DataReader
+         * (eg: root, idProperty, successProperty).</p>
+         * </div></li>
+         * <li><b><tt>"remote"</tt></b> : <div class="sub-desc">
+         * <p>A <b>valid</b> response was returned from the server having
+         * successProperty === false.  This response might contain an error-message
+         * sent from the server.  For example, the user may have failed
+         * authentication/authorization or a database validation error occurred.</p>
+         * </div></li>
+         * </ul></div>
+         * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
+         * @param {Object} options The loading options that were specified (see {@link #load} for details)
+         * @param {Object} response
+         * <p>The value of this parameter depends on the value of the <code>type</code> parameter:</p>
+         * <div class="mdetail-params"><ul>
+         * <li><b><tt>"response"</tt></b> : <div class="sub-desc">
+         * <p>The raw browser response object (eg: XMLHttpRequest)</p>
+         * </div></li>
+         * <li><b><tt>"remote"</tt></b> : <div class="sub-desc">
+         * <p>The decoded response object sent from the server.</p>
+         * </div></li>
+         * </ul></div>
+         * @param {Mixed} arg
+         * <p>The type and value of this parameter depends on the value of the <code>type</code> parameter:</p>
+         * <div class="mdetail-params"><ul>
+         * <li><b><tt>"response"</tt></b> : Error<div class="sub-desc">
+         * <p>The JavaScript Error object caught if the configured Reader could not read the data.
+         * If the load call returned success===false, this parameter will be null.</p>
+         * </div></li>
+         * <li><b><tt>"remote"</tt></b> : Record/Record[]<div class="sub-desc">
+         * <p>This parameter will only exist if the <tt>action</tt> was a <b>write</b> action
+         * (Ext.data.Api.actions.create|update|destroy).</p>
+         * </div></li>
+         * </ul></div>
+         */
+        'exception',
+        /**
+         * @event beforeload
          * Fires before a request is made for a new data object.  If the beforeload handler returns
          * <tt>false</tt> the {@link #load} action will be canceled.
          * @param {Store} this
          * @param {Object} options The loading options that were specified (see {@link #load} for details)
          */
-        'before'+Ext.data.Api.READ,
+        'beforeload',
         /**
-         * @event load (Ext.data.Api.READ)
+         * @event load
          * Fires after a new set of Records has been loaded.
          * @param {Store} this
          * @param {Ext.data.Record[]} records The Records that were loaded
          * @param {Object} options The loading options that were specified (see {@link #load} for details)
          */
-        Ext.data.Api.READ,
+        'load',
         /**
-         * @event loadexception (Ext.data.Api.READ+exception)
-         * Fires if an exception occurs in the Proxy during loading.
-         * Called with the signature of the Proxy's "loadexception" event.
+         * @event loadexception
+         * This event is <b>deprecated</b> in favor of the catch-all <b><code>{@link #exception}</code></b>
+         * event instead. Fires only if the load request returned a valid response having
+         * <code>successProperty === false</code>.  This means the server logic returned a failure
+         * status and there is no data to read.  For example, the server might return
+         * <code>successProperty === false</code> if authorization failed.  This event is
+         * called with the signature of the Proxy's "loadexception" event.
+         * @deprecated
+         * @param {DataProxy} this
+         * @param {Object} response The decoded response object from the server.
+         * @param {Object} arg The request argument.
          */
-        Ext.data.Api.READ+'exception',
+        'loadexception',
         /**
-         * @event beforewrite NOT YET IMPLEMENTED
+         * @event beforewrite
+         * @param {DataProxy} this
+         * @param {String} action [Ext.data.Api.actions.create|update|destroy]
+         * @param {Record/Array[Record]} rs
+         * @param {Object} options The loading options that were specified. Edit <code>options.params</code> to add Http parameters to the request.  (see {@link #save} for details)
+         * @param {Object} arg The callback's arg object passed to the {@link #request} function
          */
         'beforewrite',
         /**
          * @event write
-         * fires when server returns 200 after Ext.data.CREATE, UPDATE and DESTROY.  Check the res['successProperty'] of the Response
-         * parameter for action's success/fail.
-         * @TODO We can probably get rid of all other write-action events (ie: beforesave, save, saveexecption, beforecreate, create, createexception, etc)
-         *  in favor of this one "write" event.
-         * @param {Extd.data.Store} store
-         * @param {String} action [Ext.data.Api.CREATE|UPDATE|DESTROY]
+         * Fires if the server returns 200 after an Ext.data.Api.actions CRUD action.
+         * Success or failure of the action is available in the <code>result['successProperty']</code> property.
+         * The server-code might set the <code>successProperty</code> to <tt>false</tt> if a database validation
+         * failed, for example.
+         * @param {Ext.data.Store} store
+         * @param {String} action [Ext.data.Api.actions.create|update|destroy]
          * @param {Object} result The "data" picked-out out of the response for convenience.
          * @param {Ext.Direct.Transaction} res
          * @param {Record/Record[]} rs Store's records, the subject(s) of the write-action
          */
-        'write',
-        /**
-         * @event writeexception
-         * Fires when an exception occurred while writing remote-data.
-         * @param {Extd.data.Store} store
-         * @param {String} action [Ext.data.Api.CREATE|UPDATE|DESTROY]
-         * @param {Object} result null
-         * @param {Ext.Direct.Transaction} res
-         * @param {Record/Record[]} rs Store's records, the subject(s) of the write-action
-         */
-        'writeexception'
+        'write'
     );
 
     if(this.proxy){
-        this.relayEvents(this.proxy,  [Ext.data.Api.READ+"exception"]);
+        this.relayEvents(this.proxy,  ["loadexception", "exception"]);
     }
-    // With a writer installed into the Store, we want to listen to add/remove events to remotely create/destroy records.
+    // With a writer set for the Store, we want to listen to add/remove events to remotely create/destroy records.
     if (this.writer) {
-        this.relayEvents(this.proxy, ["writeexception"]);
         this.on('add', this.createRecords.createDelegate(this));
         this.on('remove', this.destroyRecord.createDelegate(this));
         this.on('update', this.updateRecord.createDelegate(this));
@@ -352,6 +432,7 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     /**
      * @cfg {String} url If a <tt>{@link #proxy}</tt> is not specified the <tt>url</tt> will be used to
      * implicitly configure a {@link Ext.data.HttpProxy HttpProxy} if an <tt>url</tt> is specified.
+     * Typically this option, or the <code>{@link #data}</code> option will be specified.
      */
     /**
      * @cfg {Boolean/Object} autoLoad If <tt>{@link #data}</tt> is not specified, and if <tt>autoLoad</tt>
@@ -361,10 +442,11 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
      */
     /**
      * @cfg {Ext.data.DataProxy} proxy The {@link Ext.data.DataProxy DataProxy} object which provides
-     * access to a data object.
+     * access to a data object.  See <code>{@link #url}</code>.
      */
     /**
-     * @cfg {Array} data Inline data to be loaded when the store is initialized.
+     * @cfg {Array} data An inline data object readable by the <code>{@link #reader}</code>.
+     * Typically this option, or the <code>{@link #url}</code> option will be specified.
      */
     /**
      * @cfg {Ext.data.DataReader} reader The {@link Ext.data.DataReader Reader} object which processes the
@@ -372,8 +454,32 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
      * <b><tt>{@link Ext.data.Record#id id}</tt></b> property.
      */
     /**
-     * @cfg {Ext.data.DataWriter} writer The {@link Ext.data.DataWriter Writer} object which processes a record
-     * object for being written to the server-side database.
+     * @cfg {Ext.data.DataWriter} writer
+     * <p>The {@link Ext.data.DataWriter Writer} object which processes a record object for being written
+     * to the server-side database.</p>
+     * <br><p>When a writer is installed into a Store the {@link #add}, {@link #remove}, and {@link #update}
+     * events on the store are monitored in order to remotely {@link #createRecords create records},
+     * {@link #destroyRecord destroy records}, or {@link #updateRecord update records}.</p>
+     * <br><p>The proxy for this store will relay any {@link #writexception} events to this store.</p>
+     * <br><p>Sample implementation:
+     * <pre><code>
+var writer = new {@link Ext.data.JsonWriter}({
+    returnJson: true,
+    writeAllFields: true // write all fields, not just those that changed
+});
+
+// Typical Store collecting the Proxy, Reader and Writer together.
+var store = new Ext.data.Store({
+    storeId: 'user',
+    root: 'records',
+    proxy: proxy,
+    reader: reader,
+    writer: writer,     // <-- plug a DataWriter into the store just as you would a Reader
+    paramsAsHash: true,
+    autoSave: false    // <-- false to delay executing create, update, destroy requests
+                        //     until specifically told to do so.
+});
+     * </code></pre></p>
      */
     writer : undefined,
     /**
@@ -428,15 +534,34 @@ sortInfo: {
      * to load the current Record cache.
      * @property
      */
-   lastOptions : null,
+    lastOptions : null,
 
     /**
-     * @cfg {Boolean} batchSave
-     * Defaults to <tt>false</tt>, which requires manually calling {@link #save} to send all
-     * modifiedRecords to the server. Specify <tt>true</tt> for the store to automatically
-     * {@link #save} records to the server when a record changes.
+     * @cfg {Boolean} autoSave
+     * <p>Defaults to <tt>true</tt> causing the store to automatically {@link #save} records to
+     * the server when a record is modified (ie: becomes "dirty"). Specify <tt>false</tt> to manually call {@link #save}
+     * to send all modifiedRecords to the server.</p>
+     * <br><p><b>Note</b>: each CRUD action will be sent as a separate request.</p>
      */
-    batchSave : false,
+    autoSave : true,
+
+    /**
+     * @cfg {Boolean} batch
+     * <p>Defaults to <tt>true</tt> (unless <code>{@link #restful}:true</code>). Multiple
+     * requests for each CRUD action (CREATE, READ, UPDATE and DESTROY) will be combined
+     * and sent as one transaction. Only applies when <code>{@link #autoSave}</code> is set
+     * to <tt>false</tt>.</p>
+     * <br><p>If Store is RESTful, the DataProxy is also RESTful, and a unique transaction is
+     * generated for each record.</p>
+     */
+    batch : true,
+
+    /**
+     * @cfg {Boolean} restful [false]
+     * Defaults to <tt>false</tt>.  Set to <tt>true</tt> to have Store and set Proxy operate in a RESTful manner, utilizing the HTTP methods
+     * GET, POST, PUT and DELETE for corresponding CREATE, READ, UPDATE and DESTROY actions.
+     */
+    restful: false,
 
     /**
      * Destroys the store.
@@ -446,6 +571,8 @@ sortInfo: {
             Ext.StoreMgr.unregister(this);
         }
         this.data = null;
+        Ext.destroy(this.proxy);
+        this.reader = this.writer = null;
         this.purgeListeners();
     },
 
@@ -485,14 +612,16 @@ sortInfo: {
      */
     remove : function(record){
         var index = this.data.indexOf(record);
-        this.data.removeAt(index);
-        if(this.pruneModifiedRecords){
-            this.modified.remove(record);
+        if(index > -1){
+            this.data.removeAt(index);
+            if(this.pruneModifiedRecords){
+                this.modified.remove(record);
+            }
+            if(this.snapshot){
+                this.snapshot.remove(record);
+            }
+            this.fireEvent("remove", this, record, index);
         }
-        if(this.snapshot){
-            this.snapshot.remove(record);
-        }
-        this.fireEvent("remove", this, record, index);
     },
 
     /**
@@ -599,7 +728,7 @@ sortInfo: {
      * <tt>parameters</tt>.</p>
      * <p>Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.</p></div></li>
      * <li><b><tt>callback</tt></b> : Function<div class="sub-desc"><p>A function to be called after the Records
-     * have been loaded. The <tt>callback</tt> is passed the following arguments:<ul>
+     * have been loaded. The <tt>callback</tt> is called after the load event and is passed the following arguments:<ul>
      * <li><tt>r</tt> : Ext.data.Record[]</li>
      * <li><tt>options</tt>: Options object from the load call</li>
      * <li><tt>success</tt>: Boolean success indicator</li></ul></p></div></li>
@@ -621,7 +750,7 @@ sortInfo: {
             options.params[pn["dir"]] = this.sortInfo.direction;
         }
         try {
-            return this.execute(Ext.data.Api.READ, null, options); // <-- null represents rs.  No rs for load actions.
+            return this.execute("read", null, options); // <-- null represents rs.  No rs for load actions.
         } catch(e) {
             this.handleException(e);
             return false;
@@ -629,7 +758,7 @@ sortInfo: {
     },
 
     /**
-     * updateRecord  Should not be used directly.  This method will be called automatically if a Writer is installed.
+     * updateRecord  Should not be used directly.  This method will be called automatically if a Writer is set.
      * Listens to "update" event.
      * @param {Object} store
      * @param {Object} record
@@ -637,13 +766,13 @@ sortInfo: {
      * @private
      */
     updateRecord : function(store, record, action) {
-        if (action == Ext.data.Record.EDIT && this.batchSave !== true && (!record.phantom || (record.phantom && record.isValid))) {
+        if (action == Ext.data.Record.EDIT && this.autoSave === true && (!record.phantom || (record.phantom && record.isValid))) {
             this.save();
         }
     },
 
     /**
-     * createRecords.  Should not be used directly.  Store#add will call this automatically if a Writer is installed
+     * Should not be used directly.  Store#add will call this automatically if a Writer is set
      * @param {Object} store
      * @param {Object} rs
      * @param {Object} index
@@ -656,21 +785,20 @@ sortInfo: {
                 this.modified.push(rs[i]);  // <-- add to modified
             }
         }
-        if (this.batchSave === false) {
+        if (this.autoSave === true) {
             this.save();
         }
     },
 
     /**
-     * destroyRecord
-     * Destroys a record or records.  Should not be used directly.  It's called by Store#remove if a Writer is installed.
+     * Destroys a record or records.  Should not be used directly.  It's called by Store#remove if a Writer is set.
      * @param {Store} this
      * @param {Ext.data.Record/Ext.data.Record[]}
      * @param {Number} index
      * @private
      */
     destroyRecord : function(store, record, index) {
-        if (this.modified.indexOf(record) != -1) {	// <-- handled already if @cfg pruneModifiedRecords == true
+        if (this.modified.indexOf(record) != -1) {  // <-- handled already if @cfg pruneModifiedRecords == true
             this.modified.remove(record);
         }
         if (!record.phantom) {
@@ -681,14 +809,14 @@ sortInfo: {
             // put back into the store.  @see Store#createCallback where the record is returned when response status === false
             record.lastIndex = index;
 
-            if (this.batchSave === false) {
+            if (this.autoSave === true) {
                 this.save();
             }
         }
     },
 
     /**
-     * execute Executes a CRUD action on a proxy if a Writer is installed.  Should not be used directly.  Called automatically
+     * Executes a CRUD action on a proxy if a Writer is set.  Should not be used directly.  Called automatically
      * by Store#add, Store#remove, Store#afterEdit
      * @param {String} action
      * @param {Record/Record[]} rs
@@ -698,10 +826,9 @@ sortInfo: {
      */
     execute : function(action, rs, options) {
         // blow up if action not Ext.data.CREATE, READ, UPDATE, DESTROY
-        if (!Ext.data.Api.isVerb(action)) {
-            throw new Error('Store#execute attempted to execute an unknown action "' + action + '".  Valid API actions are "' + Ext.data.Api.getVerbs().join(', '));
+        if (!Ext.data.Api.isAction(action)) {
+            throw new Ext.data.Api.Error('execute', action);
         }
-
         // make sure options has a params key
         options = Ext.applyIf(options||{}, {
             params: {}
@@ -710,45 +837,58 @@ sortInfo: {
         // have to separate before-events since load has a different signature than create,destroy and save events since load does not
         // include the rs (record resultset) parameter.  Capture return values from the beforeaction into doRequest flag.
         var doRequest = true;
-        if (action === Ext.data.Api.READ) {// TODO: define actions as CONSTANTS
-            doRequest = this.fireEvent('before'+action, this, options);
+
+        if (action === "read") {
+            doRequest = this.fireEvent('beforeload', this, options);
         }
         else {
-            // if rs has just a single recoractiond, shift it off so that Writer writes data as "{}" rather than "[{}]"
-            rs = (rs.length > 1) ? rs : rs.shift();
-
+            // if Writer is configured as listful, force single-recoord rs to be [{}} instead of {}
+            if (this.writer.listful === true && this.restful !== true) {
+                rs = (Ext.isArray(rs)) ? rs : [rs];
+            }
+            // if rs has just a single record, shift it off so that Writer writes data as "{}" rather than "[{}]"
+            else if (Ext.isArray(rs) && rs.length == 1) {
+                rs = rs.shift();
+            }
             // Write the action to options.params
-            if (doRequest = this.fireEvent('beforewrite', this, action, rs, options) !== false) {
+            if ((doRequest = this.fireEvent('beforewrite', this, action, rs, options)) !== false) {
                 this.writer.write(action, options.params, rs);
             }
         }
         if (doRequest !== false) {
-            // Send request to proxy.  The big Ext.apply as 3rd arg here is simply building the request-params
-            // and applying the xaction parameter.
-            // @TODO: let writer write xaction param as well rather than here in store.  DataWriter needs to expose more hooks.
-            this.proxy.request(action, rs, Ext.apply(options.params || {}, this.baseParams, {xaction: action}), this.reader, this.createCallback(action, rs), this, options);
+            // Send request to proxy.
+            var params = Ext.apply(options.params || {}, this.baseParams);
+            if (this.writer && this.proxy.url && !this.proxy.restful && !Ext.data.Api.hasUniqueUrl(this.proxy, action)) {
+                params.xaction = action;
+            }
+            // Note:  Up until this point we've been dealing with "action" as a key from Ext.data.Api.actions.  We'll flip it now
+            // and send the value into DataProxy#request, since it's the value which maps to the DataProxy#api
+            this.proxy.request(Ext.data.Api.actions[action], rs, params, this.reader, this.createCallback(action, rs), this, options);
         }
         return doRequest;
     },
 
     /**
-     * Send all {@link #getModifiedRecords modifiedRecords}, removed records and phantom records to the server using the
-     * api's configured save url.
+     * Saves all pending changes to the store.  If the commensurate Ext.data.Api.actions action is not configured, then
+     * the configured <code>{@link #url}</code> will be used.
+     * <pre>
+     * change            url
+     * ---------------   --------------------
+     * removed records   Ext.data.Api.actions.destroy
+     * phantom records   Ext.data.Api.actions.create
+     * {@link #getModifiedRecords modified records}  Ext.data.Api.actions.update
+     * </pre>
      * @TODO:  Create extensions of Error class and send associated Record with thrown exceptions.
      * eg:  Ext.data.DataReader.Error or Ext.data.Error or Ext.data.DataProxy.Error, etc.
      */
     save : function() {
         if (!this.writer) {
-            throw new Error('Store#save called without a DataWriter installed!  Unable to execute remote-actions.  See docs for Ext.data.Api, Ext.data.DataWriter, Ext.data.JsonWriter.');
+            throw new Ext.data.Store.Error('writer-undefined');
         }
 
-        // First check for removed records.  Records in this.removed are guaranteed non-phantoms.  @see Store#remove
+        // DESTROY:  First check for removed records.  Records in this.removed are guaranteed non-phantoms.  @see Store#remove
         if (this.removed.length) {
-            try {
-                this.execute(Ext.data.Api.DESTROY, this.removed);
-            } catch (e) {
-                this.handleException(e);
-            }
+            this.doTransaction("destroy", this.removed);
         }
 
         // Check for modified records.  Bail-out if empty...
@@ -757,7 +897,7 @@ sortInfo: {
             return true;
         }
 
-        // Next check for phantoms within rs.  splice-off and execute create.
+        // CREATE:  Next check for phantoms within rs.  splice-off and execute create.
         var phantoms = [];
         for (var i = rs.length-1; i >= 0; i--) {
             if (rs[i].phantom === true) {
@@ -765,56 +905,89 @@ sortInfo: {
                 if (rec.isValid()) {
                     phantoms.push(rec);
                 }
-            }
-            else if (!rs[i].isValid()) { // <-- while we're here, splice-off any !isValid real records
+            } else if (!rs[i].isValid()) { // <-- while we're here, splice-off any !isValid real records
                 rs.splice(i,1);
             }
         }
         // If we have valid phantoms, create them...
         if (phantoms.length) {
-            try {
-                this.execute(Ext.data.Api.CREATE, phantoms);
-            } catch (e) {
-                this.handleException(e);
-            }
+            this.doTransaction('create', phantoms);
         }
 
-        // And finally, if we're still here after splicing-off phantoms and !isValid real records, update the rest...
+        // UPDATE:  And finally, if we're still here after splicing-off phantoms and !isValid real records, update the rest...
         if (rs.length) {
-            try {
-                this.execute(Ext.data.Api.UPDATE, rs);
-            } catch (e) {
-                this.handleException(e);
-            }
+            this.doTransaction('update', rs);
         }
         return true;
     },
 
-    // private callback-handler for remote CRUD actions
-    // Do not override -- override loadRecords, onCreateRecords, onDestroyRecords and onUpdateRecords instead.
-    createCallback : function(action, rs) {
-        return (action == Ext.data.Api.READ) ? this.loadRecords : function(data, response, success) {
-            switch (action) {
-                case Ext.data.Api.CREATE:
-                    this.onCreateRecords(success, rs, data);
-                    break;
-                case Ext.data.Api.DESTROY:
-                    this.onDestroyRecords(success, rs, data);
-                    break;
-                case Ext.data.Api.UPDATE:
-                    this.onUpdateRecords(success, rs, data);
-                    break;
+    // private.  Simply wraps call to Store#execute in try/catch.  Defers to Store#handleException on error.  Loops if batch: false
+    doTransaction : function(action, rs) {
+        if (this.batch === false) {
+            for (var i = 0, len = rs.length; i < len; i++) {
+                transaction.call(this, rs[i]);
             }
-            // fire catch-all "write" event for CREATE, DESTROY, UPDATE
-            this.fireEvent('write', this, action, data, response, rs);
+        } else {
+            transaction.call(this, rs);
+        }
+        function transaction(records) {
+            try {
+                this.execute(action, records);
+            } catch (e) {
+                this.handleException(e);
+            }
         }
     },
 
-    // protected onCreateRecord proxy callback for create action
+    // @private callback-handler for remote CRUD actions
+    // Do not override -- override loadRecords, onCreateRecords, onDestroyRecords and onUpdateRecords instead.
+    createCallback : function(action, rs) {
+        var actions = Ext.data.Api.actions;
+        return (action == "read") ? this.loadRecords : function(data, response, success) {
+            // If success === false here, exception will have been called in DataProxy
+            if (success === true) {
+                this.fireEvent('write', this, action, data, response, rs);
+            } else {
+                this.clearModified(rs);  // <-- If not cleared, they'll keep getting posted with the same data which caused the server error.
+            }
+            // calls: onCreateRecords | onUpdateRecords | onDestroyRecords
+            this['on' + Ext.util.Format.capitalize(action) + 'Records'](success, rs, data);
+        };
+    },
+
+    // Clears records from modified array after an exception event.
+    // NOTE:  records are left marked dirty.  Do we want to commit them even though they were not updated/realized?
+    clearModified : function(rs) {
+        if (Ext.isArray(rs)) {
+            for (var n=rs.length-1;n>=0;n--) {
+                this.modified.splice(this.modified.indexOf(rs[n]), 1);
+            }
+        } else {
+            this.modified.splice(this.modified.indexOf(rs), 1);
+        }
+    },
+
+    // remap record ids in MixedCollection after records have been realized.  @see Store#onCreateRecords, @see DataReader#realize
+    reMap : function(record) {
+        if (Ext.isArray(record)) {
+            for (var i = 0, len = record.length; i < len; i++) {
+                this.reMap(record[i]);
+            }
+        } else {
+            delete this.data.map[record._phid];
+            this.data.map[record.id] = record;
+            var index = this.data.keys.indexOf(record._phid);
+            this.data.keys.splice(index, 1, record.id);
+            delete record._phid;
+        }
+    },
+
+    // @protected onCreateRecord proxy callback for create action
     onCreateRecords : function(success, rs, data) {
         if (success === true) {
             try {
                 this.reader.realize(rs, data);
+                this.reMap(rs);
             }
             catch (e) {
                 this.handleException(e);
@@ -826,13 +999,12 @@ sortInfo: {
         }
     },
 
-    // protected, onUpdateRecords proxy callback for update action
+    // @protected, onUpdateRecords proxy callback for update action
     onUpdateRecords : function(success, rs, data) {
         if (success === true) {
             try {
                 this.reader.update(rs, data);
-            }
-            catch (e) {
+            } catch (e) {
                 this.handleException(e);
                 if (Ext.isArray(rs)) {
                     // Recurse to run back into the try {}.  DataReader#update splices-off the rs until empty.
@@ -842,18 +1014,17 @@ sortInfo: {
         }
     },
 
-    // protected onDestroyRecords proxy callback for destroy action
+    // @protected onDestroyRecords proxy callback for destroy action
     onDestroyRecords : function(success, rs, data) {
-        this.removed = [];
-        if (success === true) {
-            // nothing to do so far...invert the logic?
-        } else {
+        // splice each rec out of this.removed
+        rs = (rs instanceof Ext.data.Record) ? [rs] : rs;
+        for (var i=0,len=rs.length;i<len;i++) {
+            this.removed.splice(this.removed.indexOf(rs[i]), 1);
+        }
+        if (success === false) {
             // put records back into store if remote destroy fails.
             // @TODO: Might want to let developer decide.
-            if (rs instanceof Ext.data.Record) {
-                rs = [rs];
-            }
-            for (var i=0,len=rs.length;i<len;i++) {
+            for (i=rs.length-1;i>=0;i--) {
                 this.insert(rs[i].lastIndex, rs[i]);    // <-- lastIndex set in Store#destroyRecord
             }
         }
@@ -861,12 +1032,8 @@ sortInfo: {
 
     // protected handleException.  Possibly temporary until Ext framework has an exception-handler.
     handleException : function(e) {
-        if (typeof(console) == 'object' && typeof(console.error) == 'function') {
-            console.error(e);
-        }
-        else {
-            alert(e);   // <-- ugh.  fix this before official release.
-        }
+        // @see core/Error.js
+        Ext.handleError(e);
     },
 
     /**
@@ -886,10 +1053,10 @@ sortInfo: {
     loadRecords : function(o, options, success){
         if(!o || success === false){
             if(success !== false){
-                this.fireEvent(Ext.data.Api.READ, this, [], options);
+                this.fireEvent("load", this, [], options);
             }
             if(options.callback){
-                options.callback.call(options.scope || this, [], options, false);
+                options.callback.call(options.scope || this, [], options, false, o);
             }
             return;
         }
@@ -914,7 +1081,7 @@ sortInfo: {
             this.totalLength = Math.max(t, this.data.length+r.length);
             this.add(r);
         }
-        this.fireEvent(Ext.data.Api.READ, this, r, options);
+        this.fireEvent("load", this, r, options);
         if(options.callback){
             options.callback.call(options.scope || this, r, options, true);
         }
@@ -1286,7 +1453,11 @@ sortInfo: {
         this.recordType = rtype;
         this.fields = rtype.prototype.fields;
         delete this.snapshot;
-        this.sortInfo = meta.sortInfo;
+        if(meta.sortInfo){
+            this.sortInfo = meta.sortInfo;
+        }else if(this.sortInfo  && !this.fields.get(this.sortInfo.field)){
+            delete this.sortInfo;
+        }
         this.modified = [];
         this.fireEvent('metachange', this, this.reader.meta);
     },
@@ -1317,3 +1488,18 @@ myStore.setBaseParam('foo', {bar:3});
 });
 
 Ext.reg('store', Ext.data.Store);
+
+/**
+ * Store Error extension.
+ * constructor
+ * @param {String} name
+ */
+Ext.data.Store.Error = Ext.extend(Ext.Error, {
+    name: 'Ext.data.Store'
+});
+Ext.apply(Ext.data.Store.Error.prototype, {
+    lang: {
+        "writer-undefined" : "Attempted to execute a write-action without a DataWriter installed."
+    }
+});
+

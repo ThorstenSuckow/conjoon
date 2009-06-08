@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -36,17 +36,11 @@ Ext.get('myInputField').on('keypress', function(){
  */
 Ext.util.DelayedTask = function(fn, scope, args){
     var me = this,
-    	NULL = null,
-    	id = NULL, 
-    	_delay, 
-    	_time,    	    	
+    	id,    	
     	call = function(){
-	        var now = new Date().getTime();
-	        if(now - _time >= _delay){
-	            clearInterval(id);
-	            id = NULL;
-	            fn.apply(scope, args || []);
-	        }
+    		clearInterval(id);
+	        id = null;
+	        fn.apply(scope, args || []);
 	    };
 	    
     /**
@@ -57,17 +51,11 @@ Ext.util.DelayedTask = function(fn, scope, args){
      * @param {Array} newArgs (optional) Overrides args passed to constructor
      */
     me.delay = function(delay, newFn, newScope, newArgs){
-        if(id && delay != _delay){
-            this.cancel();
-        }
-        _delay = delay;
-        _time = new Date().getTime();
+        me.cancel();
         fn = newFn || fn;
         scope = newScope || scope;
         args = newArgs || args;
-        if(!id){
-            id = setInterval(call, _delay);
-        }
+        id = setInterval(call, delay);
     };
 
     /**
@@ -76,7 +64,7 @@ Ext.util.DelayedTask = function(fn, scope, args){
     me.cancel = function(){
         if(id){
             clearInterval(id);
-            id = NULL;
+            id = null;
         }
     };
 };

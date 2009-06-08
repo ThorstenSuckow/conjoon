@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -147,8 +147,11 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 	// private override
     initEvents : function(){
         this.thumb.addClassOnOver('x-slider-thumb-over');
-        this.mon(this.el, 'mousedown', this.onMouseDown, this);
-        this.mon(this.el, 'keydown', this.onKeyDown, this);
+        this.mon(this.el, {
+            scope: this,
+            mousedown: this.onMouseDown,
+            keydown: this.onKeyDown
+        });
 
         this.focusEl.swallowEvent("click", true);
 
@@ -177,7 +180,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 	// private
     onClickChange : function(local){
         if(local.top > this.clickRange[0] && local.top < this.clickRange[1]){
-            this.setValue(Math.round(this.reverseValue(local.left)), undefined, true);
+            this.setValue(Ext.util.Format.round(this.reverseValue(local.left), this.decimalPrecision), undefined, true);
         }
     },
 
@@ -250,8 +253,8 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 
 	// private
     normalizeValue : function(v){
-        v = Ext.util.Format.round(v, this.decimalPrecision);
         v = this.doSnap(v);
+        v = Ext.util.Format.round(v, this.decimalPrecision);
         v = v.constrain(this.minValue, this.maxValue);
         return v;
     },
@@ -315,7 +318,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 	// private
     onDrag: function(e){
         var pos = this.innerEl.translatePoints(this.tracker.getXY());
-        this.setValue(Math.round(this.reverseValue(pos.left)), false);
+        this.setValue(Ext.util.Format.round(this.reverseValue(pos.left), this.decimalPrecision), false);
         this.fireEvent('drag', this, e);
     },
 
@@ -412,14 +415,14 @@ Ext.Slider.Vertical = {
     onDrag: function(e){
         var pos = this.innerEl.translatePoints(this.tracker.getXY());
         var bottom = this.innerEl.getHeight()-pos.top;
-        this.setValue(this.minValue + Math.round(bottom/this.getRatio()), false);
+        this.setValue(this.minValue + Ext.util.Format.round(bottom/this.getRatio(), this.decimalPrecision), false);
         this.fireEvent('drag', this, e);
     },
 
     onClickChange : function(local){
         if(local.left > this.clickRange[0] && local.left < this.clickRange[1]){
             var bottom = this.innerEl.getHeight()-local.top;
-            this.setValue(this.minValue + Math.round(bottom/this.getRatio()), undefined, true);
+            this.setValue(this.minValue + Ext.util.Format.round(bottom/this.getRatio(), this.decimalPrecision), undefined, true);
         }
     }
 };

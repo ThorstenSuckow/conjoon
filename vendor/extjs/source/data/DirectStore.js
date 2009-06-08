@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -42,10 +42,13 @@
  * @param {Object} config
  */
 Ext.data.DirectStore = function(c){
-	Ext.data.DirectStore.superclass.constructor.call(this, Ext.apply(c, {
+    // each transaction upon a singe record will generatie a distinct Direct transaction since Direct queues them into one Ajax request.
+    c.batchTransactions = false;
+
+    Ext.data.DirectStore.superclass.constructor.call(this, Ext.apply(c, {
         proxy: (typeof(c.proxy) == 'undefined') ? new Ext.data.DirectProxy(Ext.copyTo({}, c, 'paramOrder,paramsAsHash,directFn,api')) : c.proxy,
         reader: (typeof(c.reader) == 'undefined' && typeof(c.fields) == 'object') ? new Ext.data.JsonReader(Ext.copyTo({}, c, 'totalProperty,root,idProperty'), c.fields) : c.reader
     }));
 };
-Ext.extend(Ext.data.DirectStore, Ext.data.Store);
+Ext.extend(Ext.data.DirectStore, Ext.data.Store, {});
 Ext.reg('directstore', Ext.data.DirectStore);

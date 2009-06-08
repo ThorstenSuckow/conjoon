@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -810,10 +810,6 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
     background-color:#c3daf9;
     border-color:#3399bb;
 }
-.x-tree .x-panel-body{
-    background-color:#fff;
-}
-
 .x-tree-node-expanded .x-tree-node-icon{
 	background-image:url(../images/default/tree/folder-open.gif);
 }
@@ -1151,7 +1147,7 @@ td.x-date-mp-sep {
 }
 
 .x-menu-list-item{
-	font:normal 11px tahoma,arial, sans-serif;
+	font:normal 11px arial,tahoma,sans-serif;
 }
 
 .x-menu-item-arrow{
@@ -1168,6 +1164,7 @@ a.x-menu-item {
 }
 
 .x-menu-item-active {
+    background-image: url(../images/default/menu/item-over.gif);
 	background-color: #dbecf4;
     border-color:#aaccf6;
 }
@@ -1206,11 +1203,11 @@ a.x-menu-item {
 }
 
 .x-menu-scroller-top {
-    background-image:url(../../resources/images/default/layout/mini-top.gif);
+    background-image:url(../images/default/layout/mini-top.gif);
 }
 
 .x-menu-scroller-bottom {
-    background-image:url(../../resources/images/default/layout/mini-bottom.gif);
+    background-image:url(../images/default/layout/mini-bottom.gif);
 }
 
 .x-box-tl {

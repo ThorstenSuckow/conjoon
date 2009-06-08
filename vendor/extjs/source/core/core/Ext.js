@@ -1,13 +1,11 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
-
-Ext = {version: '3.0'};
 
 // for old browsers
 window.undefined = window.undefined;
@@ -17,6 +15,14 @@ window.undefined = window.undefined;
  * Ext core utilities and functions.
  * @singleton
  */
+
+Ext = {
+    /**
+     * The version of the framework
+     * @type String
+     */
+    version: '3.0'
+};
 
 /**
  * Copies all the properties of config to obj.
@@ -28,7 +34,7 @@ window.undefined = window.undefined;
  */
 Ext.apply = function(o, c, defaults){
     // no "this" reference for friendly out of scope calls
-    if (defaults) Ext.apply(o, defaults)
+    if (defaults) Ext.apply(o, defaults);
     if(o && c && typeof c == 'object'){
         for(var p in c){
             o[p] = c[p];
@@ -104,7 +110,7 @@ Ext.apply = function(o, c, defaults){
          * @type Boolean
          */
         enableListenerCollection : false,
-        
+
         /**
          * Indicates whether to use native browser parsing for JSON methods.
          * This option is ignored if the browser does not support native JSON methods.
@@ -274,23 +280,23 @@ Company.data.CustomStore = function(config) { ... }
         /**
          * Takes an object and converts it to an encoded URL. e.g. Ext.urlEncode({foo: 1, bar: 2}); would return "foo=1&bar=2".  Optionally, property values can be arrays, instead of keys and the resulting string that's returned will contain a name/value pair for each array value.
          * @param {Object} o
+         * @param {String} pre (optional) A prefix to add to the url encoded string
          * @return {String}
          */
-        urlEncode : function(o, pre){
-            var buf = [],
-                key,
-                e = encodeURIComponent;
+        urlEncode: function(o, pre){
+            var undef, buf = [], key, e = encodeURIComponent;
 
-            for(key in o) {
-                Ext.each(o[key] || key, function(val, i) {
-                    buf.push("&", e(key), "=", val != key ? e(val) : "");
-                });
-            }
-            if(!pre) {
-                buf.shift();
-                pre = "";
-            }
-            return pre + buf.join('');
+	        for(key in o){
+	            undef = typeof o[key] == 'undefined';
+	            Ext.each(undef ? key : o[key], function(val, i){
+	                buf.push("&", e(key), "=", (val != key || !undef) ? e(val) : "");
+	            });
+	        }
+	        if(!pre){
+	            buf.shift();
+	            pre = "";
+	        }
+	        return pre + buf.join('');
         },
 
         /**
@@ -347,13 +353,17 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
          * @param {Function} fn
          * @param {Object} scope
          */
-        each : function(array, fn, scope){
-            if(Ext.isEmpty(array, true)) return;
-            if (typeof array.length == "undefined" || typeof array == "string"){
+        each: function(array, fn, scope){
+            if(Ext.isEmpty(array, true)){
+                return;
+            }
+            if(typeof array.length == "undefined" || Ext.isPrimitive(array)){
                 array = [array];
             }
             for(var i = 0, len = array.length; i < len; i++){
-                if(fn.call(scope || array[i], array[i], i, array) === false){ return i; };
+                if(fn.call(scope || array[i], array[i], i, array) === false){
+                    return i;
+                };
             }
         },
 
@@ -362,9 +372,9 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
          * Here are some examples:
          * <pre><code>
 // gets dom node based on id
-var elDom = Ext.getDom('elId'); 
+var elDom = Ext.getDom('elId');
 // gets dom node based on the dom node
-var elDom1 = Ext.getDom(elDom); 
+var elDom1 = Ext.getDom(elDom);
 
 // If we don&#39;t know if we are working with an
 // Ext.Element or a dom node use Ext.getDom
@@ -384,14 +394,14 @@ function(el){
             }
             return el.dom ? el.dom : (typeof el == 'string' ? document.getElementById(el) : el);
         },
-        
+
         /**
          * Returns the current document body as an {@link Ext.Element}.
          * @return Ext.Element The document body
          */
         getBody : function(){
             return Ext.get(document.body || document.documentElement);
-        },        
+        },
 
         /**
          * Removes a DOM node from the document.  The body node will be ignored if passed in.
@@ -445,7 +455,7 @@ function(el){
         isObject : function(v){
             return v && typeof v == "object";
         },
-        
+
         /**
          * Returns true if the passed object is a JavaScript 'primitive', a string, number or boolean.
          * @param {Mixed} value The value to test
@@ -471,7 +481,7 @@ function(el){
          */
         isOpera : isOpera,
         /**
-         * True if the detected browser uses Webkit.
+         * True if the detected browser uses WebKit.
          * @type Boolean
          */
         isWebKit: isWebKit,
@@ -499,7 +509,7 @@ function(el){
          * True if the detected browser is Safari 2.x.
          * @type Boolean
          */
-        isSafari2 : isSafari && !isSafari3,
+        isSafari2 : isSafari && !(isSafari3 || isSafari4),
         /**
          * True if the detected browser is Internet Explorer.
          * @type Boolean
@@ -724,7 +734,7 @@ sayHi.defer(2000, this, ['Fred']);
     alert('Anonymous');
 }).defer(100);
 </code></pre>
-     * @param {Number} millis The number of milliseconds for the setTimeout call (if 0 the function is executed immediately)
+     * @param {Number} millis The number of milliseconds for the setTimeout call (if less than or equal to 0 the function is executed immediately)
      * @param {Object} obj (optional) The object for which the scope is set
      * @param {Array} args (optional) Overrides arguments for the call. (Defaults to the arguments passed by the caller)
      * @param {Boolean/Number} appendArgs (optional) if True args are appended to call args instead of overriding,
@@ -733,7 +743,7 @@ sayHi.defer(2000, this, ['Fred']);
      */
     defer : function(millis, obj, args, appendArgs){
         var fn = this.createDelegate(obj, args, appendArgs);
-        if(millis){
+        if(millis > 0){
             return setTimeout(fn, millis);
         }
         fn();

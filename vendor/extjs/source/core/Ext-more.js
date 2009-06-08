@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -202,11 +202,10 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
             for(var i = 0, a = arguments, len = a.length; i < len; i++) {
                 var as = a[i];
                 if(as){
-                    if(typeof as.destroy == 'function'){
+                    if(Ext.isFunction(as.destroy)){
                         as.destroy();
                     }
                     else if(as.dom){
-                        as.removeAllListeners();
                         as.remove();
                     }
                 }
@@ -306,59 +305,12 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
         },
 
         /**
-         * Returns the median value in the Array.
-         * @param {Array|NodeList} arr The Array from which to select the median value.
-         * @param {Function} sorter (optional) a function that will perform the sorting operation.
-         * @param {Function} MedianOperator (optional) a function that will perform the median calculation in the
-         *                   event that the length of the list is even. This is optional, but if it is not an array of
-         *                   numbers and the length is even it is needed or an error will be thrown.
-         * @return {Number} The median value.
-         */
-        median : function(arr, sorter, medCalc){
-            var ret,
-                middle,
-                remainder;
-
-            if (arr.length) {
-                if (arr.length == 1) {
-                    ret = arr[0];
-                } else {
-                    arr = Ext.toArray(arr);
-                    sorter ? arr.sort(sorter) : arr.sort();
-                    remainder = (middle = (arr.length / 2) - 1) % 1;
-                    if( remainder == 0 ){
-                        ret = medCalc ? medCalc(arr[middle], arr[middle + 1]) : ((arr[middle] + arr[middle + 1]) / 2);
-                    }else{
-                        ret = arr[middle + remainder];
-                    }
-                }
-            }
-            return ret;
-        },
-
-        /**
          * Calculates the mean of the Array
          * @param {Array} arr The Array to calculate the mean value of.
          * @return {Number} The mean.
          */
         mean : function(arr){
            return Ext.sum(arr) / arr.length;
-        },
-
-        /**
-         * Returns the mode of the Array.
-         * @param {Array} arr The Array to compute the mode on.
-         * @return {Number} The mode.
-         */
-        mode : function(arr){
-            var collect = {},
-                mode = arr[0];
-
-            Ext.each(arr, function(v) {
-                collect[v] == undefined ? collect[v] = 0 : collect[v]++;
-                mode = collect[mode] < collect[v] ? v : mode;
-            });
-            return mode;
         },
 
         /**

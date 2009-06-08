@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -83,10 +83,13 @@ Ext.layout.CardLayout = Ext.extend(Ext.layout.FitLayout, {
     
     /**
      * @cfg {Boolean} layoutOnCardChange
-     * True to force a layout of the active item when the active card is changed.
+     * True to force a layout of the active item when the active card is changed. Defaults to false.
      */
     layoutOnCardChange : false,
 
+    /**
+     * @cfg {Boolean} renderHidden @hide
+     */
     // private
     renderHidden : true,
 

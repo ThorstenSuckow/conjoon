@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -55,7 +55,9 @@ Ext.extend(Ext.tree.DefaultSelectionModel, Ext.util.Observable, {
      */
     select : function(node){
         var last = this.selNode;
-        if(last != node && this.fireEvent('beforeselect', this, node, last) !== false){
+        if(node == last){
+            node.ui.onSelectedChange(true);
+        }else if(this.fireEvent('beforeselect', this, node, last) !== false){
             if(last){
                 last.ui.onSelectedChange(false);
             }

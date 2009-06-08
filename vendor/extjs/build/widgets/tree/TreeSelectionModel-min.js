@@ -1,13 +1,13 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
 
-Ext.tree.DefaultSelectionModel=function(config){this.selNode=null;this.addEvents("selectionchange","beforeselect");Ext.apply(this,config);Ext.tree.DefaultSelectionModel.superclass.constructor.call(this);};Ext.extend(Ext.tree.DefaultSelectionModel,Ext.util.Observable,{init:function(tree){this.tree=tree;tree.getTreeEl().on("keydown",this.onKeyDown,this);tree.on("click",this.onNodeClick,this);},onNodeClick:function(node,e){this.select(node);},select:function(node){var last=this.selNode;if(last!=node&&this.fireEvent('beforeselect',this,node,last)!==false){if(last){last.ui.onSelectedChange(false);}
+Ext.tree.DefaultSelectionModel=function(config){this.selNode=null;this.addEvents("selectionchange","beforeselect");Ext.apply(this,config);Ext.tree.DefaultSelectionModel.superclass.constructor.call(this);};Ext.extend(Ext.tree.DefaultSelectionModel,Ext.util.Observable,{init:function(tree){this.tree=tree;tree.getTreeEl().on("keydown",this.onKeyDown,this);tree.on("click",this.onNodeClick,this);},onNodeClick:function(node,e){this.select(node);},select:function(node){var last=this.selNode;if(node==last){node.ui.onSelectedChange(true);}else if(this.fireEvent('beforeselect',this,node,last)!==false){if(last){last.ui.onSelectedChange(false);}
 this.selNode=node;node.ui.onSelectedChange(true);this.fireEvent("selectionchange",this,node,last);}
 return node;},unselect:function(node){if(this.selNode==node){this.clearSelections();}},clearSelections:function(){var n=this.selNode;if(n){n.ui.onSelectedChange(false);this.selNode=null;this.fireEvent("selectionchange",this,null);}
 return n;},getSelectedNode:function(){return this.selNode;},isSelected:function(node){return this.selNode==node;},selectPrevious:function(){var s=this.selNode||this.lastSelNode;if(!s){return null;}

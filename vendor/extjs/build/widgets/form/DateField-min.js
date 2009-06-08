@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -22,4 +22,4 @@ var v=Date.parseDate(value,this.format);if(!v&&this.altFormats){if(!this.altForm
 for(var i=0,len=this.altFormatsArray.length;i<len&&!v;i++){v=Date.parseDate(value,this.altFormatsArray[i]);}}
 return v;},onDestroy:function(){Ext.destroy(this.menu,this.wrap);Ext.form.DateField.superclass.onDestroy.call(this);},formatDate:function(date){return Ext.isDate(date)?date.dateFormat(this.format):date;},onTriggerClick:function(){if(this.disabled){return;}
 if(this.menu==null){this.menu=new Ext.menu.DateMenu({hideOnClick:false});}
-Ext.apply(this.menu.picker,{minDate:this.minValue,maxDate:this.maxValue,disabledDatesRE:this.disabledDatesRE,disabledDatesText:this.disabledDatesText,disabledDays:this.disabledDays,disabledDaysText:this.disabledDaysText,format:this.format,showToday:this.showToday,minText:String.format(this.minText,this.formatDate(this.minValue)),maxText:String.format(this.maxText,this.formatDate(this.maxValue))});this.menu.picker.setValue(this.getValue()||new Date());this.menu.show(this.el,"tl-bl?");this.menuEvents('on');},menuEvents:function(method){this.menu[method]('select',this.onSelect,this);this.menu[method]('hide',this.onMenuHide,this);this.menu[method]('show',this.onFocus,this);},onSelect:function(m,d){this.setValue(d);this.fireEvent('select',this,d);this.menu.hide();},onMenuHide:function(){this.focus.defer(10,this);this.menuEvents('un');},beforeBlur:function(){var v=this.parseDate(this.getRawValue());if(v){this.setValue(v);}}});Ext.reg('datefield',Ext.form.DateField);
+this.onFocus();Ext.apply(this.menu.picker,{minDate:this.minValue,maxDate:this.maxValue,disabledDatesRE:this.disabledDatesRE,disabledDatesText:this.disabledDatesText,disabledDays:this.disabledDays,disabledDaysText:this.disabledDaysText,format:this.format,showToday:this.showToday,minText:String.format(this.minText,this.formatDate(this.minValue)),maxText:String.format(this.maxText,this.formatDate(this.maxValue))});this.menu.picker.setValue(this.getValue()||new Date());this.menu.show(this.el,"tl-bl?");this.menuEvents('on');},menuEvents:function(method){this.menu[method]('select',this.onSelect,this);this.menu[method]('hide',this.onMenuHide,this);this.menu[method]('show',this.onFocus,this);},onSelect:function(m,d){this.setValue(d);this.fireEvent('select',this,d);this.menu.hide();},onMenuHide:function(){this.focus(false,60);this.menuEvents('un');},beforeBlur:function(){var v=this.parseDate(this.getRawValue());if(v){this.setValue(v);}}});Ext.reg('datefield',Ext.form.DateField);

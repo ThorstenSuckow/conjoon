@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -90,7 +90,7 @@ Ext.extend(Ext.menu.BaseItem, Ext.Component, {
     // private
     onRender : function(container, position){
         Ext.menu.BaseItem.superclass.onRender.apply(this, arguments);
-        if(this.ownerCt && this.ownerCt.isXType(Ext.menu.Menu)){
+        if(this.ownerCt && this.ownerCt instanceof Ext.menu.Menu){
             this.parentMenu = this.ownerCt;
         }else{
             this.container.addClass('x-menu-list-item');

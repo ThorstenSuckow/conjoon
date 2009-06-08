@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -28,6 +28,12 @@ Ext.extend(Ext.menu.Separator, Ext.menu.BaseItem, {
      * @cfg {Boolean} hideOnClick True to hide the containing menu after this item is clicked (defaults to false)
      */
     hideOnClick : false,
+    
+    /** 
+     * @cfg {String} activeClass
+     * @hide 
+     */
+    activeClass: '',
 
     // private
     onRender : function(li){

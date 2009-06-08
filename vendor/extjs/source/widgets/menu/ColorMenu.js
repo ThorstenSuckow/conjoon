@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -37,6 +37,7 @@
             showSeparator: false,
             items: this.palette = new Ext.ColorPalette(this.initialConfig)
         });
+        this.palette.purgeListeners();
         Ext.menu.ColorMenu.superclass.initComponent.call(this);
         this.relayEvents(this.palette, ['select']);
     },

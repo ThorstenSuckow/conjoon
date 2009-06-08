@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -32,9 +32,56 @@ var EXTUTIL = Ext.util,
  */
 EXTUTIL.Observable = function(){
     /**
-     * @cfg {Object} listeners (optional) A config object containing one or more event handlers to be added to this
+     * @cfg {Object} listeners (optional) <p>A config object containing one or more event handlers to be added to this
      * object during initialization.  This should be a valid listeners config object as specified in the
-     * {@link #addListener} example for attaching multiple handlers at once.
+     * {@link #addListener} example for attaching multiple handlers at once.</p>
+     * <p><b>Note:</b> While <i>some</i> Observable classes export selected DOM events (eg "click", "mouseover" etc), this
+     * is usually only done when extra value can be added. For example the {@link Ext.DataView DataView}'s
+     * <b><code>{@link Ext.DataView#click click}</code></b> event passing the node clicked on. To access DOM
+     * events directly from a Component's HTMLElement listeners must be added to the element after the Component
+     * has been rendered. A plugin can simplify this step:<code><pre>
+// Plugin is configured with a listeners config object.
+// The Component is appended to the argument list of all handler functions.
+Ext.DomObserver = Ext.extend(Object, {
+    constructor: function(config) {
+        this.listeners = config.listeners ? config.listeners : config;
+    },
+
+    init: function(c) {
+        var p, l = this.listeners;
+        for (p in l) {
+            if (Ext.isFunction(l[p])) {
+                l[p] = this.createHandler(l[p], c);
+            } else {
+                l[p].fn = this.createHandler(l[p].fn, c);
+            }
+        }
+        c.render = c.render.createSequence(function() {
+            c.el.on(l);
+        });
+    },
+
+    createHandler: function(fn, c) {
+        return function(e) {
+            fn.call(this, e, c);
+        };
+    }
+});
+
+var combo = new Ext.form.ComboBox({
+
+// Collapse combo when its element is clicked on
+    plugins: [ new Ext.DomObserver({
+        click: function(evt, comp) {
+            comp.collapse();
+        }
+    })],
+    store: myStore,
+    typeAhead: true,
+    mode: 'local',
+    triggerAction: 'all'
+});
+</pre></code></p>
      */
     var me = this, e = me.events;
     if(me.listeners){
@@ -93,7 +140,7 @@ EXTUTIL.Observable.prototype = function(){
 
         /**
          * Appends an event handler to this object.
-         * @param {String}   eventName The type of event to listen for.
+         * @param {String}   eventName The name of the event to listen for.
          * @param {Function} handler The method the event invokes.
          * @param {Object}   scope (optional) The scope (<code><b>this</b></code> reference) in which the handler function is executed.
          * <b>If omitted, defaults to the object which fired the event.</b>
@@ -230,7 +277,7 @@ EXTUTIL.Observable.prototype = function(){
 
         /**
          * Suspend the firing of all events. (see {@link #resumeEvents})
-         * @param queueSuspended {Boolean} Pass as true to queue up suspended events to be fired
+         * @param {Boolean} queueSuspended Pass as true to queue up suspended events to be fired
          * after the {@link #resumeEvents} call instead of discarding all suspended events;
          */
         suspendEvents : function(queueSuspended){

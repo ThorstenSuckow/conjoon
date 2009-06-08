@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -20,7 +20,7 @@ function onBeforeCheck(mi,state){if(state){var g=groups[mi.group];for(var i=0,l=
 return{hideAll:function(){hideAll();},register:function(menu){if(!menus){init();}
 menus[menu.id]=menu;menu.on("beforehide",onBeforeHide);menu.on("hide",onHide);menu.on("beforeshow",onBeforeShow);menu.on("show",onShow);var g=menu.group;if(g&&menu.events["checkchange"]){if(!groups[g]){groups[g]=[];}
 groups[g].push(menu);menu.on("checkchange",onCheck);}},get:function(menu){if(typeof menu=="string"){if(!menus){return null;}
-return menus[menu];}else if(menu.events){return menu;}else if(typeof menu.length=='number'){return new Ext.menu.Menu({items:menu});}else{return new Ext.menu.Menu(menu);}},unregister:function(menu){delete menus[menu.id];menu.un("beforehide",onBeforeHide);menu.un("hide",onHide);menu.un("beforeshow",onBeforeShow);menu.un("show",onShow);var g=menu.group;if(g&&menu.events["checkchange"]){groups[g].remove(menu);menu.un("checkchange",onCheck);}},registerCheckable:function(menuItem){var g=menuItem.group;if(g){if(!groups[g]){groups[g]=[];}
+return menus[menu];}else if(menu.events){return menu;}else if(typeof menu.length=='number'){return new Ext.menu.Menu({items:menu});}else{return Ext.create(menu,'menu');}},unregister:function(menu){delete menus[menu.id];menu.un("beforehide",onBeforeHide);menu.un("hide",onHide);menu.un("beforeshow",onBeforeShow);menu.un("show",onShow);var g=menu.group;if(g&&menu.events["checkchange"]){groups[g].remove(menu);menu.un("checkchange",onCheck);}},registerCheckable:function(menuItem){var g=menuItem.group;if(g){if(!groups[g]){groups[g]=[];}
 groups[g].push(menuItem);menuItem.on("beforecheckchange",onBeforeCheck);}},unregisterCheckable:function(menuItem){var g=menuItem.group;if(g){groups[g].remove(menuItem);menuItem.un("beforecheckchange",onBeforeCheck);}},getCheckedItem:function(groupId){var g=groups[groupId];if(g){for(var i=0,l=g.length;i<l;i++){if(g[i].checked){return g[i];}}}
 return null;},setCheckedItem:function(groupId,itemId){var g=groups[groupId];if(g){for(var i=0,l=g.length;i<l;i++){if(g[i].id==itemId){g[i].setChecked(true);}}}
 return null;}};}();

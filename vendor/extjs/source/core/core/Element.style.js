@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -15,6 +15,8 @@ Ext.Element.addMethods(function(){
         camelRe = /(-[a-z])/gi,
         classReCache = {},
         view = document.defaultView,
+        propFloat = Ext.isIE ? 'styleFloat' : 'cssFloat',
+        opacityRe = /alpha\(opacity=(.*)\)/i,
         EL = Ext.Element,   
         PADDING = "padding",
         MARGIN = "margin",
@@ -49,10 +51,9 @@ Ext.Element.addMethods(function(){
     }
 
     function chkCache(prop) {
-        return propCache[prop] || (propCache[prop] = prop.replace(camelRe, camelFn))
+        return propCache[prop] || (propCache[prop] = prop == 'float' ? propFloat : prop.replace(camelRe, camelFn));
+
     }
-        
-            
             
     return {    
         // private  ==> used by Fx  
@@ -97,7 +98,7 @@ Ext.Element.addMethods(function(){
         radioClass : function(className){
             Ext.each(this.dom.parentNode.childNodes, function(v) {
                 if(v.nodeType == 1) {
-                    Ext.get(v).removeClass(className);          
+                    Ext.fly(v).removeClass(className);          
                 }
             });
             return this.addClass(className);
@@ -149,12 +150,6 @@ Ext.Element.addMethods(function(){
         },
         
         isStyle : function(style, val) {
-//          var ret = false;
-//          style = this.getStyle(style);
-//          Ext.each(Ext.toArray(arguments,1),function(s){
-//              if(style == s) return false; // stop iterating.
-//          });
-//          return ret;
             return this.getStyle(style) == val;  
         },
     
@@ -170,9 +165,9 @@ Ext.Element.addMethods(function(){
                         v,                  
                         cs;
                     if(el == document) return null;
-                    prop = prop == 'float' ? 'cssFloat' : prop;
+                    prop = chkCache(prop);
                     return (v = el.style[prop]) ? v : 
-                           (cs = view.getComputedStyle(el, "")) ? cs[chkCache(prop)] : null;
+                           (cs = view.getComputedStyle(el, "")) ? cs[prop] : null;
                 } :
                 function(prop){      
                     var el = this.dom, 
@@ -182,7 +177,7 @@ Ext.Element.addMethods(function(){
                     if(el == document) return null;      
                     if (prop == 'opacity') {
                         if (el.style.filter.match) {                       
-                            if(m = el.style.filter.match(/alpha\(opacity=(.*)\)/i)){
+                            if(m = el.style.filter.match(opacityRe)){
                                 var fv = parseFloat(m[1]);
                                 if(!isNaN(fv)){
                                     return fv ? fv / 100 : 0;
@@ -191,8 +186,8 @@ Ext.Element.addMethods(function(){
                         }
                         return 1;
                     }
-                    prop = prop == 'float' ? 'styleFloat' : prop;   
-                    return el.style[prop] || ((cs = el.currentStyle) ? cs[chkCache(prop)] : null);
+                    prop = chkCache(prop);  
+                    return el.style[prop] || ((cs = el.currentStyle) ? cs[prop] : null);
                 };
         }(),
         
@@ -240,10 +235,9 @@ Ext.Element.addMethods(function(){
             }
             for (style in prop) {
                 value = prop[style];            
-                camel = chkCache(style);
-                camel == 'opacity' ? 
+                style == 'opacity' ? 
                     this.setOpacity(value) : 
-                    this.dom.style[camel] = value;
+                    this.dom.style[chkCache(style)] = value;
             }
             return this;
         },

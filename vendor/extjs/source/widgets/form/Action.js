@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -198,9 +198,11 @@ buttons: [{
     },
 
     // private
+    // shared code among all Actions to validate that there was a response
+    // with either responseText or responseXml
     processResponse : function(response){
         this.response = response;
-        if(!response.responseText){
+        if(!response.responseText && !response.responseXML){
             return true;
         }
         this.result = this.handleResponse(response);
@@ -447,7 +449,91 @@ Ext.extend(Ext.form.Action.Load, Ext.form.Action, {
     }
 });
 
+
+
+/**
+ * @class Ext.form.Action.DirectLoad
+ * @extends Ext.form.Action.Load
+ */
+Ext.form.Action.DirectLoad = Ext.extend(Ext.form.Action.Load, {
+    constructor: function(form, opts) {        
+        Ext.form.Action.DirectLoad.superclass.constructor.call(this, form, opts);
+    },
+    type: 'directload',
+    
+    run : function(){
+        var args = this.getParams();
+        args.push(this.success, this);                
+        this.form.api.load.apply(window, args);
+    },
+    
+    getParams: function() {
+        var buf = [], o = {};
+        var bp = this.form.baseParams;
+        var p = this.options.params;
+        Ext.apply(o, p, bp);
+        var paramOrder = this.form.paramOrder;
+        if(paramOrder){
+            for(var i = 0, len = paramOrder.length; i < len; i++){
+                buf.push(o[paramOrder[i]]);
+            }
+        }else if(this.form.paramsAsHash){
+            buf.push(o);
+        }
+        return buf;
+    },
+    // Direct actions have already been processed and therefore
+    // we can directly set the result; Direct Actions do not have
+    // a this.response property.
+    processResponse: function(result) {
+        this.result = result;
+        return result;          
+    }
+});
+
+/**
+ * @class Ext.form.Action.DirectSubmit
+ * @extends Ext.form.Action.Submit
+ */
+Ext.form.Action.DirectSubmit = Ext.extend(Ext.form.Action.Submit, {
+    constructor: function(form, opts) {
+        Ext.form.Action.DirectSubmit.superclass.constructor.call(this, form, opts);
+    },
+    type: 'directsubmit',
+    // override of Submit
+    run : function(){
+        var o = this.options;
+        if(o.clientValidation === false || this.form.isValid()){
+            // tag on any additional params to be posted in the
+            // form scope
+            this.success.params = this.getParams();
+            this.form.api.submit(this.form.el.dom, this.success, this);
+        }else if (o.clientValidation !== false){ // client validation failed
+            this.failureType = Ext.form.Action.CLIENT_INVALID;
+            this.form.afterAction(this, false);
+        }
+    },
+    
+    getParams: function() {
+        var o = {};
+        var bp = this.form.baseParams;
+        var p = this.options.params;
+        Ext.apply(o, p, bp);
+        return o;
+    },    
+    // Direct actions have already been processed and therefore
+    // we can directly set the result; Direct Actions do not have
+    // a this.response property.
+    processResponse: function(result) {
+        this.result = result;
+        return result;          
+    }
+});
+
+
 Ext.form.Action.ACTION_TYPES = {
     'load' : Ext.form.Action.Load,
-    'submit' : Ext.form.Action.Submit
+    'submit' : Ext.form.Action.Submit,
+    'directload': Ext.form.Action.DirectLoad,
+    'directsubmit': Ext.form.Action.DirectSubmit
 };

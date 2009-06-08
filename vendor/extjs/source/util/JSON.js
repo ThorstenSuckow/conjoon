@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -90,7 +90,7 @@ Ext.util.JSON = new (function(){
             return "null";
         }else if(Ext.isArray(o)){
             return encodeArray(o);
-        }else if(Ext.isDate(o)){
+        }else if(Object.prototype.toString.apply(o) === '[object Date]'){
             return Ext.util.JSON.encodeDate(o);
         }else if(typeof o == "string"){
             return encodeString(o);

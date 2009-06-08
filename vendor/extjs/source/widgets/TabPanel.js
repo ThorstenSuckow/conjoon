@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -13,10 +13,9 @@
  * (<tt>{@link Ext.Container#items items}</tt>) that are managed using a
  * {@link Ext.layout.CardLayout CardLayout layout manager}, and displayed as separate tabs.</p>
  * 
- * <p><b>Note:</b> It is advisable to configure all child items of a TabPanel (and any Container
- * which uses a {@link Ext.layout.CardLayout CardLayout}) with
- * <b><tt>{@link Ext.Component#hideMode hideMode:'offsets'}</tt></b> to avoid rendering errors
- * in child components hidden using the CSS <tt>display</tt> style.
+ * <b>Note:</b> By default, a tab's close tool <i>destroys</i> the child tab Component
+ * and all its descendants. This makes the child tab Component, and all its descendants <b>unusable</b>. To enable
+ * re-use of a tab, configure the TabPanel with <b><code>{@link #autoDestroy autoDestroy: false}</code></b>.
  * 
  * <p><b><u>TabPanel header/footer elements</u></b></p> 
  * <p>TabPanels use their {@link Ext.Panel#header header} or {@link Ext.Panel#footer footer} element
@@ -96,7 +95,9 @@ var tabs = new Ext.TabPanel({
  */
 Ext.TabPanel = Ext.extend(Ext.Panel,  {
     /**
-     * @cfg {Boolean} layoutOnTabChange Set to true to do a layout of tab items as tabs are changed.
+     * @cfg {Boolean} layoutOnTabChange
+     * Set to true to force a layout of the active tab when the tab is changed. Defaults to false.
+     * See {@link Ext.layout.CardLayout}.<code>{@link Ext.layout.CardLayout#layoutOnCardChange layoutOnCardChange}</code>.
      */
     /**
      * @cfg {String} tabCls <b>This config option is used on <u>child Components</u> of ths TabPanel.</b> A CSS
@@ -130,22 +131,22 @@ Ext.TabPanel = Ext.extend(Ext.Panel,  {
     /**
      * @cfg {Number} tabWidth The initial width in pixels of each new tab (defaults to 120).
      */
-    tabWidth: 120,
+    tabWidth : 120,
     /**
      * @cfg {Number} minTabWidth The minimum width in pixels for each tab when {@link #resizeTabs} = true (defaults to 30).
      */
-    minTabWidth: 30,
+    minTabWidth : 30,
     /**
      * @cfg {Boolean} resizeTabs True to automatically resize each tab so that the tabs will completely fill the
      * tab strip (defaults to false).  Setting this to true may cause specific widths that might be set per tab to
      * be overridden in order to fit them all into view (although {@link #minTabWidth} will always be honored).
      */
-    resizeTabs:false,
+    resizeTabs : false,
     /**
      * @cfg {Boolean} enableTabScroll True to enable scrolling to tabs that may be invisible due to overflowing the
      * overall TabPanel width. Only available with tabPosition:'top' (defaults to false).
      */
-    enableTabScroll: false,
+    enableTabScroll : false,
     /**
      * @cfg {Number} scrollIncrement The number of pixels to scroll each time a tab scroll button is pressed
      * (defaults to <tt>100</tt>, or if <tt>{@link #resizeTabs} = true</tt>, the calculated tab width).  Only
@@ -172,11 +173,11 @@ Ext.TabPanel = Ext.extend(Ext.Panel,  {
      * The only other supported value is <tt>'bottom'</tt>.  <b>Note</b>: tab scrolling is only supported for
      * <tt>tabPosition: 'top'</tt>.
      */
-    tabPosition: 'top',
+    tabPosition : 'top',
     /**
      * @cfg {String} baseCls The base CSS class applied to the panel (defaults to <tt>'x-tab-panel'</tt>).
      */
-    baseCls: 'x-tab-panel',
+    baseCls : 'x-tab-panel',
     /**
      * @cfg {Boolean} autoTabs
      * <p><tt>true</tt> to query the DOM for any divs with a class of 'x-tab' to be automatically converted
@@ -217,7 +218,7 @@ var tabs = new Ext.TabPanel({
      * supported by {@link Ext.DomQuery#select}. Note that the query will be executed within the scope of this
      * tab panel only (so that multiple tab panels from markup can be supported on a page).
      */
-    autoTabSelector:'div.x-tab',
+    autoTabSelector : 'div.x-tab',
     /**
      * @cfg {String/Number} activeTab A string id or the numeric index of the tab that should be initially
      * activated on render (defaults to none).
@@ -233,7 +234,7 @@ var tabs = new Ext.TabPanel({
      * @cfg {Boolean} plain </tt>true</tt> to render the tab strip without a background container image
      * (defaults to <tt>false</tt>).
      */
-    plain: false,
+    plain : false,
     /**
      * @cfg {Number} wheelIncrement For scrolling tabs, the number of pixels to increment on mouse wheel
      * scrolling (defaults to <tt>20</tt>).
@@ -251,10 +252,10 @@ var tabs = new Ext.TabPanel({
     itemCls : 'x-tab-item',
 
     // private config overrides
-    elements: 'body',
-    headerAsText: false,
-    frame: false,
-    hideBorders:true,
+    elements : 'body',
+    headerAsText : false,
+    frame : false,
+    hideBorders :true,
 
     // private
     initComponent : function(){
@@ -285,6 +286,13 @@ var tabs = new Ext.TabPanel({
              */
             'contextmenu'
         );
+        /**
+         * @cfg {Object} layoutConfig
+         * TabPanel implicitly uses {@link Ext.layout.CardLayout} as its layout manager.
+         * <code>layoutConfig</code> may be used to configure this layout manager.
+         * <code>{@link #deferredRender}</code> and <code>{@link #layoutOnTabChange}</code>
+         * configured on the TabPanel will be applied as configs to the layout manager.
+         */
         this.setLayout(new Ext.layout.CardLayout(Ext.apply({
             layoutOnCardChange: this.layoutOnTabChange,
             deferredRender: this.deferredRender
@@ -425,7 +433,7 @@ new Ext.TabPanel({
         this.mon(this.strip, 'mousedown', this.onStripMouseDown, this);
         this.mon(this.strip, 'contextmenu', this.onStripContextMenu, this);
         if(this.enableTabScroll){
-            this.mon(this.strip, 'mousewheel', this.onStripContextMenu, this);
+            this.mon(this.strip, 'mousewheel', this.onWheel, this);
         }
     },
 
@@ -536,7 +544,7 @@ new Ext.TabPanel({
      * @param {BoxComponent} item The {@link Ext.BoxComponent BoxComponent} for which to create a selector element in the tab strip.
      * @return {Object} An object hash containing the properties required to render the selector element.
      */
-    getTemplateArgs: function(item) {
+    getTemplateArgs : function(item) {
         var cls = item.closable ? 'x-tab-strip-closable' : '';
         if(item.disabled){
             cls += ' x-item-disabled';
@@ -634,7 +642,7 @@ new Ext.TabPanel({
     },
     
     //private
-    onItemIconChanged: function(item, iconCls, oldCls){
+    onItemIconChanged : function(item, iconCls, oldCls){
         var el = this.getTabEl(item);
         if(el){
             Ext.fly(el).child('span.x-tab-strip-text').replaceClass(oldCls, iconCls);
@@ -644,11 +652,11 @@ new Ext.TabPanel({
     /**
      * Gets the DOM element for the tab strip item which activates the child panel with the specified
      * ID. Access this to change the visual treatment of the item, for example by changing the CSS class name.
-     * @param {Panel/Number} tab The tab component, or the tab's index
+     * @param {Panel/Number/String} tab The tab component, or the tab's index, or the tabs id or itemId.
      * @return {HTMLElement} The DOM node
      */
     getTabEl : function(item){
-        var itemId = (typeof item === 'number')?this.items.items[item].getItemId() : item.getItemId();
+        var itemId = (Ext.isObject(item) ? item : this.getComponent(item)).getItemId();
         return document.getElementById(this.id+this.idDelimiter+itemId);
     },
 
@@ -1044,16 +1052,12 @@ new Ext.TabPanel({
      * @cfg {String} layout
      * @hide
      */
-    /**
-     * @cfg {Object} layoutConfig
-     * @hide
-     */
 });
 Ext.reg('tabpanel', Ext.TabPanel);
 
 /**
- * Sets the specified tab as the active tab. This method fires the {@link #beforetabchange} event which
- * can return false to cancel the tab change.
+ * See {@link #setActiveTab}. Sets the specified tab as the active tab. This method fires
+ * the {@link #beforetabchange} event which can <tt>return false</tt> to cancel the tab change.
  * @param {String/Panel} tab The id or tab Panel to activate
  * @method activate
  */

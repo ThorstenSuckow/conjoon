@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -25,7 +25,7 @@
 Ext.QuickTips.init(); // to display button quicktips
 
 var myStore = new Ext.data.Store({
-    ... 
+    ...
 });
 
 var myPageSize = 25;  // server script should only send back 25 items
@@ -44,8 +44,8 @@ var grid = new Ext.grid.GridPanel({
     })
 });
  * </code></pre>
- * 
- * <p>To use paging, pass the paging requirements to the server when the store is first loaded.</p> 
+ *
+ * <p>To use paging, pass the paging requirements to the server when the store is first loaded.</p>
  * <pre><code>
 store.load({
     params: {
@@ -157,7 +157,7 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
      * @type Number
      * @property pageSize
      */
-    
+
     /**
      * Indicator for the record position.  This property might be used to get the active page
      * number for example:<pre><code>
@@ -262,16 +262,16 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
     },
 
     // private
-	onFirstLayout: function(ii) {
-		this.mon(this.inputItem.el, "keydown", this.onPagingKeyDown, this);
-		this.mon(this.inputItem.el, "blur", this.onPagingBlur, this);
-		this.mon(this.inputItem.el, "focus", this.onPagingFocus, this);
+    onFirstLayout: function(ii) {
+        this.mon(this.inputItem.el, "keydown", this.onPagingKeyDown, this);
+        this.mon(this.inputItem.el, "blur", this.onPagingBlur, this);
+        this.mon(this.inputItem.el, "focus", this.onPagingFocus, this);
 
         this.field = this.inputItem.el.dom;
         if(this.dsLoaded){
             this.onLoad.apply(this, this.dsLoaded);
         }
-	},
+    },
 
     // private
     updateInfo : function(){
@@ -342,7 +342,7 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
         }
         return pageNum;
     },
-    
+
     onPagingFocus: function(){
         this.field.select();
     },
@@ -368,7 +368,7 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
             this.field.value = pageNum;
         }else if (k == e.UP || k == e.PAGEUP || k == e.DOWN || k == e.PAGEDOWN){
             e.stopEvent();
-            if(pageNum = this.readPage(d)){
+            if((pageNum = this.readPage(d))){
                 var increment = e.shiftKey ? 10 : 1;
                 if(k == e.DOWN || k == e.PAGEDOWN){
                     increment *= -1;
@@ -432,23 +432,26 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
             this.store.un("beforeload", this.beforeLoad, this);
             this.store.un("load", this.onLoad, this);
             this.store.un("loadexception", this.onLoadError, this);
-            
+            this.store.un("exception", this.onLoadError, this);
             if(store !== this.store && this.store.autoDestroy){
                 this.store.destroy();
             }
         }
         if(store){
             store = Ext.StoreMgr.lookup(store);
-            store.on("beforeload", this.beforeLoad, this);
-            store.on("load", this.onLoad, this);
-            store.on("loadexception", this.onLoadError, this);  
-                      
+            store.on({
+                scope: this,
+                beforeload: this.beforeLoad,
+                load: this.onLoad,
+                loadexception: this.onLoadError,
+                exception: this.onLoadError
+            });
             this.paramNames.start = store.paramNames.start;
             this.paramNames.limit = store.paramNames.limit;
-            
+
             if (store.getCount() > 0){
                 this.onLoad(store, null, {});
-            }            
+            }
         }
         this.store = store;
     },
@@ -468,7 +471,7 @@ Ext.PagingToolbar = Ext.extend(Ext.Toolbar, {
     bind : function(store){
         this.bindStore(store);
     },
-        
+
     // private
     onDestroy : function(){
         this.bindStore(null);

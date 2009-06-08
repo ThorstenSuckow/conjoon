@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -22,7 +22,7 @@ var p=o.params,url=o.url||me.url,method,cb={success:handleResponse,failure:handl
 p=Ext.urlEncode(me.extraParams,typeof p=='object'?Ext.urlEncode(p):p);if(Ext.isFunction(url)){url=url.call(o.scope||WINDOW,o);}
 if(form=Ext.getDom(o.form)){url=url||form.action;if(o.isUpload||/multipart\/form-data/i.test(form.getAttribute("enctype"))){return doFormUpload.call(me,o,p,url);}
 serForm=Ext.lib.Ajax.serializeForm(form);p=p?(p+'&'+serForm):serForm;}
-method=o.method||me.method||((p||o.xmlData||o.jsonData)?POST:GET);if(method==GET&&(me.disableCaching||o.disableCaching!==false)){var dcp=o.disableCachingParam||me.disableCachingParam;url+=(url.indexOf('?')!=-1?'&':'?')+dcp+'='+(new Date().getTime());}
+method=o.method||me.method||((p||o.xmlData||o.jsonData)?POST:GET);if(method===GET&&(me.disableCaching&&o.disableCaching!==false)||o.disableCaching===true){var dcp=o.disableCachingParam||me.disableCachingParam;url+=(url.indexOf('?')!=-1?'&':'?')+dcp+'='+(new Date().getTime());}
 o.headers=Ext.apply(o.headers||{},me.defaultHeaders||{});if(o.autoAbort===true||me.autoAbort){me.abort();}
 if((method==GET||o.xmlData||o.jsonData)&&p){url+=(/\?/.test(url)?'&':'?')+p;p='';}
 return me.transId=Ext.lib.Ajax.request(method,url,cb,p,o);}else{return o.callback?o.callback.apply(o.scope,[o,UNDEFINED,UNDEFINED]):null;}},isLoading:function(transId){return transId?Ext.lib.Ajax.isCallInProgress(transId):!!this.transId;},abort:function(transId){if(transId||this.isLoading()){Ext.lib.Ajax.abort(transId||this.transId);}}});})();Ext.Ajax=new Ext.data.Connection({autoAbort:false,serializeForm:function(form){return Ext.lib.Ajax.serializeForm(form);}});

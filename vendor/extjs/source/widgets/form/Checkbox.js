@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -38,6 +38,18 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
      */
     /**
      * @cfg {String} inputValue The value that should go into the generated input element's value attribute
+     */
+    /**
+     * @cfg {Function} handler A function called when the {@link #checked} value changes (can be used instead of 
+     * handling the check event). The handler is passed the following parameters:
+     * <div class="mdetail-params"><ul>
+     * <li><b>checkbox</b> : Ext.form.Checkbox<div class="sub-desc">The Checkbox being toggled.</div></li>
+     * <li><b>checked</b> : Boolean<div class="sub-desc">The new checked state of the checkbox.</div></li>
+     * </ul></div>
+     */
+    /**
+     * @cfg {Object} scope An object to use as the scope ("this" reference) of the {@link #handler} function
+     * (defaults to this Checkbox).
      */
 
 	// private
@@ -109,9 +121,7 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
 
     // private
     onDestroy : function(){
-        if(this.wrap){
-            this.wrap.remove();
-        }
+        Ext.destroy(this.wrap);
         Ext.form.Checkbox.superclass.onDestroy.call(this);
     },
 
@@ -142,12 +152,15 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
      * @return {Ext.form.Field} this
      */
     setValue : function(v){
-        this.checked = (v === true || v === 'true' || v == '1' || String(v).toLowerCase() == 'on');
+        var checked = this.checked = (v === true || v === 'true' || v == '1' || String(v).toLowerCase() == 'on');
         if(this.el && this.el.dom){
-            this.el.dom.checked = this.checked;
-            this.el.dom.defaultChecked = this.checked;
+            this.el.dom.checked = checked;
+            this.el.dom.defaultChecked = checked;
         }
-        this.fireEvent("check", this, this.checked);
+        this.fireEvent("check", this, checked);
+        if(this.handler){
+            this.handler.call(this.scope || this, this, checked);
+        }
         return this;
     }
 });

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -30,6 +30,7 @@ Ext.LoadMask = function(el, config){
         this.store.on('beforeload', this.onBeforeLoad, this);
         this.store.on('load', this.onLoad, this);
         this.store.on('loadexception', this.onLoad, this);
+        this.store.on('exception', this.onLoad, this);
         this.removeMask = Ext.value(this.removeMask, false);
     }else{
         var um = this.el.getUpdater();
@@ -106,7 +107,7 @@ Ext.LoadMask.prototype = {
      * Hide this LoadMask.
      */
     hide: function(){
-        this.onLoad();    
+        this.onLoad();
     },
 
     // private
@@ -115,6 +116,7 @@ Ext.LoadMask.prototype = {
             this.store.un('beforeload', this.onBeforeLoad, this);
             this.store.un('load', this.onLoad, this);
             this.store.un('loadexception', this.onLoad, this);
+            this.store.un('exception', this.onLoad, this);
         }else{
             var um = this.el.getUpdater();
             um.un('beforeupdate', this.onBeforeLoad, this);

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -93,26 +93,28 @@ Ext.layout.ContainerLayout.prototype = {
     renderItem : function(c, position, target){
         if(c && !c.rendered){
             c.render(target, position);
-            if(this.extraCls){
-            	var t = c.getPositionEl ? c.getPositionEl() : c;
-            	t.addClass(this.extraCls);
-            }
-            if (this.renderHidden && c != this.activeItem) {
-                c.hide();
-            }
+            this.configureItem(c, position);
         }else if(c && !this.isValidParent(c, target)){
-            if(this.extraCls){
-                var t = c.getPositionEl ? c.getPositionEl() : c;
-            	t.addClass(this.extraCls);
-            }
             if(typeof position == 'number'){
                 position = target.dom.childNodes[position];
             }
             target.dom.insertBefore(c.getDomPositionEl().dom, position || null);
             c.container = target;
-            if (this.renderHidden && c != this.activeItem) {
-                c.hide();
-            }
+            this.configureItem(c, position);
+        }
+    },
+    
+    // private
+    configureItem: function(c, position){
+        if(this.extraCls){
+            var t = c.getPositionEl ? c.getPositionEl() : c;
+            t.addClass(this.extraCls);
+        }
+        if (this.renderHidden && c != this.activeItem) {
+            c.hide();
+        }
+        if(position !== undefined && c.doLayout){
+            c.doLayout(false, true);
         }
     },
 
@@ -140,7 +142,11 @@ Ext.layout.ContainerLayout.prototype = {
                 this.container.un('resize', this.onResize, this);
             }
             if(ct){
-                ct.on('resize', this.onResize, this);
+                ct.on({
+                    scope: this,
+                    resize: this.onResize,
+                    bodyresize: this.onResize
+                });
             }
         }
         this.container = ct;
@@ -174,12 +180,13 @@ Ext.layout.ContainerLayout.prototype = {
     },
 
     /**
-     * @cfg {Ext.Template} fieldTpl
-     * A {@link Template Ext.Template} used by Field rendering layout classes (such as
+     * The {@link Template Ext.Template} used by Field rendering layout classes (such as
      * {@link Ext.layout.FormLayout}) to create the DOM structure of a fully wrapped,
      * labeled and styled form Field. A default Template is supplied, but this may be
      * overriden to create custom field structures. The template processes values returned from
-     * {@link Ext.form.FormLayout#getTemplateArgs}.
+     * {@link Ext.layout.FormLayout#getTemplateArgs}.
+     * @property fieldTpl
+     * @type Ext.Template
      */
     fieldTpl: (function() {
         var t = new Ext.Template(

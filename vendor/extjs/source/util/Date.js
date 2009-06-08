@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -179,7 +179,7 @@ Date.parseFunctions['x-date-format'] = myDateParser;
      */
     parseFunctions: {
         "M$": function(input, strict) {
-            // note: the timezone offset is ignored since the M$ Ajax server sends 
+            // note: the timezone offset is ignored since the M$ Ajax server sends
             // a UTC milliseconds-since-Unix-epoch value
             var re = new RegExp('\\/Date\\((\\d+)(?:[+-]\\d{4})?\\)\\/');
             var r = (input || '').match(re);
@@ -262,6 +262,37 @@ Date.formatFunctions['x-date-format'] = myDateFormatter;
      * @type String
      */
     YEAR : "y",
+
+    /**
+     * <p>An object hash containing default date values used during date parsing.</p>
+     * <p>The following properties are available:<div class="mdetail-params"><ul>
+     * <li><code>y</code> : Number<div class="sub-desc">The default year value. (defaults to undefined)</div></li>
+     * <li><code>m</code> : Number<div class="sub-desc">The default 1-based month value. (defaults to undefined)</div></li>
+     * <li><code>d</code> : Number<div class="sub-desc">The default day value. (defaults to undefined)</div></li>
+     * <li><code>h</code> : Number<div class="sub-desc">The default hour value. (defaults to undefined)</div></li>
+     * <li><code>i</code> : Number<div class="sub-desc">The default minute value. (defaults to undefined)</div></li>
+     * <li><code>s</code> : Number<div class="sub-desc">The default second value. (defaults to undefined)</div></li>
+     * <li><code>ms</code> : Number<div class="sub-desc">The default millisecond value. (defaults to undefined)</div></li>
+     * </ul></div></p>
+     * <p>Override these properties to customize the default date values used by the {@link #parseDate} method.</p>
+     * <p><b>Note: In countries which experience Daylight Saving Time (i.e. DST), the <tt>h</tt>, <tt>i</tt>, <tt>s</tt>
+     * and <tt>ms</tt> properties may coincide with the exact time in which DST takes effect.
+     * It is the responsiblity of the developer to account for this.</b></p>
+     * Example Usage:
+     * <pre><code>
+// set default day value to the first day of the month
+Date.defaults.d = 1;
+
+// parse a February date string containing only year and month values.
+// setting the default day value to 1 prevents weird date rollover issues
+// when attempting to parse the following date string on, for example, March 31st 2009.
+Date.parseDate('2009-02', 'Y-m'); // returns a Date object representing February 1st 2009
+</code></pre>
+     * @property defaults
+     * @static
+     * @type Object
+     */
+    defaults: {},
 
     /**
      * An array of textual day names.
@@ -426,7 +457,7 @@ Date.formatCodes.x = "String.leftPad(this.getDate(), 2, '0')";
         P: "this.getGMTOffset(true)",
         T: "this.getTimezone()",
         Z: "(this.getTimezoneOffset() * -60)",
-        
+
         c: function() { // ISO-8601 -- GMT format
             for (var c = "Y-m-dTH:i:sP", code = [], i = 0, l = c.length; i < l; ++i) {
                 var e = c.charAt(i);
@@ -448,10 +479,10 @@ Date.formatCodes.x = "String.leftPad(this.getDate(), 2, '0')";
             ].join(" + ");
         },
         */
-        
+
         U: "Math.round(this.getTime() / 1000)"
     },
-    
+
     /**
      * Checks if the passed Date parameters will cause a javascript Date "rollover".
      * @param {Number} year 4-digit year
@@ -470,9 +501,9 @@ Date.formatCodes.x = "String.leftPad(this.getDate(), 2, '0')";
         i = i || 0;
         s = s || 0;
         ms = ms || 0;
-            
+
         var dt = new Date(y, m - 1, d, h, i, s, ms);
-        
+
         return y == dt.getFullYear() &&
             m == dt.getMonth() + 1 &&
             d == dt.getDate() &&
@@ -483,13 +514,14 @@ Date.formatCodes.x = "String.leftPad(this.getDate(), 2, '0')";
     },
 
     /**
-     * Parses the passed string using the specified format. Note that this function expects dates in normal calendar
-     * format, meaning that months are 1-based (1 = January) and not zero-based like in JavaScript dates.  Any part of
-     * the date format that is not specified will default to the current date value for that part.  Time parts can also
-     * be specified, but default to 0.  Keep in mind that the input date string must precisely match the specified format
-     * string or the parse operation will fail.
-     * Example Usage:
-     * <pre><code>
+     * Parses the passed string using the specified date format.
+     * Note that this function expects normal calendar dates, meaning that months are 1-based (i.e. 1 = January).
+     * The {@link #defaults} hash will be used for any date value (i.e. year, month, day, hour, minute, second or millisecond)
+     * which cannot be found in the passed string. If a corresponding default date value has not been specified in the {@link #defaults} hash,
+     * the current date's year, month, day or DST-adjusted zero-hour time value will be used instead.
+     * Keep in mind that the input date string must precisely match the specified format string
+     * in order for the parse operation to be successful (failed parse operations return a null value).
+     * <p>Example:</p><pre><code>
 //dt = Fri May 25 2007 (current date)
 var dt = new Date();
 
@@ -557,6 +589,7 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
     createParser : function() {
         var code = [
             "var dt, y, m, d, h, i, s, ms, o, z, zz, u, v,",
+                "def = Date.defaults,",
                 "results = String(input).match(Date.parseRegexes[{0}]);", // either null, or an array of matched strings
 
             "if(results){",
@@ -569,25 +602,25 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
                     // this will provide us with our date defaults
                     // (note: clearTime() handles Daylight Saving Time automatically)
                     "dt = (new Date()).clearTime();",
-                
-                    // date calculations
-                    "y = y >= 0? y : dt.getFullYear();",
-                    "m = m >= 0? m : dt.getMonth();",
-                    "d = d || dt.getDate();",
 
-                    // time calculations (dt.getXXX() methods return DST-adjusted h / i / s / ms)
-                    "h = h || dt.getHours()",
-                    "i = i || dt.getMinutes();",
-                    "s = s || dt.getSeconds();",
-                    "ms = ms || dt.getMilliseconds();",
-                    
+                    // date calculations (note: these calculations create a dependency on Ext.num())
+                    "y = y >= 0? y : Ext.num(def.y, dt.getFullYear());",
+                    "m = m >= 0? m : Ext.num(def.m - 1, dt.getMonth());",
+                    "d = d || Ext.num(def.d, dt.getDate());",
+
+                    // time calculations (note: these calculations create a dependency on Ext.num())
+                    "h  = h || Ext.num(def.h, dt.getHours());",
+                    "i  = i || Ext.num(def.i, dt.getMinutes());",
+                    "s  = s || Ext.num(def.s, dt.getSeconds());",
+                    "ms = ms || Ext.num(def.ms, dt.getMilliseconds());",
+
                     "if(z >= 0 && y >= 0){",
                         // both the year and zero-based day of year are defined and >= 0.
                         // these 2 values alone provide sufficient info to create a full date object
 
                         // create Date object representing January 1st for the given year
                         "v = new Date(y, 0, 1, h, i, s, ms);",
-                        
+
                         // then add day of year, checking for Date "rollover" if necessary
                         "v = !strict? v : (strict === true && (z <= 364 || (v.isLeapYear() && z <= 365))? v.add(Date.DAY, z) : null);",
                     "}else if(strict === true && !Date.isValid(y, m + 1, d, h, i, s, ms)){", // check for Date "rollover"
@@ -609,7 +642,7 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
                     "v = v.add(Date.MINUTE, -v.getTimezoneOffset() + (sn == '+'? -1 : 1) * (hr * 60 + mn));",
                 "}",
             "}",
-            
+
             "return v;"
         ].join('\n');
 
@@ -1097,7 +1130,7 @@ document.write(orig);  //returns 'Thu Oct 01 2006'
         if (clone) {
             return this.clone().clearTime();
         }
-        
+
         // get current date before clearing time
         var d = this.getDate();
 
@@ -1108,12 +1141,12 @@ document.write(orig);  //returns 'Thu Oct 01 2006'
         this.setMilliseconds(0);
 
         if (this.getDate() != d) { // account for DST (i.e. day of month changed when setting hour = 0)
-            // note: DST adjustments are assumed to occur in multiples of 1 hour (this is almost always the case) 
+            // note: DST adjustments are assumed to occur in multiples of 1 hour (this is almost always the case)
             // refer to http://www.timeanddate.com/time/aboutdst.html for the (rare) exceptions to this rule
-            
+
             // increment hour until cloned date == current date
             for (var hr = 1, c = this.add(Date.HOUR, hr); c.getDate() != d; hr++, c = this.add(Date.HOUR, hr));
-            
+
             this.setDate(d);
             this.setHours(c.getHours());
         }
@@ -1207,7 +1240,7 @@ if (Ext.isSafari && (navigator.userAgent.match(/WebKit\/(\d+)/)[1] || NaN) < 420
     Ext.apply(Date.prototype, {
         _xMonth : Date.prototype.setMonth,
         _xDate  : Date.prototype.setDate,
-        
+
         // Bug in Safari 1.3, 2.0 (WebKit build < 420)
         // Date.setMonth does not work consistently if iMonth is not 0-11
         setMonth : function(num) {

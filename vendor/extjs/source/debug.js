@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -306,6 +306,7 @@ Ext.debug.DomTree = Ext.extend(Ext.tree.TreePanel, {
             return s;
         }
 
+        /*
         function onNodeSelect(t, n, last){
             return;
             if(last && last.unframe){
@@ -362,6 +363,7 @@ Ext.debug.DomTree = Ext.extend(Ext.tree.TreePanel, {
             stylesGrid.treeNode = n;
             stylesGrid.view.fitColumns();
         }
+        */
 
         this.loader = new Ext.tree.TreeLoader();
         this.loader.load = function(n, cb){

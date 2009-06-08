@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -176,7 +176,7 @@ TestAction.multiply(
         }else{
             var ts = [].concat(opt.ts);
             for(var i = 0, len = ts.length; i < len; i++){
-                var t = this.getTransaction(opt.ts[i]);
+                var t = this.getTransaction(ts[i]);
                 if(t && t.retryCount < this.maxRetries){
                     t.retry();
                 }else{
@@ -297,9 +297,12 @@ TestAction.multiply(
                 extTID: t.tid,
                 extAction: c,
                 extMethod: m.name,
+                extType: 'rpc',
                 extUpload: String(isUpload)
             };
-            if(callback && typeof callback == 'object'){
+            // change made from typeof callback check to callback.params
+            // to support addl param passing in DirectSubmit EAC 6/2
+            if(callback && typeof callback.params == 'object'){
                 Ext.apply(params, callback.params);
             }
             Ext.Ajax.request({

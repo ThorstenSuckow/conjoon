@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -13,12 +13,10 @@ if(this.selectOnFocus||this.emptyText){this.on("focus",this.preFocus,this);this.
 if(this.maskRe||(this.vtype&&this.disableKeyFilter!==true&&(this.maskRe=Ext.form.VTypes[this.vtype+'Mask']))){this.mon(this.el,'keypress',this.filterKeys,this);}
 if(this.grow){this.mon(this.el,'keyup',this.onKeyUpBuffered,this,{buffer:50});this.mon(this.el,'click',this.autoSize,this);}
 if(this.enableKeyEvents){this.mon(this.el,'keyup',this.onKeyUp,this);this.mon(this.el,'keydown',this.onKeyDown,this);this.mon(this.el,'keypress',this.onKeyPress,this);}},processValue:function(value){if(this.stripCharsRe){var newValue=value.replace(this.stripCharsRe,'');if(newValue!==value){this.setRawValue(newValue);return newValue;}}
-return value;},filterValidation:function(e){if(!e.isNavKeyPress()){this.validationTask.delay(this.validationDelay);}},onDisable:function(){Ext.form.TextField.superclass.onDisable.call(this);if(Ext.isIE){this.el.dom.unselectable='on';}},onEnable:function(){Ext.form.TextField.superclass.onEnable.call(this);if(Ext.isIE){this.el.dom.unselectable='';}},onKeyUpBuffered:function(e){if(!e.isNavKeyPress()){this.autoSize();}},onKeyUp:function(e){this.fireEvent('keyup',this,e);},onKeyDown:function(e){this.fireEvent('keydown',this,e);},onKeyPress:function(e){this.fireEvent('keypress',this,e);},reset:function(){Ext.form.TextField.superclass.reset.call(this);this.applyEmptyText();},applyEmptyText:function(){if(this.rendered&&this.emptyText&&this.getRawValue().length<1&&!this.hasFocus){this.setRawValue(this.emptyText);this.el.addClass(this.emptyClass);}},preFocus:function(){if(this.emptyText){if(this.el.dom.value==this.emptyText){this.setRawValue('');}
-this.el.removeClass(this.emptyClass);}
-if(this.selectOnFocus){this.el.dom.select();}},postBlur:function(){this.applyEmptyText();},filterKeys:function(e){if(e.ctrlKey){return;}
-var k=e.getKey();if(Ext.isGecko&&(e.isNavKeyPress()||k==e.BACKSPACE||(k==e.DELETE&&e.button==-1))){return;}
-var c=e.getCharCode(),cc=String.fromCharCode(c);if(!Ext.isGecko&&e.isSpecialKey()&&!cc){return;}
-if(!this.maskRe.test(cc)){e.stopEvent();}},setValue:function(v){if(this.emptyText&&this.el&&v!==undefined&&v!==null&&v!==''){this.el.removeClass(this.emptyClass);}
+return value;},filterValidation:function(e){if(!e.isNavKeyPress()){this.validationTask.delay(this.validationDelay);}},onDisable:function(){Ext.form.TextField.superclass.onDisable.call(this);if(Ext.isIE){this.el.dom.unselectable='on';}},onEnable:function(){Ext.form.TextField.superclass.onEnable.call(this);if(Ext.isIE){this.el.dom.unselectable='';}},onKeyUpBuffered:function(e){if(!e.isNavKeyPress()){this.autoSize();}},onKeyUp:function(e){this.fireEvent('keyup',this,e);},onKeyDown:function(e){this.fireEvent('keydown',this,e);},onKeyPress:function(e){this.fireEvent('keypress',this,e);},reset:function(){Ext.form.TextField.superclass.reset.call(this);this.applyEmptyText();},applyEmptyText:function(){if(this.rendered&&this.emptyText&&this.getRawValue().length<1&&!this.hasFocus){this.setRawValue(this.emptyText);this.el.addClass(this.emptyClass);}},preFocus:function(){var el=this.el;if(this.emptyText){if(el.dom.value==this.emptyText){this.setRawValue('');}
+el.removeClass(this.emptyClass);}
+if(this.selectOnFocus){(function(){el.dom.select();}).defer(this.inEditor&&Ext.isIE?50:0);}},postBlur:function(){this.applyEmptyText();},filterKeys:function(e){if(e.ctrlKey||e.isSpecialKey()){return;}
+if(!this.maskRe.test(String.fromCharCode(e.getCharCode()))){e.stopEvent();}},setValue:function(v){if(this.emptyText&&this.el&&Ext.isEmpty(v)){this.el.removeClass(this.emptyClass);}
 Ext.form.TextField.superclass.setValue.apply(this,arguments);this.applyEmptyText();this.autoSize();return this;},validateValue:function(value){if(Ext.isFunction(this.validator)){var msg=this.validator(value);if(msg!==true){this.markInvalid(msg);return false;}}
 if(this.vtype){var vt=Ext.form.VTypes;if(!vt[this.vtype](value,this)){this.markInvalid(this.vtypeText||vt[this.vtype+'Text']);return false;}}
 if(this.regex&&!this.regex.test(value)){this.markInvalid(this.regexText);return false;}

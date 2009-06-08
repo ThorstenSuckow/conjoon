@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -29,8 +29,9 @@
     font-size:1px;
     -moz-outline:0 none;
     outline:0 none;
-    -moz-user-select: text;
-    -khtml-user-select: text;
+    -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 	display:block;
 	overflow:hidden;  
 }

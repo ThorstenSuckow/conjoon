@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -39,6 +39,14 @@
 	padding-left:1px;
     padding-right:1px;
     -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
+}
+
+.x-grid3-cell{
+    -moz-user-select: none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 }
 
 .x-grid3-hd-row td {
@@ -99,7 +107,7 @@
 
 .x-grid3-row {
 	cursor: default;
-    border:1px solid;
+    border: 1px solid;
     width:100%;
 }
 
@@ -146,6 +154,7 @@
     outline:0 none;
     -moz-user-select: text;
     -khtml-user-select: text;
+    -webkit-user-select:ignore;
 }
 
 /* header styles */
@@ -235,6 +244,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 	padding: 3px 5px 3px 5px;
 	-moz-user-select: none;
 	-khtml-user-select: none;
+    -webkit-user-select:ignore;
 }
 
 .x-grid3-split {
@@ -347,6 +357,8 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 
 .x-grid3-hd {
     -moz-user-select:none;
+    -khtml-user-select:none;
+    -webkit-user-select:ignore;
 }
 
 .x-grid3-hd-btn {
@@ -534,6 +546,9 @@ a.x-grid3-hd-btn:hover {
     position:relative;
 }
 
+.ext-ie6 .x-grid3-header {
+    position: relative;
+}
 
 /* column lines */
 .x-grid-with-col-lines .x-grid3-row td.x-grid3-cell {

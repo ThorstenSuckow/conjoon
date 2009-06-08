@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -25,7 +25,12 @@ Ext.menu.Item = function(config){
 };
 Ext.extend(Ext.menu.Item, Ext.menu.BaseItem, {
     /**
-     * @cfg {Mixed} menu Either an instance of {@link Ext.menu.Menu} or the config object for an
+     * @property menu
+     * @type Ext.menu.Menu
+     * The submenu associated with this Item if one was configured.
+     */
+    /**
+     * @cfg {Mixed} menu (optional) Either an instance of {@link Ext.menu.Menu} or the config object for an
      * {@link Ext.menu.Menu} which acts as the submenu when this item is activated.
      */
     /**

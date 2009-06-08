@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -160,16 +160,18 @@ Ext.layout.FormLayout = Ext.extend(Ext.layout.AnchorLayout, {
     },
 
     /**
-     * <p>Read-only. The <b>{@link Ext.Template#compile compile}d</b> {@link Ext.Template} for rendering
-     * the fully wrapped, labeled and styled form Field which takes the following form:</p><pre><code>
-var t = new Ext.Template(
+     * @cfg {Ext.Template} fieldTpl
+     * A {@link Ext.Template#compile compile}d {@link Ext.Template} for rendering
+     * the fully wrapped, labeled and styled form Field. Defaults to:</p><pre><code>
+new Ext.Template(
     &#39;&lt;div class="x-form-item {itemCls}" tabIndex="-1">&#39;,
         &#39;&lt;&#108;abel for="{id}" style="{labelStyle}" class="x-form-item-&#108;abel">{&#108;abel}{labelSeparator}&lt;/&#108;abel>&#39;,
         &#39;&lt;div class="x-form-element" id="x-form-el-{id}" style="{elementStyle}">&#39;,
         &#39;&lt;/div>&lt;div class="{clearCls}">&lt;/div>&#39;,
     '&lt;/div>'
 );
-     * </code></pre>
+</code></pre>
+     * <p>This may be specified to produce a different DOM structure when rendering form Fields.</p>
      * <p>A description of the properties within the template follows:</p><div class="mdetail-params"><ul>
      * <li><b><tt>itemCls</tt></b> : String<div class="sub-desc">The CSS class applied to the outermost div wrapper
      * that contains this field label and field element (the default class is <tt>'x-form-item'</tt> and <tt>itemCls</tt>
@@ -189,8 +191,6 @@ var t = new Ext.Template(
      * rendered directly after each form field wrapper (defaults to <tt>'x-form-clear-left'</tt>)</div></li>
      * </ul></div>
      * <p>Also see <tt>{@link #getTemplateArgs}</tt></p>
-     * @type Ext.Template
-     * @property fieldTpl
      */
 
     // private

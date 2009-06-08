@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -105,15 +105,15 @@ function(){
 	    			style; 
 	    			
 	    		el = Ext.fly(el);	    			
-				if(Ext.isFunction(styles)) {
+				if(Ext.isFunction(styles)){
    					styles = styles.call();
 				}
-				if (typeof styles == "string") {
-					styles = styles.split(/:|;/g);
-					for (len = styles.length; i < len;) {
+				if(typeof styles == "string"){
+					styles = styles.trim().split(/\s*(?::|;)\s*/);
+					for(len = styles.length; i < len;){
 						el.setStyle(styles[i++], styles[i++]);	
 					}
-				} else if (Ext.isObject(styles)) {
+				}else if (Ext.isObject(styles)){
 					el.setStyle(styles);
 				}			
 			}	

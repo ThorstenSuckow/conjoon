@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -189,6 +189,12 @@
 	top:0;
 	left:0;
 }
+
+.ext-webkit .x-dlg-focus{
+    width: 1px;
+    height: 1px;
+}
+
 .x-dlg-mask{
     z-index:10000;
     display:none;

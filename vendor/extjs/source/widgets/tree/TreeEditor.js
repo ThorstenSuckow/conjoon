@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -105,11 +105,11 @@ Ext.extend(Ext.tree.TreeEditor, Ext.Editor, {
             */
 			this.editNode = node;
             if(this.tree.autoScroll){
-                node.ui.getEl().scrollIntoView(this.tree.body);
+                Ext.fly(node.ui.getEl()).scrollIntoView(this.tree.body);
             }
             var value = node.text || '';
             if (!Ext.isGecko && Ext.isEmpty(node.text)){
-                node.setText('&nbsp;');
+                node.setText('&#160;');
             }
             this.autoEditTimer = this.startEdit.defer(this.editDelay, this, [node.ui.textNode, value]);
             return false;

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -126,15 +126,17 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
      */
     ddText : "{0} selected row{1}",
     /**
-     * @cfg {Boolean} deferRowRender Defaults to <tt>true</tt> to enable deferred row rendering.
+     * @cfg {Boolean} deferRowRender <P>Defaults to <tt>true</tt> to enable deferred row rendering.</p>
+     * <p>This allows the GridPanel to be initially rendered empty, with the expensive update of the row
+     * structure deferred so that layouts with GridPanels appear more quickly.</p>
      */
     deferRowRender : true,
     /**
-     * @cfg {Boolean} disableSelection <tt>true</tt> to disable selections in the grid (defaults to <tt>false</tt>).
-     * - ignored if a {@link #selModel SelectionModel} is specified 
+     * @cfg {Boolean} disableSelection <p><tt>true</tt> to disable selections in the grid. Defaults to <tt>false</tt>.</p>
+     * <p>Ignored if a {@link #selModel SelectionModel} is specified.</p>
      */
     /**
-     * @cfg {Boolean} enableColumnResize <tt>false</tt> to turn off column resizing for the whole grid (defaults to <tt>true</tt>).
+     * @cfg {Boolean} enableColumnResize <tt>false</tt> to turn off column resizing for the whole grid. Defaults to <tt>true</tt>.
      */
     /**
      * @cfg {Boolean} enableColumnHide Defaults to <tt>true</tt> to enable hiding of columns with the header context menu.
@@ -146,8 +148,7 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
      */
     enableColumnMove : true,
     /**
-     * @cfg {Boolean} enableDragDrop <p>Defaults to <tt>true</tt> enabling dragging of the selected
-     * rows of the GridPanel.</p>
+     * @cfg {Boolean} enableDragDrop <p>Enables dragging of the selected rows of the GridPanel. Defaults to <tt>false</tt>.</p>
      * <p>Setting this to <b><tt>true</tt></b> causes this GridPanel's {@link #getView GridView} to
      * create an instance of {@link Ext.grid.GridDragZone}. <b>Note</b>: this is available only <b>after</b>
      * the Grid has been rendered as the GridView's <tt>{@link Ext.grid.GridView#dragZone dragZone}</tt>
@@ -163,11 +164,11 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
      */
     enableHdMenu : true,
     /**
-     * @cfg {Boolean} hideHeaders True to hide the grid's header (defaults to false).
+     * @cfg {Boolean} hideHeaders True to hide the grid's header. Defaults to <code>false</code>.
      */
     /**
      * @cfg {Object} loadMask An {@link Ext.LoadMask} config or true to mask the grid while
-     * loading (defaults to false).
+     * loading. Defaults to <code>false</code>.
      */
     loadMask : false,
     /**
@@ -688,11 +689,6 @@ function(grid, rowIndex, columnIndex, e) {
     },
 
     // private
-    getSelections : function(){
-        return this.selModel.getSelections();
-    },
-
-    // private
     onResize : function(){
         Ext.grid.GridPanel.superclass.onResize.apply(this, arguments);
         if(this.viewReady){
@@ -713,9 +709,9 @@ function(grid, rowIndex, columnIndex, e) {
 
     /**
      * Returns the grid's SelectionModel.
-     * @return {Ext.grid.AbstractSelectionModel SelectionModel} The selection model configured by the
-     * @link (#selModel} configuration option. This will be a subclass of {Ext.grid.AbstractSelectionModel}
-     * which provides either cell or row selectability.
+     * @return {SelectionModel} The selection model configured by the @link (#selModel} configuration option.
+     * This will be a subclass of {@link Ext.grid.AbstractSelectionModel} which provides either cell or row
+     * selectability. If no selection model was configured, this will return a {@link Ext.grid.RowSelectionModel RowSelectionModel}.
      */
     getSelectionModel : function(){
         if(!this.selModel){

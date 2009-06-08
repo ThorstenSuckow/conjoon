@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -198,7 +198,6 @@ div.x-toolbar-no-items {
 
 /* fix ie toolbar form items */
 .ext-border-box .x-toolbar-cell .x-form-text {
-    margin-top:1px !important;
     margin-bottom:-1px !important;
 }
 
@@ -208,6 +207,28 @@ div.x-toolbar-no-items {
 
 .ext-ie .x-toolbar-cell .x-form-field-wrap {
     height:21px;
+}
+
+.ext-ie .x-toolbar-cell .x-form-text {
+    position:relative;
+    top:-1px;
+}
+
+.ext-ie8 .x-toolbar-cell .x-form-field-trigger-wrap .x-form-text, .ext-strict .ext-ie .x-toolbar-cell .x-form-text {
+    top: 0px;
+}
+
+.x-toolbar-right td .x-form-field-trigger-wrap{
+    text-align: left;
+}
+
+.x-toolbar-cell .x-form-checkbox, .x-toolbar-cell .x-form-radio{
+    vertical-align: top;
+    margin-top: 3px;
+}
+
+.x-toolbar-cell .x-form-check-wrap label{
+    vertical-align: bottom;
 }
 
 /* StatusBar */

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -14,7 +14,7 @@ return true;},isDisplayed:function(){return!this.isStyle(DISPLAY,NONE);},enableD
 if(me._maskMsg){me._maskMsg.remove();}
 if(me._mask){me._mask.remove();}
 me._mask=dh.append(dom,{cls:"ext-el-mask"},true);me.addClass(XMASKED);me._mask.setDisplayed(true);if(typeof msg=='string'){me._maskMsg=dh.append(dom,{cls:EXTELMASKMSG,cn:{tag:'div'}},true);var mm=me._maskMsg;mm.dom.className=msgCls?EXTELMASKMSG+" "+msgCls:EXTELMASKMSG;mm.dom.firstChild.innerHTML=msg;mm.setDisplayed(true);mm.center(me);}
-if(Ext.isIE&&!(Ext.isIE7&&Ext.isStrict)&&me.getStyle('height')=='auto'){me._mask.setSize(dom.clientWidth,me.getHeight());}
+if(Ext.isIE&&!(Ext.isIE7&&Ext.isStrict)&&me.getStyle('height')=='auto'){me._mask.setSize(undefined,me.getHeight());}
 return me._mask;},unmask:function(){var me=this,mask=me._mask,maskMsg=me._maskMsg;if(mask){if(maskMsg){maskMsg.remove();delete me._maskMsg;}
 mask.remove();delete me._mask;}
 me.removeClass([XMASKED,XMASKEDRELATIVE]);},isMasked:function(){return this._mask&&this._mask.isVisible();},createShim:function(){var el=document.createElement('iframe'),shim;el.frameBorder='0';el.className='ext-shim';if(Ext.isIE&&Ext.isSecure){el.src=Ext.SSL_SECURE_URL;}

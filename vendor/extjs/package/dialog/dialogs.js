@@ -1,14 +1,14 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
 
-Ext.MessageBox=function(){var dlg,opt,mask,waitTimer;var bodyEl,msgEl,textboxEl,textareaEl,progressBar,pp,iconEl,spacerEl;var buttons,activeTextEl,bwidth,iconCls='';var handleButton=function(button){if(dlg.isVisible()){dlg.hide();Ext.callback(opt.fn,opt.scope||window,[button,activeTextEl.dom.value,opt],1);}};var handleHide=function(){if(opt&&opt.cls){dlg.el.removeClass(opt.cls);}
-progressBar.reset();};var handleEsc=function(d,k,e){if(opt&&opt.closable!==false){dlg.hide();}
+Ext.MessageBox=function(){var dlg,opt,mask,waitTimer;var bodyEl,msgEl,textboxEl,textareaEl,progressBar,pp,iconEl,spacerEl;var buttons,activeTextEl,bwidth,iconCls='';var handleButton=function(button){if(dlg.isVisible()){dlg.hide();handleHide();Ext.callback(opt.fn,opt.scope||window,[button,activeTextEl.dom.value,opt],1);}};var handleHide=function(){if(opt&&opt.cls){dlg.el.removeClass(opt.cls);}
+progressBar.reset();};var handleEsc=function(d,k,e){if(opt&&opt.closable!==false){dlg.hide();handleHide();}
 if(e){e.stopEvent();}};var updateButtons=function(b){var width=0;if(!b){buttons["ok"].hide();buttons["cancel"].hide();buttons["yes"].hide();buttons["no"].hide();return width;}
 dlg.footer.dom.style.display='';for(var k in buttons){if(typeof buttons[k]!="function"){if(b[k]){buttons[k].show();buttons[k].setText(typeof b[k]=="string"?b[k]:Ext.MessageBox.buttonText[k]);width+=buttons[k].el.getWidth()+15;}else{buttons[k].hide();}}}
 return width;};return{getDialog:function(titleText){if(!dlg){dlg=new Ext.Window({autoCreate:true,title:titleText,resizable:false,constrain:true,constrainHeader:true,minimizable:false,maximizable:false,stateful:false,modal:true,shim:true,buttonAlign:"center",width:400,height:100,minHeight:80,plain:true,footer:true,closable:true,close:function(){if(opt&&opt.buttons&&opt.buttons.no&&!opt.buttons.cancel){handleButton("no");}else{handleButton("cancel");}}});buttons={};var bt=this.buttonText;buttons["ok"]=dlg.addButton(bt["ok"],handleButton.createCallback("ok"));buttons["yes"]=dlg.addButton(bt["yes"],handleButton.createCallback("yes"));buttons["no"]=dlg.addButton(bt["no"],handleButton.createCallback("no"));buttons["cancel"]=dlg.addButton(bt["cancel"],handleButton.createCallback("cancel"));buttons["ok"].hideMode=buttons["yes"].hideMode=buttons["no"].hideMode=buttons["cancel"].hideMode='offsets';dlg.render(document.body);dlg.getEl().addClass('x-window-dlg');mask=dlg.mask;bodyEl=dlg.body.createChild({html:'<div class="ext-mb-icon"></div><div class="ext-mb-content"><span class="ext-mb-text"></span><br /><div class="ext-mb-fix-cursor"><input type="text" class="ext-mb-input" /><textarea class="ext-mb-textarea"></textarea></div></div>'});iconEl=Ext.get(bodyEl.dom.firstChild);var contentEl=bodyEl.dom.childNodes[1];msgEl=Ext.get(contentEl.firstChild);textboxEl=Ext.get(contentEl.childNodes[2].firstChild);textboxEl.enableDisplayMode();textboxEl.addKeyListener([10,13],function(){if(dlg.isVisible()&&opt&&opt.buttons){if(opt.buttons.ok){handleButton("ok");}else if(opt.buttons.yes){handleButton("yes");}}});textareaEl=Ext.get(contentEl.childNodes[2].childNodes[1]);textareaEl.enableDisplayMode();progressBar=new Ext.ProgressBar({renderTo:bodyEl});bodyEl.createChild({cls:'x-clear'});}

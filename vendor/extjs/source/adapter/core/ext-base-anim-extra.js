@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -17,6 +17,7 @@
 		EXTLIB = Ext.lib;
 	 	
     Ext.apply(EXTLIB.Easing, {
+        
         easeBoth: function (t, b, c, d) {
 	        return ((t /= d / 2) < 1)  ?  c / 2 * t * t + b  :  -c / 2 * ((--t) * (t - 2) - 1) + b;               
         },
@@ -151,43 +152,49 @@
 
     var superclass = EXTLIB.ColorAnim.superclass,
     	colorRE = /color$/i,
-    	transparentRE = /^transparent|rgba\(0, 0, 0, 0\)$/;
+    	transparentRE = /^transparent|rgba\(0, 0, 0, 0\)$/,
+        rgbRE = /^rgb\(([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\)$/i,
+        hexRE= /^#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i,
+        hex3RE = /^#?([0-9A-F]{1})([0-9A-F]{1})([0-9A-F]{1})$/i,
+        isset = function(v){
+            return typeof v !== 'undefined';
+        }
          	
    	// private	
-    function parseColor(s) {	     
-	        var pi = parseInt,	        	
-        	c;	        
-        	
-        if (s.length == 3) {
-            c = s;
-        } else if (s.charAt(0) == "r") {		           
-			c = s.replace(/[^0-9,]/g,"").split(',');
-			c = [ pi(c[1], 10), pi(c[2], 10), pi(c[3], 10) ];
-        } else if (s.length < 6) {
-            c = s.replace("#","").match(/./g);	
-            c = [ pi(c[0] + c[0], 16), pi(c[1] + c[1], 16), pi(c[2] + c[2], 16) ];
-        } else {
-            c = s.replace("#","").match(/./g);
-            c = [ pi(c[0] + c[1] , 16), pi(c[2] + c[3], 16), pi(c[4] + c[5], 16) ];	            
-        }           
+    function parseColor(s) {	
+        var pi = parseInt,
+            base,
+            out = null,
+            c;
         
-        return c;
+	    if (s.length == 3) {
+            return s;
+        }
+        
+        Ext.each([hexRE, rgbRE, hex3RE], function(re, idx){
+            base = (idx % 2 == 0) ? 16 : 10;
+            c = re.exec(s);
+            if(c && c.length == 4){
+                out = [pi(c[1], base), pi(c[2], base), pi(c[3], base)];
+                return false;
+            }
+        });
+        return out;
     }	
 
     Ext.apply(EXTLIB.ColorAnim.prototype, {
         getAttr : function(attr) {
             var me = this,
-            	el = me.el,
-            	val;            	
-            if (colorRE.test(attr)) {
-                while(el && transparentRE.test(val = fly(el).getStyle(attr))) {
-	                el = el.parentNode;
-	                val = "fff";
+                el = me.el,
+                val;                
+            if(colorRE.test(attr)){
+                while(el && transparentRE.test(val = Ext.fly(el).getStyle(attr))){
+                    el = el.parentNode;
+                    val = "fff";
                 }
-            } else {
+            }else{
                 val = superclass.getAttr.call(me, attr);
             }
-
             return val;
         },
 
@@ -196,7 +203,7 @@
             	val,
             	floor = Math.floor;            
 
-            if (colorRE.test(attr)) {
+            if(colorRE.test(attr)){
                 val = [];
              
 	            Ext.each(start, function(v, i) {
@@ -204,33 +211,31 @@
                 });
 
                 val = 'rgb(' + floor(val[0]) + ',' + floor(val[1]) + ',' + floor(val[2]) + ')';
-            } else {
+            }else{
                 val = superclass.doMethod.call(me, attr, start, end);
             }
-
             return val;
         },
 
         setRunAttr : function(attr) {
-	        var me = this,
-	        	isEmpty = Ext.isEmpty;
-	        	
+            var me = this,
+                a = me.attributes[attr],
+                to = a.to,
+                by = a.by,
+                ra;
+                
             superclass.setRunAttr.call(me, attr);
+            ra = me.runAttrs[attr];
+            if(colorRE.test(attr)){
+                var start = parseColor(ra.start),
+                    end = parseColor(ra.end);
 
-            if (colorRE.test(attr)) {
-                var attribute = me.attrs[attr],
-                	ra = me.runAttrs[attr],	                	
-                	start = parseColor(ra.start),
-               		end = parseColor(ra.end);
-
-                if (isEmpty(attribute.to) && !isEmpty(attribute.by)) {
-                    end = parseColor(attribute.by);	
-                    
-	                Ext.each(start, function(v, i) {
-                        end[i] = v + end[i];
+                if(!isset(to) && isset(by)){
+                    end = parseColor(by);
+                    Ext.each(start, function(item, idx){
+                        end[i] = item + end[i];
                     });
                 }
-
                 ra.start = start;
                 ra.end = end;
             }
@@ -247,22 +252,17 @@
 	}
 	
     EXTLIB.Scroll = function(el, attributes, duration, method) {
-        if (el) {
+        if(el){
             EXTLIB.Scroll.superclass.constructor.call(this, el, attributes, duration, method);
         }
     };
 
     Ext.extend(EXTLIB.Scroll, EXTLIB.ColorAnim);
 
-    var Y = Ext.lib,
-    	superclass = EXTLIB.Scroll.superclass,
+    var superclass = EXTLIB.Scroll.superclass,
     	SCROLL = 'scroll';
 
     Ext.apply(EXTLIB.Scroll.prototype, {
-        toString : function() {
-            var el = this.el;	            
-            return ("Scroll " + (el.id || el.tagName));
-        },
 
         doMethod : function(attr, start, end) {
             var val,
@@ -270,35 +270,32 @@
             	curFrame = me.curFrame,
             	totalFrames = me.totalFrames;
 
-            if (attr == SCROLL) {
+            if(attr == SCROLL){
                 val = [me.method(curFrame, start[0], end[0] - start[0], totalFrames),
                        me.method(curFrame, start[1], end[1] - start[1], totalFrames)];
-            } else {
+            }else{
                 val = superclass.doMethod.call(me, attr, start, end);
             }
             return val;
         },
 
         getAttr : function(attr) {
-            var val = null,
-            	me = this;
+            var me = this;
 
             if (attr == SCROLL) {
-                val = [ me.el.scrollLeft, me.el.scrollTop ];
-            } else {
-                val = superclass.getAttr.call(me, attr);
+                return [me.el.scrollLeft, me.el.scrollTop];
+            }else{
+                return superclass.getAttr.call(me, attr);
             }
-
-            return val;
         },
 
         setAttr : function(attr, val, unit) {
             var me = this;
 
-            if (attr == SCROLL) {
+            if(attr == SCROLL){
                 me.el.scrollLeft = val[0];
                 me.el.scrollTop = val[1];
-            } else {
+            }else{
                 superclass.setAttr.call(me, attr, val, unit);
             }
         }

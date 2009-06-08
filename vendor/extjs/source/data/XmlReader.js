@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,13 +9,11 @@
 /**
  * @class Ext.data.XmlReader
  * @extends Ext.data.DataReader
- * Data reader class to create an Array of {@link Ext.data.Record} objects from an XML document
- * based on mappings in a provided {@link Ext.data.Record} constructor.<br><br>
- * <p>
- * <em>Note that in order for the browser to parse a returned XML document, the Content-Type
- * header in the HTTP response must be set to "text/xml" or "application/xml".</em>
- * <p>
- * Example code:
+ * <p>Data reader class to create an Array of {@link Ext.data.Record} objects from an XML document
+ * based on mappings in a provided {@link Ext.data.Record} constructor.</p>
+ * <p><b>Note</b>: that in order for the browser to parse a returned XML document, the Content-Type
+ * header in the HTTP response must be set to "text/xml" or "application/xml".</p>
+ * <p>Example code:</p>
  * <pre><code>
 var Employee = Ext.data.Record.create([
    {name: 'name', mapping: 'name'},     // "mapping" property not needed if it is the same as "name"
@@ -65,8 +63,8 @@ Ext.data.XmlReader = function(meta, recordType){
 Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
     /**
      * This method is only used by a DataProxy which has retrieved data from a remote server.
-	 * @param {Object} response The XHR object which contains the parsed XML document.  The response is expected
-	 * to contain a property called <tt>responseXML</tt> which refers to an XML document object.
+     * @param {Object} response The XHR object which contains the parsed XML document.  The response is expected
+     * to contain a property called <tt>responseXML</tt> which refers to an XML document object.
      * @return {Object} records A data block which is used by an {@link Ext.data.Store} as
      * a cache of Ext.data.Records.
      */
@@ -80,7 +78,7 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
 
     /**
      * Create a data block containing Ext.data.Records from an XML document.
-	 * @param {Object} doc A parsed XML document.
+     * @param {Object} doc A parsed XML document.
      * @return {Object} records A data block which is used by an {@link Ext.data.Store} as
      * a cache of Ext.data.Records.
      */
@@ -91,39 +89,42 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
          */
         this.xmlData = doc;
         var root = doc.documentElement || doc;
-    	var q = Ext.DomQuery;
-    	var recordType = this.recordType, fields = recordType.prototype.fields;
-    	var sid = this.meta.idPath || this.meta.id;
-    	var totalRecords = 0, success = true;
-    	if(this.meta.totalRecords){
-    	    totalRecords = q.selectNumber(this.meta.totalRecords, root, 0);
-    	}
+        var q = Ext.DomQuery;
+        var recordType = this.recordType, fields = recordType.prototype.fields;
+        var sid = this.meta.idPath || this.meta.id;
+        var totalRecords = 0, success = true;
+        if(this.meta.totalRecords){
+            totalRecords = q.selectNumber(this.meta.totalRecords, root, 0);
+        }
 
         if(this.meta.success){
             var sv = q.selectValue(this.meta.success, root, true);
             success = sv !== false && sv !== 'false';
-    	}
-    	var records = [];
-    	var ns = q.select(this.meta.record, root);
+        }
+        var records = [];
+        var ns = q.select(this.meta.record, root);
         for(var i = 0, len = ns.length; i < len; i++) {
-	        var n = ns[i];
-	        var values = {};
-	        var id = sid ? q.selectValue(sid, n) : undefined;
-	        for(var j = 0, jlen = fields.length; j < jlen; j++){
-	            var f = fields.items[j];
+            var n = ns[i];
+            var values = {};
+            var id = sid ? q.selectValue(sid, n) : undefined;
+            for(var j = 0, jlen = fields.length; j < jlen; j++){
+                var f = fields.items[j];
                 var v = q.selectValue(Ext.value(f.mapping, f.name, true), n, f.defaultValue);
-	            v = f.convert(v, n);
-	            values[f.name] = v;
-	        }
-	        var record = new recordType(values, id);
-	        record.node = n;
-	        records[records.length] = record;
-	    }
+                v = f.convert(v, n);
+                values[f.name] = v;
+            }
+            var record = new recordType(values, id);
+            record.node = n;
+            records[records.length] = record;
+        }
 
-	    return {
-	        success : success,
-	        records : records,
-	        totalRecords : totalRecords || records.length
-	    };
-    }
+        return {
+            success : success,
+            records : records,
+            totalRecords : totalRecords || records.length
+        };
+    },
+
+    // TODO: implement readResponse for XmlReader
+    readResponse : Ext.emptyFn
 });

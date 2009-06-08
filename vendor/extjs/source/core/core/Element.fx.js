@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -219,34 +219,35 @@ el.animate(
 	     */
 	     setVisible : function(visible, animate){
 		    var me = this,
-	            visMode = me.visibilityMode;
-	            
-	        if (!animate || !me.anim) {
-	            if (me.visibilityMode == ELDISPLAY) {
-	                me.setDisplayed(visible);
-	            } else {
-	                me.fixDisplay();
-	                me.dom.style.visibility = visible ? "visible" : HIDDEN;
-	            }
-	        } else {
-	            // closure for composites            
-	            if(visible){
-	                me.setOpacity(.01);
-	                me.setVisible(true);
-	            }
-	            me.anim({opacity: { to: (visible?1:0) }},
-	                    me.preanim(arguments, 1),
-	                    null,
-	                    .35,
-	                    'easeIn',
-	                    function(){
-		                     if(!visible){
-                                 me.dom.style.display = (visMode == ELDISPLAY) ? NONE : HIDDEN;                     
-		                         Ext.get(me.dom).setOpacity(1);
-		                     }
-	                 	});
-	        }
-	        return me;
+                dom = me.dom,
+                isDisplay = (me.visibilityMode == ELDISPLAY);
+                
+            if (!animate || !me.anim) {
+                if(isDisplay){
+                    me.setDisplayed(visible);
+                }else{
+                    me.fixDisplay();
+                    dom.style.visibility = visible ? "visible" : HIDDEN;
+                }
+            }else{
+                // closure for composites            
+                if(visible){
+                    me.setOpacity(.01);
+                    me.setVisible(true);
+                }
+                me.anim({opacity: { to: (visible?1:0) }},
+                        me.preanim(arguments, 1),
+                        null,
+                        .35,
+                        'easeIn',
+                        function(){
+                             if(!visible){
+                                 dom.style[isDisplay ? DISPLAY : VISIBILITY] = (isDisplay) ? NONE : HIDDEN;                     
+                                 Ext.fly(dom).setOpacity(1);
+                             }
+                        });
+            }
+            return me;
 	    },
 	
 	    /**

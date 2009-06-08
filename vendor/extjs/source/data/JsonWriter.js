@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -22,7 +22,7 @@ Ext.data.JsonWriter = Ext.extend(Ext.data.DataWriter, {
 
     /**
      * Final action of a write event.  Apply the written data-object to params.
-     * @param {String} action [Ext.data.Api.CREATE|READ|UPDATE|DESTROY]
+     * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
      * @param {Record[]} rs
      * @param {Object} http params
      * @param {Object} data object populated according to DataReader meta-data "root" and "idProperty"
@@ -38,6 +38,7 @@ Ext.data.JsonWriter = Ext.extend(Ext.data.DataWriter, {
     },
     /**
      * createRecord
+     * @protected
      * @param {Ext.data.Record} rec
      */
     createRecord : function(rec) {
@@ -45,6 +46,7 @@ Ext.data.JsonWriter = Ext.extend(Ext.data.DataWriter, {
     },
     /**
      * updateRecord
+     * @protected
      * @param {Ext.data.Record} rec
      */
     updateRecord : function(rec) {
@@ -53,6 +55,7 @@ Ext.data.JsonWriter = Ext.extend(Ext.data.DataWriter, {
     },
     /**
      * destroyRecord
+     * @protected
      * @param {Ext.data.Record} rec
      */
     destroyRecord : function(rec) {

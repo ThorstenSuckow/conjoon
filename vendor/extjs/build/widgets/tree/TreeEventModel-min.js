@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,7 +9,7 @@
 
 Ext.tree.TreeEventModel=function(tree){this.tree=tree;this.tree.on('render',this.initEvents,this);}
 Ext.tree.TreeEventModel.prototype={initEvents:function(){var el=this.tree.getTreeEl();el.on('click',this.delegateClick,this);if(this.tree.trackMouseOver!==false){this.tree.innerCt.on('mouseover',this.delegateOver,this);this.tree.innerCt.on('mouseout',this.delegateOut,this);}
-el.on('dblclick',this.delegateDblClick,this);el.on('contextmenu',this.delegateContextMenu,this);},getNode:function(e){var t;if(t=e.getTarget('.x-tree-node-el',10)){var id=Ext.fly(t,'_treeEvents').getAttributeNS('ext','tree-node-id');if(id){return this.tree.getNodeById(id);}}
+el.on('dblclick',this.delegateDblClick,this);el.on('contextmenu',this.delegateContextMenu,this);},getNode:function(e){var t;if(t=e.getTarget('.x-tree-node-el',10)){var id=Ext.fly(t,'_treeEvents').getAttribute('tree-node-id','ext');if(id){return this.tree.getNodeById(id);}}
 return null;},getNodeTarget:function(e){var t=e.getTarget('.x-tree-node-icon',1);if(!t){t=e.getTarget('.x-tree-node-el',6);}
 return t;},delegateOut:function(e,t){if(!this.beforeEvent(e)){return;}
 if(e.getTarget('.x-tree-ec-icon',1)){var n=this.getNode(e);this.onIconOut(e,n);if(n==this.lastEcOver){delete this.lastEcOver;}}

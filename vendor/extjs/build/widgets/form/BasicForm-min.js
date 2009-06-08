@@ -1,20 +1,21 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
 
-Ext.form.BasicForm=function(el,config){Ext.apply(this,config);this.items=new Ext.util.MixedCollection(false,function(o){return o.itemId||o.id||(o.id=Ext.id());});this.addEvents('beforeaction','actionfailed','actioncomplete');if(el){this.initEl(el);}
-Ext.form.BasicForm.superclass.constructor.call(this);};Ext.extend(Ext.form.BasicForm,Ext.util.Observable,{timeout:30,activeAction:null,trackResetOnLoad:false,initEl:function(el){this.el=Ext.get(el);this.id=this.el.id||Ext.id();if(!this.standardSubmit){this.el.on('submit',this.onSubmit,this);}
+Ext.form.BasicForm=function(el,config){Ext.apply(this,config);if(typeof this.paramOrder=='string'){this.paramOrder=this.paramOrder.split(/[\s,|]/);}
+this.items=new Ext.util.MixedCollection(false,function(o){return o.itemId||o.id||(o.id=Ext.id());});this.addEvents('beforeaction','actionfailed','actioncomplete');if(el){this.initEl(el);}
+Ext.form.BasicForm.superclass.constructor.call(this);};Ext.extend(Ext.form.BasicForm,Ext.util.Observable,{timeout:30,paramOrder:undefined,paramsAsHash:false,activeAction:null,trackResetOnLoad:false,initEl:function(el){this.el=Ext.get(el);this.id=this.el.id||Ext.id();if(!this.standardSubmit){this.el.on('submit',this.onSubmit,this);}
 this.el.addClass('x-form');},getEl:function(){return this.el;},onSubmit:function(e){e.stopEvent();},destroy:function(){this.items.each(function(f){Ext.destroy(f);});if(this.el){this.el.removeAllListeners();this.el.remove();}
 this.purgeListeners();},isValid:function(){var valid=true;this.items.each(function(f){if(!f.validate()){valid=false;}});return valid;},isDirty:function(){var dirty=false;this.items.each(function(f){if(f.isDirty()){dirty=true;return false;}});return dirty;},doAction:function(action,options){if(typeof action=='string'){action=new Ext.form.Action.ACTION_TYPES[action](this,options);}
 if(this.fireEvent('beforeaction',this,action)!==false){this.beforeAction(action);action.run.defer(100,action);}
 return this;},submit:function(options){if(this.standardSubmit){var v=this.isValid();if(v){this.el.dom.submit();}
 return v;}
-this.doAction('submit',options);return this;},load:function(options){this.doAction('load',options);return this;},updateRecord:function(record){record.beginEdit();var fs=record.fields;fs.each(function(f){var field=this.findField(f.name);if(field){record.set(f.name,field.getValue());}},this);record.endEdit();return this;},loadRecord:function(record){this.setValues(record.data);return this;},beforeAction:function(action){var o=action.options;if(o.waitMsg){if(this.waitMsgTarget===true){this.el.mask(o.waitMsg,'x-mask-loading');}else if(this.waitMsgTarget){this.waitMsgTarget=Ext.get(this.waitMsgTarget);this.waitMsgTarget.mask(o.waitMsg,'x-mask-loading');}else{Ext.MessageBox.wait(o.waitMsg,o.waitTitle||this.waitTitle||'Please Wait...');}}},afterAction:function(action,success){this.activeAction=null;var o=action.options;if(o.waitMsg){if(this.waitMsgTarget===true){this.el.unmask();}else if(this.waitMsgTarget){this.waitMsgTarget.unmask();}else{Ext.MessageBox.updateProgress(1);Ext.MessageBox.hide();}}
+var submitAction=String.format('{0}submit',this.api?'direct':'');this.doAction(submitAction,options);return this;},load:function(options){var loadAction=String.format('{0}load',this.api?'direct':'');this.doAction(loadAction,options);return this;},updateRecord:function(record){record.beginEdit();var fs=record.fields;fs.each(function(f){var field=this.findField(f.name);if(field){record.set(f.name,field.getValue());}},this);record.endEdit();return this;},loadRecord:function(record){this.setValues(record.data);return this;},beforeAction:function(action){var o=action.options;if(o.waitMsg){if(this.waitMsgTarget===true){this.el.mask(o.waitMsg,'x-mask-loading');}else if(this.waitMsgTarget){this.waitMsgTarget=Ext.get(this.waitMsgTarget);this.waitMsgTarget.mask(o.waitMsg,'x-mask-loading');}else{Ext.MessageBox.wait(o.waitMsg,o.waitTitle||this.waitTitle||'Please Wait...');}}},afterAction:function(action,success){this.activeAction=null;var o=action.options;if(o.waitMsg){if(this.waitMsgTarget===true){this.el.unmask();}else if(this.waitMsgTarget){this.waitMsgTarget.unmask();}else{Ext.MessageBox.updateProgress(1);Ext.MessageBox.hide();}}
 if(success){if(o.reset){this.reset();}
 Ext.callback(o.success,o.scope,[this,action]);this.fireEvent('actioncomplete',this,action);}else{Ext.callback(o.failure,o.scope,[this,action]);this.fireEvent('actionfailed',this,action);}},findField:function(id){var field=this.items.get(id);if(!Ext.isObject(field)){this.items.each(function(f){if(f.isFormField&&(f.dataIndex==id||f.id==id||f.getName()==id)){field=f;return false;}});}
 return field||null;},markInvalid:function(errors){if(Ext.isArray(errors)){for(var i=0,len=errors.length;i<len;i++){var fieldError=errors[i];var f=this.findField(fieldError.id);if(f){f.markInvalid(fieldError.msg);}}}else{var field,id;for(id in errors){if(!Ext.isFunction(errors[id])&&(field=this.findField(id))){field.markInvalid(errors[id]);}}}

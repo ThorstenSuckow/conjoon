@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -15,7 +15,7 @@
  * field to hold the value of the valueField. The <i>{@link #displayField}</i> is shown in the text field
  * which is named according to the {@link #name}.</p>
  * <p><b><u>Events</u></b></p>
- * <p>To do something when something in ComboBox is selected, configure the select event:<pre><code> 
+ * <p>To do something when something in ComboBox is selected, configure the select event:<pre><code>
 var cb = new Ext.form.ComboBox({
     // all of your config options
     listeners:{
@@ -24,21 +24,21 @@ var cb = new Ext.form.ComboBox({
     }
 });
 
-// Alternatively, you can assign events after the object is created: 
+// Alternatively, you can assign events after the object is created:
 var cb = new Ext.form.ComboBox(yourOptions);
 cb.on('select', yourFunction, yourScope);
  * </code></pre></p>
- * 
+ *
  * <p><b><u>ComboBox in Grid</u></b></p>
  * <p>If using a ComboBox in an {@link Ext.grid.EditorGridPanel Editor Grid} a {@link Ext.grid.Column#renderer renderer}
  * will be needed to show the displayField when the editor is not active.  Set up the renderer manually, or implement
- * a reusable render, for example:<pre><code> 
+ * a reusable render, for example:<pre><code>
 // create reusable renderer
 Ext.util.Format.comboRenderer = function(combo){
-	return function(value){
-		var record = combo.findRecord(combo.{@link #valueField}, value);
-		return record ? record.get(combo.{@link #displayField}) : combo.{@link #valueNotFoundText};
-	}
+    return function(value){
+        var record = combo.findRecord(combo.{@link #valueField}, value);
+        return record ? record.get(combo.{@link #displayField}) : combo.{@link #valueNotFoundText};
+    }
 }
 
 // create the combo instance
@@ -72,10 +72,10 @@ var cm = new Ext.grid.ColumnModel([{
     ...
 ]);
  * </code></pre></p>
- * 
+ *
  * <p><b><u>Filtering</u></b></p>
  * <p>A ComboBox {@link #doQuery uses filtering itself}, for information about filtering the ComboBox
- * store manually see <tt>{@link #lastQuery}</tt>.</p> 
+ * store manually see <tt>{@link #lastQuery}</tt>.</p>
  * @constructor
  * Create a new ComboBox.
  * @param {Object} config Configuration options
@@ -88,7 +88,7 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
      * {@link Ext.form.FormPanel}, you must also set <tt>{@link #lazyRender} = true</tt>.
      */
     /**
-     * @cfg {Boolean} lazyRender <tt>true</tt> to prevent the ComboBox from rendering until requested 
+     * @cfg {Boolean} lazyRender <tt>true</tt> to prevent the ComboBox from rendering until requested
      * (should always be used when rendering into an {@link Ext.Editor} (eg. {@link Ext.grid.EditorGridPanel Grids}),
      * defaults to <tt>false</tt>).
      */
@@ -127,7 +127,7 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
      */
     /**
      * @cfg {String} displayField The underlying {@link Ext.data.Field#name data field name} to bind to this
-     * ComboBox (defaults to undefined if <tt>{@link #mode} = 'remote'</tt> or <tt>'text'</tt> if 
+     * ComboBox (defaults to undefined if <tt>{@link #mode} = 'remote'</tt> or <tt>'text'</tt> if
      * {@link #transform transforming a select} a select).
      * <p>See also <tt>{@link #valueField}</tt>.</p>
      * <p><b>Note</b>: if using a ComboBox in an {@link Ext.grid.EditorGridPanel Editor Grid} a
@@ -163,7 +163,7 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
      */
     /**
      * @cfg {String} listClass The CSS class to add to the predefined <tt>'x-combo-list'</tt> class
-     * applied the dropdown list element (defaults to ''). 
+     * applied the dropdown list element (defaults to '').
      */
     listClass : '',
     /**
@@ -206,16 +206,17 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
      * @cfg {String} triggerAction The action to execute when the trigger is clicked.
      * <div class="mdetail-params"><ul>
      * <li><b><tt>'query'</tt></b> : <b>Default</b>
-     * <p class="sub-desc">{@link #doQuery run the query} using the {Ext.form.Field#getRawValue raw value}</p></li>
-     * <li><b><tt>'all'</tt></b> : 
+     * <p class="sub-desc">{@link #doQuery run the query} using the {@link Ext.form.Field#getRawValue raw value}.</p></li>
+     * <li><b><tt>'all'</tt></b> :
      * <p class="sub-desc">{@link #doQuery run the query} specified by the <tt>{@link #allQuery}</tt> config option</p></li>
      * </ul></div>
+     * <p>See also <code>{@link #queryParam}</code>.</p>
      */
     triggerAction : 'query',
     /**
      * @cfg {Number} minChars The minimum number of characters the user must type before autocomplete and
      * {@link #typeAhead} activate (defaults to <tt>4</tt> if <tt>{@link #mode} = 'remote'</tt> or <tt>0</tt> if
-     * <tt>{@link #mode} = 'local'</tt>, does not apply if 
+     * <tt>{@link #mode} = 'local'</tt>, does not apply if
      * <tt>{@link Ext.form.TriggerField#editable editable} = false</tt>).
      */
     minChars : 4,
@@ -278,7 +279,7 @@ Ext.form.ComboBox = Ext.extend(Ext.form.TriggerField, {
      * is clicked. If you do not want the store to be automatically loaded the first time the trigger is
      * clicked, set to <tt>'local'</tt> and manually load the store.  To force a requery of the store
      * <b>every</b> time the trigger is clicked see <tt>{@link #lastQuery}</tt>.</p></li>
-     * <li><b><tt>'local'</tt></b> : 
+     * <li><b><tt>'local'</tt></b> :
      * <p class="sub-desc">ComboBox loads local data</p>
      * <pre><code>
 var combo = new Ext.form.ComboBox({
@@ -336,7 +337,7 @@ var combo = new Ext.form.ComboBox({
     mode: 'remote',
     ...
     listeners: {
-        // delete the previous query in the beforequery event or set 
+        // delete the previous query in the beforequery event or set
         // combo.lastQuery = null (this will reload the store the next time it expands)
         beforequery: function(qe){
             delete qe.combo.lastQuery;
@@ -351,7 +352,7 @@ var combo = new Ext.form.ComboBox({
     ...
     mode: 'local',
     triggerAction: 'all',
-    lastQuery: '' 
+    lastQuery: ''
 });
      * </code></pre>
      * @property lastQuery
@@ -439,25 +440,15 @@ var combo = new Ext.form.ComboBox({
             }
         }
         //auto-configure store from local array data
-        else if(Ext.isArray(this.store)){
-            if (Ext.isArray(this.store[0])){
-                this.store = new Ext.data.ArrayStore({
-                    fields: ['value','text'],
-                    data: this.store,
-                    autoDestroy: true
-                });
-                this.valueField = 'value';
-            }else{
-                this.store = new Ext.data.ArrayStore({
-                    fields: ['text'],
-                    data: this.store,
-                    expandData: true,
-                    autoDestroy: true
-                });
-                this.valueField = 'text';
+        else if(this.store){
+            this.store = Ext.StoreMgr.lookup(this.store);
+            if(this.store.autoCreated){
+                this.displayField = this.valueField = 'field1';
+                if(!this.store.expandData){
+                    this.displayField = 'field2';
+                }
+                this.mode = 'local';
             }
-            this.displayField = 'text';
-            this.mode = 'local';
         }
 
         this.selectedIndex = -1;
@@ -508,10 +499,10 @@ var combo = new Ext.form.ComboBox({
             var cls = 'x-combo-list';
 
             this.list = new Ext.Layer({
-				parentEl: this.getListParent(),
-                shadow: this.shadow, 
-				cls: [cls, this.listClass].join(' '), 
-				constrain:false
+                parentEl: this.getListParent(),
+                shadow: this.shadow,
+                cls: [cls, this.listClass].join(' '),
+                constrain:false
             });
 
             var lw = this.listWidth || Math.max(this.wrap.getWidth(), this.minListWidth);
@@ -584,7 +575,7 @@ var combo = new Ext.form.ComboBox({
                 itemSelector: this.itemSelector || '.' + cls + '-item',
                 emptyText: this.listEmptyText
             });
-			
+
             this.mon(this.view, 'click', this.onViewClick, this);
 
             this.bindStore(this.store, true);
@@ -646,7 +637,7 @@ var menu = new Ext.menu.Menu({
     getListParent : function() {
         return document.body;
     },
-    
+
     /**
      * Returns the store associated with this combo.
      * @return {Ext.data.Store} The store
@@ -661,6 +652,7 @@ var menu = new Ext.menu.Menu({
             this.store.un('beforeload', this.onBeforeLoad, this);
             this.store.un('load', this.onLoad, this);
             this.store.un('loadexception', this.collapse, this);
+            this.store.un('exception', this.collapse, this);
             if(this.store !== store && this.store.autoDestroy){
                 this.store.destroy();
             }
@@ -672,17 +664,21 @@ var menu = new Ext.menu.Menu({
             }
         }
         if(store){
-			if(!initial) {
-				this.lastQuery = null;
-				if(this.pageTb) {
-					this.pageTb.bindStore(store);
-				}				
-			}
-					
+            if(!initial) {
+                this.lastQuery = null;
+                if(this.pageTb) {
+                    this.pageTb.bindStore(store);
+                }
+            }
+
             this.store = Ext.StoreMgr.lookup(store);
-            this.store.on('beforeload', this.onBeforeLoad, this);
-            this.store.on('load', this.onLoad, this);
-            this.store.on('loadexception', this.collapse, this);
+            this.store.on({
+                scope: this,
+                beforeload: this.onBeforeLoad,
+                load: this.onLoad,
+                loadexception: this.collapse,
+                exception: this.collapse
+            });
 
             if(this.view){
                 this.view.bindStore(store);
@@ -742,10 +738,7 @@ var menu = new Ext.menu.Menu({
             this.taTask = new Ext.util.DelayedTask(this.onTypeAhead, this);
         }
         if(this.editable !== false){
-        	this.mon(this.el, 'keyup', this.onKeyUp, this);
-        }
-        if(this.forceSelection){
-            this.on('blur', this.doForce, this);
+            this.mon(this.el, 'keyup', this.onKeyUp, this);
         }
     },
 
@@ -774,8 +767,17 @@ var menu = new Ext.menu.Menu({
 
     // private
     fireKey : function(e){
-        if(e.isNavKeyPress() && !this.isExpanded() && !this.delayedCheck){
-            this.fireEvent("specialkey", this, e);
+        var fn = function(ev){
+            if (ev.isNavKeyPress() && !this.isExpanded() && !this.delayedCheck) {
+                this.fireEvent("specialkey", this, ev);
+            }
+        };
+        //For some reason I can't track down, the events fire in a different order in webkit.
+        //Need a slight delay here
+        if(this.inEditor && Ext.isWebKit && e.getKey() == e.TAB){
+            fn.defer(10, this, [new Ext.EventObjectImpl(e)]);
+        }else{
+            fn.call(this, e);
         }
     },
 
@@ -864,6 +866,12 @@ var menu = new Ext.menu.Menu({
             this.collapse();
             this.fireEvent('select', this, record, index);
         }
+    },
+    
+    // inherit docs
+    getName: function(){
+        var hf = this.hiddenField;
+        return hf && hf.name ? hf.name : this.hiddenName || Ext.form.ComboBox.superclass.getName.call(this);    
     },
 
     /**
@@ -1071,11 +1079,21 @@ var menu = new Ext.menu.Menu({
     },
 
     // private
-    doForce : function(){
-        if(this.el.dom.value.length > 0){
-            this.el.dom.value =
-                this.lastSelectionText === undefined ? '' : this.lastSelectionText;
-            this.applyEmptyText();
+    beforeBlur : function(){
+        var val = this.getRawValue();
+        if(this.forceSelection){
+            if(val.length > 0 && val != this.emptyText){
+               this.el.dom.value = this.lastSelectionText === undefined ? '' : this.lastSelectionText;
+                this.applyEmptyText();
+            }else{
+                this.clearValue();
+            }
+        }else{
+            var rec = this.findRecord(this.displayField, val);
+            if(rec){
+                val = rec.get(this.valueField);
+            }
+            this.setValue(val);
         }
     },
 
@@ -1088,9 +1106,7 @@ var menu = new Ext.menu.Menu({
      * also clears any filter previously saved in the current store (defaults to <tt>false</tt>)
      */
     doQuery : function(q, forceAll){
-        if(q === undefined || q === null){
-            q = '';
-        }
+        q = Ext.isEmpty(q) ? '' : q;
         var qe = {
             query: q,
             forceAll: forceAll,

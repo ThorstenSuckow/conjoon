@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -8,9 +8,9 @@
 
 
 Ext.form.TriggerField=Ext.extend(Ext.form.TextField,{defaultAutoCreate:{tag:"input",type:"text",size:"16",autocomplete:"off"},hideTrigger:false,editable:true,autoSize:Ext.emptyFn,monitorTab:true,deferHeight:true,mimicing:false,onResize:function(w,h){Ext.form.TriggerField.superclass.onResize.call(this,w,h);if(typeof w=='number'){this.el.setWidth(this.adjustWidth('input',w-this.trigger.getWidth()));}
-this.wrap.setWidth(this.el.getWidth()+this.trigger.getWidth());},adjustSize:Ext.BoxComponent.prototype.adjustSize,getResizeEl:function(){return this.wrap;},getPositionEl:function(){return this.wrap;},alignErrorIcon:function(){if(this.wrap){this.errorIcon.alignTo(this.wrap,'tl-tr',[2,0]);}},onRender:function(ct,position){Ext.form.TriggerField.superclass.onRender.call(this,ct,position);this.wrap=this.el.wrap({cls:"x-form-field-wrap"});this.trigger=this.wrap.createChild(this.triggerConfig||{tag:"img",src:Ext.BLANK_IMAGE_URL,cls:"x-form-trigger "+this.triggerClass});if(this.hideTrigger){this.trigger.setDisplayed(false);}
+this.wrap.setWidth(this.el.getWidth()+this.trigger.getWidth());},adjustSize:Ext.BoxComponent.prototype.adjustSize,getResizeEl:function(){return this.wrap;},getPositionEl:function(){return this.wrap;},alignErrorIcon:function(){if(this.wrap){this.errorIcon.alignTo(this.wrap,'tl-tr',[2,0]);}},onRender:function(ct,position){Ext.form.TriggerField.superclass.onRender.call(this,ct,position);this.wrap=this.el.wrap({cls:'x-form-field-wrap x-form-field-trigger-wrap'});this.trigger=this.wrap.createChild(this.triggerConfig||{tag:"img",src:Ext.BLANK_IMAGE_URL,cls:"x-form-trigger "+this.triggerClass});if(this.hideTrigger){this.trigger.setDisplayed(false);}
 this.initTrigger();if(!this.width){this.wrap.setWidth(this.el.getWidth()+this.trigger.getWidth());}
-if(!this.editable){this.editable=true;this.setEditable(false);}},afterRender:function(){Ext.form.TriggerField.superclass.afterRender.call(this);var y;if(Ext.isIE&&!this.hideTrigger&&this.el.getY()!=(y=this.trigger.getY())){this.el.position();this.el.setY(y);}},initTrigger:function(){this.mon(this.trigger,'click',this.onTriggerClick,this,{preventDefault:true});this.trigger.addClassOnOver('x-form-trigger-over');this.trigger.addClassOnClick('x-form-trigger-click');},onDestroy:function(){Ext.destroy(this.trigger,this.wrap);if(this.mimicing){Ext.get(Ext.isIE?document.body:document).un("mousedown",this.mimicBlur,this);}
+if(!this.editable){this.editable=true;this.setEditable(false);}},afterRender:function(){Ext.form.TriggerField.superclass.afterRender.call(this);},initTrigger:function(){this.mon(this.trigger,'click',this.onTriggerClick,this,{preventDefault:true});this.trigger.addClassOnOver('x-form-trigger-over');this.trigger.addClassOnClick('x-form-trigger-click');},onDestroy:function(){Ext.destroy(this.trigger,this.wrap);if(this.mimicing){Ext.get(Ext.isIE?document.body:document).un("mousedown",this.mimicBlur,this);}
 Ext.form.TriggerField.superclass.onDestroy.call(this);},onFocus:function(){Ext.form.TriggerField.superclass.onFocus.call(this);if(!this.mimicing){this.wrap.addClass('x-trigger-wrap-focus');this.mimicing=true;Ext.get(Ext.isIE?document.body:document).on("mousedown",this.mimicBlur,this,{delay:10});if(this.monitorTab){this.el.on('keydown',this.checkTab,this);}}},checkTab:function(e){if(e.getKey()==e.TAB){this.triggerBlur();}},onBlur:function(){},mimicBlur:function(e){if(!this.wrap.contains(e.target)&&this.validateBlur(e)){this.triggerBlur();}},triggerBlur:function(){this.mimicing=false;Ext.get(Ext.isIE?document.body:document).un("mousedown",this.mimicBlur,this);if(this.monitorTab&&this.el){this.el.un("keydown",this.checkTab,this);}
 this.beforeBlur();if(this.wrap){this.wrap.removeClass('x-trigger-wrap-focus');}
 Ext.form.TriggerField.superclass.onBlur.call(this);},beforeBlur:Ext.emptyFn,setEditable:function(value){if(value==this.editable){return;}

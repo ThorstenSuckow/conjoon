@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,15 +9,15 @@
 /**
  * @class Ext.Viewport
  * @extends Ext.Container
- * A specialized container representing the viewable application area (the browser viewport).
- * <p> The Viewport renders itself to the document body, and automatically sizes itself to the size of
+ * <p>A specialized container representing the viewable application area (the browser viewport).</p>
+ * <p>The Viewport renders itself to the document body, and automatically sizes itself to the size of
  * the browser viewport and manages window resizing. There may only be one Viewport created
  * in a page. Inner layouts are available by virtue of the fact that all {@link Ext.Panel Panel}s
  * added to the Viewport, either through its {@link #items}, or through the items, or the {@link #add}
  * method of any of its child Panels may themselves have a layout.</p>
  * <p>The Viewport does not provide scrolling, so child Panels within the Viewport should provide
  * for scrolling if needed using the {@link #autoScroll} config.</p>
- * Example showing a classic application border layout :<pre><code>
+ * <p>An example showing a classic application border layout:</p><pre><code>
 new Ext.Viewport({
     layout: 'border',
     items: [{
@@ -30,45 +30,33 @@ new Ext.Viewport({
         region: 'west',
         collapsible: true,
         title: 'Navigation',
-        xtype: 'treepanel',
-        width: 200,
-        autoScroll: true,
-        split: true,
-        loader: new Ext.tree.TreeLoader(),
-        root: new Ext.tree.AsyncTreeNode({
-            expanded: true,
-            children: [{
-                text: 'Menu Option 1',
-                leaf: true
-            }, {
-                text: 'Menu Option 2',
-                leaf: true
-            }, {
-                text: 'Menu Option 3',
-                leaf: true
-            }]
-        }),
-        rootVisible: false,
-        listeners: {
-            click: function(n) {
-                Ext.Msg.alert('Navigation Tree Click', 'You clicked: "' + n.attributes.text + '"');
-            }
-        }
-    }, {
-        region: 'center',
-        xtype: 'tabpanel',
-        items: {
-            title: 'Default Tab',
-            html: 'The first tab\'s content. Others may be added dynamically'
-        }
+        width: 200
+        // the west region might typically utilize a {@link Ext.tree.TreePanel TreePanel} or a Panel with {@link Ext.layout.AccordionLayout Accordion layout} 
     }, {
         region: 'south',
-        title: 'Information',
+        title: 'Title for Panel',
         collapsible: true,
         html: 'Information goes here',
         split: true,
         height: 100,
         minHeight: 100
+    }, {
+        region: 'east',
+        title: 'Title for the Grid Panel',
+        collapsible: true,
+        split: true,
+        width: 200,
+        xtype: 'grid',
+        // remaining grid configuration not shown ...
+        // notice that the GridPanel is added directly as the region
+        // it is not "overnested" inside another Panel
+    }, {
+        region: 'center',
+        xtype: 'tabpanel', // TabPanel itself has no title
+        items: {
+            title: 'Default Tab',
+            html: 'The first tab\'s content. Others may be added dynamically'
+        }
     }]
 });
 </code></pre>

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -18,7 +18,7 @@
  * @cfg {Boolean} constrain False to disable constrain to viewport (defaults to true)
  * @cfg {String} cls CSS class to add to the element
  * @cfg {Number} zindex Starting z-index (defaults to 11000)
- * @cfg {Number} shadowOffset Number of pixels to offset the shadow (defaults to 3)
+ * @cfg {Number} shadowOffset Number of pixels to offset the shadow (defaults to 4)
  * @constructor
  * @param {Object} config An object with config options.
  * @param {String/HTMLElement} existingEl (optional) Uses an existing DOM element. If the element is not found it creates it.
@@ -69,7 +69,7 @@ var shims = [];
 Ext.extend(Ext.Layer, Ext.Element, {
 
     getZIndex : function(){
-        return this.zindex || parseInt(this.getStyle("z-index"), 10) || 11000;
+        return this.zindex || parseInt((this.getShim() || this).getStyle("z-index"), 10) || 11000;
     },
 
     getShim : function(){

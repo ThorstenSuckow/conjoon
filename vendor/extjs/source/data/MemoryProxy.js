@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -15,13 +15,13 @@
  * @param {Object} data The data object which the Reader uses to construct a block of Ext.data.Records.
  */
 Ext.data.MemoryProxy = function(data){
-    Ext.data.MemoryProxy.superclass.constructor.call(this);
+    // Must define a dummy api with "read" action to satisfy DataProxy#doRequest and Ext.data.Api#prepare *before* calling super
+    var api = {};
+    api[Ext.data.Api.actions.read] = true;
+    Ext.data.MemoryProxy.superclass.constructor.call(this, {
+        api: api
+    });
     this.data = data;
-
-    // Define the proxy api to satisfy DataProxy#doRequest
-    this.api = {
-        load: true
-    };
 };
 
 Ext.extend(Ext.data.MemoryProxy, Ext.data.DataProxy, {
@@ -43,7 +43,6 @@ Ext.extend(Ext.data.MemoryProxy, Ext.data.DataProxy, {
      * for the request to the remote server.
      * @param {Ext.data.DataReader} reader The Reader object which converts the data
      * object into a block of Ext.data.Records.
-     * @param {Ext.data.DataWriter} writer
      * @param {Function} callback The function into which to pass the block of Ext.data.Records.
      * The function must be passed <ul>
      * <li>The Record block object</li>
@@ -53,14 +52,17 @@ Ext.extend(Ext.data.MemoryProxy, Ext.data.DataProxy, {
      * @param {Object} scope The scope in which to call the callback
      * @param {Object} arg An optional argument which is passed to the callback as its second parameter.
      */
-    doRequest : function(action, rs, params, reader, writer, callback, scope, arg) {
+    doRequest : function(action, rs, params, reader, callback, scope, arg) {
         // No implementation for CRUD in MemoryProxy.  Assumes all actions are 'load'
         params = params || {};
         var result;
         try {
             result = reader.readRecords(this.data);
         }catch(e){
-            this.fireEvent("loadexception", this, arg, null, e);
+            // @deprecated loadexception
+            this.fireEvent("loadexception", this, null, arg, e);
+
+            this.fireEvent('exception', this, 'response', action, arg, null, e);
             callback.call(scope, null, arg, false);
             return;
         }

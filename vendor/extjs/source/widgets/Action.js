@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -20,20 +20,22 @@
 // Define the shared action.  Each component below will have the same
 // display text and icon, and will display the same message on click.
 var action = new Ext.Action({
-    text: 'Do something',
-    handler: function(){
+    {@link #text}: 'Do something',
+    {@link #handler}: function(){
         Ext.Msg.alert('Click', 'You did something.');
     },
-    iconCls: 'do-something'
+    {@link #iconCls}: 'do-something',
+    {@link #itemId}: 'myAction'
 });
 
 var panel = new Ext.Panel({
     title: 'Actions',
-    width:500,
-    height:300,
+    width: 500,
+    height: 300,
     tbar: [
         // Add the action directly to a toolbar as a menu button
-        action, {
+        action,
+        {
             text: 'Action Menu',
             // Add the action to a menu as a text item
             menu: [action]
@@ -48,6 +50,11 @@ var panel = new Ext.Panel({
 
 // Change the text for all components using the action
 action.setText('Something else');
+
+// Reference an action through a container using the itemId
+var btn = panel.getComponent('myAction');
+var aRef = btn.baseAction;
+aRef.setText('New text');
 </code></pre>
  * @constructor
  * @param {Object} config The configuration options
@@ -85,6 +92,10 @@ Ext.Action.prototype = {
     /**
      * @cfg {Function} handler The function that will be invoked by each component tied to this action
      * when the component's primary event is triggered (defaults to undefined).
+     */
+    /**
+     * @cfg {String} itemId
+     * See {@link Ext.Component}.{@link Ext.Component#itemId itemId}.
      */
     /**
      * @cfg {Object} scope The scope in which the {@link #handler} function will execute.
@@ -160,7 +171,7 @@ Ext.Action.prototype = {
 
     /**
      * Sets the hidden state of all components using this action.  Shortcut method
-     * for {@link #hide} and {@link #show}.
+     * for <code>{@link #hide}</code> and <code>{@link #show}</code>.
      * @param {Boolean} hidden True to hide the component, false to show it
      */
     setHidden : function(v){
@@ -232,8 +243,9 @@ Ext.Action.prototype = {
     },
 
     /**
-     * Executes this action manually using the default handler specified in the original config object.  Any arguments
-     * passed to this function will be passed on to the handler function.
+     * Executes this action manually using the handler function specified in the original config object
+     * or the handler function set with <code>{@link #setHandler}</code>.  Any arguments passed to this
+     * function will be passed on to the handler function.
      * @param {Mixed} arg1 (optional) Variable number of arguments passed to the handler function 
      * @param {Mixed} arg2 (optional)
      * @param {Mixed} etc... (optional)

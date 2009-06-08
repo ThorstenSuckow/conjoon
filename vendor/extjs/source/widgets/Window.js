@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -16,6 +16,9 @@
  * grouping, activation, to front, to back and other application-specific behavior.</p>
  * <p>By default, Windows will be rendered to document.body. To {@link #constrain} a Window to another element
  * specify {@link Ext.Component#renderTo renderTo}.</p>
+ * <p><b>Note:</b> By default, the <code>{@link #closable close}</code> header tool <i>destroys</i> the Window resulting in
+ * destruction of any child Components. This makes the Window object, and all its descendants <b>unusable</b>. To enable
+ * re-use of a Window, use <b><code>{@link #closeAction closeAction: 'hide'}</code></b>.</p>
  * @constructor
  * @param {Object} config The config object
  * @xtype window
@@ -236,7 +239,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
     // private
     getState : function(){
-        return Ext.apply(Ext.Window.superclass.getState.call(this) || {}, this.getBox());
+        return Ext.apply(Ext.Window.superclass.getState.call(this) || {}, this.getBox(true));
     },
 
     // private
@@ -498,7 +501,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
     },
 
     // private
-    afterShow : function(){
+    afterShow : function(isAnim){
         this.proxy.hide();
         this.el.setStyle('display', 'block');
         this.el.show();
@@ -521,6 +524,10 @@ Ext.Window = Ext.extend(Ext.Panel, {
         }
         this.toFront();
         this.updateHandles();
+        if(isAnim && (Ext.isIE || Ext.isWebKit)){
+            var sz = this.getSize();
+            this.onResize(sz.width, sz.height);
+        }
         this.fireEvent("show", this);
     },
 
@@ -530,7 +537,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
         this.proxy.setBox(this.animateTarget.getBox());
         this.proxy.setOpacity(0);
         var b = this.getBox(false);
-        b.callback = this.afterShow;
+        b.callback = this.afterShow.createDelegate(this, [true], false);
         b.scope = this;
         b.duration = .25;
         b.easing = 'easeNone';

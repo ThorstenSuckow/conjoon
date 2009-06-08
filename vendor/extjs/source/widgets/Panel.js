@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -11,7 +11,15 @@
  * @extends Ext.Container
  * <p>Panel is a container that has specific functionality and structural components that make
  * it the perfect building block for application-oriented user interfaces.</p>
- * <p>A Panel may contain {@link #bbar bottom} and {@link #tbar top} toolbars, along with separate
+ * <p>Panels are, by virtue of their inheritance from {@link Ext.Container}, capable
+ * of being configured with a {@link layout}, and containing child Components.</p>
+ * <p>When either specifying child {@link #items} of a Panel, or dynamically {@link #add adding} Components
+ * to a Panel, remember to consider how you wish the Panel to arrange those child elements, and whether
+ * those child elements need to be sized using one of Ext's built-in <tt><b>{@link #layout}</b></tt> schemes. By
+ * default, Panels use the {@link Ext.layout.ContainerLayout ContainerLayout} scheme. This simply renders
+ * child components, appending them one after the other inside the Container, and <b>does not apply any sizing</b>
+ * at all.</p>
+ * <p>A Panel may also contain {@link #bbar bottom} and {@link #tbar top} toolbars, along with separate
  * {@link #header}, {@link #footer} and {@link #body} sections (see {@link #frame} for additional
  * information).</p>
  * <p>Panel also provides built-in {@link #collapsible expandable and collapsible behavior}, along with
@@ -119,7 +127,7 @@ new Ext.Panel({
      * @cfg {Object} footerCfg
      * <p>A {@link Ext.DomHelper DomHelper} element specification object specifying the element structure
      * of this Panel's {@link #footer} Element.  See <tt>{@link #bodyCfg}</tt> also.</p>
-     */    
+     */
     /**
      * @cfg {Boolean} closable
      * Panels themselves do not directly support being closed, but some Panel subclasses do (like
@@ -189,7 +197,7 @@ var w = new Ext.Window({
             text: 'bbar Right'
         }]
     }),
-    {@link #buttonAlign}: 'left', // anything but 'center' or 'right' and you can use "-", and "->" 
+    {@link #buttonAlign}: 'left', // anything but 'center' or 'right' and you can use "-", and "->"
                                   // to control the alignment of fbar items
     fbar: [{
         text: 'fbar Left'
@@ -214,7 +222,7 @@ var w = new Ext.Window({
      * @cfg {Boolean} footer
      * <tt>true</tt> to create the footer element explicitly, false to skip creating it. The footer
      * will be created automatically if <tt>{@link #buttons}</tt> or a <tt>{@link #fbar}</tt> have
-     * been configured.  See <tt>{@link #bodyCfg}</tt> for an example. 
+     * been configured.  See <tt>{@link #bodyCfg}</tt> for an example.
      */
     /**
      * @cfg {String} title
@@ -670,13 +678,13 @@ new Ext.Panel({
      * Defaults to '<tt>body</tt>'.
      */
     elements : 'body',
-	/**
-	 * @cfg {Boolean} resetBodyCss
-	 * Defaults to <tt>false</tt>.  When set to <tt>true</tt>, an extra css class <tt>'x-panel-normal'</tt>
-	 * will be added the the panel's element which will reset any body html to styles suggested by the W3C
-	 * (see http://www.w3.org/TR/CSS21/sample.html).
-	 */
-	resetBodyCss: false,
+    /**
+     * @cfg {Boolean} preventBodyReset
+     * Defaults to <tt>false</tt>.  When set to <tt>true</tt>, an extra css class <tt>'x-panel-normal'</tt>
+     * will be added the the panel's element, effectively applying css styles suggested by the W3C
+     * (see http://www.w3.org/TR/CSS21/sample.html) to the Panel's body element.
+     */
+    preventBodyReset: false,
 
     // protected - these could be used to customize the behavior of the window,
     // but changing them would not be useful without further mofifications and
@@ -888,9 +896,9 @@ new Ext.Panel({
             this.footer = cp.down('.'+this.footerCls);
             this.fromMarkup = true;
         }
-		if (this.resetBodyCss === true) {
-			el.addClass('x-panel-reset');
-		}
+        if (this.preventBodyReset === true) {
+            el.addClass('x-panel-reset');
+        }
         if(this.cls){
             el.addClass(this.cls);
         }
@@ -997,7 +1005,7 @@ new Ext.Panel({
                 });
             }
             if(this.titleCollapse && this.header){
-            	this.mon(this.header, 'click', this.toggleCollapse, this);
+                this.mon(this.header, 'click', this.toggleCollapse, this);
                 this.header.setStyle('cursor', 'pointer');
             }
         }
@@ -1015,6 +1023,7 @@ new Ext.Panel({
                 toolbarCls: 'x-panel-fbar'
             });
         }
+        this.toolbars = [];
         if(this.fbar){
             this.fbar = Ext.create(this.fbar, 'toolbar');
             this.fbar.enableOverflow = false;
@@ -1029,6 +1038,7 @@ new Ext.Panel({
             this.fbar.ownerCt = this;
             this.fbar.render(bct);
             bct.createChild({cls:'x-clear'});
+            this.toolbars.push(this.fbar);
         }
 
         if(this.tbar && this.topToolbar){
@@ -1039,6 +1049,7 @@ new Ext.Panel({
             }
             this.topToolbar.ownerCt = this;
             this.topToolbar.render(this.tbar);
+            this.toolbars.push(this.topToolbar);
         }
         if(this.bbar && this.bottomToolbar){
             if(Ext.isArray(this.bottomToolbar)){
@@ -1048,7 +1059,15 @@ new Ext.Panel({
             }
             this.bottomToolbar.ownerCt = this;
             this.bottomToolbar.render(this.bbar);
+            this.toolbars.push(this.bottomToolbar);
         }
+        Ext.each(this.toolbars, function(tb){
+            tb.on({
+                scope: this,
+                afterlayout: this.syncHeight,
+                remove: this.syncHeight
+            })
+        }, this);
     },
 
     /**
@@ -1179,14 +1198,29 @@ new Ext.Panel({
     },
 
     onLayout : function(){
-        if(this.topToolbar){
-            this.topToolbar.doLayout();
+        if(this.toolbars.length > 0){
+            this.duringLayout = true;
+            Ext.each(this.toolbars, function(tb){
+                tb.doLayout();
+            });
+            delete this.duringLayout;
+            this.syncHeight();
         }
-        if(this.bottomToolbar){
-            this.bottomToolbar.doLayout();
-        }
-        if(this.fbar){
-            this.fbar.doLayout();
+    },
+    
+    syncHeight: function(){
+        if(!this.duringLayout){
+            var last = this.lastSize;
+            if(last && !Ext.isEmpty(last.height)){
+                var old = last.height, h = this.el.getHeight();
+                if(old != 'auto' && old != h){
+                    h = old - h;
+                    var bd = this.body;
+                    bd.setHeight(bd.getHeight() + h);
+                    var sz = bd.getSize();
+                    this.fireEvent('bodyresize', sz.width, sz.height);
+                }
+            }
         }
     },
 
@@ -1210,9 +1244,9 @@ new Ext.Panel({
     createToolHandler : function(t, tc, overCls, panel){
         return function(e){
             t.removeClass(overCls);
-			if(tc.stopEvent !== false){
-				e.stopEvent();
-			}
+            if(tc.stopEvent !== false){
+                e.stopEvent();
+            }
             if(tc.handler){
                 tc.handler.call(tc.scope || t, e, t, panel, tc);
             }
@@ -1334,7 +1368,9 @@ new Ext.Panel({
             return;
         }
         var doAnim = animate === true || (animate !== false && this.animCollapse);
-        this.beforeEffect();
+        if(doAnim){
+            this.beforeEffect();
+        }
         this.onCollapse(doAnim, animate);
         return this;
     },
@@ -1347,15 +1383,17 @@ new Ext.Panel({
                         this.collapseDefaults));
         }else{
             this[this.collapseEl].hide();
-            this.afterCollapse();
+            this.afterCollapse(doAnim);
         }
     },
 
     // private
-    afterCollapse : function(){
+    afterCollapse : function(doAnim){
         this.collapsed = true;
         this.el.addClass(this.collapsedCls);
-        this.afterEffect();
+        if(doAnim){
+            this.afterEffect();
+        }
         this.fireEvent('collapse', this);
     },
 
@@ -1390,9 +1428,12 @@ new Ext.Panel({
     },
 
     // private
-    afterExpand : function(){
+    afterExpand: function(){
         this.collapsed = false;
         this.afterEffect();
+        if(this.deferLayout !== undefined){
+            this.doLayout(true);
+        }
         this.fireEvent('expand', this);
     },
 
@@ -1428,38 +1469,41 @@ new Ext.Panel({
         if(w !== undefined || h !== undefined){
             if(!this.collapsed){
                 if(typeof w == 'number'){
-					w = this.adjustBodyWidth(w - this.getFrameWidth());
+                    w = this.adjustBodyWidth(w - this.getFrameWidth());
                     if(this.tbar){
-	                    this.tbar.setWidth(w);
-	                    if(this.topToolbar){
-	                        this.topToolbar.setSize(w);
-	                    }
-	                }
-					if(this.bbar){
-	                    this.bbar.setWidth(w);
-	                    if(this.bottomToolbar){
-	                        this.bottomToolbar.setSize(w);
-	                    }
-	                }
-					if(this.fbar){
-                        var fWidth = 1, f = this.fbar;
+                        this.tbar.setWidth(w);
+                        if(this.topToolbar){
+                            this.topToolbar.setSize(w);
+                        }
+                    }
+                    if(this.bbar){
+                        this.bbar.setWidth(w);
+                        if(this.bottomToolbar){
+                            this.bottomToolbar.setSize(w);
+                        }
+                    }
+                    if(this.fbar){
+                        var f = this.fbar, fWidth = 1; strict = Ext.isStrict;
                         if(this.buttonAlign == 'left'){
-	                       fWidth = w - f.container.getFrameWidth('lr');
-                        }else if(Ext.isIE && !Ext.isIE8){
-                            //nasty hackery to get the toolbar to size automatically in IE7 strict mode.
-                            var el = f.getEl();
-                            if(Ext.isIE7 && Ext.isStrict){
-                                (function(){
-                                    f.setWidth(el.child('.x-toolbar-ct').getWidth());
-                                }).defer(1)
-                            }else{
-                                fWidth = el.getWidth();
-                            }
+                           fWidth = w - f.container.getFrameWidth('lr');
                         }else{
-                            fWidth = 'auto';
+                            //center/right alignment off in webkit
+                            if(Ext.isIE || Ext.isWebKit){
+                                //center alignment ok on webkit.
+                                //right broken in both, center on IE
+                                if(!(this.buttonAlign == 'center' && Ext.isWebKit) && (!strict || (!Ext.isIE8 && strict))){
+                                    (function(){
+                                        f.setWidth(f.getEl().child('.x-toolbar-ct').getWidth());
+                                    }).defer(1);
+                                }else{
+                                    fWidth = 'auto';
+                                }
+                            }else{
+                                fWidth = 'auto';
+                            }
                         }
                         f.setWidth(fWidth);
-	                }
+                    }
                     this.body.setWidth(w);
                 }else if(w == 'auto'){
                     this.body.setWidth(w);
@@ -1467,7 +1511,7 @@ new Ext.Panel({
 
                 if(typeof h == 'number'){
                     h = this.adjustBodyHeight(h - this.getFrameHeight());
-				    this.body.setHeight(h);
+                    this.body.setHeight(h);
                 }else if(h == 'auto'){
                     this.body.setHeight(h);
                 }

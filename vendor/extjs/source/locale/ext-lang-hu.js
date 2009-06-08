@@ -1,12 +1,4 @@
-/*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
-/**
+﻿/**
  * List compiled by mystix on the extjs.com forums.
  * Thank you Mystix!
  *

@@ -1,12 +1,4 @@
-/*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
-/*
+﻿/*
  * France (France) translation
  * By Thylia
  * 09-11-2007, 02:22 PM

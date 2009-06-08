@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -297,8 +297,9 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
      * @param {Function} callback (optional) A callback to be called when
      * expanding this node completes (does not wait for deep expand to complete).
      * Called with 1 parameter, this node.
+     * @param {Object} scope (optional) The scope in which to execute the callback.
      */
-    expand : function(deep, anim, callback){
+    expand : function(deep, anim, callback, scope){
         if(!this.expanded){
             if(this.fireEvent("beforeexpand", this, deep, anim) === false){
                 return;
@@ -310,9 +311,7 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
             if(!this.isHiddenRoot() && (this.getOwnerTree().animate && anim !== false) || anim){
                 this.ui.animExpand(function(){
                     this.fireEvent("expand", this);
-                    if(typeof callback == "function"){
-                        callback(this);
-                    }
+                    this.runCallback(callback, scope || this, [this]);
                     if(deep === true){
                         this.expandChildNodes(true);
                     }
@@ -321,17 +320,19 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
             }else{
                 this.ui.expand();
                 this.fireEvent("expand", this);
-                if(typeof callback == "function"){
-                    callback(this);
-                }
+                this.runCallback(callback, scope || this, [this]);
             }
         }else{
-           if(typeof callback == "function"){
-               callback(this);
-           }
+           this.runCallback(callback, scope || this, [this]);
         }
         if(deep === true){
             this.expandChildNodes(true);
+        }
+    },
+    
+    runCallback: function(cb, scope, args){
+        if(Ext.isFunction(cb)){
+            cb.apply(scope, args);
         }
     },
 
@@ -343,8 +344,12 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
      * Collapse this node.
      * @param {Boolean} deep (optional) True to collapse all children as well
      * @param {Boolean} anim (optional) false to cancel the default animation
+     * @param {Function} callback (optional) A callback to be called when
+     * expanding this node completes (does not wait for deep expand to complete).
+     * Called with 1 parameter, this node.
+     * @param {Object} scope (optional) The scope in which to execute the callback.
      */
-    collapse : function(deep, anim){
+    collapse : function(deep, anim, callback, scope){
         if(this.expanded && !this.isHiddenRoot()){
             if(this.fireEvent("beforecollapse", this, deep, anim) === false){
                 return;
@@ -353,6 +358,7 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
             if((this.getOwnerTree().animate && anim !== false) || anim){
                 this.ui.animCollapse(function(){
                     this.fireEvent("collapse", this);
+                    this.runCallback(callback, scope || this, [this]);
                     if(deep === true){
                         this.collapseChildNodes(true);
                     }
@@ -361,7 +367,10 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
             }else{
                 this.ui.collapse();
                 this.fireEvent("collapse", this);
+                this.runCallback(callback, scope || this, [this]);
             }
+        }else if(!this.expanded){
+            this.runCallback(callback, scope || this, [this]);
         }
         if(deep === true){
             var cs = this.childNodes;
@@ -401,13 +410,14 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
      * Ensures all parent nodes are expanded, and if necessary, scrolls
      * the node into view.
      * @param {Function} callback (optional) A function to call when the node has been made visible.
+     * @param {Object} scope (optional) The scope in which to execute the callback.
      */
-    ensureVisible : function(callback){
+    ensureVisible : function(callback, scope){
         var tree = this.getOwnerTree();
         tree.expandPath(this.parentNode ? this.parentNode.getPath() : this.getPath(), false, function(){
             var node = tree.getNodeById(this.id);  // Somehow if we don't do this, we lose changes that happened to node in the meantime
             tree.getTreeEl().scrollChildIntoView(node.ui.anchor);
-            Ext.callback(callback);
+            this.runCallback(callback, scope || this, [this]);
         }.createDelegate(this));
     },
 

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -13,7 +13,10 @@ Ext.Element.addMethods(
 function() {
 	var GETDOM = Ext.getDom,
 		GET = Ext.get,
-		DH = Ext.DomHelper;
+		DH = Ext.DomHelper,
+        isEl = function(el){
+            return  (el.nodeType || el.dom || typeof el == 'string');  
+        };
 	
 	return {
 	    /**
@@ -51,7 +54,7 @@ function() {
 	     * @return {Ext.Element} this
 	     */
 	    insertAfter: function(el){
-	        GETDOM(el).parentNode.insertBefore(this.dom, el.nextSibling);
+	        (el = GETDOM(el)).parentNode.insertBefore(this.dom, el.nextSibling);
 	        return this;
 	    },
 	
@@ -62,7 +65,7 @@ function() {
 	     */
 	    insertFirst: function(el, returnDom){
             el = el || {};
-            if(el.nodeType || el.dom){ // element
+            if(isEl(el)){ // element
                 el = GETDOM(el);
                 this.dom.insertBefore(el, this.dom.firstChild);
                 return !returnDom ? GET(el) : el;
@@ -91,7 +94,7 @@ function() {
 	    replaceWith: function(el){
 		    var me = this,
 		    	Element = Ext.Element;
-            if(el.nodeType || el.dom){
+            if(isEl(el)){
                 el = GETDOM(el);
                 me.dom.parentNode.insertBefore(el, me.dom);
             }else{

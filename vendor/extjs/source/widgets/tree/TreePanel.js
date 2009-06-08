@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -8,13 +8,94 @@
 
 /**
  * @class Ext.tree.TreePanel
+ * @extends Ext.Panel
  * <p>The TreePanel provides tree-structured UI representation of tree-structured data.</p>
  * <p>{@link Ext.tree.TreeNode TreeNode}s added to the TreePanel may each contain metadata
  * used by your application in their {@link Ext.tree.TreeNode#attributes attributes} property.</p>
  * <p><b>A TreePanel must have a {@link #root} node before it is rendered.</b> This may either be
  * specified using the {@link #root} config option, or using the {@link #setRootNode} method.
- * @extends Ext.Panel
+ * <p>An example of tree rendered to an existing div:</p><pre><code>
+var tree = new Ext.tree.TreePanel({
+    el: 'tree-div',
+    useArrows: true,
+    autoScroll: true,
+    animate: true,
+    enableDD: true,
+    containerScroll: true,
+    border: false,
+    // auto create TreeLoader
+    dataUrl: 'get-nodes.php',
 
+    root: {
+        nodeType: 'async',
+        text: 'Ext JS',
+        draggable: false,
+        id: 'source'
+    }
+});
+
+// render the tree
+tree.render();
+tree.getRootNode().expand();
+ * </code></pre>
+ * <p>The example above would work with a data packet similar to this:</p><pre><code>
+[
+   {
+      "text":"adapter",
+      "id":"source\/adapter",
+      "cls":"folder"
+   },
+   {
+      "text":"dd",
+      "id":"source\/dd",
+      "cls":"folder"
+   },
+   {
+      "text":"debug.js",
+      "id":"source\/debug.js",
+      "leaf":true,
+      "cls":"file"
+   }
+]
+ * </code></pre>
+ * <p>An example of tree within a Viewport:</p><pre><code>
+new Ext.Viewport({
+    layout: 'border',
+    items: [{
+        region: 'west',
+        collapsible: true,
+        title: 'Navigation',
+        xtype: 'treepanel',
+        width: 200,
+        autoScroll: true,
+        split: true,
+        loader: new Ext.tree.TreeLoader(),
+        root: new Ext.tree.AsyncTreeNode({
+            expanded: true,
+            children: [{
+                text: 'Menu Option 1',
+                leaf: true
+            }, {
+                text: 'Menu Option 2',
+                leaf: true
+            }, {
+                text: 'Menu Option 3',
+                leaf: true
+            }]
+        }),
+        rootVisible: false,
+        listeners: {
+            click: function(n) {
+                Ext.Msg.alert('Navigation Tree Click', 'You clicked: "' + n.attributes.text + '"');
+            }
+        }
+    }, {
+        region: 'center',
+        xtype: 'tabpanel',
+        // remaining code not shown ...
+    }]
+});
+ * 
  * @cfg {Ext.tree.TreeNode} root The root node for the tree.
  * @cfg {Boolean} rootVisible <tt>false</tt> to hide the root node (defaults to <tt>true</tt>)
  * @cfg {Boolean} lines <tt>false</tt> to disable tree lines (defaults to <tt>true</tt>)
@@ -31,11 +112,12 @@
  * @cfg {String} hlColor The color of the node highlight (defaults to <tt>'C3DAF9'</tt>)
  * @cfg {Boolean} animate <tt>true</tt> to enable animated expand/collapse (defaults to the value of {@link Ext#enableFx})
  * @cfg {Boolean} singleExpand <tt>true</tt> if only 1 node per branch may be expanded
- * @cfg {Boolean} selModel A tree selection model to use with this TreePanel (defaults to an {@link Ext.tree.DefaultSelectionModel})
+ * @cfg {Object} selModel A tree selection model to use with this TreePanel (defaults to an {@link Ext.tree.DefaultSelectionModel})
  * @cfg {Boolean} trackMouseOver <tt>false</tt> to disable mouse over highlighting 
  * @cfg {Ext.tree.TreeLoader} loader A {@link Ext.tree.TreeLoader} for use with this TreePanel
  * @cfg {String} pathSeparator The token used to separate sub-paths in path strings (defaults to <tt>'/'</tt>)
  * @cfg {Boolean} useArrows <tt>true</tt> to use Vista-style arrows in the tree (defaults to <tt>false</tt>)
+ * @cfg {String} requestMethod The HTTP request method for loading data (defaults to the value of {@link Ext.Ajax#method}).
  *
  * @constructor
  * @param {Object} config
@@ -59,7 +141,8 @@ Ext.tree.TreePanel = Ext.extend(Ext.Panel, {
         var l = this.loader;
         if(!l){
             l = new Ext.tree.TreeLoader({
-                dataUrl: this.dataUrl
+                dataUrl: this.dataUrl,
+                requestMethod: this.requestMethod
             });
         }else if(typeof l == 'object' && !l.load){
             l = new Ext.tree.TreeLoader(l);

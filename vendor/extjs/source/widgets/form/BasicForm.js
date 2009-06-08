@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -38,6 +38,9 @@
  */
 Ext.form.BasicForm = function(el, config){
     Ext.apply(this, config);
+    if(typeof this.paramOrder == 'string'){
+        this.paramOrder = this.paramOrder.split(/[\s,|]/);
+    }    
     /*
      * @property items
      * A {@link Ext.util.MixedCollection MixedCollection) containing all the Ext.form.Fields in this form.
@@ -134,6 +137,44 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      * @cfg {Number} timeout Timeout for form actions in seconds (default is 30 seconds).
      */
     timeout: 30,
+
+    /**
+     * @cfg {Object} api
+     * Methods which have been imported by Ext.Direct can be specified here to load and submit
+     * forms. 
+     * Such as the following:<pre><code>
+api: {
+    load: App.ss.MyProfile.load,
+    submit: App.ss.MyProfile.submit
+}
+</code></pre>
+     * <p>Load actions can use paramOrder or paramsAsHash to customize how the load method is invoked.
+     * Submit actions will always use a standard form submit. The formHandler configuration must be set
+     * on the associated server-side method which has been imported by Ext.Direct</p>
+     */
+
+    /**
+     * @cfg {Array/String} paramOrder Defaults to <tt>undefined</tt>. Only used for the api load configuration.
+     * A list of params to be executed
+     * server side.  Specify the params in the order in which they must be executed on the server-side
+     * as either (1) an Array of String values, or (2) a String of params delimited by either whitespace,
+     * comma, or pipe. For example,
+     * any of the following would be acceptable:<pre><code>
+paramOrder: ['param1','param2','param3']
+paramOrder: 'param1 param2 param3'
+paramOrder: 'param1,param2,param3'
+paramOrder: 'param1|param2|param'
+     </code></pre>
+     */
+    paramOrder: undefined,
+
+    /**
+     * @cfg {Boolean} paramsAsHash Only used for the api load configuration.
+     * Send parameters as a collection of named arguments (defaults to <tt>false</tt>). Providing a
+     * <tt>{@link #paramOrder}</tt> nullifies this configuration.
+     */
+    paramsAsHash: false,
+
 
     // private
     activeAction : null,
@@ -375,7 +416,8 @@ myFormPanel.getForm().submit({
             }
             return v;
         }
-        this.doAction('submit', options);
+        var submitAction = String.format('{0}submit', this.api ? 'direct' : '');
+        this.doAction(submitAction, options);
         return this;
     },
 
@@ -385,7 +427,8 @@ myFormPanel.getForm().submit({
      * @return {BasicForm} this
      */
     load : function(options){
-        this.doAction('load', options);
+        var loadAction = String.format('{0}load', this.api ? 'direct' : '');
+        this.doAction(loadAction, options);       
         return this;
     },
 

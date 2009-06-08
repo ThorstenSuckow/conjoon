@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -29,6 +29,6 @@ while(row<rlen){if(!first){col=0;}
 first=false;while(col<clen){if(fn.call(scope||this,row,col,cm)===true){return[row,col];}
 col++;}
 row++;}}
-return null;},getSelections:function(){return this.selModel.getSelections();},onResize:function(){Ext.grid.GridPanel.superclass.onResize.apply(this,arguments);if(this.viewReady){this.view.layout();}},getGridEl:function(){return this.body;},stopEditing:Ext.emptyFn,getSelectionModel:function(){if(!this.selModel){this.selModel=new Ext.grid.RowSelectionModel(this.disableSelection?{selectRow:Ext.emptyFn}:null);}
+return null;},onResize:function(){Ext.grid.GridPanel.superclass.onResize.apply(this,arguments);if(this.viewReady){this.view.layout();}},getGridEl:function(){return this.body;},stopEditing:Ext.emptyFn,getSelectionModel:function(){if(!this.selModel){this.selModel=new Ext.grid.RowSelectionModel(this.disableSelection?{selectRow:Ext.emptyFn}:null);}
 return this.selModel;},getStore:function(){return this.store;},getColumnModel:function(){return this.colModel;},getView:function(){if(!this.view){this.view=new Ext.grid.GridView(this.viewConfig);}
 return this.view;},getDragDropText:function(){var count=this.selModel.getCount();return String.format(this.ddText,count,count==1?'':'s');}});Ext.reg('grid',Ext.grid.GridPanel);

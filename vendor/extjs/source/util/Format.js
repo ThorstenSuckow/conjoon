@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -265,59 +265,56 @@ Ext.util.Format = function(){
          */
         number: function(v, format) {
             if(!format){
-                return v;
-            }
-            v *= 1;
-            if(typeof v != 'number' || isNaN(v)){
+		        return v;
+		    }
+		    v = Ext.num(v, NaN);
+            if (isNaN(v)){
                 return '';
             }
-            var comma = ',';
-            var dec = '.';
-            var i18n = false;
-            
-            if(format.substr(format.length - 2) == '/i'){
-                format = format.substr(0, format.length-2);
-                i18n = true;
-                comma = '.';
-                dec = ',';
-            }
-
-            var hasComma = format.indexOf(comma) != -1,
-                psplit = (i18n ? format.replace(/[^\d\,]/g,'') : format.replace(/[^\d\.]/g,'')).split(dec);
-
-            if (1 < psplit.length) {
-                v = v.toFixed(psplit[1].length);
-            }
-            else if (2 < psplit.length) {
-                throw('NumberFormatException: invalid format, formats should have no more than 1 period: ' + format);
-            }
-            else {
-                v = v.toFixed(0);
-            }
-
-            var fnum = v.toString();
-
-            if (hasComma) {
-                psplit = fnum.split('.');
-
-                var cnum = psplit[0],
-                    parr = [],
-                    j = cnum.length,
-                    m = Math.floor(j / 3),
-                    n = cnum.length % 3 || 3;
-
-                for (var i = 0; i < j; i += n) {
-                    if (i != 0) {n = 3;}
-                    parr[parr.length] = cnum.substr(i, n);
-                    m -= 1;
-                }
-                fnum = parr.join(comma);
-                if (psplit[1]) {
-                    fnum += dec + psplit[1];
-                }
-            }
-
-            return format.replace(/[\d,?\.?]+/, fnum);
+		    var comma = ',',
+		        dec = '.',
+		        i18n = false,
+		        neg = v < 0;
+		
+		    v = Math.abs(v);
+		    if(format.substr(format.length - 2) == '/i'){
+		        format = format.substr(0, format.length - 2);
+		        i18n = true;
+		        comma = '.';
+		        dec = ',';
+		    }
+		
+		    var hasComma = format.indexOf(comma) != -1, 
+		        psplit = (i18n ? format.replace(/[^\d\,]/g, '') : format.replace(/[^\d\.]/g, '')).split(dec);
+		
+		    if(1 < psplit.length){
+		        v = v.toFixed(psplit[1].length);
+		    }else if(2 < psplit.length){
+		        throw ('NumberFormatException: invalid format, formats should have no more than 1 period: ' + format);
+		    }else{
+		        v = v.toFixed(0);
+		    }
+		
+		    var fnum = v.toString();
+		    if(hasComma){
+		        psplit = fnum.split('.');
+		
+		        var cnum = psplit[0], parr = [], j = cnum.length, m = Math.floor(j / 3), n = cnum.length % 3 || 3;
+		
+		        for(var i = 0; i < j; i += n){
+		            if(i != 0){
+		                n = 3;
+		            }
+		            parr[parr.length] = cnum.substr(i, n);
+		            m -= 1;
+		        }
+		        fnum = parr.join(comma);
+		        if(psplit[1]){
+		            fnum += dec + psplit[1];
+		        }
+		    }
+		
+		    return (neg ? '-' : '') + format.replace(/[\d,?\.?]+/, fnum);
         },
 
         /**

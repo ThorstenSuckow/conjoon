@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,7 +9,7 @@
 
 Ext.chart.Chart=Ext.extend(Ext.FlashComponent,{url:"http:/"+"/yui.yahooapis.com/2.5.1/build/charts/assets/charts.swf",refreshBuffer:100,chartStyle:{padding:10,animationEnabled:true,font:{name:'Tahoma',color:0x444444,size:11},dataTip:{padding:5,border:{color:0x99bbe8,size:1},background:{color:0xDAE7F6,alpha:.9},font:{name:'Tahoma',color:0x15428B,size:10,bold:true}}},initComponent:function(){Ext.chart.Chart.superclass.initComponent.call(this);this.addEvents('itemmouseover','itemmouseout','itemclick','itemdoubleclick','itemdragstart','itemdrag','itemdragend');},setStyle:function(name,value){value=Ext.encode(value);this.swf.setStyle(name,value);},setStyles:function(styles){styles=Ext.encode(styles);this.swf.setStyles(styles);},setSeriesStyles:function(styles){for(var i=0;i<styles.length;i++){styles[i]=Ext.encode(styles[i]);}
 this.swf.setSeriesStyles(styles);},setCategoryNames:function(names){this.swf.setCategoryNames(names);},setTipRenderer:function(fn){var chart=this;this.tipFnName=this.createFnProxy(function(item,index,series){var record=chart.store.getAt(index);return fn(chart,record,index,series);},this.tipFnName);this.swf.setDataTipFunction(this.tipFnName);},setSeries:function(series){this.series=series;this.refresh();},bindStore:function(store,initial){if(!initial&&this.store){this.store.un("datachanged",this.refresh,this);this.store.un("add",this.delayRefresh,this);this.store.un("remove",this.delayRefresh,this);this.store.un("update",this.delayRefresh,this);this.store.un("clear",this.refresh,this);if(store!==this.store&&this.store.autoDestroy){this.store.destroy();}}
-if(store){store=Ext.StoreMgr.lookup(store);store.on("datachanged",this.refresh,this);store.on("add",this.delayRefresh,this);store.on("remove",this.delayRefresh,this);store.on("update",this.delayRefresh,this);store.on("clear",this.refresh,this);}
+if(store){store=Ext.StoreMgr.lookup(store);store.on({scope:this,datachanged:this.refresh,add:this.delayRefresh,remove:this.delayRefresh,update:this.delayRefresh,clear:this.refresh});}
 this.store=store;if(store&&!initial){this.refresh();}},onSwfReady:function(isReset){Ext.chart.Chart.superclass.onSwfReady.call(this,isReset);this.swf.setType(this.type);if(this.chartStyle){this.setStyles(this.chartStyle);}
 if(this.categoryNames){this.setCategoryNames(this.categoryNames);}
 if(this.tipRenderer){this.setTipRenderer(this.tipRenderer);}

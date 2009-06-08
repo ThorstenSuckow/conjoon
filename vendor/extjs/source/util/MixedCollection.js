@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -323,8 +323,8 @@ mc.add(otherEl);
  * @return {Object} The item associated with the passed key.
  */
     item : function(key){
-        var item = typeof this.map[key] != "undefined" ? this.map[key] : this.items[key];
-        return typeof item != 'function' || this.allowFunctions ? item : null; // for prototype!
+        var item = typeof this.map[key] != "undefined" ? this.map[key] : (typeof key == 'number') ? this.items[key] : null;
+        return !Ext.isFunction(item) || this.allowFunctions ? item : null; // for prototype!
     },
 
 /**

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -29,8 +29,10 @@ Ext.Element.addMethods(function(){
 	        var p = this.dom,
 	        	b = document.body, 
 	        	depth = 0, 	        	
-	        	stopEl;
-	        	
+	        	stopEl;	        
+            if(Ext.isGecko && Object.prototype.toString.call(p) == '[object XULElement]') {
+                return null;
+            }
 	        maxDepth = maxDepth || 50;
 	        if (isNaN(maxDepth)) {
 	            stopEl = Ext.getDom(maxDepth);

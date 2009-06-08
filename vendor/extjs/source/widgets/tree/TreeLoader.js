@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -75,8 +75,10 @@ Ext.tree.TreeLoader = function(config){
          */
         "loadexception"
     );
-
     Ext.tree.TreeLoader.superclass.constructor.call(this);
+    if(typeof this.paramOrder == 'string'){
+        this.paramOrder = this.paramOrder.split(/[\s,|]/);
+    }
 };
 
 Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
@@ -117,6 +119,34 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
     * child nodes before loading.
     */
     clearOnLoad : true,
+    
+    /**
+     * @cfg {Array/String} paramOrder Defaults to <tt>undefined</tt>. Only used when using directFn.
+     * A list of params to be executed
+     * server side.  Specify the params in the order in which they must be executed on the server-side
+     * as either (1) an Array of String values, or (2) a String of params delimited by either whitespace,
+     * comma, or pipe. For example,
+     * any of the following would be acceptable:<pre><code>
+paramOrder: ['param1','param2','param3']
+paramOrder: 'param1 param2 param3'
+paramOrder: 'param1,param2,param3'
+paramOrder: 'param1|param2|param'
+     </code></pre>
+     */
+    paramOrder: undefined,
+
+    /**
+     * @cfg {Boolean} paramsAsHash Only used when using directFn.
+     * Send parameters as a collection of named arguments (defaults to <tt>false</tt>). Providing a
+     * <tt>{@link #paramOrder}</tt> nullifies this configuration.
+     */
+    paramsAsHash: false,
+
+    /**
+     * @cfg {Function} directFn
+     * Function to call when executing a request.
+     */
+    directFn : undefined,
 
     /**
      * Load an {@link Ext.tree.TreeNode} from the URL specified in the constructor.
@@ -124,19 +154,18 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
      * a node (or append new children if the {@link #clearOnLoad} option is false.)
      * @param {Ext.tree.TreeNode} node
      * @param {Function} callback
+     * @param (Object) scope
      */
-    load : function(node, callback){
+    load : function(node, callback, scope){
         if(this.clearOnLoad){
             while(node.firstChild){
                 node.removeChild(node.firstChild);
             }
         }
         if(this.doPreload(node)){ // preloaded json children
-            if(typeof callback == "function"){
-                callback();
-            }
-        }else if(this.dataUrl||this.url){
-            this.requestData(node, callback);
+            this.runCallback(callback, scope || node);
+        }else if(this.directFn || this.dataUrl || this.url){
+            this.requestData(node, callback, scope || node);
         }
     },
 
@@ -154,39 +183,77 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
                 node.endUpdate();
             }
             return true;
-        }else {
-            return false;
         }
+        return false;
     },
 
     getParams: function(node){
         var buf = [], bp = this.baseParams;
-        for(var key in bp){
-            if(typeof bp[key] != "function"){
-                buf.push(encodeURIComponent(key), "=", encodeURIComponent(bp[key]), "&");
+        if(this.directFn){
+            buf.push(node.id);
+            if(bp){
+                if(this.paramOrder){
+                    for(var i = 0, len = this.paramOrder.length; i < len; i++){
+                        buf.push(bp[this.paramOrder[i]]);
+                    }
+                }else if(this.paramsAsHash){
+                    buf.push(bp);
+                }
             }
+            return buf;
+        }else{
+            for(var key in bp){
+                if(!Ext.isFunction(bp[key])){
+                    buf.push(encodeURIComponent(key), "=", encodeURIComponent(bp[key]), "&");
+                }
+            }
+            buf.push("node=", encodeURIComponent(node.id));
+            return buf.join("");
         }
-        buf.push("node=", encodeURIComponent(node.id));
-        return buf.join("");
     },
 
-    requestData : function(node, callback){
+    requestData : function(node, callback, scope){
         if(this.fireEvent("beforeload", this, node, callback) !== false){
-            this.transId = Ext.Ajax.request({
-                method:this.requestMethod,
-                url: this.dataUrl||this.url,
-                success: this.handleResponse,
-                failure: this.handleFailure,
-                scope: this,
-                argument: {callback: callback, node: node},
-                params: this.getParams(node)
-            });
+            if(this.directFn){
+                var args = this.getParams(node);
+                args.push(this.processDirectResponse.createDelegate(this, [{callback: callback, node: node, scope: scope}], true));
+                this.directFn.apply(window, args);
+            }else{
+                this.transId = Ext.Ajax.request({
+                    method:this.requestMethod,
+                    url: this.dataUrl||this.url,
+                    success: this.handleResponse,
+                    failure: this.handleFailure,
+                    scope: this,
+                    argument: {callback: callback, node: node, scope: scope},
+                    params: this.getParams(node)
+                });
+            }
         }else{
             // if the load is cancelled, make sure we notify
             // the node that we are done
-            if(typeof callback == "function"){
-                callback();
-            }
+            this.runCallback(callback, scope || node);
+        }
+    },
+    
+    processDirectResponse: function(result, response, args){
+        if(response.status){
+            this.processResponse({
+                responseData: Ext.isArray(result) ? result : null,
+                responseText: result,
+                argument: args
+            }, args.node, args.callback, args.scope);
+        }else{
+            this.handleFailure({
+                argument: args
+            });
+        }
+    },
+    
+    // private
+    runCallback: function(cb, scope, args){
+        if(Ext.isFunction(cb)){
+            cb.apply(scope, args);
         }
     },
 
@@ -243,10 +310,10 @@ new Ext.tree.TreePanel({
         }
     },
 
-    processResponse : function(response, node, callback){
+    processResponse : function(response, node, callback, scope){
         var json = response.responseText;
         try {
-            var o = Ext.decode(json);
+            var o = response.responseData || Ext.decode(json);
             node.beginUpdate();
             for(var i = 0, len = o.length; i < len; i++){
                 var n = this.createNode(o[i]);
@@ -255,9 +322,7 @@ new Ext.tree.TreePanel({
                 }
             }
             node.endUpdate();
-            if(typeof callback == "function"){
-                callback(this, node);
-            }
+            this.runCallback(callback, scope || node, [node]);
         }catch(e){
             this.handleFailure(response);
         }
@@ -266,7 +331,7 @@ new Ext.tree.TreePanel({
     handleResponse : function(response){
         this.transId = false;
         var a = response.argument;
-        this.processResponse(response, a.node, a.callback);        
+        this.processResponse(response, a.node, a.callback, a.scope);        
         this.fireEvent("load", this, a.node, response);
     },
 
@@ -274,8 +339,6 @@ new Ext.tree.TreePanel({
         this.transId = false;
         var a = response.argument;
         this.fireEvent("loadexception", this, a.node, response);
-        if(typeof a.callback == "function"){
-            a.callback(this, a.node);
-        }
+        this.runCallback(a.callback, a.scope || a.node, [a.node]);
     }
 });

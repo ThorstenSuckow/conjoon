@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -10,7 +10,16 @@
  * @class Ext.Element
  */
 (function(){
-var D = Ext.lib.Dom;
+var D = Ext.lib.Dom,
+        LEFT = "left",
+        RIGHT = "right",
+        TOP = "top",
+        BOTTOM = "bottom",
+        POSITION = "position",
+        STATIC = "static",
+        RELATIVE = "relative",
+        AUTO = "auto",
+        ZINDEX = "z-index";
 
 function animTest(args, animate, i) {
 	return this.preanim && !!animate ? this.preanim(args, i) : false	
@@ -78,7 +87,7 @@ Ext.Element.addMethods({
      * @return {Ext.Element} this
      */
     setLeft : function(left){
-        this.setStyle("left", this.addUnits(left));
+        this.setStyle(LEFT, this.addUnits(left));
         return this;
     },
 
@@ -88,7 +97,7 @@ Ext.Element.addMethods({
      * @return {Ext.Element} this
      */
     setTop : function(top){
-        this.setStyle("top", this.addUnits(top));
+        this.setStyle(TOP, this.addUnits(top));
         return this;
     },
 
@@ -98,7 +107,7 @@ Ext.Element.addMethods({
      * @return {Ext.Element} this
      */
     setRight : function(right){
-        this.setStyle("right", this.addUnits(right));
+        this.setStyle(RIGHT, this.addUnits(right));
         return this;
     },
 
@@ -108,7 +117,7 @@ Ext.Element.addMethods({
      * @return {Ext.Element} this
      */
     setBottom : function(bottom){
-        this.setStyle("bottom", this.addUnits(bottom));
+        this.setStyle(BOTTOM, this.addUnits(bottom));
         return this;
     },
 
@@ -159,7 +168,7 @@ Ext.Element.addMethods({
      * @return {Number}
      */
     getLeft : function(local){
-	    return !local ? this.getX() : parseInt(this.getStyle("left"), 10) || 0;
+	    return !local ? this.getX() : parseInt(this.getStyle(LEFT), 10) || 0;
     },
 
     /**
@@ -178,7 +187,7 @@ Ext.Element.addMethods({
      * @return {Number}
      */
     getTop : function(local) {
-	    return !local ? this.getY() : parseInt(this.getStyle("top"), 10) || 0;
+	    return !local ? this.getY() : parseInt(this.getStyle(TOP), 10) || 0;
     },
 
     /**
@@ -202,13 +211,13 @@ Ext.Element.addMethods({
     position : function(pos, zIndex, x, y){
 	    var me = this;
 	    
-        if(!pos && me.isStyle('position', 'static')){           
-            me.setStyle('position', 'relative');           
+        if(!pos && me.isStyle(POSITION, STATIC)){           
+            me.setStyle(POSITION, RELATIVE);           
         } else if(pos) {
-            me.setStyle("position", pos);
+            me.setStyle(POSITION, pos);
         }
         if(zIndex){
-            me.setStyle("z-index", zIndex);
+            me.setStyle(ZINDEX, zIndex);
         }
         if(x || y) me.setXY([x || false, y || false]);
     },
@@ -226,7 +235,7 @@ Ext.Element.addMethods({
             top : value,
             bottom : value,
             "z-index" : "",
-            position : "static"
+            position : STATIC
         });
         return this;
     },
@@ -237,21 +246,15 @@ Ext.Element.addMethods({
     * @return {Object}
     */
     getPositioning : function(){
-	    var me = this;
-        function gs(pos) {
-	    	return me.getStyle(pos);    
-        }
-        
-        var l = gs("left"),
-        	t = gs("top");
-
+        var l = this.getStyle(LEFT);
+        var t = this.getStyle(TOP);
         return {
-            position : gs("position"),
-            left : l,
-            right : l ? "" : gs("right"),
-            top : t,
-            bottom : t ? "" : gs("bottom"),
-            "z-index" : gs("z-index")
+            "position" : this.getStyle(POSITION),
+            "left" : l,
+            "right" : l ? "" : this.getStyle(RIGHT),
+            "top" : t,
+            "bottom" : t ? "" : this.getStyle(BOTTOM),
+            "z-index" : this.getStyle(ZINDEX)
         };
     },
     
@@ -266,10 +269,10 @@ Ext.Element.addMethods({
 	    	
         me.setStyle(pc);
         
-        if(pc.right == "auto"){
+        if(pc.right == AUTO){
             style.right = "";
         }
-        if(pc.bottom == "auto"){
+        if(pc.bottom == AUTO){
             style.bottom = "";
         }
         
@@ -286,10 +289,10 @@ Ext.Element.addMethods({
 	    y = isNaN(x[1]) ? y : x[1];
         x = isNaN(x[0]) ? x : x[0];
         var me = this,
-        	relative = me.isStyle('position', "relative"),
+        	relative = me.isStyle(POSITION, RELATIVE),
         	o = me.getXY(),
-        	l = parseInt(me.getStyle('left'), 10),
-        	t = parseInt(me.getStyle('top'), 10);
+        	l = parseInt(me.getStyle(LEFT), 10),
+        	t = parseInt(me.getStyle(TOP), 10);
         
         l = !isNaN(l) ? l : (relative ? 0 : me.dom.offsetLeft);
         t = !isNaN(t) ? t : (relative ? 0 : me.dom.offsetTop);        

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -168,6 +168,14 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
         Ext.form.CheckboxGroup.superclass.onRender.call(this, ct, position);
     },
     
+    afterRender: function(){
+        Ext.form.CheckboxGroup.superclass.afterRender.call(this);
+        if(this.values){
+            this.setValue.apply(this, this.values);
+            delete this.values;
+        }
+    },
+    
     // private
     validateValue : function(value){
         if(!this.allowBlank){
@@ -216,6 +224,79 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
     },
     
     /**
+     * Sets the checked radio in the group.
+     * @param {Mixed} id The checkbox to check. This can also be an array of boolean values, or an object literal containing the set of values, eg:
+         * <pre><code>
+group.setValues([true, true, false, true, false]);
+group.setValues({
+    check1: true,
+    check2: false,
+    check3: false
+});
+         * </code></pre> 
+     * @param {Boolean} value (optional) The value to set the radio.
+     * @return {Ext.form.RadioGroup} this
+     */
+    setValue : function(id, value){
+        if(this.rendered){
+            if(arguments.length == 1){
+                if(Ext.isArray(id)){
+                    //an array of boolean values
+                    Ext.each(id, function(val, idx){
+                        var item = this.items.itemAt(idx);
+                        if(item){
+                            item.setValue(val);
+                        }
+                    }, this);
+                }else if(Ext.isObject(id)){
+                    //set of name/value pairs
+                    for(var i in id){
+                        var f = this.getBox(i);
+                        if(f){
+                            f.setValue(id[i]);
+                        }
+                    }
+                }
+            }else{
+                var f = this.getBox(id);
+                if(f){
+                    f.setValue(value);
+                }
+            }
+        }else{
+            this.values = arguments;
+        }
+    },
+    
+    // private
+    getBox: function(id){
+        var box = null;
+        this.items.each(function(f){
+            if(id == f || f.dataIndex == id || f.id == id || f.getName() == id){
+                box = f;
+                return false;
+            }
+        }, this);
+        return box;
+    },
+    
+    /**
+     * Gets an array of the selected {@link Ext.form.Checkbox} in the group.
+     * @return {Array} An array of the selected checkboxes.
+     */
+    getValue: function(){
+        var out = [];
+        if(this.items){
+            this.items.each(function(item){
+                if(item.checked){
+                    out.push(item);
+                }
+            });
+        }
+        return out;
+    },
+    
+    /**
      * @cfg {String} name
      * @hide
      */
@@ -234,11 +315,7 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
      * @hide
      */
     getRawValue : Ext.emptyFn,
-    /**
-     * @method setValue
-     * @hide
-     */
-    setValue : Ext.emptyFn,
+    
     /**
      * @method setRawValue
      * @hide

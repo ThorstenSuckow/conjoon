@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -9,6 +9,10 @@
 /* all fields */
 .x-form-field{
     margin: 0 0 0 0;
+}
+
+.ext-webkit *:focus{
+    outline: none !important;
 }
 
 /* ---- text fields ---- */
@@ -46,7 +50,11 @@ textarea.x-form-field {
     margin-bottom:-2px; /* another bogus margin bug, safari/mac only */
 }
 
-.ext-gecko .x-form-text {
+.ext-strict .ext-ie8 .x-form-text, .ext-strict .ext-ie8 textarea.x-form-field {
+	margin-bottom: 1px;
+}
+
+.ext-gecko .x-form-text , .ext-ie8 .x-form-text {
     padding-top:2px; /* FF won't center the text vertically */
     padding-bottom:0;
 }
@@ -104,15 +112,11 @@ textarea {
     top:0;
 }
 
-.ext-safari .x-form-field-wrap .x-form-trigger{
-    height:21px; /* safari doesn't allow height adjustments to the fields, so adjust trigger */
-}
-
 .x-form-field-wrap .x-form-date-trigger, .x-form-field-wrap .x-form-clear-trigger, .x-form-field-wrap .x-form-search-trigger{
     cursor:pointer;
 }
 
-.ext-safari .x-form-field-wrap .x-form-trigger,.ext-gecko .x-form-field-wrap .x-form-trigger{
+.ext-safari .x-form-field-wrap .x-form-trigger{
     right:0;
 }
 
@@ -329,6 +333,8 @@ textarea {
     height:19px;
 }
 
+.ext-webkit .x-small-editor .x-form-text{padding-top:3px;font-size:100%;}
+
 .x-form-clear {
     clear:both;
     height:0;
@@ -350,6 +356,19 @@ textarea {
     clear:none !important;
     display:inline !important;
     margin-left:4px;
+    top: -2px;
+}
+
+.ext-gecko2 .x-form-cb-label{
+    top: -1px;
+}
+
+.ext-strict .ext-ie8 .x-form-cb-label {
+    top: -3px;
+}
+
+.ext-opera .x-form-cb-label, .ext-safari3 .x-form-cb-label, .ext-ie7 .x-form-cb-label, .ext-ie6 .x-form-cb-label {
+    top: 0;
 }
 
 .x-form-column {
@@ -487,11 +506,6 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 
 .ext-ie .x-fieldset-bwrap {
     zoom:1;
-}
-
-.ext-ie .x-toolbar .x-form-text {
-    position:relative;
-    top:-1px;
 }
 
 .x-fieldset-noborder {

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -206,12 +206,12 @@ el.slideIn('t', {
             args = me.switchStatements(anchor.toLowerCase(), argCalc, {
 		            t  : [wrap, st, b.width, 0, NULL, NULL, LEFT, BOTTOM, NULL, bh, NULL],
 		            l  : [wrap, st, 0, b.height, NULL, NULL, RIGHT, TOP, bw, NULL, NULL],
-		            r  : [wrap, st, 0, b.height, SETX, b.right, LEFT, TOP, bw, NULL, pt],
-		            b  : [wrap, st, b.width, 0, SETY, b.bottom, LEFT, TOP, NULL, bh, pt],
-		            tl : [wrap, st, 0, 0, NULL, NULL, RIGHT, BOTTOM, bw, NULL, pt],
+		            r  : [wrap, st, b.width, b.height, SETX, b.right, LEFT, TOP, NULL, NULL, pt],
+		            b  : [wrap, st, b.width, b.height, SETY, b.bottom, LEFT, TOP, NULL, bh, pt],
+		            tl : [wrap, st, 0, 0, NULL, NULL, RIGHT, BOTTOM, bw, bh, pt],
 		            bl : [wrap, st, 0, 0, SETY, b.y + b.height, RIGHT, TOP, bw, bh, pt],
 		            br : [wrap, st, 0, 0, SETXY, [b.right, b.bottom], LEFT, TOP, bw, bh, pt],
-		            tr : [0, 0, SETX, b.x + b.width, LEFT, BOTTOM, bw, bh, pt]
+		            tr : [wrap, st, 0, 0, SETX, b.x + b.width, LEFT, BOTTOM, bw, bh, pt]
             	});
             
             st.visibility = VISIBLE;
@@ -311,7 +311,7 @@ el.slideOut('t', {
 	            r  : [st, LEFT, TOP, WIDTH, zero, POINTS, {to : [b.right, b.y]}],
 	            b  : [st, LEFT, TOP, HEIGHT, zero, POINTS, {to : [b.x, b.bottom]}],
 	            tl : [st, RIGHT, BOTTOM, WIDTH, zero, HEIGHT, zero],
-	            bl : [st, RIGHT, TOP, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.X, b.bottom]}],
+	            bl : [st, RIGHT, TOP, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.x, b.bottom]}],
 	            br : [st, LEFT, TOP, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.x + b.width, b.bottom]}],
 	            tr : [st, LEFT, BOTTOM, WIDTH, zero, HEIGHT, zero, POINTS, {to : [b.right, b.y]}]
             });
@@ -529,8 +529,10 @@ el.frame("C3DAF9", 1, {
     */
     frame : function(color, count, o){
         var me = this,
-        	el = me.getFxEl();
-        	
+            el = me.getFxEl(),
+            proxy,
+            active;
+            
         o = o || {};
 
         el.queueFx(o, function(){
@@ -542,36 +544,54 @@ el.frame("C3DAF9", 1, {
             me.show();
 
             var xy = me.getXY(),
-            	dom = me.dom,
-            	b = {x: xy[0], y: xy[1], 0: xy[0], 1: xy[1], width: dom.offsetWidth, height: dom.offsetHeight};
+                dom = me.dom,
+                b = {x: xy[0], y: xy[1], 0: xy[0], 1: xy[1], width: dom.offsetWidth, height: dom.offsetHeight},
+                proxy,
+                queue = function(){
+                    proxy = Ext.get(document.body || document.documentElement).createChild({
+                        style:{
+                            visbility: HIDDEN,
+                            position : ABSOLUTE,
+                            "z-index": 35000, // yee haw
+                            border : "0px solid " + color
+                        }
+                    });
+                    return proxy.queueFx({}, animFn);
+                };
             
             
+            arguments.callee.anim = {
+                isAnimated: true,
+                stop: function() {
+                    count = 0;
+                    proxy.stopFx();
+                }
+            };
             
-        	function animFn(){
-                var proxy = Ext.get(document.body || document.documentElement).createChild({
-                     style:{
-                        visbility: HIDDEN,
-                        position : ABSOLUTE,
-                        "z-index": 35000, // yee haw
-                        border : "0px solid " + color
-                     }
-            	}),
-            	scale = Ext.isBorderBox ? 2 : 1;
-                proxy.animate({
+            function animFn(){
+                var scale = Ext.isBorderBox ? 2 : 1;
+                active = proxy.anim({
                     top : {from : b.y, to : b.y - 20},
                     left : {from : b.x, to : b.x - 20},
                     borderWidth : {from : 0, to : 10},
                     opacity : {from : 1, to : 0},
                     height : {from : b.height, to : b.height + 20 * scale},
                     width : {from : b.width, to : b.width + 20 * scale}
-                }, 
-                o.duration || 1, 
-                function() {
-                	proxy.remove();
-                	--count > 0 ? animFn() : el.afterFx(o);
-            	});
-        	};
-            animFn.call(me);
+                },{
+                    duration: o.duration || 1,
+                    callback: function() {
+                        proxy.remove();
+                        --count > 0 ? queue() : el.afterFx(o);
+                    }
+                });
+                arguments.callee.anim = {
+                    isAnimated: true,
+                    stop: function(){
+                        active.stop();
+                    }
+                };
+            };
+            queue();
         });
         return me;
     },
@@ -586,13 +606,21 @@ el.pause(1);
     * @param {Number} seconds The length of time to pause (in seconds)
     * @return {Ext.Element} The Element
     */
-    pause : function(seconds){
-        var el = this.getFxEl();
+    pause : function(seconds){        
+        var el = this.getFxEl(),
+            t;
 
         el.queueFx({}, function(){
-            setTimeout(function(){
+            t = setTimeout(function(){
                 el.afterFx({});
             }, seconds * 1000);
+            arguments.callee.anim = {
+                isAnimated: true,
+                stop: function(){
+                    clearTimeout(t);
+                    el.afterFx({});
+                }
+            };
         });
         return this;
     },
@@ -912,9 +940,13 @@ el.ghost('b', {
 	    var me = this;
         if(me.hasActiveFx()){
             var cur = me.fxQueue[0];
-            if(cur && cur.anim && cur.anim.isAnimated){
-                me.fxQueue = [cur]; // clear out others
-                cur.anim.stop(finish !== undefined ? finish : true);
+            if(cur && cur.anim){
+                if(cur.anim.isAnimated){
+                    me.fxQueue = [cur]; // clear out others
+                    cur.anim.stop(finish !== undefined ? finish : TRUE);
+                }else{
+                    me.fxQueue = [];
+                }
             }
         }
         return me;

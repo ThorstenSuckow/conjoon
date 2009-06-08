@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -66,8 +66,8 @@
             try {
                 headerStr = o.conn.getAllResponseHeaders();                
                 Ext.each(headerStr.split('\n'), function(v){
-	            	var t = v.split(':');
-	            	headerObj[t[0]] = t[1]; 
+	            	var t = v.indexOf(':');
+                    headerObj[v.substr(0, t)] = v.substr(t + 1);
                 });
             } catch(e) {}
                         
@@ -75,8 +75,8 @@
 		        tId : o.tId,
 	            status : conn.status,
 	            statusText : conn.statusText,
-	            getResponseHeader : headerObj,
-	            getAllResponseHeaders : headerStr,
+	            getResponseHeader : function(header){return headerObj[header];},
+                getAllResponseHeaders : function(){return headerStr},
 	            responseText : conn.responseText,
 	            responseXML : conn.responseXML,
 	            argument : callbackArg

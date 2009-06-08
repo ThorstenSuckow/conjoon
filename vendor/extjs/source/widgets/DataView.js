@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -401,12 +401,15 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
         }
         if(store){
             store = Ext.StoreMgr.lookup(store);
-            store.on("beforeload", this.onBeforeLoad, this);
-            store.on("datachanged", this.refresh, this);
-            store.on("add", this.onAdd, this);
-            store.on("remove", this.onRemove, this);
-            store.on("update", this.onUpdate, this);
-            store.on("clear", this.refresh, this);
+            store.on({
+                scope: this,
+                beforeload: this.onBeforeLoad,
+                datachanged: this.refresh,
+                add: this.onAdd,
+                remove: this.onRemove,
+                update: this.onUpdate,
+                clear: this.refresh
+            });
         }
         this.store = store;
         if(store){

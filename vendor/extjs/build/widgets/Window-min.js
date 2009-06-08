@@ -1,13 +1,13 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
 
-Ext.Window=Ext.extend(Ext.Panel,{baseCls:'x-window',resizable:true,draggable:true,closable:true,constrain:false,constrainHeader:false,plain:false,minimizable:false,maximizable:false,minHeight:100,minWidth:200,expandOnShow:true,closeAction:'close',collapsible:false,initHidden:true,monitorResize:true,elements:'header,body',frame:true,floating:true,initComponent:function(){Ext.Window.superclass.initComponent.call(this);this.addEvents('resize','maximize','minimize','restore');if(this.initHidden===false){this.show();}else{this.hidden=true;}},getState:function(){return Ext.apply(Ext.Window.superclass.getState.call(this)||{},this.getBox());},onRender:function(ct,position){Ext.Window.superclass.onRender.call(this,ct,position);if(this.plain){this.el.addClass('x-window-plain');}
+Ext.Window=Ext.extend(Ext.Panel,{baseCls:'x-window',resizable:true,draggable:true,closable:true,constrain:false,constrainHeader:false,plain:false,minimizable:false,maximizable:false,minHeight:100,minWidth:200,expandOnShow:true,closeAction:'close',collapsible:false,initHidden:true,monitorResize:true,elements:'header,body',frame:true,floating:true,initComponent:function(){Ext.Window.superclass.initComponent.call(this);this.addEvents('resize','maximize','minimize','restore');if(this.initHidden===false){this.show();}else{this.hidden=true;}},getState:function(){return Ext.apply(Ext.Window.superclass.getState.call(this)||{},this.getBox(true));},onRender:function(ct,position){Ext.Window.superclass.onRender.call(this,ct,position);if(this.plain){this.el.addClass('x-window-plain');}
 this.focusEl=this.el.createChild({tag:"a",href:"#",cls:"x-dlg-focus",tabIndex:"-1",html:"&#160;"});this.focusEl.swallowEvent('click',true);this.proxy=this.el.createProxy("x-window-proxy");this.proxy.enableDisplayMode('block');if(this.modal){this.mask=this.container.createChild({cls:"ext-el-mask"},this.el.dom);this.mask.enableDisplayMode("block");this.mask.hide();this.mon(this.mask,'click',this.focus,this);}
 this.initTools();},initEvents:function(){Ext.Window.superclass.initEvents.call(this);if(this.animateTarget){this.setAnimateTarget(this.animateTarget);}
 if(this.resizable){this.resizer=new Ext.Resizable(this.el,{minWidth:this.minWidth,minHeight:this.minHeight,handles:this.resizeHandles||"all",pinned:true,resizeElement:this.resizerAction});this.resizer.window=this;this.mon(this.resizer,'beforeresize',this.beforeResize,this);}
@@ -29,12 +29,13 @@ if(this.fireEvent("beforeshow",this)===false){return this;}
 if(cb){this.on('show',cb,scope,{single:true});}
 this.hidden=false;if(animateTarget!==undefined){this.setAnimateTarget(animateTarget);}
 this.beforeShow();if(this.animateTarget){this.animShow();}else{this.afterShow();}
-return this;},afterShow:function(){this.proxy.hide();this.el.setStyle('display','block');this.el.show();if(this.maximized){this.fitContainer();}
+return this;},afterShow:function(isAnim){this.proxy.hide();this.el.setStyle('display','block');this.el.show();if(this.maximized){this.fitContainer();}
 if(Ext.isMac&&Ext.isGecko){this.cascade(this.setAutoScroll);}
 if(this.monitorResize||this.modal||this.constrain||this.constrainHeader){Ext.EventManager.onWindowResize(this.onWindowResize,this);}
 this.doConstrain();if(this.layout){this.doLayout();}
 if(this.keyMap){this.keyMap.enable();}
-this.toFront();this.updateHandles();this.fireEvent("show",this);},animShow:function(){this.proxy.show();this.proxy.setBox(this.animateTarget.getBox());this.proxy.setOpacity(0);var b=this.getBox(false);b.callback=this.afterShow;b.scope=this;b.duration=.25;b.easing='easeNone';b.opacity=.5;b.block=true;this.el.setStyle('display','none');this.proxy.shift(b);},hide:function(animateTarget,cb,scope){if(this.hidden||this.fireEvent("beforehide",this)===false){return this;}
+this.toFront();this.updateHandles();if(isAnim&&(Ext.isIE||Ext.isWebKit)){var sz=this.getSize();this.onResize(sz.width,sz.height);}
+this.fireEvent("show",this);},animShow:function(){this.proxy.show();this.proxy.setBox(this.animateTarget.getBox());this.proxy.setOpacity(0);var b=this.getBox(false);b.callback=this.afterShow.createDelegate(this,[true],false);b.scope=this;b.duration=.25;b.easing='easeNone';b.opacity=.5;b.block=true;this.el.setStyle('display','none');this.proxy.shift(b);},hide:function(animateTarget,cb,scope){if(this.hidden||this.fireEvent("beforehide",this)===false){return this;}
 if(cb){this.on('hide',cb,scope,{single:true});}
 this.hidden=true;if(animateTarget!==undefined){this.setAnimateTarget(animateTarget);}
 if(this.modal){this.mask.hide();Ext.getBody().removeClass("x-body-masked");}

@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -74,15 +74,28 @@ Ext.lib.Event = function() {
             return ret;
         }();        
 
+    var isXUL = Ext.isGecko ? 
+        function(node) { return Object.prototype.toString.call(node) == '[object XULElement]'; } : Ext.emptyFn;
+        
+    var isTextNode = Ext.isGecko ? function(node){
+        try{
+            return node.nodeType == 3;
+        }catch(e) {
+            return false;
+        }
+
+    } : function(node){
+        return node.nodeType == 3;
+    };
+        
     function checkRelatedTarget(e) {
-        var related = e.relatedTarget, 
-            isXulEl = Object.prototype.toString.apply(related) == '[object XULElement]';
-        if (!related) return false;        
-        return (!isXulEl && related != this && this.tag != 'document' && !elContains(this, related));
+        var related = pub.getRelatedTarget(e);
+        return !(isXUL(related) || elContains(e.currentTarget,related));
     }
-    
+
     function elContains(parent, child) {
-        while(child) {
+       if(parent && parent.firstChild){  
+         while(child) {
             if(child === parent) {
                 return true;
             }
@@ -93,14 +106,17 @@ Ext.lib.Event = function() {
                 // thats inside a div sometimes it randomly throws
                 // Permission denied to get property HTMLDivElement.parentNode
                 // See https://bugzilla.mozilla.org/show_bug.cgi?id=208427
+                
                 return false;
             }                
             if(child && (child.nodeType != 1)) {
                 child = null;
             }
+          }
         }
         return false;
     }
+
      	
     // private	
     function _getCacheIndex(el, eventName, fn) {
@@ -151,7 +167,7 @@ Ext.lib.Event = function() {
     
     // private	        	
 	function startInterval() {            
-        if (!_interval) {                    
+        if(!_interval){                    
             var callback = function() {
                 _tryPreloadAttach();
             };
@@ -161,7 +177,7 @@ Ext.lib.Event = function() {
     
     // private 
     function getScroll() {
-        var scroll = Ext.get(doc).getScroll();
+        var scroll = Ext.fly(doc).getScroll();
         return [scroll.top, scroll.top];
     }
         
@@ -218,7 +234,7 @@ Ext.lib.Event = function() {
                 ret = this.purgeElement(el, false, eventName);
             } else if ("unload" == eventName) {	
                 Ext.each(unloadListeners, function(v, i, a) {
-	                if( v && v[0] == el && v[1] == evantName && v[2] == fn) {
+	                if( v && v[0] == el && v[1] == eventName && v[2] == fn) {
 		                unloadListeners.splice(i, 1);
 	                	ret = true;
                 	}
@@ -243,9 +259,16 @@ Ext.lib.Event = function() {
         },
 
         resolveTextNode : function(node) {
-            return Ext.isSafari && node && 3 == node.nodeType ? node.parentNode : node;
+            return node && !isXUL(node) && isTextNode(node) ? node.parentNode : node;
         },
 
+        getRelatedTarget : function(ev) {
+            ev = ev.browserEvent || ev;
+            return this.resolveTextNode(ev.relatedTarget || 
+				    (ev.type == "mouseout" ? ev.toElement :
+				     ev.type == "mouseover" ? ev.fromElement : null));
+        },
+        
         getPageX : function(ev) {
             return getPageCoord(ev, "X");
         },
@@ -257,13 +280,6 @@ Ext.lib.Event = function() {
 
         getXY : function(ev) {	                           
             return [this.getPageX(ev), this.getPageY(ev)];
-        },
-
-        getRelatedTarget : function(ev) {
-            ev = ev.browserEvent || ev;
-            return this.resolveTextNode(ev.relatedTarget || 
-				    (ev.type == "mouseout" ? ev.toElement :
-				     ev.type == "mouseover" ? ev.fromElement : null));
         },
 
 // Is this useful?  Removing to save space unless use case exists.
@@ -330,7 +346,9 @@ Ext.lib.Event = function() {
             loadComplete = true;
             var EU = Ext.lib.Event;    
             if (Ext.isIE && e !== true) {
-                doRemove(win, "load", EU._load);
+		// IE8 complains that _load is null or not an object
+		// so lets remove self via arguments.callee
+                doRemove(win, "load", arguments.callee);
             }
         },            
         
@@ -350,16 +368,16 @@ Ext.lib.Event = function() {
         getListeners : function(el, eventName) {
             var me = this,
             	results = [], 
-            	searchLists = [listeners, unloadListeners];
+            	searchLists;
 
-			if (eventName) {					
-				searchLists.splice(eventName == "unload" ? 0 : 1 ,1);
-			} else {
-				searchLists = searchLists[0].concat(searchLists[1]);	
-			}
+			if (eventName){  
+                searchLists = eventName == 'unload' ? unloadListeners : listeners;
+            }else{
+                searchLists = listeners.concat(unloadListeners);
+            }
 
 			Ext.each(searchLists, function(v, i){
-				if (v && v[me.EL] == el && (!eventName || eventName == v[me.type])) {
+				if (v && v[EL] == el && (!eventName || eventName == v[TYPE])) {
 					results.push({
                                 type:   v[TYPE],
                                 fn:     v[FN],
@@ -385,8 +403,10 @@ Ext.lib.Event = function() {
 
 			Ext.each(unloadListeners, function(v) {
 				if (v) {
-					scope =  v[ADJ_SCOPE] ? (v[ADJ_SCOPE] === true ? v[OBJ] : v[ADJ_SCOPE]) :  win;	
-					v[FN].call(scope, EU.getEvent(e), v[OBJ]);	
+                    try{
+					    scope =  v[ADJ_SCOPE] ? (v[ADJ_SCOPE] === true ? v[OBJ] : v[ADJ_SCOPE]) :  win;	
+					    v[FN].call(scope, EU.getEvent(e), v[OBJ]);
+                    }catch(e){}
 				}	
 			});		
 

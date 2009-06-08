@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -14,10 +14,11 @@
  * be created directly. For existing implementations, see {@link Ext.data.ArrayReader},
  * {@link Ext.data.JsonReader} and {@link Ext.data.XmlReader}.
  * @constructor Create a new DataReader
- * @param {Object} meta Metadata configuration options (implementation-specific)
- * @param {Object} recordType Either an Array of field definition objects as specified
- * in {@link Ext.data.Record#create}, or an {@link Ext.data.Record} object created
- * using {@link Ext.data.Record#create}.
+ * @param {Object} meta Metadata configuration options (implementation-specific).
+ * @param {Array/Object} recordType
+ * <p>Either an Array of {@link Ext.data.Field Field} definition objects (which
+ * will be passed to {@link Ext.data.Record#create}, or a {@link Ext.data.Record Record}
+ * constructor created using {@link Ext.data.Record#create}.</p>
  */
 Ext.data.DataReader = function(meta, recordType){
     /**
@@ -26,6 +27,12 @@ Ext.data.DataReader = function(meta, recordType){
      * @property meta
      */
     this.meta = meta;
+    /**
+     * @cfg {Array/Object} fields
+     * <p>Either an Array of {@link Ext.data.Field Field} definition objects (which
+     * will be passed to {@link Ext.data.Record#create}, or a {@link Ext.data.Record Record}
+     * constructor created from {@link Ext.data.Record#create}.</p>
+     */
     this.recordType = Ext.isArray(recordType) ?
         Ext.data.Record.create(recordType) : recordType;
 };
@@ -34,9 +41,8 @@ Ext.data.DataReader.prototype = {
 
     /**
      * Used for un-phantoming a record after a successful database insert.  Sets the records pk along with new data from server.
-     * You <b>must</b> return a complete new record from the server.  If you don't, your local record's missing fields
-     * will be populated with the default values specified in your Ext.data.Record.create specification.  Without a defaultValue,
-     * local fields will be populated with empty string "".  So return your entire record's data after remote create and update.
+     * You <b>must</b> return at least the database pk using the idProperty defined in your DataReader configuration.  The incoming
+     * data from server will be merged with the data in the local record.
      * In addition, you <b>must</b> return record-data from the server in the same order received.
      * Will perform a commit as well, un-marking dirty-fields.  Store's "update" event will be suppressed.
      * @param {Record/Record[]} record The phantom record to be realized.
@@ -57,14 +63,18 @@ Ext.data.DataReader.prototype = {
             }
         }
         else {
+            // If rs is NOT an array but data IS, see if data contains just 1 record.  If so extract it and carry on.
+            if (Ext.isArray(data) && data.length == 1) {
+                data = data.shift();
+            }
             if (!this.isData(data)) {
-                // TODO: create custom Exception class to return record in thrown exception.  Allow exception-handler the choice
-                // to commit or not rather than blindly rs.commit() here.
+                // TODO: Let exception-handler choose to commit or not rather than blindly rs.commit() here.
                 rs.commit();
-                throw new Error("DataReader#realize was called with invalid remote-data.  Please see the docs for DataReader#realize and review your DataReader configuration.");
+                throw new Ext.data.DataReader.Error('realize', rs);
             }
             var values = this.extractValues(data, rs.fields.items, rs.fields.items.length);
             rs.phantom = false; // <-- That's what it's all about
+            rs._phid = rs.id;  // <-- copy phantom-id -> _phid, so we can remap in Store#onCreateRecords
             rs.id = data[this.meta.idProperty];
             rs.data = values;
             rs.commit();
@@ -96,13 +106,17 @@ Ext.data.DataReader.prototype = {
             }
         }
         else {
+                     // If rs is NOT an array but data IS, see if data contains just 1 record.  If so extract it and carry on.
+            if (Ext.isArray(data) && data.length == 1) {
+                data = data.shift();
+            }
             if (!this.isData(data)) {
                 // TODO: create custom Exception class to return record in thrown exception.  Allow exception-handler the choice
                 // to commit or not rather than blindly rs.commit() here.
                 rs.commit();
-                throw new Error("DataReader#update received invalid data from server.  Please see docs for DataReader#update");
+                throw new Ext.data.DataReader.Error('update', rs);
             }
-            rs.data = this.extractValues(data, rs.fields.items, rs.fields.items.length);
+            rs.data = this.extractValues(Ext.apply(rs.data, data), rs.fields.items, rs.fields.items.length);
             rs.commit();
         }
     },
@@ -117,3 +131,23 @@ Ext.data.DataReader.prototype = {
         return (data && typeof(data) == 'object' && !Ext.isEmpty(data[this.meta.idProperty])) ? true : false
     }
 };
+
+/**
+ * General error class for Ext.data.DataReader
+ */
+Ext.data.DataReader.Error = Ext.extend(Ext.Error, {
+    constructor : function(message, arg) {
+        this.arg = arg;
+        Ext.Error.call(this, message);
+    },
+    name: 'Ext.data.DataReader'
+});
+Ext.apply(Ext.data.DataReader.Error.prototype, {
+    lang : {
+        'update': "#update received invalid data from server.  Please see docs for DataReader#update and review your DataReader configuration.",
+        'realize': "#realize was called with invalid remote-data.  Please see the docs for DataReader#realize and review your DataReader configuration.",
+        'invalid-response': "#readResponse received an invalid response from the server."
+    }
+});
+
+

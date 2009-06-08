@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -41,8 +41,8 @@ this.targetXY=e.getXY();var t=e.getTarget();if(!t||t.nodeType!==1||t==document||
 if(this.activeTarget&&t==this.activeTarget.el){this.clearTimer('hide');this.show();return;}
 if(t&&this.targets[t.id]){this.activeTarget=this.targets[t.id];this.activeTarget.el=t;this.anchor=this.activeTarget.anchor;if(this.anchor){this.anchorTarget=t;}
 this.delayShow();return;}
-var ttp,et=Ext.fly(t),cfg=this.tagConfig;var ns=cfg.namespace;if(this.interceptTitles&&t.title){ttp=t.title;t.qtip=ttp;t.removeAttribute("title");e.preventDefault();}else{ttp=t.qtip||et.getAttributeNS(ns,cfg.attribute);}
-if(ttp){var autoHide=et.getAttributeNS(ns,cfg.hide);this.activeTarget={el:t,text:ttp,width:et.getAttributeNS(ns,cfg.width),autoHide:autoHide!="user"&&autoHide!=='false',title:et.getAttributeNS(ns,cfg.title),cls:et.getAttributeNS(ns,cfg.cls),align:et.getAttributeNS(ns,cfg.align)};this.anchor=et.getAttributeNS(ns,cfg.anchor);if(this.anchor){this.anchorTarget=t;}
+var ttp,et=Ext.fly(t),cfg=this.tagConfig;var ns=cfg.namespace;if(this.interceptTitles&&t.title){ttp=t.title;t.qtip=ttp;t.removeAttribute("title");e.preventDefault();}else{ttp=t.qtip||et.getAttribute(cfg.attribute,ns);}
+if(ttp){var autoHide=et.getAttribute(cfg.hide,ns);this.activeTarget={el:t,text:ttp,width:et.getAttribute(cfg.width,ns),autoHide:autoHide!="user"&&autoHide!=='false',title:et.getAttribute(cfg.title,ns),cls:et.getAttribute(cfg.cls,ns),align:et.getAttribute(cfg.align,ns)};this.anchor=et.getAttribute(cfg.anchor,ns);if(this.anchor){this.anchorTarget=t;}
 this.delayShow();}},onTargetOut:function(e){this.clearTimer('show');if(this.autoHide!==false){this.delayHide();}},showAt:function(xy){var t=this.activeTarget;if(t){if(!this.rendered){this.render(Ext.getBody());this.activeTarget=t;}
 if(t.width){this.setWidth(t.width);this.body.setWidth(this.adjustBodyWidth(t.width-this.getFrameWidth()));this.measureWidth=false;}else{this.measureWidth=true;}
 this.setTitle(t.title||'');this.body.update(t.text);this.autoHide=t.autoHide;this.dismissDelay=t.dismissDelay||this.dismissDelay;if(this.lastCls){this.el.removeClass(this.lastCls);delete this.lastCls;}

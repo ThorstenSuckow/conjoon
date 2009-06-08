@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 3.0 Pre-alpha
- * Copyright(c) 2006-2008, Ext JS, LLC.
+ * Ext JS Library 3.0 RC2
+ * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -12,4 +12,4 @@ return this.readRecords(doc);},readRecords:function(doc){this.xmlData=doc;var ro
 if(this.meta.success){var sv=q.selectValue(this.meta.success,root,true);success=sv!==false&&sv!=='false';}
 var records=[];var ns=q.select(this.meta.record,root);for(var i=0,len=ns.length;i<len;i++){var n=ns[i];var values={};var id=sid?q.selectValue(sid,n):undefined;for(var j=0,jlen=fields.length;j<jlen;j++){var f=fields.items[j];var v=q.selectValue(Ext.value(f.mapping,f.name,true),n,f.defaultValue);v=f.convert(v,n);values[f.name]=v;}
 var record=new recordType(values,id);record.node=n;records[records.length]=record;}
-return{success:success,records:records,totalRecords:totalRecords||records.length};}});
+return{success:success,records:records,totalRecords:totalRecords||records.length};},readResponse:Ext.emptyFn});
