@@ -1524,6 +1524,10 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         if (node && node.attributes.type && (node.attributes.type != 'root' && node.attributes.type != 'accounts_root')) {
             this.clkNodeId = node.id;
             if (this.clkNodeId != this.lastClkNodeId) {
+                var proxy = this.gridPanel.store.proxy;
+                if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+                    proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+                }
                 this.gridPanel.store.removeAll();
                 this.gridPanel.view.reset(true);
                 this.lastClkNodeId = this.clkNodeId;
@@ -1550,8 +1554,8 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         this.clkNodeId = null;
         this.gridPanel.loadMask.hide();
         var proxy = this.gridPanel.store.proxy;
-        if (proxy.activeRequest[Ext.data.Api.READ]) {
-            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
+        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
         }
         this.gridPanel.store.removeAll();
     },
@@ -1593,7 +1597,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
         var folderId = record.data.groupwareEmailFoldersId;
 
         if (this.lastClkNodeId && (this.lastClkNodeId == folderId
-            && !this.gridPanel.store.proxy.activeRequest[Ext.data.Api.READ])) {
+            && !this.gridPanel.store.proxy.activeRequest[Ext.data.Api.actions.read])) {
             var pendingStore  = this.treePanel.pendingItemStore;
             var pendingRecord = pendingStore.getById(folderId);
             if (pendingRecord) {
@@ -1716,7 +1720,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
             }
         }
 
-        if (this.gridPanel.store.proxy.activeRequest[Ext.data.Api.READ]) {
+        if (this.gridPanel.store.proxy.activeRequest[Ext.data.Api.actions.read]) {
             this.clearPending();
             return;
         }
