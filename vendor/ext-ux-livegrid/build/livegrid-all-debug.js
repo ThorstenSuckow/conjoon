@@ -1546,6 +1546,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      */
     showLoadMask : function(show)
     {
+        if (!this.loadMask) {
+            return;
+        }
+
         if (show) {
             this.loadMask.show();
             this.liveScroller.setStyle('zIndex', this._maskIndex);
