@@ -264,7 +264,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
         var taEl = this._textArea.el;
         var cC   = this._charCounter;
 
-        Ext.fly(cC).update(remaining);
+        Ext.fly(cC).update(""+remaining);
 
         if (remaining <= 10) {
             taEl.removeClass('warning');
