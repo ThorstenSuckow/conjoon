@@ -1320,13 +1320,13 @@ com.conjoon.groupware.email.EmailForm = function(config){
             editor    : receiveTypeEditor,
             renderer  : function(value, metadata, record, rowIndex, colIndex, store) {
                 var st  = receiveTypeEditor.store;
-                var ind = st.find('value', value, 0, false, true);
+                var ind = st.find('field1', value, 0, false, true);
                 var sRecord = null;
                 if (ind >= 0) {
                     sRecord = st.getAt(ind);
                 }
                 if(sRecord) {
-                    return sRecord.data.text;
+                    return sRecord.get('field2');
                 } else {
                     '';
                 }
