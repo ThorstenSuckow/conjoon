@@ -79,15 +79,36 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
 
         this.store.on('load',  this._onLoad,        this);
         this.on('beforequery', this._onBeforeQuery, this);
+        this.on('blur',        this._onBlur, this);
+     },
+
+    abortQuery : function()
+    {
+        var proxy = this.store.proxy;
+        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+        }
     },
 
 // -------- listeners
+
+    /**
+     * Listener for the blur event of this field.
+     * Will abort any ongoing server request.
+     *
+     */
+    _onBlur : function()
+    {
+        this.abortQuery();
+    },
 
     /**
      * Listener for the beforequery event.
      * Will only return true if the value queried was not already queried
      * before and not found, if anyhing but whitespaces are submitted and
      * if it only contains chars that are allowed in a name or email address.
+     * If the beforequery does not return false, this method will also request to
+     * abort any ongoing server request.
      *
      * @param {Object} queryObject The event this method listens to.
      *
@@ -100,6 +121,11 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
         if (str.trim() == "") {
             return false;
         }
+
+        if (str.length < 3) {
+            return false;
+        }
+
 
         var blacklist = this._blacklist;
         var i = blacklist.length-1;
@@ -117,6 +143,8 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
         if (!alpha.test(str)) {
             return false;
         }
+
+        this.abortQuery();
     },
 
     /**
@@ -131,7 +159,7 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
     _onLoad : function(store, records, options)
     {
         if (records.length == 0) {
-            this._blacklist.push(options.params.query);
+            this._blacklist.push(store.baseParams[this.queryParam]);
         }
     }
 
