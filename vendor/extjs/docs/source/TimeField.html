@@ -85,8 +85,6 @@ Ext.form.TimeField = Ext.extend(Ext.form.ComboBox, {
 
     // private
     initComponent : function(){
-        Ext.form.TimeField.superclass.initComponent.call(this);
-
         if(typeof this.minValue == "string"){
             this.minValue = this.parseDate(this.minValue);
         }
@@ -95,25 +93,16 @@ Ext.form.TimeField = Ext.extend(Ext.form.ComboBox, {
         }
 
         if(!this.store){
-            var min = this.parseDate(this.minValue);
-            if(!min){
-                min = new Date(this.initDate).clearTime();
-            }
-            var max = this.parseDate(this.maxValue);
-            if(!max){
-                max = new Date(this.initDate).clearTime().add('mi', (24 * 60) - 1);
-            }
+            var min = this.parseDate(this.minValue) || new Date(this.initDate).clearTime();
+            var max = this.parseDate(this.maxValue) || new Date(this.initDate).clearTime().add('mi', (24 * 60) - 1);
             var times = [];
             while(min <= max){
-                times.push([min.dateFormat(this.format)]);
+                times.push(min.dateFormat(this.format));
                 min = min.add('mi', this.increment);
             }
-            this.store = new Ext.data.ArrayStore({
-                fields: ['text'],
-                data : times
-            });
-            this.displayField = 'text';
+            this.store = times;
         }
+        Ext.form.TimeField.superclass.initComponent.call(this);
     },
 
     // inherited docs

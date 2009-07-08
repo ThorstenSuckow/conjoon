@@ -231,7 +231,7 @@
 
                 if(!isset(to) && isset(by)){
                     end = parseColor(by);
-                    Ext.each(start, function(item, idx){
+                    Ext.each(start, function(item, i){
                         end[i] = item + end[i];
                     });
                 }

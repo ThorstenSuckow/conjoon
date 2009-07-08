@@ -53,6 +53,7 @@ Ext.data.ScriptTagProxy = function(config){
 
     <div id="event-Ext.data.ScriptTagProxy-loadexception"></div>/**
      * @event loadexception
+     * <b>Deprecated</b> in favor of 'exception' event.
      * Fires if an exception occurs in the Proxy during data loading.  This event can be fired for one of two reasons:
      * <ul><li><b>The load call timed out.</b>  This means the load callback did not execute within the time limit
      * specified by {@link #timeout}.  In this case, this event will be raised and the
@@ -67,7 +68,7 @@ Ext.data.ScriptTagProxy = function(config){
      * call timed out, this parameter will be null.
      * @param {Object} arg The callback's arg object passed to the {@link #load} function
      * @param {Error} e The JavaScript Error object caught if the configured Reader could not read the data.
-     * If the load call returned success: false, this parameter will be null.
+     * If the remote request returns success: false, this parameter will be null.
      */
 };
 
@@ -97,7 +98,7 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
     <div id="method-Ext.data.ScriptTagProxy-doRequest"></div>/**
      * HttpProxy implementation of DataProxy#doRequest
      * @param {String} action
-     * @param {Ext.data.Record/Ext.data.Record[]} rs If action is load, rs will be null
+     * @param {Ext.data.Record/Ext.data.Record[]} rs If action is <tt>read</tt>, rs will be null
      * @param {Object} params An object containing properties which are to be used as HTTP parameters
      * for the request to the remote server.
      * @param {Ext.data.DataReader} reader The Reader object which converts the data
@@ -118,10 +119,10 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
         if (!url) {
             throw new Ext.data.Api.Error('invalid-url', url);
         }
-        url += (url.indexOf("?") != -1 ? "&" : "?") + p;
+        url = Ext.urlAppend(url, p);
 
         if(this.nocache){
-            url += "&_dc=" + (new Date().getTime());
+            url = Ext.urlAppend(url, '_dc=' + (new Date().getTime()));
         }
         var transId = ++Ext.data.ScriptTagProxy.TRANS_ID;
         var trans = {
@@ -164,7 +165,7 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
             } else {
                 self.onWrite.call(self, action, trans, res, rs);
             }
-        }
+        };
     },
     /**
      * Callback for read actions

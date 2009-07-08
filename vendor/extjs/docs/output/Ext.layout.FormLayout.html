@@ -7,7 +7,7 @@ via the new keyword. See <tt><b><a href="output/Ext.Container.html#Ext.Container
 <p>In an application, it will usually be preferrable to use a <a href="output/Ext.form.FormPanel.html" ext:cls="Ext.form.FormPanel">FormPanel</a>
 (which is configured with FormLayout as its layout class by default) since it also provides built-in
 functionality for <a href="output/Ext.form.BasicForm.html#Ext.form.BasicForm-doAction" ext:member="doAction" ext:cls="Ext.form.BasicForm">loading, validating and submitting</a> the form.</p>
-<p>A <a href="output/Ext.Container.html" ext:cls="Ext.Container">Container</a> <i>using</i> the FormLayout layout manager (eg.
+<p>A <a href="output/Ext.Container.html" ext:cls="Ext.Container">Container</a> <i>using</i> the FormLayout layout manager (e.g.
 <a href="output/Ext.form.FormPanel.html" ext:cls="Ext.form.FormPanel">Ext.form.FormPanel</a> or specifying <tt>layout:'form'</tt>) can also accept the following
 layout-specific config properties:<div class="mdetail-params"><ul>
 <li><b><tt><a href="output/Ext.form.FormPanel.html#Ext.form.FormPanel-hideLabels" ext:member="hideLabels" ext:cls="Ext.form.FormPanel">hideLabels</a></tt></b></li>
@@ -72,12 +72,12 @@ Ext.QuickTips.init();
         {text: <em>'Cancel'</em>}
     ],
     layoutConfig: {
-        <a href="output/Ext.layout.FormLayout.html#Ext.layout.FormLayout-labelSeparator" ext:member="labelSeparator" ext:cls="Ext.layout.FormLayout">labelSeparator</a>: <em>'~'</em> <i>// superseded by assignment below </i>
+        <a href="output/Ext.layout.FormLayout.html#Ext.layout.FormLayout-labelSeparator" ext:member="labelSeparator" ext:cls="Ext.layout.FormLayout">labelSeparator</a>: <em>'~'</em> <i>// superseded by assignment below</i>
     },
     <i>// config options applicable to container when layout=<em>'form'</em>:</i>
     hideLabels: false,
     labelAlign: <em>'left'</em>,   <i>// or <em>'right'</em> or <em>'top'</em></i>
-    <a href="output/Ext.form.FormPanel.html#Ext.form.FormPanel-labelSeparator" ext:member="labelSeparator" ext:cls="Ext.form.FormPanel">labelSeparator</a>: <em>'>>'</em>, <i>// takes precedence over layoutConfig value </i>
+    <a href="output/Ext.form.FormPanel.html#Ext.form.FormPanel-labelSeparator" ext:member="labelSeparator" ext:cls="Ext.form.FormPanel">labelSeparator</a>: <em>'>>'</em>, <i>// takes precedence over layoutConfig value</i>
     labelWidth: 65,       <i>// defaults to 100</i>
     labelPad: 8           <i>// defaults to 5, must specify labelWidth to be honored</i>
 });</code></pre></div><div class="hr"></div><a id="Ext.layout.FormLayout-configs"></a><h2>Config Options</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Config Options</th><th class="msource-header">Defined By</th></tr><tr class="config-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.layout.AnchorLayout-anchor"></a><b><a href="source/AnchorLayout.html#cfg-Ext.layout.AnchorLayout-anchor">anchor</a></b> : String<div class="mdesc"><div class="short">This configuation option is to be applied to child items of a container managed by&#13;
@@ -90,13 +90,15 @@ The following types of anchor values are supported:<div class="mdetail-params"><
 <li><b>Percentage</b> : Any value between 1 and 100, expressed as a percentage.<div class="sub-desc">
 The first anchor is the percentage width that the item should take up within the container, and the
 second is the percentage height.  For example:<pre><code><i>// two values specified</i>
-anchor: <em>'100% 50%'</em> <i>// render item complete width of the container and 1/2 its height.</i>
+anchor: <em>'100% 50%'</em> <i>// render item complete width of the container and</i>
+                   <i>// 1/2 height of the container</i>
 <i>// one value specified</i>
 anchor: <em>'100%'</em>     <i>// the width value; the height will <b>default</b> to auto</i></code></pre></div></li>
 <li><b>Offsets</b> : Any positive or negative integer value.<div class="sub-desc">
 This is a raw adjustment where the first anchor is the offset from the right edge of the container,
 and the second is the offset from the bottom edge. For example:<pre><code><i>// two values specified</i>
-anchor: <em>'-50 -100'</em> <i>// render item the complete width of the container minus 50 pixels and</i>
+anchor: <em>'-50 -100'</em> <i>// render item the complete width of the container</i>
+                   <i>// minus 50 pixels and</i>
                    <i>// the complete height minus 100 pixels.</i>
 <i>// one value specified</i>
 anchor: <em>'-50'</em>      <i>// anchor value is assumed to be the right offset value</i>

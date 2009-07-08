@@ -5,7 +5,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js"><div id="cls-Ext.EventManager"></div>/**
+    <pre class="prettyprint lang-js">/**
  * @class Ext.EventManager
  */
 Ext.apply(Ext.EventManager, function(){
@@ -15,12 +15,26 @@ Ext.apply(Ext.EventManager, function(){
     	textSize,
     	D = Ext.lib.Dom,
     	E = Ext.lib.Event,
-    	propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/;
+    	propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/,
+        curWidth = 0,
+        curHeight = 0,
+        // note 1: IE fires ONLY the keydown event on specialkey autorepeat
+        // note 2: Safari < 3.1, Gecko (Mac/Linux) & Opera fire only the keypress event on specialkey autorepeat
+        // (research done by @Jan Wolter at http://unixpapa.com/js/key.html)
+        useKeydown = Ext.isSafari ? 
+                    Ext.num(navigator.userAgent.toLowerCase().match(/version\/(\d+\.\d)/)[1] || 2) >= 3.1 :
+                    !((Ext.isGecko && !Ext.isWindows) || Ext.isOpera);
       	
 	return { 
 		// private
 	    doResizeEvent: function(){
-	        resizeEvent.fire(D.getViewWidth(), D.getViewHeight());
+            var h = D.getViewHeight(),
+                w = D.getViewWidth();
+            
+            //whacky problem in IE where the resize event will fire even though the w/h are the same.
+            if(curHeight != h || curWidth != w){
+                resizeEvent.fire(curWidth = w, curHeight = h);
+            }
 	    },
 	    
 	    <div id="method-Ext.EventManager-onWindowResize"></div>/**
@@ -98,8 +112,12 @@ Ext.apply(Ext.EventManager, function(){
 	    <div id="prop-Ext.EventManager-ieDeferSrc"></div>/**
          * Url used for onDocumentReady with using SSL (defaults to Ext.SSL_SECURE_URL)
          */
-        ieDeferSrc : false   
-    }
+        ieDeferSrc : false,
+        
+        // protected for use inside the framework
+        // detects whether we should use keydown or keypress based on the browser.
+        useKeydown: useKeydown
+    };
 }());
 
 Ext.EventManager.on = Ext.EventManager.addListener;

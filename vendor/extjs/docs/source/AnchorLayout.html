@@ -57,7 +57,8 @@ Ext.layout.AnchorLayout = Ext.extend(Ext.layout.ContainerLayout, {
      * The first anchor is the percentage width that the item should take up within the container, and the
      * second is the percentage height.  For example:<pre><code>
 // two values specified
-anchor: '100% 50%' // render item complete width of the container and 1/2 its height.
+anchor: '100% 50%' // render item complete width of the container and
+                   // 1/2 height of the container
 // one value specified
 anchor: '100%'     // the width value; the height will default to auto
      * </code></pre></div></li>
@@ -66,7 +67,8 @@ anchor: '100%'     // the width value; the height will default to auto
      * This is a raw adjustment where the first anchor is the offset from the right edge of the container,
      * and the second is the offset from the bottom edge. For example:<pre><code>
 // two values specified
-anchor: '-50 -100' // render item the complete width of the container minus 50 pixels and
+anchor: '-50 -100' // render item the complete width of the container
+                   // minus 50 pixels and
                    // the complete height minus 100 pixels.
 // one value specified
 anchor: '-50'      // anchor value is assumed to be the right offset value

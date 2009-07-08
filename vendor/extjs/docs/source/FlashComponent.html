@@ -12,15 +12,40 @@
  * @xtype flash
  */
 Ext.FlashComponent = Ext.extend(Ext.BoxComponent, {
+    <div id="cfg-Ext.FlashComponent-flashVersion"></div>/**
+     * @cfg {String} flashVersion
+     * Indicates the version the flash content was published for. Defaults to <tt>'9.0.45'</tt>.
+     */
     flashVersion : '9.0.45',
+
+    <div id="cfg-Ext.FlashComponent-backgroundColor"></div>/**
+     * @cfg {String} backgroundColor
+     * The background color of the chart. Defaults to <tt>'#ffffff'</tt>.
+     */
     backgroundColor: '#ffffff',
+
+    <div id="cfg-Ext.FlashComponent-wmode"></div>/**
+     * @cfg {String} wmode
+     * The wmode of the flash object. This can be used to control layering. Defaults to <tt>'opaque'</tt>.
+     */
     wmode: 'opaque',
+
+    <div id="cfg-Ext.FlashComponent-url"></div>/**
+     * @cfg {String} url
+     * The URL of the chart to include. Defaults to <tt>undefined</tt>.
+     */
     url: undefined,
     swfId : undefined,
     swfWidth: '100%',
     swfHeight: '100%',
+
+    <div id="cfg-Ext.FlashComponent-expressInstall"></div>/**
+     * @cfg {Boolean} expressInstall
+     * True to prompt the user to install flash if not installed. Note that this uses
+     * Ext.FlashComponent.EXPRESS_INSTALL_URL, which should be set to the local resource. Defaults to <tt>false</tt>.
+     */
     expressInstall: false,
-    
+
     initComponent : function(){
         Ext.FlashComponent.superclass.initComponent.call(this);
 
@@ -30,28 +55,21 @@ Ext.FlashComponent = Ext.extend(Ext.BoxComponent, {
     onRender : function(){
         Ext.FlashComponent.superclass.onRender.apply(this, arguments);
 
-        var swfId = this.getSwfId();
-        var swf = new deconcept.SWFObject(this.url, swfId, this.swfWidth, this.swfHeight, this.flashVersion, this.backgroundColor);
-		if(this.expressInstall){
-			swf.useExpressInstall(this.expressInstall);
-		}
+        var params = {
+            allowScriptAccess: 'always',
+            bgcolor: this.backgroundColor,
+            wmode: this.wmode
+        }, vars = {
+            allowedDomain: document.location.hostname,
+            elementID: this.getId(),
+            eventHandler: 'Ext.FlashEventProxy.onEvent'
+        };
 
-        // params
-        swf.addParam("allowScriptAccess", "always");
-		if(this.wmode !== undefined){
-			swf.addParam("wmode", this.wmode);
-		}
+        new swfobject.embedSWF(this.url, this.id, this.swfWidth, this.swfHeight, this.flashVersion,
+            this.expressInstall ? Ext.FlashComponent.EXPRESS_INSTALL_URL : undefined, vars, params);
 
-		swf.addVariable("allowedDomain", document.location.hostname);
-		swf.addVariable("elementID", this.getId());
-
-		// set the name of the function to call when the swf has an event
-		swf.addVariable("eventHandler", "Ext.FlashEventProxy.onEvent");
-
-        var r = swf.write(this.el.dom);
-        if(r){
-			this.swf = Ext.getDom(swfId);
-		}
+        this.swf = Ext.getDom(this.id);
+        this.el = Ext.get(this.swf);
     },
 
     getSwfId : function(){
@@ -64,12 +82,12 @@ Ext.FlashComponent = Ext.extend(Ext.BoxComponent, {
 
     onFlashEvent : function(e){
         switch(e.type){
-			case "swfReady":
-   				this.initSwf();
-				return;
-			case "log":
+            case "swfReady":
+                this.initSwf();
                 return;
-		}
+            case "log":
+                return;
+        }
         e.component = this;
         this.fireEvent(e.type.toLowerCase().replace(/event$/, ''), e);
     },
@@ -79,24 +97,23 @@ Ext.FlashComponent = Ext.extend(Ext.BoxComponent, {
         this.isInitialized = true;
         this.fireEvent('initialize', this);
     },
-    
+
     beforeDestroy: function(){
-        if(Ext.isIE && this.rendered){
-            var el = this.el.child('object');
-            if(el){
-                el = el.dom;
-                for (var prop in el){
-                    if(Ext.isFunction(el[prop])){
-                        el[prop] = Ext.emptyFn;
-                    }
-                }
-            }
+        if(this.rendered){
+            swfobject.removeSWF(this.swf.id);
         }
         Ext.FlashComponent.superclass.beforeDestroy.call(this);
     },
 
     onSwfReady : Ext.emptyFn
 });
+
+<div id="prop-Ext.FlashComponent-EXPRESS_INSTALL_URL"></div>/**
+ * Sets the url for installing flash if it doesn't exist. This should be set to a local resource.
+ * @static
+ * @type String
+ */
+Ext.FlashComponent.EXPRESS_INSTALL_URL = 'http:/' + '/swfobject.googlecode.com/svn/trunk/swfobject/expressInstall.swf';
 
 Ext.reg('flash', Ext.FlashComponent);</pre>    
 </body>

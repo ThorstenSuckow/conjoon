@@ -101,11 +101,12 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
     ],
     defaultFont: 'tahoma',
     <div id="cfg-Ext.form.HtmlEditor-defaultValue"></div>/**
-     * @cfg {String} defaultValue A default value to be put into the editor to resolve focus issues (defaults to &#8203;, &nbsp; in Opera).
+     * @cfg {String} defaultValue A default value to be put into the editor to resolve focus issues (defaults to &#8203; (Zero-width space), &nbsp; (Non-breaking space) in Opera and IE6).
      */
-    defaultValue: Ext.isOpera ? '&nbsp;' : '&#8203;',
+    defaultValue: (Ext.isOpera || Ext.isIE6) ? '&nbsp;' : '&#8203;',
 
     // private properties
+    actionMode: 'wrap',
     validationEvent : false,
     deferHeight: true,
     initialized : false,
@@ -212,6 +213,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
                 handler:handler||editor.relayBtnCmd,
                 clickEvent:'mousedown',
                 tooltip: tipsEnabled ? editor.buttonTips[id] || undefined : undefined,
+                overflowText: editor.buttonTips[id].title || undefined,
                 tabIndex:-1
             };
         }
@@ -634,6 +636,14 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
             }
             if(this.fireEvent('beforepush', this, v) !== false){
                 this.getEditorBody().innerHTML = v;
+                if(Ext.isGecko){
+                    // Gecko hack, see: https://bugzilla.mozilla.org/show_bug.cgi?id=232791#c8
+                    var d = this.doc,
+                        mode = d.designMode.toLowerCase();
+                    
+                    d.designMode = mode.toggle('on', 'off');
+                    d.designMode = mode;
+                }
                 this.fireEvent('push', this, v);
             }
         }

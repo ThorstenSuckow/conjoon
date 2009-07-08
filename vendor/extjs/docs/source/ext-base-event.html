@@ -7,24 +7,29 @@
 <body  onload="prettyPrint();">
     <pre class="prettyprint lang-js">Ext.lib.Event = function() {
     var loadComplete = false,
-    	listeners = [],
-    	unloadListeners = [],
-    	retryCount = 0,
-    	onAvailStack = [],
-    	_interval,
-    	locked = false,
-    	win = window,
-    	doc = document,
-    	
-    	// constants        	
-    	POLL_RETRYS = 200,
+        listeners = [],
+        unloadListeners = [],
+        retryCount = 0,
+        onAvailStack = [],
+        _interval,
+        locked = false,
+        win = window,
+        doc = document,
+        
+        // constants            
+        POLL_RETRYS = 200,
         POLL_INTERVAL = 20,
         EL = 0,
         TYPE = 1,
         FN = 2,
         WFN = 3,
         OBJ = 3,
-        ADJ_SCOPE = 4,            
+        ADJ_SCOPE = 4,   
+        SCROLLLEFT = 'scrollLeft',
+        SCROLLTOP = 'scrollTop',
+        UNLOAD = 'unload',
+        MOUSEOVER = 'mouseover',
+        MOUSEOUT = 'mouseout',
         // private
         doAdd = function() {
             var ret;
@@ -32,10 +37,10 @@
                 ret = function(el, eventName, fn, capture) {
                     if (eventName == 'mouseenter') {
                         fn = fn.createInterceptor(checkRelatedTarget);
-                        el.addEventListener('mouseover', fn, (capture));
+                        el.addEventListener(MOUSEOVER, fn, (capture));
                     } else if (eventName == 'mouseleave') {
                         fn = fn.createInterceptor(checkRelatedTarget);
-                        el.addEventListener('mouseout', fn, (capture));
+                        el.addEventListener(MOUSEOUT, fn, (capture));
                     } else {
                         el.addEventListener(eventName, fn, (capture));
                     }
@@ -50,16 +55,16 @@
                 ret = function(){};
             }
             return ret;
-        }(),	
-		// private
+        }(),    
+        // private
         doRemove = function(){
             var ret;
             if (win.removeEventListener) {
                 ret = function (el, eventName, fn, capture) {
                     if (eventName == 'mouseenter') {
-                        eventName = 'mouseover'
+                        eventName = MOUSEOVER;
                     } else if (eventName == 'mouseleave') {
-                        eventName = 'mouseout'
+                        eventName = MOUSEOUT;
                     }                        
                     el.removeEventListener(eventName, fn, (capture));
                 };
@@ -73,8 +78,9 @@
             return ret;
         }();        
 
-    var isXUL = Ext.isGecko ? 
-        function(node) { return Object.prototype.toString.call(node) == '[object XULElement]'; } : Ext.emptyFn;
+    var isXUL = Ext.isGecko ? function(node){ 
+        return Object.prototype.toString.call(node) == '[object XULElement]';
+    } : function(){};
         
     var isTextNode = Ext.isGecko ? function(node){
         try{
@@ -116,43 +122,43 @@
         return false;
     }
 
-     	
-    // private	
+        
+    // private  
     function _getCacheIndex(el, eventName, fn) {
         var index = -1;
         Ext.each(listeners, function (v,i) {
             if(v && v[FN] == fn && v[EL] == el && v[TYPE] == eventName) {
-	            index = i;
+                index = i;
             }
         });
         return index;
     }
-                	
-	// private
+                    
+    // private
     function _tryPreloadAttach() {
-        var ret = false,            	
-        	notAvail = [],
+        var ret = false,                
+            notAvail = [],
             element,
-        	tryAgain = !loadComplete || (retryCount > 0);	                	
+            tryAgain = !loadComplete || (retryCount > 0);                       
         
         if (!locked) {
             locked = true;
             
             Ext.each(onAvailStack, function (v,i,a){
-            	if(v && (element = doc.getElementById(v.id))){
-	            	if(!v.checkReady || loadComplete || element.nextSibling || (doc && doc.body)) {
-		            	element = v.override ? (v.override === true ? v.obj : v.override) : element;
-		            	v.fn.call(element, v.obj);
-		            	onAvailStack[i] = null;
-	            	} else {
-		            	notAvail.push(item);
-	            	}
-            	}	
+                if(v && (element = doc.getElementById(v.id))){
+                    if(!v.checkReady || loadComplete || element.nextSibling || (doc && doc.body)) {
+                        element = v.override ? (v.override === true ? v.obj : v.override) : element;
+                        v.fn.call(element, v.obj);
+                        onAvailStack[i] = null;
+                    } else {
+                        notAvail.push(v);
+                    }
+                }   
             });
 
-            retryCount = (notAvail.length == 0) ? 0 : retryCount - 1;
+            retryCount = (notAvail.length === 0) ? 0 : retryCount - 1;
 
-            if (tryAgain) {	
+            if (tryAgain) { 
                 startInterval();
             } else {
                 clearInterval(_interval);
@@ -160,31 +166,38 @@
             }
 
             ret = !(locked = false);
-		}
-		return ret;
+        }
+        return ret;
     }
     
-    // private	        	
-	function startInterval() {            
+    // private              
+    function startInterval() {            
         if(!_interval){                    
             var callback = function() {
                 _tryPreloadAttach();
             };
-            _interval = setInterval(callback, pub.POLL_INTERVAL);
+            _interval = setInterval(callback, POLL_INTERVAL);
         }
     }
     
     // private 
     function getScroll() {
-        var scroll = Ext.fly(doc).getScroll();
-        return [scroll.top, scroll.top];
+        var dd = doc.documentElement, 
+            db = doc.body;
+        if(dd && (dd[SCROLLTOP] || dd[SCROLLLEFT])){
+            return [dd[SCROLLLEFT], dd[SCROLLTOP]];
+        }else if(db){
+            return [db[SCROLLLEFT], db[SCROLLTOP]];
+        }else{
+            return [0, 0];
+        }
     }
         
     // private
     function getPageCoord (ev, xy) {
         ev = ev.browserEvent || ev;
         var coord  = ev['page' + xy];
-        if (!coord && 0 != coord) {
+        if (!coord && coord !== 0) {
             coord = ev['client' + xy] || 0;
 
             if (Ext.isIE) {
@@ -196,7 +209,7 @@
     }
 
     var pub =  {
-        onAvailable : function(p_id, p_fn, p_obj, p_override) {	            
+        onAvailable : function(p_id, p_fn, p_obj, p_override) {             
             onAvailStack.push({ 
                 id:         p_id,
                 fn:         p_fn,
@@ -204,49 +217,49 @@
                 override:   p_override,
                 checkReady: false });
 
-            retryCount = this.POLL_RETRYS;
+            retryCount = POLL_RETRYS;
             startInterval();
         },
 
 
         addListener: function(el, eventName, fn) {
-			var ret;				
-			el = Ext.getDom(el);				
-			if (el && fn) {
-				if ("unload" == eventName) {
-				    ret = !!(unloadListeners[unloadListeners.length] = [el, eventName, fn]);					
-				} else {
+            var ret;                
+            el = Ext.getDom(el);                
+            if (el && fn) {
+                if (UNLOAD == eventName) {
+                    ret = !!(unloadListeners[unloadListeners.length] = [el, eventName, fn]);                    
+                } else {
                     listeners.push([el, eventName, fn, ret = doAdd(el, eventName, fn, false)]);
-				}
-			}
-			return !!ret;
+                }
+            }
+            return !!ret;
         },
 
         removeListener: function(el, eventName, fn) {
             var ret = false,
-            	index, 
-            	cacheItem;
+                index, 
+                cacheItem;
 
             el = Ext.getDom(el);
 
-            if(!fn) { 	                
+            if(!fn) {                   
                 ret = this.purgeElement(el, false, eventName);
-            } else if ("unload" == eventName) {	
+            } else if (UNLOAD == eventName) {   
                 Ext.each(unloadListeners, function(v, i, a) {
-	                if( v && v[0] == el && v[1] == eventName && v[2] == fn) {
-		                unloadListeners.splice(i, 1);
-	                	ret = true;
-                	}
+                    if( v && v[0] == el && v[1] == eventName && v[2] == fn) {
+                        unloadListeners.splice(i, 1);
+                        ret = true;
+                    }
                 });
-            } else {	
+            } else {    
                 index = arguments[3] || _getCacheIndex(el, eventName, fn);
                 cacheItem = listeners[index];
                 
                 if (el && cacheItem) {
-	                doRemove(el, eventName, cacheItem[WFN], false);		
-	                cacheItem[WFN] = cacheItem[FN] = null;		                 
-	                listeners.splice(index, 1);		
-	                ret = true;
+                    doRemove(el, eventName, cacheItem[WFN], false);     
+                    cacheItem[WFN] = cacheItem[FN] = null;                       
+                    listeners.splice(index, 1);     
+                    ret = true;
                 }
             }
             return ret;
@@ -264,8 +277,8 @@
         getRelatedTarget : function(ev) {
             ev = ev.browserEvent || ev;
             return this.resolveTextNode(ev.relatedTarget || 
-				    (ev.type == "mouseout" ? ev.toElement :
-				     ev.type == "mouseover" ? ev.fromElement : null));
+                    (ev.type == MOUSEOUT ? ev.toElement :
+                     ev.type == MOUSEOVER ? ev.fromElement : null));
         },
         
         getPageX : function(ev) {
@@ -277,7 +290,7 @@
         },
 
 
-        getXY : function(ev) {	                           
+        getXY : function(ev) {                             
             return [this.getPageX(ev), this.getPageY(ev)];
         },
 
@@ -296,7 +309,7 @@
 //                 return ev.time;
 //             },
 
-        stopEvent : function(ev) {		                      
+        stopEvent : function(ev) {                            
             this.stopPropagation(ev);
             this.preventDefault(ev);
         },
@@ -345,82 +358,84 @@
             loadComplete = true;
             var EU = Ext.lib.Event;    
             if (Ext.isIE && e !== true) {
-		// IE8 complains that _load is null or not an object
-		// so lets remove self via arguments.callee
+        // IE8 complains that _load is null or not an object
+        // so lets remove self via arguments.callee
                 doRemove(win, "load", arguments.callee);
             }
         },            
         
         purgeElement : function(el, recurse, eventName) {
-			var me = this;
-			Ext.each( me.getListeners(el, eventName), function(v){
-				if(v) me.removeListener(el, v.type, v.fn);
-			});
+            var me = this;
+            Ext.each( me.getListeners(el, eventName), function(v){
+                if(v){
+                    me.removeListener(el, v.type, v.fn);
+                }
+            });
 
             if (recurse && el && el.childNodes) {
                 Ext.each(el.childNodes, function(v){
-	                me.purgeElement(v, recurse, eventName);
+                    me.purgeElement(v, recurse, eventName);
                 });
             }
         },
 
         getListeners : function(el, eventName) {
             var me = this,
-            	results = [], 
-            	searchLists;
+                results = [], 
+                searchLists;
 
-			if (eventName){  
-                searchLists = eventName == 'unload' ? unloadListeners : listeners;
+            if (eventName){  
+                searchLists = eventName == UNLOAD ? unloadListeners : listeners;
             }else{
                 searchLists = listeners.concat(unloadListeners);
             }
 
-			Ext.each(searchLists, function(v, i){
-				if (v && v[EL] == el && (!eventName || eventName == v[TYPE])) {
-					results.push({
+            Ext.each(searchLists, function(v, i){
+                if (v && v[EL] == el && (!eventName || eventName == v[TYPE])) {
+                    results.push({
                                 type:   v[TYPE],
                                 fn:     v[FN],
                                 obj:    v[OBJ],
                                 adjust: v[ADJ_SCOPE],
                                 index:  i
                             });
-				}	
-			});                
+                }   
+            });                
 
             return results.length ? results : null;
         },
 
         _unload : function(e) {
              var EU = Ext.lib.Event, 
-            	i, 
-            	j, 
-            	l, 
-            	len, 
-            	index,
-            	scope;
-            	
+                i, 
+                j, 
+                l, 
+                len, 
+                index,
+                scope;
+                
 
-			Ext.each(unloadListeners, function(v) {
-				if (v) {
+            Ext.each(unloadListeners, function(v) {
+                if (v) {
                     try{
-					    scope =  v[ADJ_SCOPE] ? (v[ADJ_SCOPE] === true ? v[OBJ] : v[ADJ_SCOPE]) :  win;	
-					    v[FN].call(scope, EU.getEvent(e), v[OBJ]);
-                    }catch(e){}
-				}	
-			});		
+                        scope =  v[ADJ_SCOPE] ? (v[ADJ_SCOPE] === true ? v[OBJ] : v[ADJ_SCOPE]) :  win; 
+                        v[FN].call(scope, EU.getEvent(e), v[OBJ]);
+                    }catch(ex){}
+                }   
+            });     
 
             unloadListeners = null;
 
-            if (listeners && (j = listeners.length)) {                    
-                while (j) {                        
-                    if (l = listeners[index = --j]) {
+            if(listeners && (j = listeners.length)){                    
+                while(j){                        
+                    if((l = listeners[index = --j])){
                         EU.removeListener(l[EL], l[TYPE], l[FN], index);
                     }                        
                 }
                 //EU.clearCache();
             }
 
-            doRemove(win, "unload", EU._unload);
+            doRemove(win, UNLOAD, EU._unload);
         }            
     };        
     
@@ -432,7 +447,7 @@
     } else {
         doAdd(win, "load", pub._load);
     }
-    doAdd(win, "unload", pub._unload);    
+    doAdd(win, UNLOAD, pub._unload);    
     _tryPreloadAttach();
     
     return pub;

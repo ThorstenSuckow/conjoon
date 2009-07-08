@@ -242,7 +242,7 @@ mc.add(otherEl);
         }
         this.length++;
         this.items.splice(index, 0, o);
-        if(typeof key != "undefined" && key != null){
+        if(typeof key != "undefined" && key !== null){
             this.map[key] = o;
         }
         this.keys.splice(index, 0, key);
@@ -319,10 +319,12 @@ mc.add(otherEl);
  * Returns the item associated with the passed key OR index. Key has priority over index.  This is the equivalent
  * of calling {@link #key} first, then if nothing matched calling {@link #itemAt}.
  * @param {String/Number} key The key or index of the item.
- * @return {Object} The item associated with the passed key.
+ * @return {Object} If the item is found, returns the item.  If the item was not found, returns <tt>undefined</tt>.
+ * If an item was found, but is a Class, returns <tt>null</tt>.
  */
     item : function(key){
-        var item = typeof this.map[key] != "undefined" ? this.map[key] : (typeof key == 'number') ? this.items[key] : null;
+        var mk = this.map[key],
+            item = mk !== undefined ? mk : (typeof key == 'number') ? this.items[key] : undefined;
         return !Ext.isFunction(item) || this.allowFunctions ? item : null; // for prototype!
     },
 
@@ -391,22 +393,25 @@ mc.add(otherEl);
 
     // private
     _sort : function(property, dir, fn){
-        var dsc = String(dir).toUpperCase() == "DESC" ? -1 : 1;
+        var i,
+            len,
+            dsc = String(dir).toUpperCase() == "DESC" ? -1 : 1,
+            c = [], k = this.keys, items = this.items;
+            
         fn = fn || function(a, b){
             return a-b;
         };
-        var c = [], k = this.keys, items = this.items;
-        for(var i = 0, len = items.length; i < len; i++){
+        for(i = 0, len = items.length; i < len; i++){
             c[c.length] = {key: k[i], value: items[i], index: i};
         }
         c.sort(function(a, b){
             var v = fn(a[property], b[property]) * dsc;
-            if(v == 0){
+            if(v === 0){
                 v = (a.index < b.index ? -1 : 1);
             }
             return v;
         });
-        for(var i = 0, len = c.length; i < len; i++){
+        for(i = 0, len = c.length; i < len; i++){
             items[i] = c[i].value;
             k[i] = c[i].key;
         }
@@ -447,13 +452,13 @@ mc.add(otherEl);
         }
         start = start || 0;
         end = Math.min(typeof end == "undefined" ? this.length-1 : end, this.length-1);
-        var r = [];
+        var i, r = [];
         if(start <= end){
-            for(var i = start; i <= end; i++) {
+            for(i = start; i <= end; i++) {
                 r[r.length] = items[i];
             }
         }else{
-            for(var i = start; i >= end; i--) {
+            for(i = start; i >= end; i--) {
                 r[r.length] = items[i];
             }
         }
@@ -562,10 +567,12 @@ mc.add(otherEl);
     }
 });
 <div id="method-Ext.util.MixedCollection-get"></div>/**
- * Returns the item associated with the passed key or index.
- * @method
+ * This method calls {@link #item item()}.
+ * Returns the item associated with the passed key OR index. Key has priority over index.  This is the equivalent
+ * of calling {@link #key} first, then if nothing matched calling {@link #itemAt}.
  * @param {String/Number} key The key or index of the item.
- * @return {Object} The item associated with the passed key.
+ * @return {Object} If the item is found, returns the item.  If the item was not found, returns <tt>undefined</tt>.
+ * If an item was found, but is a Class, returns <tt>null</tt>.
  */
 Ext.util.MixedCollection.prototype.get = Ext.util.MixedCollection.prototype.item;</pre>    
 </body>

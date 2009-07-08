@@ -35,14 +35,40 @@ var myImage = new Ext.BoxComponent({
  */
 Ext.BoxComponent = Ext.extend(Ext.Component, {
 
-	// Configs below are used for all Components when rendered by BorderLayout.
+    // Configs below are used for all Components when rendered by BorderLayout.
     <div id="cfg-Ext.BoxComponent-region"></div>/**
      * @cfg {String} region <p><b>Note</b>: this config is only used when this BoxComponent is rendered
      * by a Container which has been configured to use the <b>{@link Ext.layout.BorderLayout BorderLayout}</b>
-     * layout manager (eg. specifying <tt>layout:'border'</tt>).</p><br>
+     * layout manager (e.g. specifying <tt>layout:'border'</tt>).</p><br>
      * <p>See {@link Ext.layout.BorderLayout} also.</p>
      */
-
+    // margins config is used when a BoxComponent is rendered by BorderLayout or BoxLayout.
+    <div id="cfg-Ext.BoxComponent-margins"></div>/**
+     * @cfg {Object} margins <p><b>Note</b>: this config is only used when this BoxComponent is rendered
+     * by a Container which has been configured to use the <b>{@link Ext.layout.BorderLayout BorderLayout}</b>
+     * or one of the two <b>{@link Ext.layout.BoxLayout BoxLayout} subclasses.</b></p>
+     * <p>An object containing margins to apply to this BoxComponent in the
+     * format:</p><pre><code>
+{
+    top: (top margin),
+    right: (right margin),
+    bottom: (bottom margin),
+    left: (left margin)
+}</code></pre>
+     * <p>May also be a string containing space-separated, numeric margin values. The order of the
+     * sides associated with each value matches the way CSS processes margin values:</p>
+     * <p><div class="mdetail-params"><ul>
+     * <li>If there is only one value, it applies to all sides.</li>
+     * <li>If there are two values, the top and bottom borders are set to the first value and the
+     * right and left are set to the second.</li>
+     * <li>If there are three values, the top is set to the first value, the left and right are set
+     * to the second, and the bottom is set to the third.</li>
+     * <li>If there are four values, they apply to the top, right, bottom, and left, respectively.</li>
+     * </ul></div></p>
+     * <p>Defaults to:</p><pre><code>
+     * {top:0, right:0, bottom:0, left:0}
+     * </code></pre>
+     */
     <div id="cfg-Ext.BoxComponent-x"></div>/**
      * @cfg {Number} x
      * The local x (left) coordinate for this component if contained within a positioning container.
@@ -62,22 +88,86 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
     <div id="cfg-Ext.BoxComponent-height"></div>/**
      * @cfg {Number} height
      * The height of this component in pixels (defaults to auto).
+     * <b>Note</b> to express this dimension as a percentage or offset see {@link Ext.Component#anchor}.
      */
     <div id="cfg-Ext.BoxComponent-width"></div>/**
      * @cfg {Number} width
      * The width of this component in pixels (defaults to auto).
+     * <b>Note</b> to express this dimension as a percentage or offset see {@link Ext.Component#anchor}.
      */
     <div id="cfg-Ext.BoxComponent-autoHeight"></div>/**
      * @cfg {Boolean} autoHeight
-     * True to use height:'auto', false to use fixed height (defaults to false). <b>Note</b>: Although many components 
-     * inherit this config option, not all will function as expected with a height of 'auto'. Setting autoHeight:true 
-     * means that the browser will manage height based on the element's contents, and that Ext will not manage it at all.
+     * <p>True to use height:'auto', false to use fixed height (or allow it to be managed by its parent
+     * Container's {@link Ext.Container#layout layout manager}. Defaults to false.</p>
+     * <p><b>Note</b>: Although many components inherit this config option, not all will
+     * function as expected with a height of 'auto'. Setting autoHeight:true means that the
+     * browser will manage height based on the element's contents, and that Ext will not manage it at all.</p>
+     * <p>If the <i>browser</i> is managing the height, be aware that resizes performed by the browser in response
+     * to changes within the structure of the Component cannot be detected. Therefore changes to the height might
+     * result in elements needing to be synchronized with the new height. Example:</p><pre><code>
+var w = new Ext.Window({
+    title: 'Window',
+    width: 600,
+    autoHeight: true,
+    items: {
+        title: 'Collapse Me',
+        height: 400,
+        collapsible: true,
+        border: false,
+        listeners: {
+            beforecollapse: function() {
+                w.el.shadow.hide();
+            },
+            beforeexpand: function() {
+                w.el.shadow.hide();
+            },
+            collapse: function() {
+                w.syncShadow();
+            },
+            expand: function() {
+                w.syncShadow();
+            }
+        }
+    }
+}).show();
+</code></pre>
      */
     <div id="cfg-Ext.BoxComponent-autoWidth"></div>/**
      * @cfg {Boolean} autoWidth
-     * True to use width:'auto', false to use fixed width (defaults to false). <b>Note</b>: Although many components 
-     * inherit this config option, not all will function as expected with a width of 'auto'. Setting autoWidth:true 
-     * means that the browser will manage width based on the element's contents, and that Ext will not manage it at all.
+     * <p>True to use width:'auto', false to use fixed width (or allow it to be managed by its parent
+     * Container's {@link Ext.Container#layout layout manager}. Defaults to false.</p>
+     * <p><b>Note</b>: Although many components  inherit this config option, not all will
+     * function as expected with a width of 'auto'. Setting autoWidth:true means that the
+     * browser will manage width based on the element's contents, and that Ext will not manage it at all.</p>
+     * <p>If the <i>browser</i> is managing the width, be aware that resizes performed by the browser in response
+     * to changes within the structure of the Component cannot be detected. Therefore changes to the width might
+     * result in elements needing to be synchronized with the new width. For example, where the target element is:</p><pre><code>
+&lt;div id='grid-container' style='margin-left:25%;width:50%'>&lt;/div>
+</code></pre>
+     * A Panel rendered into that target element must listen for browser window resize in order to relay its
+      * child items when the browser changes its width:<pre><code>
+var myPanel = new Ext.Panel({
+    renderTo: 'grid-container',
+    monitorResize: true, // relay on browser resize
+    title: 'Panel',
+    height: 400,
+    autoWidth: true,
+    layout: 'hbox',
+    layoutConfig: {
+        align: 'stretch'
+    },
+    defaults: {
+        flex: 1
+    },
+    items: [{
+        title: 'Box 1',
+    }, {
+        title: 'Box 2'
+    }, {
+        title: 'Box 3'
+    }],
+});
+</code></pre>
      */
 
     /* // private internal config
@@ -86,7 +176,7 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
      * height (defaults to false).
      */
 
-	// private
+    // private
     initComponent : function(){
         Ext.BoxComponent.superclass.initComponent.call(this);
         this.addEvents(
@@ -264,7 +354,16 @@ Ext.BoxComponent = Ext.extend(Ext.Component, {
         return this;
     },
 
-    // protected
+    <div id="method-Ext.BoxComponent-getResizeEl"></div>/**
+     * <p>Returns the outermost Element of this Component which defines the Components overall size.</p>
+     * <p><i>Usually</i> this will return the same Element as <code>{@link #getEl}</code>,
+     * but in some cases, a Component may have some more wrapping Elements around its main
+     * active Element.</p>
+     * <p>An example is a ComboBox. It is encased in a <i>wrapping</i> Element which
+     * contains both the <code>&lt;input></code> Element (which is what would be returned
+     * by its <code>{@link #getEl}</code> method, <i>and</i> the trigger button Element.
+     * This Element is returned as the <code>resizeEl</code>.
+     */
     getResizeEl : function(){
         return this.resizeEl || this.el;
     },

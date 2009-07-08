@@ -48,24 +48,30 @@ myStore.on({
             <i>// use <tt><a href="output/Ext.data.HttpProxy.html#Ext.data.HttpProxy-setUrl" ext:member="setUrl" ext:cls="Ext.data.HttpProxy">setUrl</a></tt> to change the URL <b>for</b> *just* this request.</i>
             store.proxy.setUrl(<em>'changed1.php'</em>);
 
-            <i>// set optional second parameter to true to make this URL change permanent, applying this URL <b>for</b> all subsequent requests.</i>
+            <i>// set optional second parameter to true to make this URL change</i>
+            <i>// permanent, applying this URL <b>for</b> all subsequent requests.</i>
             store.proxy.setUrl(<em>'changed1.php'</em>, true);
 
-            <i>// manually set the <b>private</b> connection URL.  <b>Warning:</b>  Accessing the private URL property like should be avoided.  Please use the public</i>
-            <i>// method <tt><a href="output/Ext.data.HttpProxy.html#Ext.data.HttpProxy-setUrl" ext:member="setUrl" ext:cls="Ext.data.HttpProxy">setUrl</a></tt> instead, shown above.  It should be noted that changing the URL like</i>
-            <i>// this will affect the URL <b>for</b> just this request.  Subsequent requests will use the API or URL defined <b>in</b> your initial</i>
-            <i>// proxy configuration.</i>
+            <i>// manually set the <b>private</b> connection URL.</i>
+            <i>// <b>Warning:</b>  Accessing the private URL property should be avoided.</i>
+            <i>// Use the public method <tt><a href="output/Ext.data.HttpProxy.html#Ext.data.HttpProxy-setUrl" ext:member="setUrl" ext:cls="Ext.data.HttpProxy">setUrl</a></tt> instead, shown above.</i>
+            <i>// It should be noted that changing the URL like this will affect</i>
+            <i>// the URL <b>for</b> just this request.  Subsequent requests will use the</i>
+            <i>// API or URL defined <b>in</b> your initial proxy configuration.</i>
             store.proxy.conn.url = <em>'changed1.php'</em>;
 
             <i>// proxy URL will be superseded by API (only <b>if</b> proxy created to use ajax):</i>
-            <i>// It should be noted that proxy API changes are permanent and will be used <b>for</b> all subsequent requests.</i>
+            <i>// It should be noted that proxy API changes are permanent and will</i>
+            <i>// be used <b>for</b> all subsequent requests.</i>
             store.proxy.api.load = <em>'changed2.php'</em>;
 
-            <i>// However, altering the proxy API should be done using the public method <tt><a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-setApi" ext:member="setApi" ext:cls="Ext.data.DataProxy">setApi</a></tt> instead.</i>
+            <i>// However, altering the proxy API should be done using the public</i>
+            <i>// method <tt><a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-setApi" ext:member="setApi" ext:cls="Ext.data.DataProxy">setApi</a></tt> instead.</i>
             store.proxy.setApi(<em>'load'</em>, <em>'changed2.php'</em>);
 
-            <i>// Or set the entire API <b>with</b> a config-object.  When using the config-object option, you must redefine the <b>entire</b> API --</i>
-            <i>// not just a specific action of it.</i>
+            <i>// Or set the entire API <b>with</b> a config-object.</i>
+            <i>// When using the config-object option, you must redefine the <b>entire</b></i>
+            <i>// API -- not just a specific action of it.</i>
             store.proxy.setApi({
                 read    : <em>'changed_read.php'</em>,
                 create  : <em>'changed_create.php'</em>,
@@ -80,23 +86,24 @@ the server the name of the callback function set up by t...</div><div class="lon
 the server the name of the callback function set up by the load call to process the returned data object.
 Defaults to "callback".<p>The server-side processing must read this parameter value, and generate
 javascript output which calls this named function passing the data object as its only parameter.</div></div></td><td class="msource">ScriptTagProxy</td></tr><tr class="config-row  inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-doRequest"></a><b><a href="source/DataProxy.html#cfg-Ext.data.DataProxy-doRequest">doRequest</a></b> : Function<div class="mdesc">Abstract method that should be implemented in all subclasses
-(eg: <a href="output/Ext.data.HttpProxy.html#Ext.data.HttpProxy-doRequest" ext:member="doRequest" ext:cls="Ext.data.HttpProxy">HttpProxy.doRequest</a>,
+(e.g.: <a href="output/Ext.data.HttpProxy.html#Ext.data.HttpProxy-doRequest" ext:member="doRequest" ext:cls="Ext.data.HttpProxy">HttpProxy.doRequest</a>,
 <a href="output/Ext.data.DirectProxy.html#Ext.data.DirectProxy-doRequest" ext:member="doRequest" ext:cls="Ext.data.DirectProxy">DirectProxy.doRequest</a>).</div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#doRequest" ext:member="#doRequest" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="config-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-listeners"></a><b><a href="source/Observable.html#cfg-Ext.util.Observable-listeners">listeners</a></b> : Object<div class="mdesc"><div class="short">A config object containing one or more event handlers to be added to this
 object during initialization.  This should ...</div><div class="long"><p>A config object containing one or more event handlers to be added to this
 object during initialization.  This should be a valid listeners config object as specified in the
 <a href="output/Ext.util.Observable.html#Ext.util.Observable-addListener" ext:member="addListener" ext:cls="Ext.util.Observable">addListener</a> example for attaching multiple handlers at once.</p>
-<p><b>Note:</b> While <i>some</i> Observable classes export selected DOM events (eg "click", "mouseover" etc), this
+<br><p><b><u>DOM events from ExtJs <a href="output/Ext.Component.html" ext:cls="Ext.Component">Components</a></u></b></p>
+<br><p>While <i>some</i> ExtJs Component classes export selected DOM events (e.g. "click", "mouseover" etc), this
 is usually only done when extra value can be added. For example the <a href="output/Ext.DataView.html" ext:cls="Ext.DataView">DataView</a>'s
 <b><code><a href="output/Ext.DataView.html#Ext.DataView-click" ext:member="click" ext:cls="Ext.DataView">click</a></code></b> event passing the node clicked on. To access DOM
-events directly from a Component's HTMLElement listeners must be added to the element after the Component
-has been rendered. A plugin can simplify this step:<code><pre>
-<i>// Plugin is configured <b>with</b> a listeners config object.</i>
+events directly from a Component's HTMLElement, listeners must be added to the <i><a href="output/Ext.Component.html#Ext.Component-getEl" ext:member="getEl" ext:cls="Ext.Component">Element</a></i> after the Component
+has been rendered. A plugin can simplify this step:<pre><code><i>// Plugin is configured <b>with</b> a listeners config object.</i>
 <i>// The Component is appended to the argument list of all handler functions.</i>
 Ext.DomObserver = Ext.extend(Object, {
     constructor: <b>function</b>(config) {
         this.listeners = config.listeners ? config.listeners : config;
     },
 
+    <i>// Component passes itself into plugin&#39;s init method</i>
     init: <b>function</b>(c) {
         <b>var</b> p, l = this.listeners;
         <b>for</b> (p <b>in</b> l) {
@@ -106,8 +113,13 @@ Ext.DomObserver = Ext.extend(Object, {
                 l[p].fn = this.createHandler(l[p].fn, c);
             }
         }
-        c.render = c.render.createSequence(<b>function</b>() {
-            c.el.on(l);
+
+        <i>// Add the listeners to the Element immediately following the render call</i>
+        c.render = c.render.<a href="output/Function.html#Function-createSequence" ext:member="createSequence" ext:cls="Function">createSequence</a>(<b>function</b>() {
+            <b>var</b> e = c.getEl();
+            <b>if</b> (e) {
+                e.on(l);
+            }
         });
     },
 
@@ -120,7 +132,7 @@ Ext.DomObserver = Ext.extend(Object, {
 
 <b>var</b> combo = <b>new</b> Ext.form.ComboBox({
 
-<i>// Collapse combo when its element is clicked on</i>
+    <i>// Collapse combo when its element is clicked on</i>
     plugins: [ <b>new</b> Ext.DomObserver({
         click: <b>function</b>(evt, comp) {
             comp.collapse();
@@ -130,8 +142,7 @@ Ext.DomObserver = Ext.extend(Object, {
     typeAhead: true,
     mode: <em>'local'</em>,
     triggerAction: <em>'all'</em>
-});
-</pre></code></p></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#listeners" ext:member="#listeners" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="config-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-nocache"></a><b><a href="source/ScriptTagProxy.html#cfg-Ext.data.ScriptTagProxy-nocache">nocache</a></b> : Boolean<div class="mdesc">Defaults to true. Disable caching by adding a unique parameter
+});</code></pre></p></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#listeners" ext:member="#listeners" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="config-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-nocache"></a><b><a href="source/ScriptTagProxy.html#cfg-Ext.data.ScriptTagProxy-nocache">nocache</a></b> : Boolean<div class="mdesc">Defaults to true. Disable caching by adding a unique parameter
 name to the request.</div></td><td class="msource">ScriptTagProxy</td></tr><tr class="config-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-restful"></a><b><a href="source/DataProxy.html#cfg-Ext.data.DataProxy-restful">restful</a></b> : Boolean<div class="mdesc"><div class="short">Defaults to false.  Set to true to operate in a RESTful manner.&#13;
  Note: this parameter will automatically be set to t...</div><div class="long"><p>Defaults to <tt>false</tt>.  Set to <tt>true</tt> to operate in a RESTful manner.</p>
 <br><p> Note: this parameter will automatically be set to <tt>true</tt> if the
@@ -154,11 +165,7 @@ GET      /users     read
 PUT      /users/23  update
 DESTROY  /users/23  delete
 </pre></p></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#restful" ext:member="#restful" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="config-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-timeout"></a><b><a href="source/ScriptTagProxy.html#cfg-Ext.data.ScriptTagProxy-timeout">timeout</a></b> : Number<div class="mdesc">The number of milliseconds to wait for a response. Defaults to 30 seconds.</div></td><td class="msource">ScriptTagProxy</td></tr><tr class="config-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-url"></a><b><a href="source/ScriptTagProxy.html#cfg-Ext.data.ScriptTagProxy-url">url</a></b> : String<div class="mdesc">The URL from which to request the data object.</div></td><td class="msource">ScriptTagProxy</td></tr></tbody></table><a id="Ext.data.ScriptTagProxy-props"></a><h2>Public Properties</h2><div class="no-members">This class has no public properties.</div><a id="Ext.data.ScriptTagProxy-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-ScriptTagProxy"></a><b><a href="source/ScriptTagProxy.html#cls-Ext.data.ScriptTagProxy">ScriptTagProxy</a></b>(&nbsp;<code>Object&nbsp;config</code>&nbsp;)
-    <div class="mdesc"><div class="short"></div><div class="long"><div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>config</code> : Object<div class="sub-desc">A configuration object.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">ScriptTagProxy</td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-DataProxy.Error"></a><b><a href="source/DataProxy.html#method-Ext.data.DataProxy-DataProxy.Error">DataProxy.Error</a></b>(&nbsp;<code>String&nbsp;name</code>,&nbsp;<code>Record/Array[Record]/Array&nbsp;</code>&nbsp;)
-    :
-                                        void<div class="mdesc"><div class="short">DataProxy Error extension.&#13;
-constructor</div><div class="long">DataProxy Error extension.
-constructor<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>name</code> : String<div class="sub-desc"></div></li><li><code></code> : Record/Array[Record]/Array<div class="sub-desc"></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#DataProxy.Error" ext:member="#DataProxy.Error" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-abort"></a><b><a href="source/ScriptTagProxy.html#method-Ext.data.ScriptTagProxy-abort">abort</a></b>()
+    <div class="mdesc"><div class="short"></div><div class="long"><div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>config</code> : Object<div class="sub-desc">A configuration object.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">ScriptTagProxy</td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-abort"></a><b><a href="source/ScriptTagProxy.html#method-Ext.data.ScriptTagProxy-abort">abort</a></b>()
     :
                                         void<div class="mdesc"><div class="short">Abort the current server request.</div><div class="long">Abort the current server request.<div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">ScriptTagProxy</td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-addEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-addEvents">addEvents</a></b>(&nbsp;<code>Object&nbsp;object</code>&nbsp;)
     :
@@ -183,41 +190,41 @@ Using the options argument, it is possible to combine different types of listene
 <br>
 A delayed, one-time listener.
 <pre><code>myDataView.on(<em>'click'</em>, this.onClick, this, {
-        single: true,
-        delay: 100
-    });</code></pre>
+    single: true,
+    delay: 100
+});</code></pre>
 <p>
 <b>Attaching multiple handlers in 1 call</b><br>
 The method also allows for a single argument to be passed which is a config object containing properties
 which specify multiple handlers.
 <p>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : {
-            fn: this.onClick,
-            scope: this,
-            delay: 100
-        },
-        <em>'mouseover'</em> : {
-            fn: this.onMouseOver,
-            scope: this
-        },
-        <em>'mouseout'</em> : {
-            fn: this.onMouseOut,
-            scope: this
-        }
-    });</code></pre>
+    <em>'click'</em> : {
+        fn: this.onClick,
+        scope: this,
+        delay: 100
+    },
+    <em>'mouseover'</em> : {
+        fn: this.onMouseOver,
+        scope: this
+    },
+    <em>'mouseout'</em> : {
+        fn: this.onMouseOut,
+        scope: this
+    }
+});</code></pre>
 <p>
 Or a shorthand syntax:<br>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : this.onClick,
-        <em>'mouseover'</em> : this.onMouseOver,
-        <em>'mouseout'</em> : this.onMouseOut,
-         scope: this
-    });</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-destroy"></a><b><a href="source/DataProxy.html#method-Ext.data.DataProxy-destroy">destroy</a></b>()
+    <em>'click'</em> : this.onClick,
+    <em>'mouseover'</em> : this.onMouseOver,
+    <em>'mouseout'</em> : this.onMouseOut,
+     scope: this
+});</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-destroy"></a><b><a href="source/DataProxy.html#method-Ext.data.DataProxy-destroy">destroy</a></b>()
     :
                                         void<div class="mdesc"><div class="short">Destroys the proxy by purging any event listeners and cancelling any active requests.</div><div class="long">Destroys the proxy by purging any event listeners and cancelling any active requests.<div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#destroy" ext:member="#destroy" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-doRequest"></a><b><a href="source/ScriptTagProxy.html#method-Ext.data.ScriptTagProxy-doRequest">doRequest</a></b>(&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Ext.data.Record/Ext.data.Record[]&nbsp;rs</code>,&nbsp;<code>Object&nbsp;params</code>,&nbsp;<code>Ext.data.DataReader&nbsp;reader</code>,&nbsp;<code>Function&nbsp;callback</code>,&nbsp;<code>Object&nbsp;scope</code>,&nbsp;<code>Object&nbsp;arg</code>&nbsp;)
     :
-                                        void<div class="mdesc"><div class="short">HttpProxy implementation of DataProxy#doRequest</div><div class="long">HttpProxy implementation of DataProxy#doRequest<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>action</code> : String<div class="sub-desc"></div></li><li><code>rs</code> : Ext.data.Record/Ext.data.Record[]<div class="sub-desc">If action is load, rs will be null</div></li><li><code>params</code> : Object<div class="sub-desc">An object containing properties which are to be used as HTTP parameters
+                                        void<div class="mdesc"><div class="short">HttpProxy implementation of DataProxy#doRequest</div><div class="long">HttpProxy implementation of DataProxy#doRequest<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>action</code> : String<div class="sub-desc"></div></li><li><code>rs</code> : Ext.data.Record/Ext.data.Record[]<div class="sub-desc">If action is <tt>read</tt>, rs will be null</div></li><li><code>params</code> : Object<div class="sub-desc">An object containing properties which are to be used as HTTP parameters
 for the request to the remote server.</div></li><li><code>reader</code> : Ext.data.DataReader<div class="sub-desc">The Reader object which converts the data
 object into a block of Ext.data.Records.</div></li><li><code>callback</code> : Function<div class="sub-desc">The function into which to pass the block of Ext.data.Records.
 The function must be passed <ul>
@@ -252,7 +259,7 @@ the corresponding code for CRUD action.<div class="mdetail-params"><strong>Param
     :
                                         void<div class="mdesc"><div class="short">Removes an event handler.</div><div class="long">Removes an event handler.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>eventName</code> : String<div class="sub-desc">The type of event the handler was associated with.</div></li><li><code>handler</code> : Function<div class="sub-desc">The handler to remove. <b>This must be a reference to the function passed into the <a href="output/Ext.util.Observable.html#Ext.util.Observable-addListener" ext:member="addListener" ext:cls="Ext.util.Observable">addListener</a> call.</b></div></li><li><code>scope</code> : Object<div class="sub-desc">(optional) The scope originally specified for the handler.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#removeListener" ext:member="#removeListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-request"></a><b><a href="source/DataProxy.html#method-Ext.data.DataProxy-request">request</a></b>(&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Ext.data.Record/Ext.data.Record[]/null&nbsp;rs</code>,&nbsp;<code>Object&nbsp;params</code>,&nbsp;<code>Ext.data.DataReader&nbsp;reader</code>,&nbsp;<code>Function&nbsp;callback</code>,&nbsp;<code>Object&nbsp;scope</code>,&nbsp;<code>Object&nbsp;options</code>&nbsp;)
     :
-                                        void<div class="mdesc"><div class="short">All proxy actions are executed through this method.  Automatically fires the "before" + action event</div><div class="long">All proxy actions are executed through this method.  Automatically fires the "before" + action event<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>action</code> : String<div class="sub-desc"></div></li><li><code>rs</code> : Ext.data.Record/Ext.data.Record[]/null<div class="sub-desc">Will be null when action is 'load'</div></li><li><code>params</code> : Object<div class="sub-desc"></div></li><li><code>reader</code> : Ext.data.DataReader<div class="sub-desc"></div></li><li><code>callback</code> : Function<div class="sub-desc"></div></li><li><code>scope</code> : Object<div class="sub-desc">Scope with which to call the callback (defaults to the Proxy object)</div></li><li><code>options</code> : Object<div class="sub-desc"></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#request" ext:member="#request" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-resumeEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-resumeEvents">resumeEvents</a></b>()
+                                        void<div class="mdesc"><div class="short">All proxy actions are executed through this method.  Automatically fires the "before" + action event</div><div class="long">All proxy actions are executed through this method.  Automatically fires the "before" + action event<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>action</code> : String<div class="sub-desc">Name of the action</div></li><li><code>rs</code> : Ext.data.Record/Ext.data.Record[]/null<div class="sub-desc">Will be null when action is 'load'</div></li><li><code>params</code> : Object<div class="sub-desc"></div></li><li><code>reader</code> : Ext.data.DataReader<div class="sub-desc"></div></li><li><code>callback</code> : Function<div class="sub-desc"></div></li><li><code>scope</code> : Object<div class="sub-desc">Scope with which to call the callback (defaults to the Proxy object)</div></li><li><code>options</code> : Object<div class="sub-desc">Any options specified for the action (e.g. see <a href="output/Ext.data.Store.html#Ext.data.Store-load" ext:member="load" ext:cls="Ext.data.Store">Ext.data.Store.load</a>.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#request" ext:member="#request" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-resumeEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-resumeEvents">resumeEvents</a></b>()
     :
                                         void<div class="mdesc"><div class="short">Resume firing events. (see suspendEvents)
 If events were suspended using the queueSuspended parameter, then all
@@ -262,53 +269,83 @@ events fired during event suspension will be sent to any listeners now.<div clas
     :
                                         void<div class="mdesc"><div class="short">Redefines the Proxy's API or a single action of an API. Can be called with two method signatures.&#13;
 If called with an ...</div><div class="long"><p>Redefines the Proxy's API or a single action of an API. Can be called with two method signatures.</p>
-<p>If called with an object as the only parameter, the object should redefine the <b>entire</b> API, eg:</p><code><pre>
-proxy.setApi({
+<p>If called with an object as the only parameter, the object should redefine the <b>entire</b> API, e.g.:</p><pre><code>proxy.setApi({
     read    : <em>'/users/read'</em>,
     create  : <em>'/users/create'</em>,
     update  : <em>'/users/update'</em>,
     destroy : <em>'/users/destroy'</em>
-});
-</pre></code>
+});</code></pre>
 <p>If called with two parameters, the first parameter should be a string specifying the API action to
-redefine and the second parameter should be the URL (or function if using DirectProxy) to call for that action, eg:</p><code><pre>
-proxy.setApi(Ext.data.Api.actions.read, <em>'/users/<b>new</b>_load_url'</em>);
-</pre></code><div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>api</code> : String/Object<div class="sub-desc">An API specification object, or the name of an action.</div></li><li><code>url</code> : String/Function<div class="sub-desc">The URL (or function if using DirectProxy) to call for the action.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#setApi" ext:member="#setApi" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-suspendEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-suspendEvents">suspendEvents</a></b>(&nbsp;<code>Boolean&nbsp;queueSuspended</code>&nbsp;)
+redefine and the second parameter should be the URL (or function if using DirectProxy) to call for that action, e.g.:</p><pre><code>proxy.setApi(Ext.data.Api.actions.read, <em>'/users/<b>new</b>_load_url'</em>);</code></pre><div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>api</code> : String/Object<div class="sub-desc">An API specification object, or the name of an action.</div></li><li><code>url</code> : String/Function<div class="sub-desc">The URL (or function if using DirectProxy) to call for the action.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#setApi" ext:member="#setApi" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-suspendEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-suspendEvents">suspendEvents</a></b>(&nbsp;<code>Boolean&nbsp;queueSuspended</code>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Suspend the firing of all events. (see resumeEvents)</div><div class="long">Suspend the firing of all events. (see <a href="output/Ext.util.Observable.html#Ext.util.Observable-resumeEvents" ext:member="resumeEvents" ext:cls="Ext.util.Observable">resumeEvents</a>)<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>queueSuspended</code> : Boolean<div class="sub-desc">Pass as true to queue up suspended events to be fired
 after the <a href="output/Ext.util.Observable.html#Ext.util.Observable-resumeEvents" ext:member="resumeEvents" ext:cls="Ext.util.Observable">resumeEvents</a> call instead of discarding all suspended events;</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#suspendEvents" ext:member="#suspendEvents" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-un"></a><b><a href="source/Observable.html#method-Ext.util.Observable-un">un</a></b>(&nbsp;<code>String&nbsp;eventName</code>,&nbsp;<code>Function&nbsp;handler</code>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Removes an event handler (shorthand for removeListener.)</div><div class="long">Removes an event handler (shorthand for <a href="output/Ext.util.Observable.html#Ext.util.Observable-removeListener" ext:member="removeListener" ext:cls="Ext.util.Observable">removeListener</a>.)<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>eventName</code> : String<div class="sub-desc">The type of event the handler was associated with.</div></li><li><code>handler</code> : Function<div class="sub-desc">The handler to remove. <b>This must be a reference to the function passed into the <a href="output/Ext.util.Observable.html#Ext.util.Observable-addListener" ext:member="addListener" ext:cls="Ext.util.Observable">addListener</a> call.</b></div></li><li><code>scope</code> : Object<div class="sub-desc">(optional) The scope originally specified for the handler.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#un" ext:member="#un" ext:cls="Ext.util.Observable">Observable</a></td></tr></tbody></table><a id="Ext.data.ScriptTagProxy-events"></a><h2>Public Events</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Event</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-beforeload"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-beforeload">beforeload</a></b> :
-                                      (&nbsp;<code>Object&nbsp;this</code>,&nbsp;<code>Object&nbsp;params</code>&nbsp;)
-    <div class="mdesc"><div class="short">Fires before a network request is made to retrieve a data object.</div><div class="long">Fires before a network request is made to retrieve a data object.<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : Object<div class="sub-desc"></div></li><li><code>params</code> : Object<div class="sub-desc">The params object passed to the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a> function</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#beforeload" ext:member="#beforeload" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-beforewrite"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-beforewrite">beforewrite</a></b> :
+                                      (&nbsp;<code>DataProxy&nbsp;this</code>,&nbsp;<code>Object&nbsp;params</code>&nbsp;)
+    <div class="mdesc"><div class="short">Fires before a request to retrieve a data object.</div><div class="long">Fires before a request to retrieve a data object.<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : DataProxy<div class="sub-desc">The proxy for the request</div></li><li><code>params</code> : Object<div class="sub-desc">The params object passed to the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a> function</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#beforeload" ext:member="#beforeload" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-beforewrite"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-beforewrite">beforewrite</a></b> :
                                       (&nbsp;<code>DataProxy&nbsp;this</code>,&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Record/Array[Record]&nbsp;rs</code>,&nbsp;<code>Object&nbsp;params</code>&nbsp;)
-    <div class="mdesc"><div class="short">Fires before a network request is generated for one of the actions Ext.data.Api.actions.create|update|destroy</div><div class="long">Fires before a network request is generated for one of the actions Ext.data.Api.actions.create|update|destroy<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : DataProxy<div class="sub-desc"></div></li><li><code>action</code> : String<div class="sub-desc">[Ext.data.Api.actions.create|update|destroy]</div></li><li><code>rs</code> : Record/Array[Record]<div class="sub-desc"></div></li><li><code>params</code> : Object<div class="sub-desc">HTTP request-params object.  Edit <code>params</code> to add Http parameters to the request.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#beforewrite" ext:member="#beforewrite" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-exception"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-exception">exception</a></b> :
-                                      (&nbsp;<code>DataProxy&nbsp;sender</code>,&nbsp;<code>String&nbsp;type</code>,&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Object&nbsp;options</code>,&nbsp;<code>Object&nbsp;response</code>,&nbsp;<code>Error&nbsp;e</code>,&nbsp;<code>DataProxy&nbsp;sender</code>,&nbsp;<code>String&nbsp;type</code>,&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Object&nbsp;options</code>,&nbsp;<code>Object&nbsp;response</code>,&nbsp;<code>Record/Record[]&nbsp;rs</code>&nbsp;)
-    <div class="mdesc"><div class="short">Fires if an exception occurs in the Proxy during a remote request.  This event can be fired for one of two reasons:&#13;
-...</div><div class="long">Fires if an exception occurs in the Proxy during a remote request.  This event can be fired for one of two reasons:
-<ul><li><b>The remote-request failed and the server did not return status === 200</b></li>
-<li><b>The remote-request succeeded but the reader could not read the response.</b>  This means the server returned
-data, but the configured Reader threw an error while reading the response.  In this case, this event will be
-raised and the caught error will be passed along into this event.</li></ul>
-This event fires with two different contexts based upon the 2nd parameter <tt>type [remote|response]</tt>.  Note that the
-first four parameters are identical between the two contexts -- only the final two parameters differ.
-<b>response</b>
-If the type of exception is "response", an <b>invalid response</b> from the server was returned, either 404, 500 or the response
-meta-data does not match that defined in your DataReader (eg: root, idProperty, successProperty).
-The event parameters for this context are:<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>sender</code> : DataProxy<div class="sub-desc"></div></li><li><code>type</code> : String<div class="sub-desc">[response]</div></li><li><code>action</code> : String<div class="sub-desc">[Ext.data.Api.actions.create|read|update|destroy]</div></li><li><code>options</code> : Object<div class="sub-desc">The loading options that were specified (see <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-load" ext:member="load" ext:cls="Ext.data.DataProxy">load</a> for details)</div></li><li><code>response</code> : Object<div class="sub-desc">The raw browser response object (eg: XMLHttpRequest)</div></li><li><code>e</code> : Error<div class="sub-desc">The JavaScript Error object caught if the configured Reader could not read the data.
-If the load call returned success: false, this parameter will be null.
-<b>remote</b>
-If the type of exception is "remote", a <b>valid response</b> was returned from the server having successProperty === false.  This
-response might contain an error-message sent from the server.  For example, the user may have failed
-authentication/authorization or a database validation error occurred.</div></li><li><code>sender</code> : DataProxy<div class="sub-desc"></div></li><li><code>type</code> : String<div class="sub-desc">[remote]</div></li><li><code>action</code> : String<div class="sub-desc">[Ext.data.Api.actions.create|read|update|destroy]</div></li><li><code>options</code> : Object<div class="sub-desc">The loading options that were specified (see <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-load" ext:member="load" ext:cls="Ext.data.DataProxy">load</a> for details)</div></li><li><code>response</code> : Object<div class="sub-desc">The decoded response object sent from the server.</div></li><li><code>rs</code> : Record/Record[]<div class="sub-desc">Records from the Store.  This parameter will only exist if the <tt>action</tt> was a <b>write</b> action
-(Ext.data.Api.actions.create|update|destroy)
-Note that this event is also relayed through <a href="output/Ext.data.Store.html" ext:cls="Ext.data.Store">Ext.data.Store</a>, so you can listen for it directly
-on any Store instance.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#exception" ext:member="#exception" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-load"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-load">load</a></b> :
-                                      (&nbsp;<code>Object&nbsp;this</code>,&nbsp;<code>Object&nbsp;o</code>,&nbsp;<code>Object&nbsp;arg</code>&nbsp;)
-    <div class="mdesc"><div class="short">Fires before the load method's callback is called.</div><div class="long">Fires before the load method's callback is called.<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : Object<div class="sub-desc"></div></li><li><code>o</code> : Object<div class="sub-desc">The data object</div></li><li><code>arg</code> : Object<div class="sub-desc">The callback's arg object passed to the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a> function</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#load" ext:member="#load" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-loadexception"></a><b><a href="source/ScriptTagProxy.html#event-Ext.data.ScriptTagProxy-loadexception">loadexception</a></b> :
+    <div class="mdesc"><div class="short">Fires before a request is generated for one of the actions Ext.data.Api.actions.create|update|destroy</div><div class="long">Fires before a request is generated for one of the actions Ext.data.Api.actions.create|update|destroy<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : DataProxy<div class="sub-desc">The proxy for the request</div></li><li><code>action</code> : String<div class="sub-desc">[Ext.data.Api.actions.create|update|destroy]</div></li><li><code>rs</code> : Record/Array[Record]<div class="sub-desc">The Record(s) to create|update|destroy.</div></li><li><code>params</code> : Object<div class="sub-desc">The request <code>params</code> object.  Edit <code>params</code> to add parameters to the request.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#beforewrite" ext:member="#beforewrite" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-exception"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-exception">exception</a></b> :
+                                      (&nbsp;<code>DataProxy&nbsp;this</code>,&nbsp;<code>String&nbsp;type</code>,&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Object&nbsp;options</code>,&nbsp;<code>Object&nbsp;response</code>,&nbsp;<code>Mixed&nbsp;arg</code>&nbsp;)
+    <div class="mdesc"><div class="short">Fires if an exception occurs in the Proxy during a remote request.&#13;
+This event is relayed through a corresponding&#13;
+Ex...</div><div class="long"><p>Fires if an exception occurs in the Proxy during a remote request.
+This event is relayed through a corresponding
+<a href="output/Ext.data.Store.html" ext:cls="Ext.data.Store">Ext.data.Store</a>.<a href="output/Ext.data.Store.html#Ext.data.Store-exception" ext:member="exception" ext:cls="Ext.data.Store">exception</a>,
+so any Store instance may observe this event.
+This event can be fired for one of two reasons:</p>
+<div class="mdetail-params"><ul>
+<li>remote-request <b>failed</b> : <div class="sub-desc">
+The server did not return status === 200.
+</div></li>
+<li>remote-request <b>succeeded</b> : <div class="sub-desc">
+The remote-request succeeded but the reader could not read the response.
+This means the server returned data, but the configured Reader threw an
+error while reading the response.  In this case, this event will be
+raised and the caught error will be passed along into this event.
+</div></li>
+</ul></div>
+<br><p>This event fires with two different contexts based upon the 2nd
+parameter <tt>type [remote|response]</tt>.  The first four parameters
+are identical between the two contexts -- only the final two parameters
+differ.</p><div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : DataProxy<div class="sub-desc">The proxy that sent the request</div></li><li><code>type</code> : String<div class="sub-desc"><p>The value of this parameter will be either <tt>'response'</tt> or <tt>'remote'</tt>.</p>
+<div class="mdetail-params"><ul>
+<li><b><tt>'response'</tt></b> : <div class="sub-desc">
+<p>An <b>invalid</b> response from the server was returned: either 404,
+500 or the response meta-data does not match that defined in the DataReader
+(e.g.: root, idProperty, successProperty).</p>
+</div></li>
+<li><b><tt>'remote'</tt></b> : <div class="sub-desc">
+<p>A <b>valid</b> response was returned from the server having
+successProperty === false.  This response might contain an error-message
+sent from the server.  For example, the user may have failed
+authentication/authorization or a database validation error occurred.</p>
+</div></li>
+</ul></div></div></li><li><code>action</code> : String<div class="sub-desc">Name of the action (see <a href="output/Ext.data.Api.html#Ext.data.Api-actions" ext:member="actions" ext:cls="Ext.data.Api">Ext.data.Api.actions</a>.</div></li><li><code>options</code> : Object<div class="sub-desc">The options for the action that were specified in the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a>.</div></li><li><code>response</code> : Object<div class="sub-desc"><p>The value of this parameter depends on the value of the <code>type</code> parameter:</p>
+<div class="mdetail-params"><ul>
+<li><b><tt>'response'</tt></b> : <div class="sub-desc">
+<p>The raw browser response object (e.g.: XMLHttpRequest)</p>
+</div></li>
+<li><b><tt>'remote'</tt></b> : <div class="sub-desc">
+<p>The decoded response object sent from the server.</p>
+</div></li>
+</ul></div></div></li><li><code>arg</code> : Mixed<div class="sub-desc"><p>The type and value of this parameter depends on the value of the <code>type</code> parameter:</p>
+<div class="mdetail-params"><ul>
+<li><b><tt>'response'</tt></b> : Error<div class="sub-desc">
+<p>The JavaScript Error object caught if the configured Reader could not read the data.
+If the remote request returns success===false, this parameter will be null.</p>
+</div></li>
+<li><b><tt>'remote'</tt></b> : Record/Record[]<div class="sub-desc">
+<p>This parameter will only exist if the <tt>action</tt> was a <b>write</b> action
+(Ext.data.Api.actions.create|update|destroy).</p>
+</div></li>
+</ul></div></div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#exception" ext:member="#exception" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-load"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-load">load</a></b> :
+                                      (&nbsp;<code>DataProxy&nbsp;this</code>,&nbsp;<code>Object&nbsp;o</code>,&nbsp;<code>Object&nbsp;options</code>&nbsp;)
+    <div class="mdesc"><div class="short">Fires before the load method's callback is called.</div><div class="long">Fires before the load method's callback is called.<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : DataProxy<div class="sub-desc">The proxy for the request</div></li><li><code>o</code> : Object<div class="sub-desc">The request transaction object</div></li><li><code>options</code> : Object<div class="sub-desc">The callback's <tt>options</tt> property as passed to the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a> function</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#load" ext:member="#load" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.ScriptTagProxy-loadexception"></a><b><a href="source/ScriptTagProxy.html#event-Ext.data.ScriptTagProxy-loadexception">loadexception</a></b> :
                                       (&nbsp;<code>Object&nbsp;this</code>,&nbsp;<code>Object&nbsp;options</code>,&nbsp;<code>Object&nbsp;arg</code>,&nbsp;<code>Error&nbsp;e</code>&nbsp;)
-    <div class="mdesc"><div class="short">Fires if an exception occurs in the Proxy during data loading.  This event can be fired for one of two reasons:&#13;
-The ...</div><div class="long">Fires if an exception occurs in the Proxy during data loading.  This event can be fired for one of two reasons:
+    <div class="mdesc"><div class="short">Deprecated in favor of 'exception' event.&#13;
+Fires if an exception occurs in the Proxy during data loading.  This event...</div><div class="long"><b>Deprecated</b> in favor of 'exception' event.
+Fires if an exception occurs in the Proxy during data loading.  This event can be fired for one of two reasons:
 <ul><li><b>The load call timed out.</b>  This means the load callback did not execute within the time limit
 specified by <a href="output/Ext.data.ScriptTagProxy.html#Ext.data.ScriptTagProxy-timeout" ext:member="timeout" ext:cls="Ext.data.ScriptTagProxy">timeout</a>.  In this case, this event will be raised and the
 fourth parameter (read error) will be null.</li>
@@ -318,6 +355,6 @@ raised and the caught error will be passed along as the fourth parameter of this
 Note that this event is also relayed through <a href="output/Ext.data.Store.html" ext:cls="Ext.data.Store">Ext.data.Store</a>, so you can listen for it directly
 on any Store instance.<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : Object<div class="sub-desc"></div></li><li><code>options</code> : Object<div class="sub-desc">The loading options that were specified (see <a href="output/Ext.data.ScriptTagProxy.html#Ext.data.ScriptTagProxy-load" ext:member="load" ext:cls="Ext.data.ScriptTagProxy">load</a> for details).  If the load
 call timed out, this parameter will be null.</div></li><li><code>arg</code> : Object<div class="sub-desc">The callback's arg object passed to the <a href="output/Ext.data.ScriptTagProxy.html#Ext.data.ScriptTagProxy-load" ext:member="load" ext:cls="Ext.data.ScriptTagProxy">load</a> function</div></li><li><code>e</code> : Error<div class="sub-desc">The JavaScript Error object caught if the configured Reader could not read the data.
-If the load call returned success: false, this parameter will be null.</div></li></ul></div></div></div></td><td class="msource">ScriptTagProxy</td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-write"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-write">write</a></b> :
-                                      (&nbsp;<code>Object&nbsp;this</code>,&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Object&nbsp;data</code>,&nbsp;<code>Object&nbsp;response</code>,&nbsp;<code>Record/Record{}&nbsp;rs</code>,&nbsp;<code>Object&nbsp;arg</code>&nbsp;)
-    <div class="mdesc"><div class="short">Fires before the request-callback is called</div><div class="long">Fires before the request-callback is called<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : Object<div class="sub-desc"></div></li><li><code>action</code> : String<div class="sub-desc">[Ext.data.Api.actions.create|read|upate|destroy]</div></li><li><code>data</code> : Object<div class="sub-desc">The data object extracted from the server-response</div></li><li><code>response</code> : Object<div class="sub-desc">The decoded response from server</div></li><li><code>rs</code> : Record/Record{}<div class="sub-desc">The records from Store</div></li><li><code>arg</code> : Object<div class="sub-desc">The callback's arg object passed to the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a> function</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#write" ext:member="#write" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr></tbody></table></div>
+If the remote request returns success: false, this parameter will be null.</div></li></ul></div></div></div></td><td class="msource">ScriptTagProxy</td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.data.DataProxy-write"></a><b><a href="source/DataProxy.html#event-Ext.data.DataProxy-write">write</a></b> :
+                                      (&nbsp;<code>DataProxy&nbsp;this</code>,&nbsp;<code>String&nbsp;action</code>,&nbsp;<code>Object&nbsp;data</code>,&nbsp;<code>Object&nbsp;response</code>,&nbsp;<code>Record/Record{}&nbsp;rs</code>,&nbsp;<code>Object&nbsp;options</code>&nbsp;)
+    <div class="mdesc"><div class="short">Fires before the request-callback is called</div><div class="long">Fires before the request-callback is called<div class="mdetail-params"><strong style="font-weight: normal;">Listeners will be called with the following arguments:</strong><ul><li><code>this</code> : DataProxy<div class="sub-desc">The proxy that sent the request</div></li><li><code>action</code> : String<div class="sub-desc">[Ext.data.Api.actions.create|upate|destroy]</div></li><li><code>data</code> : Object<div class="sub-desc">The data object extracted from the server-response</div></li><li><code>response</code> : Object<div class="sub-desc">The decoded response from server</div></li><li><code>rs</code> : Record/Record{}<div class="sub-desc">The records from Store</div></li><li><code>options</code> : Object<div class="sub-desc">The callback's <tt>options</tt> property as passed to the <a href="output/Ext.data.DataProxy.html#Ext.data.DataProxy-request" ext:member="request" ext:cls="Ext.data.DataProxy">request</a> function</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.data.DataProxy.html#write" ext:member="#write" ext:cls="Ext.data.DataProxy">DataProxy</a></td></tr></tbody></table></div>

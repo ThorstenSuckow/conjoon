@@ -75,9 +75,11 @@ paramOrder: 'param1|param2|param'
 
         var trans = {
             params : params || {},
-            callback : callback,
-            scope : scope,
-            arg : options,
+            request: {
+                callback : callback,
+                scope : scope,
+                arg : options
+            },
             reader: reader
         };
 
@@ -94,7 +96,7 @@ paramOrder: 'param1|param2|param'
                     this.fireEvent("loadexception", this, trans, res, null);
                 }
                 this.fireEvent('exception', this, 'remote', action, trans, res, null);
-                trans.callback.call(trans.scope, null, trans.arg, false);
+                trans.request.callback.call(trans.request.scope, null, trans.request.arg, false);
                 return;
             }
             if (action === Ext.data.Api.actions.read) {
@@ -102,7 +104,7 @@ paramOrder: 'param1|param2|param'
             } else {
                 this.onWrite(action, trans, result, res, rs);
             }
-        }
+        };
     },
     /**
      * Callback for read actions
@@ -121,11 +123,11 @@ paramOrder: 'param1|param2|param'
             this.fireEvent("loadexception", this, trans, res, ex);
 
             this.fireEvent('exception', this, 'response', action, trans, res, ex);
-            trans.callback.call(trans.scope, null, trans.arg, false);
+            trans.request.callback.call(trans.request.scope, null, trans.request.arg, false);
             return;
         }
-        this.fireEvent("load", this, res, trans.arg);
-        trans.callback.call(trans.scope, records, trans.arg, true);
+        this.fireEvent("load", this, res, trans.request.arg);
+        trans.request.callback.call(trans.request.scope, records, trans.request.arg, true);
     },
     /**
      * Callback for write actions
@@ -135,8 +137,8 @@ paramOrder: 'param1|param2|param'
      * @private
      */
     onWrite : function(action, trans, result, res, rs) {
-        this.fireEvent("write", this, action, result, res, rs, trans.arg);
-        trans.callback.call(trans.scope, result, res, true);
+        this.fireEvent("write", this, action, result, res, rs, trans.request.arg);
+        trans.request.callback.call(trans.request.scope, result, res, true);
     }
 });
 

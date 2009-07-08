@@ -105,9 +105,9 @@ map.addBinding({
      */
 	addBinding : function(config){
         if(Ext.isArray(config)){
-            for(var i = 0, len = config.length; i < len; i++){
-                this.addBinding(config[i]);
-            }
+            Ext.each(config, function(c){
+                this.addBinding(c);
+            }, this);
             return;
         }
         var keyCode = config.key,
@@ -158,7 +158,8 @@ map.addBinding({
     checkModifiers: function(config, e){
         var val, key, keys = ['shift', 'ctrl', 'alt'];
         for (var i = 0, len = keys.length; i < len; ++i){
-            key = keys[i], val = config[key];
+            key = keys[i];
+            val = config[key];
             if(!(val === undefined || (val === e[key + 'Key']))){
                 return false;
             }
@@ -191,7 +192,7 @@ map.addBinding({
             alt: alt,
             fn: fn,
             scope: scope
-        })
+        });
     },
 
     // private

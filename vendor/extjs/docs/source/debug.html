@@ -236,7 +236,7 @@ Ext.debug.LogPanel = Ext.extend(Ext.Panel, {
 
     log : function(){
         var markup = [  '<div style="padding:5px !important;border-bottom:1px solid #ccc;">',
-                    Ext.util.Format.htmlEncode(Array.prototype.join.call(arguments, ', ')).replace(/\n/g, '<br />').replace(/\s/g, '&#160;'),
+                    Ext.util.Format.htmlEncode(Array.prototype.join.call(arguments, ', ')).replace(/\n/g, '<br/>').replace(/\s/g, '&#160;'),
                     '</div>'].join('');
 
         this.body.insertHtml('beforeend', markup);
@@ -289,7 +289,7 @@ Ext.debug.DomTree = Ext.extend(Ext.tree.TreePanel, {
             }
             cn.select();
             var a = cn.ui.anchor;
-            treeEl.dom.scrollTop = Math.max(0 ,a.offsetTop-10);
+            this.getTreeEl().dom.scrollTop = Math.max(0 ,a.offsetTop-10);
             //treeEl.dom.scrollLeft = Math.max(0 ,a.offsetLeft-10); no likey
             cn.highlight();
             return true;
@@ -587,8 +587,8 @@ Ext.debug.ColumnNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
              '<li class="x-tree-node"><div ext:tree-node-id="',n.id,'" class="x-tree-node-el x-tree-node-leaf ', a.cls,'">',
                 '<div class="x-tree-col" style="width:',c.width-bw,'px;">',
                     '<span class="x-tree-node-indent">',this.indentMarkup,"</span>",
-                    '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow">',
-                    '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',(a.icon ? " x-tree-node-inline-icon" : ""),(a.iconCls ? " "+a.iconCls : ""),'" unselectable="on">',
+                    '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow"/>',
+                    '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',(a.icon ? " x-tree-node-inline-icon" : ""),(a.iconCls ? " "+a.iconCls : ""),'" unselectable="on"/>',
                     '<a hidefocus="on" class="x-tree-node-anchor" href="',a.href ? a.href : "#",'" tabIndex="1" ',
                     a.hrefTarget ? ' target="'+a.hrefTarget+'"' : "", '>',
                     '<span unselectable="on">', n.text || (c.renderer ? c.renderer(a[c.dataIndex], n, a) : a[c.dataIndex]),"</span></a>",

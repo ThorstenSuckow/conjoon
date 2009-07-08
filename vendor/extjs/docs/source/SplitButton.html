@@ -63,7 +63,7 @@ Ext.SplitButton = Ext.extend(Ext.Button, {
     onRender : function(){
         Ext.SplitButton.superclass.onRender.apply(this, arguments);
         if(this.arrowTooltip){
-            btn.child(this.arrowSelector).dom[this.tooltipType] = this.arrowTooltip;
+            this.el.child(this.arrowSelector).dom[this.tooltipType] = this.arrowTooltip;
         }
     },
 
@@ -78,7 +78,7 @@ Ext.SplitButton = Ext.extend(Ext.Button, {
     },
 
     getMenuClass : function(){
-        return this.menu && this.arrowAlign != 'bottom' ? 'x-btn-split' : 'x-btn-split-bottom';
+        return 'x-btn-split' + (this.arrowAlign == 'bottom' ? '-bottom' : '');
     },
 
     isClickOnArrow : function(e){

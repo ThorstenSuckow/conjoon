@@ -8,13 +8,20 @@
     <pre class="prettyprint lang-js"><div id="cls-Ext.chart.Chart"></div>/**
  * @class Ext.chart.Chart
  * @extends Ext.FlashComponent
+ * The Ext.chart package provides the capability to visualize data with flash based charting.
+ * Each chart binds directly to an Ext.data.Store enabling automatic updates of the chart.
  * @constructor
  * @xtype chart
  */
-Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
-    url: "http:/"+"/yui.yahooapis.com/2.5.1/build/charts/assets/charts.swf",
+ 
+ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
     refreshBuffer: 100,
-    // style defaults
+
+    <div id="cfg-Ext.chart.Chart-chartStyle"></div>/**
+     * @cfg {Object} chartStyle
+     * Sets styles for this chart. Contains a number of default values. Modifying this property will override
+     * the base styles on the chart.
+     */
     chartStyle: {
         padding: 10,
         animationEnabled: true,
@@ -41,10 +48,34 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
             }
         }
     },
+    
+    <div id="cfg-Ext.chart.Chart-url"></div>/**
+     * @cfg {String} url
+     * The url to load the chart from. This defaults to Ext.chart.Chart.CHART_URL, which should
+     * be modified to point to the local charts resource.
+     */
+    
+    <div id="cfg-Ext.chart.Chart-extraStyle"></div>/**
+     * @cfg {Object} extraStyle
+     * Contains extra styles that will be added or overwritten to the default chartStyle. Defaults to <tt>null</tt>.
+     */
+    extraStyle: null,
+    
+    <div id="cfg-Ext.chart.Chart-disableCaching"></div>/**
+     * @cfg {Boolean} disableCaching
+     * True to add a "cache buster" to the end of the chart url. Defaults to true for Opera and IE.
+     */
+    disableCaching: Ext.isIE || Ext.isOpera,
+    disableCacheParam: '_dc',
 
     initComponent : function(){
         Ext.chart.Chart.superclass.initComponent.call(this);
-
+        if(!this.url){
+            this.url = Ext.chart.Chart.CHART_URL;
+        }
+        if(this.disableCaching){
+            this.url = Ext.urlAppend(this.url, String.format('{0}={1}', this.disableCacheParam, new Date().getTime()));
+        }
         this.addEvents(
             'itemmouseover',
             'itemmouseout',
@@ -54,6 +85,7 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
             'itemdrag',
             'itemdragend'
         );
+        this.store = Ext.StoreMgr.lookup(this.store);
     },
 
     <div id="method-Ext.chart.Chart-setStyle"></div>/**
@@ -63,8 +95,7 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
      * @param value {Object} New value to pass to the Chart style.
      */
      setStyle: function(name, value){
-             value = Ext.encode(value);
-             this.swf.setStyle(name, value);
+         this.swf.setStyle(name, Ext.encode(value));
      },
 
     <div id="method-Ext.chart.Chart-setStyles"></div>/**
@@ -73,8 +104,7 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
      * @param styles {Object} Initializer for all Chart styles.
      */
     setStyles: function(styles){
-            styles = Ext.encode(styles);
-            this.swf.setStyles(styles);
+        this.swf.setStyles(Ext.encode(styles));
     },
 
     <div id="method-Ext.chart.Chart-setSeriesStyles"></div>/**
@@ -83,10 +113,11 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
      * @param styles {Array} Initializer for all Chart series styles.
      */
     setSeriesStyles: function(styles){
-            for(var i = 0; i < styles.length; i++){
-                    styles[i] = Ext.encode(styles[i]);
-            }
-            this.swf.setSeriesStyles(styles);
+        var s = [];
+        Ext.each(styles, function(style){
+            s.push(Ext.encode(style));
+        });
+        this.swf.setSeriesStyles(s);
     },
 
     setCategoryNames : function(names){
@@ -141,12 +172,11 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
 
     onSwfReady : function(isReset){
         Ext.chart.Chart.superclass.onSwfReady.call(this, isReset);
-
         this.swf.setType(this.type);
 
         if(this.chartStyle){
-			this.setStyles(this.chartStyle);
-		}
+            this.setStyles(Ext.apply(this.extraStyle || {}, this.chartStyle));
+        }
 
         if(this.categoryNames){
             this.setCategoryNames(this.categoryNames);
@@ -213,7 +243,7 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
         } else{
             dataProvider.push({type: this.type, dataProvider: data});
         }
-        this.swf.setDataProvider(dataProvider, (this.isFirst = (this.isFirst === undefined)));
+        this.swf.setDataProvider(dataProvider);
     },
 
     createFnProxy : function(fn, old){
@@ -223,10 +253,22 @@ Ext.chart.Chart = Ext.extend(Ext.FlashComponent, {
         var fnName = "extFnProxy" + (++Ext.chart.Chart.PROXY_FN_ID);
         window[fnName] = fn;
         return fnName;
+    },
+    
+    onDestroy: function(){
+        Ext.chart.Chart.superclass.onDestroy.call(this);
+        delete window[this.tipFnName];
     }
 });
 Ext.reg('chart', Ext.chart.Chart);
 Ext.chart.Chart.PROXY_FN_ID = 0;
+
+<div id="prop-Ext.chart.Chart-CHART_URL"></div>/**
+ * Sets the url to load the chart from. This should be set to a local resource.
+ * @static
+ * @type String
+ */
+Ext.chart.Chart.CHART_URL = 'http:/' + '/yui.yahooapis.com/2.7.0/build/charts/assets/charts.swf';
 
 <div id="cls-Ext.chart.PieChart"></div>/**
  * @class Ext.chart.PieChart
@@ -339,6 +381,17 @@ Ext.chart.ColumnChart = Ext.extend(Ext.chart.CartesianChart, {
 });
 Ext.reg('columnchart', Ext.chart.ColumnChart);
 
+<div id="cls-Ext.chart.StackedColumnChart"></div>/**
+ * @class Ext.chart.StackedColumnChart
+ * @extends Ext.chart.CartesianChart
+ * @constructor
+ * @xtype stackedcolumnchart
+ */
+Ext.chart.StackedColumnChart = Ext.extend(Ext.chart.CartesianChart, {
+    type: 'stackcolumn'
+});
+Ext.reg('stackedcolumnchart', Ext.chart.StackedColumnChart);
+
 <div id="cls-Ext.chart.BarChart"></div>/**
  * @class Ext.chart.BarChart
  * @extends Ext.chart.CartesianChart
@@ -349,6 +402,17 @@ Ext.chart.BarChart = Ext.extend(Ext.chart.CartesianChart, {
     type: 'bar'
 });
 Ext.reg('barchart', Ext.chart.BarChart);
+
+<div id="cls-Ext.chart.StackedBarChart"></div>/**
+ * @class Ext.chart.StackedBarChart
+ * @extends Ext.chart.CartesianChart
+ * @constructor
+ * @xtype stackedbarchart
+ */
+Ext.chart.StackedBarChart = Ext.extend(Ext.chart.CartesianChart, {
+    type: 'stackbar'
+});
+Ext.reg('stackedbarchart', Ext.chart.StackedBarChart);
 
 
 
@@ -363,46 +427,46 @@ Ext.chart.Axis = function(config){
 
 Ext.chart.Axis.prototype =
 {
-	<div id="prop-Ext.chart.Axis-type"></div>/**
-	 * The type of axis.
-	 *
-	 * @property type
-	 * @type String
-	 */
-	type: null,
+    <div id="prop-Ext.chart.Axis-type"></div>/**
+     * The type of axis.
+     *
+     * @property type
+     * @type String
+     */
+    type: null,
 
-	<div id="prop-Ext.chart.Axis-orientation"></div>/**
-	 * The direction in which the axis is drawn. May be "horizontal" or "vertical".
-	 *
-	 * @property orientation
-	 * @type String
-	 */
-	orientation: "horizontal",
+    <div id="prop-Ext.chart.Axis-orientation"></div>/**
+     * The direction in which the axis is drawn. May be "horizontal" or "vertical".
+     *
+     * @property orientation
+     * @type String
+     */
+    orientation: "horizontal",
 
-	<div id="prop-Ext.chart.Axis-reverse"></div>/**
-	 * If true, the items on the axis will be drawn in opposite direction.
-	 *
-	 * @property reverse
-	 * @type Boolean
-	 */
-	reverse: false,
+    <div id="prop-Ext.chart.Axis-reverse"></div>/**
+     * If true, the items on the axis will be drawn in opposite direction.
+     *
+     * @property reverse
+     * @type Boolean
+     */
+    reverse: false,
 
-	<div id="prop-Ext.chart.Axis-labelFunction"></div>/**
-	 * A string reference to the globally-accessible function that may be called to
-	 * determine each of the label values for this axis.
-	 *
-	 * @property labelFunction
-	 * @type String
-	 */
-	labelFunction: null,
+    <div id="prop-Ext.chart.Axis-labelFunction"></div>/**
+     * A string reference to the globally-accessible function that may be called to
+     * determine each of the label values for this axis.
+     *
+     * @property labelFunction
+     * @type String
+     */
+    labelFunction: null,
 
-	<div id="prop-Ext.chart.Axis-hideOverlappingLabels"></div>/**
-	 * If true, labels that overlap previously drawn labels on the axis will be hidden.
-	 *
-	 * @property hideOverlappingLabels
-	 * @type Boolean
-	 */
-	hideOverlappingLabels: true
+    <div id="prop-Ext.chart.Axis-hideOverlappingLabels"></div>/**
+     * If true, labels that overlap previously drawn labels on the axis will be hidden.
+     *
+     * @property hideOverlappingLabels
+     * @type Boolean
+     */
+    hideOverlappingLabels: true
 };
 
 <div id="cls-Ext.chart.NumericAxis"></div>/**
@@ -412,68 +476,68 @@ Ext.chart.Axis.prototype =
  * @constructor
  */
 Ext.chart.NumericAxis = Ext.extend(Ext.chart.Axis, {
-	type: "numeric",
+    type: "numeric",
 
-	<div id="prop-Ext.chart.NumericAxis-minimum"></div>/**
-	 * The minimum value drawn by the axis. If not set explicitly, the axis minimum
-	 * will be calculated automatically.
-	 *
-	 * @property minimum
-	 * @type Number
-	 */
-	minimum: NaN,
+    <div id="prop-Ext.chart.NumericAxis-minimum"></div>/**
+     * The minimum value drawn by the axis. If not set explicitly, the axis minimum
+     * will be calculated automatically.
+     *
+     * @property minimum
+     * @type Number
+     */
+    minimum: NaN,
 
-	<div id="prop-Ext.chart.NumericAxis-maximum"></div>/**
-	 * The maximum value drawn by the axis. If not set explicitly, the axis maximum
-	 * will be calculated automatically.
-	 *
-	 * @property maximum
-	 * @type Number
-	 */
-	maximum: NaN,
+    <div id="prop-Ext.chart.NumericAxis-maximum"></div>/**
+     * The maximum value drawn by the axis. If not set explicitly, the axis maximum
+     * will be calculated automatically.
+     *
+     * @property maximum
+     * @type Number
+     */
+    maximum: NaN,
 
-	<div id="prop-Ext.chart.NumericAxis-majorUnit"></div>/**
-	 * The spacing between major intervals on this axis.
-	 *
-	 * @property majorUnit
-	 * @type Number
-	 */
-	majorUnit: NaN,
+    <div id="prop-Ext.chart.NumericAxis-majorUnit"></div>/**
+     * The spacing between major intervals on this axis.
+     *
+     * @property majorUnit
+     * @type Number
+     */
+    majorUnit: NaN,
 
-	<div id="prop-Ext.chart.NumericAxis-minorUnit"></div>/**
-	 * The spacing between minor intervals on this axis.
-	 *
-	 * @property minorUnit
-	 * @type Number
-	 */
-	minorUnit: NaN,
+    <div id="prop-Ext.chart.NumericAxis-minorUnit"></div>/**
+     * The spacing between minor intervals on this axis.
+     *
+     * @property minorUnit
+     * @type Number
+     */
+    minorUnit: NaN,
 
-	<div id="prop-Ext.chart.NumericAxis-snapToUnits"></div>/**
-	 * If true, the labels, ticks, gridlines, and other objects will snap to
-	 * the nearest major or minor unit. If false, their position will be based
-	 * on the minimum value.
-	 *
-	 * @property snapToUnits
-	 * @type Boolean
-	 */
-	snapToUnits: true,
+    <div id="prop-Ext.chart.NumericAxis-snapToUnits"></div>/**
+     * If true, the labels, ticks, gridlines, and other objects will snap to
+     * the nearest major or minor unit. If false, their position will be based
+     * on the minimum value.
+     *
+     * @property snapToUnits
+     * @type Boolean
+     */
+    snapToUnits: true,
 
-	<div id="prop-Ext.chart.NumericAxis-alwaysShowZero"></div>/**
-	 * If true, and the bounds are calculated automatically, either the minimum or
-	 * maximum will be set to zero.
-	 *
-	 * @property alwaysShowZero
-	 * @type Boolean
-	 */
-	alwaysShowZero: true,
+    <div id="prop-Ext.chart.NumericAxis-alwaysShowZero"></div>/**
+     * If true, and the bounds are calculated automatically, either the minimum or
+     * maximum will be set to zero.
+     *
+     * @property alwaysShowZero
+     * @type Boolean
+     */
+    alwaysShowZero: true,
 
-	<div id="prop-Ext.chart.NumericAxis-scale"></div>/**
-	 * The scaling algorithm to use on this axis. May be "linear" or "logarithmic".
-	 *
-	 * @property scale
-	 * @type String
-	 */
-	scale: "linear"
+    <div id="prop-Ext.chart.NumericAxis-scale"></div>/**
+     * The scaling algorithm to use on this axis. May be "linear" or "logarithmic".
+     *
+     * @property scale
+     * @type String
+     */
+    scale: "linear"
 });
 
 <div id="cls-Ext.chart.TimeAxis"></div>/**
@@ -483,67 +547,67 @@ Ext.chart.NumericAxis = Ext.extend(Ext.chart.Axis, {
  * @constructor
  */
 Ext.chart.TimeAxis = Ext.extend(Ext.chart.Axis, {
-	type: "time",
+    type: "time",
 
-	<div id="prop-Ext.chart.TimeAxis-minimum"></div>/**
-	 * The minimum value drawn by the axis. If not set explicitly, the axis minimum
-	 * will be calculated automatically.
-	 *
-	 * @property minimum
-	 * @type Date
-	 */
-	minimum: null,
+    <div id="prop-Ext.chart.TimeAxis-minimum"></div>/**
+     * The minimum value drawn by the axis. If not set explicitly, the axis minimum
+     * will be calculated automatically.
+     *
+     * @property minimum
+     * @type Date
+     */
+    minimum: null,
 
-	<div id="prop-Ext.chart.TimeAxis-maximum"></div>/**
-	 * The maximum value drawn by the axis. If not set explicitly, the axis maximum
-	 * will be calculated automatically.
-	 *
-	 * @property maximum
-	 * @type Number
-	 */
-	maximum: null,
+    <div id="prop-Ext.chart.TimeAxis-maximum"></div>/**
+     * The maximum value drawn by the axis. If not set explicitly, the axis maximum
+     * will be calculated automatically.
+     *
+     * @property maximum
+     * @type Number
+     */
+    maximum: null,
 
-	<div id="prop-Ext.chart.TimeAxis-majorUnit"></div>/**
-	 * The spacing between major intervals on this axis.
-	 *
-	 * @property majorUnit
-	 * @type Number
-	 */
-	majorUnit: NaN,
+    <div id="prop-Ext.chart.TimeAxis-majorUnit"></div>/**
+     * The spacing between major intervals on this axis.
+     *
+     * @property majorUnit
+     * @type Number
+     */
+    majorUnit: NaN,
 
-	<div id="prop-Ext.chart.TimeAxis-majorTimeUnit"></div>/**
-	 * The time unit used by the majorUnit.
-	 *
-	 * @property majorTimeUnit
-	 * @type String
-	 */
-	majorTimeUnit: null,
+    <div id="prop-Ext.chart.TimeAxis-majorTimeUnit"></div>/**
+     * The time unit used by the majorUnit.
+     *
+     * @property majorTimeUnit
+     * @type String
+     */
+    majorTimeUnit: null,
 
-	<div id="prop-Ext.chart.TimeAxis-majorUnit"></div>/**
-	 * The spacing between minor intervals on this axis.
-	 *
-	 * @property majorUnit
-	 * @type Number
-	 */
-	minorUnit: NaN,
+    <div id="prop-Ext.chart.TimeAxis-majorUnit"></div>/**
+     * The spacing between minor intervals on this axis.
+     *
+     * @property majorUnit
+     * @type Number
+     */
+    minorUnit: NaN,
 
-	<div id="prop-Ext.chart.TimeAxis-majorTimeUnit"></div>/**
-	 * The time unit used by the minorUnit.
-	 *
-	 * @property majorTimeUnit
-	 * @type String
-	 */
-	minorTimeUnit: null,
+    <div id="prop-Ext.chart.TimeAxis-majorTimeUnit"></div>/**
+     * The time unit used by the minorUnit.
+     *
+     * @property majorTimeUnit
+     * @type String
+     */
+    minorTimeUnit: null,
 
-	<div id="prop-Ext.chart.TimeAxis-snapToUnits"></div>/**
-	 * If true, the labels, ticks, gridlines, and other objects will snap to
-	 * the nearest major or minor unit. If false, their position will be based
-	 * on the minimum value.
-	 *
-	 * @property snapToUnits
-	 * @type Boolean
-	 */
-	snapToUnits: true
+    <div id="prop-Ext.chart.TimeAxis-snapToUnits"></div>/**
+     * If true, the labels, ticks, gridlines, and other objects will snap to
+     * the nearest major or minor unit. If false, their position will be based
+     * on the minimum value.
+     *
+     * @property snapToUnits
+     * @type Boolean
+     */
+    snapToUnits: true
 });
 
 <div id="cls-Ext.chart.CategoryAxis"></div>/**
@@ -553,15 +617,15 @@ Ext.chart.TimeAxis = Ext.extend(Ext.chart.Axis, {
  * @constructor
  */
 Ext.chart.CategoryAxis = Ext.extend(Ext.chart.Axis, {
-	type: "category",
+    type: "category",
 
-	<div id="prop-Ext.chart.CategoryAxis-categoryNames"></div>/**
-	 * A list of category names to display along this axis.
-	 *
-	 * @property categoryNames
-	 * @type Array
-	 */
-	categoryNames: null
+    <div id="prop-Ext.chart.CategoryAxis-categoryNames"></div>/**
+     * A list of category names to display along this axis.
+     *
+     * @property categoryNames
+     * @type Array
+     */
+    categoryNames: null
 });
 
 <div id="cls-Ext.chart.Series"></div>/**
@@ -573,21 +637,21 @@ Ext.chart.Series = function(config) { Ext.apply(this, config); };
 
 Ext.chart.Series.prototype =
 {
-	<div id="prop-Ext.chart.Series-type"></div>/**
-	 * The type of series.
-	 *
-	 * @property type
-	 * @type String
-	 */
-	type: null,
+    <div id="prop-Ext.chart.Series-type"></div>/**
+     * The type of series.
+     *
+     * @property type
+     * @type String
+     */
+    type: null,
 
-	<div id="prop-Ext.chart.Series-displayName"></div>/**
-	 * The human-readable name of the series.
-	 *
-	 * @property displayName
-	 * @type String
-	 */
-	displayName: null
+    <div id="prop-Ext.chart.Series-displayName"></div>/**
+     * The human-readable name of the series.
+     *
+     * @property displayName
+     * @type String
+     */
+    displayName: null
 };
 
 <div id="cls-Ext.chart.CartesianSeries"></div>/**
@@ -597,21 +661,21 @@ Ext.chart.Series.prototype =
  * @constructor
  */
 Ext.chart.CartesianSeries = Ext.extend(Ext.chart.Series, {
-	<div id="prop-Ext.chart.CartesianSeries-xField"></div>/**
-	 * The field used to access the x-axis value from the items from the data source.
-	 *
-	 * @property xField
-	 * @type String
-	 */
-	xField: null,
+    <div id="prop-Ext.chart.CartesianSeries-xField"></div>/**
+     * The field used to access the x-axis value from the items from the data source.
+     *
+     * @property xField
+     * @type String
+     */
+    xField: null,
 
-	<div id="prop-Ext.chart.CartesianSeries-yField"></div>/**
-	 * The field used to access the y-axis value from the items from the data source.
-	 *
-	 * @property yField
-	 * @type String
-	 */
-	yField: null
+    <div id="prop-Ext.chart.CartesianSeries-yField"></div>/**
+     * The field used to access the y-axis value from the items from the data source.
+     *
+     * @property yField
+     * @type String
+     */
+    yField: null
 });
 
 <div id="cls-Ext.chart.ColumnSeries"></div>/**
@@ -621,7 +685,7 @@ Ext.chart.CartesianSeries = Ext.extend(Ext.chart.Series, {
  * @constructor
  */
 Ext.chart.ColumnSeries = Ext.extend(Ext.chart.CartesianSeries, {
-	type: "column"
+    type: "column"
 });
 
 <div id="cls-Ext.chart.LineSeries"></div>/**
@@ -631,7 +695,7 @@ Ext.chart.ColumnSeries = Ext.extend(Ext.chart.CartesianSeries, {
  * @constructor
  */
 Ext.chart.LineSeries = Ext.extend(Ext.chart.CartesianSeries, {
-	type: "line"
+    type: "line"
 });
 
 <div id="cls-Ext.chart.BarSeries"></div>/**
@@ -641,7 +705,7 @@ Ext.chart.LineSeries = Ext.extend(Ext.chart.CartesianSeries, {
  * @constructor
  */
 Ext.chart.BarSeries = Ext.extend(Ext.chart.CartesianSeries, {
-	type: "bar"
+    type: "bar"
 });
 
 
@@ -652,9 +716,9 @@ Ext.chart.BarSeries = Ext.extend(Ext.chart.CartesianSeries, {
  * @constructor
  */
 Ext.chart.PieSeries = Ext.extend(Ext.chart.Series, {
-	type: "pie",
-	dataField: null,
-	categoryField: null
+    type: "pie",
+    dataField: null,
+    categoryField: null
 });</pre>    
 </body>
 </html>

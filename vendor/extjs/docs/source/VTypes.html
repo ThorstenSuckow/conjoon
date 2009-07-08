@@ -9,7 +9,7 @@
  * @class Ext.form.VTypes
  * <p>This is a singleton object which contains a set of commonly used field validation functions.
  * The validations provided are basic and intended to be easily customizable and extended.</p>
- * <p>To add custom VTypes specify the <tt>{@link Ext.form.TextField#vtype vtype}</tt> validation
+ * <p>To add custom VTypes specify the <code>{@link Ext.form.TextField#vtype vtype}</code> validation
  * test function, and optionally specify any corresponding error text to display and any keystroke
  * filtering mask to apply. For example:</p>
  * <pre><code>
@@ -43,7 +43,7 @@ Ext.form.VTypes = function(){
     // closure these in so they are only created once.
     var alpha = /^[a-zA-Z_]+$/;
     var alphanum = /^[a-zA-Z0-9_]+$/;
-    var email = /^([\w]+)(\.[\w]+)*@([\w\-]+\.){1,5}([A-Za-z]){2,4}$/;
+    var email = /^(\w+)([-+.][\w]+)*@(\w[-\w]*\.){1,5}([A-Za-z]){2,4}$/;
     var url = /(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
 
     // All these messages and functions are configurable
@@ -53,18 +53,21 @@ Ext.form.VTypes = function(){
          * validation per the email RFC specifications is very complex and beyond the scope of this class, although
          * this function can be overridden if a more comprehensive validation scheme is desired.  See the validation
          * section of the <a href="http://en.wikipedia.org/wiki/E-mail_address">Wikipedia article on email addresses</a> 
-         * for additional information.
+         * for additional information.  This implementation is intended to validate the following emails:<tt>
+         * 'barney@example.de', 'barney.rubble@example.com', 'barney-rubble@example.coop', 'barney+rubble@example.com'
+         * </tt>.
          * @param {String} value The email address
+         * @return {Boolean} true if the RegExp test passed, and false if not.
          */
         'email' : function(v){
             return email.test(v);
         },
         <div id="prop-Ext.form.VTypes-emailText"></div>/**
          * The error text to display when the email validation function returns false.  Defaults to:
-         * <tt>'This field should be an e-mail address in the format "user@domain.com"'</tt>
+         * <tt>'This field should be an e-mail address in the format "user@example.com"'</tt>
          * @type String
          */
-        'emailText' : 'This field should be an e-mail address in the format "user@domain.com"',
+        'emailText' : 'This field should be an e-mail address in the format "user@example.com"',
         <div id="prop-Ext.form.VTypes-emailMask"></div>/**
          * The keystroke filter mask to be applied on email input.  See the {@link #email} method for 
          * information about more complex email validation. Defaults to:
@@ -76,20 +79,22 @@ Ext.form.VTypes = function(){
         <div id="method-Ext.form.VTypes-url"></div>/**
          * The function used to validate URLs
          * @param {String} value The URL
+         * @return {Boolean} true if the RegExp test passed, and false if not.
          */
         'url' : function(v){
             return url.test(v);
         },
         <div id="prop-Ext.form.VTypes-urlText"></div>/**
          * The error text to display when the url validation function returns false.  Defaults to:
-         * <tt>'This field should be a URL in the format "http:/'+'/www.domain.com"'</tt>
+         * <tt>'This field should be a URL in the format "http:/'+'/www.example.com"'</tt>
          * @type String
          */
-        'urlText' : 'This field should be a URL in the format "http:/'+'/www.domain.com"',
+        'urlText' : 'This field should be a URL in the format "http:/'+'/www.example.com"',
         
         <div id="method-Ext.form.VTypes-alpha"></div>/**
          * The function used to validate alpha values
          * @param {String} value The value
+         * @return {Boolean} true if the RegExp test passed, and false if not.
          */
         'alpha' : function(v){
             return alpha.test(v);
@@ -110,6 +115,7 @@ Ext.form.VTypes = function(){
         <div id="method-Ext.form.VTypes-alphanum"></div>/**
          * The function used to validate alphanumeric values
          * @param {String} value The value
+         * @return {Boolean} true if the RegExp test passed, and false if not.
          */
         'alphanum' : function(v){
             return alphanum.test(v);

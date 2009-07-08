@@ -73,7 +73,7 @@ var myReader = new Ext.data.JsonReader();
         foo: 'bar' // custom property
     },
     results: 2,
-    rows: [
+    rows: [ // an Array
         { 'id': 1, 'name': 'Bill', occupation: 'Gardener' },
         { 'id': 2, 'name': 'Ben', occupation: 'Horticulturalist' }
     ]
@@ -82,8 +82,15 @@ var myReader = new Ext.data.JsonReader();
  * @cfg {String} totalProperty [total] Name of the property from which to retrieve the total number of records
  * in the dataset. This is only needed if the whole dataset is not passed in one go, but is being
  * paged from the remote server.  Defaults to <tt>total</tt>.
- * @cfg {String} successProperty [success] Name of the property from which to retrieve the success attribute used by forms.  Defaults to <tt>success</tt>.
- * @cfg {String} root [undefined] <b>Required</b>.  The name of the property which contains the Array of row objects.  Defaults to <tt>undefined</tt>.  An exception will be thrown if the root property is undefiend.
+ * @cfg {String} successProperty [success] Name of the property from which to
+ * retrieve the success attribute. Defaults to <tt>success</tt>.  See
+ * {@link Ext.data.DataProxy}.{@link Ext.data.DataProxy#exception exception}
+ * for additional information.
+ * @cfg {String} root [undefined] <b>Required</b>.  The name of the property
+ * which contains the Array of row objects.  Defaults to <tt>undefined</tt>.
+ * An exception will be thrown if the root property is undefined. The data packet
+ * value for this property should be an empty array to clear the data or show
+ * no data.
  * @cfg {String} idProperty [id] Name of the property within a row object that contains a record identifier value.  Defaults to <tt>id</tt>
  * @constructor
  * Create a new JsonReader
@@ -146,11 +153,11 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         var re = /[\[\.]/;
         return function(expr) {
             try {
-                return(re.test(expr))
-                    ? new Function("obj", "return obj." + expr)
-                    : function(obj){
-                        return obj[expr];
-                    };
+                return(re.test(expr)) ?
+                new Function("obj", "return obj." + expr) :
+                function(obj){
+                    return obj[expr];
+                };
             } catch(e){}
             return Ext.emptyFn;
         };
@@ -178,21 +185,17 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
             this.onMetaChange(this.meta, this.recordType, o);
         }
         var s = this.meta, Record = this.recordType,
-            f = Record.prototype.fields, fi = f.items, fl = f.length;
+            f = Record.prototype.fields, fi = f.items, fl = f.length, v;
 
-        // Generate extraction functions for the totalProperty, the root, the id, and for each field
-        if (!this.ef) {
-            this.ef = this.buildExtractors();
-        }
         var root = this.getRoot(o), c = root.length, totalRecords = c, success = true;
         if(s.totalProperty){
-            var v = parseInt(this.getTotal(o), 10);
+            v = parseInt(this.getTotal(o), 10);
             if(!isNaN(v)){
                 totalRecords = v;
             }
         }
         if(s.successProperty){
-            var v = this.getSuccess(o);
+            v = this.getSuccess(o);
             if(v === false || v === 'false'){
                 success = false;
             }
@@ -214,6 +217,9 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
 
     // private
     buildExtractors : function() {
+        if(this.ef){
+            return;
+        }
         var s = this.meta, Record = this.recordType,
             f = Record.prototype.fields, fi = f.items, fl = f.length;
 
@@ -239,7 +245,7 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
             var map = (f.mapping !== undefined && f.mapping !== null) ? f.mapping : f.name;
             ef.push(this.getJsonAccessor(map));
         }
-        return ef;
+        this.ef = ef;
     },
 
     // private extractValues
@@ -254,13 +260,12 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
     },
 
     /**
-     * readResponse
-     * decodes a json response from server
+     * Decode a json response from server.
      * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
      * @param {Object} response
      */
     readResponse : function(action, response) {
-        var o = (typeof(response.responseText) != undefined) ? Ext.decode(response.responseText) : response;
+        var o = (response.responseText !== undefined) ? Ext.decode(response.responseText) : response;
         if(!o) {
             throw new Ext.data.JsonReader.Error('response');
         }
@@ -268,23 +273,21 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
             throw new Ext.data.JsonReader.Error('successProperty-response', this.meta.successProperty);
         }
         // TODO, separate empty and undefined exceptions.
-        if ((action === Ext.data.Api.actions.create || action === Ext.data.Api.actions.update)) {
+        if (action === Ext.data.Api.actions.create) {
             if (Ext.isEmpty(o[this.meta.root])) {
                 throw new Ext.data.JsonReader.Error('root-emtpy', this.meta.root);
             }
-            else if (typeof(o[this.meta.root]) === undefined) {
+            else if (o[this.meta.root] === undefined) {
                 throw new Ext.data.JsonReader.Error('root-undefined-response', this.meta.root);
             }
         }
-        // makde sure extaction functions are defined.
-        if (!this.ef) {
-            this.ef = this.buildExtractors();
-        }
+
         return o;
     }
 });
 
 /**
+ * @class Ext.data.JsonReader.Error
  * Error class for JsonReader
  */
 Ext.data.JsonReader.Error = Ext.extend(Ext.Error, {
@@ -300,7 +303,7 @@ Ext.apply(Ext.data.JsonReader.Error.prototype, {
         'successProperty-response': 'Could not locate your "successProperty" in your server response.  Please review your JsonReader config to ensure the config-property "successProperty" matches the property in your server-response.  See the JsonReader docs.',
         'root-undefined-response': 'Could not locate your "root" property in your server response.  Please review your JsonReader config to ensure the config-property "root" matches the property your server-response.  See the JsonReader docs.',
         'root-undefined-config': 'Your JsonReader was configured without a "root" property.  Please review your JsonReader config and make sure to define the root property.  See the JsonReader docs.',
-        'idProperty-undefined' : 'Your JsonReader was configured without an "idProperty"  Please review your JsonReader configuration and ensure the "idProperty" is set (eg: "id").  See the JsonReader docs.',
+        'idProperty-undefined' : 'Your JsonReader was configured without an "idProperty"  Please review your JsonReader configuration and ensure the "idProperty" is set (e.g.: "id").  See the JsonReader docs.',
         'root-emtpy': 'Data was expected to be returned by the server in the "root" property of the response.  Please review your JsonReader configuration to ensure the "root" property matches that returned in the server-response.  See JsonReader docs.'
     }
 });

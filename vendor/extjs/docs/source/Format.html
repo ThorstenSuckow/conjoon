@@ -220,6 +220,12 @@ Ext.util.Format = function(){
             }
         },
 
+        <div id="method-Ext.util.Format-math"></div>/**
+         * It does simple math for use in a template, for example:<pre><code>
+         * var tpl = new Ext.Template('{value} * 10 = {value:math("* 10")}');
+         * </code></pre>
+         * @return {Function} A function that operates on the passed value.
+         */
         math : function(){
             var fns = {};
             return function(v, a){

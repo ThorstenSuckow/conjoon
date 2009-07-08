@@ -120,6 +120,18 @@ document.write(dt.format(Date.patterns.ShortDate));
 
 (function() {
 
+<div id="prop-Date-useStrict"></div>/**
+ * Global flag which determines if strict date parsing should be used.
+ * Strict date parsing will not roll-over invalid dates, which is the
+ * default behaviour of javascript Date objects.
+ * (see {@link #parseDate} for more information)
+ * Defaults to <tt>false</tt>.
+ * @static
+ * @type Boolean
+*/
+Date.useStrict = false;
+
+
 // create private copy of Ext's String.format() method
 // - to remove unnecessary dependency
 // - to resolve namespace conflict with M$-Ajax's implementation
@@ -161,9 +173,9 @@ Ext.apply(Date, {
      * date formats are requested for Ext standard formatting strings.</p>
      * <p>Custom parsing functions may be inserted into this object, keyed by a name which from then on
      * may be used as a format string to {@link #parseDate}.<p>
-     * <p>Example:</p><code><pre>
+     * <p>Example:</p><pre><code>
 Date.parseFunctions['x-date-format'] = myDateParser;
-</pre></code>
+</code></pre>
      * <p>A parsing function should return a Date object, and is passed the following parameters:<div class="mdetail-params"><ul>
      * <li><code>date</code> : String<div class="sub-desc">The date string to parse.</div></li>
      * <li><code>strict</code> : Boolean<div class="sub-desc">True to validate date strings while parsing
@@ -179,10 +191,10 @@ Date.parseFunctions['x-date-format'] = myDateParser;
     parseFunctions: {
         "M$": function(input, strict) {
             // note: the timezone offset is ignored since the M$ Ajax server sends
-            // a UTC milliseconds-since-Unix-epoch value
-            var re = new RegExp('\\/Date\\((\\d+)(?:[+-]\\d{4})?\\)\\/');
+            // a UTC milliseconds-since-Unix-epoch value (negative values are allowed)
+            var re = new RegExp('\\/Date\\(([-+])?(\\d+)(?:[+-]\\d{4})?\\)\\/');
             var r = (input || '').match(re);
-            return r? new Date(r[1] * 1) : null;
+            return r? new Date(((r[1] || '') + r[2]) * 1) : null;
         }
     },
     parseRegexes: [],
@@ -193,9 +205,9 @@ Date.parseFunctions['x-date-format'] = myDateParser;
      * <p>This object is automatically populated with date formatting functions as
      * date formats are requested for Ext standard formatting strings.</p>
      * <p>Custom formatting functions may be inserted into this object, keyed by a name which from then on
-     * may be used as a format string to {@link #format}. Example:</p><code><pre>
+     * may be used as a format string to {@link #format}. Example:</p><pre><code>
 Date.formatFunctions['x-date-format'] = myDateFormatter;
-</pre></code>
+</code></pre>
      * <p>A formatting function should return a string repesentation of the passed Date object:<div class="mdetail-params"><ul>
      * <li><code>date</code> : Date<div class="sub-desc">The Date to format.</div></li>
      * </ul></div></p>
@@ -211,7 +223,7 @@ Date.formatFunctions['x-date-format'] = myDateFormatter;
             return '\\/Date(' + this.getTime() + ')\\/';
         }
     },
-    daysInMonth : [31,28,31,30,31,30,31,31,30,31,30,31],
+
     y2kYear : 50,
 
     <div id="prop-Date-MILLI"></div>/**
@@ -524,7 +536,7 @@ Date.formatCodes.x = "String.leftPad(this.getDate(), 2, '0')";
 //dt = Fri May 25 2007 (current date)
 var dt = new Date();
 
-//dt = Thu May 25 2006 (today's month/day in 2006)
+//dt = Thu May 25 2006 (today&#39;s month/day in 2006)
 dt = Date.parseDate("2006", "Y");
 
 //dt = Sun Jan 15 2006 (all date parts specified)
@@ -548,7 +560,7 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
         if (p[format] == null) {
             Date.createParser(format);
         }
-        return p[format](input, strict);
+        return p[format](input, Ext.isDefined(strict) ? strict : Date.useStrict);
     },
 
     // private
@@ -605,7 +617,7 @@ dt = Date.parseDate("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
                     // date calculations (note: these calculations create a dependency on Ext.num())
                     "y = y >= 0? y : Ext.num(def.y, dt.getFullYear());",
                     "m = m >= 0? m : Ext.num(def.m - 1, dt.getMonth());",
-                    "d = d || Ext.num(def.d, dt.getDate());",
+                    "d = d >= 0? d : Ext.num(def.d, dt.getDate());",
 
                     // time calculations (note: these calculations create a dependency on Ext.num())
                     "h  = h || Ext.num(def.h, dt.getHours());",
@@ -966,11 +978,14 @@ Ext.apply(Date.prototype, {
      * Get the numeric day number of the year, adjusted for leap year.
      * @return {Number} 0 to 364 (365 in leap years).
      */
-    getDayOfYear : function() {
-        var num = 0;
-        Date.daysInMonth[1] = this.isLeapYear() ? 29 : 28;
-        for (var i = 0; i < this.getMonth(); ++i) {
-            num += Date.daysInMonth[i];
+    getDayOfYear: function() {
+        var i = 0,
+            num = 0,
+            d = this.clone(),
+            m = this.getMonth();
+
+        for (i = 0, d.setMonth(0); i < m; d.setMonth(++i)) {
+            num += d.getDaysInMonth();
         }
         return num + this.getDate() - 1;
     },
@@ -1031,8 +1046,7 @@ document.write(Date.dayNames[dt.getLastDayOfMonth()]); //output: 'Wednesday'
      * @return {Number} The day number (0-6).
      */
     getLastDayOfMonth : function() {
-        var day = (this.getDay() + (Date.daysInMonth[this.getMonth()] - this.getDate())) % 7;
-        return (day < 0) ? (day + 7) : day;
+        return this.getLastDateOfMonth().getDay();
     },
 
 
@@ -1056,10 +1070,15 @@ document.write(Date.dayNames[dt.getLastDayOfMonth()]); //output: 'Wednesday'
      * Get the number of days in the current month, adjusted for leap year.
      * @return {Number} The number of days in the month.
      */
-    getDaysInMonth : function() {
-        Date.daysInMonth[1] = this.isLeapYear() ? 29 : 28;
-        return Date.daysInMonth[this.getMonth()];
-    },
+    getDaysInMonth: function() {
+        var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        return function() { // return a closure for efficiency
+            var m = this.getMonth();
+
+            return m == 1 && this.isLeapYear() ? 29 : daysInMonth[m];
+        }
+    }(),
 
     <div id="method-Date-getSuffix"></div>/**
      * Get the English ordinal suffix of the current day (equivalent to the format specifier 'S').
@@ -1286,13 +1305,13 @@ console.groupEnd();
 // ISO-8601 format as specified in http://www.w3.org/TR/NOTE-datetime
 // -- accepts ALL 6 levels of date-time granularity
 console.group('ISO-8601 Granularity Test (see http://www.w3.org/TR/NOTE-datetime)');
-    console.log('Date.parseDate("1997", "c")                              = %o', Date.parseDate("1997", "c")); // YYYY (eg 1997)
-    console.log('Date.parseDate("1997-07", "c")                           = %o', Date.parseDate("1997-07", "c")); // YYYY-MM (eg 1997-07)
-    console.log('Date.parseDate("1997-07-16", "c")                        = %o', Date.parseDate("1997-07-16", "c")); // YYYY-MM-DD (eg 1997-07-16)
-    console.log('Date.parseDate("1997-07-16T19:20+01:00", "c")            = %o', Date.parseDate("1997-07-16T19:20+01:00", "c")); // YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-    console.log('Date.parseDate("1997-07-16T19:20:30+01:00", "c")         = %o', Date.parseDate("1997-07-16T19:20:30+01:00", "c")); // YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
-    console.log('Date.parseDate("1997-07-16T19:20:30.45+01:00", "c")      = %o', Date.parseDate("1997-07-16T19:20:30.45+01:00", "c")); // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-    console.log('Date.parseDate("1997-07-16 19:20:30.45+01:00", "c")      = %o', Date.parseDate("1997-07-16 19:20:30.45+01:00", "c")); // YYYY-MM-DD hh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+    console.log('Date.parseDate("1997", "c")                              = %o', Date.parseDate("1997", "c")); // YYYY (e.g. 1997)
+    console.log('Date.parseDate("1997-07", "c")                           = %o', Date.parseDate("1997-07", "c")); // YYYY-MM (e.g. 1997-07)
+    console.log('Date.parseDate("1997-07-16", "c")                        = %o', Date.parseDate("1997-07-16", "c")); // YYYY-MM-DD (e.g. 1997-07-16)
+    console.log('Date.parseDate("1997-07-16T19:20+01:00", "c")            = %o', Date.parseDate("1997-07-16T19:20+01:00", "c")); // YYYY-MM-DDThh:mmTZD (e.g. 1997-07-16T19:20+01:00)
+    console.log('Date.parseDate("1997-07-16T19:20:30+01:00", "c")         = %o', Date.parseDate("1997-07-16T19:20:30+01:00", "c")); // YYYY-MM-DDThh:mm:ssTZD (e.g. 1997-07-16T19:20:30+01:00)
+    console.log('Date.parseDate("1997-07-16T19:20:30.45+01:00", "c")      = %o', Date.parseDate("1997-07-16T19:20:30.45+01:00", "c")); // YYYY-MM-DDThh:mm:ss.sTZD (e.g. 1997-07-16T19:20:30.45+01:00)
+    console.log('Date.parseDate("1997-07-16 19:20:30.45+01:00", "c")      = %o', Date.parseDate("1997-07-16 19:20:30.45+01:00", "c")); // YYYY-MM-DD hh:mm:ss.sTZD (e.g. 1997-07-16T19:20:30.45+01:00)
     console.log('Date.parseDate("1997-13-16T19:20:30.45+01:00", "c", true)= %o', Date.parseDate("1997-13-16T19:20:30.45+01:00", "c", true)); // strict date parsing with invalid month value
 console.groupEnd();
 

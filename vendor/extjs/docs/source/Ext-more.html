@@ -5,24 +5,22 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js"><div id="cls-Ext"></div>/**
+    <pre class="prettyprint lang-js">/**
  * @class Ext
  */
 
 Ext.ns("Ext.grid", "Ext.dd", "Ext.tree", "Ext.form", "Ext.menu",
        "Ext.state", "Ext.layout", "Ext.app", "Ext.ux", "Ext.chart", "Ext.direct");
+    <div id="prop-Ext-ux"></div>/**
+     * Namespace alloted for extensions to the framework.
+     * @property ux
+     * @type Object
+     */
 
 Ext.apply(Ext, function(){
     var E = Ext, idSeed = 0;
 
     return {
-        <div id="prop-Ext-SSL_SECURE_URL"></div>/**
-         * URL to a blank file used by Ext when in secure mode for iframe src and onReady src to prevent
-         * the IE insecure content warning (defaults to javascript:false).
-         * @type String
-         */
-        SSL_SECURE_URL : "javascript:false",
-
         <div id="prop-Ext-emptyFn"></div>/**
         * A reusable empty function
         * @property
@@ -31,11 +29,14 @@ Ext.apply(Ext, function(){
         emptyFn : function(){},
 
         <div id="prop-Ext-BLANK_IMAGE_URL"></div>/**
-         * URL to a 1x1 transparent gif image used by Ext to create inline icons with CSS background images. (Defaults to
-         * "http://extjs.com/s.gif" and you should change this to a URL on your server).
+         * URL to a 1x1 transparent gif image used by Ext to create inline icons with CSS background images. 
+         * In older versions of IE, this defaults to "http://extjs.com/s.gif" and you should change this to a URL on your server.
+         * For other browsers it uses an inline data URL.
          * @type String
          */
-        BLANK_IMAGE_URL : "http:/"+"/extjs.com/s.gif",
+        BLANK_IMAGE_URL : Ext.isIE6 || Ext.isIE7 ?
+                            'http:/' + '/extjs.com/s.gif' :
+                            'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
 
         extendX : function(supr, fn){
             return Ext.extend(supr, fn(supr.prototype));
@@ -65,7 +66,7 @@ Ext.apply(Ext, function(){
          * @return {Number} Value, if numeric, else defaultValue
          */
         num : function(v, defaultValue){
-            v = Number(v == null? NaN : v);
+            v = Number(v === null || typeof v == 'boolean'? NaN : v);
             return isNaN(v)? defaultValue : v;
         },
 
@@ -178,12 +179,11 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
             if(typeof names == 'string'){
                 names = names.split(/[,;\s]/);
             }
-            for(var i = 0, len = names.length; i< len; i++){
-                var n = names[i];
-                if(source.hasOwnProperty(n)){
-                    dest[n] = source[n];
+            Ext.each(names, function(name){
+                if(source.hasOwnProperty(name)){
+                    dest[name] = source[name];
                 }
-            }
+            }, this);
             return dest;
         },
 
@@ -193,22 +193,22 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
          * intended for arguments of type {@link Ext.Element} and {@link Ext.Component}, but any subclass of
          * {@link Ext.util.Observable} can be passed in.  Any number of elements and/or components can be
          * passed into this function in a single call as separate arguments.
-         * @param {Mixed} arg1 An {@link Ext.Element} or {@link Ext.Component} to destroy
+         * @param {Mixed} arg1 An {@link Ext.Element}, {@link Ext.Component}, or an Array of either of these to destroy
          * @param {Mixed} arg2 (optional)
          * @param {Mixed} etc... (optional)
          */
         destroy : function(){
-            for(var i = 0, a = arguments, len = a.length; i < len; i++) {
-                var as = a[i];
-                if(as){
-                    if(Ext.isFunction(as.destroy)){
-                        as.destroy();
-                    }
-                    else if(as.dom){
-                        as.remove();
-                    }
+            Ext.each(arguments, function(arg){
+                if(arg){
+                    if(Ext.isArray(arg)){
+                        this.destroy.apply(this, arg);
+                    }else if(Ext.isFunction(arg.destroy)){
+                        arg.destroy();
+                    }else if(arg.dom){
+                        arg.remove();
+                    }    
                 }
-            }
+            }, this);
         },
 
         <div id="method-Ext-destroyMembers"></div>/**
@@ -232,7 +232,9 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
         clean : function(arr){
             var ret = [];
             Ext.each(arr, function(v){
-                if(!!v) ret.push(v);
+                if(!!v){
+                    ret.push(v);
+                }
             });
             return ret;
         },
@@ -264,10 +266,14 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
             var worker = [];
             function rFlatten(a) {
                 Ext.each(a, function(v) {
-                    Ext.isArray(v) ? rFlatten(v) : worker.push(v);
+                    if(Ext.isArray(v)){
+                        rFlatten(v);
+                    }else{
+                        worker.push(v);
+                    }
                 });
                 return worker;
-            };
+            }
             return rFlatten(arr);
         },
 
@@ -280,7 +286,7 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
          */
         min : function(arr, comp){
             var ret = arr[0];
-            comp = comp || function(a,b){ return a < b ? -1 : 1 };
+            comp = comp || function(a,b){ return a < b ? -1 : 1; };
             Ext.each(arr, function(v) {
                 ret = comp(ret, v) == -1 ? ret : v;
             });
@@ -296,7 +302,7 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
          */
         max : function(arr, comp){
             var ret = arr[0];
-            comp = comp || function(a,b){ return a > b ? 1 : -1 };
+            comp = comp || function(a,b){ return a > b ? 1 : -1; };
             Ext.each(arr, function(v) {
                 ret = comp(ret, v) == 1 ? ret : v;
             });
@@ -363,7 +369,7 @@ Ext.partition(
 Ext.invoke(Ext.query("p"), "getAttribute", "id");
 // [el1.getAttribute("id"), el2.getAttribute("id"), ..., elN.getAttribute("id")]
          * </code></pre>
-         * @param {Array|NodeList(not in IE)} arr The Array of items to invoke the method on.
+         * @param {Array|NodeList} arr The Array of items to invoke the method on.
          * @param {String} methodName The method name to invoke.
          * @param {Anything} ... Arguments to send into the method invocation.
          * @return {Array} The results of invoking the method on each item in the array.
@@ -419,7 +425,7 @@ Ext.zip(
          * @return {Array} The zipped set.
          */
         zip : function(){
-            var parts = Ext.partition(arguments, function( val ){ return typeof val != "function" }),
+            var parts = Ext.partition(arguments, function( val ){ return !Ext.isFunction(val); }),
                 arrs = parts[0],
                 fn = parts[1][0],
                 len = Ext.max(Ext.pluck(arrs, "length")),
@@ -439,9 +445,11 @@ Ext.zip(
         },
 
         <div id="method-Ext-getCmp"></div>/**
+         * This is shorthand reference to {@link Ext.ComponentMgr#get}.
          * Looks up an existing {@link Ext.Component Component} by {@link Ext.Component#id id}
          * @param {String} id The component {@link Ext.Component#id id}
-         * @return Ext.Component The Component, or null if not found.
+         * @return Ext.Component The Component, <tt>undefined</tt> if not found, or <tt>null</tt> if a
+         * Class was found.
         */
         getCmp : function(id){
             return Ext.ComponentMgr.get(id);
@@ -452,7 +460,7 @@ Ext.zip(
          * you may want to set this to true.
          * @type Boolean
          */
-        useShims : ((E.isIE && E.isIE6) || (E.isMac && E.isGecko && !E.isGecko3)),
+        useShims: E.isIE6 || (E.isMac && E.isGecko2),
 
         // inpired by a similar function in mootools library
         <div id="method-Ext-type"></div>/**
@@ -515,10 +523,10 @@ Ext.zip(
                 }
             }
         }
-    }
+    };
 }());
 
-<div id="cls-Function"></div>/**
+/**
  * @class Function
  * These functions are available on every Function object (any JavaScript function).
  */
@@ -557,7 +565,7 @@ sayGoodbye('Fred'); // both alerts show
 });
 
 
-<div id="cls-String"></div>/**
+/**
  * @class String
  * These functions are available as static methods on the JavaScript String object.
  */

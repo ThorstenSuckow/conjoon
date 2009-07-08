@@ -5,7 +5,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/**
+    <pre class="prettyprint lang-js"><div id="cls-Ext.EventManager"></div>/**
  * @class Ext.EventManager
  * Registers event handlers that want to receive a normalized EventObject instead of the standard browser event and provides
  * several useful events directly.
@@ -197,23 +197,21 @@ Ext.EventManager = function(){
 	     * Note that this may be filtered by using the <tt>delegate</tt> option.</div></li>
 	     * <li>o : Object<div class="sub-desc">The options object from the addListener call.</div></li>
 	     * </ul>
-	     * @param {Object} scope (optional) The scope in which to execute the handler
-	     * function (the handler function's "this" context)
+	     * @param {Object} scope (optional) The scope (<b><code>this</code></b> reference) in which the handler function is executed. <b>Defaults to the Element</b>.
 	     * @param {Object} options (optional) An object containing handler configuration properties.
 	     * This may contain any of the following properties:<ul>
-	     * <li>scope {Object} : The scope in which to execute the handler function. The handler function's "this" context.</li>
-	     * <li>delegate {String} : A simple selector to filter the target or look for a descendant of the target</li>
-	     * <li>stopEvent {Boolean} : True to stop the event. That is stop propagation, and prevent the default action.</li>
-	     * <li>preventDefault {Boolean} : True to prevent the default action</li>
-	     * <li>stopPropagation {Boolean} : True to prevent event propagation</li>
-	     * <li>normalized {Boolean} : False to pass a browser event to the handler function instead of an Ext.EventObject</li>
-	     * <li>delay {Number} : The number of milliseconds to delay the invocation of the handler after te event fires.</li>
-	     * <li>single {Boolean} : True to add a handler to handle just the next firing of the event, and then remove itself.</li>
-	     * <li>buffer {Number} : Causes the handler to be scheduled to run in an {@link Ext.util.DelayedTask} delayed
+	     * <li>scope : Object<div class="sub-desc">The scope (<b><code>this</code></b> reference) in which the handler function is executed. <b>Defaults to the Element</b>.</div></li>
+	     * <li>delegate : String<div class="sub-desc">A simple selector to filter the target or look for a descendant of the target</div></li>
+	     * <li>stopEvent : Boolean<div class="sub-desc">True to stop the event. That is stop propagation, and prevent the default action.</div></li>
+	     * <li>preventDefault : Boolean<div class="sub-desc">True to prevent the default action</div></li>
+	     * <li>stopPropagation : Boolean<div class="sub-desc">True to prevent event propagation</div></li>
+	     * <li>normalized : Boolean<div class="sub-desc">False to pass a browser event to the handler function instead of an Ext.EventObject</div></li>
+	     * <li>delay : Number<div class="sub-desc">The number of milliseconds to delay the invocation of the handler after te event fires.</div></li>
+	     * <li>single : Boolean<div class="sub-desc">True to add a handler to handle just the next firing of the event, and then remove itself.</div></li>
+	     * <li>buffer : Number<div class="sub-desc">Causes the handler to be scheduled to run in an {@link Ext.util.DelayedTask} delayed
 	     * by the specified number of milliseconds. If the event fires again within that time, the original
-	     * handler is <em>not</em> invoked, but the new handler is scheduled in its place.</li>
-	     * <li>target {Element} : Only call the handler if the event was fired on the target Element, <i>not</i>
-	     * if the event was bubbled up from a child node.</li>
+	     * handler is <em>not</em> invoked, but the new handler is scheduled in its place.</div></li>
+	     * <li>target : Element<div class="sub-desc">Only call the handler if the event was fired on the target Element, <i>not</i> if the event was bubbled up from a child node.</div></li>
 	     * </ul><br>
 	     * <p>See {@link Ext.Element#addListener} for examples of how to use these options.</p>
 	     */
@@ -371,13 +369,11 @@ Ext.onReady = Ext.EventManager.onDocumentReady;
         if(Ext.isLinux){
             cls.push("ext-linux");
         }
-        if(Ext.isBorderBox){
-            cls.push('ext-border-box');
-        }
-        if(Ext.isStrict){ // add to the parent to allow for selectors like ".ext-strict .ext-ie"
+
+        if(Ext.isStrict || Ext.isBorderBox){ // add to the parent to allow for selectors like ".ext-strict .ext-ie"
             var p = bd.parentNode;
             if(p){
-                p.className += ' ext-strict';
+                p.className += Ext.isStrict ? ' ext-strict' : ' ext-border-box';
             }
         }
         bd.className += cls.join(' ');
@@ -456,7 +452,7 @@ Ext.EventObject = function(){
                 me.type = e.type;
                 me.shiftKey = e.shiftKey;
                 // mac metaKey behaves like ctrlKey
-                me.ctrlKey = e.ctrlKey || e.metaKey;
+                me.ctrlKey = e.ctrlKey || e.metaKey || false;
                 me.altKey = e.altKey;
                 // in getKey these will be normalized for the mac
                 me.keyCode = e.keyCode;
@@ -549,17 +545,6 @@ Ext.EventObject = function(){
         getPageY : function(){
             return this.xy[1];
         },
-
-//         <div id="method-Ext.EventObject-getTime"></div>/**
-//          * Gets the time of the event.
-//          * @return {Number}
-//          */
-//         getTime : function(){
-//             if(this.browserEvent){
-//                 return E.getTime(this.browserEvent);
-//             }
-//             return null;
-//         },
 
         <div id="method-Ext.EventObject-getXY"></div>/**
          * Gets the page coordinates of the event.

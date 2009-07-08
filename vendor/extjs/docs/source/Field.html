@@ -95,8 +95,13 @@ side          Add an error icon to the right of the field with a popup on hover
      */
     msgFx : 'normal',
     <div id="cfg-Ext.form.Field-readOnly"></div>/**
-     * @cfg {Boolean} readOnly True to mark the field as readOnly in HTML (defaults to false) -- Note: this only
-     * sets the element's readOnly DOM attribute.
+     * @cfg {Boolean} readOnly <tt>true</tt> to mark the field as readOnly in HTML
+     * (defaults to <tt>false</tt>).
+     * <br><p><b>Note</b>: this only sets the element's readOnly DOM attribute.
+     * Setting <code>readOnly=true</code>, for example, will not disable triggering a
+     * ComboBox or DateField; it gives you the option of forcing the user to choose
+     * via the trigger without typing in the text box. To hide the trigger use
+     * <code>{@link Ext.form.TriggerField#hideTrigger hideTrigger}</code>.</p>
      */
     readOnly : false,
     <div id="cfg-Ext.form.Field-disabled"></div>/**
@@ -112,8 +117,8 @@ side          Add an error icon to the right of the field with a popup on hover
     // private
     hasFocus : false,
 
-	// private
-	initComponent : function(){
+    // private
+    initComponent : function(){
         Ext.form.Field.superclass.initComponent.call(this);
         this.addEvents(
             <div id="event-Ext.form.Field-focus"></div>/**
@@ -239,7 +244,13 @@ var form = new Ext.form.FormPanel({
         }else if(!Ext.isEmpty(this.el.dom.value) && this.el.dom.value != this.emptyText){
             this.setValue(this.el.dom.value);
         }
-        // reference to original value for reset
+        <div id="prop-Ext.form.Field-originalValue"></div>/**
+         * The original value of the field as configured in the {@link #value} configuration, or
+         * as loaded by the last form load operation if the form's {@link Ext.form.BasicForm#trackResetOnLoad trackResetOnLoad}
+         * setting is <code>true</code>.
+         * @type mixed
+         * @property originalValue
+         */
         this.originalValue = this.getValue();
     },
 
@@ -285,8 +296,8 @@ var form = new Ext.form.FormPanel({
 
     // private
     initEvents : function(){
-    	this.mon(this.el, Ext.isIE || Ext.isSafari3 || Ext.isChrome ? "keydown" : "keypress", this.fireKey,  this);
-		this.mon(this.el, 'focus', this.onFocus, this);
+        this.mon(this.el, Ext.EventManager.useKeydown ? "keydown" : "keypress", this.fireKey,  this);
+        this.mon(this.el, 'focus', this.onFocus, this);
 
         // fix weird FF/Win editor issue when changing OS window focus
         var o = this.inEditor && Ext.isWindows && Ext.isGecko ? {buffer:10} : null;
@@ -460,7 +471,7 @@ var form = new Ext.form.FormPanel({
      * @return {Mixed} value The field value that is set
      */
     setRawValue : function(v){
-        return this.el.dom.value = (Ext.isEmpty(v) ? '' : v);
+        return (this.el.dom.value = (Ext.isEmpty(v) ? '' : v));
     },
 
     <div id="method-Ext.form.Field-setValue"></div>/**
@@ -478,7 +489,7 @@ var form = new Ext.form.FormPanel({
     },
 
     // private, does not work for all fields
-    append :function(v){
+    append : function(v){
          this.setValue([this.getValue(), v].join(''));
     },
 

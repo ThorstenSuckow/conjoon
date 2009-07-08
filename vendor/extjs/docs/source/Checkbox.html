@@ -20,18 +20,18 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
      */
     focusClass : undefined,
     <div id="cfg-Ext.form.Checkbox-fieldClass"></div>/**
-     * @cfg {String} fieldClass The default CSS class for the checkbox (defaults to "x-form-field")
+     * @cfg {String} fieldClass The default CSS class for the checkbox (defaults to 'x-form-field')
      */
-    fieldClass: "x-form-field",
+    fieldClass : 'x-form-field',
     <div id="cfg-Ext.form.Checkbox-checked"></div>/**
-     * @cfg {Boolean} checked True if the the checkbox should render already checked (defaults to false)
+     * @cfg {Boolean} checked <tt>true</tt> if the checkbox should render initially checked (defaults to <tt>false</tt>)
      */
-    checked: false,
+    checked : false,
     <div id="cfg-Ext.form.Checkbox-autoCreate"></div>/**
      * @cfg {String/Object} autoCreate A DomHelper element spec, or true for a default element spec (defaults to
-     * {tag: "input", type: "checkbox", autocomplete: "off"})
+     * {tag: 'input', type: 'checkbox', autocomplete: 'off'})
      */
-    defaultAutoCreate : { tag: "input", type: 'checkbox', autocomplete: "off"},
+    defaultAutoCreate : { tag: 'input', type: 'checkbox', autocomplete: 'off'},
     <div id="cfg-Ext.form.Checkbox-boxLabel"></div>/**
      * @cfg {String} boxLabel The text that appears beside the checkbox
      */
@@ -47,10 +47,13 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
      * </ul></div>
      */
     <div id="cfg-Ext.form.Checkbox-scope"></div>/**
-     * @cfg {Object} scope An object to use as the scope ("this" reference) of the {@link #handler} function
+     * @cfg {Object} scope An object to use as the scope ('this' reference) of the {@link #handler} function
      * (defaults to this Checkbox).
      */
 
+    // private
+    actionMode : 'wrap',
+    
 	// private
     initComponent : function(){
         Ext.form.Checkbox.superclass.initComponent.call(this);
@@ -68,7 +71,7 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
     // private
     onResize : function(){
         Ext.form.Checkbox.superclass.onResize.apply(this, arguments);
-        if(!this.boxLabel){
+        if(!this.boxLabel && !this.fieldLabel){
             this.el.alignTo(this.wrap, 'c-c');
         }
     },
@@ -91,12 +94,14 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
     },
 
     <div id="method-Ext.form.Checkbox-markInvalid"></div>/**
-     * Overridden and disabled. The editor element does not support standard valid/invalid marking. @hide
+     * @hide
+     * Overridden and disabled. The editor element does not support standard valid/invalid marking.
      * @method
      */
     markInvalid : Ext.emptyFn,
     <div id="method-Ext.form.Checkbox-clearInvalid"></div>/**
-     * Overridden and disabled. The editor element does not support standard valid/invalid marking. @hide
+     * @hide
+     * Overridden and disabled. The editor element does not support standard valid/invalid marking.
      * @method
      */
     clearInvalid : Ext.emptyFn,
@@ -107,7 +112,7 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
         if(this.inputValue !== undefined){
             this.el.dom.value = this.inputValue;
         }
-        this.wrap = this.el.wrap({cls: "x-form-check-wrap"});
+        this.wrap = this.el.wrap({cls: 'x-form-check-wrap'});
         if(this.boxLabel){
             this.wrap.createChild({tag: 'label', htmlFor: this.el.id, cls: 'x-form-cb-label', html: this.boxLabel});
         }
@@ -125,7 +130,9 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
     },
 
     // private
-    initValue : Ext.emptyFn,
+    initValue : function() {
+        this.originalValue = this.getValue();
+    },
 
     <div id="method-Ext.form.Checkbox-getValue"></div>/**
      * Returns the checked state of the checkbox.
@@ -146,23 +153,29 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
     },
 
     <div id="method-Ext.form.Checkbox-setValue"></div>/**
-     * Sets the checked state of the checkbox.
-     * @param {Boolean/String} checked True, 'true', '1', or 'on' to check the checkbox, any other value will uncheck it.
+     * Sets the checked state of the checkbox, fires the 'check' event, and calls a
+     * <code>{@link #handler}</code> (if configured).
+     * @param {Boolean/String} checked The following values will check the checkbox:
+     * <code>true, 'true', '1', or 'on'</code>. Any other value will uncheck the checkbox.
      * @return {Ext.form.Field} this
      */
     setValue : function(v){
-        var checked = this.checked = (v === true || v === 'true' || v == '1' || String(v).toLowerCase() == 'on');
-        if(this.el && this.el.dom){
-            this.el.dom.checked = checked;
-            this.el.dom.defaultChecked = checked;
+        var checked = this.checked ;
+        this.checked = (v === true || v === 'true' || v == '1' || String(v).toLowerCase() == 'on');
+        if(this.rendered){
+            this.el.dom.checked = this.checked;
+            this.el.dom.defaultChecked = this.checked;
         }
-        this.fireEvent("check", this, checked);
-        if(this.handler){
-            this.handler.call(this.scope || this, this, checked);
+        if(checked != this.checked){
+            this.fireEvent('check', this, this.checked);
+            if(this.handler){
+                this.handler.call(this.scope || this, this, this.checked);
+            }
         }
         return this;
     }
 });
-Ext.reg('checkbox', Ext.form.Checkbox);</pre>    
+Ext.reg('checkbox', Ext.form.Checkbox);
+</pre>    
 </body>
 </html>

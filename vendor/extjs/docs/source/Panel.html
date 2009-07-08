@@ -11,10 +11,10 @@
  * <p>Panel is a container that has specific functionality and structural components that make
  * it the perfect building block for application-oriented user interfaces.</p>
  * <p>Panels are, by virtue of their inheritance from {@link Ext.Container}, capable
- * of being configured with a {@link layout}, and containing child Components.</p>
- * <p>When either specifying child {@link #items} of a Panel, or dynamically {@link #add adding} Components
+ * of being configured with a {@link Ext.Container#layout layout}, and containing child Components.</p>
+ * <p>When either specifying child {@link Ext.Component#items items} of a Panel, or dynamically {@link Ext.Container#add adding} Components
  * to a Panel, remember to consider how you wish the Panel to arrange those child elements, and whether
- * those child elements need to be sized using one of Ext's built-in <tt><b>{@link #layout}</b></tt> schemes. By
+ * those child elements need to be sized using one of Ext's built-in <tt><b>{@link Ext.Container#layout layout}</b></tt> schemes. By
  * default, Panels use the {@link Ext.layout.ContainerLayout ContainerLayout} scheme. This simply renders
  * child components, appending them one after the other inside the Container, and <b>does not apply any sizing</b>
  * at all.</p>
@@ -56,6 +56,11 @@ Ext.Panel = Ext.extend(Ext.Container, {
      * @type Ext.Element
      * @property bwrap
      */
+    <div id="prop-Ext.Panel-collapsed"></div>/**
+     * True if this panel is collapsed. Read-only.
+     * @type Boolean
+     * @property collapsed
+     */
     <div id="cfg-Ext.Panel-bodyCfg"></div>/**
      * @cfg {Object} bodyCfg
      * <p>A {@link Ext.DomHelper DomHelper} element specification object may be specified for any
@@ -89,7 +94,6 @@ new Ext.Panel({
         cls: 'x-panel-body',  // Default class not applied if Custom element specified
         html: 'Message'
     },
-    {@link #footer}: true,
     footerCfg: {
         tag: 'h2',
         cls: 'x-panel-footer'        // same as the Default class
@@ -164,7 +168,7 @@ new Ext.Panel({
      * <p>The top toolbar of the panel. This can be a {@link Ext.Toolbar} object, a toolbar config, or an array of
      * buttons/button configs to be added to the toolbar.  Note that this is not available as a property after render.
      * To access the top toolbar after render, use {@link #getTopToolbar}.</p>
-     * <p><b>Note:</b> Although a Toolbar may contain Field components, these will <b>not<b> be updated by a load
+     * <p><b>Note:</b> Although a Toolbar may contain Field components, these will <b>not</b> be updated by a load
      * of an ancestor FormPanel. A Panel's toolbars are not part of the standard Container->Component hierarchy, and
      * so are not scanned to collect form items. However, the values <b>will</b> be submitted because form
      * submission parameters are collected from the DOM tree.</p>
@@ -306,14 +310,14 @@ var w = new Ext.Window({
      * @cfg {String} iconCls
      * The CSS class selector that specifies a background image to be used as the header icon (defaults to '').
      * <p>An example of specifying a custom icon class would be something like:
-     * </p><code><pre>
+     * </p><pre><code>
 // specify the property in the config for the class:
      ...
      iconCls: 'my-icon'
 
 // css class that specifies background image to be used as the icon image:
 .my-icon { background-image: url(../images/my-icon.gif) 0 6px no-repeat !important; }
-</pre></code>
+</code></pre>
      */
     <div id="cfg-Ext.Panel-collapsible"></div>/**
      * @cfg {Boolean} collapsible
@@ -430,7 +434,7 @@ var win = new Ext.Window({
      */
     <div id="cfg-Ext.Panel-hideCollapseTool"></div>/**
      * @cfg {Boolean} hideCollapseTool
-     * <tt>true</tt> to hide the expand/collapse toggle button when <tt>{@link #collapsible} = true</tt>,
+     * <tt>true</tt> to hide the expand/collapse toggle button when <code>{@link #collapsible} == true</code>,
      * <tt>false</tt> to display it (defaults to <tt>false</tt>).
      */
     <div id="cfg-Ext.Panel-titleCollapse"></div>/**
@@ -522,7 +526,7 @@ var win = new Ext.Window({
      * in this config instead of <tt>true</tt>. Ext.Panel.DD is an internal, undocumented class which
      * moves a proxy Element around in place of the Panel's element, but provides no other behaviour
      * during dragging or on drop. It is a subclass of {@link Ext.dd.DragSource}, so behaviour may be
-     * added by implementing the interface methods of {@link Ext.dd.DragDrop} eg:
+     * added by implementing the interface methods of {@link Ext.dd.DragDrop} e.g.:
      * <pre><code>
 new Ext.Panel({
     title: 'Drag me',
@@ -620,25 +624,25 @@ new Ext.Panel({
      * when it is disabled, but masking the panel can provide an additional visual cue that the panel is
      * disabled.
      */
-    maskDisabled: true,
+    maskDisabled : true,
     <div id="cfg-Ext.Panel-animCollapse"></div>/**
      * @cfg {Boolean} animCollapse
      * <tt>true</tt> to animate the transition when the panel is collapsed, <tt>false</tt> to skip the
      * animation (defaults to <tt>true</tt> if the {@link Ext.Fx} class is available, otherwise <tt>false</tt>).
      */
-    animCollapse: Ext.enableFx,
+    animCollapse : Ext.enableFx,
     <div id="cfg-Ext.Panel-headerAsText"></div>/**
      * @cfg {Boolean} headerAsText
      * <tt>true</tt> to display the panel <tt>{@link #title}</tt> in the <tt>{@link #header}</tt>,
      * <tt>false</tt> to hide it (defaults to <tt>true</tt>).
      */
-    headerAsText: true,
+    headerAsText : true,
     <div id="cfg-Ext.Panel-buttonAlign"></div>/**
      * @cfg {String} buttonAlign
      * The alignment of any {@link #buttons} added to this panel.  Valid values are <tt>'right'</tt>,
      * <tt>'left'</tt> and <tt>'center'</tt> (defaults to <tt>'right'</tt>).
      */
-    buttonAlign: 'right',
+    buttonAlign : 'right',
     <div id="cfg-Ext.Panel-collapsed"></div>/**
      * @cfg {Boolean} collapsed
      * <tt>true</tt> to render the panel collapsed, <tt>false</tt> to render it expanded (defaults to
@@ -650,12 +654,12 @@ new Ext.Panel({
      * <tt>true</tt> to make sure the collapse/expand toggle button always renders first (to the left of)
      * any other tools in the panel's title bar, <tt>false</tt> to render it last (defaults to <tt>true</tt>).
      */
-    collapseFirst: true,
+    collapseFirst : true,
     <div id="cfg-Ext.Panel-minButtonWidth"></div>/**
      * @cfg {Number} minButtonWidth
      * Minimum width in pixels of all {@link #buttons} in this panel (defaults to <tt>75</tt>)
      */
-    minButtonWidth:75,
+    minButtonWidth : 75,
     <div id="cfg-Ext.Panel-unstyled"></div>/**
      * @cfg {Boolean} unstyled
      * Overrides the <tt>{@link #baseCls}</tt> setting to <tt>{@link #baseCls} = 'x-plain'</tt> which renders
@@ -680,10 +684,11 @@ new Ext.Panel({
     <div id="cfg-Ext.Panel-preventBodyReset"></div>/**
      * @cfg {Boolean} preventBodyReset
      * Defaults to <tt>false</tt>.  When set to <tt>true</tt>, an extra css class <tt>'x-panel-normal'</tt>
-     * will be added the the panel's element, effectively applying css styles suggested by the W3C
-     * (see http://www.w3.org/TR/CSS21/sample.html) to the Panel's body element.
+     * will be added to the panel's element, effectively applying css styles suggested by the W3C
+     * (see http://www.w3.org/TR/CSS21/sample.html) to the Panel's <b>body</b> element (not the header,
+     * footer, etc.).
      */
-    preventBodyReset: false,
+    preventBodyReset : false,
 
     // protected - these could be used to customize the behavior of the window,
     // but changing them would not be useful without further mofifications and
@@ -691,17 +696,17 @@ new Ext.Panel({
     toolTarget : 'header',
     collapseEl : 'bwrap',
     slideAnchor : 't',
-    disabledClass: '',
+    disabledClass : '',
 
     // private, notify box this class will handle heights
-    deferHeight: true,
+    deferHeight : true,
     // private
     expandDefaults: {
-        duration:.25
+        duration : 0.25
     },
     // private
-    collapseDefaults: {
-        duration:.25
+    collapseDefaults : {
+        duration : 0.25
     },
 
     // private
@@ -817,11 +822,11 @@ new Ext.Panel({
         if(this.header === true){
             this.elements += ',header';
             delete this.header;
-        }else if(this.title && this.header !== false){
+        }else if(this.headerCfg || (this.title && this.header !== false)){
             this.elements += ',header';
         }
 
-        if(this.footer === true){
+        if(this.footerCfg || this.footer === true){
             this.elements += ',footer';
             delete this.footer;
         }
@@ -883,7 +888,9 @@ new Ext.Panel({
         Ext.Panel.superclass.onRender.call(this, ct, position);
         this.createClasses();
 
-        var el = this.el, d = el.dom;
+        var el = this.el,
+            d = el.dom,
+            bw;
         el.addClass(this.baseCls);
         if(d.firstChild){ // existing markup
             this.header = el.down('.'+this.headerCls);
@@ -916,7 +923,7 @@ new Ext.Panel({
             this.createElement('bwrap', d);
 
             // append the mid and bottom frame to the bwrap
-            var bw = this.bwrap.dom;
+            bw = this.bwrap.dom;
             var ml = d.childNodes[1], bl = d.childNodes[2];
             bw.appendChild(ml);
             bw.appendChild(bl);
@@ -935,7 +942,7 @@ new Ext.Panel({
             this.createElement('bwrap', d);
 
             // append the mid and bottom frame to the bwrap
-            var bw = this.bwrap.dom;
+            bw = this.bwrap.dom;
             this.createElement('tbar', bw);
             this.createElement('body', bw);
             this.createElement('bbar', bw);
@@ -1065,7 +1072,7 @@ new Ext.Panel({
                 scope: this,
                 afterlayout: this.syncHeight,
                 remove: this.syncHeight
-            })
+            });
         }, this);
     },
 
@@ -1206,18 +1213,23 @@ new Ext.Panel({
             this.syncHeight();
         }
     },
-    
-    syncHeight: function(){
-        if(!this.duringLayout){
+
+    syncHeight : function(){
+        if(!(this.autoHeight || this.duringLayout)){
             var last = this.lastSize;
             if(last && !Ext.isEmpty(last.height)){
                 var old = last.height, h = this.el.getHeight();
                 if(old != 'auto' && old != h){
-                    h = old - h;
-                    var bd = this.body;
-                    bd.setHeight(bd.getHeight() + h);
-                    var sz = bd.getSize();
-                    this.fireEvent('bodyresize', sz.width, sz.height);
+                    var bd = this.body, bdh = bd.getHeight();
+                    h = Math.max(bdh + old - h, 0);
+                    if(bdh > 0 && bdh != h){
+                        bd.setHeight(h);
+                        if(Ext.isIE && h <= 0){
+                            return;
+                        }
+                        var sz = bd.getSize();
+                        this.fireEvent('bodyresize', sz.width, sz.height);
+                    }
                 }
             }
         }
@@ -1367,9 +1379,7 @@ new Ext.Panel({
             return;
         }
         var doAnim = animate === true || (animate !== false && this.animCollapse);
-        if(doAnim){
-            this.beforeEffect();
-        }
+        this.beforeEffect();
         this.onCollapse(doAnim, animate);
         return this;
     },
@@ -1382,17 +1392,15 @@ new Ext.Panel({
                         this.collapseDefaults));
         }else{
             this[this.collapseEl].hide();
-            this.afterCollapse(doAnim);
+            this.afterCollapse();
         }
     },
 
     // private
-    afterCollapse : function(doAnim){
+    afterCollapse : function(){
         this.collapsed = true;
         this.el.addClass(this.collapsedCls);
-        if(doAnim){
-            this.afterEffect();
-        }
+        this.afterEffect();
         this.fireEvent('collapse', this);
     },
 
@@ -1427,7 +1435,7 @@ new Ext.Panel({
     },
 
     // private
-    afterExpand: function(){
+    afterExpand : function(){
         this.collapsed = false;
         this.afterEffect();
         if(this.deferLayout !== undefined){
@@ -1482,7 +1490,9 @@ new Ext.Panel({
                         }
                     }
                     if(this.fbar){
-                        var f = this.fbar, fWidth = 1; strict = Ext.isStrict;
+                        var f = this.fbar,
+                            fWidth = 1,
+                            strict = Ext.isStrict;
                         if(this.buttonAlign == 'left'){
                            fWidth = w - f.container.getFrameWidth('lr');
                         }else{
@@ -1509,7 +1519,7 @@ new Ext.Panel({
                 }
 
                 if(typeof h == 'number'){
-                    h = this.adjustBodyHeight(h - this.getFrameHeight());
+                    h = Math.max(0, this.adjustBodyHeight(h - this.getFrameHeight()));
                     this.body.setHeight(h);
                 }else if(h == 'auto'){
                     this.body.setHeight(h);
@@ -1700,11 +1710,7 @@ panel.load({
                 Ext.destroy(this.buttons[b]);
             }
         }
-        Ext.destroy(
-            this.topToolbar,
-            this.bottomToolbar,
-            this.fbar
-        );
+        Ext.destroy(this.toolbars);
         Ext.Panel.superclass.beforeDestroy.call(this);
     },
 
@@ -1756,7 +1762,7 @@ panel.load({
      * @param {String} id
      * @return {Object} tool
      */
-    getTool: function(id) {
+    getTool : function(id) {
         return this.tools[id];
     }
 

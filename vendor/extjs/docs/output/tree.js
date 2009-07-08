@@ -1,3 +1,9 @@
+/*!
+ * Ext JS Library 3.0.0
+ * Copyright(c) 2006-2009 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
 
 		Docs.classData ={"id":"apidocs","iconCls":"icon-docs","text":"API Documentation","singleClickExpand":true,"children":[
                 {"id":"pkg-Ext","text":"Ext","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
@@ -32,11 +38,17 @@
 				,
                 {"href":"output/Ext.chart.Series.html","text":"Series","id":"Ext.chart.Series","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Ext.chart.StackedBarChart.html","text":"StackedBarChart","id":"Ext.chart.StackedBarChart","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.chart.StackedColumnChart.html","text":"StackedColumnChart","id":"Ext.chart.StackedColumnChart","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
+				,
                 {"href":"output/Ext.chart.TimeAxis.html","text":"TimeAxis","id":"Ext.chart.TimeAxis","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				]}
 				,
                 {"id":"pkg-Ext.data","text":"data","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
                 {"href":"output/Ext.data.Api.html","text":"Api","id":"Ext.data.Api","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.data.Api.Error.html","text":"Api.Error","id":"Ext.data.Api.Error","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.ArrayReader.html","text":"ArrayReader","id":"Ext.data.ArrayReader","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -46,7 +58,11 @@
 				,
                 {"href":"output/Ext.data.DataProxy.html","text":"DataProxy","id":"Ext.data.DataProxy","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Ext.data.DataProxy.Error.html","text":"DataProxy.Error","id":"Ext.data.DataProxy.Error","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Ext.data.DataReader.html","text":"DataReader","id":"Ext.data.DataReader","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.data.DataReader.Error.html","text":"DataReader.Error","id":"Ext.data.DataReader.Error","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.DataWriter.html","text":"DataWriter","id":"Ext.data.DataWriter","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -61,6 +77,8 @@
                 {"href":"output/Ext.data.HttpProxy.html","text":"HttpProxy","id":"Ext.data.HttpProxy","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.JsonReader.html","text":"JsonReader","id":"Ext.data.JsonReader","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.data.JsonReader.Error.html","text":"JsonReader.Error","id":"Ext.data.JsonReader.Error","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.JsonStore.html","text":"JsonStore","id":"Ext.data.JsonStore","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -77,6 +95,8 @@
                 {"href":"output/Ext.data.SortTypes.html","text":"SortTypes","id":"Ext.data.SortTypes","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.Store.html","text":"Store","id":"Ext.data.Store","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.data.Store.Error.html","text":"Store.Error","id":"Ext.data.Store.Error","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.Tree.html","text":"Tree","id":"Ext.data.Tree","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -320,6 +340,8 @@
 				,
                 {"href":"output/Ext.util.ClickRepeater.html","text":"ClickRepeater","id":"Ext.util.ClickRepeater","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Ext.util.Cookies.html","text":"Cookies","id":"Ext.util.Cookies","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
+				,
                 {"href":"output/Ext.util.DelayedTask.html","text":"DelayedTask","id":"Ext.util.DelayedTask","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.util.Format.html","text":"Format","id":"Ext.util.Format","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
@@ -364,6 +386,8 @@
                 {"href":"output/Ext.DatePicker.html","text":"DatePicker","id":"Ext.DatePicker","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.Direct.html","text":"Direct","id":"Ext.Direct","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.Direct.Transaction.html","text":"Direct.Transaction","id":"Ext.Direct.Transaction","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.DomHelper.html","text":"DomHelper","id":"Ext.DomHelper","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
 				,
@@ -514,9 +538,15 @@
 			,
 			"Ext.chart.Series":"icon-cls"
 			,
+			"Ext.chart.StackedBarChart":"icon-cmp"
+			,
+			"Ext.chart.StackedColumnChart":"icon-cmp"
+			,
 			"Ext.chart.TimeAxis":"icon-cls"
 			,
 			"Ext.data.Api":"icon-static"
+			,
+			"Ext.data.Api.Error":"icon-cls"
 			,
 			"Ext.data.ArrayReader":"icon-cls"
 			,
@@ -526,7 +556,11 @@
 			,
 			"Ext.data.DataProxy":"icon-cls"
 			,
+			"Ext.data.DataProxy.Error":"icon-cls"
+			,
 			"Ext.data.DataReader":"icon-cls"
+			,
+			"Ext.data.DataReader.Error":"icon-cls"
 			,
 			"Ext.data.DataWriter":"icon-cls"
 			,
@@ -541,6 +575,8 @@
 			"Ext.data.HttpProxy":"icon-cls"
 			,
 			"Ext.data.JsonReader":"icon-cls"
+			,
+			"Ext.data.JsonReader.Error":"icon-cls"
 			,
 			"Ext.data.JsonStore":"icon-cls"
 			,
@@ -557,6 +593,8 @@
 			"Ext.data.SortTypes":"icon-static"
 			,
 			"Ext.data.Store":"icon-cls"
+			,
+			"Ext.data.Store.Error":"icon-cls"
 			,
 			"Ext.data.Tree":"icon-cls"
 			,
@@ -782,6 +820,8 @@
 			,
 			"Ext.util.ClickRepeater":"icon-cls"
 			,
+			"Ext.util.Cookies":"icon-static"
+			,
 			"Ext.util.DelayedTask":"icon-cls"
 			,
 			"Ext.util.Format":"icon-static"
@@ -825,6 +865,8 @@
 			"Ext.DatePicker":"icon-cmp"
 			,
 			"Ext.Direct":"icon-static"
+			,
+			"Ext.Direct.Transaction":"icon-cls"
 			,
 			"Ext.DomHelper":"icon-static"
 			,

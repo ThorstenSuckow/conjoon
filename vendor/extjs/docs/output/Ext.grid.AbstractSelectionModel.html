@@ -3,18 +3,19 @@ implemented by descendant classes.  This class should not be directly instantiat
 object during initialization.  This should ...</div><div class="long"><p>A config object containing one or more event handlers to be added to this
 object during initialization.  This should be a valid listeners config object as specified in the
 <a href="output/Ext.util.Observable.html#Ext.util.Observable-addListener" ext:member="addListener" ext:cls="Ext.util.Observable">addListener</a> example for attaching multiple handlers at once.</p>
-<p><b>Note:</b> While <i>some</i> Observable classes export selected DOM events (eg "click", "mouseover" etc), this
+<br><p><b><u>DOM events from ExtJs <a href="output/Ext.Component.html" ext:cls="Ext.Component">Components</a></u></b></p>
+<br><p>While <i>some</i> ExtJs Component classes export selected DOM events (e.g. "click", "mouseover" etc), this
 is usually only done when extra value can be added. For example the <a href="output/Ext.DataView.html" ext:cls="Ext.DataView">DataView</a>'s
 <b><code><a href="output/Ext.DataView.html#Ext.DataView-click" ext:member="click" ext:cls="Ext.DataView">click</a></code></b> event passing the node clicked on. To access DOM
-events directly from a Component's HTMLElement listeners must be added to the element after the Component
-has been rendered. A plugin can simplify this step:<code><pre>
-<i>// Plugin is configured <b>with</b> a listeners config object.</i>
+events directly from a Component's HTMLElement, listeners must be added to the <i><a href="output/Ext.Component.html#Ext.Component-getEl" ext:member="getEl" ext:cls="Ext.Component">Element</a></i> after the Component
+has been rendered. A plugin can simplify this step:<pre><code><i>// Plugin is configured <b>with</b> a listeners config object.</i>
 <i>// The Component is appended to the argument list of all handler functions.</i>
 Ext.DomObserver = Ext.extend(Object, {
     constructor: <b>function</b>(config) {
         this.listeners = config.listeners ? config.listeners : config;
     },
 
+    <i>// Component passes itself into plugin&#39;s init method</i>
     init: <b>function</b>(c) {
         <b>var</b> p, l = this.listeners;
         <b>for</b> (p <b>in</b> l) {
@@ -24,8 +25,13 @@ Ext.DomObserver = Ext.extend(Object, {
                 l[p].fn = this.createHandler(l[p].fn, c);
             }
         }
-        c.render = c.render.createSequence(<b>function</b>() {
-            c.el.on(l);
+
+        <i>// Add the listeners to the Element immediately following the render call</i>
+        c.render = c.render.<a href="output/Function.html#Function-createSequence" ext:member="createSequence" ext:cls="Function">createSequence</a>(<b>function</b>() {
+            <b>var</b> e = c.getEl();
+            <b>if</b> (e) {
+                e.on(l);
+            }
         });
     },
 
@@ -38,7 +44,7 @@ Ext.DomObserver = Ext.extend(Object, {
 
 <b>var</b> combo = <b>new</b> Ext.form.ComboBox({
 
-<i>// Collapse combo when its element is clicked on</i>
+    <i>// Collapse combo when its element is clicked on</i>
     plugins: [ <b>new</b> Ext.DomObserver({
         click: <b>function</b>(evt, comp) {
             comp.collapse();
@@ -48,8 +54,7 @@ Ext.DomObserver = Ext.extend(Object, {
     typeAhead: true,
     mode: <em>'local'</em>,
     triggerAction: <em>'all'</em>
-});
-</pre></code></p></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#listeners" ext:member="#listeners" ext:cls="Ext.util.Observable">Observable</a></td></tr></tbody></table><a id="Ext.grid.AbstractSelectionModel-props"></a><h2>Public Properties</h2><div class="no-members">This class has no public properties.</div><a id="Ext.grid.AbstractSelectionModel-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.grid.AbstractSelectionModel-AbstractSelectionModel"></a><b><a href="source/AbstractSelectionModel.html#cls-Ext.grid.AbstractSelectionModel">AbstractSelectionModel</a></b>()
+});</code></pre></p></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#listeners" ext:member="#listeners" ext:cls="Ext.util.Observable">Observable</a></td></tr></tbody></table><a id="Ext.grid.AbstractSelectionModel-props"></a><h2>Public Properties</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Property</th><th class="msource-header">Defined By</th></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.grid.AbstractSelectionModel-grid"></a><b><a href="source/AbstractSelectionModel.html#prop-Ext.grid.AbstractSelectionModel-grid">grid</a></b> : Object<div class="mdesc">The GridPanel for which this SelectionModel is handling selection. Read-only.</div></td><td class="msource">AbstractSelectionModel</td></tr></tbody></table><a id="Ext.grid.AbstractSelectionModel-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.grid.AbstractSelectionModel-AbstractSelectionModel"></a><b><a href="source/AbstractSelectionModel.html#cls-Ext.grid.AbstractSelectionModel">AbstractSelectionModel</a></b>()
     <div class="mdesc"><div class="short"></div><div class="long"><div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">AbstractSelectionModel</td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-addEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-addEvents">addEvents</a></b>(&nbsp;<code>Object&nbsp;object</code>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Used to define events on this Observable</div><div class="long">Used to define events on this Observable<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>object</code> : Object<div class="sub-desc">The object with the events defined</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addEvents" ext:member="#addEvents" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-addListener"></a><b><a href="source/Observable.html#method-Ext.util.Observable-addListener">addListener</a></b>(&nbsp;<code>String&nbsp;eventName</code>,&nbsp;<code>Function&nbsp;handler</code>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;options</code>]</span>&nbsp;)
@@ -73,37 +78,37 @@ Using the options argument, it is possible to combine different types of listene
 <br>
 A delayed, one-time listener.
 <pre><code>myDataView.on(<em>'click'</em>, this.onClick, this, {
-        single: true,
-        delay: 100
-    });</code></pre>
+    single: true,
+    delay: 100
+});</code></pre>
 <p>
 <b>Attaching multiple handlers in 1 call</b><br>
 The method also allows for a single argument to be passed which is a config object containing properties
 which specify multiple handlers.
 <p>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : {
-            fn: this.onClick,
-            scope: this,
-            delay: 100
-        },
-        <em>'mouseover'</em> : {
-            fn: this.onMouseOver,
-            scope: this
-        },
-        <em>'mouseout'</em> : {
-            fn: this.onMouseOut,
-            scope: this
-        }
-    });</code></pre>
+    <em>'click'</em> : {
+        fn: this.onClick,
+        scope: this,
+        delay: 100
+    },
+    <em>'mouseover'</em> : {
+        fn: this.onMouseOver,
+        scope: this
+    },
+    <em>'mouseout'</em> : {
+        fn: this.onMouseOut,
+        scope: this
+    }
+});</code></pre>
 <p>
 Or a shorthand syntax:<br>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : this.onClick,
-        <em>'mouseover'</em> : this.onMouseOver,
-        <em>'mouseout'</em> : this.onMouseOut,
-         scope: this
-    });</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-enableBubble"></a><b><a href="source/Observable-more.html#method-Ext.util.Observable-enableBubble">enableBubble</a></b>(&nbsp;<code>Object&nbsp;events</code>&nbsp;)
+    <em>'click'</em> : this.onClick,
+    <em>'mouseover'</em> : this.onMouseOver,
+    <em>'mouseout'</em> : this.onMouseOut,
+     scope: this
+});</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-enableBubble"></a><b><a href="source/Observable-more.html#method-Ext.util.Observable-enableBubble">enableBubble</a></b>(&nbsp;<code>Object&nbsp;events</code>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Used to enable bubbling of events</div><div class="long">Used to enable bubbling of events<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>events</code> : Object<div class="sub-desc"></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#enableBubble" ext:member="#enableBubble" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-fireEvent"></a><b><a href="source/Observable.html#method-Ext.util.Observable-fireEvent">fireEvent</a></b>(&nbsp;<code>String&nbsp;eventName</code>,&nbsp;<code>Object...&nbsp;args</code>&nbsp;)
     :

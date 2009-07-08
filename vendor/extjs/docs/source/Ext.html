@@ -9,7 +9,7 @@
 // for old browsers
 window.undefined = window.undefined;
 
-/**
+<div id="cls-Ext"></div>/**
  * @class Ext
  * Ext core utilities and functions.
  * @singleton
@@ -20,7 +20,7 @@ Ext = {
      * The version of the framework
      * @type String
      */
-    version: '3.0'
+    version : '3.0'
 };
 
 <div id="method-Ext-apply"></div>/**
@@ -33,7 +33,9 @@ Ext = {
  */
 Ext.apply = function(o, c, defaults){
     // no "this" reference for friendly out of scope calls
-    if (defaults) Ext.apply(o, defaults);
+    if(defaults){
+        Ext.apply(o, defaults);
+    }
     if(o && c && typeof c == 'object'){
         for(var p in c){
             o[p] = c[p];
@@ -44,21 +46,40 @@ Ext.apply = function(o, c, defaults){
 
 (function(){
     var idSeed = 0,
+        toString = Object.prototype.toString,
+        //assume it's not null and not an array
+        isIterable = function(v){
+            //check for array or arguments
+            if(Ext.isArray(v) || v.callee){
+                return true;
+            }
+            //check for node list type
+            if(/NodeList|HTMLCollection/.test(toString.call(v))){
+                return true;
+            }
+            //NodeList has an item and length property
+            //IXMLDOMNodeList has nextNode method, needs to be checked first.
+            return ((v.nextNode || v.item) && Ext.isNumber(v.length));
+        },
         ua = navigator.userAgent.toLowerCase(),
         check = function(r){
             return r.test(ua);
         },
-        isStrict = document.compatMode == "CSS1Compat",
+        DOC = document,
+        isStrict = DOC.compatMode == "CSS1Compat",
         isOpera = check(/opera/),
         isChrome = check(/chrome/),
         isWebKit = check(/webkit/),
         isSafari = !isChrome && check(/safari/),
+        isSafari2 = isSafari && check(/applewebkit\/4/), // unique to Safari 2
         isSafari3 = isSafari && check(/version\/3/),
         isSafari4 = isSafari && check(/version\/4/),
         isIE = !isOpera && check(/msie/),
         isIE7 = isIE && check(/msie 7/),
         isIE8 = isIE && check(/msie 8/),
+        isIE6 = isIE && !isIE7 && !isIE8,
         isGecko = !isWebKit && check(/gecko/),
+        isGecko2 = isGecko && check(/rv:1\.8/),
         isGecko3 = isGecko && check(/rv:1\.9/),
         isBorderBox = isIE && !isStrict,
         isWindows = check(/windows|win32/),
@@ -68,13 +89,19 @@ Ext.apply = function(o, c, defaults){
         isSecure = /^https/i.test(window.location.protocol);
 
     // remove css image flicker
-    if(isIE && !(isIE7 || isIE8)){
+    if(isIE6){
         try{
-            document.execCommand("BackgroundImageCache", false, true);
+            DOC.execCommand("BackgroundImageCache", false, true);
         }catch(e){}
     }
 
     Ext.apply(Ext, {
+        <div id="prop-Ext-SSL_SECURE_URL"></div>/**
+         * URL to a blank file used by Ext when in secure mode for iframe src and onReady src to prevent
+         * the IE insecure content warning (defaults to javascript:false).
+         * @type String
+         */
+        SSL_SECURE_URL : 'javascript:false',
         <div id="prop-Ext-isStrict"></div>/**
          * True if the browser is in strict (standards-compliant) mode, as opposed to quirks mode
          * @type Boolean
@@ -128,7 +155,9 @@ Ext.apply = function(o, c, defaults){
         applyIf : function(o, c){
             if(o){
                 for(var p in c){
-                    if(Ext.isEmpty(o[p])){ o[p] = c[p]; }
+                    if(Ext.isEmpty(o[p])){
+                        o[p] = c[p];
+                    }
                 }
             }
             return o;
@@ -285,17 +314,17 @@ Company.data.CustomStore = function(config) { ... }
         urlEncode: function(o, pre){
             var undef, buf = [], key, e = encodeURIComponent;
 
-	        for(key in o){
-	            undef = typeof o[key] == 'undefined';
-	            Ext.each(undef ? key : o[key], function(val, i){
-	                buf.push("&", e(key), "=", (val != key || !undef) ? e(val) : "");
-	            });
-	        }
-	        if(!pre){
-	            buf.shift();
-	            pre = "";
-	        }
-	        return pre + buf.join('');
+            for(key in o){
+                undef = !Ext.isDefined(o[key]);
+                Ext.each(undef ? key : o[key], function(val, i){
+                    buf.push("&", e(key), "=", (val != key || !undef) ? e(val) : "");
+                });
+            }
+            if(!pre){
+                buf.shift();
+                pre = "";
+            }
+            return pre + buf.join('');
         },
 
         <div id="method-Ext-urlDecode"></div>/**
@@ -321,6 +350,20 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
                             [].concat(obj[name]).concat(value);
             });
             return obj;
+        },
+
+        <div id="method-Ext-urlAppend"></div>/**
+         * Appends content to the query string of a URL, which handles logic for whether to place
+         * a question mark or ampersand.
+         * @param {String} url The url to append to.
+         * @@param {String} s The content to append to the url.
+         * @return (String) The appended string
+         */
+        urlAppend : function(url, s){
+            if(!Ext.isEmpty(s)){
+                return url + (url.indexOf('?') === -1 ? '?' : '&') + s;
+            }
+            return url;
         },
 
         <div id="method-Ext-toArray"></div>/**
@@ -356,13 +399,48 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
             if(Ext.isEmpty(array, true)){
                 return;
             }
-            if(typeof array.length == "undefined" || Ext.isPrimitive(array)){
+            if(!isIterable(array) || Ext.isPrimitive(array)){
                 array = [array];
             }
             for(var i = 0, len = array.length; i < len; i++){
                 if(fn.call(scope || array[i], array[i], i, array) === false){
                     return i;
                 };
+            }
+        },
+
+        <div id="method-Ext-iterate"></div>/**
+         * Iterates either the elements in an array, or each of the properties in an object.
+         * <b>Note</b>: If you are only iterating arrays, it is better to call {@link #each}.
+         * @param {Object/Array} object The object or array to be iterated
+         * @param {Function} fn The function to be called for each iteration.
+         * The iteration will stop if the supplied function returns false, or
+         * all array elements / object properties have been covered. The signature
+         * varies depending on the type of object being interated:
+         * <div class="mdetail-params"><ul>
+         * <li>Arrays : <tt>(Object item, Number index, Array allItems)</tt>
+         * <div class="sub-desc">
+         * When iterating an array, the supplied function is called with each item.</div></li>
+         * <li>Objects : <tt>(String key, Object value)</tt>
+         * <div class="sub-desc">
+         * When iterating an object, the supplied function is called with each key-value pair in
+         * the object.</div></li>
+         * </ul></div>
+         * @param {Object} scope The scope to call the supplied function with, defaults to
+         * the specified <tt>object</tt>
+         */
+        iterate : function(obj, fn, scope){
+            if(isIterable(obj)){
+                Ext.each(obj, fn, scope);
+                return;
+            }else if(Ext.isObject(obj)){
+                for(var prop in obj){
+                    if(obj.hasOwnProperty(prop)){
+                        if(fn.call(scope || obj, prop, obj[prop]) === false){
+                            return;
+                        };
+                    }
+                }
             }
         },
 
@@ -388,10 +466,10 @@ function(el){
          * @return HTMLElement
          */
         getDom : function(el){
-            if(!el || !document){
+            if(!el || !DOC){
                 return null;
             }
-            return el.dom ? el.dom : (typeof el == 'string' ? document.getElementById(el) : el);
+            return el.dom ? el.dom : (Ext.isString(el) ? DOC.getElementById(el) : el);
         },
 
         <div id="method-Ext-getBody"></div>/**
@@ -399,7 +477,7 @@ function(el){
          * @return Ext.Element The document body
          */
         getBody : function(){
-            return Ext.get(document.body || document.documentElement);
+            return Ext.get(DOC.body || DOC.documentElement);
         },
 
         <div id="method-Ext-removeNode"></div>/**
@@ -410,7 +488,7 @@ function(el){
             var d;
             return function(n){
                 if(n && n.tagName != 'BODY'){
-                    d = d || document.createElement('div');
+                    d = d || DOC.createElement('div');
                     d.appendChild(n);
                     d.innerHTML = '';
                 }
@@ -443,7 +521,7 @@ function(el){
          * @return {Boolean}
          */
         isArray : function(v){
-            return Object.prototype.toString.apply(v) === '[object Array]';
+            return toString.apply(v) === '[object Array]';
         },
 
         <div id="method-Ext-isObject"></div>/**
@@ -461,8 +539,7 @@ function(el){
          * @return {Boolean}
          */
         isPrimitive : function(v){
-            var t = typeof v;
-            return t == 'string' || t == 'number' || t == 'boolean';
+            return Ext.isString(v) || Ext.isNumber(v) || Ext.isBoolean(v);
         },
 
         <div id="method-Ext-isFunction"></div>/**
@@ -471,7 +548,43 @@ function(el){
          * @return {Boolean}
          */
         isFunction : function(v){
-            return typeof v == "function";
+            return toString.apply(v) === '[object Function]';
+        },
+
+        <div id="method-Ext-isNumber"></div>/**
+         * Returns true if the passed object is a number. Returns false for non-finite numbers.
+         * @param {Object} v The object to test
+         * @return {Boolean}
+         */
+        isNumber: function(v){
+            return typeof v === 'number' && isFinite(v);
+        },
+
+        <div id="method-Ext-isString"></div>/**
+         * Returns true if the passed object is a string.
+         * @param {Object} v The object to test
+         * @return {Boolean}
+         */
+        isString: function(v){
+            return typeof v === 'string';
+        },
+
+        <div id="method-Ext-isBoolean"></div>/**
+         * Returns true if the passed object is a boolean.
+         * @param {Object} v The object to test
+         * @return {Boolean}
+         */
+        isBoolean: function(v){
+            return typeof v === 'boolean';
+        },
+
+        <div id="method-Ext-isDefined"></div>/**
+         * Returns true if the passed object is not undefined.
+         * @param {Object} v The object to test
+         * @return {Boolean}
+         */
+        isDefined: function(v){
+            return typeof v !== 'undefined';
         },
 
         <div id="prop-Ext-isOpera"></div>/**
@@ -508,7 +621,7 @@ function(el){
          * True if the detected browser is Safari 2.x.
          * @type Boolean
          */
-        isSafari2 : isSafari && !(isSafari3 || isSafari4),
+        isSafari2 : isSafari2,
         <div id="prop-Ext-isIE"></div>/**
          * True if the detected browser is Internet Explorer.
          * @type Boolean
@@ -518,7 +631,7 @@ function(el){
          * True if the detected browser is Internet Explorer 6.x.
          * @type Boolean
          */
-        isIE6 : isIE && !isIE7 && !isIE8,
+        isIE6 : isIE6,
         <div id="prop-Ext-isIE7"></div>/**
          * True if the detected browser is Internet Explorer 7.x.
          * @type Boolean
@@ -538,7 +651,7 @@ function(el){
          * True if the detected browser uses a pre-Gecko 1.9 layout engine (e.g. Firefox 2.x).
          * @type Boolean
          */
-        isGecko2 : isGecko && !isGecko3,
+        isGecko2 : isGecko2,
         <div id="prop-Ext-isGecko3"></div>/**
          * True if the detected browser uses a Gecko 1.9+ layout engine (e.g. Firefox 3.x).
          * @type Boolean
@@ -591,7 +704,7 @@ Company.data.CustomStore = function(config) { ... }
 Ext.ns("Ext", "Ext.util", "Ext.lib", "Ext.data");
 
 
-/**
+<div id="cls-Function"></div>/**
  * @class Function
  * These functions are available on every Function object (any JavaScript function).
  */
@@ -705,7 +818,7 @@ btn.on('click', sayHi.createDelegate(btn, ['Fred']));
             if (appendArgs === true){
                 callArgs = Array.prototype.slice.call(arguments, 0);
                 callArgs = callArgs.concat(args);
-            }else if (typeof appendArgs == "number"){
+            }else if (Ext.isNumber(appendArgs)){
                 callArgs = Array.prototype.slice.call(arguments, 0); // copy arguments first
                 var applyArgs = [appendArgs, 0].concat(args); // create method call params
                 Array.prototype.splice.apply(callArgs, applyArgs); // splice them in
@@ -750,7 +863,7 @@ sayHi.defer(2000, this, ['Fred']);
     }
 });
 
-/**
+<div id="cls-String"></div>/**
  * @class String
  * These functions are available on every String object.
  */
@@ -787,10 +900,12 @@ Ext.applyIf(Array.prototype, {
      * @return {Number} The index of o in the array (or -1 if it is not found)
      */
     indexOf : function(o){
-       for (var i = 0, len = this.length; i < len; i++){
-           if(this[i] == o) return i;
-       }
-       return -1;
+        for (var i = 0, len = this.length; i < len; i++){
+            if(this[i] == o){
+                return i;
+            }
+        }
+        return -1;
     },
 
     <div id="method-Array-remove"></div>/**
@@ -799,11 +914,11 @@ Ext.applyIf(Array.prototype, {
      * @return {Array} this array
      */
     remove : function(o){
-       var index = this.indexOf(o);
-       if(index != -1){
-           this.splice(index, 1);
-       }
-       return this;
+        var index = this.indexOf(o);
+        if(index != -1){
+            this.splice(index, 1);
+        }
+        return this;
     }
 });
 </pre>    

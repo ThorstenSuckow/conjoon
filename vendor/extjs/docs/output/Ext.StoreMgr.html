@@ -30,37 +30,37 @@ Using the options argument, it is possible to combine different types of listene
 <br>
 A delayed, one-time listener.
 <pre><code>myDataView.on(<em>'click'</em>, this.onClick, this, {
-        single: true,
-        delay: 100
-    });</code></pre>
+    single: true,
+    delay: 100
+});</code></pre>
 <p>
 <b>Attaching multiple handlers in 1 call</b><br>
 The method also allows for a single argument to be passed which is a config object containing properties
 which specify multiple handlers.
 <p>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : {
-            fn: this.onClick,
-            scope: this,
-            delay: 100
-        },
-        <em>'mouseover'</em> : {
-            fn: this.onMouseOver,
-            scope: this
-        },
-        <em>'mouseout'</em> : {
-            fn: this.onMouseOut,
-            scope: this
-        }
-    });</code></pre>
+    <em>'click'</em> : {
+        fn: this.onClick,
+        scope: this,
+        delay: 100
+    },
+    <em>'mouseover'</em> : {
+        fn: this.onMouseOver,
+        scope: this
+    },
+    <em>'mouseout'</em> : {
+        fn: this.onMouseOut,
+        scope: this
+    }
+});</code></pre>
 <p>
 Or a shorthand syntax:<br>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : this.onClick,
-        <em>'mouseover'</em> : this.onMouseOver,
-        <em>'mouseout'</em> : this.onMouseOut,
-         scope: this
-    });</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-clear"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-clear">clear</a></b>()
+    <em>'click'</em> : this.onClick,
+    <em>'mouseover'</em> : this.onMouseOver,
+    <em>'mouseout'</em> : this.onMouseOut,
+     scope: this
+});</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-clear"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-clear">clear</a></b>()
     :
                                         void<div class="mdesc"><div class="short">Removes all items from the collection.  Fires the clear event when complete.</div><div class="long">Removes all items from the collection.  Fires the <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-clear" ext:member="clear" ext:cls="Ext.util.MixedCollection">clear</a> event when complete.<div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#clear" ext:member="#clear" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-clone"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-clone">clone</a></b>()
     :
@@ -113,7 +113,11 @@ by calling <a href="output/Ext.util.Observable.html#Ext.util.Observable-enableBu
     :
                                         Object<div class="mdesc"><div class="short">Returns the first item in the collection.</div><div class="long">Returns the first item in the collection.<div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li><code>Object</code><div class="sub-desc">the first item in the collection..</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#first" ext:member="#first" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-get"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-get">get</a></b>(&nbsp;<code>String/Number&nbsp;key</code>&nbsp;)
     :
-                                        Object<div class="mdesc"><div class="short">Returns the item associated with the passed key or index.</div><div class="long">Returns the item associated with the passed key or index.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>key</code> : String/Number<div class="sub-desc">The key or index of the item.</div></li></ul><strong>Returns:</strong><ul><li><code>Object</code><div class="sub-desc">The item associated with the passed key.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#get" ext:member="#get" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-getCount"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-getCount">getCount</a></b>()
+                                        Object<div class="mdesc"><div class="short">This method calls item().&#13;
+Returns the item associated with the passed key OR index. Key has priority over index.  Th...</div><div class="long">This method calls <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-item" ext:member="item" ext:cls="Ext.util.MixedCollection">item()</a>.
+Returns the item associated with the passed key OR index. Key has priority over index.  This is the equivalent
+of calling <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-key" ext:member="key" ext:cls="Ext.util.MixedCollection">key</a> first, then if nothing matched calling <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-itemAt" ext:member="itemAt" ext:cls="Ext.util.MixedCollection">itemAt</a>.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>key</code> : String/Number<div class="sub-desc">The key or index of the item.</div></li></ul><strong>Returns:</strong><ul><li><code>Object</code><div class="sub-desc">If the item is found, returns the item.  If the item was not found, returns &lt;tt&gt;undefined&lt;/tt&gt;.&#13;
+If an item was found, but is a Class, returns &lt;tt&gt;null&lt;/tt&gt;.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#get" ext:member="#get" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-getCount"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-getCount">getCount</a></b>()
     :
                                         Number<div class="mdesc"><div class="short">Returns the number of items in the collection.</div><div class="long">Returns the number of items in the collection.<div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li><code>Number</code><div class="sub-desc">the number of items in the collection.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#getCount" ext:member="#getCount" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-getKey"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-getKey">getKey</a></b>(&nbsp;<code>Object&nbsp;item</code>&nbsp;)
     :
@@ -154,7 +158,8 @@ mc.add(otherEl);</code></pre><div class="mdetail-params"><strong>Parameters:</st
     :
                                         Object<div class="mdesc"><div class="short">Returns the item associated with the passed key OR index. Key has priority over index.  This is the equivalent&#13;
 of ca...</div><div class="long">Returns the item associated with the passed key OR index. Key has priority over index.  This is the equivalent
-of calling <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-key" ext:member="key" ext:cls="Ext.util.MixedCollection">key</a> first, then if nothing matched calling <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-itemAt" ext:member="itemAt" ext:cls="Ext.util.MixedCollection">itemAt</a>.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>key</code> : String/Number<div class="sub-desc">The key or index of the item.</div></li></ul><strong>Returns:</strong><ul><li><code>Object</code><div class="sub-desc">The item associated with the passed key.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#item" ext:member="#item" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-itemAt"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-itemAt">itemAt</a></b>(&nbsp;<code>Number&nbsp;index</code>&nbsp;)
+of calling <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-key" ext:member="key" ext:cls="Ext.util.MixedCollection">key</a> first, then if nothing matched calling <a href="output/Ext.util.MixedCollection.html#Ext.util.MixedCollection-itemAt" ext:member="itemAt" ext:cls="Ext.util.MixedCollection">itemAt</a>.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>key</code> : String/Number<div class="sub-desc">The key or index of the item.</div></li></ul><strong>Returns:</strong><ul><li><code>Object</code><div class="sub-desc">If the item is found, returns the item.  If the item was not found, returns &lt;tt&gt;undefined&lt;/tt&gt;.&#13;
+If an item was found, but is a Class, returns &lt;tt&gt;null&lt;/tt&gt;.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#item" ext:member="#item" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-itemAt"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-itemAt">itemAt</a></b>(&nbsp;<code>Number&nbsp;index</code>&nbsp;)
     :
                                         Object<div class="mdesc"><div class="short">Returns the item at the specified index.</div><div class="long">Returns the item at the specified index.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>index</code> : Number<div class="sub-desc">The index of the item.</div></li></ul><strong>Returns:</strong><ul><li><code>Object</code><div class="sub-desc">The item at the specified index.</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.MixedCollection.html#itemAt" ext:member="#itemAt" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.MixedCollection-key"></a><b><a href="source/MixedCollection.html#method-Ext.util.MixedCollection-key">key</a></b>(&nbsp;<code>String/Number&nbsp;key</code>&nbsp;)
     :

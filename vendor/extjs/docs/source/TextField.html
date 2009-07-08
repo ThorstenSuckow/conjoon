@@ -17,49 +17,48 @@
  * <div class="mdetail-params"><ul>
  * <li><b>1. Field specific validator</b>
  * <div class="sub-desc">
- * <p>If a field is configured with <tt>{@link Ext.form.TextField#validator validator}</tt> function,
- * it will be passed the current field value.  The <tt>{@link Ext.form.TextField#validator validator}</tt>
+ * <p>If a field is configured with a <code>{@link Ext.form.TextField#validator validator}</code> function,
+ * it will be passed the current field value.  The <code>{@link Ext.form.TextField#validator validator}</code>
  * function is expected to return boolean <tt>true</tt> if the value is valid or return a string to
  * represent the invalid message if invalid.</p>
  * </div></li>
- * <li><b>2. Preconfigured Validation Types (VTypes)</b>
+ * <li><b>2. Built in Validation</b>
+ * <div class="sub-desc">
+ * <p>Basic validation is affected with the following configuration properties:</p>
+ * <pre>
+ * <u>Validation</u>    <u>Invalid Message</u>
+ * <code>{@link Ext.form.TextField#allowBlank allowBlank}    {@link Ext.form.TextField#emptyText emptyText}</code>
+ * <code>{@link Ext.form.TextField#minLength minLength}     {@link Ext.form.TextField#minLengthText minLengthText}</code>
+ * <code>{@link Ext.form.TextField#maxLength maxLength}     {@link Ext.form.TextField#maxLengthText maxLengthText}</code>
+ * </pre>
+ * </div></li>
+ * <li><b>3. Preconfigured Validation Types (VTypes)</b>
  * <div class="sub-desc">
  * <p>Using VTypes offers a convenient way to reuse validation. If a field is configured with a
- * <tt>{@link Ext.form.TextField#vtype vtype}</tt>, the corresponding {@link Ext.form.VTypes VTypes}
+ * <code>{@link Ext.form.TextField#vtype vtype}</code>, the corresponding {@link Ext.form.VTypes VTypes}
  * validation function will be used for validation.  If invalid, either the field's
- * <tt>{@link Ext.form.TextField#vtypeText vtypeText}</tt> or the VTypes vtype Text property will be
+ * <code>{@link Ext.form.TextField#vtypeText vtypeText}</code> or the VTypes vtype Text property will be
  * used for the invalid message.  Keystrokes on the field will be filtered according to the VTypes
  * vtype Mask property.</p>
  * </div></li>
- * <li><b>3. Field specific regex test</b>
+ * <li><b>4. Field specific regex test</b>
  * <div class="sub-desc">
- * <p>Each field may also specify a <tt>{@link Ext.form.TextField#regex regex}</tt> test.
+ * <p>Each field may also specify a <code>{@link Ext.form.TextField#regex regex}</code> test.
  * The invalid message for this test is configured with
- * <tt>{@link Ext.form.TextField#regexText regexText}</tt>.</p>
+ * <code>{@link Ext.form.TextField#regexText regexText}</code>.</p>
  * </div></li>
- * <li><b>4. Built in Validation</b>
+ * <li><b>Alter Validation Behavior</b>
  * <div class="sub-desc">
- * <p>If the prior validation steps all return <tt>true</tt>, built in validation criteria are
- * checked. Basic validation is affected with the following configuration properties:</p>
- * <pre>
- * <u>Validation</u>    <u>Invalid Message</u>
- * <tt>{@link Ext.form.TextField#allowBlank allowBlank}</tt>    <tt>{@link Ext.form.TextField#emptyText emptyText}</tt>
- * <tt>{@link Ext.form.TextField#minLength minLength}</tt>     <tt>{@link Ext.form.TextField#minLengthText minLengthText}</tt>
- * <tt>{@link Ext.form.TextField#maxLength maxLength}</tt>     <tt>{@link Ext.form.TextField#maxLengthText maxLengthText}</tt>
- * </pre>
- * </div></li>
- * <li><b>Alter Validation Process</b>
- * <div class="sub-desc">
- * <p>Validation behavior for each field can be modified:</p><ul>
- * <li>If any of above do not provide a message when invalid,
- * <tt>{@link Ext.form.TextField#invalidText invalidText}</tt> will be used</li>
- * <li><tt>{@link Ext.form.TextField#maskRe maskRe}</tt> : filter out keystrokes before any validation occurs</li>
- * <li><tt>{@link Ext.form.TextField#stripCharsRe stripCharsRe}</tt> : filter characters after being typed in,
+ * <p>Validation behavior for each field can be configured:</p><ul>
+ * <li><code>{@link Ext.form.TextField#invalidText invalidText}</code> : the default validation message to
+ * show if any validation step above does not provide a message when invalid</li>
+ * <li><code>{@link Ext.form.TextField#maskRe maskRe}</code> : filter out keystrokes before any validation occurs</li>
+ * <li><code>{@link Ext.form.TextField#stripCharsRe stripCharsRe}</code> : filter characters after being typed in,
  * but before being validated</li>
- * <li><tt>{@link Ext.form.Field#invalidClass invalidClass}</tt> : alternate style when invalid</li>
- * <li><tt>{@link Ext.form.Field#validateOnBlur validateOnBlur}</tt>,
- * <tt>{@link Ext.form.Field#validationDelay validationDelay}</tt>, and
- * <tt>{@link Ext.form.Field#validationEvent validationEvent}</tt> : modify how/when validation is triggered</li>
+ * <li><code>{@link Ext.form.Field#invalidClass invalidClass}</code> : alternate style when invalid</li>
+ * <li><code>{@link Ext.form.Field#validateOnBlur validateOnBlur}</code>,
+ * <code>{@link Ext.form.Field#validationDelay validationDelay}</code>, and
+ * <code>{@link Ext.form.Field#validationEvent validationEvent}</code> : modify how/when validation is triggered</li>
  * </ul>
  * </div></li>
  * </ul></div>
@@ -71,8 +70,8 @@
 Ext.form.TextField = Ext.extend(Ext.form.Field,  {
     <div id="cfg-Ext.form.TextField-vtypeText"></div>/**
      * @cfg {String} vtypeText A custom error message to display in place of the default message provided
-     * for the <b><tt>{@link #vtype}</tt></b> currently set for this field (defaults to <tt>''</tt>).  <b>Note</b>:
-     * only applies if <b><tt>{@link #vtype}</tt></b> is set, else ignored.
+     * for the <b><code>{@link #vtype}</code></b> currently set for this field (defaults to <tt>''</tt>).  <b>Note</b>:
+     * only applies if <b><code>{@link #vtype}</code></b> is set, else ignored.
      */
     <div id="cfg-Ext.form.TextField-stripCharsRe"></div>/**
      * @cfg {RegExp} stripCharsRe A JavaScript RegExp object used to strip unwanted content from the value
@@ -84,12 +83,12 @@ Ext.form.TextField = Ext.extend(Ext.form.Field,  {
      */
     grow : false,
     <div id="cfg-Ext.form.TextField-growMin"></div>/**
-     * @cfg {Number} growMin The minimum width to allow when <tt><b>{@link #grow}</b> = true</tt> (defaults
+     * @cfg {Number} growMin The minimum width to allow when <code><b>{@link #grow}</b> = true</code> (defaults
      * to <tt>30</tt>)
      */
     growMin : 30,
     <div id="cfg-Ext.form.TextField-growMax"></div>/**
-     * @cfg {Number} growMax The maximum width to allow when <tt><b>{@link #grow}</b> = true</tt> (defaults
+     * @cfg {Number} growMax The maximum width to allow when <code><b>{@link #grow}</b> = true</code> (defaults
      * to <tt>800</tt>)
      */
     growMax : 800,
@@ -127,21 +126,21 @@ var myField = new Ext.form.NumberField({
     anchor:'90%',
     fieldLabel: 'Mobile',
     maxLength: 16, // for validation
-    autoCreate: {tag: "input", type: "text", size: "20", autocomplete: "off", maxlength: "10"}
+    autoCreate: {tag: 'input', type: 'text', size: '20', autocomplete: 'off', maxlength: '10'}
 });
 </code></pre>
      */
     maxLength : Number.MAX_VALUE,
     <div id="cfg-Ext.form.TextField-minLengthText"></div>/**
      * @cfg {String} minLengthText Error text to display if the <b><tt>{@link #minLength minimum length}</tt></b>
-     * validation fails (defaults to <tt>"The minimum length for this field is {minLength}"</tt>)
+     * validation fails (defaults to <tt>'The minimum length for this field is {minLength}'</tt>)
      */
-    minLengthText : "The minimum length for this field is {0}",
+    minLengthText : 'The minimum length for this field is {0}',
     <div id="cfg-Ext.form.TextField-maxLengthText"></div>/**
      * @cfg {String} maxLengthText Error text to display if the <b><tt>{@link #maxLength maximum length}</tt></b>
-     * validation fails (defaults to <tt>"The maximum length for this field is {maxLength}"</tt>)
+     * validation fails (defaults to <tt>'The maximum length for this field is {maxLength}'</tt>)
      */
-    maxLengthText : "The maximum length for this field is {0}",
+    maxLengthText : 'The maximum length for this field is {0}',
     <div id="cfg-Ext.form.TextField-selectOnFocus"></div>/**
      * @cfg {Boolean} selectOnFocus <tt>true</tt> to automatically select any existing field text when the field
      * receives input focus (defaults to <tt>false</tt>)
@@ -149,29 +148,28 @@ var myField = new Ext.form.NumberField({
     selectOnFocus : false,
     <div id="cfg-Ext.form.TextField-blankText"></div>/**
      * @cfg {String} blankText The error text to display if the <b><tt>{@link #allowBlank}</tt></b> validation
-     * fails (defaults to <tt>"This field is required"</tt>)
+     * fails (defaults to <tt>'This field is required'</tt>)
      */
-    blankText : "This field is required",
+    blankText : 'This field is required',
     <div id="cfg-Ext.form.TextField-validator"></div>/**
      * @cfg {Function} validator A custom validation function to be called during field validation
-     * (defaults to <tt>null</tt>). If specified, this function will be called <b>only after</b> the built-in
-     * validations ({@link #allowBlank}, {@link #minLength}, {@link #maxLength}) and any configured {@link #vtype}
-     * all <tt>return true</tt>. This function will be passed the current field value and expected to return
-     * boolean <tt>true</tt> if the value is valid or a string error message if invalid.
+     * (defaults to <tt>null</tt>). If specified, this function will be called first, allowing the
+     * developer to override the default validation process. This function will be passed the current
+     * field value and expected to return boolean <tt>true</tt> if the value is valid or a string
+     * error message if invalid.
      */
     validator : null,
     <div id="cfg-Ext.form.TextField-regex"></div>/**
      * @cfg {RegExp} regex A JavaScript RegExp object to be tested against the field value during validation
-     * (defaults to <tt>null</tt>). If available, this regex will be evaluated only after the basic validators
-     * all <tt>return true</tt>, and will be passed the current field value.  If the test fails, the field will
-     * be marked invalid using <b><tt>{@link #regexText}</tt></b>.
+     * (defaults to <tt>null</tt>). If the test fails, the field will be marked invalid using
+     * <b><tt>{@link #regexText}</tt></b>.
      */
     regex : null,
     <div id="cfg-Ext.form.TextField-regexText"></div>/**
      * @cfg {String} regexText The error text to display if <b><tt>{@link #regex}</tt></b> is used and the
-     * test fails during validation (defaults to <tt>""</tt>)
+     * test fails during validation (defaults to <tt>''</tt>)
      */
-    regexText : "",
+    regexText : '',
     <div id="cfg-Ext.form.TextField-emptyText"></div>/**
      * @cfg {String} emptyText The default text to place into an empty field (defaults to <tt>null</tt>).
      * <b>Note</b>: that this value will be submitted to the server if this field is enabled and configured
@@ -241,7 +239,7 @@ var myField = new Ext.form.NumberField({
         	this.mon(this.el, this.validationEvent, this.validate, this, {buffer: this.validationDelay});
         }
         if(this.selectOnFocus || this.emptyText){
-            this.on("focus", this.preFocus, this);
+            this.on('focus', this.preFocus, this);
             
             this.mon(this.el, 'mousedown', function(){
                 if(!this.hasFocus){
@@ -376,7 +374,7 @@ var myField = new Ext.form.NumberField({
     },
 
     setValue : function(v){
-        if(this.emptyText && this.el && Ext.isEmpty(v)){
+        if(this.emptyText && this.el && !Ext.isEmpty(v)){
             this.el.removeClass(this.emptyClass);
         }
         Ext.form.TextField.superclass.setValue.apply(this, arguments);
@@ -399,17 +397,6 @@ var myField = new Ext.form.NumberField({
                 return false;
             }
         }
-        if(this.vtype){
-            var vt = Ext.form.VTypes;
-            if(!vt[this.vtype](value, this)){
-                this.markInvalid(this.vtypeText || vt[this.vtype +'Text']);
-                return false;
-            }
-        }
-        if(this.regex && !this.regex.test(value)){
-            this.markInvalid(this.regexText);
-            return false;
-        }
         if(value.length < 1 || value === this.emptyText){ // if it's blank
              if(this.allowBlank){
                  this.clearInvalid();
@@ -425,6 +412,17 @@ var myField = new Ext.form.NumberField({
         }
         if(value.length > this.maxLength){
             this.markInvalid(String.format(this.maxLengthText, this.maxLength));
+            return false;
+        }	
+        if(this.vtype){
+            var vt = Ext.form.VTypes;
+            if(!vt[this.vtype](value, this)){
+                this.markInvalid(this.vtypeText || vt[this.vtype +'Text']);
+                return false;
+            }
+        }
+        if(this.regex && !this.regex.test(value)){
+            this.markInvalid(this.regexText);
             return false;
         }
         return true;
@@ -446,8 +444,8 @@ var myField = new Ext.form.NumberField({
                 d.setSelectionRange(start, end);
             }else if(d.createTextRange){
                 var range = d.createTextRange();
-                range.moveStart("character", start);
-                range.moveEnd("character", end-v.length);
+                range.moveStart('character', start);
+                range.moveEnd('character', end-v.length);
                 range.select();
             }
             doFocus = Ext.isGecko || Ext.isOpera;
@@ -477,10 +475,10 @@ var myField = new Ext.form.NumberField({
         v = d.innerHTML;
         d = null;
         Ext.removeNode(d);
-        v += "&#160;";
+        v += '&#160;';
         var w = Math.min(this.growMax, Math.max(this.metrics.getWidth(v) + /* add extra padding */ 10, this.growMin));
         this.el.setWidth(w);
-        this.fireEvent("autosize", this, w);
+        this.fireEvent('autosize', this, w);
     },
 	
 	onDestroy: function(){

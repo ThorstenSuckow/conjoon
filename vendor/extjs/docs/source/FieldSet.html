@@ -98,17 +98,17 @@ Ext.form.FieldSet = Ext.extend(Ext.Panel, {
     <div id="cfg-Ext.form.FieldSet-baseCls"></div>/**
      * @cfg {String} baseCls The base CSS class applied to the fieldset (defaults to <tt>'x-fieldset'</tt>).
      */
-    baseCls:'x-fieldset',
+    baseCls : 'x-fieldset',
     <div id="cfg-Ext.form.FieldSet-layout"></div>/**
      * @cfg {String} layout The {@link Ext.Container#layout} to use inside the fieldset (defaults to <tt>'form'</tt>).
      */
-    layout: 'form',
+    layout : 'form',
     <div id="cfg-Ext.form.FieldSet-animCollapse"></div>/**
      * @cfg {Boolean} animCollapse
      * <tt>true</tt> to animate the transition when the panel is collapsed, <tt>false</tt> to skip the
      * animation (defaults to <tt>false</tt>).
      */
-    animCollapse: false,
+    animCollapse : false,
 
     // private
     onRender : function(ct, position){
@@ -149,7 +149,7 @@ Ext.form.FieldSet = Ext.extend(Ext.Panel, {
         Ext.form.FieldSet.superclass.onExpand.call(this, doAnim, animArg);
     },
 
-    /* //protected
+    <div id="method-Ext.form.FieldSet-onCheckClick"></div>/**
      * This function is called by the fieldset's checkbox when it is toggled (only applies when
      * checkboxToggle = true).  This method should never be called externally, but can be
      * overridden to provide custom behavior when the checkbox is toggled if needed.
@@ -166,10 +166,6 @@ Ext.form.FieldSet = Ext.extend(Ext.Panel, {
      * @cfg {Mixed} applyTo
      * @hide
      */
-    <div id="cfg-Ext.form.FieldSet-bbar"></div>/**
-     * @cfg {Object/Array} bbar
-     * @hide
-     */
     <div id="cfg-Ext.form.FieldSet-bodyBorder"></div>/**
      * @cfg {Boolean} bodyBorder
      * @hide
@@ -180,14 +176,6 @@ Ext.form.FieldSet = Ext.extend(Ext.Panel, {
      */
     <div id="cfg-Ext.form.FieldSet-bufferResize"></div>/**
      * @cfg {Boolean/Number} bufferResize
-     * @hide
-     */
-    <div id="cfg-Ext.form.FieldSet-buttonAlign"></div>/**
-     * @cfg {String} buttonAlign
-     * @hide
-     */
-    <div id="cfg-Ext.form.FieldSet-buttons"></div>/**
-     * @cfg {Array} buttons
      * @hide
      */
     <div id="cfg-Ext.form.FieldSet-collapseFirst"></div>/**
@@ -316,7 +304,6 @@ Ext.form.FieldSet = Ext.extend(Ext.Panel, {
      */
 });
 Ext.reg('fieldset', Ext.form.FieldSet);
-
 </pre>    
 </body>
 </html>

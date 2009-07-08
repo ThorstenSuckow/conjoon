@@ -10,13 +10,47 @@
 }
 
 (function(){
-var E = YAHOO.util.Event;
-var D = YAHOO.util.Dom;
-var CN = YAHOO.util.Connect;
-
-var ES = YAHOO.util.Easing;
-var A = YAHOO.util.Anim;
-var libFlyweight;
+    var E = YAHOO.util.Event,
+        D = YAHOO.util.Dom,
+        CN = YAHOO.util.Connect,
+        ES = YAHOO.util.Easing,
+        A = YAHOO.util.Anim,
+        libFlyweight,
+        version = YAHOO.env.getVersion('yahoo').version.split('.'),
+        mouseEnterSupported = parseInt(version[0]) >= 3,
+        mouseCache = {},
+        isXUL = Ext.isGecko ? function(node){
+            return Object.prototype.toString.call(node) == '[object XULElement]';
+        } : function(){
+        }, isTextNode = Ext.isGecko ? function(node){
+            try{
+                return node.nodeType == 3;
+            }catch (e){
+                return false;
+            }
+        } : function(node){
+            return node.nodeType == 3;
+        }, elContains = function(parent, child){
+            if(parent && parent.firstChild){
+                while(child){
+                    if(child === parent){
+                        return true;
+                    }
+                    try{
+                        child = child.parentNode;
+                    }catch (e){
+                        return false;
+                    }
+                    if(child && (child.nodeType != 1)){
+                        child = null;
+                    }
+                }
+            }
+            return false;
+        }, checkRelatedTarget = function(e){
+            var related = Ext.lib.Event.getRelatedTarget(e);
+            return !(isXUL(related) || elContains(e.currentTarget, related));
+        };
 
 Ext.lib.Dom = {
     getViewWidth : function(full){
@@ -158,11 +192,27 @@ Ext.lib.Event = {
     },
 
     on : function(el, eventName, fn, scope, override){
+        if((eventName == 'mouseenter' || eventName == 'mouseleave') && !mouseEnterSupported){
+            var item = mouseCache[el.id] || (mouseCache[el.id] = {});
+            item[eventName] = fn;
+            fn = fn.createInterceptor(checkRelatedTarget);
+            eventName = (eventName == 'mouseenter') ? 'mouseover' : 'mouseout';
+        }
         E.on(el, eventName, fn, scope, override);
     },
 
     un : function(el, eventName, fn){
-        E.removeListener(el, eventName, fn);
+        if((eventName == 'mouseenter' || eventName == 'mouseleave') && !mouseEnterSupported){
+            var item = mouseCache[el.id], 
+                ev = item && item[eventName];
+
+            if(ev){
+                fn = ev.fn;
+                delete item[eventName];
+                eventName = (eventName == 'mouseenter') ? 'mouseover' : 'mouseout';
+            }
+        }
+        E.removeListener(el, eventName, fn);;
     },
 
     purgeElement : function(el){

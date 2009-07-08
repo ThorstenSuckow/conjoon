@@ -112,8 +112,8 @@ Ext.layout.ContainerLayout.prototype = {
         if (this.renderHidden && c != this.activeItem) {
             c.hide();
         }
-        if(position !== undefined && c.doLayout){
-            c.doLayout(false, true);
+        if(c.doLayout){
+            c.doLayout(false, this.forceLayout);
         }
     },
 
@@ -125,13 +125,19 @@ Ext.layout.ContainerLayout.prototype = {
         var b = this.container.bufferResize;
         if(b){
             if(!this.resizeTask){
-                this.resizeTask = new Ext.util.DelayedTask(this.layout, this);
+                this.resizeTask = new Ext.util.DelayedTask(this.runLayout, this);
                 this.resizeBuffer = typeof b == 'number' ? b : 100;
             }
             this.resizeTask.delay(this.resizeBuffer);
         }else{
-            this.layout();
+            this.runLayout();
         }
+    },
+    
+    // private
+    runLayout: function(){
+        this.layout();
+        this.container.onLayout();
     },
 
     // private
@@ -139,6 +145,7 @@ Ext.layout.ContainerLayout.prototype = {
         if(this.monitorResize && ct != this.container){
             if(this.container){
                 this.container.un('resize', this.onResize, this);
+                this.container.un('bodyresize', this.onResize, this);
             }
             if(ct){
                 ct.on({

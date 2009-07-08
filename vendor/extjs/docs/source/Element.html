@@ -80,7 +80,7 @@ var DOC = document;
 Ext.Element = function(element, forceNew){
     var dom = typeof element == "string" ?
               DOC.getElementById(element) : element,
-    	id;
+        id;
 
     if(!dom) return null;
 
@@ -103,14 +103,14 @@ Ext.Element = function(element, forceNew){
     this.id = id || Ext.id(dom);
 };
 
-var	D = Ext.lib.Dom,
-	DH = Ext.DomHelper,
-	E = Ext.lib.Event,
-	A = Ext.lib.Anim,
-	El = Ext.Element;
+var D = Ext.lib.Dom,
+    DH = Ext.DomHelper,
+    E = Ext.lib.Event,
+    A = Ext.lib.Anim,
+    El = Ext.Element;
 
 El.prototype = {
-	<div id="method-Ext.Element-set"></div>/**
+    <div id="method-Ext.Element-set"></div>/**
      * Sets the passed attributes as attributes of this element (a style attribute can be a string, object or function)
      * @param {Object} o The object with the attributes
      * @param {Boolean} useSet (optional) false to override the default setAttribute to use expandos.
@@ -118,18 +118,18 @@ El.prototype = {
      */
     set : function(o, useSet){
         var el = this.dom,
-        	attr,
-        	val;       	
+            attr,
+            val;        
        
         for(attr in o){
-	        val = o[attr];
+            val = o[attr];
             if (attr != "style" && !Ext.isFunction(val)) {
-	            if (attr == "cls" ) {
-	                el.className = val;
-	            } else if (o.hasOwnProperty(attr)) {
-	                if (useSet || !!el.setAttribute) el.setAttribute(attr, val);
-	                else el[attr] = val;
-	            }
+                if (attr == "cls" ) {
+                    el.className = val;
+                } else if (o.hasOwnProperty(attr)) {
+                    if (useSet || !!el.setAttribute) el.setAttribute(attr, val);
+                    else el[attr] = val;
+                }
             }
         }
         if(o.style){
@@ -137,7 +137,7 @@ El.prototype = {
         }
         return this;
     },
-	
+    
 //  Mouse events
     <div id="event-Ext.Element-click"></div>/**
      * @event click
@@ -439,7 +439,7 @@ El.prototype = {
      * @return {String/Number}
      */
     getValue : function(asNumber){
-	    var val = this.dom.value;
+        var val = this.dom.value;
         return asNumber ? parseInt(val, 10) : val;
     },
 
@@ -464,7 +464,7 @@ El.prototype = {
      * <li><b>preventDefault</b> Boolean: <div class="sub-desc">True to prevent the default action</div></li>
      * <li><b>stopPropagation</b> Boolean: <div class="sub-desc">True to prevent event propagation</div></li>
      * <li><b>normalized</b> Boolean: <div class="sub-desc">False to pass a browser event to the handler function instead of an Ext.EventObject</div></li>
-     * <li><b>target</b> Ext.Element: <div class="sub-desc">The event will be passed to handler only when it has bubbled up to the specified target element</div></li>
+     * <li><b>target</b> Ext.Element: <div class="sub-desc">Only call the handler if the event was fired on the target Element, <i>not</i> if the event was bubbled up from a child node.</div></li>
      * <li><b>delay</b> Number: <div class="sub-desc">The number of milliseconds to delay the invocation of the handler after the event fires.</div></li>
      * <li><b>single</b> Boolean: <div class="sub-desc">True to add a handler to handle just the next firing of the event, and then remove itself.</div></li>
      * <li><b>buffer</b> Number: <div class="sub-desc">Causes the handler to be scheduled to run in an {@link Ext.util.DelayedTask} delayed
@@ -588,11 +588,11 @@ el.un('click', this.handlerFn);
      */
     addUnits : function(size){
         if(size === "" || size == "auto" || size === undefined){
-	        size = size || '';
-	    } else if(!isNaN(size) || !unitPattern.test(size)){
-	        size = size + (this.defaultUnit || 'px');
-	    }
-	    return size;
+            size = size || '';
+        } else if(!isNaN(size) || !unitPattern.test(size)){
+            size = size + (this.defaultUnit || 'px');
+        }
+        return size;
     },
 
     <div id="method-Ext.Element-load"></div>/**
@@ -626,11 +626,13 @@ el.un('click', this.handlerFn);
      * Removes this element from the DOM and deletes it from the cache
      */
     remove : function(){
-        var me = this;
+        var me = this,
+            dom = me.dom;
         
         me.removeAllListeners();
-        delete El.cache[me.dom.id];
-        Ext.removeNode(me.dom);
+        delete El.cache[dom.id];
+        delete El.dataCache[dom.id]
+        Ext.removeNode(dom);
     },
 
     <div id="method-Ext.Element-hover"></div>/**
@@ -648,7 +650,7 @@ el.un('click', this.handlerFn);
         return me;
     },
 
-	<div id="method-Ext.Element-contains"></div>/**
+    <div id="method-Ext.Element-contains"></div>/**
      * Returns true if this element is an ancestor of the passed element
      * @param {HTMLElement/String} el The element to check
      * @return {Boolean} True if this element is an ancestor of el, else false
@@ -678,7 +680,7 @@ el.un('click', this.handlerFn);
         var d = this.dom,
             type = typeof d[ns + ":" + name];
 
-        if(!Ext.isEmpty(type) && type != 'unknown'){
+        if(['undefined', 'unknown'].indexOf(type) == -1){
             return d[ns + ":" + name];
         }
         return d[name];
@@ -687,8 +689,14 @@ el.un('click', this.handlerFn);
         return d.getAttributeNS(ns, name) || d.getAttribute(ns + ":" + name) || d.getAttribute(name) || d[name];
     },
     
+    <div id="method-Ext.Element-update"></div>/**
+    * Update the innerHTML of this element
+    * @param {String} html The new HTML
+    * @return {Ext.Element} this
+     */
     update : function(html) {
-	    this.dom.innerHTML = html;
+        this.dom.innerHTML = html;
+        return this;
     }
 };
 
@@ -728,12 +736,13 @@ ep.autoBoxAdjust = true;
 
 // private
 var unitPattern = /\d+(px|em|%|en|ex|pt|in|cm|mm|pc)$/i,
-	docEl;
+    docEl;
 
 /**
  * @private
  */
 El.cache = {};
+El.dataCache = {};
 
 <div id="method-Ext.Element-get"></div>/**
  * Retrieves Ext.Element objects.
@@ -750,8 +759,8 @@ El.cache = {};
  */
 El.get = function(el){
     var ex,
-     	elm,
-     	id;
+        elm,
+        id;
     if(!el){ return null; }
     if (typeof el == "string") { // element id
         if (!(elm = DOC.getElementById(el))) {
@@ -797,6 +806,19 @@ El.get = function(el){
     return null;
 };
 
+// private method for getting and setting element data
+El.data = function(el, key, value){
+    var c = El.dataCache[el.id];
+    if(!c){
+        c = El.dataCache[el.id] = {};
+    }
+    if(arguments.length == 2){
+        return c[key];    
+    }else{
+        c[key] = value;
+    }
+};
+
 // private
 // Garbage collection - uncache elements/purge listeners on orphaned elements
 // so we don't hold a reference and cause the browser to retain them
@@ -804,37 +826,37 @@ function garbageCollect(){
     if(!Ext.enableGarbageCollector){
         clearInterval(El.collectorThread);
     } else {
-	    var eid,
-	    	el,
-	    	d;
+        var eid,
+            el,
+            d;
 
-	    for(eid in El.cache){
-	        el = El.cache[eid];
-	        d = el.dom;
-	        // -------------------------------------------------------
-	        // Determining what is garbage:
-	        // -------------------------------------------------------
-	        // !d
-	        // dom node is null, definitely garbage
-	        // -------------------------------------------------------
-	        // !d.parentNode
-	        // no parentNode == direct orphan, definitely garbage
-	        // -------------------------------------------------------
-	        // !d.offsetParent && !document.getElementById(eid)
-	        // display none elements have no offsetParent so we will
-	        // also try to look it up by it's id. However, check
-	        // offsetParent first so we don't do unneeded lookups.
-	        // This enables collection of elements that are not orphans
-	        // directly, but somewhere up the line they have an orphan
-	        // parent.
-	        // -------------------------------------------------------
-	        if(!d || !d.parentNode || (!d.offsetParent && !DOC.getElementById(eid))){
-	            delete El.cache[eid];
-	            if(d && Ext.enableListenerCollection){
-	                Ext.EventManager.removeAll(d);
-	            }
-	        }
-	    }
+        for(eid in El.cache){
+            el = El.cache[eid];
+            d = el.dom;
+            // -------------------------------------------------------
+            // Determining what is garbage:
+            // -------------------------------------------------------
+            // !d
+            // dom node is null, definitely garbage
+            // -------------------------------------------------------
+            // !d.parentNode
+            // no parentNode == direct orphan, definitely garbage
+            // -------------------------------------------------------
+            // !d.offsetParent && !document.getElementById(eid)
+            // display none elements have no offsetParent so we will
+            // also try to look it up by it's id. However, check
+            // offsetParent first so we don't do unneeded lookups.
+            // This enables collection of elements that are not orphans
+            // directly, but somewhere up the line they have an orphan
+            // parent.
+            // -------------------------------------------------------
+            if(!d || !d.parentNode || (!d.offsetParent && !DOC.getElementById(eid))){
+                delete El.cache[eid];
+                if(d && Ext.enableListenerCollection){
+                    Ext.EventManager.removeAll(d);
+                }
+            }
+        }
     }
 }
 El.collectorThreadId = setInterval(garbageCollect, 30000);
@@ -866,13 +888,13 @@ El._flyweights = {};
  */
 El.fly = function(el, named){
     var ret = null;
-	named = named || '_global';
+    named = named || '_global';
 
     if (el = Ext.getDom(el)) {
-    	(El._flyweights[named] = El._flyweights[named] || new El.Flyweight()).dom = el;
-    	ret = El._flyweights[named];
-	}
-	return ret;
+        (El._flyweights[named] = El._flyweights[named] || new El.Flyweight()).dom = el;
+        ret = El._flyweights[named];
+    }
+    return ret;
 };
 
 <div id="method-Ext-get"></div>/**
@@ -918,6 +940,7 @@ if(Ext.isIE || Ext.isGecko){
 
 Ext.EventManager.on(window, 'unload', function(){
     delete El.cache;
+    delete El.dataCache;
     delete El._flyweights;
 });
 })();

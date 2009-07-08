@@ -10,7 +10,7 @@
  * @extends Ext.util.Observable
  * A TreeLoader provides for lazy loading of an {@link Ext.tree.TreeNode}'s child
  * nodes from a specified URL. The response must be a JavaScript Array definition
- * whose elements are node definition objects. eg:
+ * whose elements are node definition objects. e.g.:
  * <pre><code>
     [{
         id: 1,
@@ -118,7 +118,7 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
     * child nodes before loading.
     */
     clearOnLoad : true,
-    
+
     <div id="cfg-Ext.tree.TreeLoader-paramOrder"></div>/**
      * @cfg {Array/String} paramOrder Defaults to <tt>undefined</tt>. Only used when using directFn.
      * A list of params to be executed
@@ -162,7 +162,7 @@ paramOrder: 'param1|param2|param'
             }
         }
         if(this.doPreload(node)){ // preloaded json children
-            this.runCallback(callback, scope || node);
+            this.runCallback(callback, scope || node, []);
         }else if(this.directFn || this.dataUrl || this.url){
             this.requestData(node, callback, scope || node);
         }
@@ -231,24 +231,24 @@ paramOrder: 'param1|param2|param'
         }else{
             // if the load is cancelled, make sure we notify
             // the node that we are done
-            this.runCallback(callback, scope || node);
+            this.runCallback(callback, scope || node, []);
         }
     },
-    
+
     processDirectResponse: function(result, response, args){
         if(response.status){
-            this.processResponse({
+            this.handleResponse({
                 responseData: Ext.isArray(result) ? result : null,
                 responseText: result,
                 argument: args
-            }, args.node, args.callback, args.scope);
+            });
         }else{
             this.handleFailure({
                 argument: args
             });
         }
     },
-    
+
     // private
     runCallback: function(cb, scope, args){
         if(Ext.isFunction(cb)){
@@ -269,7 +269,7 @@ paramOrder: 'param1|param2|param'
     <div id="method-Ext.tree.TreeLoader-createNode"></div>/**
     * <p>Override this function for custom TreeNode node implementation, or to
     * modify the attributes at creation time.</p>
-    * Example:<code><pre>
+    * Example:<pre><code>
 new Ext.tree.TreePanel({
     ...
     new Ext.tree.TreeLoader({
@@ -286,7 +286,7 @@ new Ext.tree.TreePanel({
     }),
     ...
 });
-</pre></code>
+</code></pre>
     * @param attr {Object} The attributes from which to create the new node.
     */
     createNode : function(attr){
@@ -330,7 +330,7 @@ new Ext.tree.TreePanel({
     handleResponse : function(response){
         this.transId = false;
         var a = response.argument;
-        this.processResponse(response, a.node, a.callback, a.scope);        
+        this.processResponse(response, a.node, a.callback, a.scope);
         this.fireEvent("load", this, a.node, response);
     },
 

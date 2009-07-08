@@ -8,15 +8,16 @@
     <pre class="prettyprint lang-js"><div id="cls-Ext.data.Api"></div>/**
  * @class Ext.data.Api
  * @extends Object
- * Ext.data.Api is a singleton designed to manage the data API including methods for validating
- * a developer's DataProxy API.  Defines variables for CRUD actions create, read, update and destroy in addition to a
- * mapping of RESTful HTTP methods GET, POST, PUT and DELETE to CRUD actions.
+ * Ext.data.Api is a singleton designed to manage the data API including methods
+ * for validating a developer's DataProxy API.  Defines variables for CRUD actions
+ * create, read, update and destroy in addition to a mapping of RESTful HTTP methods
+ * GET, POST, PUT and DELETE to CRUD actions.
  * @singleton
  */
 Ext.data.Api = (function() {
 
     // private validActions.  validActions is essentially an inverted hash of Ext.data.Api.actions, where value becomes the key.
-    // Some methods in this singleton (eg: getActions, getVerb) will loop through actions with the code <code>for (var verb in this.actions)</code>
+    // Some methods in this singleton (e.g.: getActions, getVerb) will loop through actions with the code <code>for (var verb in this.actions)</code>
     // For efficiency, some methods will first check this hash for a match.  Those methods which do acces validActions will cache their result here.
     // We cannot pre-define this hash since the developer may over-ride the actions at runtime.
     var validActions = {};
@@ -43,7 +44,8 @@ actions: {
         },
 
         <div id="prop-Ext.data.Api-restActions"></div>/**
-         * Defined {CRUD action}:{HTTP method} pairs corresponding to remote actions for RESTful proxies.
+         * Defined {CRUD action}:{HTTP method} pairs to associate HTTP methods with the
+         * corresponding actions for {@link Ext.data.DataProxy#restful RESTful proxies}.
          * Defaults to:
          * <pre><code>
 restActions : {
@@ -134,7 +136,7 @@ restActions : {
          * one can explicitly define the HTTP method (GET|POST) to use for each CRUD action.  This method will prepare the supplied API, setting
          * each action to the Object form.  If your API-actions do not explicitly define the HTTP method, the "method" configuration-parameter will
          * be used.  If the method configuration parameter is not specified, POST will be used.
-         <code><pre>
+         <pre><code>
 new Ext.data.HttpProxy({
     method: "POST",     // <-- default HTTP method when not specified.
     api: {
@@ -154,7 +156,7 @@ new Ext.data.HttpProxy({
         save: 'update.php'
     }
 });
-        </pre></code>
+        </code></pre>
          *
          * @param {Ext.data.DataProxy} proxy
          */
@@ -183,13 +185,43 @@ new Ext.data.HttpProxy({
             for (var verb in this.restActions) {
                 proxy.api[this.actions[verb]].method = this.restActions[verb];
             }
+            // TODO: perhaps move this interceptor elsewhere?  like into DataProxy, perhaps?  Placed here
+            // to satisfy initial 3.0 final release of REST features.
+            proxy.onWrite = proxy.onWrite.createInterceptor(function(action, o, response, rs) {
+                var reader = o.reader;
+                var res = {};
+                switch (response.status) {
+                    case 200:   // standard 200 response, send control back to HttpProxy#onWrite
+                        return true;
+                        break;
+                    case 201:   // entity created but no response returned
+                        res[reader.meta.successProperty] = true;
+                        break;
+                    case 204:  // no-content.  Create a fake response.
+                        res[reader.meta.successProperty] = true;
+                        res[reader.meta.root] = null;
+                        break;
+                    default:
+                        return true;
+                        break;
+                }
+                if (res[reader.meta.successProperty] === true) {
+                    this.fireEvent("write", this, action, res[reader.meta.root], res, rs, o.request.arg);
+                } else {
+                    this.fireEvent('exception', this, 'remote', action, o, res, rs);
+                }
+                o.request.callback.call(o.request.scope, res[reader.meta.root], res, res[reader.meta.successProperty]);
+
+                return false;   // <-- false to prevent intercepted function from running.
+            }, proxy);
         }
     };
 })();
 
-
-<div id="prop-Ext.data.Api-Error"></div>/**
- * Error class for Ext.data.Api errors.
+<div id="cls-Ext.data.Api.Error"></div>/**
+ * @class Ext.data.Api.Error
+ * @extends Ext.Error
+ * Error class for Ext.data.Api errors
  */
 Ext.data.Api.Error = Ext.extend(Ext.Error, {
     constructor : function(message, arg) {

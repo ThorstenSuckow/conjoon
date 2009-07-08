@@ -7,7 +7,49 @@
 <body  onload="prettyPrint();">
     <pre class="prettyprint lang-js">(function(){
 
-var libFlyweight;
+var libFlyweight,
+    version = Prototype.Version.split('.'),
+    mouseEnterSupported = (parseInt(version[0]) >= 2) || (parseInt(version[1]) >= 7) || (parseInt(version[2]) >= 1),
+    mouseCache = {},
+    isXUL = Ext.isGecko ? function(node){ 
+        return Object.prototype.toString.call(node) == '[object XULElement]';
+    } : function(){},
+    isTextNode = Ext.isGecko ? function(node){
+        try{
+            return node.nodeType == 3;
+        }catch(e) {
+            return false;
+        }
+
+    } : function(node){
+        return node.nodeType == 3;
+    },
+    elContains = function(parent, child) {
+       if(parent && parent.firstChild){  
+         while(child) {
+            if(child === parent) {
+                return true;
+            }
+            try {
+                child = child.parentNode;
+            } catch(e) {
+                // In FF if you mouseout an text input element
+                // thats inside a div sometimes it randomly throws
+                // Permission denied to get property HTMLDivElement.parentNode
+                // See https://bugzilla.mozilla.org/show_bug.cgi?id=208427
+                return false;
+            }                
+            if(child && (child.nodeType != 1)) {
+                child = null;
+            }
+          }
+        }
+        return false;
+    },
+    checkRelatedTarget = function(e) {
+        var related = Ext.lib.Event.getRelatedTarget(e);
+        return !(isXUL(related) || elContains(e.currentTarget,related));
+    };
 
 Ext.lib.Dom = {
     getViewWidth : function(full){
@@ -198,11 +240,7 @@ Ext.lib.Event = {
     },
 
     resolveTextNode: function(node) {
-        if (node && 3 == node.nodeType) {
-            return node.parentNode;
-        } else {
-            return node;
-        }
+        return node && !isXUL(node) && isTextNode(node) ? node.parentNode : node;
     },
 
     getRelatedTarget: function(ev) { // missing from prototype?
@@ -220,10 +258,26 @@ Ext.lib.Event = {
     },
 
     on : function(el, eventName, fn){
+        if((eventName == 'mouseenter' || eventName == 'mouseleave') && !mouseEnterSupported){
+            var item = mouseCache[el.id] || (mouseCache[el.id] = {});
+            item[eventName] = fn;
+            fn = fn.createInterceptor(checkRelatedTarget);
+            eventName = (eventName == 'mouseenter') ? 'mouseover' : 'mouseout';
+        }
         Event.observe(el, eventName, fn, false);
     },
 
     un : function(el, eventName, fn){
+        if((eventName == 'mouseenter' || eventName == 'mouseleave') && !mouseEnterSupported){
+            var item = mouseCache[el.id], 
+                ev = item && item[eventName];
+
+            if(ev){
+                fn = ev.fn;
+                delete item[eventName];
+                eventName = (eventName == 'mouseenter') ? 'mouseover' : 'mouseout';
+            }
+        }
         Event.stopObserving(el, eventName, fn, false);
     },
 

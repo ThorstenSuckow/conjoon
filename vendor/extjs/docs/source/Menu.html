@@ -11,19 +11,26 @@
  * <p>Layout manager used by {@link Ext.menu.Menu}. Generally this class should not need to be used directly.</p>
  */
  Ext.layout.MenuLayout = Ext.extend(Ext.layout.ContainerLayout, {
+    monitorResize : true,
+
+    setContainer : function(ct){
+        this.monitorResize = !ct.floating;
+        Ext.layout.MenuLayout.superclass.setContainer.call(this, ct);
+    },
+
     renderItem : function(c, position, target){
         if (!this.itemTpl) {
             this.itemTpl = Ext.layout.MenuLayout.prototype.itemTpl = new Ext.XTemplate(
                 '<li id="{itemId}" class="{itemCls}">',
                     '<tpl if="needsIcon">',
-                        '<img src="{icon}" class="{iconCls}">',
+                        '<img src="{icon}" class="{iconCls}"/>',
                     '</tpl>',
                 '</li>'
             );
         }
 
         if(c && !c.rendered){
-            if(typeof position == 'number'){
+            if(Ext.isNumber(position)){
                 position = target.dom.childNodes[position];
             }
             var a = this.getItemArgs(c);
@@ -42,14 +49,14 @@
                 c.positionEl.addClass('x-menu-list-item-indent');
             }
         }else if(c && !this.isValidParent(c, target)){
-            if(typeof position == 'number'){
+            if(Ext.isNumber(position)){
                 position = target.dom.childNodes[position];
             }
             target.dom.insertBefore(c.getActionEl().dom, position || null);
         }
     },
 
-    getItemArgs: function(c) {
+    getItemArgs : function(c) {
         var isMenuItem = c instanceof Ext.menu.Item;
         return {
             isMenuItem: isMenuItem,
@@ -62,7 +69,7 @@
     },
 
 //  Valid if the Component is in a <li> which is part of our target <ul>
-    isValidParent: function(c, target) {
+    isValidParent : function(c, target) {
         return c.el.up('li.x-menu-list-item', 5).dom.parentNode === (target.dom || target);
     },
 
@@ -73,12 +80,14 @@
 
     doAutoSize : function(){
         var ct = this.container, w = ct.width;
-        if(w){
-            ct.setWidth(w);
-        }else if(Ext.isIE){
-            ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8) ? 'auto' : ct.minWidth);
-            var el = ct.getEl(), t = el.dom.offsetWidth; // force recalc
-            ct.setWidth(ct.getLayoutTarget().getWidth() + el.getFrameWidth('lr'));
+        if(ct.floating){
+            if(w){
+                ct.setWidth(w);
+            }else if(Ext.isIE){
+                ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8) ? 'auto' : ct.minWidth);
+                var el = ct.getEl(), t = el.dom.offsetWidth; // force recalc
+                ct.setWidth(ct.getLayoutTarget().getWidth() + el.getFrameWidth('lr'));
+            }
         }
     }
 });
@@ -96,7 +105,7 @@ Ext.Container.LAYOUTS['menu'] = Ext.layout.MenuLayout;
  * for an example.</p>
  * <p>By default, Menus are absolutely positioned, floating Components. By configuring a Menu with
  * <b><tt>{@link #floating}:false</tt></b>, a Menu may be used as child of a Container.</p>
- * 
+ *
  * @xtype menu
  */
 Ext.menu.Menu = Ext.extend(Ext.Container, {
@@ -117,20 +126,20 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      */
     minWidth : 120,
     <div id="cfg-Ext.menu.Menu-shadow"></div>/**
-     * @cfg {Boolean/String} shadow True or "sides" for the default effect, "frame" for 4-way shadow, and "drop"
-     * for bottom-right shadow (defaults to "sides")
+     * @cfg {Boolean/String} shadow True or 'sides' for the default effect, 'frame' for 4-way shadow, and 'drop'
+     * for bottom-right shadow (defaults to 'sides')
      */
-    shadow : "sides",
+    shadow : 'sides',
     <div id="cfg-Ext.menu.Menu-subMenuAlign"></div>/**
      * @cfg {String} subMenuAlign The {@link Ext.Element#alignTo} anchor position value to use for submenus of
-     * this menu (defaults to "tl-tr?")
+     * this menu (defaults to 'tl-tr?')
      */
-    subMenuAlign : "tl-tr?",
+    subMenuAlign : 'tl-tr?',
     <div id="cfg-Ext.menu.Menu-defaultAlign"></div>/**
      * @cfg {String} defaultAlign The default {@link Ext.Element#alignTo} anchor position value for this menu
-     * relative to its element of origin (defaults to "tl-bl?")
+     * relative to its element of origin (defaults to 'tl-bl?')
      */
-    defaultAlign : "tl-bl?",
+    defaultAlign : 'tl-bl?',
     <div id="cfg-Ext.menu.Menu-allowOtherMenus"></div>/**
      * @cfg {Boolean} allowOtherMenus True to allow multiple menus to be displayed at the same time (defaults to false)
      */
@@ -143,63 +152,57 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     <div id="cfg-Ext.menu.Menu-enableScrolling"></div>/**
      * @cfg {Boolean} enableScrolling True to allow the menu container to have scroller controls if the menu is too long (defaults to true).
      */
-    enableScrolling: true,
+    enableScrolling : true,
     <div id="cfg-Ext.menu.Menu-maxHeight"></div>/**
      * @cfg {Number} maxHeight The maximum height of the menu. Only applies when enableScrolling is set to True (defaults to null).
      */
-    maxHeight: null,
+    maxHeight : null,
     <div id="cfg-Ext.menu.Menu-scrollIncrement"></div>/**
      * @cfg {Number} scrollIncrement The amount to scroll the menu. Only applies when enableScrolling is set to True (defaults to 24).
      */
-    scrollIncrement: 24,
+    scrollIncrement : 24,
     <div id="cfg-Ext.menu.Menu-showSeparator"></div>/**
      * @cfg {Boolean} showSeparator True to show the icon separator. (defaults to true).
      */
-    showSeparator: true,
+    showSeparator : true,
+    <div id="cfg-Ext.menu.Menu-defaultOffsets"></div>/**
+     * @cfg {Array} defaultOffsets An array specifying the [x, y] offset in pixels by which to
+     * change the default Menu popup position after aligning according to the {@link #defaultAlign}
+     * configuration. Defaults to <tt>[0, 0]</tt>.
+     */
+    defaultOffsets : [0, 0],
 
     <div id="cfg-Ext.menu.Menu-floating"></div>/**
      * @cfg {Boolean} floating
-     * May be specified as false to create a Menu which may be used as a child item of another Container
-     * instead of a free-floating {@link Ext.Layer Layer}. (defaults to true).
+     * <p>By default, a Menu configured as <b><code>floating:true</code></b>
+     * will be rendered as an {@link Ext.Layer} (an absolutely positioned,
+     * floating Component with zindex=15000).
+     * If configured as <b><code>floating:false</code></b>, the Menu may be
+     * used as child item of another Container instead of a free-floating
+     * {@link Ext.Layer Layer}.
      */
-    floating: true,         // Render as a Layer by default
+    floating : true,
 
     // private
-    hidden: true,
-    hideMode: 'offsets',    // Important for laying out Components
-    layout: 'menu',
-    scrollerHeight: 8,
-    autoLayout: true,       // Provided for backwards compat
+    hidden : true,
 
-    initComponent: function(){
+    <div id="cfg-Ext.menu.Menu-layout"></div>/**
+     * @cfg {String/Object} layout
+     * This class assigns a default layout (<code>layout:'<b>menu</b>'</code>).
+     * Developers <i>may</i> override this configuration option if another layout is required.
+     * See {@link Ext.Container#layout} for additional information.
+     */
+    layout : 'menu',
+    hideMode : 'offsets',    // Important for laying out Components
+    scrollerHeight : 8,
+    autoLayout : true,       // Provided for backwards compat
+    defaultType : 'menuitem',
+
+    initComponent : function(){
         if(Ext.isArray(this.initialConfig)){
             Ext.apply(this, {items:this.initialConfig});
         }
         this.addEvents(
-            <div id="event-Ext.menu.Menu-beforeshow"></div>/**
-             *  @event beforeshow
-             * Fires before this menu is displayed
-             * @param {Ext.menu.Menu} this
-            */
-            'beforeshow',
-            <div id="event-Ext.menu.Menu-beforehide"></div>/**
-             * @event beforehide
-             * Fires before this menu is hidden
-             * @param {Ext.menu.Menu} this
-            */
-            'beforehide',
-            <div id="event-Ext.menu.Menu-show"></div>/**
-             * @event show
-             * Fires after this menu is displayed
-             * @param {Ext.menu.Menu} this
-            */
-            'show',
-            <div id="event-Ext.menu.Menu-hide"></div>/**
-             * @event hide
-             * Fires after this menu is hidden
-             * @param {Ext.menu.Menu} this
-            */
-            'hide',
             <div id="event-Ext.menu.Menu-click"></div>/**
              * @event click
              * Fires when this menu is clicked (or when the enter key is pressed while it is active)
@@ -231,8 +234,16 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
              * @param {Ext.EventObject} e
              */
             'itemclick'
-        );    
+        );
         Ext.menu.MenuMgr.register(this);
+        if(this.floating){
+            Ext.EventManager.onWindowResize(this.hide, this);
+        }else{
+            if(this.initialConfig.hidden !== false){
+                this.hidden = false;
+            }
+            this.internalDefaults = {hideOnClick: false};
+        }
         Ext.menu.Menu.superclass.initComponent.call(this);
         if(this.autoLayout){
             this.on({
@@ -241,7 +252,6 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
                 scope: this
             });
         }
-        //Ext.EventManager.onWindowResize(this.hide, this);
     },
 
     //private
@@ -251,13 +261,13 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
 
     // private
     onRender : function(ct, position){
-        if(!ct){ 
+        if(!ct){
             ct = Ext.getBody();
         }
 
         var dh = {
             id: this.getId(),
-            cls: 'x-menu ' + ((this.floating) ? 'x-layer ' : '') + (this.cls || '') + (this.plain ? ' x-menu-plain' : '') + (this.showSeparator ? '' : ' x-menu-nosep'),
+            cls: 'x-menu ' + ((this.floating) ? 'x-menu-floating x-layer ' : '') + (this.cls || '') + (this.plain ? ' x-menu-plain' : '') + (this.showSeparator ? '' : ' x-menu-nosep'),
             style: this.style,
             cn: [
                 {tag: 'a', cls: 'x-menu-focus', href: '#', onclick: 'return false;', tabIndex: '-1'},
@@ -283,18 +293,25 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         // generic focus element
         this.focusEl = this.el.child('a.x-menu-focus');
         this.ul = this.el.child('ul.x-menu-list');
-        this.mon(this.ul, 'click', this.onClick, this);
-        this.mon(this.ul, 'mouseover', this.onMouseOver, this);
-        this.mon(this.ul, 'mouseout', this.onMouseOut, this);
+        this.mon(this.ul, {
+            scope: this,
+            click: this.onClick,
+            mouseover: this.onMouseOver,
+            mouseout: this.onMouseOut
+        });
         if(this.enableScrolling){
-            this.mon(this.el, 'click', this.onScroll, this, {delegate: '.x-menu-scroller'});
-            this.mon(this.el, 'mouseover', this.deactivateActive, this, {delegate: '.x-menu-scroller'});
+            this.mon(this.el, {
+                scope: this,
+                delegate: '.x-menu-scroller',
+                click: this.onScroll,
+                mouseover: this.deactivateActive
+            });
         }
     },
 
     // private
     findTargetItem : function(e){
-        var t = e.getTarget(".x-menu-list-item", this.ul, true);
+        var t = e.getTarget('.x-menu-list-item', this.ul, true);
         if(t && t.menuItemId){
             return this.items.get(t.menuItemId);
         }
@@ -312,7 +329,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
                     e.preventDefault();
                 }else if(t.onClick){
                     t.onClick(e);
-                    this.fireEvent("click", this, t, e);
+                    this.fireEvent('click', this, t, e);
                 }
             }
         }
@@ -332,7 +349,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         }
     },
 
-    deactivateActive: function(){
+    deactivateActive : function(){
         var a = this.activeItem;
         if(a){
             if(a.isFormField){
@@ -369,7 +386,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             }
         }
         this.over = true;
-        this.fireEvent("mouseover", this, e, t);
+        this.fireEvent('mouseover', this, e, t);
     },
 
     // private
@@ -382,11 +399,11 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             }
         }
         this.over = false;
-        this.fireEvent("mouseout", this, e, t);
+        this.fireEvent('mouseout', this, e, t);
     },
 
     // private
-    onScroll: function(e, t){
+    onScroll : function(e, t){
         if(e){
             e.stopEvent();
         }
@@ -398,7 +415,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     },
 
     // private
-    onScrollerIn: function(e, t){
+    onScrollerIn : function(e, t){
         var ul = this.ul.dom, top = Ext.fly(t).is('.x-menu-scroller-top');
         if(top ? ul.scrollTop > 0 : ul.scrollTop + this.activeMax < ul.scrollHeight){
             Ext.fly(t).addClass(['x-menu-item-active', 'x-menu-scroller-active']);
@@ -406,25 +423,31 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     },
 
     // private
-    onScrollerOut: function(e, t){
+    onScrollerOut : function(e, t){
         Ext.fly(t).removeClass(['x-menu-item-active', 'x-menu-scroller-active']);
     },
 
     <div id="method-Ext.menu.Menu-show"></div>/**
-     * Displays this menu relative to another element
+     * If <code>{@link #floating}=true</code>, shows this menu relative to
+     * another element, otherwise uses {@link Ext.Component#show}.
      * @param {Mixed} element The element to align to
      * @param {String} position (optional) The {@link Ext.Element#alignTo} anchor position to use in aligning to
      * the element (defaults to this.defaultAlign)
      * @param {Ext.menu.Menu} parentMenu (optional) This menu's parent menu, if applicable (defaults to undefined)
      */
     show : function(el, pos, parentMenu){
-        this.parentMenu = parentMenu;
-        if(!this.el){
-            this.render();
-            this.doLayout(false, true);
+        if(this.floating){
+            this.parentMenu = parentMenu;
+            if(!this.el){
+                this.render();
+                this.doLayout(false, true);
+            }
+            if(this.fireEvent('beforeshow', this) !== false){
+                this.showAt(this.el.getAlignToXY(el, pos || this.defaultAlign, this.defaultOffsets), parentMenu, false);
+            }
+        }else{
+            Ext.menu.Menu.superclass.show.call(this);
         }
-        this.fireEvent("beforeshow", this);
-        this.showAt(this.el.getAlignToXY(el, pos || this.defaultAlign), parentMenu, false);
     },
 
     <div id="method-Ext.menu.Menu-showAt"></div>/**
@@ -437,36 +460,35 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         if(!this.el){
             this.render();
         }
-        if(_e !== false){
-            this.fireEvent("beforeshow", this);
-            xy = this.el.adjustForConstraints(xy);
-        }
         this.el.setXY(xy);
         if(this.enableScrolling){
-            this.constrainScroll(xy[1]);     
+            this.constrainScroll(xy[1]);
         }
         this.el.show();
         Ext.menu.Menu.superclass.onShow.call(this);
         if(Ext.isIE){
-           this.layout.doAutoSize();
+            this.layout.doAutoSize();
+            if(!Ext.isIE8){
+                this.el.repaint();
+            }
         }
         this.hidden = false;
         this.focus();
-        this.fireEvent("show", this);
+        this.fireEvent('show', this);
     },
 
-    constrainScroll: function(y){
+    constrainScroll : function(y){
         var max, full = this.ul.setHeight('auto').getHeight();
-        if (this.maxHeight){
-            max = this.maxHeight - (this.scrollerHeight * 3);
+        if(this.floating){
+            max = this.maxHeight ? this.maxHeight : Ext.fly(this.el.dom.parentNode).getViewSize().height - y;
         }else{
-            var ct = Ext.get(this.el.dom.parentNode);
-            max = Ext.fly(this.el.dom.parentNode).getViewSize().height - y - (this.scrollerHeight * 3);
+            max = this.getHeight();
         }
-        if (full > max && max > 0){
-            this.activeMax = max;
-            this.ul.setHeight(max);
+        if(full > max && max > 0){
+            this.activeMax = max - this.scrollerHeight * 2 - this.el.getFrameWidth('tb') - Ext.num(this.el.shadowOffset, 0);
+            this.ul.setHeight(this.activeMax);
             this.createScrollers();
+            this.el.select('.x-menu-scroller').setDisplayed('');
         }else{
             this.ul.setHeight(full);
             this.el.select('.x-menu-scroller').setDisplayed('none');
@@ -474,7 +496,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         this.ul.dom.scrollTop = 0;
     },
 
-    createScrollers: function(){
+    createScrollers : function(){
         if(!this.scroller){
             this.scroller = {
                 pos: 0,
@@ -503,16 +525,15 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             });
         }
     },
-    
-    onLayout: function(){
+
+    onLayout : function(){
         if(this.isVisible()){
             if(this.enableScrolling){
                 this.constrainScroll(this.el.getTop());
             }
-            if(Ext.isIE){
-              this.layout.doAutoSize();
+            if(this.floating){
+                this.el.sync();
             }
-            this.el.sync();
         }
     },
 
@@ -533,41 +554,65 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Boolean} deep (optional) True to hide all parent menus recursively, if any (defaults to false)
      */
     hide : function(deep){
-        if(this.el){
-            Ext.menu.Menu.superclass.hide.call(this);
+        this.deepHide = deep;
+        Ext.menu.Menu.superclass.hide.call(this);
+        delete this.deepHide;
+    },
+
+    // private
+    onHide : function(){
+        Ext.menu.Menu.superclass.onHide.call(this);
+        this.deactivateActive();
+        if(this.el && this.floating){
             this.el.hide();
-            if(deep === true && this.parentMenu){
-                this.parentMenu.hide(true);
-            }
+        }
+        if(this.deepHide === true && this.parentMenu){
+            this.parentMenu.hide(true);
         }
     },
 
     // private
-    onHide: function(){
-        Ext.menu.Menu.superclass.onHide.call(this);
-        this.deactivateActive();
+    lookupComponent : function(c){
+         if(Ext.isString(c)){
+            c = (c == 'separator' || c == '-') ? new Ext.menu.Separator() : new Ext.menu.TextItem(c);
+             this.applyDefaults(c);
+         }else{
+            if(Ext.isObject(c)){
+                c = this.getMenuItem(c);
+            }else if(c.tagName || c.el){ // element. Wrap it.
+                c = new Ext.BoxComponent({
+                    el: c
+                });
+            }
+         }
+         return c;
+    },
+
+    applyDefaults : function(c){
+        if(!Ext.isString(c)){
+            c = Ext.menu.Menu.superclass.applyDefaults.call(this, c);
+            var d = this.internalDefaults;
+            if(d){
+                if(c.events){
+                    Ext.applyIf(c.initialConfig, d);
+                    Ext.apply(c, d);
+                }else{
+                    Ext.applyIf(c, d);
+                }
+            }
+        }
+        return c;
     },
 
     // private
-    lookupComponent: function(c){
-        var item;
-        if(c.render){ // some kind of Component
-            item = c;
-         }else if(typeof c == "string"){ // string
-             if(c == "separator" || c == "-"){
-                 item = new Ext.menu.Separator();
-             }else{
-                 item = new Ext.menu.TextItem(c);
-             }
-         }else if(c.tagName || c.el){ // element. Wrap it.
-             item = new Ext.BoxComponent({
-                el: c
-             })
-         }else if(typeof c == "object"){ // must be menu item config?
-             Ext.applyIf(c, this.defaults);
-             item = this.getMenuItem(c);
-         }
-         return item;
+    getMenuItem : function(config){
+       if(!config.isXType){
+            if(!config.xtype && Ext.isBoolean(config.checked)){
+                return new Ext.menu.CheckItem(config)
+            }
+            return Ext.create(config, this.defaultType);
+        }
+        return config;
     },
 
     <div id="method-Ext.menu.Menu-addSeparator"></div>/**
@@ -605,20 +650,6 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         return this.add(this.getMenuItem(config));
     },
 
-    // private
-    getMenuItem: function(config){
-       if(!(config.isXType && config.isXType(Ext.menu.Item))){
-            if(config.xtype){
-                return Ext.ComponentMgr.create(config, this.defaultType);
-            }else if(typeof config.checked == "boolean"){ // must be check menu item config?
-                return new Ext.menu.CheckItem(config);
-            }else{
-                return new Ext.menu.Item(config);
-            }
-        }
-        return config; 
-    },
-
     <div id="method-Ext.menu.Menu-addText"></div>/**
      * Creates a new {@link Ext.menu.TextItem} with the supplied text and adds it to the menu
      * @param {String} text The text to display in the menu item
@@ -638,7 +669,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         }
         var s = this.scroller;
         if(s){
-            Ext.destroy(s.topRepeater, s.bottomRepeater, s.top, s.bottom);    
+            Ext.destroy(s.topRepeater, s.bottomRepeater, s.top, s.bottom);
         }
     }
 });
@@ -658,14 +689,14 @@ Ext.menu.MenuNav = Ext.extend(Ext.KeyNav, function(){
         }
     }
     return {
-        constructor: function(menu){
+        constructor : function(menu){
             Ext.menu.MenuNav.superclass.constructor.call(this, menu.el);
             this.scope = this.menu = menu;
         },
 
         doRelay : function(e, h){
             var k = e.getKey();
-//          Keystrokes within a form Field (eg: down in a Combo) do not navigate. Allow only TAB
+//          Keystrokes within a form Field (e.g.: down in a Combo) do not navigate. Allow only TAB
             if (this.menu.activeItem && this.menu.activeItem.isFormField && k != e.TAB) {
                 return false;
             }
@@ -706,7 +737,7 @@ Ext.menu.MenuNav = Ext.extend(Ext.KeyNav, function(){
             if(m.activeItem){
                 e.stopPropagation();
                 m.activeItem.onClick(e);
-                m.fireEvent("click", this, m.activeItem);
+                m.fireEvent('click', this, m.activeItem);
                 return true;
             }
         }

@@ -11,16 +11,16 @@
  * <p>This layout manager is specifically designed for rendering and managing child Components of
  * {@link Ext.form.FormPanel forms}. It is responsible for rendering the labels of
  * {@link Ext.form.Field Field}s.</p>
- * 
+ *
  * <p>This layout manager is used when a Container is configured with the <tt>layout:'form'</tt>
  * {@link Ext.Container#layout layout} config option, and should generally not need to be created directly
  * via the new keyword. See <tt><b>{@link Ext.Container#layout}</b></tt> for additional details.</p>
- * 
+ *
  * <p>In an application, it will usually be preferrable to use a {@link Ext.form.FormPanel FormPanel}
  * (which is configured with FormLayout as its layout class by default) since it also provides built-in
  * functionality for {@link Ext.form.BasicForm#doAction loading, validating and submitting} the form.</p>
- * 
- * <p>A {@link Ext.Container Container} <i>using</i> the FormLayout layout manager (eg.
+ *
+ * <p>A {@link Ext.Container Container} <i>using</i> the FormLayout layout manager (e.g.
  * {@link Ext.form.FormPanel} or specifying <tt>layout:'form'</tt>) can also accept the following
  * layout-specific config properties:<div class="mdetail-params"><ul>
  * <li><b><tt>{@link Ext.form.FormPanel#hideLabels hideLabels}</tt></b></li>
@@ -29,12 +29,12 @@
  * <li><b><tt>{@link Ext.form.FormPanel#labelSeparator labelSeparator}</tt></b></li>
  * <li><b><tt>{@link Ext.form.FormPanel#labelWidth labelWidth}</tt></b></li>
  * </ul></div></p>
- * 
+ *
  * <p>Any Component (including Fields) managed by FormLayout accepts the following as a config option:
  * <div class="mdetail-params"><ul>
  * <li><b><tt>{@link Ext.Component#anchor anchor}</tt></b></li>
  * </ul></div></p>
- * 
+ *
  * <p>Any Component managed by FormLayout may be rendered as a form field (with an associated label) by
  * configuring it with a non-null <b><tt>{@link Ext.Component#fieldLabel fieldLabel}</tt></b>. Components configured
  * in this way may be configured with the following options which affect the way the FormLayout renders them:
@@ -46,7 +46,7 @@
  * <li><b><tt>{@link Ext.Component#labelSeparator labelSeparator}</tt></b></li>
  * <li><b><tt>{@link Ext.Component#labelStyle labelStyle}</tt></b></li>
  * </ul></div></p>
- * 
+ *
  * <p>Example usage:</p>
  * <pre><code>
 // Required if showing validation messages
@@ -89,12 +89,12 @@ var form = new Ext.form.FormPanel({
         {text: 'Cancel'}
     ],
     layoutConfig: {
-        {@link #labelSeparator}: '~' // superseded by assignment below 
+        {@link #labelSeparator}: '~' // superseded by assignment below
     },
     // config options applicable to container when layout='form':
     hideLabels: false,
     labelAlign: 'left',   // or 'right' or 'top'
-    {@link Ext.form.FormPanel#labelSeparator labelSeparator}: '>>', // takes precedence over layoutConfig value 
+    {@link Ext.form.FormPanel#labelSeparator labelSeparator}: '>>', // takes precedence over layoutConfig value
     labelWidth: 65,       // defaults to 100
     labelPad: 8           // defaults to 5, must specify labelWidth to be honored
 });
@@ -244,10 +244,10 @@ new Ext.Template(
             elementStyle: this.elementStyle||'',
             labelSeparator: noLabelSep ? '' : (typeof field.labelSeparator == 'undefined' ? this.labelSeparator : field.labelSeparator),
             itemCls: (field.itemCls||this.container.itemCls||'') + (field.hideLabel ? ' x-hide-label' : ''),
-            clearCls: field.clearCls || 'x-form-clear-left' 
+            clearCls: field.clearCls || 'x-form-clear-left'
         };
     },
-	
+
     // private
     adjustWidthAnchor : function(value, comp){
         return value - (comp.isFormField || comp.fieldLabel  ? (comp.hideLabel ? 0 : this.labelAdjust) : 0);

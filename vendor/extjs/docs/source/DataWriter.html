@@ -7,10 +7,43 @@
 <body  onload="prettyPrint();">
     <pre class="prettyprint lang-js"><div id="cls-Ext.data.DataWriter"></div>/**
  * @class Ext.data.DataWriter
- * Abstract base class for writing structured data from a data source and converting
- * it into a JSON-string containing {@link Ext.data.Record} objects and metadata for use
- * by an {@link Ext.data.Store}.  This class is intended to be extended and should not
- * be created directly. For existing implementations, see {@link Ext.data.JsonWriter},
+ * <p>Ext.data.DataWriter facilitates create, update, and destroy actions between
+ * an Ext.data.Store and a server-side framework. A Writer enabled Store will
+ * automatically manage the Ajax requests to perform CRUD actions on a Store.</p>
+ * <p>Ext.data.DataWriter is an abstract base class which is intended to be extended
+ * and should not be created directly. For existing implementations, see
+ * {@link Ext.data.JsonWriter}.</p>
+ * <p>Creating a writer is simple:</p>
+ * <pre><code>
+var writer = new Ext.data.JsonWriter();
+ * </code></pre>
+ * <p>The proxy for a writer enabled store can be configured with a simple <code>url</code>:</p>
+ * <pre><code>
+// Create a standard HttpProxy instance.
+var proxy = new Ext.data.HttpProxy({
+    url: 'app.php/users'
+});
+ * </code></pre>
+ * <p>For finer grained control, the proxy may also be configured with an <code>api</code>:</p>
+ * <pre><code>
+// Use the api specification
+var proxy = new Ext.data.HttpProxy({
+    api: {
+        read    : 'app.php/users/read',
+        create  : 'app.php/users/create',
+        update  : 'app.php/users/update',
+        destroy : 'app.php/users/destroy'
+    }
+});
+ * </code></pre>
+ * <p>Creating a Writer enabled store:</p>
+ * <pre><code>
+var store = new Ext.data.Store({
+    proxy: proxy,
+    reader: reader,
+    writer: writer
+});
+ * </code></pre>
  * @constructor Create a new DataWriter
  * @param {Object} meta Metadata configuration options (implementation-specific)
  * @param {Object} recordType Either an Array of field definition objects as specified
@@ -72,17 +105,17 @@ Ext.data.DataWriter.prototype = {
     update : function(rs) {
         var params = {};
         if (Ext.isArray(rs)) {
-            var data = [];
-            var ids = [];
-            for (var n=0,len=rs.length;n<len;n++) {
-                ids.push(rs[n].id);
-                data.push(this.updateRecord(rs[n]));
-            }
+            var data = [],
+                ids = [];
+            Ext.each(rs, function(val){
+                ids.push(val.id);
+                data.push(this.updateRecord(val));
+            }, this);
             params[this.meta.idProperty] = ids;
             params[this.meta.root] = data;
         }
         else if (rs instanceof Ext.data.Record) {
-            params[this.meta.idProperty] = rs.id;
+            //params[this.meta.idProperty] = rs.id; // <-- removed, un-neccessary.
             params[this.meta.root] = this.updateRecord(rs);
         }
         return params;
@@ -90,7 +123,7 @@ Ext.data.DataWriter.prototype = {
 
     <div id="cfg-Ext.data.DataWriter-saveRecord"></div>/**
      * @cfg {Function} saveRecord Abstract method that should be implemented in all subclasses
-     * (eg: {@link Ext.data.JsonWriter#saveRecord JsonWriter.saveRecord}
+     * (e.g.: {@link Ext.data.JsonWriter#saveRecord JsonWriter.saveRecord}
      */
     updateRecord : Ext.emptyFn,
 
@@ -104,9 +137,9 @@ Ext.data.DataWriter.prototype = {
         var params = {};
         if (Ext.isArray(rs)) {
             var data = [];
-            for (var n=0,len=rs.length;n<len;n++) {
-                data.push(this.createRecord(rs[n]));
-            }
+            Ext.each(rs, function(val){
+                data.push(this.createRecord(val));
+            }, this);
             params[this.meta.root] = data;
         }
         else if (rs instanceof Ext.data.Record) {
@@ -117,7 +150,7 @@ Ext.data.DataWriter.prototype = {
 
     <div id="cfg-Ext.data.DataWriter-createRecord"></div>/**
      * @cfg {Function} createRecord Abstract method that should be implemented in all subclasses
-     * (eg: {@link Ext.data.JsonWriter#createRecord JsonWriter.createRecord}
+     * (e.g.: {@link Ext.data.JsonWriter#createRecord JsonWriter.createRecord})
      */
     createRecord : Ext.emptyFn,
 
@@ -130,11 +163,11 @@ Ext.data.DataWriter.prototype = {
     destroy : function(rs) {
         var params = {};
         if (Ext.isArray(rs)) {
-            var data = [];
-            var ids = [];
-            for (var i=0,len=rs.length;i<len;i++) {
-                data.push(this.destroyRecord(rs[i]));
-            }
+            var data = [],
+                ids = [];
+            Ext.each(rs, function(val){
+                data.push(this.destroyRecord(val));
+            }, this);
             params[this.meta.root] = data;
         } else if (rs instanceof Ext.data.Record) {
             params[this.meta.root] = this.destroyRecord(rs);
@@ -144,23 +177,25 @@ Ext.data.DataWriter.prototype = {
 
     <div id="cfg-Ext.data.DataWriter-destroyRecord"></div>/**
      * @cfg {Function} destroyRecord Abstract method that should be implemented in all subclasses
-     * (eg: {@link Ext.data.JsonWriter#destroyRecord JsonWriter.destroyRecord}
+     * (e.g.: {@link Ext.data.JsonWriter#destroyRecord JsonWriter.destroyRecord})
      */
     destroyRecord : Ext.emptyFn,
 
     /**
-     * toHash
      * Converts a Record to a hash
      * @param {Record}
      * @private
      */
     toHash : function(rec) {
-        var map = rec.fields.map;
-        var data = {};
-        var raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data;
-        for (var k in raw) {
-            data[(map[k].mapping) ? map[k].mapping : map[k].name] = raw[k];
-        }
+        var map = rec.fields.map,
+            data = {},
+            raw = (this.writeAllFields === false && rec.phantom === false) ? rec.getChanges() : rec.data,
+            m;
+        Ext.iterate(raw, function(prop, value){
+            if((m = map[prop])){
+                data[m.mapping ? m.mapping : m.name] = value;
+            }
+        });
         data[this.meta.idProperty] = rec.id;
         return data;
     }

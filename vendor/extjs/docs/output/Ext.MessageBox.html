@@ -26,9 +26,9 @@ Ext.Msg.show({
 Supported ...</div><div class="long">An object containing the default button text strings that can be overriden for localized language support.
 Supported properties are: ok, cancel, yes and no.  Generally you should include a locale-specific
 resource file for handling language support across the framework.
-Customize the default text like so: Ext.MessageBox.buttonText.yes = "oui"; //french</div></div></td><td class="msource">MessageBox</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-defaultTextHeight"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-defaultTextHeight">defaultTextHeight</a></b> : Number<div class="mdesc">The default height in pixels of the message box's multiline textarea if displayed (defaults to 75)</div></td><td class="msource">MessageBox</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-maxWidth"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-maxWidth">maxWidth</a></b> : Number<div class="mdesc">The maximum width in pixels of the message box (defaults to 600)</div></td><td class="msource">MessageBox</td></tr><tr class="property-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-minProgressWidth"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-minProgressWidth">minProgressWidth</a></b> : Number<div class="mdesc"><div class="short">The minimum width in pixels of the message box if it is a progress-style dialog.  This is useful
+Customize the default text like so: Ext.MessageBox.buttonText.yes = 'oui'; //french</div></div></td><td class="msource">MessageBox</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-defaultTextHeight"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-defaultTextHeight">defaultTextHeight</a></b> : Number<div class="mdesc">The default height in pixels of the message box's multiline textarea if displayed (defaults to 75)</div></td><td class="msource">MessageBox</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-maxWidth"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-maxWidth">maxWidth</a></b> : Number<div class="mdesc">The maximum width in pixels of the message box (defaults to 600)</div></td><td class="msource">MessageBox</td></tr><tr class="property-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-minProgressWidth"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-minProgressWidth">minProgressWidth</a></b> : Number<div class="mdesc"><div class="short">The minimum width in pixels of the message box if it is a progress-style dialog.  This is useful
 for setting a differ...</div><div class="long">The minimum width in pixels of the message box if it is a progress-style dialog.  This is useful
-for setting a different minimum width than text-only dialogs may need (defaults to 250)</div></div></td><td class="msource">MessageBox</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-minWidth"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-minWidth">minWidth</a></b> : Number<div class="mdesc">The minimum width in pixels of the message box (defaults to 100)</div></td><td class="msource">MessageBox</td></tr></tbody></table><a id="Ext.MessageBox-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-alert"></a><b><a href="source/MessageBox.html#method-Ext.MessageBox-alert">alert</a></b>(&nbsp;<code>String&nbsp;title</code>,&nbsp;<code>String&nbsp;msg</code>,&nbsp;<span title="Optional" class="optional">[<code>Function&nbsp;fn</code>]</span>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>&nbsp;)
+for setting a different minimum width than text-only dialogs may need (defaults to 250)</div></div></td><td class="msource">MessageBox</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-minWidth"></a><b><a href="source/MessageBox.html#prop-Ext.MessageBox-minWidth">minWidth</a></b> : Number<div class="mdesc">The minimum width in pixels of the message box (defaults to 110)</div></td><td class="msource">MessageBox</td></tr></tbody></table><a id="Ext.MessageBox-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.MessageBox-alert"></a><b><a href="source/MessageBox.html#method-Ext.MessageBox-alert">alert</a></b>(&nbsp;<code>String&nbsp;title</code>,&nbsp;<code>String&nbsp;msg</code>,&nbsp;<span title="Optional" class="optional">[<code>Function&nbsp;fn</code>]</span>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>&nbsp;)
     :
                                         Ext.MessageBox<div class="mdesc"><div class="short">Displays a standard read-only message box with an OK button (comparable to the basic JavaScript alert prompt).
 If a c...</div><div class="long">Displays a standard read-only message box with an OK button (comparable to the basic JavaScript alert prompt).
@@ -83,8 +83,6 @@ cancel:'Bar'}), or false to not show any buttons (defaults to false)</div></li>
 progress and wait dialogs will ignore this property and always hide the close button as they can only
 be closed programmatically.</div></li>
 <li><b>cls</b> : String<div class="sub-desc">A custom CSS class to apply to the message box's container element</div></li>
-<li><b>defaultTextHeight</b> : Number<div class="sub-desc">The default height in pixels of the message box's multiline textarea
-if displayed (defaults to 75)</div></li>
 <li><b>fn</b> : Function<div class="sub-desc">A callback function which is called when the dialog is dismissed either
 by clicking on the configured buttons, or on the dialog close button, or by pressing
 the return button to enter input.
@@ -112,11 +110,15 @@ add an optional header icon (defaults to '')</div></li>
 displayed (defaults to true)</div></li>
 <li><b>msg</b> : String<div class="sub-desc">A string that will replace the existing message box body text (defaults to the
 XHTML-compliant non-breaking space character '&amp;#160;')</div></li>
-<li><a id="show-option-multiline"></a><b>multiline</b> : Boolean<div class="sub-desc">
-True to prompt the user to enter multi-line text (defaults to false)</div></li>
+<li><a id="show-option-multiline"></a><b>multiline</b> : Boolean/Number<div class="sub-desc">
+If <code>prompt</code> is true, instead of prompting the user with a single line textbox,
+specify <code>multiline = true</code> to prompt the user with a multiline textarea
+using the <code><a href="output/Ext.MessageBox.html#Ext.MessageBox-defaultTextHeight" ext:member="defaultTextHeight" ext:cls="Ext.MessageBox">defaultTextHeight</a></code> property, or specify a height in pixels
+to create the textarea (defaults to false creating a single-line textbox)</div></li>
 <li><b>progress</b> : Boolean<div class="sub-desc">True to display a progress bar (defaults to false)</div></li>
 <li><b>progressText</b> : String<div class="sub-desc">The text to display inside the progress bar if progress = true (defaults to '')</div></li>
-<li><a id="show-option-prompt"></a><b>prompt</b> : Boolean<div class="sub-desc">True to prompt the user to enter single-line text (defaults to false)</div></li>
+<li><a id="show-option-prompt"></a><b>prompt</b> : Boolean<div class="sub-desc">
+True to prompt the user with a textbox or textarea (defaults to false)</div></li>
 <li><b>proxyDrag</b> : Boolean<div class="sub-desc">True to display a lightweight proxy while dragging (defaults to false)</div></li>
 <li><b>title</b> : String<div class="sub-desc">The title text</div></li>
 <li><b>value</b> : String<div class="sub-desc">The string value to set into the active textbox element if displayed</div></li>
@@ -130,7 +132,7 @@ Example usage:
    msg: <em>'Please enter your address:'</em>,
    width: 300,
    buttons: Ext.MessageBox.OKCANCEL,
-   multiline: true,
+   multiline: true, <i>// show a multiline textarea using the <a href="output/Ext.MessageBox.html#Ext.MessageBox-defaultTextHeight" ext:member="defaultTextHeight" ext:cls="Ext.MessageBox">defaultTextHeight</a></i>
    fn: saveAddress,
    animEl: <em>'addAddressBtn'</em>,
    icon: Ext.MessageBox.INFO

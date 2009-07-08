@@ -18,7 +18,7 @@
  */
 Ext.form.Label = Ext.extend(Ext.BoxComponent, {
     <div id="cfg-Ext.form.Label-text"></div>/**
-     * @cfg {String} text The plain text to display within the label (defaults to ''). If you need to include HTML 
+     * @cfg {String} text The plain text to display within the label (defaults to ''). If you need to include HTML
      * tags within the label's innerHTML, use the {@link #html} config instead.
      */
     <div id="cfg-Ext.form.Label-forId"></div>/**
@@ -26,7 +26,7 @@ Ext.form.Label = Ext.extend(Ext.BoxComponent, {
      * attribute. If not specified, the attribute will not be added to the label.
      */
     <div id="cfg-Ext.form.Label-html"></div>/**
-     * @cfg {String} html An HTML fragment that will be used as the label's innerHTML (defaults to ''). 
+     * @cfg {String} html An HTML fragment that will be used as the label's innerHTML (defaults to '').
      * Note that if {@link #text} is specified it will take precedence and this value will be ignored.
      */
 
@@ -42,17 +42,19 @@ Ext.form.Label = Ext.extend(Ext.BoxComponent, {
         }
         Ext.form.Label.superclass.onRender.call(this, ct, position);
     },
-    
+
     <div id="method-Ext.form.Label-setText"></div>/**
      * Updates the label's innerHTML with the specified string.
      * @param {String} text The new label text
      * @param {Boolean} encode (optional) False to skip HTML-encoding the text when rendering it
-     * to the label (defaults to true which encodes the value). This might be useful if you want to include 
+     * to the label (defaults to true which encodes the value). This might be useful if you want to include
      * tags in the label's innerHTML rather than rendering them as string literals per the default logic.
      * @return {Label} this
      */
-    setText: function(t, encode){
-        this.text = t;
+    setText : function(t, encode){
+        var e = encode === false;
+        this[!e ? 'text' : 'html'] = t;
+        delete this[e ? 'text' : 'html'];
         if(this.rendered){
             this.el.dom.innerHTML = encode !== false ? Ext.util.Format.htmlEncode(t) : t;
         }

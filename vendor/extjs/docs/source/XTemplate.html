@@ -199,7 +199,7 @@ Ext.XTemplate = function(){
 
     s = ['<tpl>', s, '</tpl>'].join('');
 
-    while(m = s.match(re)){
+    while((m = s.match(re))){
        	var m2 = m[0].match(nameRe),
 			m3 = m[0].match(ifRe),
        		m4 = m[0].match(execRe),
@@ -308,11 +308,11 @@ Ext.extend(Ext.XTemplate, Ext.Template, {
                 args= ''; format = "("+v+" === undefined ? '' : ";
             }
             return "'"+ sep + format + v + args + ")"+sep+"'";
-        };
+        }
 
         function codeFn(m, code){
             return "'"+ sep +'('+code+')'+sep+"'";
-        };
+        }
 
         // branched to use + in gecko and [].join() in others
         if(Ext.isGecko){

@@ -37,9 +37,9 @@
  */
 Ext.form.BasicForm = function(el, config){
     Ext.apply(this, config);
-    if(typeof this.paramOrder == 'string'){
+    if(Ext.isString(this.paramOrder)){
         this.paramOrder = this.paramOrder.split(/[\s,|]/);
-    }    
+    }
     /*
      * @property items
      * A {@link Ext.util.MixedCollection MixedCollection) containing all the Ext.form.Fields in this form.
@@ -85,17 +85,23 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      */
     <div id="cfg-Ext.form.BasicForm-reader"></div>/**
      * @cfg {DataReader} reader
-     * An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader}) to be used to read data when executing "load" actions.
-     * This is optional as there is built-in support for processing JSON.
+     * An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader}) to be used to read
+     * data when executing 'load' actions. This is optional as there is built-in
+     * support for processing JSON.  For additional information on using an XMLReader
+     * see the example provided in examples/form/xml-form.html.
      */
     <div id="cfg-Ext.form.BasicForm-errorReader"></div>/**
      * @cfg {DataReader} errorReader
-     * <p>An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader}) to be used to read field error messages returned from "submit" actions.
-     * This is completely optional as there is built-in support for processing JSON.</p>
-     * <p>The Records which provide messages for the invalid Fields must use the Field name (or id) as the Record ID,
-     * and must contain a field called "msg" which contains the error message.</p>
-     * <p>The errorReader does not have to be a full-blown implementation of a DataReader. It simply needs to implement a 
-     * <tt>read(xhr)</tt> function which returns an Array of Records in an object with the following structure:<pre><code>
+     * <p>An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader}) to be used to
+     * read field error messages returned from 'submit' actions. This is optional
+     * as there is built-in support for processing JSON.</p>
+     * <p>The Records which provide messages for the invalid Fields must use the
+     * Field name (or id) as the Record ID, and must contain a field called 'msg'
+     * which contains the error message.</p>
+     * <p>The errorReader does not have to be a full-blown implementation of a
+     * DataReader. It simply needs to implement a <tt>read(xhr)</tt> function
+     * which returns an Array of Records in an object with the following
+     * structure:</p><pre><code>
 {
     records: recordArray
 }
@@ -103,12 +109,13 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      */
     <div id="cfg-Ext.form.BasicForm-url"></div>/**
      * @cfg {String} url
-     * The URL to use for form actions if one isn't supplied in the {@link #doAction action} options.
+     * The URL to use for form actions if one isn't supplied in the
+     * <code>{@link #doAction doAction} options</code>.
      */
     <div id="cfg-Ext.form.BasicForm-fileUpload"></div>/**
      * @cfg {Boolean} fileUpload
      * Set to true if this form is a file upload.
-     * <p>File uploads are not performed using normal "Ajax" techniques, that is they are <b>not</b>
+     * <p>File uploads are not performed using normal 'Ajax' techniques, that is they are <b>not</b>
      * performed using XMLHttpRequests. Instead the form is submitted in the standard manner with the
      * DOM <tt>&lt;form></tt> element temporarily modified to have its
      * <a href="http://www.w3.org/TR/REC-html40/present/frames.html#adef-target">target</a> set to refer
@@ -138,27 +145,30 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     timeout: 30,
 
     <div id="cfg-Ext.form.BasicForm-api"></div>/**
-     * @cfg {Object} api
+     * @cfg {Object} api (Optional) If specified load and submit actions will be handled
+     * with {@link Ext.form.Action.DirectLoad} and {@link Ext.form.Action.DirectSubmit}.
      * Methods which have been imported by Ext.Direct can be specified here to load and submit
-     * forms. 
+     * forms.
      * Such as the following:<pre><code>
 api: {
     load: App.ss.MyProfile.load,
     submit: App.ss.MyProfile.submit
 }
 </code></pre>
-     * <p>Load actions can use paramOrder or paramsAsHash to customize how the load method is invoked.
-     * Submit actions will always use a standard form submit. The formHandler configuration must be set
-     * on the associated server-side method which has been imported by Ext.Direct</p>
+     * <p>Load actions can use <code>{@link #paramOrder}</code> or <code>{@link #paramsAsHash}</code>
+     * to customize how the load method is invoked.
+     * Submit actions will always use a standard form submit. The formHandler configuration must
+     * be set on the associated server-side method which has been imported by Ext.Direct</p>
      */
 
     <div id="cfg-Ext.form.BasicForm-paramOrder"></div>/**
-     * @cfg {Array/String} paramOrder Defaults to <tt>undefined</tt>. Only used for the api load configuration.
-     * A list of params to be executed
-     * server side.  Specify the params in the order in which they must be executed on the server-side
-     * as either (1) an Array of String values, or (2) a String of params delimited by either whitespace,
-     * comma, or pipe. For example,
-     * any of the following would be acceptable:<pre><code>
+     * @cfg {Array/String} paramOrder <p>A list of params to be executed server side.
+     * Defaults to <tt>undefined</tt>. Only used for the <code>{@link #api}</code>
+     * <code>load</code> configuration.</p>
+     * <br><p>Specify the params in the order in which they must be executed on the
+     * server-side as either (1) an Array of String values, or (2) a String of params
+     * delimited by either whitespace, comma, or pipe. For example,
+     * any of the following would be acceptable:</p><pre><code>
 paramOrder: ['param1','param2','param3']
 paramOrder: 'param1 param2 param3'
 paramOrder: 'param1,param2,param3'
@@ -168,8 +178,9 @@ paramOrder: 'param1|param2|param'
     paramOrder: undefined,
 
     <div id="cfg-Ext.form.BasicForm-paramsAsHash"></div>/**
-     * @cfg {Boolean} paramsAsHash Only used for the api load configuration.
-     * Send parameters as a collection of named arguments (defaults to <tt>false</tt>). Providing a
+     * @cfg {Boolean} paramsAsHash Only used for the <code>{@link #api}</code>
+     * <code>load</code> configuration. Send parameters as a collection of named
+     * arguments (defaults to <tt>false</tt>). Providing a
      * <tt>{@link #paramOrder}</tt> nullifies this configuration.
      */
     paramsAsHash: false,
@@ -201,22 +212,22 @@ new Ext.FormPanel({
     baseParams: {
         foo: 'bar'
     },
-    url: "myProcess.php",
+    url: 'myProcess.php',
     items: [{
-        xtype: "textfield",
-        name: "userName"
+        xtype: 'textfield',
+        name: 'userName'
     }],
     buttons: [{
-        text: "Save",
+        text: 'Save',
         handler: function(){
             var O = this.ownerCt;
             if (O.getForm().isValid()) {
-                if (O.url) 
+                if (O.url)
                     O.getForm().getEl().dom.action = O.url;
                 if (O.baseParams) {
                     for (i in O.baseParams) {
                         O.add({
-                            xtype: "hidden",
+                            xtype: 'hidden',
                             name: i,
                             value: O.baseParams[i]
                         })
@@ -306,56 +317,65 @@ new Ext.FormPanel({
 
     <div id="method-Ext.form.BasicForm-doAction"></div>/**
      * Performs a predefined action ({@link Ext.form.Action.Submit} or
-     * {@link Ext.form.Action.Load}) or a custom extension of {@link Ext.form.Action} 
+     * {@link Ext.form.Action.Load}) or a custom extension of {@link Ext.form.Action}
      * to perform application-specific processing.
      * @param {String/Object} actionName The name of the predefined action type,
      * or instance of {@link Ext.form.Action} to perform.
-     * @param {Object} options (optional) The options to pass to the {@link Ext.form.Action}. 
-     * All of the config options listed below are supported by both the submit
-     * and load actions unless otherwise noted (custom actions could also accept
+     * @param {Object} options (optional) The options to pass to the {@link Ext.form.Action}.
+     * All of the config options listed below are supported by both the
+     * {@link Ext.form.Action.Submit submit} and {@link Ext.form.Action.Load load}
+     * actions unless otherwise noted (custom actions could also accept
      * other config options):<ul>
-     * <li><b>url</b> : String<p class="sub-desc">The url for the action (defaults
-     * to the form's {@link #url}.)</p></li>
-     * <li><b>method</b> : String<p class="sub-desc">The form method to use (defaults
-     * to the form's method, or POST if not defined)</p></li>
+     *
+     * <li><b>url</b> : String<div class="sub-desc">The url for the action (defaults
+     * to the form's {@link #url}.)</div></li>
+     *
+     * <li><b>method</b> : String<div class="sub-desc">The form method to use (defaults
+     * to the form's method, or POST if not defined)</div></li>
+     *
      * <li><b>params</b> : String/Object<div class="sub-desc"><p>The params to pass
      * (defaults to the form's baseParams, or none if not defined)</p>
      * <p>Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.</p></div></li>
-     * <li><b>headers</b> : Object<p class="sub-desc">Request headers to set for the action
-     * (defaults to the form's default headers)</p></li>
-     * <li><b>success</b> : Function<p class="sub-desc">The callback that will
-     * be invoked after a successful response. The function is passed the following parameters:<ul>
+     *
+     * <li><b>headers</b> : Object<div class="sub-desc">Request headers to set for the action
+     * (defaults to the form's default headers)</div></li>
+     *
+     * <li><b>success</b> : Function<div class="sub-desc">The callback that will
+     * be invoked after a successful response (see top of
+     * {@link Ext.form.Action.Submit submit} and {@link Ext.form.Action.Load load}
+     * for a description of what constitutes a successful response).
+     * The function is passed the following parameters:<ul>
      * <li><tt>form</tt> : Ext.form.BasicForm<div class="sub-desc">The form that requested the action</div></li>
      * <li><tt>action</tt> : The {@link Ext.form.Action Action} object which performed the operation.
      * <div class="sub-desc">The action object contains these properties of interest:<ul>
      * <li><tt>{@link Ext.form.Action#response response}</tt></li>
      * <li><tt>{@link Ext.form.Action#result result}</tt> : interrogate for custom postprocessing</li>
      * <li><tt>{@link Ext.form.Action#type type}</tt></li>
-     * </ul></p></li>
-     * <li><b>failure</b> : Function
-     * <div class="sub-desc">
-     * <p>The callback that will be invoked after a failed transaction attempt. The function is
-     * passed the following parameters:</p><ul>
-     * <li><tt>form</tt> : The {@link Ext.form.BasicForm} that requested the action. 
-     * <div class="sub-desc"></div></li>
+     * </ul></div></li></ul></div></li>
+     *
+     * <li><b>failure</b> : Function<div class="sub-desc">The callback that will be invoked after a
+     * failed transaction attempt. The function is passed the following parameters:<ul>
+     * <li><tt>form</tt> : The {@link Ext.form.BasicForm} that requested the action.</li>
      * <li><tt>action</tt> : The {@link Ext.form.Action Action} object which performed the operation.
      * <div class="sub-desc">The action object contains these properties of interest:<ul>
      * <li><tt>{@link Ext.form.Action#failureType failureType}</tt></li>
      * <li><tt>{@link Ext.form.Action#response response}</tt></li>
      * <li><tt>{@link Ext.form.Action#result result}</tt> : interrogate for custom postprocessing</li>
      * <li><tt>{@link Ext.form.Action#type type}</tt></li>
-     * </ul></div></li></ul>
-     * </div></li>
-     * <li><b>scope</b> : Object<p class="sub-desc">The scope in which to call the
-     * callback functions (The <tt>this</tt> reference for the callback functions).</p></li>
-     * <li><b>clientValidation</b> : Boolean<p class="sub-desc">Submit Action only.
+     * </ul></div></li></ul></div></li>
+     *
+     * <li><b>scope</b> : Object<div class="sub-desc">The scope in which to call the
+     * callback functions (The <tt>this</tt> reference for the callback functions).</div></li>
+     *
+     * <li><b>clientValidation</b> : Boolean<div class="sub-desc">Submit Action only.
      * Determines whether a Form's fields are validated in a final call to
      * {@link Ext.form.BasicForm#isValid isValid} prior to submission. Set to <tt>false</tt>
-     * to prevent this. If undefined, pre-submission field validation is performed.</p></li></ul>
+     * to prevent this. If undefined, pre-submission field validation is performed.</div></li></ul>
+     *
      * @return {BasicForm} this
      */
     doAction : function(action, options){
-        if(typeof action == 'string'){
+        if(Ext.isString(action)){
             action = new Ext.form.Action.ACTION_TYPES[action](this, options);
         }
         if(this.fireEvent('beforeaction', this, action) !== false){
@@ -377,32 +397,32 @@ myFormPanel.getForm().submit({
         newStatus: 'delivered'
     },
     success: function(form, action) {
-       Ext.Msg.alert("Success", action.result.msg);
+       Ext.Msg.alert('Success', action.result.msg);
     },
     failure: function(form, action) {
         switch (action.failureType) {
             case Ext.form.Action.CLIENT_INVALID:
-                Ext.Msg.alert("Failure", "Form fields may not be submitted with invalid values");
+                Ext.Msg.alert('Failure', 'Form fields may not be submitted with invalid values');
                 break;
             case Ext.form.Action.CONNECT_FAILURE:
-                Ext.Msg.alert("Failure", "Ajax communication failed");
+                Ext.Msg.alert('Failure', 'Ajax communication failed');
                 break;
             case Ext.form.Action.SERVER_INVALID:
-               Ext.Msg.alert("Failure", action.result.msg);
+               Ext.Msg.alert('Failure', action.result.msg);
        }
     }
 });
 </code></pre>
      * would process the following server response for a successful submission:<pre><code>
 {
-    success: true,
-    msg: 'Consignment updated'
+    "success":true, // note this is Boolean, not string
+    "msg":"Consignment updated"
 }
 </code></pre>
      * and the following server response for a failed submission:<pre><code>
 {
-    success: false,
-    msg: 'You do not have permission to perform this operation'
+    "success":false, // note this is Boolean, not string
+    "msg":"You do not have permission to perform this operation"
 }
 </code></pre>
      * @return {BasicForm} this
@@ -427,7 +447,7 @@ myFormPanel.getForm().submit({
      */
     load : function(options){
         var loadAction = String.format('{0}load', this.api ? 'direct' : '');
-        this.doAction(loadAction, options);       
+        this.doAction(loadAction, options);
         return this;
     },
 
@@ -549,16 +569,16 @@ myFormPanel.getForm().submit({
 
     <div id="method-Ext.form.BasicForm-setValues"></div>/**
      * Set values for fields in this form in bulk.
-     * @param {Array/Object} values Either an array in the form:<br><br><code><pre>
+     * @param {Array/Object} values Either an array in the form:<pre><code>
 [{id:'clientName', value:'Fred. Olsen Lines'},
  {id:'portOfLoading', value:'FXT'},
- {id:'portOfDischarge', value:'OSL'} ]</pre></code><br><br>
-     * or an object hash of the form:<br><br><code><pre>
+ {id:'portOfDischarge', value:'OSL'} ]</code></pre>
+     * or an object hash of the form:<pre><code>
 {
     clientName: 'Fred. Olsen Lines',
     portOfLoading: 'FXT',
     portOfDischarge: 'OSL'
-}</pre></code><br>
+}</code></pre>
      * @return {BasicForm} this
      */
     setValues : function(values){

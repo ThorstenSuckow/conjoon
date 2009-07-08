@@ -59,6 +59,11 @@ Ext.form.TriggerField = Ext.extend(Ext.form.TextField,  {
      * the field will only respond to a click on the trigger to set the value. (defaults to <tt>true</tt>)
      */
     editable: true,
+    <div id="cfg-Ext.form.TriggerField-wrapFocusClass"></div>/**
+     * @cfg {String} wrapFocusClass The class added to the to the wrap of the trigger element. Defaults to
+     * <tt>x-trigger-wrap-focus</tt>.
+     */
+    wrapFocusClass: 'x-trigger-wrap-focus',
     <div id="method-Ext.form.TriggerField-autoSize"></div>/**
      * @hide 
      * @method autoSize
@@ -70,6 +75,8 @@ Ext.form.TriggerField = Ext.extend(Ext.form.TextField,  {
     deferHeight : true,
     // private
     mimicing : false,
+    
+    actionMode: 'wrap',
 
     // private
     onResize : function(w, h){
@@ -144,7 +151,7 @@ Ext.form.TriggerField = Ext.extend(Ext.form.TextField,  {
     onFocus : function(){
         Ext.form.TriggerField.superclass.onFocus.call(this);
         if(!this.mimicing){
-            this.wrap.addClass('x-trigger-wrap-focus');
+            this.wrap.addClass(this.wrapFocusClass);
             this.mimicing = true;
             Ext.get(Ext.isIE ? document.body : document).on("mousedown", this.mimicBlur, this, {delay: 10});
             if(this.monitorTab){
@@ -179,11 +186,10 @@ Ext.form.TriggerField = Ext.extend(Ext.form.TextField,  {
         if(this.monitorTab && this.el){
             this.el.un("keydown", this.checkTab, this);
         }
-        this.beforeBlur();
-        if(this.wrap){
-            this.wrap.removeClass('x-trigger-wrap-focus');
-        }
         Ext.form.TriggerField.superclass.onBlur.call(this);
+        if(this.wrap){
+            this.wrap.removeClass(this.wrapFocusClass);
+        }
     },
 
     beforeBlur : Ext.emptyFn, 
@@ -212,37 +218,6 @@ Ext.form.TriggerField = Ext.extend(Ext.form.TextField,  {
         return true;
     },
 
-    // private
-    onDisable : function(){
-        Ext.form.TriggerField.superclass.onDisable.call(this);
-        if(this.wrap){
-            this.wrap.addClass(this.disabledClass);
-            this.el.removeClass(this.disabledClass);
-        }
-    },
-
-    // private
-    onEnable : function(){
-        Ext.form.TriggerField.superclass.onEnable.call(this);
-        if(this.wrap){
-            this.wrap.removeClass(this.disabledClass);
-        }
-    },
-
-    // private
-    onShow : function(){
-        if(this.wrap){
-			var s = this.wrap.dom.style;
-            s.display = '';
-            s.visibility = 'visible';
-        }
-    },
-
-    // private
-    onHide : function(){
-        this.wrap.dom.style.display = 'none';
-    },
-
     <div id="method-Ext.form.TriggerField-onTriggerClick"></div>/**
      * The function that should handle the trigger's click event.  This method does nothing by default
      * until overridden by an implementing function.  See Ext.form.ComboBox and Ext.form.DateField for
@@ -268,7 +243,8 @@ Ext.form.TriggerField = Ext.extend(Ext.form.TextField,  {
  * @extends Ext.form.TriggerField
  * TwinTriggerField is not a public class to be used directly.  It is meant as an abstract base class
  * to be extended by an implementing class.  For an example of implementing this class, see the custom
- * SearchField implementation here: http://extjs.com/deploy/ext/examples/form/custom.html
+ * SearchField implementation here:
+ * <a href="http://extjs.com/deploy/ext/examples/form/custom.html">http://extjs.com/deploy/ext/examples/form/custom.html</a>
  */
 Ext.form.TwinTriggerField = Ext.extend(Ext.form.TriggerField, {
     <div id="cfg-Ext.form.TwinTriggerField-triggerConfig"></div>/**

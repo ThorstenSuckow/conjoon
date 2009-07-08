@@ -38,13 +38,15 @@ The following types of anchor values are supported:<div class="mdetail-params"><
 <li><b>Percentage</b> : Any value between 1 and 100, expressed as a percentage.<div class="sub-desc">
 The first anchor is the percentage width that the item should take up within the container, and the
 second is the percentage height.  For example:<pre><code><i>// two values specified</i>
-anchor: <em>'100% 50%'</em> <i>// render item complete width of the container and 1/2 its height.</i>
+anchor: <em>'100% 50%'</em> <i>// render item complete width of the container and</i>
+                   <i>// 1/2 height of the container</i>
 <i>// one value specified</i>
 anchor: <em>'100%'</em>     <i>// the width value; the height will <b>default</b> to auto</i></code></pre></div></li>
 <li><b>Offsets</b> : Any positive or negative integer value.<div class="sub-desc">
 This is a raw adjustment where the first anchor is the offset from the right edge of the container,
 and the second is the offset from the bottom edge. For example:<pre><code><i>// two values specified</i>
-anchor: <em>'-50 -100'</em> <i>// render item the complete width of the container minus 50 pixels and</i>
+anchor: <em>'-50 -100'</em> <i>// render item the complete width of the container</i>
+                   <i>// minus 50 pixels and</i>
                    <i>// the complete height minus 100 pixels.</i>
 <i>// one value specified</i>
 anchor: <em>'-50'</em>      <i>// anchor value is assumed to be the right offset value</i>

@@ -103,7 +103,7 @@ Ext.util.CSS = function(){
     * @return {Object} An object (hash) of rules indexed by selector
     */
    getRules : function(refreshCache){
-   		if(rules == null || refreshCache){
+   		if(rules === null || refreshCache){
    			rules = {};
    			var ds = doc.styleSheets;
    			for(var i =0, len = ds.length; i < len; i++){

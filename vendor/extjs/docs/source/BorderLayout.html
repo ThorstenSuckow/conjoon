@@ -298,14 +298,14 @@ Ext.layout.BorderLayout.Region.prototype = {
 }</code></pre>
      * <p>May also be a string containing space-separated, numeric margin values. The order of the
      * sides associated with each value matches the way CSS processes margin values:</p>
-     * <p><ul>
+     * <p><div class="mdetail-params"><ul>
      * <li>If there is only one value, it applies to all sides.</li>
      * <li>If there are two values, the top and bottom borders are set to the first value and the
      * right and left are set to the second.</li>
      * <li>If there are three values, the top is set to the first value, the left and right are set
      * to the second, and the bottom is set to the third.</li>
      * <li>If there are four values, they apply to the top, right, bottom, and left, respectively.</li>
-     * </ul></p>
+     * </ul></div></p>
      * <p>Defaults to:</p><pre><code>
      * {top:0, right:0, bottom:0, left:0}
      * </code></pre>
@@ -699,8 +699,11 @@ Ext.layout.BorderLayout.Region.prototype = {
         Ext.getDoc().un("click", this.slideInIf, this);
     },
 
-    // these names are backwards but not changed for compat
-    // private
+    <div id="method-Ext.layout.BorderLayout.Region-slideOut"></div>/**
+     * If this Region is {@link #floatable}, this method slides this Region into full visibility <i>over the top
+     * of the center Region</i> where it floats until either {@link #slideIn} is called, or other regions of the layout
+     * are clicked, or the mouse exits the Region.
+     */
     slideOut : function(){
         if(this.isSlid || this.el.hasActiveFx()){
             return;
@@ -753,7 +756,10 @@ Ext.layout.BorderLayout.Region.prototype = {
         }
     },
 
-    // private
+    <div id="method-Ext.layout.BorderLayout.Region-slideIn"></div>/**
+     * If this Region is {@link #floatable}, and this Region has been slid into floating visibility, then this method slides
+     * this region back into its collapsed state.
+     */
     slideIn : function(cb){
         if(!this.isSlid || this.el.hasActiveFx()){
             Ext.callback(cb);

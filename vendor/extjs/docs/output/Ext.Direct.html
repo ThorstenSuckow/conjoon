@@ -1,27 +1,57 @@
-<div class="body-wrap" xmlns:ext="http://www.extjs.com"><div class="top-tools"><a class="inner-link" href="#Ext.Direct-props"><img src="resources/images/default/s.gif" class="item-icon icon-prop">Properties</a>&#13;<a class="inner-link" href="#Ext.Direct-methods"><img src="resources/images/default/s.gif" class="item-icon icon-method">Methods</a>&#13;<a class="inner-link" href="#Ext.Direct-events"><img src="resources/images/default/s.gif" class="item-icon icon-event">Events</a>&#13;<a class="inner-link" href="#Ext.Direct-configs"><img src="resources/images/default/s.gif" class="item-icon icon-config">Config Options</a>&#13;<a class="bookmark" href="../docs/?class=Ext.Direct"><img src="resources/images/default/s.gif" class="item-icon icon-fav">Direct Link</a>&#13;</div><div class="inheritance res-block"><pre class="res-block-inner"><a href="output/Ext.util.Observable.html" ext:member="" ext:cls="Ext.util.Observable">Observable</a>&#13;&nbsp;&nbsp;<img src="resources/elbow-end.gif">Direct</pre></div><h1>Class <a href="source/Direct.html#cls-Ext.Direct">Ext.Direct</a></h1><table cellspacing="0"><tr><td class="label">Package:</td><td class="hd-info">Ext</td></tr><tr><td class="label">Defined In:</td><td class="hd-info">Direct.js</td></tr><tr><td class="label">Class:</td><td class="hd-info"><a href="source/Direct.html#cls-Ext.Direct">Direct</a></td></tr><tr><td class="label">Extends:</td><td class="hd-info"><a href="output/Ext.util.Observable.html" ext:cls="Ext.util.Observable" ext:member="">Observable</a></td></tr></table><div class="description"><p>Provides a single interface to facilitate data communication between the client and server.</p>
-<p>Custom events from the server may be handled by the client by adding listeners, for example:</p>
+<div class="body-wrap" xmlns:ext="http://www.extjs.com"><div class="top-tools"><a class="inner-link" href="#Ext.Direct-props"><img src="resources/images/default/s.gif" class="item-icon icon-prop">Properties</a>&#13;<a class="inner-link" href="#Ext.Direct-methods"><img src="resources/images/default/s.gif" class="item-icon icon-method">Methods</a>&#13;<a class="inner-link" href="#Ext.Direct-events"><img src="resources/images/default/s.gif" class="item-icon icon-event">Events</a>&#13;<a class="inner-link" href="#Ext.Direct-configs"><img src="resources/images/default/s.gif" class="item-icon icon-config">Config Options</a>&#13;<a class="bookmark" href="../docs/?class=Ext.Direct"><img src="resources/images/default/s.gif" class="item-icon icon-fav">Direct Link</a>&#13;</div><div class="inheritance res-block"><pre class="res-block-inner"><a href="output/Ext.util.Observable.html" ext:member="" ext:cls="Ext.util.Observable">Observable</a>&#13;&nbsp;&nbsp;<img src="resources/elbow-end.gif">Direct</pre></div><h1>Class <a href="source/Direct.html#cls-Ext.Direct">Ext.Direct</a></h1><table cellspacing="0"><tr><td class="label">Package:</td><td class="hd-info">Ext</td></tr><tr><td class="label">Defined In:</td><td class="hd-info">Direct.js</td></tr><tr><td class="label">Class:</td><td class="hd-info"><a href="source/Direct.html#cls-Ext.Direct">Direct</a></td></tr><tr><td class="label">Extends:</td><td class="hd-info"><a href="output/Ext.util.Observable.html" ext:cls="Ext.util.Observable" ext:member="">Observable</a></td></tr></table><div class="description"><p><b><u>Overview</u></b></p>
+<p>Ext.Direct aims to streamline communication between the client and server
+by providing a single interface that reduces the amount of common code
+typically required to validate data and handle returned data packets
+(reading data, error conditions, etc).</p>
+<p>The Ext.direct namespace includes several classes for a closer integration
+with the server-side. The Ext.data namespace also includes classes for working
+with Ext.data.Stores which are backed by data from an Ext.Direct method.</p>
+<p><b><u>Specification</u></b></p>
+<p>For additional information consult the 
+<a href="http://extjs.com/products/extjs/direct.php">Ext.Direct Specification</a>.</p>
+<p><b><u>Providers</u></b></p>
+<p>Ext.Direct uses a provider architecture, where one or more providers are
+used to transport data to and from the server. There are several providers
+that exist in the core at the moment:</p><div class="mdetail-params"><ul>
+<li><a href="output/Ext.direct.JsonProvider.html" ext:cls="Ext.direct.JsonProvider">JsonProvider</a> for simple JSON operations</li>
+<li><a href="output/Ext.direct.PollingProvider.html" ext:cls="Ext.direct.PollingProvider">PollingProvider</a> for repeated requests</li>
+<li><a href="output/Ext.direct.RemotingProvider.html" ext:cls="Ext.direct.RemotingProvider">RemotingProvider</a> exposes server side
+on the client.</li>
+</ul></div>
+<p>A provider does not need to be invoked directly, providers are added via
+<a href="output/Ext.Direct.html" ext:cls="Ext.Direct">Ext.Direct</a>.<a href="output/Ext.Direct.html#Ext.Direct-add" ext:member="add" ext:cls="Ext.Direct">add</a>.</p>
+<p><b><u>Router</u></b></p>
+<p>Ext.Direct utilizes a "router" on the server to direct requests from the client
+to the appropriate server-side method. Because the Ext.Direct API is completely
+platform-agnostic, you could completely swap out a Java based server solution
+and replace it with one that uses C# without changing the client side JavaScript
+at all.</p>
+<p><b><u>Server side events</u></b></p>
+<p>Custom events from the server may be handled by the client by adding
+listeners, for example:</p>
 <pre><code>{<em>"type"</em>:<em>"event"</em>,<em>"name"</em>:<em>"message"</em>,<em>"data"</em>:<em>"Successfully polled at: 11:19:30 am"</em>}
 
 <i>// add a handler <b>for</b> a <em>'message'</em> event sent by the server </i>
 Ext.Direct.on(<em>'message'</em>, <b>function</b>(e){
-    out.append(String.format(<em>'<p><i>{0}</i></p>'</em>, e.data));
+    out.append(String.format(<em>'&lt;p>&lt;i>{0}&lt;/i>&lt;/p>'</em>, e.data));
             out.el.scrollTo(<em>'t'</em>, 100000, true);
 });</code></pre><br><br><i>This class is a singleton and cannot be created directly.</i></div><div class="hr"></div><a id="Ext.Direct-configs"></a><h2>Config Options</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Config Options</th><th class="msource-header">Defined By</th></tr><tr class="config-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-listeners"></a><b><a href="source/Observable.html#cfg-Ext.util.Observable-listeners">listeners</a></b> : Object<div class="mdesc"><div class="short">A config object containing one or more event handlers to be added to this
 object during initialization.  This should ...</div><div class="long"><p>A config object containing one or more event handlers to be added to this
 object during initialization.  This should be a valid listeners config object as specified in the
 <a href="output/Ext.util.Observable.html#Ext.util.Observable-addListener" ext:member="addListener" ext:cls="Ext.util.Observable">addListener</a> example for attaching multiple handlers at once.</p>
-<p><b>Note:</b> While <i>some</i> Observable classes export selected DOM events (eg "click", "mouseover" etc), this
+<br><p><b><u>DOM events from ExtJs <a href="output/Ext.Component.html" ext:cls="Ext.Component">Components</a></u></b></p>
+<br><p>While <i>some</i> ExtJs Component classes export selected DOM events (e.g. "click", "mouseover" etc), this
 is usually only done when extra value can be added. For example the <a href="output/Ext.DataView.html" ext:cls="Ext.DataView">DataView</a>'s
 <b><code><a href="output/Ext.DataView.html#Ext.DataView-click" ext:member="click" ext:cls="Ext.DataView">click</a></code></b> event passing the node clicked on. To access DOM
-events directly from a Component's HTMLElement listeners must be added to the element after the Component
-has been rendered. A plugin can simplify this step:<code><pre>
-<i>// Plugin is configured <b>with</b> a listeners config object.</i>
+events directly from a Component's HTMLElement, listeners must be added to the <i><a href="output/Ext.Component.html#Ext.Component-getEl" ext:member="getEl" ext:cls="Ext.Component">Element</a></i> after the Component
+has been rendered. A plugin can simplify this step:<pre><code><i>// Plugin is configured <b>with</b> a listeners config object.</i>
 <i>// The Component is appended to the argument list of all handler functions.</i>
 Ext.DomObserver = Ext.extend(Object, {
     constructor: <b>function</b>(config) {
         this.listeners = config.listeners ? config.listeners : config;
     },
 
+    <i>// Component passes itself into plugin&#39;s init method</i>
     init: <b>function</b>(c) {
         <b>var</b> p, l = this.listeners;
         <b>for</b> (p <b>in</b> l) {
@@ -31,8 +61,13 @@ Ext.DomObserver = Ext.extend(Object, {
                 l[p].fn = this.createHandler(l[p].fn, c);
             }
         }
-        c.render = c.render.createSequence(<b>function</b>() {
-            c.el.on(l);
+
+        <i>// Add the listeners to the Element immediately following the render call</i>
+        c.render = c.render.<a href="output/Function.html#Function-createSequence" ext:member="createSequence" ext:cls="Function">createSequence</a>(<b>function</b>() {
+            <b>var</b> e = c.getEl();
+            <b>if</b> (e) {
+                e.on(l);
+            }
         });
     },
 
@@ -45,7 +80,7 @@ Ext.DomObserver = Ext.extend(Object, {
 
 <b>var</b> combo = <b>new</b> Ext.form.ComboBox({
 
-<i>// Collapse combo when its element is clicked on</i>
+    <i>// Collapse combo when its element is clicked on</i>
     plugins: [ <b>new</b> Ext.DomObserver({
         click: <b>function</b>(evt, comp) {
             comp.collapse();
@@ -55,21 +90,22 @@ Ext.DomObserver = Ext.extend(Object, {
     typeAhead: true,
     mode: <em>'local'</em>,
     triggerAction: <em>'all'</em>
-});
-</pre></code></p></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#listeners" ext:member="#listeners" ext:cls="Ext.util.Observable">Observable</a></td></tr></tbody></table><a id="Ext.Direct-props"></a><h2>Public Properties</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Property</th><th class="msource-header">Defined By</th></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Direct-eventTypes"></a><b><a href="source/Direct.html#prop-Ext.Direct-eventTypes">eventTypes</a></b> : Object&#13;
-Each event type implements a getData() method. The default event types are:&#13;
-&lt;div class="mdetail-params"&gt;&lt;ul&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;event&lt;/tt&gt;&lt;/b&gt; : Ext.Direct.Event&lt;/li&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;exception&lt;/tt&gt;&lt;/b&gt; : Ext.Direct.ExceptionEvent&lt;/li&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;rpc&lt;/tt&gt;&lt;/b&gt; : Ext.Direct.RemotingEvent&lt;/li&gt;&#13;
-&lt;/ul&gt;&lt;/div&gt;<div class="mdesc"></div></td><td class="msource">Direct</td></tr><tr class="property-row  "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Direct-exceptions"></a><b><a href="source/Direct.html#prop-Ext.Direct-exceptions">exceptions</a></b> : Object&#13;
-Four types of possible exceptions which can occur:&#13;
-&lt;div class="mdetail-params"&gt;&lt;ul&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;Ext.Direct.exceptions.TRANSPORT&lt;/tt&gt;&lt;/b&gt; : 'xhr'&lt;/li&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;Ext.Direct.exceptions.PARSE&lt;/tt&gt;&lt;/b&gt; : 'parse'&lt;/li&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;Ext.Direct.exceptions.LOGIN&lt;/tt&gt;&lt;/b&gt; : 'login'&lt;/li&gt;&#13;
-&lt;li&gt;&lt;b&gt;&lt;tt&gt;Ext.Direct.exceptions.SERVER&lt;/tt&gt;&lt;/b&gt; : 'exception'&lt;/li&gt;&#13;
-&lt;/ul&gt;&lt;/div&gt;<div class="mdesc"></div></td><td class="msource">Direct</td></tr></tbody></table><a id="Ext.Direct-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-addEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-addEvents">addEvents</a></b>(&nbsp;<code>Object&nbsp;object</code>&nbsp;)
+});</code></pre></p></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#listeners" ext:member="#listeners" ext:cls="Ext.util.Observable">Observable</a></td></tr></tbody></table><a id="Ext.Direct-props"></a><h2>Public Properties</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Property</th><th class="msource-header">Defined By</th></tr><tr class="property-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Direct-eventTypes"></a><b><a href="source/Direct.html#prop-Ext.Direct-eventTypes">eventTypes</a></b> : Object<div class="mdesc"><div class="short">Each event type implements a getData() method. The default event types are:&#13;
+&lt;div class="mdetail-params"&gt;&#13;
+event : Ex...</div><div class="long">Each event type implements a getData() method. The default event types are:
+<div class="mdetail-params"><ul>
+<li><b><tt>event</tt></b> : Ext.Direct.Event</li>
+<li><b><tt>exception</tt></b> : Ext.Direct.ExceptionEvent</li>
+<li><b><tt>rpc</tt></b> : Ext.Direct.RemotingEvent</li>
+</ul></div></div></div></td><td class="msource">Direct</td></tr><tr class="property-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Direct-exceptions"></a><b><a href="source/Direct.html#prop-Ext.Direct-exceptions">exceptions</a></b> : Object<div class="mdesc"><div class="short">Four types of possible exceptions which can occur:&#13;
+&lt;div class="mdetail-params"&gt;&#13;
+Ext.Direct.exceptions.TRANSPORT : '...</div><div class="long">Four types of possible exceptions which can occur:
+<div class="mdetail-params"><ul>
+<li><b><tt>Ext.Direct.exceptions.TRANSPORT</tt></b> : 'xhr'</li>
+<li><b><tt>Ext.Direct.exceptions.PARSE</tt></b> : 'parse'</li>
+<li><b><tt>Ext.Direct.exceptions.LOGIN</tt></b> : 'login'</li>
+<li><b><tt>Ext.Direct.exceptions.SERVER</tt></b> : 'exception'</li>
+</ul></div></div></div></td><td class="msource">Direct</td></tr></tbody></table><a id="Ext.Direct-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-addEvents"></a><b><a href="source/Observable.html#method-Ext.util.Observable-addEvents">addEvents</a></b>(&nbsp;<code>Object&nbsp;object</code>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Used to define events on this Observable</div><div class="long">Used to define events on this Observable<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>object</code> : Object<div class="sub-desc">The object with the events defined</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addEvents" ext:member="#addEvents" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-addListener"></a><b><a href="source/Observable.html#method-Ext.util.Observable-addListener">addListener</a></b>(&nbsp;<code>String&nbsp;eventName</code>,&nbsp;<code>Function&nbsp;handler</code>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;options</code>]</span>&nbsp;)
     :
@@ -92,37 +128,37 @@ Using the options argument, it is possible to combine different types of listene
 <br>
 A delayed, one-time listener.
 <pre><code>myDataView.on(<em>'click'</em>, this.onClick, this, {
-        single: true,
-        delay: 100
-    });</code></pre>
+    single: true,
+    delay: 100
+});</code></pre>
 <p>
 <b>Attaching multiple handlers in 1 call</b><br>
 The method also allows for a single argument to be passed which is a config object containing properties
 which specify multiple handlers.
 <p>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : {
-            fn: this.onClick,
-            scope: this,
-            delay: 100
-        },
-        <em>'mouseover'</em> : {
-            fn: this.onMouseOver,
-            scope: this
-        },
-        <em>'mouseout'</em> : {
-            fn: this.onMouseOut,
-            scope: this
-        }
-    });</code></pre>
+    <em>'click'</em> : {
+        fn: this.onClick,
+        scope: this,
+        delay: 100
+    },
+    <em>'mouseover'</em> : {
+        fn: this.onMouseOver,
+        scope: this
+    },
+    <em>'mouseout'</em> : {
+        fn: this.onMouseOut,
+        scope: this
+    }
+});</code></pre>
 <p>
 Or a shorthand syntax:<br>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : this.onClick,
-        <em>'mouseover'</em> : this.onMouseOver,
-        <em>'mouseout'</em> : this.onMouseOut,
-         scope: this
-    });</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Direct-addProvider"></a><b><a href="source/Direct.html#method-Ext.Direct-addProvider">addProvider</a></b>(&nbsp;<code>Object/Array&nbsp;provider</code>&nbsp;)
+    <em>'click'</em> : this.onClick,
+    <em>'mouseover'</em> : this.onMouseOver,
+    <em>'mouseout'</em> : this.onMouseOut,
+     scope: this
+});</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.util.Observable.html#addListener" ext:member="#addListener" ext:cls="Ext.util.Observable">Observable</a></td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Direct-addProvider"></a><b><a href="source/Direct.html#method-Ext.Direct-addProvider">addProvider</a></b>(&nbsp;<code>Object/Array&nbsp;provider</code>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Adds an Ext.Direct Provider and creates the proxy or stub methods to execute server-side methods.&#13;
 If the provider is...</div><div class="long">Adds an Ext.Direct Provider and creates the proxy or stub methods to execute server-side methods.

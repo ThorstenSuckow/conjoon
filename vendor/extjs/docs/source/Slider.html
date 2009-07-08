@@ -71,7 +71,7 @@ Ext.Slider = Ext.extend(Ext.BoxComponent, {
 
     // private override
     initComponent : function(){
-        if(this.value === undefined){
+        if(!Ext.isDefined(this.value)){
             this.value = this.minValue;
         }
         Ext.Slider.superclass.initComponent.call(this);

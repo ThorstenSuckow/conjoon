@@ -1,29 +1,48 @@
-<div class="body-wrap" xmlns:ext="http://www.extjs.com"><div class="top-tools"><a class="inner-link" href="#Ext.util.Observable-props"><img src="resources/images/default/s.gif" class="item-icon icon-prop">Properties</a>&#13;<a class="inner-link" href="#Ext.util.Observable-methods"><img src="resources/images/default/s.gif" class="item-icon icon-method">Methods</a>&#13;<a class="inner-link" href="#Ext.util.Observable-events"><img src="resources/images/default/s.gif" class="item-icon icon-event">Events</a>&#13;<a class="inner-link" href="#Ext.util.Observable-configs"><img src="resources/images/default/s.gif" class="item-icon icon-config">Config Options</a>&#13;<a class="bookmark" href="../docs/?class=Ext.util.Observable"><img src="resources/images/default/s.gif" class="item-icon icon-fav">Direct Link</a>&#13;</div><h1>Class <a href="source/Observable-more.html#cls-Ext.util.Observable">Ext.util.Observable</a></h1><table cellspacing="0"><tr><td class="label">Package:</td><td class="hd-info">Ext.util</td></tr><tr><td class="label">Defined In:</td><td class="hd-info">Observable-more.js,&#13;Observable.js</td></tr><tr><td class="label">Class:</td><td class="hd-info"><a href="source/Observable-more.html#cls-Ext.util.Observable">Observable</a></td></tr><tr><td class="label">Subclasses:</td><td class="hd-info"><a href="output/Ext.Component.html" ext:cls="Ext.Component">Component</a>,&#13;<a href="output/Ext.Direct.html" ext:cls="Ext.Direct">Direct</a>,&#13;<a href="output/Ext.History.html" ext:cls="Ext.History">History</a>,&#13;<a href="output/Ext.ListView.ColumnResizer.html" ext:cls="Ext.ListView.ColumnResizer">ListView.ColumnResizer</a>,&#13;<a href="output/Ext.ListView.Sorter.html" ext:cls="Ext.ListView.Sorter">ListView.Sorter</a>,&#13;<a href="output/Ext.Resizable.html" ext:cls="Ext.Resizable">Resizable</a>,&#13;<a href="output/Ext.SplitBar.html" ext:cls="Ext.SplitBar">SplitBar</a>,&#13;<a href="output/Ext.Updater.html" ext:cls="Ext.Updater">Updater</a>,&#13;<a href="output/Ext.data.Connection.html" ext:cls="Ext.data.Connection">Connection</a>,&#13;<a href="output/Ext.data.DataProxy.html" ext:cls="Ext.data.DataProxy">DataProxy</a>,&#13;<a href="output/Ext.data.Node.html" ext:cls="Ext.data.Node">Node</a>,&#13;<a href="output/Ext.data.Store.html" ext:cls="Ext.data.Store">Store</a>,&#13;<a href="output/Ext.data.Tree.html" ext:cls="Ext.data.Tree">Tree</a>,&#13;<a href="output/Ext.dd.DragTracker.html" ext:cls="Ext.dd.DragTracker">DragTracker</a>,&#13;<a href="output/Ext.direct.Provider.html" ext:cls="Ext.direct.Provider">Provider</a>,&#13;<a href="output/Ext.form.BasicForm.html" ext:cls="Ext.form.BasicForm">BasicForm</a>,&#13;<a href="output/Ext.grid.AbstractSelectionModel.html" ext:cls="Ext.grid.AbstractSelectionModel">AbstractSelectionModel</a>,&#13;<a href="output/Ext.grid.ColumnModel.html" ext:cls="Ext.grid.ColumnModel">ColumnModel</a>,&#13;<a href="output/Ext.grid.GridView.html" ext:cls="Ext.grid.GridView">GridView</a>,&#13;<a href="output/Ext.grid.PropertyStore.html" ext:cls="Ext.grid.PropertyStore">PropertyStore</a>,&#13;<a href="output/Ext.tree.DefaultSelectionModel.html" ext:cls="Ext.tree.DefaultSelectionModel">DefaultSelectionModel</a>,&#13;<a href="output/Ext.tree.MultiSelectionModel.html" ext:cls="Ext.tree.MultiSelectionModel">MultiSelectionModel</a>,&#13;<a href="output/Ext.tree.TreeLoader.html" ext:cls="Ext.tree.TreeLoader">TreeLoader</a>,&#13;<a href="output/Ext.util.ClickRepeater.html" ext:cls="Ext.util.ClickRepeater">ClickRepeater</a>,&#13;<a href="output/Ext.util.MixedCollection.html" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr><td class="label">Extends:</td><td class="hd-info">Object</td></tr></table><div class="description">Abstract base class that provides a common interface for publishing events. Subclasses are expected to
-to have a property "events" with all the events defined.<br>
+<div class="body-wrap" xmlns:ext="http://www.extjs.com"><div class="top-tools"><a class="inner-link" href="#Ext.util.Observable-props"><img src="resources/images/default/s.gif" class="item-icon icon-prop">Properties</a>&#13;<a class="inner-link" href="#Ext.util.Observable-methods"><img src="resources/images/default/s.gif" class="item-icon icon-method">Methods</a>&#13;<a class="inner-link" href="#Ext.util.Observable-events"><img src="resources/images/default/s.gif" class="item-icon icon-event">Events</a>&#13;<a class="inner-link" href="#Ext.util.Observable-configs"><img src="resources/images/default/s.gif" class="item-icon icon-config">Config Options</a>&#13;<a class="bookmark" href="../docs/?class=Ext.util.Observable"><img src="resources/images/default/s.gif" class="item-icon icon-fav">Direct Link</a>&#13;</div><h1>Class <a href="source/Observable.html#cls-Ext.util.Observable">Ext.util.Observable</a></h1><table cellspacing="0"><tr><td class="label">Package:</td><td class="hd-info">Ext.util</td></tr><tr><td class="label">Defined In:</td><td class="hd-info">Observable.js,&#13;Observable-more.js</td></tr><tr><td class="label">Class:</td><td class="hd-info"><a href="source/Observable.html#cls-Ext.util.Observable">Observable</a></td></tr><tr><td class="label">Subclasses:</td><td class="hd-info"><a href="output/Ext.Component.html" ext:cls="Ext.Component">Component</a>,&#13;<a href="output/Ext.Direct.html" ext:cls="Ext.Direct">Direct</a>,&#13;<a href="output/Ext.History.html" ext:cls="Ext.History">History</a>,&#13;<a href="output/Ext.ListView.ColumnResizer.html" ext:cls="Ext.ListView.ColumnResizer">ListView.ColumnResizer</a>,&#13;<a href="output/Ext.ListView.Sorter.html" ext:cls="Ext.ListView.Sorter">ListView.Sorter</a>,&#13;<a href="output/Ext.Resizable.html" ext:cls="Ext.Resizable">Resizable</a>,&#13;<a href="output/Ext.SplitBar.html" ext:cls="Ext.SplitBar">SplitBar</a>,&#13;<a href="output/Ext.Updater.html" ext:cls="Ext.Updater">Updater</a>,&#13;<a href="output/Ext.data.Connection.html" ext:cls="Ext.data.Connection">Connection</a>,&#13;<a href="output/Ext.data.DataProxy.html" ext:cls="Ext.data.DataProxy">DataProxy</a>,&#13;<a href="output/Ext.data.Node.html" ext:cls="Ext.data.Node">Node</a>,&#13;<a href="output/Ext.data.Store.html" ext:cls="Ext.data.Store">Store</a>,&#13;<a href="output/Ext.data.Tree.html" ext:cls="Ext.data.Tree">Tree</a>,&#13;<a href="output/Ext.dd.DragTracker.html" ext:cls="Ext.dd.DragTracker">DragTracker</a>,&#13;<a href="output/Ext.direct.Provider.html" ext:cls="Ext.direct.Provider">Provider</a>,&#13;<a href="output/Ext.form.BasicForm.html" ext:cls="Ext.form.BasicForm">BasicForm</a>,&#13;<a href="output/Ext.grid.AbstractSelectionModel.html" ext:cls="Ext.grid.AbstractSelectionModel">AbstractSelectionModel</a>,&#13;<a href="output/Ext.grid.ColumnModel.html" ext:cls="Ext.grid.ColumnModel">ColumnModel</a>,&#13;<a href="output/Ext.grid.GridView.html" ext:cls="Ext.grid.GridView">GridView</a>,&#13;<a href="output/Ext.grid.PropertyStore.html" ext:cls="Ext.grid.PropertyStore">PropertyStore</a>,&#13;<a href="output/Ext.tree.DefaultSelectionModel.html" ext:cls="Ext.tree.DefaultSelectionModel">DefaultSelectionModel</a>,&#13;<a href="output/Ext.tree.MultiSelectionModel.html" ext:cls="Ext.tree.MultiSelectionModel">MultiSelectionModel</a>,&#13;<a href="output/Ext.tree.TreeLoader.html" ext:cls="Ext.tree.TreeLoader">TreeLoader</a>,&#13;<a href="output/Ext.util.ClickRepeater.html" ext:cls="Ext.util.ClickRepeater">ClickRepeater</a>,&#13;<a href="output/Ext.util.MixedCollection.html" ext:cls="Ext.util.MixedCollection">MixedCollection</a></td></tr><tr><td class="label">Extends:</td><td class="hd-info">Object</td></tr></table><div class="description">Base class that provides a common interface for publishing events. Subclasses are expected to
+to have a property "events" with all the events defined, and, optionally, a property "listeners"
+with configured listeners defined.<br>
 For example:
-<pre><code>Employee = <b>function</b>(name){
-    this.name = name;
-    this.addEvents({
-        <em>"fired"</em> : true,
-        <em>"quit"</em> : true
-    });
- }
- Ext.extend(Employee, Ext.util.Observable);</code></pre></div><div class="hr"></div><a id="Ext.util.Observable-configs"></a><h2>Config Options</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Config Options</th><th class="msource-header">Defined By</th></tr><tr class="config-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-listeners"></a><b><a href="source/Observable.html#cfg-Ext.util.Observable-listeners">listeners</a></b> : Object<div class="mdesc"><div class="short">A config object containing one or more event handlers to be added to this
+<pre><code>Employee = Ext.extend(Ext.util.Observable, {
+    constructor: <b>function</b>(config){
+        this.name = config.name;
+        this.addEvents({
+            <em>"fired"</em> : true,
+            <em>"quit"</em> : true
+        });
+
+        <i>// Copy configured listeners into *this* object so that the base class&#39;s</i>
+        <i>// constructor will add them.</i>
+        this.listeners = config.listeners;
+
+        <i>// Call our superclass constructor to complete construction process.</i>
+        Employee.superclass.constructor.call(config)
+    }
+});</code></pre>
+This could then be used like this:<pre><code><b>var</b> newEmployee = <b>new</b> Employee({
+    name: employeeName,
+    listeners: {
+        quit: <b>function</b>() {
+            <i>// By <b>default</b>, <em>"this"</em> will be the object that fired the event.</i>
+            alert(this.name + <em>" has quit!"</em>);
+        }
+    }
+});</code></pre></div><div class="hr"></div><a id="Ext.util.Observable-configs"></a><h2>Config Options</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Config Options</th><th class="msource-header">Defined By</th></tr><tr class="config-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-listeners"></a><b><a href="source/Observable.html#cfg-Ext.util.Observable-listeners">listeners</a></b> : Object<div class="mdesc"><div class="short">A config object containing one or more event handlers to be added to this
 object during initialization.  This should ...</div><div class="long"><p>A config object containing one or more event handlers to be added to this
 object during initialization.  This should be a valid listeners config object as specified in the
 <a href="output/Ext.util.Observable.html#Ext.util.Observable-addListener" ext:member="addListener" ext:cls="Ext.util.Observable">addListener</a> example for attaching multiple handlers at once.</p>
-<p><b>Note:</b> While <i>some</i> Observable classes export selected DOM events (eg "click", "mouseover" etc), this
+<br><p><b><u>DOM events from ExtJs <a href="output/Ext.Component.html" ext:cls="Ext.Component">Components</a></u></b></p>
+<br><p>While <i>some</i> ExtJs Component classes export selected DOM events (e.g. "click", "mouseover" etc), this
 is usually only done when extra value can be added. For example the <a href="output/Ext.DataView.html" ext:cls="Ext.DataView">DataView</a>'s
 <b><code><a href="output/Ext.DataView.html#Ext.DataView-click" ext:member="click" ext:cls="Ext.DataView">click</a></code></b> event passing the node clicked on. To access DOM
-events directly from a Component's HTMLElement listeners must be added to the element after the Component
-has been rendered. A plugin can simplify this step:<code><pre>
-<i>// Plugin is configured <b>with</b> a listeners config object.</i>
+events directly from a Component's HTMLElement, listeners must be added to the <i><a href="output/Ext.Component.html#Ext.Component-getEl" ext:member="getEl" ext:cls="Ext.Component">Element</a></i> after the Component
+has been rendered. A plugin can simplify this step:<pre><code><i>// Plugin is configured <b>with</b> a listeners config object.</i>
 <i>// The Component is appended to the argument list of all handler functions.</i>
 Ext.DomObserver = Ext.extend(Object, {
     constructor: <b>function</b>(config) {
         this.listeners = config.listeners ? config.listeners : config;
     },
 
+    <i>// Component passes itself into plugin&#39;s init method</i>
     init: <b>function</b>(c) {
         <b>var</b> p, l = this.listeners;
         <b>for</b> (p <b>in</b> l) {
@@ -33,8 +52,13 @@ Ext.DomObserver = Ext.extend(Object, {
                 l[p].fn = this.createHandler(l[p].fn, c);
             }
         }
-        c.render = c.render.createSequence(<b>function</b>() {
-            c.el.on(l);
+
+        <i>// Add the listeners to the Element immediately following the render call</i>
+        c.render = c.render.<a href="output/Function.html#Function-createSequence" ext:member="createSequence" ext:cls="Function">createSequence</a>(<b>function</b>() {
+            <b>var</b> e = c.getEl();
+            <b>if</b> (e) {
+                e.on(l);
+            }
         });
     },
 
@@ -47,7 +71,7 @@ Ext.DomObserver = Ext.extend(Object, {
 
 <b>var</b> combo = <b>new</b> Ext.form.ComboBox({
 
-<i>// Collapse combo when its element is clicked on</i>
+    <i>// Collapse combo when its element is clicked on</i>
     plugins: [ <b>new</b> Ext.DomObserver({
         click: <b>function</b>(evt, comp) {
             comp.collapse();
@@ -57,8 +81,7 @@ Ext.DomObserver = Ext.extend(Object, {
     typeAhead: true,
     mode: <em>'local'</em>,
     triggerAction: <em>'all'</em>
-});
-</pre></code></p></div></div></td><td class="msource">Observable</td></tr></tbody></table><a id="Ext.util.Observable-props"></a><h2>Public Properties</h2><div class="no-members">This class has no public properties.</div><a id="Ext.util.Observable-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-Observable.capture"></a><b><a href="source/Observable-more.html#method-Ext.util.Observable-Observable.capture">Observable.capture</a></b>(&nbsp;<code>Observable&nbsp;o</code>,&nbsp;<code>Function&nbsp;fn</code>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>&nbsp;)
+});</code></pre></p></div></div></td><td class="msource">Observable</td></tr></tbody></table><a id="Ext.util.Observable-props"></a><h2>Public Properties</h2><div class="no-members">This class has no public properties.</div><a id="Ext.util.Observable-methods"></a><h2>Public Methods</h2><table cellspacing="0" class="member-table"><tbody><tr><th colspan="2" class="sig-header">Method</th><th class="msource-header">Defined By</th></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-Observable.capture"></a><b><a href="source/Observable-more.html#method-Ext.util.Observable-Observable.capture">Observable.capture</a></b>(&nbsp;<code>Observable&nbsp;o</code>,&nbsp;<code>Function&nbsp;fn</code>,&nbsp;<span title="Optional" class="optional">[<code>Object&nbsp;scope</code>]</span>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">&lt;static&gt;&nbsp;Starts capture on the specified Observable. All events will be passed&#13;
 to the supplied function with the event name +...</div><div class="long">&lt;static&gt;&nbsp;Starts capture on the specified Observable. All events will be passed
@@ -98,37 +121,37 @@ Using the options argument, it is possible to combine different types of listene
 <br>
 A delayed, one-time listener.
 <pre><code>myDataView.on(<em>'click'</em>, this.onClick, this, {
-        single: true,
-        delay: 100
-    });</code></pre>
+    single: true,
+    delay: 100
+});</code></pre>
 <p>
 <b>Attaching multiple handlers in 1 call</b><br>
 The method also allows for a single argument to be passed which is a config object containing properties
 which specify multiple handlers.
 <p>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : {
-            fn: this.onClick,
-            scope: this,
-            delay: 100
-        },
-        <em>'mouseover'</em> : {
-            fn: this.onMouseOver,
-            scope: this
-        },
-        <em>'mouseout'</em> : {
-            fn: this.onMouseOut,
-            scope: this
-        }
-    });</code></pre>
+    <em>'click'</em> : {
+        fn: this.onClick,
+        scope: this,
+        delay: 100
+    },
+    <em>'mouseover'</em> : {
+        fn: this.onMouseOver,
+        scope: this
+    },
+    <em>'mouseout'</em> : {
+        fn: this.onMouseOut,
+        scope: this
+    }
+});</code></pre>
 <p>
 Or a shorthand syntax:<br>
 <pre><code>myGridPanel.on({
-        <em>'click'</em> : this.onClick,
-        <em>'mouseover'</em> : this.onMouseOver,
-        <em>'mouseout'</em> : this.onMouseOut,
-         scope: this
-    });</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">Observable</td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-enableBubble"></a><b><a href="source/Observable-more.html#method-Ext.util.Observable-enableBubble">enableBubble</a></b>(&nbsp;<code>Object&nbsp;events</code>&nbsp;)
+    <em>'click'</em> : this.onClick,
+    <em>'mouseover'</em> : this.onMouseOver,
+    <em>'mouseout'</em> : this.onMouseOut,
+     scope: this
+});</code></pre></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">Observable</td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-enableBubble"></a><b><a href="source/Observable-more.html#method-Ext.util.Observable-enableBubble">enableBubble</a></b>(&nbsp;<code>Object&nbsp;events</code>&nbsp;)
     :
                                         void<div class="mdesc"><div class="short">Used to enable bubbling of events</div><div class="long">Used to enable bubbling of events<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>events</code> : Object<div class="sub-desc"></div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource">Observable</td></tr><tr class="method-row expandable "><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.util.Observable-fireEvent"></a><b><a href="source/Observable.html#method-Ext.util.Observable-fireEvent">fireEvent</a></b>(&nbsp;<code>String&nbsp;eventName</code>,&nbsp;<code>Object...&nbsp;args</code>&nbsp;)
     :

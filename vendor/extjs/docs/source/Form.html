@@ -17,11 +17,13 @@
  * {@link Ext.layout.FormLayout} layout manager.</p>
  * 
  * <p><b><u>BasicForm</u></b></p>
- * <p>Although <b>not listed</b> as configuration options of FormPanel, the FormPanel class also accepts all
- * of the config options required to configure its internal {@link Ext.form.BasicForm} for 
- * {@link Ext.form.BasicForm#fileUpload file uploads} or providing the functionality for
- * {@link Ext.form.BasicForm#doAction loading, validating and submitting} the form.</p>
- * 
+ * <p>Although <b>not listed</b> as configuration options of FormPanel, the FormPanel class accepts all
+ * of the config options required to configure its internal {@link Ext.form.BasicForm} for:
+ * <div class="mdetail-params"><ul>
+ * <li>{@link Ext.form.BasicForm#fileUpload file uploads}</li>
+ * <li>functionality for {@link Ext.form.BasicForm#doAction loading, validating and submitting} the form</li>
+ * </ul></div>
+ *  
  * <p><b>Note</b>: If subclassing FormPanel, any configuration options for the BasicForm must be applied to
  * the <tt><b>initialConfig</b></tt> property of the FormPanel. Applying {@link Ext.form.BasicForm BasicForm}
  * configuration settings to <b><tt>this</tt></b> will <b>not</b> affect the BasicForm's configuration.</p>
@@ -78,11 +80,7 @@ Ext.FormPanel = Ext.extend(Ext.Panel, {
      * the form's {@link #monitorValid valid state monitor task} to enable/disable those Buttons depending on
      * the form's valid/invalid state.</p>
      */
-    <div id="cfg-Ext.form.FormPanel-buttonAlign"></div>/**
-     * @cfg {String} buttonAlign Valid values are <tt>'left'</tt>, <tt>'center'</tt>, and <tt>'right'</tt>
-     * (defaults to <tt>'center'</tt>).
-     */
-    buttonAlign : 'center',
+
 
     <div id="cfg-Ext.form.FormPanel-minButtonWidth"></div>/**
      * @cfg {Number} minButtonWidth Minimum width of all buttons in pixels (defaults to <tt>75</tt>).
@@ -149,8 +147,8 @@ Ext.FormPanel = Ext.extend(Ext.Panel, {
 
     // private
     createForm : function(){
-        delete this.initialConfig.listeners;
-        return new Ext.form.BasicForm(null, this.initialConfig);
+        var config = Ext.applyIf({listeners: {}}, this.initialConfig);
+        return new Ext.form.BasicForm(null, config);
     },
 
     // private
@@ -173,7 +171,8 @@ Ext.FormPanel = Ext.extend(Ext.Panel, {
                     labelWidth: c.ownerCt.labelWidth,
                     itemCls: c.ownerCt.itemCls
                 });
-                if(c.items){
+                //each check required for check/radio groups.
+                if(c.items && c.items.each){
                     c.items.each(fn, this);
                 }
             }
@@ -203,8 +202,14 @@ Ext.FormPanel = Ext.extend(Ext.Panel, {
     
     // private
     beforeDestroy : function(){
-        Ext.FormPanel.superclass.beforeDestroy.call(this);
         this.stopMonitoring();
+        Ext.FormPanel.superclass.beforeDestroy.call(this);
+        /*
+         * Clear the items here to prevent them being destroyed again.
+         * Don't move this behaviour to BasicForm because it can be used
+         * on it's own.
+         */
+        this.form.items.clear();
         Ext.destroy(this.form);
     },
 
