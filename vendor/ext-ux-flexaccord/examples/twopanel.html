@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+  <title>Ext.ux.FlexAccord - Example using two panels</title>
+<!-- base -->
+<link rel="stylesheet" type="text/css" href="./my_js/extjs/resources/css/ext-all.css" />
+<!-- ^^ EO base -->
+
+
+  <!-- Custom Styles -->
+  <style type="text/css">
+
+
+
+  </style>
+  <!-- ^^ EO Custom Styles -->
+
+<link rel="stylesheet" type="text/css" href="../src/resources/css/ext-ux-flexaccord.css" />
+
+ </head>
+
+ <body>
+<script type="text/javascript" src="./my_js/extjs/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="./my_js/extjs/ext-all-debug.js"></script>
+
+
+<script type="text/javascript" src="../src/DropTarget.js"></script>
+<script type="text/javascript" src="../src/DropPanel.js"></script>
+<script type="text/javascript" src="../src/Layout.js"></script>
+<script type="text/javascript" src="../src/SplitBar.js"></script>
+
+
+
+<script type="text/javascript">
+
+Ext.onReady(function(){
+
+    /**
+     * Build up the dd panels that get managed by the AccordionDropPanel.
+     */
+    var ddPanel1 = new Ext.Panel({
+        title     : "<b>DD Panel 1</b> (not resizable)",
+        // we will not allow this panel to be resizable.
+        resizable : false,
+        // the height of this panel will always be 150, and since
+        // resizable is set to false, it will always stay like this
+        height    : 150,
+        // yes, this panel is draggable!
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#ffc1f1;height:500px;width:500px">This panel has an init height of 150px and is NOT resizable!</div>'
+    });
+
+    var ddPanel2 = new Ext.Panel({
+        title     : "<b>DD Panel 2</b> (resizable)",
+        // yes, this panel is draggable!
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#c1c7ff;height:500px;width:500px">This panel\'s height is automatically calculated. The panel is resizable</div>'
+    });
+
+    var ddPanel3 = new Ext.Panel({
+        title     : "<b>DD Panel 3</b> (not resizable)",
+        // yes, this panel is draggable!
+        draggable : true,
+        resizable : false,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#c1ffce;height:500px;width:500px">This panel\'s height is fixed. The panel is not resizable</div>'
+    });
+
+    var ddPanel4 = new Ext.Panel({
+        title     : "<b>DD Panel 4</b> (resizable)",
+        // yes, this panel is draggable!
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#fbffc1;height:500px;width:500px">This panel\'s height is automatically calculated. The panel is resizable</div>'
+    });
+
+
+//*****************************//
+
+/**
+     * Build up the dd panels that get managed by the AccordionDropPanel.
+     */
+    var ddPanel1_2 = new Ext.Panel({
+        title     : "<b>DD Panel 1_2</b> (resizable)",
+        height    : 150,
+        // yes, this panel is draggable!
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#ffc1f1;height:500px;width:500px">This panel has an init height of 150px.</div>'
+    });
+
+    var ddPanel2_2 = new Ext.Panel({
+        title     : "<b>DD Panel 2_2</b> (resizable)",
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#c1c7ff;height:500px;width:500px">This panel\'s height is automatically calculated. The panel is resizable</div>'
+    });
+
+    var ddPanel3_2 = new Ext.Panel({
+        title     : "<b>DD Panel 3_2</b> (resizable)",
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#c1ffce;height:500px;width:500px">The panel is resizable</div>'
+    });
+
+    var ddPanel4_2 = new Ext.Panel({
+        title     : "<b>DD Panel 4_2</b> (resizable)",
+        draggable : true,
+        layout    : 'fit',
+        autoScroll : true,
+        html      : '<div style="background:#fbffc1;height:500px;width:500px">This panel\'s height is automatically calculated. The panel is resizable</div>'
+    });
+
+//*****************************//
+
+    /**
+     * We build the DropPanel here. Components within the panel get
+     * managed by the Ext.ux.layout.flexAccord.Layout. We do not need to specify the
+     * layout, since DropPanel uses the Ext.ux.layout.flexAccord.Layout by
+     * default.
+     */
+    var accordionDropPanel = new Ext.ux.layout.flexAccord.DropPanel({
+        layoutConfig : {
+            animate : true
+        },
+        border : false,
+        items : [
+            ddPanel1,
+            ddPanel2,
+            ddPanel3,
+            ddPanel4
+        ]
+    });
+
+    /**
+     * We build the DropPanel here. Components within the panel get
+     * managed by the Ext.ux.layout.flexAccord.Layout. We do not need to specify the
+     * layout, since DropPanel uses the Ext.ux.layout.flexAccord.Layout by
+     * default.
+     */
+    var accordionDropPanel_2 = new Ext.ux.layout.flexAccord.DropPanel({
+        layoutConfig : {
+            animate : true
+        },
+        border : false,
+        items : [
+            ddPanel1_2,
+            ddPanel2_2,
+            ddPanel3_2,
+            ddPanel4_2
+        ]
+    });
+
+    /**
+     * This is the dialog that renders the AccordionPanel.
+     * Pretty straight forward.
+     */
+    var dialog = new Ext.Window({
+        layout : 'fit',
+        border : false,
+        items  : accordionDropPanel,
+        height : 500,
+        width  : 300
+    });
+
+    /**
+     * This is the dialog that renders the AccordionPanel.
+     * Pretty straight forward.
+     */
+    var dialog_2 = new Ext.Window({
+        layout : 'fit',
+        x      : 100,
+        y      : 20,
+        border : false,
+        items  : accordionDropPanel_2,
+        height : 500,
+        width  : 300
+    });
+
+    dialog.show();
+
+    dialog_2.show();
+
+});
+
+
+</script>
+
+
+
+</body>
+</html>
