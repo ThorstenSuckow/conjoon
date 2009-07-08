@@ -311,7 +311,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
      */
     _getWestPanel : function()
     {
-        return new com.conjoon.dd.AccordionDropPanel({
+        return new Ext.ux.layout.flexAccord.DropPanel({
             region       : 'west',
             layoutConfig : {
                 animate : true
@@ -370,7 +370,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
         twitterPanel.on('show', this._onInfoPanelVisibilityChange, this);
         twitterPanel.on('hide', this._onInfoPanelVisibilityChange, this);
 
-        return new com.conjoon.dd.AccordionDropPanel({
+        return new Ext.ux.layout.flexAccord.DropPanel({
             layoutConfig : {
                 animate : true
             },
