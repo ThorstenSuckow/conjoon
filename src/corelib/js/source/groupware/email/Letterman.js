@@ -289,10 +289,6 @@ com.conjoon.groupware.email.Letterman = function(config) {
                 title   : com.conjoon.Gettext.ngettext("New email", "New emails", length),
                 html    : text
             }).show(document);
-
-            if (com.conjoon.groupware.SoundManager) {
-                com.conjoon.groupware.SoundManager.play('newemail');
-            }
         },
 
         /**
