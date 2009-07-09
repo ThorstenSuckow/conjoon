@@ -81,6 +81,14 @@ com.conjoon.groupware.Reception = function() {
     var _userBeforeLoadListeners = [];
 
     /**
+     * Listeners get called before the application sends a request to the
+     * server to sign the current user out
+     *
+     * @param {Object}
+     */
+    var _beforeLogoutListeners = [];
+
+    /**
      * The login window that will be shown to request user credentials
      * for logging into the application.
      *
@@ -211,6 +219,13 @@ com.conjoon.groupware.Reception = function() {
     var _logout = function(buttonType)
     {
         if (buttonType == 'yes') {
+
+            for (var i = 0, len = _beforeLogoutListeners.length; i < len; i++) {
+                var ret = _beforeLogoutListeners[i]['fn'].call(_beforeLogoutListeners[i]['scope']);
+                if (ret === false) {
+                    return;
+                }
+            }
 
             com.conjoon.SystemMessageManager.wait(
                 new com.conjoon.SystemMessage({
@@ -659,6 +674,17 @@ com.conjoon.groupware.Reception = function() {
         onUserLoad : function(fn, scope)
         {
             _userLoadListeners.push({
+                fn    : fn,
+                scope : scope || window
+            });
+        },
+
+        /**
+         *
+         */
+        onBeforeLogout : function(fn, scope)
+        {
+            _beforeLogoutListeners.push({
                 fn    : fn,
                 scope : scope || window
             });
