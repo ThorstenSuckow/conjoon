@@ -148,7 +148,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
 
 };
 
-Ext.extend(com.conjoon.groupware.email.LatestEmailsPanel, Ext.grid.GridPanel, {
+Ext.extend(com.conjoon.groupware.email.LatestEmailsPanel, Ext.ux.grid.livegrid.GridPanel, {
 
 // -------- listeners
     cellClickActive : false,
