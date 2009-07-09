@@ -38,7 +38,6 @@ body {
 
 /*.sm2player .ui,*/
 .sm2player .sm2playlist {
- xfilter:alpha(opacity=90); /* Even IE 7 (still) sucks! */
  opacity:0.9;
 }
 
@@ -85,7 +84,12 @@ body {
 
 .sm2player .left .trigger.pauseplay span {
  background:transparent url(../image/sec-left-arr1.png) 5px 6px no-repeat;
- _background-image:url(../image/sec-left-arr1.gif);
+ _background-image:url(../.sm2player .left {
+ width:15px;
+ background:transparent url(../image/skin-0-ui.png) 0px 0px no-repeat;
+ _background-image:url(../image/skin-0-ui.gif); /* IE <7 */
+}
+image/sec-left-arr1.gif);
 }
 
 .sm2player .left .trigger.pauseplay span.playing {

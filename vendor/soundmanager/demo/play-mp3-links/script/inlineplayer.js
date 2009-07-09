@@ -16,6 +16,7 @@ function InlinePlayer() {
   var self = this;
   var pl = this;
   var sm = soundManager; // soundManager instance
+  this.excludeClass = 'inline-exclude'; // CSS class for ignoring MP3 links
   this.links = [];
   this.sounds = [];
   this.soundsByURL = [];
@@ -25,7 +26,8 @@ function InlinePlayer() {
   var isIE = (navigator.userAgent.match(/msie/i));
 
   this.config = {
-    playNext: false // stop after one sound, or play through list until end
+    playNext: false, // stop after one sound, or play through list until end
+	autoPlay: false  // start playing the first sound right away
   }
 
   this.css = {
@@ -45,7 +47,7 @@ function InlinePlayer() {
   }
 
   this.classContains = function(o,cStr) {
-    return (typeof(o.className)!='undefined'?o.className.indexOf(cStr)+1:false);
+	return (typeof(o.className)!='undefined'?o.className.match(new RegExp('(\\s|^)'+cStr+'(\\s|$)')):false);
   }
 
   this.addClass = function(o,cStr) {
@@ -60,6 +62,17 @@ function InlinePlayer() {
 
   this.getSoundByURL = function(sURL) {
     return (typeof self.soundsByURL[sURL] != 'undefined'?self.soundsByURL[sURL]:null);
+  }
+
+  this.isChildOfNode = function(o,sNodeName) {
+    if (!o || !o.parentNode) {
+      return false;
+    }
+    sNodeName = sNodeName.toLowerCase();
+    do {
+      o = o.parentNode;
+    } while (o && o.parentNode && o.nodeName.toLowerCase() != sNodeName);
+    return (o.nodeName.toLowerCase() == sNodeName?o:null);
   }
 
   this.events = {
@@ -120,9 +133,17 @@ function InlinePlayer() {
 
   this.handleClick = function(e) {
     // a sound link was clicked
+    if (typeof e.button != 'undefined' && e.button>1) {
+	  // ignore right-click
+	  return true;
+    }
     var o = self.getTheDamnLink(e);
+    if (o.nodeName.toLowerCase() != 'a') {
+      o = self.isChildOfNode(o,'a');
+      if (!o) return true;
+    }
     var sURL = o.getAttribute('href');
-    if (!o.href || !o.href.match(/.mp3$/i)) {
+    if (!o.href || !o.href.match(/\.mp3(\\?.*)$/i) || self.classContains(o,self.excludeClass)) {
       if (isIE && o.onclick) {
         return false; // IE will run this handler before .onclick(), everyone else is cool?
       }
@@ -145,7 +166,7 @@ function InlinePlayer() {
     } else {
       // create sound
       thisSound = sm.createSound({
-       id:'mp3Sound'+(self.soundCount++),
+       id:'inlineMP3Sound'+(self.soundCount++),
        url:soundURL,
        onplay:self.events.play,
        onstop:self.events.stop,
@@ -186,7 +207,7 @@ function InlinePlayer() {
     // grab all links, look for .mp3
     var foundItems = 0;
     for (var i=0; i<oLinks.length; i++) {
-      if (oLinks[i].href.match(/.mp3$/i)) {
+      if (oLinks[i].href.match(/\.mp3/i) && !self.classContains(oLinks[i],self.excludeClass)) {
         self.addClass(oLinks[i],self.css.sDefault); // add default CSS decoration
         self.links[foundItems] = (oLinks[i]);
         self.indexByURL[oLinks[i].href] = foundItems; // hack for indexing
@@ -195,6 +216,9 @@ function InlinePlayer() {
     }
     if (foundItems>0) {
       self.addEventHandler(document,'click',self.handleClick);
+	  if (self.config.autoPlay) {
+	    self.handleClick({target:self.links[0],preventDefault:function(){}});
+	  }
     }
     sm._writeDebug('inlinePlayer.init(): Found '+foundItems+' relevant items.');
   }
@@ -207,7 +231,7 @@ var inlinePlayer = null;
 
 soundManager.debugMode = true; // disable or enable debug output
 
-soundManager.url = '../../soundmanager2.swf'; // path to movie
+soundManager.url = '../../swf/'; // path to directory containing SM2 SWF
 
 soundManager.onload = function() {
   // soundManager.createSound() etc. may now be called

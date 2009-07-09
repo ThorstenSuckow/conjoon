@@ -23,7 +23,6 @@
 body {
  font:75% normal verdana,arial,tahoma,"sans serif";
 }
-
 </style>
 <link rel="stylesheet" type="text/css" href="css/page-player.css" />
 <script type="text/javascript" src="../../script/soundmanager2.js"></script>
@@ -42,7 +41,7 @@ function setTheme(sTheme) {
 
 <div>
 
- <h1>Basic Template: Page as a playlist</h1>
+ <h1>Basic Template: Page as a playlist (Flash 8 version)</h1>
 
  <ul class="playlist">
 
@@ -51,10 +50,11 @@ function setTheme(sTheme) {
   <li><a href="../jsAMP-preview/audio/office_lobby.mp3">Office Lobby</a></li>
   <li><a href="../jsAMP-preview/audio/walking.mp3">Walking</a></li>
   <li><a href="http://freshly-ground.com/data/audio/mpc/20060812%20-%20Groove.mp3" title="Dr. John Groove">Schill - Dr. John Groove</a></li>
-  <!-- files from the web (note that ID3 information will *not* load from remote domains without permission, Flash restriction) -->
+  <!-- files from the web (note that ID3 and waveformData information will *not* load from remote domains without permission, due to Flash security restrictions) -->
   <li><a href="http://www.freshly-ground.com/misc/music/carl-3-barlp.mp3">Barrlping with Carl (featureblend.com)</a></li>
   <li><a href="http://www.freshly-ground.com/data/audio/binaural/Mak.mp3">Angry cow sound?</a></li>
   <li><a href="http://www.freshly-ground.com/data/audio/binaural/Things that open, close and roll.mp3">Things that open, close and roll</a></li>
+  <li><a href="http://www.freshly-ground.com/data/audio/binaural/A%20Trip%20to%20the%20Basement%20Garage.mp3">A Trip To The Basement Garage</a></li>
 
  </ul>
  
@@ -70,15 +70,25 @@ function setTheme(sTheme) {
    <div id="sm2_timing" class="timing-data">
     <span class="sm2_position">%s1</span> / <span class="sm2_total">%s2</span></div>
   </div>
+  <div class="peak">
+   <div class="peak-box"><span class="l"></span><span class="r"></span>
+   </div>
+  </div>
  </div>
- 
+
+ <div id="spectrum-container" class="spectrum-container">
+  <div class="spectrum-box">
+   <div class="spectrum"></div>
+  </div>
+ </div> 
+
  <p>For alternate themes, add the class to the playlist UL - eg. <a href="#" onclick="return setTheme('dark')">&lt;ul class="playlist dark"&gt;</a> or <a href="#" onclick="return setTheme('bubblegum')">&lt;ul class="playlist bubblegum"&gt;</a>; the base default is <a href="#" onclick="return setTheme()">&lt;ul class="playlist"&gt;</a>.</p>
  
  <p>A reminder that if loading from the local filesystem, Flash will deny access to remote (network/internet) URLs by default unless whitelisted via the <a href="http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html">Flash Player Global Security Settings Page</a>. Some URLs in this example are remote to demonstrate this.</p>
 
- <p><a href="http://schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project home</a></p>
+ <p>Note that by default, the Flash 8 version is used and therefore Flash 9-only features such as the VU meter, waveform etc. are not available. Refer to the main "page player" demo for configuration examples, or view the source of page-player.js for the configuration object (similar to that used in SoundManager 2 itself.)</p>
 
-</div>
+ <p><a href="http://schillmania.com/projects/soundmanager2/" title="Javascript MP3 sound player API">SoundManager 2 project</a></p>
 
 </body>
 </html>

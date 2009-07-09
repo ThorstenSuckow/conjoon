@@ -10,6 +10,8 @@ var B_VMAX = 5;
 var B_WIDTH = 13;
 var B_HEIGHT = 13;
 var useMouse = null;
+var ballSound = null;
+var ballPopSound = null;
 
 function rnd(n) {
   return Math.random()*n;
@@ -49,7 +51,6 @@ function initBall(oBall,i) {
   oBall._vX = B_VMIN+rnd(B_VMAX)*(Math.random()>0.5?1:-1);
   oBall._vY = B_VMIN+rnd(B_VMAX);
   oBall.style.display = 'block';
-  soundManager.createSound({id:oBall._id,url:'audio/bonk.mp3'});
 }
 
 function moveBall(oBall) {
@@ -70,14 +71,16 @@ function moveBall(oBall) {
     } else {
       oBall._vX = 0;
     }
-    if (Math.abs(oBall._vY)<=1.5 && Math.abs(oBall._vX==0)) {
+    if (Math.abs(oBall._vY)<=3 && Math.abs(oBall._vX==0)) {
       oBall._active = false;
+	  bounce = false;
+	  ballPopSound.play();
       oBall.style.display = 'none';
     }
   }
   oBall.style.left = oBall._x+'px';
   oBall.style.top = oBall._y+'px';
-  if (bounce) soundManager.play(oBall._id,{pan:getPan(oBall._x,canvasX)});
+  if (bounce) ballSound.play({pan:getPan(oBall._x,canvasX)});
 }
 
 function getPan(x,canvasX) {
@@ -101,12 +104,16 @@ function animateStuff() {
 
 function startAnimation() {
   if (!timer) timer = setInterval(animateStuff,20);
+  document.getElementById('b-start').disabled = true;
+  document.getElementById('b-stop').disabled = false;
 }
 
 function stopAnimation() {
   if (!timer) return false;
   clearInterval(timer);
   timer = null;
+  document.getElementById('b-start').disabled = false;
+  document.getElementById('b-stop').disabled = true;
 }
 
 function mouseDown(e) {
@@ -115,6 +122,7 @@ function mouseDown(e) {
   m_lastY = e.clientY;
   document.onmousemove = mouseMove;
   document.onmouseup = mouseUp;
+  return false;
 }
 
 function mouseMove(e) {
@@ -133,6 +141,20 @@ function mouseUp() {
 }
 
 function init() {
+  ballSound = soundManager.createSound({
+   id: 'ballSound',
+   url: 'audio/fingerplop.mp3',
+   volume: 50,
+   multiShot: true,
+   autoLoad: true
+  });
+  ballPopSound = soundManager.createSound({
+   id: 'ballPopSound',
+   url: 'audio/fingerplop2.mp3',
+   volume: 50,
+   multiShot: true,
+   autoLoad: true
+  });
   balls = document.getElementById('ball-container').getElementsByTagName('img');
   for (var i=balls.length; i--;) {
     initBall(balls[i],i);
@@ -155,9 +177,11 @@ getWindowCoords = (navigator.userAgent.toLowerCase().indexOf('opera')>0||navigat
 
 window.onresize = getWindowCoords;
 
-soundManager.url = '../../soundmanager2.swf';
+soundManager.flashVersion = 9;
+soundManager.url = '../../swf/';
+soundManager.useHighPerformance = true;
 soundManager.debugMode = false; // disable debug mode
-soundManager.defaultOptions.multiShot = false;
+soundManager.defaultOptions.multiShot = true;
 
 soundManager.onload = function() {
   // soundManager is ready to use (create sounds and so on)

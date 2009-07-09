@@ -7,7 +7,9 @@
    Code licensed under the BSD License:
    http://www.schillmania.com/projects/soundmanager2/license.txt
 
-   V2.5b.20080525
+   V2.94a.20090206
+
+   Flash 8 / ActionScript 2 version
 
    Compiling AS to Flash 8 SWF using MTASC (free compiler - http://www.mtasc.org/):
    mtasc -swf soundmanager2.swf -main -header 16:16:30 SoundManager2.as -version 8
@@ -29,6 +31,11 @@ class SoundManager2 {
   static var app : SoundManager2;
 
   function SoundManager2() {
+	
+  // Cross-domain security exception shiz
+  // HTML on foo.com loading .swf hosted on bar.com? Define your "HTML domain" here to allow JS+Flash communication to work.
+  // See http://livedocs.adobe.com/flash/8/main/wwhelp/wwhimpl/common/html/wwhelp.htm?context=LiveDocs_Parts&file=00002647.html
+  // System.security.allowDomain("foo.com");
 
   // externalInterface references (for Javascript callbacks)
   var baseJSController = "soundManager";
@@ -38,7 +45,7 @@ class SoundManager2 {
   var sounds = [];            // indexed string array
   var soundObjects = [];      // associative Sound() object array
   var timer = null;
-  var timerInterval = 50;
+  var timerInterval = 20;
   var pollingEnabled = false; // polling (timer) flag - disabled by default, enabled by JS->Flash call
   var debugEnabled = true;    // Flash debug output enabled by default, disabled by JS call
 
@@ -49,10 +56,10 @@ class SoundManager2 {
 
   var _externalInterfaceTest = function(isFirstCall) {
     if (isFirstCall) {
-      writeDebug('_externalInterfaceTest(): JS &lt;-&gt; Flash OK');
+      writeDebug('Flash to JS OK');
       ExternalInterface.call(baseJSController+"._externalInterfaceOK");
     } else {
-      writeDebug('Flash -&gt; JS OK');
+      writeDebug('_externalInterfaceTest(): JS to/from Flash OK');
       var sandboxType = System.security['sandboxType'];
       ExternalInterface.call(baseJSController+"._setSandboxType",sandboxType);
     }
@@ -98,7 +105,7 @@ class SoundManager2 {
     checkProgress(); // ensure progress stats are up-to-date
     // force duration update (doesn't seem to be always accurate)
     ExternalInterface.call(baseJSObject+"['"+this.sID+"']._whileloading",this.getBytesLoaded(),this.getBytesTotal(),this.duration);
-    ExternalInterface.call(baseJSObject+"['"+this.sID+"']._onload",bSuccess?1:0);
+    ExternalInterface.call(baseJSObject+"['"+this.sID+"']._onload",this.duration>0?1:0); // bSuccess doesn't always seem to work, so check MP3 duration instead.
   }
 
   var onID3 = function() {
@@ -124,6 +131,7 @@ class SoundManager2 {
 
   var registerOnComplete = function(sID) {
     soundObjects[sID].onSoundComplete = function() {
+      checkProgress();
       this.didJustBeforeFinish = false; // reset
       ExternalInterface.call(baseJSObject+"['"+sID+"']._onfinish");
     }
@@ -149,11 +157,11 @@ class SoundManager2 {
     s.didJustBeforeFinish = false;
     if (bAutoPlay != true) {
       s.stop(); // prevent default auto-play behaviour
-      // writeDebug('auto-play stopped');
     } else {
       // writeDebug('auto-play allowed');
     }
     registerOnComplete(sID);
+
   }
 
   var _unload = function(sID,sURL) {
@@ -183,6 +191,20 @@ class SoundManager2 {
       nLoops: 1
     };
     sounds.push(sID);
+  }
+
+  var _destroySound = function(sID) {
+    // for the power of garbage collection! .. er, Greyskull!
+    var s = (soundObjects[sID]||null);
+    if (!s) return false;
+    for (var i=0; i<sounds.length; i++) {
+      if (sounds[i] == s) {
+	    sounds.splice(i,1);
+        continue;
+      }
+    }
+    s = null;
+    delete soundObjects[sID];
   }
 
   var _stop = function(sID,bStopAll) {
@@ -243,10 +265,7 @@ class SoundManager2 {
 
   // XML handler stuff
 
-  var oXML = new XML();
-  oXML.ignoreWhite = true;
-
-  var parseXML = function() {
+  var parseXML = function(oXML) {
     // trace("Parsing XML");
     var xmlRoot = oXML.firstChild;
     var xmlAttr = xmlRoot.attributes;
@@ -262,15 +281,13 @@ class SoundManager2 {
     }
   }
 
-  oXML.onLoad = function(ok) {
+  var xmlOnloadHandler = function(ok) {
     if (ok) {
       // trace("XML loaded.");
-      // ExternalInterface.call(baseJSController+"._writeDebug","[Flash]: XML loaded.");
-          writeDebug("XML Loaded");
-      parseXML();
+      writeDebug("XML loaded");
+      parseXML(this);
     } else {
       // trace("XML load failed.");
-      // ExternalInterface.call(baseJSController+"._writeDebug","[Flash]: XML load failed.");
       writeDebug('XML load failed');
     }
   }
@@ -281,6 +298,9 @@ class SoundManager2 {
     writeDebug("_loadFromXML("+sXmlUrl+")");
     // ExternalInterface.call(baseJSController+"._writeDebug","_loadFromXML("+sXmlUrl+")");
     // var oXmlHandler = new XMLHandler(sXmlUrl);
+    var oXML = new XML();
+    oXML.ignoreWhite = true;
+    oXML.onLoad = xmlOnloadHandler;
     writeDebug("Attempting to load XML: "+sXmlUrl);
     oXML.load(sXmlUrl);
   }
@@ -307,6 +327,7 @@ class SoundManager2 {
     ExternalInterface.addCallback('_disableDebug', this, _disableDebug);
     ExternalInterface.addCallback('_loadFromXML', null, _loadFromXML);
     ExternalInterface.addCallback('_createSound', this, _createSound);
+    ExternalInterface.addCallback('_destroySound', this, _destroySound);
     // try to talk to JS, do init etc.
     _externalInterfaceTest(true);
 

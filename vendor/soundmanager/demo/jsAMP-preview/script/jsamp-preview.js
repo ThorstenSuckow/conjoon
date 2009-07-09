@@ -1502,7 +1502,6 @@ function SoundPlayer() {
         self.oSMPlayer.update();
       }
     }
-    // soundManager._writeDebug(Math.abs(this.position-self.oSMPlayer.lastTime));
     if (Math.abs(this.position-self.oSMPlayer.lastTime)>1000) self.oSMPlayer.updateTime(this.position);
   }
 
