@@ -35,6 +35,15 @@ Ext.namespace('Ext.ux.grid.livegrid');
  */
 Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
 
+    initComponent : function()
+    {
+        Ext.apply(this,{
+            cls : 'ext-ux-livegrid'
+        });
+
+        Ext.ux.grid.livegrid.GridPanel.superclass.initComponent.call(this);
+    },
+
     /**
      * Overriden to make sure the attached store loads only when the
      * grid has been fully rendered if, and only if the store's
@@ -202,7 +211,7 @@ Ext.ux.grid.livegrid.GridView = function(config) {
      * data possible.
      */
     this.templates.master = new Ext.Template(
-        '<div class="x-grid3" hidefocus="true"><div class="ext-ux-livegrid-liveScroller"><div></div></div>',
+        '<div class="x-grid3" hidefocus="true"><div class="liveScroller"><div></div></div>',
             '<div class="x-grid3-viewport"">',
                 '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset" style="{ostyle}">{header}</div></div><div class="x-clear"></div></div>',
                 '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body" style="{bstyle}">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
@@ -224,13 +233,6 @@ Ext.ux.grid.livegrid.GridView = function(config) {
 Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
 // {{{ --------------------------properties-------------------------------------
-
-    /**
-     * Used to store the z-index of the mask that is used to show while buffering,
-     * so the scrollbar can be displayed above of it.
-     * @type {Number} _maskIndex
-     */
-    _maskIndex : 20001,
 
     /**
      * Stores the height of the header. Needed for recalculating scroller inset height.
@@ -335,6 +337,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * @param {Boolean}
      */
     isPrebuffering : false,
+
+    /**
+     * The dom node for which the node mask will be rendered.
+     * @type {Ext.Element}
+     * @private
+     */
+    _loadMaskAnchor : null,
+
 // }}}
 
 // {{{ --------------------------public API methods-----------------------------
@@ -419,10 +429,18 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         }
 
         if (this.loadMask) {
-            this.loadMask = new Ext.LoadMask(
-                this.mainBody.dom.parentNode.parentNode,
-                this.loadMask
+            this._loadMaskAnchor = Ext.get(this.mainBody.dom.parentNode.parentNode);
+            Ext.apply(this.loadMask,{
+                msgCls : 'x-mask-loading'
+            });
+            this._loadMaskAnchor.mask(
+                this.loadMask.msg, this.loadMask.msgCls
             );
+            var dom  = this._loadMaskAnchor.dom;
+            var data = Ext.Element.data;
+            data(dom, 'mask').addClass('ext-ux-livegrid');
+            data(dom, 'mask').setDisplayed(false);
+            data(dom, 'maskMsg').setDisplayed(false);
         }
     },
 
@@ -555,7 +573,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         // set vw to 19 to take scrollbar width into account!
         var vw = csize.width;
 
-        if(vw < 20 || csize.height < 20){ // display: none?
+        if(!g.hideHeaders && vw < 20 || csize.height < 20){ // display: none?
             return;
         }
 
@@ -640,6 +658,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         this.updateHeaders();
         this.updateHeaderSortState();
         this.afterMove(newIndex);
+        this.grid.fireEvent('columnmove', oldIndex, newIndex);
     },
 
 
@@ -932,6 +951,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      */
     onBeforeLoad : function(store, options)
     {
+        var proxy = store.proxy;
+        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+        }
+
+        this.isBuffering    = false;
+        this.isPreBuffering = false;
+
         options.params = options.params || {};
 
         var apply = Ext.apply;
@@ -940,7 +967,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             scope    : this,
             callback : function(){
                 this.reset(false);
-            }
+            },
+            suspendLoadEvent : false
         });
 
         apply(options.params, {
@@ -1006,15 +1034,21 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                 options
             );
 
-            this.isBuffering    = false;
-            this.isPrebuffering = false;
-            this.showLoadMask(false);
-
             // this is needed since references to records which have been unloaded
             // get lost when the store gets loaded with new data.
             // from the store
             this.grid.selModel.replaceSelections(records);
 
+            this.isBuffering    = false;
+            this.isPrebuffering = false;
+            this.showLoadMask(false);
+
+            if (this.requestQueue >= 0) {
+                var offset = this.requestQueue;
+                this.requestQueue = -1;
+                this.updateLiveRows(offset);
+                return;
+            }
 
             if (this.isInRange(this.rowIndex)) {
                 this.replaceLiveRows(this.rowIndex, options.forceRepaint);
@@ -1022,11 +1056,6 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                 this.updateLiveRows(this.rowIndex);
             }
 
-            if (this.requestQueue >= 0) {
-                var offset = this.requestQueue;
-                this.requestQueue = -1;
-                this.updateLiveRows(offset);
-            }
 
             return;
         } else {
@@ -1119,44 +1148,37 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     // private
     processRows : function(startRow, skipStripe, paintSelections)
     {
-        skipStripe = skipStripe || !this.grid.stripeRows;
-        // we will always process all rows in the view
-        startRow = 0;
-        var rows = this.getRows();
-        var cls = ' x-grid3-row-alt ';
-        var cursor = this.rowIndex;
+        if(!this.ds || this.ds.getCount() < 1){
+            return;
+        }
 
-        var index      = 0;
-        var selections = this.grid.selModel.selections;
-        var ds         = this.ds;
-        var row        = null;
-        for(var i = startRow, len = rows.length; i < len; i++){
-            index = i+cursor;
-            row   = rows[i];
-            // changed!
-            row.rowIndex = index;
+        var cursor = this.rowIndex;
+        skipStripe   = skipStripe || !this.grid.stripeRows;
+        var rows     = this.getRows();
+        var index    = 0;
+
+        Ext.each(rows, function(row, idx) {
+            row.rowIndex = index = cursor+idx;
+            row.className = row.className.replace(this.rowClsRe, ' ');
+            if (!skipStripe && (index + 1) % 2 === 0) {
+                row.className += ' x-grid3-row-alt';
+            }
 
             if (paintSelections !== false) {
                 if (this.grid.selModel.isSelected(this.ds.getAt(index)) === true) {
-                    this.addRowClass(index, "x-grid3-row-selected");
+                    this.addRowClass(index, this.selectedRowClass);
                 } else {
-                    this.removeRowClass(index, "x-grid3-row-selected");
+                    this.removeRowClass(index, this.selectedRowClass);
                 }
                 this.fly(row).removeClass("x-grid3-row-over");
             }
+        }, this);
 
-            if(!skipStripe){
-                var isAlt = ((index+1) % 2 == 0);
-                var hasAlt = (' '+row.className + ' ').indexOf(cls) != -1;
-                if(isAlt == hasAlt){
-                    continue;
-                }
-                if(isAlt){
-                    row.className += " x-grid3-row-alt";
-                }else{
-                    row.className = row.className.replace("x-grid3-row-alt", "");
-                }
-            }
+        // add first/last-row classes
+        if(cursor === 0){
+            Ext.fly(rows[0]).addClass(this.firstRowCls);
+        } else if (cursor + rows.length == this.ds.totalLength) {
+            Ext.fly(rows[rows.length - 1]).addClass(this.lastRowCls);
         }
     },
 
@@ -1550,12 +1572,23 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
+        var dom  = this._loadMaskAnchor.dom;
+        var data = Ext.Element.data;
+
+        var mask    = data(dom, 'mask');
+        var maskMsg = data(dom, 'maskMsg');
+
         if (show) {
-            this.loadMask.show();
-            this.liveScroller.setStyle('zIndex', this._maskIndex);
+            mask.setDisplayed(true);
+            maskMsg.setDisplayed(true);
+            maskMsg.center(this._loadMaskAnchor);
+            // this lines will help IE8 to re-calculate the height of the loadmask
+            if(Ext.isIE && !(Ext.isIE7 && Ext.isStrict) && this._loadMaskAnchor.getStyle('height') == 'auto'){
+	            mask.setSize(undefined, this._loadMaskAnchor.getHeight());
+	        }
         } else {
-            this.loadMask.hide();
-            this.liveScroller.setStyle('zIndex', 1);
+            mask.setDisplayed(false);
+            maskMsg.setDisplayed(false);
         }
     },
 
@@ -3460,6 +3493,15 @@ Ext.ux.grid.livegrid.EditorGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
     onRender : function(ct, position)
     {
         return Ext.ux.grid.livegrid.GridPanel.prototype.onRender.call(this, ct, position);
+    },
+
+    initComponent : function()
+    {
+        Ext.apply(this,{
+            cls : 'ext-ux-livegrid'
+        });
+
+        return Ext.ux.grid.livegrid.EditorGridPanel.superclass.initComponent.call(this);
     }
 
 });

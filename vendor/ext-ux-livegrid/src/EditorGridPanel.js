@@ -81,6 +81,15 @@ Ext.ux.grid.livegrid.EditorGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
     onRender : function(ct, position)
     {
         return Ext.ux.grid.livegrid.GridPanel.prototype.onRender.call(this, ct, position);
+    },
+
+    initComponent : function()
+    {
+        Ext.apply(this,{
+            cls : 'ext-ux-livegrid'
+        });
+
+        return Ext.ux.grid.livegrid.EditorGridPanel.superclass.initComponent.call(this);
     }
 
 });

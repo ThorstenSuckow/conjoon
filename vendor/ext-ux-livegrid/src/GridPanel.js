@@ -35,6 +35,15 @@ Ext.namespace('Ext.ux.grid.livegrid');
  */
 Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
 
+    initComponent : function()
+    {
+        Ext.apply(this,{
+            cls : 'ext-ux-livegrid'
+        });
+
+        Ext.ux.grid.livegrid.GridPanel.superclass.initComponent.call(this);
+    },
+
     /**
      * Overriden to make sure the attached store loads only when the
      * grid has been fully rendered if, and only if the store's

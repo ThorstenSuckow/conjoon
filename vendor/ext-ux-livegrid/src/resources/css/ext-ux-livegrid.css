@@ -2,7 +2,11 @@
     background-image:url(../images/loading.gif) !important;
 }
 
-.ext-ux-livegrid-liveScroller {
+.ext-ux-livegrid.ext-el-mask {
+    z-index:0;
+}
+
+.ext-ux-livegrid .liveScroller {
     z-index:1;
     background:none!important;
     position:absolute;
@@ -13,7 +17,7 @@
     overflow-x:hidden;
 }
 
-.ext-ux-livegrid-liveScroller div {
+.ext-ux-livegrid .liveScroller div {
     background:none;
     width:1px;
     overflow:hidden;
