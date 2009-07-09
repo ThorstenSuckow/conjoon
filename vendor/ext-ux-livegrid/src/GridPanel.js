@@ -37,9 +37,11 @@ Ext.ux.grid.livegrid.GridPanel = Ext.extend(Ext.grid.GridPanel, {
 
     initComponent : function()
     {
-        Ext.apply(this,{
-            cls : 'ext-ux-livegrid'
-        });
+        if (this.cls) {
+            this.cls += ' ext-ux-livegrid';
+        } else {
+            this.cls = 'ext-ux-livegrid';
+        }
 
         Ext.ux.grid.livegrid.GridPanel.superclass.initComponent.call(this);
     },
