@@ -33,7 +33,13 @@ com.conjoon.service.twitter.data.TweetPoller = function(config){
          * @event updateempty
          * @param {com.conjoon.service.twitter.data.TweetPoller} tweetPoller
          */
-        'updateempty'
+        'updateempty',
+        /**
+         * @event updateavailable
+         * @param {com.conjoon.service.twitter.data.TweetPoller} tweetPoller
+         * @param {Array} records
+         */
+        'updateavailable'
     )
 
     com.conjoon.service.twitter.data.TweetPoller.superclass.constructor.call(this, Ext.apply(config, {
@@ -180,17 +186,22 @@ Ext.extend(com.conjoon.service.twitter.data.TweetPoller, Ext.data.Store, {
         var rec      = null;
 
         var updated = false;
-
+        var added   = [];
+        var cp      = null;
         for (var i = 0, len = records.length; i < len; i++) {
             rec = records[i];
             if (!updStore.getById(rec.id)) {
-                updStore.addSorted(rec.copy());
+                cp = rec.copy();
+                updStore.addSorted(cp);
+                added.push(cp);
                 updated = true;
             }
         }
 
         if (!updated) {
             this.fireEvent('updateempty', this);
+        } else {
+            this.fireEvent('updateavailable', this, added);
         }
 
         this.removeAll();

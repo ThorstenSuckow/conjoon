@@ -192,6 +192,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         com.conjoon.service.twitter.TwitterPanel.superclass.initEvents.call(this);
 
+        this.tweetPoller.on('updateavailable', this._onTweetPollerUpdateAvailable, this);
+
         this.friendsList.on('show', this._onFriendsListShow, this);
 
         this.inputBox.on('render', this.showInputBox.createDelegate(this, [false]), this);
@@ -222,6 +224,19 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     },
 
 // -------- listeners
+
+    /**
+     * Gets fired when new tweets available from the tweet poller.
+     *
+     * @param {com.conjoon.service.twitter.data.TweetPoller} tweetPoller
+     * @param {Array} records
+     */
+    _onTweetPollerUpdateAvailable : function(tweetPoller, records)
+    {
+        Ext.ux.util.MessageBus.publish('com.conjoon.service.twitter.newTweets', {
+            tweets : records
+        });
+    },
 
     /**
      * Listener for the beforeload event of the recent tweet's store.
