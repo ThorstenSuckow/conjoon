@@ -58,13 +58,19 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
         if (!records || (records && !records.length)) {
             return;
         }
-
+        var added = [];
+        var cp    = null;
         for (var i = 0, len = records.length; i < len; i++) {
-            feedStore.addSorted(records[i].copy());
+            cp = records[i].copy();
+            feedStore.addSorted(cp);
+            added.push(cp);
         }
 
         store.removeAll();
         if (len > 0) {
+            Ext.ux.util.MessageBus.publish('com.conjoon.groupware.feeds.FeedRunner.newFeeds', {
+                feeds : added
+            });
             notifyUser(len);
         }
     };
