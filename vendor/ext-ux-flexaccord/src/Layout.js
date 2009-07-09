@@ -175,7 +175,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
                 }
             , c.dd);
         }
-
+c.hideMode = 'offsets';
         if (!this._orgHeights) {
             this._orgHeights = {};
         }
@@ -339,7 +339,10 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
 
         }
 
-        this.rendered = true;
+        if (!this.rendered) {
+            this.rendered = true;
+            this.onResize();
+        }
     },
 
     /**
@@ -386,16 +389,18 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
                 continue;
             }
 
-            if (!firstSpillItem && this._isResizable(item, true)) {
+            if (item.height <= this.getHeaderHeight(item, true)+3) {
+                this.collapse(item, true);
+                item.height = this.getHeaderHeight(item);
+            } else if (item.collapsed) {
+                this.expand(item);
+                item.height = Math.max(item.height, this.getHeaderHeight(item, true));
+            }
+
+            if (!firstSpillItem && this._isResizable(item)) {
                 if (exclude.indexOf(item) == -1) {
                     firstSpillItem = item;
                 }
-            }
-
-            if (item.height <= this.getHeaderHeight(item)+3) {
-                this.collapse(item, true);
-            } else if (item.collapsed) {
-                this.expand(item);
             }
 
             item.setSize({height : item.height, width : width});
@@ -409,7 +414,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
         } else if (panelHeights > innerHeight && firstSpillItem) {
             // if rem is smaller than hh, call this method recursively
             var rem = firstSpillItem.getSize().height-(panelHeights-innerHeight);
-            var hh  = this.getHeaderHeight(firstSpillItem);
+            var hh  = this.getHeaderHeight(firstSpillItem, true);
             firstSpillItem.height = Math.max(hh, rem);
             firstSpillItem.setHeight(firstSpillItem.height);
             if (rem <= hh) {
@@ -425,11 +430,11 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
      */
     onResize : function()
     {
+        Ext.ux.layout.flexAccord.Layout.superclass.onResize.call(this);
+
         if (!this.rendered) {
             return;
         }
-
-        Ext.ux.layout.flexAccord.Layout.superclass.onResize.call(this);
 
         var items = this.container.items;
 
@@ -504,9 +509,9 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             return false;
         }
         itemId     = item.getId();
-        itemHeight = item.getSize().height;
+        itemHeight = item.height;
 
-        if (itemHeight <= this.getHeaderHeight(item) && ignoreCollapse !== true) {
+        if (itemHeight <= this.getHeaderHeight(item, true) && ignoreCollapse !== true) {
             return false;
         }
 
@@ -557,7 +562,6 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
     onCollapse : function(p, anim)
     {
         var items        = this.container.items;
-        var itemPos      = items.indexOf(p);
         var item         = null;
         var panelHeights = 0;
         var tmpItem      = null;
@@ -567,7 +571,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
 
             // mark the first item that is resizable and which is a previous
             // node of the item collapsed
-            if (!item && this._isResizable(tmpItem)) {
+            if (!item && p != tmpItem && this._isResizable(tmpItem)) {
                 item = tmpItem;
             }
             panelHeights += tmpItem.getSize().height;
@@ -613,10 +617,17 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
 
         var panelHeights = resizedElement.height;
 
-        var after   = [];
-        var ordered = [];
+        var len = items.items.length;
+
+        var after          = [];
+        var ordered        = [];
         var notResizables  = [];
-        for (var i = itemPos+1, len = items.items.length; i < len; i++) {
+        var allCollapsed   = true;
+        for (var i = itemPos+1; i < len ; i++) {
+            if (!items.get(i).collapsed) {
+                allCollapsed = false;
+            }
+
             if (items.get(i).resizable === false) {
                 notResizables.push(items.get(i));
             } else {
@@ -624,17 +635,20 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             }
         }
 
+        if (!allCollapsed || resizedElement.resizable !== false || itemPos != 0) {
 
-        if (items.get(itemPos+1) && items.get(itemPos+1).resizable === false) {
-            notResizables.reverse();
-            //after.reverse();
+            if (items.get(itemPos+1) && items.get(itemPos+1).resizable === false) {
+                notResizables.reverse();
+                //after.reverse();
+            }
+
+            ordered = after.concat(notResizables);
+
+            for (var i = 0, len = ordered.length; i < len && spill != 0; i++) {
+                spill = this.addSpill(ordered[i], spill);
+            }
         }
 
-        ordered = after.concat(notResizables);
-
-        for (var i = 0, len = ordered.length; i < len && spill != 0; i++) {
-            spill = this.addSpill(ordered[i], spill);
-        }
 
         this.adjustHeight();
     },
@@ -656,10 +670,16 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
      */
     addSpill : function(panel, spill)
     {
-        var tHeight  = panel.resizable === false
-                       ? (spill > 0 ? this._orgHeights[panel.id] : this.getHeaderHeight(panel))
-                       : (panel.height+spill) <= this.getHeaderHeight(panel)+2
-                         ? this.getHeaderHeight(panel) : (panel.height+spill);
+        if (panel.resizable === false) {
+            if (spill > 0) {
+                tHeight = this._orgHeights[panel.id];
+            } else {
+                tHeight = this.getHeaderHeight(panel)
+            }
+        } else {
+            tHeight = Math.max(this.getHeaderHeight(panel), panel.height + spill);
+        }
+
         var retSpill = 0;
 
         panel.height = tHeight <= 0 ? this.getHeaderHeight(panel) : tHeight;
