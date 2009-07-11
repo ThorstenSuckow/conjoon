@@ -76,10 +76,9 @@ com.conjoon.groupware.email.NodeContextMenu = function() {
         {
             if (menu === null) {
                 menu = initComponent();
+                menu.on('hide',       this.onHide,       this);
+                menu.on('beforeshow', this.onBeforeShow, this);
             }
-
-            menu.on('hide',       this.onHide,       this);
-            menu.on('beforeshow', this.onBeforeShow, this);
 
             return menu;
         },
