@@ -40,9 +40,9 @@ com.conjoon.groupware.workbench.PanelDragSource = function() {
                 endDrag : function(e)
                 {
                     var workbench = com.conjoon.util.Registry.get('com.conjoon.groupware.Workbench')
-
                     workbench.checkIfCollapsible(this.dragData.dragSourceContainer);
 
+                    this.proxy.hide();
                     this.panel.saveState();
                 },
 

@@ -432,7 +432,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
         var owner  = panel.ownerCt;
 
         if (!this.checkIfCollapsible(owner)) {
-            owner.getLayout().fitPanels();
+           // owner.getLayout().fitPanels();
             owner.doLayout();
         }
     },
