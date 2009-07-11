@@ -147,6 +147,10 @@ Ext.onReady(function(){
             new groupware.Workbench()
         );
 
+        if (groupware.Registry.get('/client/system/sfx/enabled')) {
+            com.conjoon.groupware.SystemSoundManager.initDriver();
+         }
+
         (function(){
             Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({
                 endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)

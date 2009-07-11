@@ -57,6 +57,11 @@ class Conjoon_Modules_Default_Registry {
                                 || strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'iphone'))
                                 ? 'iphone'
                                 : 'default'
+                ),
+                'system' => array(
+                    'sfx' => array(
+                        'enabled' => true
+                    )
                 )
             ),
             'server' => array(

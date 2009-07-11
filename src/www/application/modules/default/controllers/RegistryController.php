@@ -56,6 +56,12 @@ class RegistryController extends Zend_Controller_Action {
                 )
             ),
             array(
+                'key'   => '/client/system/sfx/enabled',
+                'value' => Conjoon_Modules_Default_Registry::get(
+                    '/client/system/sfx/enabled'
+                )
+            ),
+            array(
                 'key'   => '/client/environment/device',
                 'value' => Conjoon_Modules_Default_Registry::get(
                     '/client/environment/device'
