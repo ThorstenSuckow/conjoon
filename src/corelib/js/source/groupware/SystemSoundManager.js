@@ -170,9 +170,8 @@ com.conjoon.groupware.SystemSoundManager = function(){
                     window.soundManager = new SoundManager();
                     _driver = soundManager
                     _driver.url = './js/soundmanager/swf/';
-                    _driver.debugMode   = true;
+                    _driver.debugMode   = false;
                     _driver.consoleOnly = true;
-                    _driver.waitForWindowLoad  = false;
                     _driver.onload = _initEvents;
                     _driver.go();
                 break;
