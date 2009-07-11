@@ -53,7 +53,7 @@ Ext.ux.layout.flexAccord.SplitBar = function(
     this.adapter.setElementSize = function(s, newSize, onComplete)
     {
         var resizedElement = s.resizingComponent;
-        resizedElement.ownerCt.getLayout().setItemHeight(resizedElement, newSize, true);
+        resizedElement.ownerCt.getLayout().setItemHeight(resizedElement, newSize);
     };
 
 };

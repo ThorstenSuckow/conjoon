@@ -1,0 +1,33 @@
++------------------------------------------------------------------------------+
+|                         Ex.ux.FlexAccord Build Tools                         |
++------------------------------------------------------------------------------+
+
+The shell script found in ./win32 will create several files within
+the /build directory.
+The directory layout is:
+
+/build
+  /resources
+    /css
+    /images
+
+After running the script, you will find 2 files within /build:
+  flexaccord-all.js
+  flexaccord-all-debug.js
+and one file within /build/resources/css:
+  ext-ux-flexaccord.css
+
+ext-ux-flexaccord.css
+--------------------
+ext-ux-flexaccord.css is the compressed version of the following files:
+  /src/resources/css/ext-ux-flexaccord.css
+
+flexaccord-all.js, flexaccord-all-debug.js
+---------------------------------------
+flexaccord-all.js is the merged and compressed version of the following files:
+  /src/Layout.js
+  /src/DropTarget.js
+  /src/DropPanel.js
+  /src/Splitbar.js
+
+flexaccord-all-debug.js contains the same files, but is not compressed.

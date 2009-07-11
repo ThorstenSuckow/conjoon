@@ -45,7 +45,8 @@ Ext.ux.layout.flexAccord.DropTarget = function(accordionPanel, cfg)
 Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
 
     /**
-     * Caches the last index position that was determined by a drag event.
+     * @type {Number} _lastPos Caches the last index position that was determined
+     * by a drag event.
      */
     _lastPos : -1,
 
@@ -53,7 +54,17 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
      * Looks up the first element that's resizable in the panel when a proxy
      * gets dragged to a specific position.
      *
-     * @param {Number} height The height of the proxy that gets dragged.
+     * @param {Ext.Panel} accordionPanel The panel in which the first resizable
+     * element should be looked up
+     * @param {Number} neededHeight The amount of pixels any resizable element
+     * should exceed to make room for the dragged panel's proxy element
+     *
+     * @return {Object} An object with the following properties:
+     * - {Ext.Panel} item The item that can be resized
+     * - {Number} overallHeight The overall height of all containing panels
+     * - {Number} innerHeight The inner height of teh container     *
+     *
+     * @private
      */
     _findResizableElement : function(accordionPanel, neededHeight)
     {
@@ -65,16 +76,18 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
 
         var overallHeight = 0;
         var innerHeight   = accordionPanel.getInnerHeight();
+        var item          = null;
 
         for (var i = 0, len = items.length; i < len; i++) {
-            overallHeight += items[i].getSize().height;
-            if (!items[i].collapsed) {
-                if (!resizable && layout._isResizable(items[i]) &&  items[i].getSize().height > neededHeight) {
-                    resizable = items[i];
+            item = items[i];
+            overallHeight += item.getSize().height;
+            if (!item.collapsed) {
+                if (!resizable && layout.isResizable(item) &&  item.getSize().height > neededHeight) {
+                    resizable = item;
                 }
 
-                if (!notResizable && !layout._isResizable(items[i]) &&  items[i].getSize().height > neededHeight) {
-                    notResizable = items[i];
+                if (!notResizable && !layout.isResizable(item) &&  item.getSize().height > neededHeight) {
+                    notResizable = item;
                 }
             }
         }
@@ -114,14 +127,16 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
     },
 
     /**
-     * Overrides parent implementation. Checks if a last resize info is available and accordingly
-     * resets the last resized panel to its original value, before a drag occured.
+     * Overrides parent implementation. Checks if a last resize info is available
+     * and accordingly resets the last resized panel to its original value, before
+     * a drag occured. The panel resized in this method is most likely the one that
+     * was looked up with "_findResizableElement()".
      *
      * @param {Ext.dd.DragSource} source The drag source that was dragged over this drop target
      * @param {Event} e The event
      * @param {Object} data An object containing arbitrary data supplied by the drag source
-     * @return {String} status The CSS class that communicates the drop status back to the source so that the
-     * underlying {@link Ext.dd.StatusProxy} can be updated
+     *
+     * @return {Boolean} Whether a drop is allowed
      */
     notifyEnter : function(dd, e, data)
     {
@@ -213,6 +228,11 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
 
     },
 
+    /**
+     * Called when a drop occured, in a container that uses {Ext.ux.layout.flexAccord.layout}
+     * as its layout manager. Will reposition the dragged panel and accordingly force the
+     * layout manager to recalculate sizings.
+     */
     notifyDrop : function(dd, e, data, pos)
     {
         if(this._lastPos == -1){
@@ -234,12 +254,14 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
             var newLayout = newPanel.getLayout();
             var oldLayout = oldPanel.getLayout();
 
-            if (oldPanel.getId() != newPanel.getId()) {
+            var sameContainer = oldPanel.getId() == newPanel.getId();
+
+            if (!sameContainer) {
                 oldPanel.getLayout().unregisterPanel(dd.panel, this.accordionPanel);
                 oldPanel.remove(dd.panel, false);
                 oldPanel.doLayout();
                 oldPanel.getLayout().adjustHeight();
-            };
+            }
 
             dd.panel.el.dom.parentNode.removeChild(dd.panel.el.dom);
 
@@ -249,15 +271,15 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
                 this.accordionPanel.add(dd.panel);
             }
 
-            (function() {
-                this.ownerCt.getLayout().rendered = false;
-                this.ownerCt.doLayout();
-                if (this._wasExpanded) {
-                    this.expand(false);
-                    delete this._wasExpanded;
-                }
-            }).defer(1, dd.panel);
-
+            if (!sameContainer) {
+                (function() {
+                    dd.panel.ownerCt.doLayout();
+                    if (dd.panel._wasExpanded === true) {
+                        dd.panel.expand(false);
+                        delete dd.panel._wasExpanded;
+                    }
+                 }).defer(1);
+            }
 
             this.accordionPanel.fireEvent('drop', dropEvent);
         }
