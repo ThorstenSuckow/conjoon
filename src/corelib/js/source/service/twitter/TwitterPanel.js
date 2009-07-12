@@ -307,7 +307,10 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
     _onUsersRecentTweetsHide : function()
     {
-        Ext.Ajax.abort(this.userInfoBox.tweetStore.proxy.activeRequest[Ext.data.Api.actions.read]);
+        var proxy = this.userInfoBox.tweetStore.proxy;
+        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+        }
 
         this.getSwitchFriendshipButton().setVisible(false);
     },
