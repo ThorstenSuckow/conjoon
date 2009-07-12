@@ -78,8 +78,9 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
             var m = this;
             return {
                 render : function(p) {
-                    m.addListener(p.body);
-                    p.on('destroy', function(){this.removeListener(p.body)}, m);
+                    var target = p.body ? b.pody : (p.el ? p.el : p);
+                    m.addListener(target);
+                    p.on('destroy', function(){this.removeListener(target)}, m);
                 }
             };
         },
