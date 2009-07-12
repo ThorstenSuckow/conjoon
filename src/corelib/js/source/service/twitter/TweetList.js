@@ -158,7 +158,10 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
         var when = this._getTimeString(record);
 
         // replace all usernames referenced with an "@" with appropriate links
-        var text = record.get("text").replace(/@(.*?)(:|$|\s)/ig, '@<a class="screenName" href="#">$1</a>$2');
+        var text = record.get("text").replace(
+            /@(.*?)(\.|\)|:|$|\s)/ig,
+            '@<a class="screenName" href="#">$1</a>$2'
+        );
 
         text = com.conjoon.util.Format.formatUrls(text, {
             'class' : 'tweetUrl'
