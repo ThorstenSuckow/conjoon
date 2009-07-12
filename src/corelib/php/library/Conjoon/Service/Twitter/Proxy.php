@@ -130,6 +130,9 @@ class Conjoon_Service_Twitter_Proxy  {
      * Favorites or unfavorites a tweet based on the $favorite
      * parameter.
      *
+     * @todo "favorited" in xml response returns always false as of 12-July 2009
+     * check back later for proper return value
+     *
      * @param int $id Id of the tweet to (un)favorite
      * @param boolean $favorite true to favorite the tweet, false tounfavorite it
      *
@@ -190,7 +193,7 @@ class Conjoon_Service_Twitter_Proxy  {
             'inReplyToStatusId'   => (string)$favoriteStatus->in_reply_to_status_id,
             'inReplyToUserId'     => (string)$favoriteStatus->in_reply_to_user_id,
             'inReplyToScreenName' => (string)$favoriteStatus->in_reply_to_screen_name,
-            'favorited'           => (string)$favoriteStatus->favorited
+            'favorited'           => $favorite//(string)$favoriteStatus->favorited
         );
 
         /**
