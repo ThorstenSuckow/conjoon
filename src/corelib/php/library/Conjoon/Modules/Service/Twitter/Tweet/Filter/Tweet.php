@@ -70,11 +70,6 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
             'Float'
          ),
         'text' => array(
-            array(
-                'HtmlEntities',
-                ENT_COMPAT,
-                'UTF-8'
-            ),
             'StringTrim'
          ),
         'createdAt' => array(
