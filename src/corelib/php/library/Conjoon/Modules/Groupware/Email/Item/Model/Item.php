@@ -921,6 +921,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             $messageType = 'scratch';
         }
 
+
         // prefill update/insert arrays
         $sentFolderId = $folderModel->getSentFolder($accountId, $userId);
         $date         = new Zend_Date($mail->getDate(), Zend_Date::RFC_2822);
@@ -976,9 +977,22 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         );
 
         switch ($messageType) {
-            // if the message was sent from an opened draft or from the outbox,, we simply can create a new entry in the tables,
+            // if the message was sent from an opened draft or from the outbox,
+            // we simply can create a new entry in the tables,
             // as if it was created from scratch
+            // if, however, the email was sent from drafts, a user might have updated
+            // the addresses, the subject, the email text and the attachments.
+            // those fields have to be updated in the datastorage as well
             case 'draft':
+                Conjoon_Util_Array::apply($itemUpdate, array(
+                    'subject'            => $message->getSubject(),
+                    'to'                 => $toString,
+                    'cc'                 => $ccString,
+                    'bcc'                => $bccString,
+                    'content_text_plain' => $message->getContentTextPlain(),
+                    'content_text_html'  => $message->getContentTextHtml(),
+                ));
+
             // most simple: mesageType is outbox which means we have simply to update a few fields
             case 'outbox':
                 if ($messageId <= 0 || $sentFolderId == 0) {
