@@ -99,7 +99,7 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
                 '<td class="label">Web:</span></td>',
                 '<td class="value">',
                 '<tpl if="url != 0">',
-                '<a target="_blank" href="{url}">{url}</a>',
+                '<a href="{url}">{url}</a>',
                 '</tpl>',
                 '<tpl if="url == 0">&nbsp;</tpl>',
                 '</td>',
@@ -124,6 +124,12 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
         if (this.tweetStore) {
             this.tweetStore.on('load',       this._onTweetStoreLoad, this);
             this.tweetStore.on('beforeload', this._onBeforeTweetStoreLoad, this);
+        }
+
+        var clickListener = com.conjoon.groupware.util.LinkInterceptor.getListener();
+
+        for (var i in clickListener) {
+            this.on(i, clickListener[i]);
         }
 
         com.conjoon.service.twitter.UserInfoBox.superclass.initComponent.call(this);
