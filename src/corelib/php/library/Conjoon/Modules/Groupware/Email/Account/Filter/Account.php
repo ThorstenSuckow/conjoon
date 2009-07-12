@@ -286,7 +286,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             if (str_replace("*", "", $data['passwordOutbox']) == "") {
                 unset($data['passwordOutbox']);
             }
-        } else if ($data['isOutboxAuth']) {
+        } else if (!$data['isOutboxAuth']) {
             $data['usernameOutbox'] = null;
             $data['passwordOutbox'] = null;
         }
