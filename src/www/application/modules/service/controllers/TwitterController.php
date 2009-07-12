@@ -205,7 +205,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         if ($friends->user) {
             foreach ($friends->user as $friend) {
                 $users[] = array(
-                    'id'              => (int)(string)$friend->id,
+                    'id'              => (float)(string)$friend->id,
                     'name'            => (string)$friend->name,
                     'screenName'      => (string)$friend->screen_name,
                     'location'        => (string)$friend->location,
@@ -239,10 +239,10 @@ class Service_TwitterController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Error/Factory.php';
 
-        $userId    = (int)$this->_request->getParam('userId');
+        $userId    = (float)$this->_request->getParam('userId');
         $accountId = (int)$this->_request->getParam('id');
         $userName  = (string)$this->_request->getParam('userName');
-        $statusId  = (int)$this->_request->getParam('statusId');
+        $statusId  = (float)$this->_request->getParam('statusId');
 
         if ($userName != "" && $userId <= 0) {
             $userId = $userName;
@@ -334,7 +334,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         require_once 'Conjoon/Error/Factory.php';
 
         $accountId         = (int)$this->_request->getParam('accountId');
-        $inReplyToStatusId = (int)$this->_request->getParam('inReplyToStatusId');
+        $inReplyToStatusId = (float)$this->_request->getParam('inReplyToStatusId');
         $message            = (string)$this->_request->getParam('message');
 
         if ($accountId <= 0) {
@@ -402,7 +402,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         require_once 'Conjoon/Error/Factory.php';
 
         $accountId  = (int)$this->_request->getParam('accountId');
-        $tweetId    = (int)$this->_request->getParam('tweetId');
+        $tweetId    = (float)$this->_request->getParam('tweetId');
 
         if ($accountId <= 0 || $tweetId <= 0) {
             $errorDto = Conjoon_Error_Factory::createError(
@@ -471,7 +471,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         require_once 'Conjoon/Error/Factory.php';
 
         $accountId  = (int)$this->_request->getParam('accountId');
-        $tweetId    = (int)$this->_request->getParam('tweetId');
+        $tweetId    = (float)$this->_request->getParam('tweetId');
         /**
          * @todo Filter!!!
          */

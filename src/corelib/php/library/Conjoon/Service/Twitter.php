@@ -22,6 +22,11 @@ require_once 'Zend/Service/Twitter.php';
  * This class main purpose is to send a source id "conjoon" with any status update,
  * thus notifying the Twitter service that the update was done using conjoon.
  *
+ * It does also override "favoriteCreate", "favoriteDestroy" and "statusDestroy",
+ * since in ZF 1.7.8 the status ids would be casted to integer, which must not happen
+ * (see #http://www.twitpocalypse.com/)
+ *
+ *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  * @author The Zend Framework Team
  */
@@ -66,6 +71,51 @@ class Conjoon_Service_Twitter extends Zend_Service_Twitter {
 
         //$this->status = $status;
         $response = $this->restPost($path, $data);
+        return new Zend_Rest_Client_Result($response->getBody());
+    }
+
+    /**
+     * Remove a favorite
+     *
+     * @param  float $id Status ID you want to de-list as a favorite
+     * @return Zend_Rest_Client_Result
+     */
+    public function favoriteDestroy($id)
+    {
+        $this->_init();
+        $path = '/favorites/destroy/' . (float)$id . '.xml';
+
+        $response = $this->restPost($path);
+        return new Zend_Rest_Client_Result($response->getBody());
+    }
+
+    /**
+     * Mark a status as a favorite
+     *
+     * @param  float $id Status ID you want to mark as a favorite
+     * @return Zend_Rest_Client_Result
+     */
+    public function favoriteCreate($id)
+    {
+        $this->_init();
+        $path = '/favorites/create/' .  (float)$id . '.xml';
+
+        $response = $this->restPost($path);
+        return new Zend_Rest_Client_Result($response->getBody());
+    }
+
+    /**
+     * Destroy a status message
+     *
+     * @param  float $id ID of status to destroy
+     * @return Zend_Rest_Client_Result
+     */
+    public function statusDestroy($id)
+    {
+        $this->_init();
+        $path = '/statuses/destroy/' . (float)$id . '.xml';
+
+        $response = $this->restPost($path);
         return new Zend_Rest_Client_Result($response->getBody());
     }
 

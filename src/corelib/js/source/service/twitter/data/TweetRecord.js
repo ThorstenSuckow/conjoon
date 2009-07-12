@@ -29,10 +29,10 @@ Ext.namespace('com.conjoon.service.twitter.data');
 com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
 
     /**
-     * @type {String} id The id of the tweet, as managed by the Twitter service.
+     * @type {Number} id The id of the tweet, as managed by the Twitter service.
      * This should not be converted to an integer, see http://www.twitpocalypse.com/
      */
-    {name : 'id',              type : 'string'},
+    {name : 'id',              type : 'float'},
 
     /**
      * @type {String} text The actual text of the status update.
@@ -71,7 +71,7 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
      * @type {Number} userId The id of the user who posted this tweet, as managed by
      * the Twitter service.
      */
-    {name : 'userId',          type : 'int'},
+    {name : 'userId',          type : 'float'},
 
     /**
      * @type {String} name The name of the user who posted this tweet as managed by the
@@ -128,17 +128,17 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
     {name : 'isFollowing',  type : 'bool'},
 
     /**
-     * @type {String} inReplyToStatusId The id of the tweet this tweet referrs to, as managed
+     * @type {Number} inReplyToStatusId The id of the tweet this tweet referrs to, as managed
      * by the Twitter service. May be null. This should not be converted to an integer. See
      * http://www.twitpocalypse.com/
      */
-    {name : 'inReplyToStatusId',  type : 'string'},
+    {name : 'inReplyToStatusId',  type : 'float'},
 
     /**
      * @type {Number} inReplyToUserId The id of the user of the tweet this tweet
      * referrs to, as managed by the Twitter service. May be null.
      */
-    {name : 'inReplyToUserId',  type : 'int'},
+    {name : 'inReplyToUserId',  type : 'float'},
 
     /**
      * @type {String} inReplyToScreenName The screen name of the user of the tweet

@@ -67,7 +67,7 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
 
     protected $_filters = array(
         'id' => array(
-            'Int'
+            'Float'
          ),
         'text' => array(
             array(
@@ -91,7 +91,7 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
             'FormBoolToInt'
         ),
         'userId' => array(
-            'Int'
+            'Float'
         ),
         'name' => array(
             array(
@@ -146,10 +146,10 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
             'Int'
         ),
         'inReplyToStatusId' => array(
-            'Int'
+            'Float'
         ),
         'inReplyToUserId' => array(
-            'Int'
+            'Float'
         ),
         'inReplyToScreenName' => array(
             'StringTrim'
@@ -218,7 +218,7 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
         ),
         'inReplyToUserId' => array(
             'allowEmpty' => true,
-            'default'    => 0
+            'default'    => ""
         ),
         'inReplyToScreenName' => array(
             'allowEmpty' => true,
