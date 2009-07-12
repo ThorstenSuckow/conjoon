@@ -1134,6 +1134,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         if (this.requestId !== null) {
             return false;
         } else {
+            this.accountStore.un('update', this.onUpdate, this);
             this.rejectChanges();
             return true;
         }
