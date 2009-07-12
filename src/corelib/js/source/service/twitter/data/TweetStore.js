@@ -37,5 +37,24 @@ com.conjoon.service.twitter.data.TweetStore = function(c){
                 direction : 'DESC'
             }
     }));
+
+    this.on('beforeload', this._onBeforeLoad, this);
 };
-Ext.extend(com.conjoon.service.twitter.data.TweetStore, Ext.data.Store);
+
+Ext.extend(com.conjoon.service.twitter.data.TweetStore, Ext.data.Store, {
+
+    /**
+     * Listener for the beforeload event - cancels any ongoing server request.
+     *
+     * @param {Ext.data.Store} store
+     * @param {Object} options
+     */
+    _onBeforeLoad : function()
+    {
+        var proxy = this.proxy;
+        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
+        }
+    }
+
+});
