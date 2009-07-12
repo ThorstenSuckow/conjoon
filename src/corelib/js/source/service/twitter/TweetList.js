@@ -143,7 +143,8 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
      * with a-tags, so the link is highlited and clickable.
      *
      * @param {Array/Object} data The raw data object that was used to create the
-     * Record.
+     * Record. Notice, that this is the original data of the record, thus a reference.
+     * Changes to this object will be reflected in teh record itself.
      * @param {Number} recordIndex the index number of the Record being prepared
      * for rendering.
      * @param {Record} record The Record being prepared for rendering.
@@ -163,7 +164,9 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
             'class' : 'tweetUrl'
         });
 
-        return Ext.apply(data, {
+        var f = Ext.apply({}, data);
+
+        return Ext.apply(f, {
             when : when,
             text : text
         });
