@@ -198,6 +198,8 @@ com.conjoon.groupware.email.EmailPreview = function() {
      */
     var onHide = function(skipAlign)
     {
+        emailView.abortRequest();
+
         previewPanel.setTitle(com.conjoon.Gettext.gettext("Loading..."));
 
         if (skipAlign === true) {
