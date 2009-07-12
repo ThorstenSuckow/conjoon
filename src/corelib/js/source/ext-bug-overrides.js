@@ -22,6 +22,10 @@
  * Solves a bug with ext.menu.Menu not firing the "beforeshow" event.
  * - found in version 3.0.0
  * see http://extjs.com/forum/showthread.php?t=73378
+ *
+ * Solves a bug with a free floating menu not constrained to the viewport:
+ * - found in version 3.0.0
+ * see http://www.extjs.com/forum/showthread.php?p=356609
  */
 Ext.menu.Menu.prototype.showAt = function(xy, parentMenu, /* private: */_e){
     if(this.fireEvent('beforeshow', this) !== false){
@@ -29,6 +33,11 @@ Ext.menu.Menu.prototype.showAt = function(xy, parentMenu, /* private: */_e){
         if(!this.el){
             this.render();
         }
+
+        if (_e !== false) {
+            xy = this.el.adjustForConstraints(xy);
+        }
+
         this.el.setXY(xy);
         if(this.enableScrolling){
             this.constrainScroll(xy[1]);

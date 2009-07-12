@@ -312,7 +312,8 @@ Ext.extend(com.conjoon.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel
             var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
 
             this.menu = new Ext.menu.Menu({
-                items: [{
+                enableScrolling : false,
+                items           : [{
                     text  : com.conjoon.Gettext.gettext("Open in new tab"),
                     handler : this.controller.openEmailView,
                     scope : this.controller
