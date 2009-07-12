@@ -180,7 +180,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             'replyAddress' : new TextField({
                 fieldLabel : com.conjoon.Gettext.gettext("Reply to"),
                 allowBlank : true,
-                validator  : Ext.form.VTypes.email
+                vtype      : 'email'
             }),
             'protocol' : new TextField({
                 labelStyle : 'width:50px;font-size:11px',
@@ -869,6 +869,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             fields['passwordOutbox'].isValid();
             fields['usernameOutbox'].setDisabled(!checked);
             fields['passwordOutbox'].setDisabled(!checked);
+
             this.onConfigChange();
         }, this);
 
@@ -1436,7 +1437,10 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      * Saves the configuration for the last selected record.
      *
      * Passwords will only be modified if they do not equal to their default value,
-     * which is a string of empty spaces according to the length of the original value.
+     * which is a string "*" according to the length of the original value.
+     *
+     * @todo do not rely on a string of "*" - better update the value if a change in the
+     * field was detected
      */
     saveRecord : function()
     {
@@ -1447,6 +1451,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         var fields = this.fields;
         var record = this.clkRecord;
 
+        var isOutboxAuth = fields['isOutboxAuth'].getValue();
+
         record.set('name',            fields['name'].getValue());
         record.set('userName',       fields['userName'].getValue());
         record.set('address',         fields['address'].getValue());
@@ -1456,18 +1462,28 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         record.set('usernameInbox',  fields['usernameInbox'].getValue());
         record.set('serverOutbox',   fields['serverOutbox'].getValue());
         record.set('portOutbox',     fields['portOutbox'].getValue());
-        record.set('isOutboxAuth',     fields['isOutboxAuth'].getValue());
-        record.set('usernameOutbox', fields['usernameOutbox'].getValue());
+        record.set('isOutboxAuth',     isOutboxAuth);
         record.set('isCopyLeftOnServer',      !fields['isCopyLeftOnServer'].getValue());
         record.set('isSignatureUsed',   fields['isSignatureUsed'].getValue());
         record.set('signature',       fields['signature'].getValue());
+
         var passwordInbox  = fields['passwordInbox'].getValue();
         var passwordOutbox = fields['passwordOutbox'].getValue();
 
-        if (passwordInbox.trim() != "") {
+        if (!isOutboxAuth) {
+            record.set('usernameOutbox',  "");
+            passwordOutbox = "";
+        } else {
+            record.set('usernameOutbox',  fields['usernameOutbox'].getValue());
+        }
+
+        if (passwordInbox.trim() == "" || passwordInbox.replace(/\*/g, '').trim() != "") {
+            passwordInbox = passwordInbox.trim() == "" ? "" : passwordInbox;
             record.set('passwordInbox',  passwordInbox);
         }
-        if (passwordOutbox.trim() != "") {
+
+        if (passwordOutbox.trim() == "" || passwordOutbox.replace(/\*/g, '').trim() != "") {
+            passwordOutbox = passwordOutbox.trim() == "" ? "" : passwordOutbox;
             record.set('passwordOutbox', passwordOutbox);
         }
 
