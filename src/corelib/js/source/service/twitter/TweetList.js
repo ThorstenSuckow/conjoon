@@ -209,7 +209,22 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
                 com.conjoon.service.twitter.TweetList.superclass.onRemove.call(this, ds, record, index);
                 this._updateRows();
             },
-            scope : this
+            scope  : this,
+            // make sure all blocking fx get removed so we can remove this
+            // element
+            // when switching between tweet lists, removing an element in the view
+            // without specifying this property might fail.
+            // Example:
+            // 1 remove this property
+            // 2 go to Account A
+            // 3 Add tweet X
+            // 4 go to Account B
+            // 5 switch back to Account A
+            // 6 Delete tweet X
+            // As of Ext 3.0.0, without specifying stopFx == true, the tweet won't
+            // be removed from the view (though its clearly not available anymore in
+            // the store)
+            stopFx : true
         });
 
     },
