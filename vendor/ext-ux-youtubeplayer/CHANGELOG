@@ -1,3 +1,17 @@
+Version 0.3RC5
+17-July-2009
+ - enhancement: added compatibility for Ext JS 3.0.0
+ - enhancement: replaced jsb build process with yuicompressor, including batch file
+ - enhancement: added build-file ext-ux-youtubeplayer-all-debug.js
+
+Version 0.3RC4
+13-May-2009
+
+ - fixed: fixed a problem where the onYoutubePlayerReady method would be called
+twice due to initializing the ratio mode; delegated style for ratio mode to css
+files
+ - enhancement: minor doc changes
+
 Version 0.3RC3
 18-April-2009
 
