@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+  <title>Ext.ux.FlashControl - Example Youtube Video</title>
+
+<link rel="stylesheet" type="text/css" href="./my_js/extjs/resources/css/ext-all.css" />
+
+<link rel="stylesheet" type="text/css" href="../src/resources/css/ext-ux-flashcontrol.css" />
+
+ </head>
+
+ <body>
+<script type="text/javascript" src="./my_js/extjs/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="./my_js/extjs/ext-all-debug.js"></script>
+
+
+<script type="text/javascript" src="../src/FlashControl.js"></script>
+
+
+
+<script type="text/javascript">
+
+    /**
+     * HINT!
+     * Before running this example, make sure to include
+     *    ----- ext-ux-flashcontrol.js -----
+     * into your page!
+     */
+
+    function switchContainer()
+    {
+        if (flashControl.container == dialog2) {
+            flashControl.registerComponents(movie, dialog1);
+        } else {
+            flashControl.registerComponents(movie, dialog2);
+        }
+
+    }
+
+    var dialog1      = null;
+    var dialog2      = null;
+    var movie        = null;
+    var flashControl = null;
+
+Ext.onReady(function(){
+
+    movie = new Ext.FlashComponent({
+        // its important to set the FlashComponents hideMode to offsets
+        hideMode : 'offsets',
+        id       : 'dustinthewind',
+        swfId    : 'dustinthewind',
+        url      : 'http://www.youtube.com/v/1qxSwJC3Ly0&hl=de&fs=1&'
+    });
+
+
+    dialog1 = new Ext.Window({
+        title       : "Kansas - Dust in the Wind Dialog 1 (managed by Ext.ux.util.FlashControl)",
+        height      : 400,
+        width       : 600,
+        closable    : false,
+        resizable   : true,
+        maximizable : true,
+        collapsible : true,
+        layout      : 'fit'
+    });
+
+    dialog2 = new Ext.Window({
+        title       : "Dialog 2",
+        closable    : false,
+        height      : 200,
+        width       : 300,
+        resizable   : true,
+        maximizable : true,
+        collapsible : true,
+        layout      : 'fit'
+    });
+
+    flashControl = new Ext.ux.util.FlashControl({
+        flashComponent    : movie,
+        container         : dialog1,
+        // enable workarounds for FF since the dialog's container
+        // is the document.body, which means that some css classes gets added
+        // to it when the window gets maximized. This will invoke a workaround
+        // to prevent FF from reloading the flash movie
+        // This is only neded if you are using windows which are direct children
+        // of document.body, if they are maximizable AND if the style declaration "overflow"
+        // for document.body is not already set to "hidden"
+        quirksFF          : true,
+        // We are embedding a flash movie that does not seem to have a
+        // js interface for setting the sizings after it has been rendered.
+        // This will make for strange behavior in IE, so we activate a
+        // few workarounds by setting quirksIE to "true".
+        quirksIE          : true,
+        // we know the window is draggable so we let the FlashControl
+        // automatically create a DragTracker that will hide/show
+        // the FlashComponent on dragstart/dragend
+        autoDragTracker   : true,
+        // we will allow the control for traversing the container's
+        // parents and adding default listeners for the parent containers
+        // for the following events. We will not use activate and deactivate default
+        // listeners, since activate/deactivate for an Ext.Window means
+        // focus/blur - the default listeners would simply show/hide the
+        // flashcomponent, while we only want to update the zIndex of the
+        // flashComponent. thus, we will define our own config for this
+        autoAddListeners : [
+            'collapse',
+            'beforecollapse',
+            'expand',
+            'beforeexpand',
+            'maximize'
+        ],
+        getListenerConfig : function() {
+            return {
+                activate : {
+                    // afterContainerLayout...
+                    fn    : 'afterContainerLayout',
+                    // ...will be called when this.container's
+                    // activate event triggers. This is mainly
+                    // for updating the flashComponent with the
+                    // proper zIndex
+                    items : [this.container]
+                },
+                deactivate : {
+                    // afterContainerLayout...
+                    fn    : 'afterContainerLayout',
+                    // ...will be called when this.container's
+                    // deactivate event triggers. This is mainly
+                    // for updating the flashComponent with the
+                    // proper zIndex
+                    items : [this.container]
+                }
+            };
+        }
+    })
+
+    dialog1.show();
+    dialog2.show();
+
+});
+
+
+
+</script>
+
+<input style="position:absolute;top:100px;left:50px;width:150px;" type="button" value="Switch Container" onclick="switchContainer()" />
+
+
+</body>
+</html>
