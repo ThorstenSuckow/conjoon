@@ -181,6 +181,16 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
             pos = false;
         }
 
+        if (data._lastPanel && data._lastPanel.getId() === accordionPanel.getId() && data._lastPos === pos) {
+            return;
+        }
+
+        var lastPanel = data._lastPanel;
+
+        data._lastPanel = accordionPanel;
+        data._lastPos   = pos;
+
+
         var overEvent = this.createEvent(dd, e, data, pos);
 
         if(accordionPanel.fireEvent('validatedrop', overEvent) !== false &&
@@ -198,12 +208,13 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
                 var resizeInfo = this._findResizableElement(accordionPanel, proxyEl.getSize().height);
 
                 if (resizeInfo.item && resizeInfo.innerHeight - resizeInfo.overallHeight < proxyEl.getSize().height) {
-                    accordionPanel.doLayout();
+
                     data._lastResizeInfo = {
                         height : resizeInfo.item.getSize().height,
                         panel  : resizeInfo.item
                     };
-                    resizeInfo.item.setHeight(resizeInfo.item.getSize().height-proxyEl.getSize().height);
+                    resizeInfo.item.height = resizeInfo.item.getSize().height-proxyEl.getSize().height;
+                    resizeInfo.item.setHeight(resizeInfo.item.height);
                 }
             }
 
@@ -215,6 +226,10 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
                 }
             } else {
                 Ext.fly(accordionPanel.body).appendChild(proxyEl);
+            }
+            accordionPanel.getLayout().layout(accordionPanel.items.items);
+            if (lastPanel && lastPanel.getId() != accordionPanel.getId()) {
+                lastPanel.getLayout().layout(lastPanel.items.items);
             }
 
             this._lastPos = pos;
@@ -260,7 +275,6 @@ Ext.extend(Ext.ux.layout.flexAccord.DropTarget, Ext.dd.DropTarget, {
                 oldPanel.getLayout().unregisterPanel(dd.panel, this.accordionPanel);
                 oldPanel.remove(dd.panel, false);
                 oldPanel.doLayout();
-                oldPanel.getLayout().adjustHeight();
             }
 
             dd.panel.el.dom.parentNode.removeChild(dd.panel.el.dom);

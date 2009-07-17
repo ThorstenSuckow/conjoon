@@ -1,3 +1,18 @@
+V0.1.1
+17-July-2009
+ - enhancement: (Layout.js) layout now injects "_isDragged" property nto panels that are
+currently being dragged; added "previousHeight" to cache the height after a resize occured,
+to only process calculations when necessary in "onResize()"; added fix for IE7 to properly
+size the dragged panel's ghost; "getHeaderHeight()" now accesses the panel's header property
+directly; "adjustHeight()" no only expands a collapsed panel if it is not currently being
+dragged; added override for "layout()" to properly fire the "afterlayout" event;
+"beforeExpand()" now calls "layout()" instead of "adjustHeight()" directly, if needed;
+"onCollapse()"/"setItemHeight()" now calls "layout()"
+ - enhancement: (DropTarget.js) "notifyOver()" does only process its calculations if the
+last possible drop pos differs from the current possible drop pos; removed unecessary call
+to "adjustHeight()" in "notifyDrop()" if the drop target is the panel's original owner
+container
+
 11-July 2009
  - enhancement: enhanced drop behavior if the drop target is the same as the
 drop source - the layout manager will not recalculate sizings then, since the

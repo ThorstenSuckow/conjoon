@@ -108,6 +108,7 @@ Ext.namespace('Ext.ux.layout.flexAccord');
  *   collapsed during drag/drop
  * - {Ext.Element} splitEl The HTMLElement for use with the SplitBar
  * - {Ext.ux.layout.flexAccord.SplitBar} splitter The SplitBar for this panel
+ * - {Boolean} _isDragged true if the panel is currently being dragged
  *
  * Any panel's dd methods "b4StartDrag" and "endDrag" will be intercepted/sequenced.
  *
@@ -169,6 +170,13 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
     rendered : false,
 
     /**
+     * @type {Number} previousHeight caches the innerHeight of the container when a resize
+     * occurs. If that value does not change during the next resize event, no sizing
+     * calculations will be made for the height of the containing panels.
+     */
+    previousHeight : 0,
+
+    /**
      * Renders the specified item into the layout and adds the splitbar
      * to the item if item's properties "resizable" does not equal to "false".
      *
@@ -196,10 +204,21 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
         Ext.ux.layout.flexAccord.Layout.superclass.renderItem.call(this, c, position, target);
 
         if (initDDOverride && c.dd) {
+
+            if (Ext.isIE7) {
+                // override for IE7 - panel's bwrap will still be determined
+                // to the state it was expanded - comment this and the panel's ghost
+                // will always have the height of the panel before it got dragged
+                c.dd.proxy.show = c.dd.proxy.show.createSequence(function(){
+                    this.ghost.setHeight(this.panel.height);
+                }, c.dd.proxy);
+            }
+
             c.dd.b4StartDrag = c.dd.b4StartDrag.createInterceptor(
                 function() {
-                    var panel    = this.panel;
-                    panel._oldId  = panel.ownerCt.getId();
+                    var panel        = this.panel;
+                    panel._oldId     = panel.ownerCt.getId();
+                    panel._isDragged = true;
                     if (!panel.collapsed) {
                         panel._wasExpanded = true;
                         panel._oldHeight   = panel.height;
@@ -207,8 +226,8 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
                         // since we will ignore the layout's oncollapse listener
                         // which usually takes care of this
                         var layout = panel.ownerCt.getLayout();
-                        panel.height = layout.getHeaderHeight(this.panel);
-                        layout.collapse(this.panel, true);
+                        panel.height = layout.getHeaderHeight(panel, true);
+                        layout.layout(panel.ownerCt.items.items);
                     }
                 }
             , c.dd);
@@ -216,6 +235,9 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             c.dd.endDrag = c.dd.endDrag.createSequence(
                 function() {
                     var panel = this.panel;
+                    // unset this property before any layout actions
+                    // are processed
+                    delete panel._isDragged;
                     if (panel._oldId == panel.ownerCt.getId()) {
                         if (panel._wasExpanded) {
                             panel.height = panel._oldHeight;
@@ -427,23 +449,28 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             this.onResize();
             return;
         }
-
-        this.adjustHeight();
     },
 
     /**
      * Takes care of resizing the containing panels when the container
      * was resized, to make sure they fit in this container without causing
      * spill or leaving remaining space.
+     * Any calculation of containing panel's sizings will only be made if
+     * this.previousHeight does not equal to the actual innerHeight of the
+     * container.
      *
      */
     onResize : function()
     {
         Ext.ux.layout.flexAccord.Layout.superclass.onResize.call(this);
 
-        if (!this.rendered) {
+        var innerHeight = this.container.getInnerHeight();
+
+        if (!this.rendered || this.previousHeight === innerHeight) {
             return;
         }
+
+        this.previousHeight = innerHeight;
 
         var items = this.container.items;
 
@@ -515,12 +542,12 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
      */
     getHeaderHeight : function(panel, toolbars)
     {
-        return panel.getSize().height
+        return panel.header.getHeight()
         + (toolbars === true && panel.getBottomToolbar()
           ? panel.getBottomToolbar().getSize().height : 0)
         + (toolbars === true && panel.getTopToolbar()
-           ? panel.getTopToolbar().getSize().height : 0)
-        - panel.bwrap.getHeight();
+           ? panel.getTopToolbar().getSize().height : 0);
+
     },
 
     /**
@@ -557,12 +584,14 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             if (item.height <= this.getHeaderHeight(item, true)+3) {
                 this.collapse(item, true);
                 item.height = this.getHeaderHeight(item);
-            } else if (item.collapsed) {
+            } else if (item.collapsed && !item._isDragged) {
+
                 if (animatePanel == item) {
                     this.expand(item, undefined, true);
                 } else {
                     this.expand(item);
                 }
+
                 item.height = Math.max(item.height, this.getHeaderHeight(item, true));
             }
 
@@ -574,7 +603,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
 
             item.setSize({height : item.height, width : width});
 
-            panelHeights += item.height;
+            panelHeights += item._isDragged ? item._oldHeight : item.height;
         }
 
         if (panelHeights < innerHeight && firstSpillItem) {
@@ -591,6 +620,30 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
                 this.adjustHeight(exclude.concat([firstSpillItem]));
             }
         }
+    },
+
+    /**
+     * Override for parent's layout implementation to fire the "afterlayout"
+     * event directly or - if there is currently a panel that needs to be
+     * expanded - after the "expand" event of this panels fires.
+     *
+     * @param {Array} exclude gets passed to the "adjustHeight()" method
+     * @param {Ext.Panel} panel if psupplied, this panel will be expanded in
+     * the "adjustHeight()" method
+     */
+    layout : function(exclude, animatePanel) {
+        var target = this.container.getLayoutTarget();
+        this.onLayout(this.container, target);
+        this.adjustHeight(exclude, animatePanel);
+
+        if (animatePanel) {
+            animatePanel.on('expand', function() {
+                this.container.fireEvent('afterlayout', this.container, this);
+            }, this, {single : true});
+        } else {
+            this.container.fireEvent('afterlayout', this.container, this);
+        }
+
     },
 
     /**
@@ -650,7 +703,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
                           (panelHeights - this.getHeaderHeight(p));
             if (this._orgHeights[p.id] && heightToSet > this._orgHeights[p.id]) {
                 p.height = this._orgHeights[p.id];
-                this.adjustHeight(items.items, (anim !== false ? p : undefined));
+                this.layout(items.items, (anim !== false ? p : undefined));
                 return false;
             } else if (this._orgHeights[p.id]) {
                 heightToSet = this._orgHeights[p.id];
@@ -697,6 +750,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
         // its important to set the height attribute of the
         // collapsed item to its header height
         p.height = this.getHeaderHeight(p);
+        this.layout();
     },
 
     /**
@@ -767,7 +821,7 @@ Ext.ux.layout.flexAccord.Layout = Ext.extend(Ext.layout.ContainerLayout, {
             }
         }
 
-        this.adjustHeight([], (animateIfExpand === true ? resizedElement : null));
+        this.layout([], (animateIfExpand === true ? resizedElement : null));
     },
 
     /**
