@@ -55,3 +55,17 @@ Ext.menu.Menu.prototype.showAt = function(xy, parentMenu, /* private: */_e){
         this.fireEvent('show', this);
     }
 };
+
+/**
+ * Solves a bug with DataView "onMouseOut" breaking when hovering over
+ * a scrollbar and the "overClass" in a DataView's entry is applied
+ * - found in version 3.0.0
+ * see http://extjs.com/forum/showthread.php?p=359881
+ */
+Ext.Element.prototype.contains = function(el) {
+    try {
+        return !el ? false : Ext.lib.Dom.isAncestor(this.dom, el.dom ? el.dom : el);
+    } catch(e) {
+        return false;
+    }
+};
