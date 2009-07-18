@@ -44,7 +44,7 @@ com.conjoon.groupware.QuickEditPanel = function(){
         var playerPanel = new Ext.ux.YoutubePlayer({
             developerKey : config.apiKey,
             playerId     : 'myplayer',
-            ratioMode    : 'strict',
+            ratioMode    : 'stretch',
             hideMode     : 'offsets',
             bgColor      : "#000000",
             bodyStyle    : 'background-color:#000000;'
@@ -81,12 +81,91 @@ com.conjoon.groupware.QuickEditPanel = function(){
 
         _playerContainer = new Ext.Panel({
             title     : 'Ytube',
-            layout    : 'fit',
             hideMode  : 'offsets',
+            cls       : 'youtube',
+            layout    : 'fit',
             bbar      : _youtubeControl
         });
 
-        com.conjoon.groupware.util.FlashControl.register(playerPanel, _playerContainer);
+        new Ext.ux.util.FlashControl({
+            flashComponent    : playerPanel,
+            container         : _playerContainer,
+            getListenerConfig : function() {
+
+                var westPanel = com.conjoon.util.Registry.get('com.conjoon.groupware.Workbench').getWestPanel();
+                var eastPanel = com.conjoon.util.Registry.get('com.conjoon.groupware.Workbench').getEastPanel();
+
+                var itemsWest = westPanel.items.items;
+                var itemsEast = eastPanel.items.items;
+
+                return {
+                    activate : {
+                        items  : [this.container],
+                        fn     : this.flashComponent.show,
+                        scope  : this.flashComponent,
+                        strict : true
+                    },
+                    deactivate : {
+                        items  : [this.container],
+                        fn     : this.flashComponent.hide,
+                        scope  : this.flashComponent,
+                        strict : true
+                    },
+                    drop : {
+                        items  : [eastPanel, westPanel],
+                        fn     : 'refreshListeners',
+                        strict : false
+                    },
+                    show : {
+                        items  : [eastPanel, westPanel],
+                        fn     : this.flashComponent.show,
+                        scope  : this.flashComponent,
+                        strict : true
+                    },
+                    hide : {
+                        items  : [eastPanel, westPanel],
+                        fn     : this.flashComponent.hide,
+                        scope  : this.flashComponent,
+                        strict : true
+                    },
+                    afterlayout : {
+                        items  : [eastPanel, westPanel],
+                        fn     : 'afterContainerLayout',
+                        strict : true
+                    },
+                    beforeexpand : {
+                        items  : itemsEast.concat(itemsWest),
+                        fn     : this.flashComponent.hide,
+                        scope  : this.flashComponent,
+                        strict : [eastPanel, westPanel]
+                    },
+                    expand : {
+                        items  : itemsEast.concat(itemsWest),
+                        fn     : this.flashComponent.show,
+                        scope  : this.flashComponent,
+                        strict : [eastPanel, westPanel]
+                    },
+                    beforecollapse : {
+                        items  : itemsEast.concat(itemsWest),
+                        fn     : this.flashComponent.hide,
+                        scope  : this.flashComponent,
+                        strict : [eastPanel, westPanel]
+                    },
+                    collapse : {
+                        items  : itemsEast.concat(itemsWest),
+                        fn     : function(component) {
+                            if (component != this.container.ownerCt) {
+                                this.flashComponent.show();
+                            }
+                        },
+                        strict : [eastPanel, westPanel]
+                    }
+                };
+            }
+        });
+
+
+
 
         return _playerContainer;
     };
