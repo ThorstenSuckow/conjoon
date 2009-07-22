@@ -196,13 +196,16 @@ Ext.extend(com.conjoon.groupware.workbench.dd.TabDropZone, Ext.dd.DropZone, {
                 return false;
             }
 
-            var pos = info.pos;
+            var pos      = info.pos;
+            var isWithin = this.tabPanel == data.panel.ownerCt;
 
-            if(pt == "before" && orgPos < pos){
+            if(pt == "before" && (isWithin && orgPos < pos)){
                 pos--;
-            } else if(pt == "after" && orgPos > pos){
+            } else if(pt == "after" && (!isWithin || orgPos > pos)){
                 pos++;
             }
+
+            console.log(isWithin+" "+pos);
 
             if(this.tabPanel.fireEvent('validatedrop', data) !== false &&
                this.tabPanel.fireEvent('beforedrop', data) !== false){
