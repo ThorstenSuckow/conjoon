@@ -81,16 +81,16 @@ com.conjoon.groupware.forms.QuickContactForm = function() {
             }
 
              _form = new Ext.FormPanel({
-                labelWidth: 0,
-                frame:false,
-                labelAlign:'left',
-                title: com.conjoon.Gettext.gettext("Contact"),
-                //width: 220,
-                bodyStyle:'background:#DFE8F6;padding:5px;',
-                cls: 'x-small-editor',
-                labelPad: 0,
-                defaultType: 'textfield',
-                hideLabels:true
+                labelWidth  : 0,
+                buttonAlign : 'center',
+                frame       : false,
+                labelAlign  : 'left',
+                title       : com.conjoon.Gettext.gettext("Contact"),
+                bodyStyle   : 'background:#DFE8F6;padding:5px;',
+                cls         : 'x-small-editor',
+                labelPad    : 0,
+                defaultType : 'textfield',
+                hideLabels  : true
             });
 
             _form.on('beforerender', _initComponents, this);
