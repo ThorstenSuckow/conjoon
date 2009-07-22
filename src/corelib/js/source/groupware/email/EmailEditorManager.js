@@ -60,7 +60,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var activePanelMasks = [];
 
-    var createPanel = function(emailItemRecord, type, recipient)
+    var createPanel = function(emailItemRecord, type, recipient, position)
     {
         var draftId = -1;
 
@@ -129,7 +129,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
             recipientStore = form.gridStore;
 
-
             contentPanel.add(masterPanel);
             document.getElementById(contentPanel.id+'__'+masterPanel.id).style.display = 'none';
             contentPanel.setActiveTab(masterPanel);
@@ -178,8 +177,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         if (recipient) {
             Ext.apply(ajaxOptions.params, {
-                name    : recipient.name,
-                address : recipient.address
+                name             : recipient.name,
+                address          : recipient.address,
+                contentTextPlain : recipient.contentTextPlain ? recipient.contentTextPlain : "",
+                subject          : recipient.subject ? recipient.subject : ""
             });
         }
 
@@ -198,7 +199,12 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         contentPanel.on('beforedrop',    onBeforeDrop,  emailEditor);
         contentPanel.on('drop',          onDrop,        emailEditor);
 
-        contentPanel.add(panel);
+        if (Ext.isNumber(position)) {
+            contentPanel.insert(position, panel);
+        } else {
+            contentPanel.add(panel);
+        }
+
         contentPanel.setActiveTab(panel);
 
         tabCount++;
@@ -1217,9 +1223,14 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
          * @param {Object} recipient optional, if supplied the id will be set to -1,
          * and the type to new. Most likely a mailto link was then clicked and the
          * user wants to write an email immediately to the email address. The properties
-         * of this object are "name" and address.
+         * of this object are "name" and "address". Additionally, you might specify
+         * the values "subject" and "contentTextPlain", which will be used to prefill the
+         * emailForm then
+         * @param {Number} position optional, lets you specify the index where to add
+         * the panel to the contantPanel
+         *
          */
-        createEditor : function(id, type, recipient)
+        createEditor : function(id, type, recipient, position)
         {
             init();
 
@@ -1236,7 +1247,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 type = 'new';
             }
 
-            createPanel(id, type, recipient);
+            createPanel(id, type, recipient, position);
         },
 
         /**
