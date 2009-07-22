@@ -267,6 +267,20 @@ com.conjoon.groupware.QuickEditPanel = function(){
                         p.header.addClass('x-panel-header');
                     },
                     scope : this
+                },
+                // override initEvents to create the dragZone here
+                initEvents : function() {
+                    Ext.TabPanel.prototype.initEvents.call(this);
+                    var m = new Ext.Element(this.footer.dom.lastChild);
+                    this._tabDragZone = new com.conjoon.groupware.workbench.dd.TabDragZone(
+                        this, m, [
+                            com.conjoon.groupware.forms.QuickContactForm.getComponent(),
+                            _playerContainer
+                        ]
+                    );
+
+                    this.footer.on('mousedown', this._tabDragZone.callHandleMouseDown, this._tabDragZone);
+
                 }
             };
 

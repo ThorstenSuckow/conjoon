@@ -228,9 +228,24 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
      */
     dropTo : function(container, panel, position)
     {
-        container.remove(panel, false);
-        this.insert(position, panel);
-        this.setActiveTab(panel);
+        var emailForm = com.conjoon.groupware.forms.QuickEmailForm;
+
+        if (panel == emailForm.getComponent()) {
+            com.conjoon.groupware.email.EmailEditorManager.createEditor(
+                -1, 'new', {
+                    name    : '',
+                    address          : emailForm.getRecipient(),
+                    contentTextPlain : emailForm.getMessage(),
+                    subject          : emailForm.getSubject()
+                }, position
+            );
+            emailForm.reset();
+
+        } else {
+            container.remove(panel, false);
+            this.insert(position, panel);
+            this.setActiveTab(panel);
+        }
 
     },
 
