@@ -73,6 +73,10 @@ div.com-conjoon-groupware-workbench-tabProxy {
     text-overflow:ellipsis;
 }
 
+.com-conjoon-groupware-workbench-tabProxy .defaultIcon {
+    background-image:url(../images/16x16/actions/groupware-drag-tab.png);
+}
+
 .com-conjoon-groupware-workbench-tabProxy span {
     background-repeat:no-repeat;
     background-position:0 50%;

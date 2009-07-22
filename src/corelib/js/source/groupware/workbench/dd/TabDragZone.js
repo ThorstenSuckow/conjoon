@@ -104,7 +104,7 @@ Ext.extend(com.conjoon.groupware.workbench.dd.TabDragZone, Ext.dd.DragZone, {
     setProxyTplData : function(title, iconCls)
     {
         title   = title ? title : '&#160;'
-        iconCls = iconCls ? iconCls : '';
+        iconCls = iconCls ? iconCls : 'defaultIcon';
 
         var cont = this.dragData.proxyEl.firstChild;
 
