@@ -205,8 +205,6 @@ Ext.extend(com.conjoon.groupware.workbench.dd.TabDropZone, Ext.dd.DropZone, {
                 pos++;
             }
 
-            console.log(isWithin+" "+pos);
-
             if(this.tabPanel.fireEvent('validatedrop', data) !== false &&
                this.tabPanel.fireEvent('beforedrop', data) !== false){
 
