@@ -61,6 +61,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
         self::CONTEXT_NEW => array(
             'name',
             'address',
+            'subject',
+            'contentTextPlain',
             'groupwareEmailAccountsId',
             'groupwareEmailFoldersId',
             'id'
