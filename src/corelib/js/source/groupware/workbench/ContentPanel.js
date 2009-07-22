@@ -26,10 +26,25 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
     _emailPanel : null,
 
     /**
+     * @type {com.conjoon.groupware.home.HomePanel} _homePanel
+     */
+    _homePanel : null,
+
+    /**
      * @type {Array} _removeList A list of ids of components which have to be confirmed
      * to get removed before tehy actually are
      */
     _removeList : null,
+
+    /**
+     * @type {com.conjoon.groupware.workbench.dd.TabDragZone) tabDragZone
+     */
+    _tabDragZone : null,
+
+    /**
+     * @type {com.conjoon.groupware.workbench.dd.TabDropZone) tabDropZone
+     */
+    _tabDropZone : null,
 
     /**
      * Inits this component.
@@ -37,6 +52,26 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
      */
     initComponent : function()
     {
+        this.addEvents(
+            /**
+             * @event validatedrop Fires before an item gets dropped onto the DropZone.
+             * Listeners should return false to cancel the drop.
+             * @param {Object} dragData
+             */
+            'validatedrop',
+            /**
+             * @event beforedrop Fires before an item gets dropped onto the DropZone.
+             * Listeners should return false to cancel the drop.
+             * @param {Object} dragData
+             */
+            'beforedrop',
+            /**
+             * @event drop  Fires after an item was successfully dropped onto the DropZone.
+             * @param {Object} dragData
+             */
+            'drop'
+        );
+
         Ext.apply(this, {
             id              : 'DOM:com.conjoon.groupware.ContentPanel',
             region          : 'center',
@@ -54,7 +89,7 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
 
         // we need to put the listener init here, since initEvents gets called
         // after the initial configuration for the items has been finished
-        this.on('add', this._onAdd, this);
+        this.on('add',    this._onAdd, this);
 
         com.conjoon.util.Registry.register('com.conjoon.groupware.ContentPanel', this);
         com.conjoon.groupware.workbench.ContentPanel.superclass.initComponent.call(this);
@@ -64,8 +99,39 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
     {
         com.conjoon.groupware.workbench.ContentPanel.superclass.initEvents.call(this);
 
-        this.on('resize', this.doLayout, this);
+        this.on('resize',       this.doLayout,        this);
         this.on('beforeremove', this._onBeforeRemove, this);
+        this.on('beforedrop',   this._onBeforeDrop,   this);
+        this.on('drop',         this._onDrop,         this);
+
+        this.header.on('mousedown', this._handleHeaderMouseDown, this);
+
+        this._createDragDrop();
+    },
+
+
+    /**
+     * Listener for the 'render' event.
+     *
+     */
+    _createDragDrop : function()
+    {
+        var m = new Ext.Element(this.header.dom.firstChild);
+        this._tabDragZone = new com.conjoon.groupware.workbench.dd.TabDragZone(
+            this, m, [this.getHomePanel()]
+        );
+        this._tabDropZone = new com.conjoon.groupware.workbench.dd.TabDropZone(
+            this, m, [{panel : this.getHomePanel(), pos : ['before']}]
+        );
+
+    },
+
+    /**
+     *
+     */
+    _handleHeaderMouseDown : function(e)
+    {
+        this._tabDragZone.callHandleMouseDown(e);
     },
 
     /**
@@ -79,6 +145,19 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
         }
 
         return this._emailPanel;
+    },
+
+    /**
+     *
+     * @return {com.conjoon.groupware.home.HomePanel}
+     */
+    getHomePanel : function()
+    {
+        if (!this._homePanel) {
+            this._homePanel = this._getHomePanel();
+        }
+
+        return this._homePanel;
     },
 
     /**
@@ -109,7 +188,57 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
         return false;
     },
 
+    /**
+     * Overrides parent implemenation to use custom ClickRepeaters of type
+     * {com.conjoon.groupware.workbench.ClickRepeater}
+     */
+    createScrollers : function()
+    {
+        var _cr = Ext.util.ClickRepeater;
+
+        Ext.util.ClickRepeater = Ext.emptyFn;
+
+        com.conjoon.groupware.workbench.ContentPanel.superclass.createScrollers.call(this);
+
+        Ext.util.ClickRepeater = _cr;
+
+        this.leftRepeater = new com.conjoon.groupware.workbench.ClickRepeater(this.scrollLeft, {
+            interval : this.scrollRepeatInterval,
+            handler  : this.onScrollLeft,
+            scope    : this
+        });
+
+        this.rightRepeater = new com.conjoon.groupware.workbench.ClickRepeater(this.scrollRight, {
+            interval : this.scrollRepeatInterval,
+            handler  : this.onScrollRight,
+            scope    : this
+        });
+
+    },
+
 // -------- listeners
+
+    /**
+     * Listener for the beforedrop event of the attached drop zone.
+     * Suspends all "beforeremove" listeners.
+     *
+     * @param {Object} data The drag data that initiated the beforedrop-event.
+     */
+    _onBeforeDrop : function(data)
+    {
+        this.un('beforeremove', this._onBeforeRemove, this);
+    },
+
+    /**
+     * Listener for the drop event of the attached drop zone.
+     * Resumed all "beforeremove" listeners.
+     *
+     * @param {Object} data The drag data that initiated the drop-event.
+     */
+    _onDrop : function(data)
+    {
+        this.on('beforeremove', this._onBeforeRemove, this);
+    },
 
     /**
      * Callback for the dialog that was created via the _confirmCloseTab
@@ -148,20 +277,20 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
         var id  = component.id;
         var add = true;
 
-        switch (id) {
-            case 'DOM:com.conjoon.groupware.HomePanel':
-            case 'DOM:com.conjoon.groupware.EmailPanel':
-            case 'DOM:com.conjoon.groupware.ContactsPanel':
-            case 'DOM:com.conjoon.groupware.TodoPanel':
-            case 'DOM:com.conjoon.groupware.CalendarPanel':
-                if (this._removeList.indexOf(id) < 0) {
-                    this._removeList.push(id);
-                    component.on('destroy', function(component) {
-                        this._removeList.remove(component.getId());
-                    }, this);
-                }
-                add = false;
-            break;
+        var fix = [
+            'DOM:com.conjoon.groupware.HomePanel', 'DOM:com.conjoon.groupware.EmailPanel',
+            'DOM:com.conjoon.groupware.ContactsPanel', 'DOM:com.conjoon.groupware.TodoPanel',
+            'DOM:com.conjoon.groupware.CalendarPanel'
+        ]
+
+        if (fix.indexOf(id) != -1) {
+            if (this._removeList.indexOf(id) < 0) {
+                this._removeList.push(id);
+                component.on('destroy', function(component) {
+                    this._removeList.remove(component.getId());
+                }, this);
+            }
+            add = false;
         }
 
         var title   = component.title;
@@ -170,7 +299,42 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
         if (add && title) {
             var menu = com.conjoon.groupware.workbench.BookmarkController.getButton().menu;
 
-            var item = menu.add({iconCls : iconCls, text : title});
+            var dynIndex = com.conjoon.groupware.workbench.BookmarkController.getDynIndex();
+
+            var existingItem = menu.findById('mi_'+component.getId());
+
+            // item already exists, add position was obviously called because of
+            // a dd operation
+            if (existingItem) {
+                // removing from the dom is needed as the menu's layout manager wouldn't
+                // render the item at its correct position
+                if (existingItem.el) {
+                    existingItem.el.dom.parentNode.parentNode.removeChild(existingItem.el.dom.parentNode);
+                    existingItem.rendered = false;
+                }
+
+                // calculate the index by checking if any tabs found in "fix"
+                // appear -before- the newly added tab.
+                var citems = container.items;
+                var pos    = index;
+                for (var i = 0, len = citems.length; i < len; i++) {
+                    if (i > index) {
+                        break;
+                    }
+                    if (fix.indexOf(citems.get(i).id) != -1) {
+                        pos--;
+                    }
+                }
+                menu.remove(existingItem, false);
+                menu.insert(dynIndex+pos, existingItem);
+                return;
+            }
+
+            var item = menu.add({
+                id      : 'mi_'+component.getId(),
+                iconCls : iconCls,
+                text    : title
+            });
             item.on('click', function() {
                 this.setActiveTab(component);
             }, this)
@@ -191,7 +355,7 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
     _getItems : function()
     {
         return [
-            new com.conjoon.groupware.home.HomePanel(),
+            this.getHomePanel(),
             this.getEmailPanel()
         ];
     },
@@ -208,6 +372,23 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
 
         w.on('destroy', function() {
             this._emailPanel = null;
+        }, this);
+
+        return w;
+    },
+
+    /**
+     *
+     * @return  {com.conjoon.groupware.home.HomePanel}
+     *
+     * @protected
+     */
+    _getHomePanel : function()
+    {
+        var w = new com.conjoon.groupware.home.HomePanel();
+
+        w.on('destroy', function() {
+            this._homePanel = null;
         }, this);
 
         return w;

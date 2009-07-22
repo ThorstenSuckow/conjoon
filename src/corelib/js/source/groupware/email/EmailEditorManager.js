@@ -195,12 +195,24 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         panel.on('destroy',    onDestroyPanel,    emailEditor);
 
         contentPanel.on('beforeremove',  onBeforeClose, emailEditor);
+        contentPanel.on('beforedrop',    onBeforeDrop,  emailEditor);
+        contentPanel.on('drop',          onDrop,        emailEditor);
 
         contentPanel.add(panel);
         contentPanel.setActiveTab(panel);
 
         tabCount++;
         tabIdCount++;
+    };
+
+    var onBeforeDrop = function(data)
+    {
+        contentPanel.un('beforeremove', onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
+    };
+
+    var onDrop = function(data)
+    {
+        contentPanel.on('beforeremove', onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
     };
 
     var onBeforeClose = function(container, component)

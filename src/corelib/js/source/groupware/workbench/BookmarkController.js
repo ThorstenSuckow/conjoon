@@ -46,6 +46,20 @@ com.conjoon.groupware.workbench.BookmarkController = function() {
             return _container;
         },
 
+        /**
+         * Returns the index in the menu where the first dynamic item
+         * can be added.
+         *
+         * @return {Number}
+         */
+        getDynIndex : function()
+        {
+            /**
+             * @todo don't hardcode, instead get position of last separator
+             */
+            return 7;
+        },
+
         getButton : function()
         {
             if (!_button) {

@@ -44,3 +44,39 @@
 .com-conjoon-groupware-workbench-AboutDialog .bold {
     font-weight:bold;
 }
+
+/**
+ * Styles for drag/drop
+ */
+/**
+ * Class for drop indicator workbench
+ */
+.com-conjoon-groupware-workbench-drop-ind-top, .com-conjoon-groupware-workbench-drop-ind-bottom {
+    width:9px;
+    height:9px;
+    position:absolute;
+    top:0;
+    display:none;
+    font-size:1px;
+    z-index:10000;
+    background:transparent url(../images/drop_indicator.png) no-repeat left top;
+}
+
+.com-conjoon-groupware-workbench-drop-ind-bottom {
+    background-position:0 -9px;
+}
+
+div.com-conjoon-groupware-workbench-tabProxy {
+    background:transparent url(../images/tabs-sprite.png) repeat-x scroll 0 -153px;
+    padding:4px 0 4px 0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.com-conjoon-groupware-workbench-tabProxy span {
+    background-repeat:no-repeat;
+    background-position:0 50%;
+    padding:4px 0 4px 20px;
+    font-weight:bold;
+    color:#15428B;
+    }
