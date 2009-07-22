@@ -216,6 +216,24 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
 
     },
 
+    /**
+     * Called from tabDropZone when "validatedrop"/"beforedrop" did not cancel
+     * the drop event. Passes the dragged panel's container, the panel itself
+     * and the position where to insert the panel as arguments.
+     * After this method was called, the "drop" event will be fired.
+     *
+     * @param {Ext.TabPanel} container The container from which the panel was dragged
+     * @param {Ext.Panel} panel The panel that was dragged and is bout to be dropped
+     * @param {Number} position The index where to place the dragged panel
+     */
+    dropTo : function(container, panel, position)
+    {
+        container.remove(panel, false);
+        this.insert(position, panel);
+        this.setActiveTab(panel);
+
+    },
+
 // -------- listeners
 
     /**

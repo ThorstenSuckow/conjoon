@@ -207,9 +207,7 @@ Ext.extend(com.conjoon.groupware.workbench.dd.TabDropZone, Ext.dd.DropZone, {
             if(this.tabPanel.fireEvent('validatedrop', data) !== false &&
                this.tabPanel.fireEvent('beforedrop', data) !== false){
 
-                this.tabPanel.remove(data.panel, false);
-                this.tabPanel.insert(pos, data.panel);
-                this.tabPanel.setActiveTab(data.panel);
+                this.tabPanel.dropTo(data.panel.ownerCt, data.panel, pos);
 
                 this.tabPanel.fireEvent('drop', data);
 
