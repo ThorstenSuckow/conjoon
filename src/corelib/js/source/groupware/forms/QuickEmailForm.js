@@ -21,17 +21,63 @@ Ext.namespace('com.conjoon.groupware.forms');
 
 com.conjoon.groupware.forms.QuickEmailForm = function() {
 
-    // shorthands
-    var _fieldConfigs    = com.conjoon.groupware.forms.QuickEmailFormFieldConfigs;
-    var _textFieldConfig = _fieldConfigs.textField;
-    var _textAreaConfig  = _fieldConfigs.textArea;
-    var _buttonConfig    = _fieldConfigs.button;
-
     var subjectField   = null;
     var recipientField = null;
     var messageField   = null;
 
+    var cancelButton = null;
+    var submitButton = null;
+
     var _form = null;
+
+    var getSubmitButton = function()
+    {
+        return new Ext.Button({
+            text     : com.conjoon.Gettext.gettext("Send now"),
+            formBind : true
+        });
+    };
+
+    var getCancelButton = function()
+    {
+        return new Ext.Button({
+            text    : com.conjoon.Gettext.gettext("Cancel"),
+            handler : com.conjoon.groupware.forms.QuickEmailForm.reset,
+            scope   : com.conjoon.groupware.forms.QuickEmailForm
+        });
+    };
+
+    var getSubjectField = function()
+    {
+        return new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Subject"),
+            emptyText  : com.conjoon.Gettext.gettext("<Subject>"),
+            name       : 'subject',
+            anchor     : '100%'
+        });
+    };
+
+    var getRecipientField = function()
+    {
+        return new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("To"),
+            name       : 'emailaddress',
+            emptyText  : com.conjoon.Gettext.gettext("<Email address>"),
+            vtype      : 'email',
+            anchor     : '100%',
+            allowBlank : false
+        })
+    };
+
+    var getMessageField = function()
+    {
+        return new Ext.form.TextArea({
+            emptyText  : com.conjoon.Gettext.gettext("<Message>"),
+            fieldLabel : com.conjoon.Gettext.gettext("Message"),
+            anchor     : '100% -40'
+        });
+    };
+
 
 
     return {
@@ -91,34 +137,34 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
 
             var decorate  = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
 
-            subjectField   = new Ext.form.TextField(_textFieldConfig.subject);
-            recipientField = new Ext.form.TextField(_textFieldConfig.emailAddress);
-            messageField   = new Ext.form.TextArea(_textAreaConfig.message);
+            subjectField   = getSubjectField();
+            recipientField = getRecipientField();
+            messageField   = getMessageField();
 
-            var cancelConfig = Ext.apply(_buttonConfig.cancel, {
-                handler : this.reset,
-                scope   : this
-            });
+            cancelButton = getCancelButton();
+            submitButton = getSubmitButton();
+
 
             _form = new Ext.FormPanel({
-                labelWidth  : 0,
-                frame       : false,
-                buttonAlign : 'center',
-                labelAlign  : 'left',
-                title       : com.conjoon.Gettext.gettext("Email"),
-                bodyStyle   : 'background:#DFE8F6;padding:5px;',
-                cls         : 'x-small-editor',
-                labelPad    : 0,
-                defaultType : 'textfield',
-                hideLabels  : true,
-                items       : [
+                labelWidth   : 0,
+                monitorValid : true,
+                frame        : false,
+                buttonAlign  : 'center',
+                labelAlign   : 'left',
+                title        : com.conjoon.Gettext.gettext("Email"),
+                bodyStyle    : 'background:#DFE8F6;padding:5px;',
+                cls          : 'x-small-editor',
+                labelPad     : 0,
+                defaultType  : 'textfield',
+                hideLabels   : true,
+                items        : [
                     recipientField,
                     subjectField,
                     messageField
                 ],
                 buttons : [
-                    decorate(new Ext.Button(_buttonConfig.save)),
-                    decorate(new Ext.Button(cancelConfig))
+                    decorate(submitButton),
+                    decorate(cancelButton)
                 ]
 
             });
