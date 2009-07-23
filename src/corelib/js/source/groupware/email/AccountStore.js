@@ -49,7 +49,31 @@ com.conjoon.groupware.email.AccountStore = function() {
             }
 
             return _store;
-        }
+        },
+
+        /**
+         * Returns the record which is currently marked as "standard" account.
+         * If "useFallback" is set to "true" and no record is found where
+         * "isStandard == true", the first record in the store will be returned.
+         *
+         * @param {Boolean} useFallback Whether to return the first record found
+         * in the store when no standard account was found.
+         *
+         * @return {com.conjoon.groupware.email.AccountRecord}
+         */
+        getStandardAccount : function(useFallback)
+        {
+            this.getInstance();
+
+            var isStandardIndex = _store.find('isStandard', true);
+            var standardAcc     = _store.getAt(isStandardIndex);
+
+            if (!standardAcc && useFallback !== false) {
+                standardAcc = _store.getAt(0);
+            }
+
+            return standardAcc;
+        },
 
     };
 

@@ -1278,7 +1278,8 @@ com.conjoon.groupware.email.EmailForm = function(config){
 
     Ext.apply(this, config);
 
-    var accountStore = com.conjoon.groupware.email.AccountStore.getInstance();
+    var accSt        = com.conjoon.groupware.email.AccountStore;
+    var accountStore = accSt.getInstance();
 
     var view = new Ext.grid.GridView({
         getRowClass : function(record, rowIndex, p, ds){
@@ -1286,9 +1287,7 @@ com.conjoon.groupware.email.EmailForm = function(config){
         }
     });
 
-    var isStandardIndex = accountStore.find('isStandard', true);
-    var standardAcc     = accountStore.getAt(isStandardIndex);
-
+    var standardAcc = accSt.getStandardAccount(false);
 
     this.fromComboBox = new Ext.form.ComboBox({
        name : 'from',
