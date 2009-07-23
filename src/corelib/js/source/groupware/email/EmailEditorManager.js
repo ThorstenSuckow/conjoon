@@ -542,7 +542,12 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 com.conjoon.groupware.email.Dispatcher.sendEmail(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
-                    {panelId : panelId}
+                    {panelId            : panelId,
+                     setSubjectCallback : {
+                        fn    : com.conjoon.groupware.email.EmailEditorManager.setSubject,
+                        scope : com.conjoon.groupware.email.EmailEditorManager,
+                        args  : [panelId]
+                     }}
                 );
             break;
 
@@ -550,7 +555,12 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 com.conjoon.groupware.email.Dispatcher.moveDraftToOutbox(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
-                    {panelId : panelId}
+                    {panelId            : panelId,
+                     setSubjectCallback : {
+                        fn    : com.conjoon.groupware.email.EmailEditorManager.setSubject,
+                        scope : com.conjoon.groupware.email.EmailEditorManager,
+                        args  : [panelId]
+                     }}
                 );
             break;
 
@@ -558,7 +568,12 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 com.conjoon.groupware.email.Dispatcher.saveDraft(
                     draftRecord,
                     (formValues[panelId].emailItemRecord ? formValues[panelId].emailItemRecord : null),
-                    {panelId : panelId}
+                    {panelId            : panelId,
+                     setSubjectCallback : {
+                        fn    : com.conjoon.groupware.email.EmailEditorManager.setSubject,
+                        scope : com.conjoon.groupware.email.EmailEditorManager,
+                        args  : [panelId]
+                     }}
                 );
             break;
         }

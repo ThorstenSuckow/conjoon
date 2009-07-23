@@ -207,7 +207,13 @@ com.conjoon.groupware.email.Dispatcher = function() {
                         }
                         text = text == undefined ? "" : text+"";
                         draft.set('subject', text);
-                        com.conjoon.groupware.email.EmailEditorManager.setSubject(text, options.panelId);
+
+                        if (options.setSubjectCallback) {
+                            var cb   = options.setSubjectCallback;
+                            var args = [text].concat(cb.args);
+                            cb.fn.apply(cb.scope, args);
+                        }
+
                         _manageDraft(draft, referencedItem, options, type, false);
                     }
                 });
