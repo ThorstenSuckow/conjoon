@@ -318,7 +318,7 @@ com.conjoon.groupware.email.Dispatcher = function() {
          */
         sendEmail : function(draft, referencedItem, options, checkSubject)
         {
-            _manageDraft(draft, referencedItem, options, 'send');
+            _manageDraft(draft, referencedItem, options, 'send', checkSubject);
         },
 
         /**
