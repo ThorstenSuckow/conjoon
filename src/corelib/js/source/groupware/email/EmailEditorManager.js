@@ -581,6 +581,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     /**
      * Callback before an email is moved to the outbox or send or a draft is saved.
+     * This callback is defined using the MessageBus. It is possible that this method
+     * is called when sending an email is triggered from another component.
+
      *
      * This implementation will both handle the messages
      * com.conjoon.groupware.email.Smtp.beforeEmailSent
@@ -601,6 +604,13 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         }
 
         var panelId = options.panelId;
+
+        // check if a panelId is available in the options.
+        // if that is not the case, the EditorManager did not trigger this message
+        // and we can exit here
+        if (!panelId || !formValues[panelId]) {
+            return;
+        }
 
         formValues[panelId].disabled = true;
         formValues[panelId].pending  = true;
@@ -649,7 +659,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         // check if a panelId is available in the options.
         // if that is not the case, the EditorManager did not trigger this message
         // and we can exit here
-        if (!message.options || (message.options && !message.options.panelId)) {
+        if (!message.options || (message.options && (!message.options.panelId || !formValues[message.options.panelId]))) {
             return;
         }
 
@@ -693,7 +703,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         // check if a panelId is available in the options.
         // if that is not the case, the EditorManager did not trigger this message
         // and we can exit here
-        if (!message.options || (message.options && !message.options.panelId)) {
+        if (!message.options || (message.options && (!message.options.panelId || !formValues[message.options.panelId]))) {
             return;
         }
 
