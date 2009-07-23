@@ -1123,11 +1123,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
                        ? $contact['last_name'] .' '
                        : '');
 
-            if ($name) {
-                $address = $name . '<' . $address . '>';
-            }
-
-            $response[]['address'] = $address;
+            $response[] = array(
+                'name'        => $name ? $name : '',
+                'address'     => $address,
+                'fullAddress' => $name ? $name . '<' . $address . '>' : $address
+            );
         }
 
         $this->view->success = true;

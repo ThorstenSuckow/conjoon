@@ -31,24 +31,29 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
      */
     _blacklist : null,
 
+    /**
+     * @cfg {String} displayField The field to use for displaying the selected record.
+     * Defaults to "fullAddress"
+     */
+    displayField : 'fullAddress',
+
     initComponent : function()
     {
         Ext.apply(this, {
             hideTrigger   : true,
-            tpl           : '<tpl for="."><div class="x-combo-list-item">{address:htmlEncode}</div></tpl>',
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{fullAddress:htmlEncode}</div></tpl>',
             typeAhead     : true,
             queryDelay    : 250,
             lazyRender    : true,
             triggerAction : 'query',
             minChars      : 3,
-            displayField  : 'address',
             mode          : 'remote',
             listClass     : 'x-combo-list-small',
             // store
             store         : new Ext.data.JsonStore({
                 url       : './groupware/email/get.recipient/format/json',
                 root      : 'matches',
-                fields    : ['address'],
+                fields    : ['name', 'address', 'fullAddress'],
                 autoLoad  : false,
                 listeners : {
                     loadexception : {
