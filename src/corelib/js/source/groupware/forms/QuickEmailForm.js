@@ -34,7 +34,9 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
     {
         return new Ext.Button({
             text     : com.conjoon.Gettext.gettext("Send now"),
-            formBind : true
+            formBind : true,
+            handler  : send,
+            scope    : com.conjoon.groupware.forms.QuickEmailForm
         });
     };
 
@@ -59,14 +61,22 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
 
     var getRecipientField = function()
     {
-        return new Ext.form.TextField({
+        return new com.conjoon.groupware.email.form.RecipientComboBox({
+            anchor       : '100%',
+            allowBlank   : false,
+            emptyText    : com.conjoon.Gettext.gettext("<Email address>"),
+            vtype        : 'email',
+            displayField : 'address'
+        });
+
+        /*return new Ext.form.TextField({
             fieldLabel : com.conjoon.Gettext.gettext("To"),
             name       : 'emailaddress',
             emptyText  : com.conjoon.Gettext.gettext("<Email address>"),
             vtype      : 'email',
             anchor     : '100%',
             allowBlank : false
-        })
+        });*/
     };
 
     var getMessageField = function()
@@ -78,9 +88,107 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
         });
     };
 
+    /**
+     * Prepares the data to be sent by com.conjoon.groupware.email.Dispatcher
+     *
+     * @return {com.conjoon.groupware.email.data.Draft}
+     */
+    var prepareData = function()
+    {
+        var to  = [];
+        var cc  = [];
+        var bcc = [];
 
+        var sngl = com.conjoon.groupware.forms.QuickEmailForm;
+
+        to.push(sngl.getRecipient());
+
+        var accountId = com.conjoon.groupware.email.AccountStore.getStandardAccount().id;
+
+        var params = {
+            format                   : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
+            id                       : -1,
+            referencesId             : -1,
+            type                     : 'new',
+            inReplyTo                : '',
+            references               : '',
+            date                     : Math.floor((new Date().getTime())/1000),
+            subject                  : sngl.getSubject(),
+            message                  : sngl.getMessage(),
+            to                       : Ext.encode(to),
+            cc                       : '',
+            bcc                      : '',
+            groupwareEmailFoldersId  : -1,
+            groupwareEmailAccountsId : accountId
+        };
+
+        var rec = new com.conjoon.groupware.email.data.Draft(
+            params, params.id
+        );
+
+        return rec;
+    };
+
+    var send = function()
+    {
+        var draftRecord = prepareData();
+
+        com.conjoon.groupware.email.Dispatcher.sendEmail(
+            draftRecord, null, {
+                panelId : _form.getId(),
+                setSubjectCallback : {
+                    fn    : com.conjoon.groupware.forms.QuickEmailForm.setSubject,
+                    scope : com.conjoon.groupware.forms.QuickEmailForm
+                }
+            }, true
+        );
+    };
+
+    var sentFailure = function(subject, message)
+    {
+        if (message.options.panelId == _form.getId()) {
+            _form.el.unmask();
+            com.conjoon.groupware.forms.QuickEmailForm.reset();
+        }
+    };
+
+    var beforeSent = function(subject, message)
+    {
+        if (message.options.panelId == _form.getId()) {
+            _form.el.mask(
+                com.conjoon.Gettext.gettext("Sending..."),
+                'x-mask-loading'
+            );
+        }
+    };
+
+    var sentSuccess = function(subject, message)
+    {
+        if (message.options.panelId == _form.getId()) {
+            _form.el.unmask();
+            com.conjoon.groupware.forms.QuickEmailForm.reset();
+        }
+    };
+
+    Ext.ux.util.MessageBus.subscribe(
+        'com.conjoon.groupware.email.Smtp.emailSent',
+        sentSuccess
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'com.conjoon.groupware.email.Smtp.emailSentFailure',
+        sentFailure
+    );
+    Ext.ux.util.MessageBus.subscribe(
+        'com.conjoon.groupware.email.Smtp.beforeEmailSent',
+        beforeSent
+    );
 
     return {
+
+        setSubject : function(value)
+        {
+            this.setValueFor('subject', value);
+        },
 
         getSubject : function()
         {
@@ -95,6 +203,19 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
         getMessage : function()
         {
             return this.getValueFor('message');
+        },
+
+        setValueFor : function(type, value)
+        {
+            if (!_form) {
+                return "";
+            }
+
+            switch (type) {
+                case 'subject':
+                    subjectField.setValue(value);
+                break;
+            }
         },
 
         getValueFor : function(type)
@@ -113,7 +234,6 @@ com.conjoon.groupware.forms.QuickEmailForm = function() {
                 default:
                     return "";
             }
-
         },
 
         reset : function()
