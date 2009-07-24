@@ -241,6 +241,10 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
             );
             emailForm.reset();
 
+        } else if (panel == com.conjoon.groupware.service.youtube.ViewBaton.getBasePanel()) {
+
+            com.conjoon.groupware.service.youtube.ViewBaton.showInFeaturePanel(position);
+
         } else {
             container.remove(panel, false);
             this.insert(position, panel);

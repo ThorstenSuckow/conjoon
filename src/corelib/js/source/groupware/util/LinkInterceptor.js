@@ -36,7 +36,7 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
                 });
             } else if (href &&  (href.indexOf('http://www.youtube.com') == 0 ||
                        href.indexOf('http://youtube.com') == 0)) {
-                com.conjoon.groupware.QuickEditPanel.loadYoutubeVideo(href);
+                com.conjoon.groupware.service.youtube.VideoDirector.loadVideo(href);
 
             } else {
                 window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(href));
