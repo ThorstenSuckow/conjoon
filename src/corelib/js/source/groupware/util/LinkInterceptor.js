@@ -37,10 +37,13 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
                 return;
             } else if (href &&  (href.indexOf('http://www.youtube.com') == 0 ||
                        href.indexOf('http://youtube.com') == 0)) {
-                var res = com.conjoon.groupware.service.youtube.VideoDirector.loadVideo(href);
 
-                if (res) {
-                    return;
+                if (href.indexOf('v=') != -1 || href.indexOf('/v') != -1) {
+                    var res = com.conjoon.groupware.service.youtube.VideoDirector.loadVideo(href);
+
+                    if (res) {
+                        return;
+                    }
                 }
             }
 
