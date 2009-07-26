@@ -547,11 +547,13 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             }
 
             // link
-            if ($link = $item->link()) {
+            if ($link = $item->link() && !is_object($item->link())) {
                 $itemData['link'] = $link;
-            } else if ($link = $item->link['href']) {
+            } else if (isset($item->link['href']) && $link = $item->link['href']) {
                 $itemData['link'] = $link;
             } else if ($link = $item->link('alternate')) {
+                $itemData['link'] = $link;
+            } else if ($link = $item->link(0)) {
                 $itemData['link'] = $link;
             }
 
@@ -579,6 +581,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $itemData['pubDate'] = $dateFilter->filter($date);
 
             $itemData['savedTimestamp'] = time();
+
             $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                 $itemData,
                 Conjoon_Filter_Input::CONTEXT_CREATE
