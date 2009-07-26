@@ -46,7 +46,11 @@ com.conjoon.groupware.feeds.FeedGrid = function(config) {
         header: com.conjoon.Gettext.gettext("Title"),
         width: 220,
         sortable: true,
-        dataIndex: 'title'
+        dataIndex: 'title',
+        renderer : function(value, metadata, record){
+            metadata.attr = 'qtip="'+value+'"';
+            return value;
+        }
       },{
         header: com.conjoon.Gettext.gettext("Description"),
         hidden:true,

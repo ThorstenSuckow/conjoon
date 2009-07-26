@@ -95,7 +95,11 @@ com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
         header    : com.conjoon.Gettext.gettext("Subject"),
         width     : 160,
         sortable  : false,
-        dataIndex : 'subject'
+        dataIndex : 'subject',
+        renderer : function(value, metadata, record){
+            metadata.attr = 'qtip="'+value+'"';
+            return value;
+        }
       },{
         header    : com.conjoon.Gettext.gettext("Sender"),
         width     : 160,
