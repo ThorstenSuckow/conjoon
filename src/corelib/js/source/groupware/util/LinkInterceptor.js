@@ -34,13 +34,18 @@ com.conjoon.groupware.util.LinkInterceptor = function(){
                     name    : t.firstChild.data,
                     address : href.substr(7)
                 });
+                return;
             } else if (href &&  (href.indexOf('http://www.youtube.com') == 0 ||
                        href.indexOf('http://youtube.com') == 0)) {
-                com.conjoon.groupware.service.youtube.VideoDirector.loadVideo(href);
+                var res = com.conjoon.groupware.service.youtube.VideoDirector.loadVideo(href);
 
-            } else {
-                window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(href));
+                if (res) {
+                    return;
+                }
             }
+
+            window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(href));
+
 
         },
         options : {

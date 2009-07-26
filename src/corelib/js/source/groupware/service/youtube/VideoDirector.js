@@ -78,28 +78,19 @@ com.conjoon.groupware.service.youtube.VideoDirector = function() {
 
         /**
          * Attempts to load the specified video url.
-         * For playing a video, the control must be available.
-         * If the basePanels owner ct is either a west or east panel
-         * of the workbench and if its currently hidden, a new tab will be added
-         * to the workbench's content panel, and the video will be loaded.
-         * Otherwise, if the player sits in the basePanel and if no owner is
-         * hidden, it will play rigth away.
+         * For playing a video, the basePanel must be available.
          *
+         * @return {Boolean} false if the video could not be loaded due to the
+         * basePanel not available, otherwise true
          */
         loadVideo : function(url)
         {
-            if (!viewBaton.playerAvailable()) {
-                return;
+            if (!viewBaton.showPlayer()) {
+                return false;
             }
 
             var control = viewBaton.getControl();
             var player  = viewBaton.getPlayer();
-
-            //if (_panel.ownerCt.hidden) {
-                //_panel.ownerCt.setVisible(true);
-            //}
-
-            //_panel.setActiveTab(_playerContainer);
 
             var id = control._parseVideoId(url);
             if (id) {
@@ -115,6 +106,8 @@ com.conjoon.groupware.service.youtube.VideoDirector = function() {
                     playQueue();
                 }
             }
+
+            return true;
         }
 
     };

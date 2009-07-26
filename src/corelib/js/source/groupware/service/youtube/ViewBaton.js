@@ -377,14 +377,18 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
                 'com.conjoon.groupware.ContentPanel'
             );
 
-            if (basePanel.ownerCt == com.conjoon.groupware.QuickEditPanel.getComponent()) {
+            if (com.conjoon.groupware.QuickEditPanel.getComponent().findById(basePanel.getId())) {
                 basePanel.ownerCt.remove(basePanel, false);
                 featurePanel.add(basePanel);
             }
 
             flashControl.refreshListeners();
 
-            contentPanel.insert(position, featurePanel);
+            if (!Ext.isNumber(position)) {
+                contentPanel.add(featurePanel);
+            } else {
+                contentPanel.insert(position, featurePanel);
+            }
             contentPanel.setActiveTab(featurePanel);
         },
 
@@ -410,6 +414,44 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
             flashControl.refreshListeners();
 
             quickPanel.setActiveTab(basePanel);
+        },
+
+        /**
+         * Attempts to activate either the quickpanel or the featurepanel,
+         * depending on the ownerCt of the basePanel, for showing the video.
+         *
+         * @return {Boolean} false if the player could not be shown, otherwise
+         * true
+         */
+        showPlayer : function()
+        {
+            this.getBasePanel();
+
+            if (!basePanel) {
+                return false;
+            }
+            if (featurePanel && featurePanel.findById(basePanel.getId())) {
+                featurePanel.ownerCt.setActiveTab(featurePanel);
+                return true;
+            }
+
+            var quickPanel = com.conjoon.groupware.QuickEditPanel.getComponent();
+
+            if (quickPanel && quickPanel.findById(basePanel.getId())) {
+                // check whether any of the basePanel's ownerct is hidden
+                var ct = basePanel;
+                while (ct) {
+                    if (ct.hidden === true) {
+                        this.showInFeaturePanel();
+                        return true;
+                    }
+                    ct = ct.ownerCt;
+                }
+
+                quickPanel.setActiveTab(basePanel);
+            }
+
+            return true;
         },
 
 
