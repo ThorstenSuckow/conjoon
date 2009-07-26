@@ -105,6 +105,38 @@ com.conjoon.groupware.service.youtube.VideoDirector = function() {
                 } else {
                     playQueue();
                 }
+            } else {
+
+                if (Ext.form.VTypes.url(url)) {
+                    com.conjoon.SystemMessageManager.confirm(new com.conjoon.SystemMessage({
+                        title : com.conjoon.Gettext.gettext("Youtube id error"),
+                        text  : String.format(
+                            com.conjoon.Gettext.gettext("\"{0}\" does not seem to be a valid Youtube video id. Do you want to try to load the specified url in another window instead?"),
+                            url
+                        )
+                    }), {
+                        fn : function(button) {
+                            if (button == 'yes') {
+                                window.open(com.conjoon.groupware.util.LinkInterceptor.getRedirectLink(url));
+                            }
+                        }
+                    });
+                } else {
+                    com.conjoon.SystemMessageManager.prompt(new com.conjoon.SystemMessage({
+                        title : com.conjoon.Gettext.gettext("Youtube id error"),
+                        text  : String.format(
+                            com.conjoon.Gettext.gettext("\"{0}\" does not seem to be a valid Youtube video id. Please try again."),
+                            url
+                        )
+                    }), {
+                        fn : function(button, text) {
+                            if (button == 'ok') {
+                                com.conjoon.groupware.service.youtube.VideoDirector.loadVideo(text);
+                            }
+                            return;
+                        }
+                    });
+                }
             }
 
             return true;
