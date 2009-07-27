@@ -88,7 +88,7 @@ class Conjoon_Filter_UrlToATag implements Zend_Filter_Interface
         }
 
         // now work on remaining links
-        $pattern = "/(?:(ftp:\/\/|https:\/\/|http:\/\/)|(www\.))([a-zA-Z0-9-:\.\/\_\?\%\#\&\=\;\~\!\(\)]+)/ie";
+        $pattern = "/(?:(ftp:\/\/|https:\/\/|http:\/\/)|(www\.))([a-zA-Z0-9-:\.\/\_\?\%\#\&\=\;\~\!\(\)\+]+)/ie";
         $value = preg_replace(
             $pattern,
             "'<a ".$this->_attributeString." href=\"'.('\\1' ? '\\1' : 'http://').'$2$3\">$1$2$3</a>'",
