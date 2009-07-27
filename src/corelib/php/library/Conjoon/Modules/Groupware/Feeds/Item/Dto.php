@@ -21,6 +21,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Dto {
     public $name;
     public $title;
     public $author;
+    public $authorUri;
+    public $authorEmail;
     public $description;
     public $content;
     public $pubDate;

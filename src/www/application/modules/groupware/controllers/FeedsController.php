@@ -524,10 +524,20 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $itemData['title'] = $item->title();
 
             // author
-            if ($author = $item->author()) {
-                $itemData['author'] = $author;
-            } else if ($author = $item->creator()) {
-                $itemData['author'] = $author;
+            $itemData['author']      = "";
+            $itemData['authorUri']   = "";
+            $itemData['authorEmail'] = "";
+
+            try {
+                $itemData['author']      = $item->author->name();
+                $itemData['authorUri']   = $item->author->uri();
+                $itemData['authorEmail'] = $item->author->email();
+            } catch (Exception $e) {
+                if ($author = $item->author()) {
+                    $itemData['author'] = $author;
+                } else if ($author = $item->creator()) {
+                    $itemData['author'] = $author;
+                }
             }
 
              // description

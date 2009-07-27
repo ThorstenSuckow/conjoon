@@ -22,6 +22,8 @@ com.conjoon.groupware.feeds.ItemRecord = Ext.data.Record.create([
     {name: 'name', type : 'string'},
     {name: 'title', type : 'string'},
     {name: 'author', type : 'string'},
+    {name: 'authorUri', type : 'string'},
+    {name: 'authorEmail', type : 'string'},
     {name: 'content', type : 'string'},
     {name: 'description', type : 'string'},
     {name: 'pubDate', type: 'date', dateFormat: 'Y-m-d H:i:s'},

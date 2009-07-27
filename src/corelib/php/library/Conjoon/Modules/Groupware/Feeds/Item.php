@@ -41,6 +41,8 @@ class Conjoon_Modules_Groupware_Feeds_Item implements Conjoon_BeanContext, Seria
     protected $name;
     protected $title;
     protected $author;
+    protected $authorUri;
+    protected $authorEmail;
     protected $description;
     protected $content;
     protected $pubDate;
@@ -66,6 +68,8 @@ class Conjoon_Modules_Groupware_Feeds_Item implements Conjoon_BeanContext, Seria
     public function getName(){return $this->name;}
     public function getTitle(){return $this->title;}
     public function getAuthor(){return $this->author;}
+    public function getAuthorUri(){return $this->authorUri;}
+    public function getAuthorEmail(){return $this->authorEmail;}
     public function getDescription(){return $this->description;}
     public function getContent(){return $this->content;}
     public function getPubDate(){return $this->pubDate;}
@@ -78,6 +82,8 @@ class Conjoon_Modules_Groupware_Feeds_Item implements Conjoon_BeanContext, Seria
     public function setGroupwareFeedsAccountsId($groupwareFeedsAccountsId){$this->groupwareFeedsAccountsId = $groupwareFeedsAccountsId;}
     public function setName($name){$this->name = $name;}
     public function setAuthor($author){$this->author = $author;}
+    public function setAuthorUri($authorUri){$this->authorUri = $authorUri;}
+    public function setAuthorEmail($authorEmail){$this->authorEmail = $authorEmail;}
     public function setContent($content){$this->content = $content;}
     public function setTitle($title){$this->title = $title;}
     public function setDescription($description){$this->description = $description;}
@@ -151,6 +157,8 @@ class Conjoon_Modules_Groupware_Feeds_Item implements Conjoon_BeanContext, Seria
             'name' => $this->name ,
             'title' => $this->title ,
             'author' => $this->author ,
+            'authorUri' => $this->authorUri,
+            'authorEmail' => $this->authorEmail,
             'description' => $this->description ,
             'pubDate' => $this->pubDate,
             'guid' => $this->guid,
@@ -175,6 +183,8 @@ class Conjoon_Modules_Groupware_Feeds_Item implements Conjoon_BeanContext, Seria
             'name: '.$data['name'].', '.
             'title: '.$data['title'].', '.
             'author: '.$data['author'].', '.
+            'authorUri: '.$data['authorUri'].', '.
+            'authorEmail: '.$data['authorEmail'].', '.
             'guid: '.$data['guid'].', '.
             'content: '.htmlentities($data['content']).', '.
             'description: '.$data['description'].', '.

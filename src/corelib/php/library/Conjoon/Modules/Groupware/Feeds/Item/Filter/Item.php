@@ -81,6 +81,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'name',
             'title',
             'author',
+            'authorUri',
+            'authorEmail',
             'description',
             'pubDate',
             'link',
@@ -93,6 +95,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'content',
             'title',
             'author',
+            'authorUri',
+            'authorEmail',
             'description',
             'pubDate',
             'link',
@@ -107,6 +111,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                 'link',
                 'guid',
                 'author',
+                'authorUri',
+                'authorEmail',
                 'savedTimestamp',
                 'groupwareFeedsAccountsId'
         )
@@ -129,6 +135,12 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'StringTrim'
          ),
          'author' => array(
+            'StringTrim'
+         ),
+         'authorUri' => array(
+            'StringTrim'
+         ),
+         'authorEmail' => array(
             'StringTrim'
          ),
         'description' => array(
@@ -173,6 +185,14 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'default' => ''
          ),
         'author' => array(
+            'allowEmpty' => true,
+            'default' => ''
+         ),
+         'authorUri' => array(
+            'allowEmpty' => true,
+            'default' => ''
+         ),
+         'authorEmail' => array(
             'allowEmpty' => true,
             'default' => ''
          ),
@@ -254,12 +274,13 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                         // allow all except img, object, script, embed etc.
                         array(
                             'p','div','span','ul','li','table','tr','td','blockquote',
-                            'strong','b','i','u','sup','sub','tt','h1','h2','h3','h4',
-                            'h5','h6','small','big','br','nobr','center','ol','a','font',
+                            'strong','b','i','u','sup','sub','tt', 'tbody', 'h1','h2','h3','h4',
+                            'h5','h6','small','big','br','nobr','center','ol','a', 'link','font',
                             'pre'
                         ),
                         array(
-                            'style', 'class','id', 'href', 'border', 'cellspacing', 'cellpadding'
+                            'style', 'class','id', 'href', 'border', 'cellspacing',
+                            'cellpadding', 'valign', 'rowspan', 'colspan', 'alt'
                         )
                     ),
                     array(
@@ -271,6 +292,9 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                         'PregReplace',
                         "/href='javascript:/",
                         "href='/index/javascript/"
+                    ),
+                    array(
+                        'UrlToATag'
                     ),
                     'StringTrim'
                 );
