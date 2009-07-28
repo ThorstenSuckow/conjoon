@@ -67,3 +67,14 @@
     font-weight:bold;
     font-family:Tahoma, Verdana, Helvetica, Arial;
 }
+
+.com-conjoon-groupware-feeds-FeedView-header a.url {
+    background-image:url(../images/12x12/apps/groupware-feeds-authorurl.png);
+    background-repeat:no-repeat;
+    margin-left:6px;
+}
+
+.com-conjoon-groupware-feeds-FeedView-header a.url img {
+    height:12px;
+    width:12px;
+}

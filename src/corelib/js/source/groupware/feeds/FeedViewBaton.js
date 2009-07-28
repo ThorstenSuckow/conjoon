@@ -201,7 +201,6 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
 
         var body = new Ext.Panel({
             region     : 'center',
-            listeners  : com.conjoon.groupware.util.LinkInterceptor.getListener(),
             autoScroll : true,
             cls        : 'com-conjoon-groupware-feeds-FeedView-panel',
             html       : ''
@@ -218,6 +217,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                          : 'com-conjoon-groupware-feeds-FeedView-Icon',
             closable   : true,
             hideMode   : 'offsets',
+            listeners  : com.conjoon.groupware.util.LinkInterceptor.getListener(),
             items      : [{
                 region    : 'north',
                 bodyStyle : 'border-bottom:none',
@@ -227,8 +227,20 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                    '<span class="date">'+Ext.util.Format.date(feedItemRecord.get('pubDate'), 'd.m.Y H:i')+'</span>'+
                    '<div class="subject">'+feedItemRecord.get('title')+'</div>'+
                    '<div class="name">'+name+'</div>'+
-                   '<div class="link"><a href="'+LinkInterceptor.getRedirectLink(link)+'" target="_blank">'+link+'</a></div>'+
-                   '<div class="author">'+com.conjoon.Gettext.gettext("Posted by")+': '+feedItemRecord.get('author')+'</div>'+
+                   '<div class="link"><a href="'+link+'" target="_blank">'+link+'</a></div>'+
+                   '<div class="author">'+
+                   com.conjoon.Gettext.gettext("Posted by")+': '+
+                   (
+                    feedItemRecord.get('authorEmail')
+                    ? '<a href="mailto:'+feedItemRecord.get('authorEmail')+'">'+feedItemRecord.get('author')+'</a>'
+                    : feedItemRecord.get('author')
+                   )+
+                   (
+                    feedItemRecord.get('authorUri')
+                    ? '<a class="url" href="'+feedItemRecord.get('authorUri')+'"><img src="'+Ext.BLANK_IMAGE_URL+'" border="0" /></a>'
+                    : ''
+                   )+
+                   '</div>'+
                    '</div>'
 
             },body
