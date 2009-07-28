@@ -28,6 +28,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
 
     protected $_validGetOptions = array('id');
 
+    protected $_validTagOptions = array('accountId');
+
     /**
      *
      * @param array $options An associative array with the following
@@ -37,6 +39,18 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
     protected function _buildId(Array $options)
     {
         return (string)$options['id'];
+    }
+
+    /**
+     *
+     * @param array $options An associative array with the following
+     * key value/pairs:
+     *   - accountId: The id of the related account this feed was retrieved
+     * for
+     */
+    protected function _getTagList(Array $options)
+    {
+        return array($options['accountId']);
     }
 
     /**
@@ -57,7 +71,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
 
         $id = $options['id'];
 
-        $cacheId = $this->_buildId($options);
+        $cacheId = $this->buildId($options);
+        $tagList = $this->getTagList($options);
 
         $cache = $this->_cache;
 
@@ -84,7 +99,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
 
             $item = $itemModel->getItemAsDto($id);
 
-            $cache->save($item, $cacheId);
+            $cache->save($item, $cacheId, $tagList);
 
         } else {
             $item = $cache->load($cacheId);

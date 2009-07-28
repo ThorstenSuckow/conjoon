@@ -444,7 +444,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         /**
          * @todo filter incoming data
          */
-        $id = $this->_request->getParam('id', 0);
+        $id        = $this->_request->getParam('id', 0);
+        $accountId = $this->_request->getParam('groupwareFeedsAccountsId', 0);
 
         /**
          * @see Conjoon_Keys
@@ -459,7 +460,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $item = Conjoon_Builder_Factory::getBuilder(
             Conjoon_Keys::CACHE_FEED_ITEM,
             Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->get(array('id' => $id));
+        )->get(array('id' => $id, 'accountId' => $accountId));
 
         if ($item == null) {
             /**

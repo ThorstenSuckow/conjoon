@@ -131,19 +131,6 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
      */
     var clkRecord = null;
 
-    /**
-     * The load configuration for reading out feeds. Will be used by the preview
-     * panel and the window that gets created when the panel was detached from
-     * the corresponding grid.
-     */
-    var loadConfig = {
-        url: './groupware/feeds/get.feed.content/format/json',
-        discardUrl: false,
-        nocache: true,
-        text: com.conjoon.Gettext.gettext("Please wait. Loading entry..."),
-        timeout: 30,
-        scripts: false
-    };
 // }}}
 
 // {{{ private methods
@@ -235,7 +222,10 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
 
         requestId = Ext.Ajax.request({
             url       : './groupware/feeds/get.feed.content/format/json',
-            params    : {id : clkRecord.id},
+            params    : {
+                id                       : clkRecord.id,
+                groupwareFeedsAccountsId : clkRecord.get('groupwareFeedsAccountsId')
+            },
             success   : onLoadSuccess,
             failure   : onLoadFailure,
             disableCaching : true

@@ -84,10 +84,11 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
      * Loads the feed's contents for the specified id from the server.
      *
      * @param {Number} id
+     * @param {Number} groupwareFeedsAccountsId
      * @param {String} panelId
      *
      */
-    var loadFeedContents = function(id, panelId)
+    var loadFeedContents = function(id, groupwareFeedsAccountsId, panelId)
     {
         if (_requestIds[panelId]) {
             return;
@@ -96,7 +97,8 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
         _requestIds[panelId] = Ext.Ajax.request({
             url    : './groupware/feeds/get.feed.content/format/json',
             params : {
-                id : id
+                id                       : id,
+                groupwareFeedsAccountsId : groupwareFeedsAccountsId
             },
             panelId : panelId,
             success : onFeedLoadSuccess,
@@ -179,7 +181,11 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
         responseInspector.handleFailure(response, {
             onLogin : {
                 fn : function(){
-                    loadFeedContents(options.params.id, options.panelId);
+                    loadFeedContents(
+                        options.params.id,
+                        options.params.groupwareFeedsAccountsId,
+                        options.panelId
+                    );
                 }
             },
             title   : com.conjoon.Gettext.gettext("Error while loading feed item")
@@ -324,6 +330,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
                 if (loadFromServer === true) {
                     loadFeedContents(
                         feedItemRecord.id,
+                        feedItemRecord.get('groupwareFeedsAccountsId'),
                         idPrefix+feedItemRecord.id
                     );
                 } else {
