@@ -279,12 +279,40 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      * representing the accounts that should be updated.
      * Depending on the context, either json-encoded strings will be available, or plain
      * arrays.
+     * This action will also request to delete any feed items that where cached, tagged with either
+     * the ids of the deleted or updated accounts.
      */
     public function updateAccountsAction()
     {
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+         */
         require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
+
+        /**
+         * @see Conjoon_Util_Array
+         */
         require_once 'Conjoon/Util/Array.php';
+
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Account_Model_Account
+         */
         require_once 'Conjoon/Modules/Groupware/Feeds/Account/Model/Account.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
+        $builder = Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_FEED_ITEM,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        );
 
         $toDelete      = array();
         $toUpdate      = array();
@@ -306,6 +334,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $affected = $model->deleteAccount($toDelete[$i]);
             if (!$affected) {
                 $deletedFailed[] = $toDelete[$i];
+            } else {
+                $builder->cleanCacheForTags(array('accountId' => $toDelete[$i]));
             }
         }
 
@@ -336,6 +366,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 $affected = $model->updateAccount($id, $data[$i]);
                 if (!$affected) {
                     $updatedFailed[] = $id;
+                }  else {
+                    $builder->cleanCacheForTags(array('accountId' => $id));
                 }
             }
 
