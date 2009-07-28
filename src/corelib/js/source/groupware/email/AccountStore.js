@@ -73,7 +73,7 @@ com.conjoon.groupware.email.AccountStore = function() {
             }
 
             return standardAcc;
-        },
+        }
 
     };
 

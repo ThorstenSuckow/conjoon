@@ -452,7 +452,7 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
             }
 
             return true;
-        },
+        }
 
 
     };
