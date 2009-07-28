@@ -95,6 +95,40 @@ abstract class Conjoon_Builder {
     }
 
     /**
+     * Cleans the cache based on the passed parameters.
+     *
+     * @param string $type Any of
+     *       Zend_Cache::CLEANING_MODE_ALL
+     *       Zend_Cache::CLEANING_MODE_OLD
+     *       Zend_Cache::CLEANING_MODE_MATCHING_TAG
+     *       Zend_Cache::CLEANING_MODE_NOT_MATCHING_TAG
+     *       Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG
+     * @param array $options When using any tag related clean up, this array
+     * should hold all related tags for this operation
+     *
+     *
+     * @see Zend_Cache::clean
+     */
+    public function clean($type, Array $options = array())
+    {
+        $this->_cache->clean($type, $options);
+    }
+
+    /**
+     * Cleans the cache with all cached items that where tagged with
+     * the tags found in the return value of getTagList.
+     *
+     * @see clean
+     * @see getTagList
+     */
+    public function cleanCacheForTags(Array $options)
+    {
+        $tags = $this->getTagList($options);
+
+        $this->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, $tags);
+    }
+
+    /**
      * Checks whether the keys specified in $_validGetOptions are available in
      * $options. Throws an exception if that is not the case, otherwise calls the
      * concrete implementation of _get.
