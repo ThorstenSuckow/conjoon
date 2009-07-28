@@ -73,9 +73,9 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
             $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 
             /**
-             * @see Zend_Service_Twitter
+             * @see Conjoon_Service_Twitter
              */
-            require_once 'Zend/Service/Twitter.php';
+            require_once 'Conjoon/Service/Twitter.php';
 
             for ($i = 0, $len = count($accounts); $i < $len; $i++) {
                 $dto =& $accounts[$i];
@@ -85,7 +85,7 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
                     /**
                      * @todo move to separate model
                      */
-                    $twitter = new Zend_Service_Twitter($dto->name, $dto->password);
+                    $twitter = new Conjoon_Service_Twitter($dto->name, $dto->password);
                     $response = $twitter->userShow($dto->name);
 
                     $dto->twitterId              = (string)$response->id;
