@@ -54,6 +54,12 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
      */
     protected function _get(Array $options)
     {
+        // prevent serialized PHP_IMCOMPLETE_CLASS
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Dto
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Dto.php';
+
         $userId = $options['userId'];
 
         $cacheId = $this->_buildId($options);
