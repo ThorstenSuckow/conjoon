@@ -63,6 +63,10 @@ abstract class Conjoon_Builder {
      */
     protected $_validGetOptions = array();
 
+    /**
+     * @var array $_validTagOptions
+     */
+    protected $_validTagOptions = array();
 
     /**
      * @var Zend_Cache_Core $cache
@@ -136,6 +140,36 @@ abstract class Conjoon_Builder {
     protected abstract function _buildId(Array $options);
 
     /**
+     * An abstract function which returns a numerical array with tag ids as their values.
+     * IF this method does not return an empty array, those ids will be used to tag a cached
+     * item.
+     *
+     * @param Array $options a hash with key/value pairs which can be used to build a
+     * tag list
+     *
+     * @return Array
+     */
+    protected function _getTagList(Array $options)
+    {
+        return array();
+    }
+
+    /**
+     * A function which returns an array with tag ids that can be used to tag a cached item.
+     *
+     * @param array $options An associative array of options to use. If the
+     * _validTagOptions property is specified, the options will be checked against
+     * this property.
+     *
+     * @return Array
+     */
+    protected function getTagList(Array $options)
+    {
+        $this->_checkValidTagOptions($options);
+        return $this->_getTagList($options);
+    }
+
+    /**
      * A function which returns an id under which an object in the cache can be identified.
      * The returned key will be used to identify objects in the clean() and get() method of
      * this class.
@@ -171,6 +205,31 @@ abstract class Conjoon_Builder {
 
                     throw new Conjoon_Builder_Exception(
                         '"'.$this->_validGetOptions[$i].'" not found in "$options"'
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates the keys of the passed array against the whitelist of keys
+     * specified in $_validTagOptions.
+     * Throws an exception if there is a key missing in the passed argument that was
+     * specified in $_validTagOptions.
+     *
+     */
+    protected function _checkValidTagOptions(Array $options)
+    {
+        if (!empty($this->_validTagOptions)) {
+            for ($i = 0, $len = count($this->_validTagOptions); $i < $len; $i++) {
+                if (!isset($options[$this->_validTagOptions[$i]])) {
+                    /**
+                     * @see Conjoon_Builder_Exception
+                     */
+                    require_once 'Conjoon/Builder/Exception.php';
+
+                    throw new Conjoon_Builder_Exception(
+                        '"'.$this->_validTagOptions[$i].'" not found in "$options"'
                     );
                 }
             }
