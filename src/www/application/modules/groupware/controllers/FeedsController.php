@@ -141,10 +141,13 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                         $insertedItems[] = $itemResponseFilter->getProcessedData();
                     }
                 }
+
+                // only mark as updated if no exception occurred
+                $updatedAccounts[$accounts[$i]->id] = true;
+
             } catch (Exception $e) {
                 // ignore
             }
-            $updatedAccounts[$accounts[$i]->id] = true;
         }
 
         // set the last updated timestamp for the accounts
@@ -566,57 +569,56 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 $itemData['authorUri']   = $item->author->uri();
                 $itemData['authorEmail'] = $item->author->email();
             } catch (Exception $e) {
-                if ($author = $item->author()) {
-                    $itemData['author'] = $author;
-                } else if ($author = $item->creator()) {
-                    $itemData['author'] = $author;
+                if ($item->author()) {
+                    $itemData['author'] = $item->author();
+                } else if ($item->creator()) {
+                    $itemData['author'] = $item->creator();
                 }
             }
 
              // description
-            if ($description = $item->description()) {
-                $itemData['description'] = $description;
-            } else if ($description = $item->summary()) {
-                $itemData['description'] = $description;
+            if ($item->description()) {
+                $itemData['description'] = $item->description();
+            } else if ($item->summary()) {
+                $itemData['description'] = $item->summary();
             } else {
                 $itemData['description'] = $itemData['title'];
             }
 
             // content
-            if ($content = $item->content()) {
-                $itemData['content'] = $content;
+            if ($item->content()) {
+                $itemData['content'] = $item->content();
             } else if ($itemData['description']) {
                 $itemData['content'] = $itemData['description'];
             }
 
             // link
-            if ($link = $item->link() && !is_object($item->link())) {
-                $itemData['link'] = $link;
-            } else if (isset($item->link['href']) && $link = $item->link['href']) {
-                $itemData['link'] = $link;
-            } else if ($link = $item->link('alternate')) {
-                $itemData['link'] = $link;
-            } else if ($link = $item->link(0)) {
-                $itemData['link'] = $link;
+            if ($item->link() && !is_array($item->link()) && !is_object($item->link())) {
+                $itemData['link'] = $item->link();
+            } else if (isset($item->link['href']) && $item->link['href']) {
+                $itemData['link'] = $item->link['href'];
+            } else if ($item->link('alternate')) {
+                $itemData['link'] = $item->link('alternate');
+            } else if ($item->link(0)) {
+                $itemData['link'] = $item->link(0);
             }
 
             // guid
-            if ($link = $item->id()) {
-                $itemData['guid'] = $link;
-            } else if ($link = $item->guid()) {
-                $itemData['guid'] = $link;
+            if ($item->id()) {
+                $itemData['guid'] = $item->id();
+            } else if ($item->guid()) {
+                $itemData['guid'] = $item->guid();
             } else {
                 $itemData['guid'] = $itemData['link'];
             }
 
             // pubDate
-
-            if ($pubDate = $item->updated()) {
-                $date = $pubDate;
-            } else if ($pubDate = $item->pubDate()) {
-                $date = $pubDate;
-            } else if ($pubDate = $item->date()) {
-                $date = $pubDate;
+            if ($item->updated()) {
+                $date = $item->updated();
+            } else if ($item->pubDate()) {
+                $date = $item->pubDate();
+            } else if ($item->date()) {
+                $date = $item->date();
             } else {
                 $date = new Zend_Date();
             }
