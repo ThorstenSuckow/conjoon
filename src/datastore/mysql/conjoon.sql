@@ -337,3 +337,5 @@ ALTER TABLE `users` ADD `last_login` INT( 11 ) UNSIGNED NULL ;
 ALTER TABLE `groupware_feeds_items` ADD `author_uri` TEXT NULL AFTER `author` ;
 
 ALTER TABLE `groupware_feeds_items` ADD `author_email` TEXT NULL AFTER `author_uri` ;
+
+ALTER TABLE `groupware_feeds_accounts` ADD `is_image_enabled` BOOL NOT NULL DEFAULT '0' AFTER `request_timeout` ;

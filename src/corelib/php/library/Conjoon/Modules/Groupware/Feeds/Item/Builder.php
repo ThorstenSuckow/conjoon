@@ -26,7 +26,7 @@ require_once 'Conjoon/Builder.php';
 
 class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
 
-    protected $_validGetOptions = array('id');
+    protected $_validGetOptions = array('id', 'accountId');
 
     protected $_validTagOptions = array('accountId');
 
@@ -69,7 +69,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
          */
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Dto.php';
 
-        $id = $options['id'];
+        $id        = $options['id'];
+        $accountId = $options['accountId'];
 
         $cacheId = $this->buildId($options);
         $tagList = $this->getTagList($options);
@@ -88,9 +89,22 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
              */
             require_once 'Conjoon/BeanContext/Decorator.php';
 
+            // get the account and check whether images are enabled
+            $accountModel = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
+            );
+
+            $account = $accountModel->getAccountAsDto($accountId);
+
+            $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE;
+
+            if ($account->isImageEnabled) {
+                $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE_IMG;
+            }
+
             $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                 array(),
-                Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE
+                $responseType
             );
             $itemModel = new Conjoon_BeanContext_Decorator(
                 'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',

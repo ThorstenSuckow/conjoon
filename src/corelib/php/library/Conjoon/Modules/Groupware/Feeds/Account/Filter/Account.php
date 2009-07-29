@@ -43,7 +43,8 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
                 'name',
                 'updateInterval',
                 'requestTimeout',
-                'deleteInterval'
+                'deleteInterval',
+                'isImageEnabled'
         ),
         'create' =>
             array(
@@ -54,7 +55,8 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
                 'link',
                 'requestTimeout',
                 'description',
-                'deleteInterval'
+                'deleteInterval',
+                'isImageEnabled'
         )
     );
 
@@ -85,6 +87,9 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
         ),
         'deleteInterval' => array(
             'Int'
+         ),
+        'isImageEnabled' => array(
+            'FormBoolToInt'
          )
     );
 
@@ -125,7 +130,12 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
             'allowEmpty' => true,
             'default'    => 172800,
             array('GreaterThan', 0)
+        ),
+        'isImageEnabled' => array(
+            'allowEmpty' => true,
+            'default'    => 0
         )
+
     );
 
 

@@ -59,6 +59,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
 
     const CONTEXT_ITEM_RESPONSE = 'item_response';
 
+    const CONTEXT_ITEM_RESPONSE_IMG = 'item_response_img';
+
     protected $_presence = array(
         'delete' =>
             array(
@@ -89,6 +91,20 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'isRead'
         ),
         self::CONTEXT_ITEM_RESPONSE => array(
+            'id',
+            'groupwareFeedsAccountsId',
+            'name',
+            'content',
+            'title',
+            'author',
+            'authorUri',
+            'authorEmail',
+            'description',
+            'pubDate',
+            'link',
+            'isRead'
+        ),
+        self::CONTEXT_ITEM_RESPONSE_IMG => array(
             'id',
             'groupwareFeedsAccountsId',
             'name',
@@ -268,20 +284,30 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                 new Conjoon_Filter_ShortenString(128, '...')
             );
 
-            if ($this->_context == self::CONTEXT_ITEM_RESPONSE) {
+            if ($this->_context == self::CONTEXT_ITEM_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
+
+                $allowedTags = array(
+                    'p','div','span','ul','li','table','tr','td','blockquote',
+                    'strong','b','i','u','sup','sub','tt', 'tbody', 'h1','h2','h3','h4',
+                    'h5','h6','small','big','br','nobr','center','ol','a', 'link','font',
+                    'pre'
+                );
+
+                $allowedAttributes = array(
+                    'style', 'class','id', 'href', 'border', 'cellspacing',
+                    'cellpadding', 'valign', 'rowspan', 'colspan', 'alt', 'border'
+                );
+
+                if ($this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
+                    $allowedTags[]       = 'img';
+                    $allowedAttributes[] = 'src';
+                }
+
                 $this->_filters['content'] = array(
                     array('StripTags',
                         // allow all except img, object, script, embed etc.
-                        array(
-                            'p','div','span','ul','li','table','tr','td','blockquote',
-                            'strong','b','i','u','sup','sub','tt', 'tbody', 'h1','h2','h3','h4',
-                            'h5','h6','small','big','br','nobr','center','ol','a', 'link','font',
-                            'pre'
-                        ),
-                        array(
-                            'style', 'class','id', 'href', 'border', 'cellspacing',
-                            'cellpadding', 'valign', 'rowspan', 'colspan', 'alt'
-                        )
+                        $allowedTags,
+                        $allowedAttributes
                     ),
                     array(
                         'PregReplace',

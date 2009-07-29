@@ -25,5 +25,6 @@ class Conjoon_Modules_Groupware_Feeds_Account_Dto {
     public $updateInterval;
     public $deleteInterval;
     public $requestTimeout;
+    public $isImageEnabled;
 
 }

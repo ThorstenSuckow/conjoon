@@ -25,7 +25,8 @@ com.conjoon.groupware.feeds.AccountRecord = Ext.data.Record.create([
     {name: 'name', type : 'string'},
     {name: 'updateInterval', type : 'int'},
     {name: 'deleteInterval', type : 'int'},
-    {name: 'requestTimeout', type : 'int'}
+    {name: 'requestTimeout', type : 'int'},
+    {name: 'isImageEnabled', type : 'bool'}
 
 
 ]);

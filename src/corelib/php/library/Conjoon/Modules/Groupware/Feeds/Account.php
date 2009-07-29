@@ -47,6 +47,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
     private $updateInterval;
     private $deleteInterval;
     private $requestTimeout;
+    private $isImageEnabled;
     private $_isDeleted;
     private $_lastUpdated;
 
@@ -72,6 +73,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
     public function getRequestTimeout(){return $this->requestTimeout;}
     public function getLastUpdated(){return $this->_lastUpdated;}
     public function isDeleted(){return $this->_isDeleted;}
+    public function isImageEnabled(){return $this->isImageEnabled;}
 
     public function setRequestTimeout($requestTimeout){$this->requestTimeout = $requestTimeout;}
     public function setLastUpdated($lastUpdated){$this->_lastUpdated = $lastUpdated;}
@@ -85,6 +87,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
     public function setUpdateInterval($updateInterval){$this->updateInterval = $updateInterval;}
     public function setDeleteInterval($deleteInterval){$this->deleteInterval = $deleteInterval;}
     public function setDeleted($isDeleted){$this->_isDeleted = $isDeleted;}
+    public function setImageEnabled($isImageEnabled){$this->isImageEnabled = $isImageEnabled;}
 
 // -------- interface Serializable
     /**
@@ -155,7 +158,8 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
             'uri'            => $this->uri,
             'requestTimeout' => $this->requestTimeout,
             'updateInterval' => $this->updateInterval,
-            'deleteInterval' => $this->deleteInterval
+            'deleteInterval' => $this->deleteInterval,
+            'isImageEnabled' => $this->isImageEnabled
         );
     }
 
@@ -177,6 +181,7 @@ class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Se
             'description: '.$data['description'].', '.
             'updateInterval: '.$data['updateInterval'].', '.
             'requestTimeout: '.$data['requestTimeout'].', '.
+            'isImageEnabled: '.$data['isImageEnabled'].', '.
             'deleteInterval: '.$data['deleteInterval'].';';
     }
 }

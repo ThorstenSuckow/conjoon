@@ -15,10 +15,58 @@
  /**
  * Feed Options Dialog
  */
-.com-conjoon-groupware-feeds-FeedOptionsDialog-feedPanel {
+.com-conjoon-groupware-feeds-FeedOptionsDialog .feedPanel {
     margin-bottom:5px;
 }
 
-.com-conjoon-groupware-feeds-FeedOptionsDialog-feedPanel .x-grid3-row {
+.com-conjoon-groupware-feeds-FeedOptionsDialog .feedPanel .x-grid3-row {
     border:none;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .x-fieldset {
+    border:none;
+    background-image:url(../images/x-ux-formintro-sepx.png);
+    background-repeat:repeat-x;
+    padding:10px 0 0 0;
+}
+
+.ext-ie .com-conjoon-groupware-feeds-FeedOptionsDialog .x-fieldset {
+    background-position:0 17px;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .x-fieldset legend {
+    background-color:#f6f6f6;
+    padding-right:5px;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .x-fieldset .x-fieldset-bwrap {
+    padding-left:5px;
+}
+
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .tabPanel .x-tab-strip-spacer {
+    background:none!important;
+    border-bottom:none!important;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .tabPanel .x-tab-panel-header {
+    padding-bottom:0px;
+    border:none;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .tabPanel .x-tab-strip-top {
+    background:#f6f6f6 none;
+}
+
+/* BG images for active Tab */
+.com-conjoon-groupware-feeds-FeedOptionsDialog .tabPanel .x-tab-strip-top .x-tab-strip-active .x-tab-right {
+    background: transparent url(../images/form-tabs-sprite.png) no-repeat 0 -0px!important;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .tabPanel .x-tab-strip-top .x-tab-strip-active .x-tab-left {
+    background: transparent url(../images/form-tabs-sprite.png) no-repeat right -301px!important;
+}
+
+.com-conjoon-groupware-feeds-FeedOptionsDialog .tabPanel .x-tab-strip-top .x-tab-strip-active .x-tab-strip-inner {
+    background: transparent url(../images/form-tabs-sprite.png) repeat-x 0 -151px!important;
 }
