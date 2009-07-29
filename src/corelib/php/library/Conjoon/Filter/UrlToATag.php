@@ -77,14 +77,31 @@ class Conjoon_Filter_UrlToATag implements Zend_Filter_Interface
             $value = str_replace($matches[$i][0], '@a@'.$mk.'_'.$i.'@a@', $value);
             $replaceMap[] = array($matches[$i][0], '@a@'.$mk.'_'.$i.'@a@');
         }
-
-        // replace all img tags
-        $pattern = "/(<img\b[^>]*\/>)/is";
+        // replace all non XHTML img tags
+        $pattern = "/(<(img)\b[^>]*>)+(.*?)(<\/\\2>)+/is";
         $matches = array();
         preg_match_all($pattern, $value, $matches, PREG_SET_ORDER);
         for ($i = 0, $len = count($matches); $i < $len; $i++) {
             $value = str_replace($matches[$i][0], '@img@'.$mk.'_'.$i.'@img@', $value);
             $replaceMap[] = array($matches[$i][0], '@img@'.$mk.'_'.$i.'@img@');
+        }
+
+        // replace all XHTML img tags
+        $pattern = "/(<img\b[^>]*\/>)/is";
+        $matches = array();
+        preg_match_all($pattern, $value, $matches, PREG_SET_ORDER);
+        for ($i = 0, $len = count($matches); $i < $len; $i++) {
+            $value = str_replace($matches[$i][0], '@img1@'.$mk.'_'.$i.'@img1@', $value);
+            $replaceMap[] = array($matches[$i][0], '@img1@'.$mk.'_'.$i.'@img1@');
+        }
+
+        // replace all non conform XHTML img tags
+        $pattern = "/(<img\b[^>]*\>)/is";
+        $matches = array();
+        preg_match_all($pattern, $value, $matches, PREG_SET_ORDER);
+        for ($i = 0, $len = count($matches); $i < $len; $i++) {
+            $value = str_replace($matches[$i][0], '@img2@'.$mk.'_'.$i.'@img2@', $value);
+            $replaceMap[] = array($matches[$i][0], '@img2@'.$mk.'_'.$i.'@img2@');
         }
 
         // now work on remaining links
