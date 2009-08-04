@@ -84,6 +84,14 @@
     padding-bottom:3px;
 }
 
+.com-conjoon-groupware-QuickPanel-itemPanel.east {
+    padding-right:4px;
+}
+
+.com-conjoon-groupware-QuickPanel-itemPanel.west {
+    padding-left:4px;
+}
+
 .com-conjoon-groupware-QuickPanel-itemPanel .x-panel-body {
     background:#eef5fe url(../images/quickpanel-bg.png) repeat-x scroll 0 bottom;
 }

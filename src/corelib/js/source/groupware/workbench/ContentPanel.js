@@ -81,7 +81,6 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
             tabWidth        : 115,
             enableTabScroll : true,
             hideMode        : 'offsets',
-            margins         : '0 0 0 0',
             border          : false,
             baseCls         : 'com-conjoon-groupware-TabHeader',
             items           : this._getItems()

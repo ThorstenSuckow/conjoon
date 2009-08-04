@@ -16,6 +16,14 @@
     padding-bottom:3px;
 }
 
+.com-conjoon-groupware-TabHeader.paddingLeft {
+    padding-left:4px;
+}
+
+.com-conjoon-groupware-TabHeader.paddingRight {
+    padding-right:4px;
+}
+
 /**
  * special main tab style
  */

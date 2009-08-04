@@ -73,7 +73,36 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
         this.on('focus', this._onFocus, this);
         this.on('blur',  this._onBlur, this);
 
+        this.on('afterlayout', this._calcBorder, this, {single : true});
+
         com.conjoon.groupware.Workbench.superclass.initComponent.call(this);
+    },
+
+    _calcBorder : function()
+    {
+        var borderRegion = this.getLayout()['center'];
+        if (!borderRegion) {
+            return;
+        }
+
+        var clsl = 'paddingLeft';
+        var clsr = 'paddingRight';
+
+        var west = this.getWestPanel();
+        var east = this.getEastPanel();
+
+        if (west.hidden || !west.rendered) {
+            borderRegion.el.addClass(clsl);
+        } else {
+            borderRegion.el.removeClass(clsl);
+        }
+
+        if (east.hidden || !east.rendered) {
+            borderRegion.el.addClass(clsr);
+        }else {
+            borderRegion.el.removeClass(clsr);
+        }
+
     },
 
 // -------- listeners
@@ -139,24 +168,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
 
     _onQuickPanelVisibilityChange : function(panel)
     {
-        var region = null;
-
-        if (panel == this.getWestPanel()) {
-            region = 'west';
-        } else {
-            region = 'east';
-        }
-
-        var borderRegion = this.getLayout()['center'];
-        if (!borderRegion) {
-            return;
-        }
-
-        if (region == 'west') {
-            borderRegion.margins.left = panel.hidden ? 4 : 0;
-        } else {
-            borderRegion.margins.right =  panel.hidden ? 4 : 0;
-        }
+        this._calcBorder();
 
         // check if the panel is already rendered... just a hack
         // otherwise doLayout will cause a few errors in other components
@@ -323,7 +335,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             hidden       : true,
             maxSize      : 600,
             border       : false,
-            cls          : 'com-conjoon-groupware-QuickPanel-itemPanel',
+            cls          : 'com-conjoon-groupware-QuickPanel-itemPanel west',
             listeners    : {
                 show  : this._onQuickPanelVisibilityChange,
                 hide  : this._onQuickPanelVisibilityChange,
@@ -381,7 +393,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             maxSize      : 600,
             border       : false,
             margins      : '64 0 0 0',
-            cls          : 'com-conjoon-groupware-QuickPanel-itemPanel',
+            cls          : 'com-conjoon-groupware-QuickPanel-itemPanel east',
             items : [
                 quickPanel,
                 emailsPanel,
