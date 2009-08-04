@@ -97,7 +97,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
         sortable  : false,
         dataIndex : 'subject',
         renderer : function(value, metadata, record){
-            metadata.attr = 'qtip="'+value+'"';
+            metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
             return value;
         }
       },{
