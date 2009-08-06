@@ -48,7 +48,7 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
 
     var defaultUpdateInterval = 3600;
 
-    var onStoreLoadException = function(proxy, options, response, jsError)
+    var onStoreLoadException = function(proxy, type, action, options, response, arg)
     {
         com.conjoon.groupware.ResponseInspector.handleFailure(response);
     };
@@ -161,8 +161,8 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
         this.on('beforeload', stopRunning, com.conjoon.groupware.feeds.FeedRunner);
     }, feedStore, {single : true});
 
-    store.on('load', onStoreLoad, com.conjoon.groupware.feeds.FeedRunner);
-    store.on('loadexception', onStoreLoadException, com.conjoon.groupware.feeds.FeedRunner);
+    store.on('load',      onStoreLoad, com.conjoon.groupware.feeds.FeedRunner);
+    store.on('exception', onStoreLoadException, com.conjoon.groupware.feeds.FeedRunner);
 
     var _reception = com.conjoon.groupware.Reception;
 

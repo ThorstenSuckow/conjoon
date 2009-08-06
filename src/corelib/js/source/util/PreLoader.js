@@ -61,7 +61,7 @@ com.conjoon.util.PreLoader = function() {
     var storeLoaded = function(store)
     {
         store.un('load',          storeLoaded, com.conjoon.util.PreLoader);
-        store.un('loadexception', storeLoaded, com.conjoon.util.PreLoader);
+        store.un('exception',     storeLoaded, com.conjoon.util.PreLoader);
 
         storeCount--;
         if (storeCount == 0) {
@@ -132,7 +132,7 @@ com.conjoon.util.PreLoader = function() {
             store.on('beforeload', function(store) {
                 kernel.fireEvent('beforestoreload', store);
             }, preLoader,  {single : true});
-            store.on('loadexception', function(store){
+            store.on('exception', function(proxy, type, action, options, response, arg){
                 kernel.fireEvent('storeloadexception', store);
             }, preLoader,  {single : true});
             store.on('load', function(store) {
@@ -150,10 +150,10 @@ com.conjoon.util.PreLoader = function() {
             }
 
             if (config.ignoreLoadException === true) {
-                store.on('loadexception', storeLoaded, preLoader, {single : true});
+                store.on('exception', storeLoaded, preLoader, {single : true});
             } else if (typeof config.exceptionCallback == "function") {
                 store.on(
-                    'loadexception',
+                    'exception',
                     config.exceptionCallback,
                     (config.scope ? config.scope : window),
                     {single : true}

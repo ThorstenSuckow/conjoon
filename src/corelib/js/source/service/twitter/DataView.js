@@ -49,12 +49,12 @@ com.conjoon.service.twitter.DataView = Ext.extend(Ext.DataView, {
     bindStore : function(store, initial)
     {
         if (!initial && this.store){
-            this.store.un("load", this.onLoad, this);
-            this.store.un("loadexception", this._onLoadException, this);
+            this.store.un("load",      this.onLoad, this);
+            this.store.un("exception", this._onLoadException, this);
         }
         if (store) {
-            Ext.StoreMgr.lookup(store).on("load", this.onLoad, this);
-            Ext.StoreMgr.lookup(store).on("loadexception", this._onLoadException, this);
+            Ext.StoreMgr.lookup(store).on("load",      this.onLoad, this);
+            Ext.StoreMgr.lookup(store).on("exception", this._onLoadException, this);
         }
 
         com.conjoon.service.twitter.DataView.superclass.bindStore.call(this, store, initial);
@@ -64,7 +64,7 @@ com.conjoon.service.twitter.DataView = Ext.extend(Ext.DataView, {
      * Handles a store's loadexception.
      *
      */
-    _onLoadException : function()
+    _onLoadException : function(proxy, type, action, options, response, arg)
     {
         if (this.loadMask) {
             this.loadMask.hide();

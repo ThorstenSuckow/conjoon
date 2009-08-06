@@ -56,8 +56,8 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
                 fields    : ['name', 'address', 'fullAddress'],
                 autoLoad  : false,
                 listeners : {
-                    loadexception : {
-                        fn:  function(proxy, options, response, jsError) {
+                    exception : {
+                        fn:  function(proxy, type, action, options, response, arg) {
                             com.conjoon.groupware.ResponseInspector.handleFailure(response);
                         }
                     }

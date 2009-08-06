@@ -67,9 +67,9 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
         });
 
         // add loadexception listeners to the attached stores.
-        recTweetStore.on('loadexception',    this._defaultLoadExceptionListener, this);
-        recentTweetStore.on('loadexception', this._defaultLoadExceptionListener, this);
-        friendsStore.on('loadexception',     this._defaultLoadExceptionListener, this);
+        recTweetStore.on('exception',    this._defaultLoadExceptionListener, this);
+        recentTweetStore.on('exception', this._defaultLoadExceptionListener, this);
+        friendsStore.on('exception',     this._defaultLoadExceptionListener, this);
 
         var inputBox = new com.conjoon.service.twitter.InputBox();
 
@@ -107,7 +107,7 @@ com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twit
      * card if necessary.
      *
      */
-    _defaultLoadExceptionListener : function()
+    _defaultLoadExceptionListener : function(proxy, type, action, options, response, arg)
     {
         this._clearCurrentAccount();
         this.getChooseAccountButton().resetAccountMenuItemStates(true);
