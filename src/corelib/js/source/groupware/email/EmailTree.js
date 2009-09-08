@@ -84,7 +84,7 @@ com.conjoon.groupware.email.EmailTree = function(config) {
     this.tbar = [actionDecorator.decorate(new Ext.Toolbar.Button({
         iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
         tooltip : com.conjoon.Gettext.gettext("Show all folders"),
-        handler : function(){ this.root.expand(true); },
+        handler : this._onExpandAllClick,
         scope   : this
       })),'-', actionDecorator.decorate(new Ext.Toolbar.Button({
         iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
@@ -121,7 +121,8 @@ com.conjoon.groupware.email.EmailTree = function(config) {
     this.nodeEditor = new com.conjoon.groupware.email.NodeEditor(this);
 
     // register the listeners
-    this.treeLoader.on('nodeloaded', this.onNodeLoaded, this);
+    this.treeLoader.on('nodeloaded',    this.onNodeLoaded, this);
+    this.treeLoader.on('loadexception', this._onTreeLoaderException, this);
 
     this.contextMenu.getMenu().on('itemclick', this.contextMenuItemClicked, this);
     this.on('contextmenu', this.onContextMenu, this);
@@ -175,6 +176,11 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      * The last selected node in this tree.
      */
     clkNode : null,
+
+    /**
+     * The last node that failed to load.
+     */
+    lastFailedNode : null,
 
     /**
      * A {Ext.util.TaskRunner} that will check if the editor is busy if any
@@ -1028,6 +1034,58 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
     },
 
     /**
+     * The listener for the "expand all" button in the toolbar.
+     * Expands all nodes or tries to reload the root if initial loading failed
+     * or returned no child-nodes.
+     * If the root node has child nodes, but the previous loading of a node failed,
+     * the method will look up the last clicked node and reload it. If no last clicked
+     * node was found, the method will automatically reload the root node or try to load
+     * the lastFailed node.
+     *
+     */
+    _onExpandAllClick : function()
+    {
+        console.log("LAST FAILED NODE: "+this.lastFailedNode);
+
+        if (!this.root.hasChildNodes()) {
+            // if no child nodes are found, reload the root node.
+            this.root.reload();
+        } else {
+
+            // if there is currently a node selected, load this
+            if (this.clkNode) {
+                if (this.lastFailedNode == this.clkNode) {
+                    this.clkNode.reload();
+                } else {
+                    this.clkNode.expand(true);
+                }
+            } else {
+                // no node selected, check if there is a lastFailedNode
+                if (this.lastFailedNode) {
+                    this.lastFailedNode.reload();
+                } else {
+                    // expand the root
+                    this.root.expand(true);
+                }
+            }
+        }
+     },
+
+    /**
+     * Listener for the treeloader loadexception event.
+     * If there are currently no nodes rendered in the panel, a message will
+     * be shown to inform the user that loading the nodes failed.
+     *
+     * @param {Ext.tree.TreeLoader} treeLoader The treeLoader that triggered the event
+     * @param {String} node The node that was requested
+     * @param {Object} response The response as returned by the server
+     */
+    _onTreeLoaderException : function(treeLoader, node, response)
+    {
+        this.lastFailedNode = node;
+    },
+
+    /**
      * Callback for the treeLoader-event "nodeloaded"
      *
      * @param {Ext.tree.TreeNode} The parent node to which the newly loaded node
@@ -1036,6 +1094,10 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      */
     onNodeLoaded : function(parent, node)
     {
+        if (parent == this.lastFailedNode) {
+            this.lastFailedNode = null;
+        }
+
         var attr = node.attributes;
 
         switch (attr.type) {
