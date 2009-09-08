@@ -117,7 +117,7 @@ com.conjoon.groupware.Reception = function() {
 
         var data = inspector.isSuccess(response);
         if (!data) {
-            return inspector.handleFailure(response, options);
+            return inspector.handleFailure(response);
         }
 
         _user = data.user;
@@ -139,7 +139,7 @@ com.conjoon.groupware.Reception = function() {
     var _onUserLoadFailure = function(response, options)
     {
         for (var i = 0, len = _userLoadFailureListeners.length; i < len; i++) {
-            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope']);
+            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope'], response, options);
         }
     };
 
@@ -774,7 +774,7 @@ com.conjoon.groupware.Reception = function() {
                 success        : _lockWorkbench,
                 failure        : function(response, options) {
                     com.conjoon.SystemMessageManager.hide();
-                    com.conjoon.groupware.ResponseInspector.handleFailure(response, options);
+                    com.conjoon.groupware.ResponseInspector.handleFailure(response);
                 },
                 scope          : this
             });
