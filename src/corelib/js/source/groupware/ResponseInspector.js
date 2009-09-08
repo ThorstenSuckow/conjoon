@@ -252,6 +252,57 @@ com.conjoon.groupware.ResponseInspector = function() {
         },
 
         /**
+         * Returns a SystemMessage object passed on the response passed to this method.
+         *
+         * @return com.conjoon.SystemMessage
+         */
+        generateMessage : function(response, options)
+        {
+            var resp = response;
+
+            options = options || {};
+
+            try {
+                if (resp) {
+                    if (resp.responseText) {
+                        resp = _tryDecode(resp.responseText);
+                    } else {
+                        resp = _tryDecode(resp);
+                    }
+                }
+            } catch (e) {
+                // ignore, so we can show an unexpected error
+            }
+
+            var json = com.conjoon.util.Json;
+
+            var error = null;
+
+            var opt = {};
+
+            if (!resp.error) {
+                error = json.forceErrorDecode(resp, options);
+                opt = {
+                    title : error.title,
+                    text  : error.message,
+                    type  : error.level
+                };
+            } else {
+                error = resp.error;
+                opt = {
+                    title : Ext.util.Format.htmlEncode(error.title) || options.title,
+                    text  : options.message
+                            ? options.message + "<br />" + Ext.util.Format.htmlEncode(error.message)
+                            : Ext.util.Format.htmlEncode(error.message),
+                    type  : error.level
+                };
+            }
+
+            return new com.conjoon.SystemMessage(opt);
+
+        },
+
+        /**
          * A method for taking automatic actions when a erroneous response from
          * the server is expected.
          * Shows a message dialog given more detailed information about the error.
@@ -290,24 +341,12 @@ com.conjoon.groupware.ResponseInspector = function() {
          */
         handleFailure : function(response, options)
         {
-            var resp = response;
+            var systemMessage = this.generateMessage(response, options);
 
             options = options || {};
 
-            try {
-                if (resp) {
-                    if (resp.responseText) {
-                        resp = _tryDecode(resp.responseText);
-                    } else {
-                        resp = _tryDecode(resp);
-                    }
-                }
-            } catch (e) {
-                // ignore, so we can show an unexpected error
-            }
-
             // check if the response send an authentication failure
-            if (options.onLogin && com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(resp)) {
+            if (options.onLogin && com.conjoon.groupware.ResponseInspector.isAuthenticationFailure(response)) {
                 var ol = options.onLogin;
                 com.conjoon.groupware.Reception.onLogin(
                     ol.fn, ol.scope
@@ -317,36 +356,14 @@ com.conjoon.groupware.ResponseInspector = function() {
                 ol.fn.call(ol.scope);
             }
 
-            var json = com.conjoon.util.Json;
-
-            var error = null;
-
-            var opt = {};
-
-            if (!resp.error) {
-                error = json.forceErrorDecode(resp, options);
-                opt = {
-                    title   : error.title,
-                    message : error.message
-                };
-            } else {
-                error = resp.error;
-                opt = {
-                    title   : Ext.util.Format.htmlEncode(error.title) || options.title,
-                    message : options.message
-                              ? options.message + "<br />" + Ext.util.Format.htmlEncode(error.message)
-                              : Ext.util.Format.htmlEncode(error.message)
-                };
-            }
-
             var msg  = Ext.MessageBox;
 
             com.conjoon.SystemMessageManager.show({
-                title   : opt.title || com.conjoon.Gettext.gettext("Error"),
-                msg     : opt.message,
+                title   : systemMessage.title || com.conjoon.Gettext.gettext("Error"),
+                msg     : systemMessage.text,
                 buttons : msg.OK,
-                icon    : msg[error.level.toUpperCase()],
-                cls     :'com-conjoon-msgbox-'+error.level,
+                icon    : msg[systemMessage.type.toUpperCase()],
+                cls     :'com-conjoon-msgbox-'+systemMessage.type,
                 width   : 400
             });
         }

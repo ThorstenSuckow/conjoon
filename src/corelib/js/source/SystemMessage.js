@@ -42,41 +42,41 @@ com.conjoon.SystemMessage.prototype = {
 };
 
 /**
- * @const {Number} TYPE_WARNING
+ * @const {String} TYPE_WARNING
  */
-com.conjoon.SystemMessage.TYPE_WARNING = 0;
+com.conjoon.SystemMessage.TYPE_WARNING = 'warning';
 
 /**
- * @const {Number} TYPE_ERROR
+ * @const {String} TYPE_ERROR
  */
-com.conjoon.SystemMessage.TYPE_ERROR = 2;
+com.conjoon.SystemMessage.TYPE_ERROR = 'error';
 
 /**
- * @const {Number} TYPE_INFO
+ * @const {String} TYPE_INFO
  */
-com.conjoon.SystemMessage.TYPE_INFO =  4;
+com.conjoon.SystemMessage.TYPE_INFO =  'info';
 
 /**
- * @const {Number} TYPE_NOTICE
+ * @const {String} TYPE_NOTICE
  */
-com.conjoon.SystemMessage.TYPE_NOTICE = 8;
+com.conjoon.SystemMessage.TYPE_NOTICE = 'notice';
 
 /**
- * @const {Number} TYPE_CRITICAL
+ * @const {String} TYPE_CRITICAL
  */
-com.conjoon.SystemMessage.TYPE_CRITICAL = 16;
+com.conjoon.SystemMessage.TYPE_CRITICAL = 'critical';
 
 /**
- * @const {Number} TYPE_CONFIRM
+ * @const {String} TYPE_CONFIRM
  */
-com.conjoon.SystemMessage.TYPE_CONFIRM = 32;
+com.conjoon.SystemMessage.TYPE_CONFIRM = 'confirm';
 
 /**
- * @const {Number} TYPE_PROMPT
+ * @const {String} TYPE_PROMPT
  */
-com.conjoon.SystemMessage.TYPE_PROMPT = 64;
+com.conjoon.SystemMessage.TYPE_PROMPT = 'prompt';
 
 /**
- * @const {Number} TYPE_WAIT
+ * @const {String} TYPE_WAIT
  */
-com.conjoon.SystemMessage.TYPE_WAIT = 128;
+com.conjoon.SystemMessage.TYPE_WAIT = 'wait';
