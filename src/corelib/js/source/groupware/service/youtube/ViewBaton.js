@@ -105,6 +105,17 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
                         cls     :'com-conjoon-msgbox-prompt',
                         width   : 375
                     });
+            },
+            _onError : function(errorCode, playerPanel, player) {
+                playerPanel.stopVideo();
+
+                com.conjoon.SystemMessageManager.error(new com.conjoon.SystemMessage({
+                    title : com.conjoon.Gettext.gettext("Error"),
+                    text  : String.format(
+                        com.conjoon.Gettext.gettext("The video you requested could not be played. Error code \"{0}\"."),
+                        errorCode
+                    )
+                }));
             }
         });
     };
