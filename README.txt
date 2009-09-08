@@ -25,7 +25,6 @@
 Author:
 -------
 Thorsten Suckow-Homberg <ts@siteartwork.de> (<tsuckow@conjoon.org)
-or
 
 Blog:
 -------------------------
