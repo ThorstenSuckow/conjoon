@@ -86,6 +86,17 @@ com.conjoon.util.PreLoader = function() {
 
     return {
 
+        getStoreConfig : function(store)
+        {
+            var id = Ext.StoreMgr.getKey(store);
+
+            if (!id || !(stores[id])) {
+                return;
+            }
+
+            return stores[id]['config'];
+        },
+
         on : function(eventName, fn, scope, parameters)
         {
             kernel.on(eventName, fn, scope, parameters);
@@ -133,7 +144,7 @@ com.conjoon.util.PreLoader = function() {
                 kernel.fireEvent('beforestoreload', store);
             }, preLoader,  {single : true});
             store.on('exception', function(proxy, type, action, options, response, arg){
-                kernel.fireEvent('storeloadexception', store);
+                kernel.fireEvent('storeloadexception', store, response, options);
             }, preLoader,  {single : true});
             store.on('load', function(store) {
                 kernel.fireEvent('storeload', store);
@@ -161,7 +172,10 @@ com.conjoon.util.PreLoader = function() {
             }
 
             store.on('destroy', storeDestroyed, preLoader);
-            stores[id] = store;
+            stores[id] = {
+                store  : store,
+                config : config
+            };
             storeCount++;
         },
 
@@ -171,13 +185,13 @@ com.conjoon.util.PreLoader = function() {
             for (var i in stores) {
                 skip = false;
                 for (var a = 0, len = _loadsAfter.length; a < len; a++) {
-                    if (_loadsAfter[a].id == Ext.StoreMgr.getKey(stores[i])) {
+                    if (_loadsAfter[a].id == Ext.StoreMgr.getKey(stores[i]['store'])) {
                         skip = true;
                         break;
                     }
                 }
                 if (!skip) {
-                    stores[i].load();
+                    stores[i]['store'].load();
                 }
             }
         }
