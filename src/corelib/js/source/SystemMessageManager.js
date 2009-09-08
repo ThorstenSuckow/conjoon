@@ -53,7 +53,6 @@ com.conjoon.SystemMessageManager = function() {
         dlg.on('show', function(){
             if (dlg.el.dom.className.indexOf('com-conjoon-msgbox') == -1) {
                 dlg.el.addClass('com-conjoon-msgbox-error');
-                Ext.MessageBox.setIcon(Ext.MessageBox.ERROR);
             }
 
             var el = Ext.DomQuery.selectNode('div[class=x-progress-wrap]');
@@ -193,6 +192,35 @@ com.conjoon.SystemMessageManager = function() {
         hide : function()
         {
             Ext.MessageBox.hide();
+        },
+
+
+        /**
+         * Shows a dialog indicating an error happened.
+         *
+         * @param {com.conjoon.SystemMessage} message
+         * @param {Object} options
+         */
+        error : function(message, options)
+        {
+            var msg = Ext.MessageBox;
+
+            var c = {};
+
+            Ext.apply(c, message);
+
+            c.msg = c.text;
+            delete c.text;
+
+            Ext.apply(c, {
+                buttons : msg.OK,
+                icon    : msg.ERROR,
+                cls     : 'com-conjoon-msgbox-error',
+                width   : 375
+            });
+
+            Ext.apply(c, options);
+            this.show(c);
         },
 
         /**
