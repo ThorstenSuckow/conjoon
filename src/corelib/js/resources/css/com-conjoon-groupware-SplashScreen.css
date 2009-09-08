@@ -31,6 +31,34 @@
     background-image:url(../images/splash.png);
 }
 
+.com-conjoon-groupware-SplashScreen-body .errorPanel {
+    background-image:url(../images/splashscreen-error-bg.png);
+    color:#FFFFFF;
+    height:85px;
+    left:10px;
+    padding:4px;
+    position:absolute;
+    top:220px;
+    width:467px;
+    display:none;
+}
+
+.com-conjoon-groupware-SplashScreen-body .errorPanel .textContainer {
+    background-image:url(../images/32x32/actions/splashscreen-startup-error.png);
+    background-repeat:no-repeat;
+    height:86px;
+    padding:0px 0px 0px 42px;
+}
+
+.com-conjoon-groupware-SplashScreen-body .errorPanel .textContainer .message {
+    overflow:auto;
+    height:60px;
+}
+
+.com-conjoon-groupware-SplashScreen-body .errorPanel .textContainer .notice {
+    font-weight:bold;
+}
+
 .com-conjoon-groupware-SplashScreen-progressBar {
     background-image:url(../images/splash-loading-bar.gif);
     background-repeat:no-repeat;

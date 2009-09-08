@@ -33,7 +33,41 @@ Ext.onReady(function(){
         _updateIndicator(store.storeId);
     };
 
-    var _loadException = function(store) {
+    var loadingFailed = false;
+    var failMessages  = "";
+
+    var _showErrorMessage = function(systemMessage)
+    {
+        var p = document.getElementById('com-conjoon-groupware-SplashScreen-errorPanel');
+
+        if (!p) {
+            return;
+        }
+
+        p.style.display = 'block';
+
+        var noticeP  = document.getElementById('com-conjoon-groupware-SplashScreen-error-notice');
+        var messageP = document.getElementById('com-conjoon-groupware-SplashScreen-error-message');
+
+        if (!loadingFailed) {
+            Ext.fly(noticeP).update(
+                com.conjoon.Gettext.gettext("Loading the application failed")
+            );
+            loadingFailed = true;
+        }
+
+        failMessages += systemMessage.text+"<br />--- <br />";
+
+        Ext.fly(messageP).update(failMessages);
+    };
+
+    var _loadException = function(store, response, options) {
+
+        var config = preLoader.getStoreConfig(store);
+        if (config && config.ignoreLoadException !== true) {
+            var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
+            _showErrorMessage(sm);
+        }
         _updateFailIndicator(store.storeId);
     };
 
@@ -110,7 +144,9 @@ Ext.onReady(function(){
     reception.onUserLoad(function(){
         _updateIndicator('reception-id');
     });
-    reception.onUserLoadFailure(function(){
+    reception.onUserLoadFailure(function(response, options){
+        var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
+        _showErrorMessage(sm);
         _updateFailIndicator('reception-id');
     });
 
@@ -126,7 +162,9 @@ Ext.onReady(function(){
     preLoader.addStore(emailAccountStore);
     preLoader.addStore(feedsAccountStore);
     preLoader.addStore(registryStore);
-    preLoader.addStore(twitterAccountStore);
+    preLoader.addStore(twitterAccountStore, {
+        ignoreLoadException : true
+    });
     preLoader.addStore(feedsFeedStore, {
         ignoreLoadException : true,
         loadAfterStore      : feedsAccountStore
