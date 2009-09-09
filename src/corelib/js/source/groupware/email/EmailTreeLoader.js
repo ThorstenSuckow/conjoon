@@ -158,6 +158,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
     processResponse : function(response, node, callback)
     {
         var json = response.responseText;
+
         try {
             var o = eval("("+json+")");
             /**
@@ -183,7 +184,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
     },
 
 
-    requestData : function(node, callback)
+    /*requestData : function(node, callback)
     {
         com.conjoon.groupware.email.EmailTreeLoader.superclass.requestData.call(this, node, callback);
 
@@ -192,13 +193,14 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             var f = function(){
                 if (this.transId && transId.tId == this.transId.tId) {
                    // this.node.expand(false, false, callback)
+                    console.log("ABORT FROM TREELOADER");
                     this.abort();
                 }
             }.createDelegate(this);
             window.setTimeout(f, 15000);
         }
 
-    },
+    },*/
 
     onBeforeLoad : function(treeLoader, node, callback)
     {
