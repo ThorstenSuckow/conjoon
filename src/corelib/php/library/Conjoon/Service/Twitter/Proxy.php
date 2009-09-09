@@ -355,6 +355,13 @@ class Conjoon_Service_Twitter_Proxy  {
             array(), Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
+        $tweetUserId = (string)$tweet->user->id;
+
+        $isFollowing = $this->friendshipExists($tweetUserId);
+
+        if (!is_bool($isFollowing)) {
+            return $isFollowing;
+        }
 
         $data = array(
             'id'                  => (string)$tweet->id,
@@ -362,7 +369,7 @@ class Conjoon_Service_Twitter_Proxy  {
             'createdAt'           => (string)$tweet->created_at,
             'source'              => (string)$tweet->source,
             'truncated'           => (string)$tweet->truncated,
-            'userId'              => (string)$tweet->user->id,
+            'userId'              => $tweetUserId,
             'name'                => (string)$tweet->user->name,
             'screenName'          => (string)$tweet->user->screen_name,
             'location'            => (string)$tweet->user->location,
@@ -370,7 +377,7 @@ class Conjoon_Service_Twitter_Proxy  {
             'url'                 => (string)$tweet->user->url,
             'description'         => (string)$tweet->user->description,
             'protected'           => (string)$tweet->user->protected,
-            'isFollowing'         => (string)$tweet->user->following,
+            'isFollowing'         => $isFollowing,
             'followersCount'      => (string)$tweet->user->followers_count,
             'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
             'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
@@ -442,6 +449,12 @@ class Conjoon_Service_Twitter_Proxy  {
             array(), Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
+        $isFollowing = $this->friendshipExists($params['id']);
+
+        if (!is_bool($isFollowing)) {
+            return $isFollowing;
+        }
+
         foreach ($tweets->status as $tweet) {
             $data = array(
                 'id'                  => (string)$tweet->id,
@@ -457,7 +470,7 @@ class Conjoon_Service_Twitter_Proxy  {
                 'url'                 => (string)$tweet->user->url,
                 'description'         => (string)$tweet->user->description,
                 'protected'           => (string)$tweet->user->protected,
-                'isFollowing'         => (string)$tweet->user->following,
+                'isFollowing'         => $isFollowing,
                 'followersCount'      => (string)$tweet->user->followers_count,
                 'inReplyToStatusId'   => (string)$tweet->in_reply_to_status_id,
                 'inReplyToUserId'     => (string)$tweet->in_reply_to_user_id,
@@ -567,6 +580,54 @@ class Conjoon_Service_Twitter_Proxy  {
         return $entries;
     }
 
+    /**
+     * Returns true if userA follows userB, otherwise false.
+     *
+     * @param  mixed $userId either the screenName or the id of the user to
+     * check the friendship against
+
+     *
+     * @return boolean (true/false) or Conjoon_Error
+     */
+    public function friendshipExists($userId)
+    {
+        try {
+            $tweets = $this->_twitter->friendshipExists($userId);
+        } catch (Exception $e) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+
+        if (isset($tweets->error)) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                (string)$tweets->error .
+                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
+                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
+                "]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        $isFollowing = (string)$tweets->friends;
+
+        if ($isFollowing === "true") {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Update user's current status
