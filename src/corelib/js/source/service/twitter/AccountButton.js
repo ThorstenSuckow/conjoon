@@ -81,8 +81,7 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
 
         Ext.apply(this, {
             iconCls  : 'com-conjoon-service-twitter-AccountButton-icon',
-            menu     : this._getMenu(),
-            disabled : true
+            menu     : this._getMenu()
         });
 
         var store = this.accountStore;
@@ -96,7 +95,6 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
         store.on('update',        this._onAccountStoreUpdate,        this);
 
         this.on('render', function() {
-            this.setDisabled((store.getCount() == 0));
             this._onAccountStoreAdd(store, store.getRange());
         }, this);
 
@@ -220,8 +218,7 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
     /**
      * Listens to the accountStore's remove event.
      * This implementation will remove the corresponding
-     * menu item from this store and render it disabled if there are
-     * no more records in the store.
+     * menu item from this menu.
      *
      * @param {Ext.data.Store} store
      * @param {com.conjoon.service.twitter.data.AccountRecord} record
@@ -238,16 +235,6 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
             this._accountItemMap[id] = null;
             delete this._accountItemMap[id];
         }
-
-        var a = 0;
-        for (var i in this._accountItemMap) {
-            a++;
-        }
-
-        if (a == 0) {
-            this.setDisabled(true);
-        }
-
     },
 
     /**
@@ -299,10 +286,6 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
             this._accountItemMap[rec.id] = item;
             this.menu.insert(0, item);
         }
-
-
-        this.setDisabled(false);
-
     },
 
 
