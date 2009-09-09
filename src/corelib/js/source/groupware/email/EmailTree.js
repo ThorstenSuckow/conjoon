@@ -122,7 +122,9 @@ com.conjoon.groupware.email.EmailTree = function(config) {
 
     // register the listeners
     this.treeLoader.on('nodeloaded',    this.onNodeLoaded, this);
-    this.treeLoader.on('loadexception', this._onTreeLoaderException, this);
+    this.treeLoader.on('loadexception', this._onTreeLoaderException,  this);
+    this.treeLoader.on('beforeload',    this._onTreeLoaderBeforeLoad, this);
+    this.treeLoader.on('load',          this._onTreeLoaderLoad,       this);
 
     this.contextMenu.getMenu().on('itemclick', this.contextMenuItemClicked, this);
     this.on('contextmenu', this.onContextMenu, this);
@@ -189,6 +191,15 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      * @see {onRequestFailure}
      */
     taskRunner : null,
+
+    /**
+     * @type {HTMLElement} infoText An html element holding information about current
+     * loading state and loading errors if, and only if the root node is either being loaded,
+     * or loading the root node failed due to 0 child nodes or a server error. Once
+     * The root node has been loaded and it has child nodes, this element will be destroyed
+     * since it's not needed anymore.
+     */
+    infoText : null,
 
 
 //------------------------- Node related methods -------------------------------
@@ -1045,8 +1056,6 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      */
     _onExpandAllClick : function()
     {
-        console.log("LAST FAILED NODE: "+this.lastFailedNode);
-
         if (!this.root.hasChildNodes()) {
             // if no child nodes are found, reload the root node.
             this.root.reload();
@@ -1082,7 +1091,112 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      */
     _onTreeLoaderException : function(treeLoader, node, response)
     {
+        console.log("EXCEPTION");
         this.lastFailedNode = node;
+
+        if (node == this.root && !this.root.firstChild) {
+            this.showPanelInfo('root_failed');
+        }
+
+    },
+
+    /**
+     * Listener for the "beforeload" event of the treeloader. Will be
+     * removed once the treeloader has successfully loaded child nodes
+     * for the root node.
+     *
+     * @param {Ext.tree.TreeLoader) treeLoader
+     * @param {Ext.tree.TreeNode) node
+     * @param {Function) callback
+     */
+    _onTreeLoaderBeforeLoad : function(treeLoader, node, callback)
+    {
+        if (node == this.root) {
+            this.showPanelInfo('root_loading');
+        }
+
+    },
+
+    /**
+     * Listener for the treeloader's "load" event. Will be removed once the root
+     * node has successfully loaded it's children.
+     *
+     * @param {Ext.tree.TreeLoader) treeLoader
+     * @param {Ext.tree.TreeNode) node
+     * @param {Object) response
+     *
+     */
+    _onTreeLoaderLoad : function(treeLoader, node, response)
+    {
+        var resp = com.conjoon.groupware.ResponseInspector.isSuccess(response);
+
+        if (!resp) {
+            return;
+        }
+
+        if (node == this.root) {
+            if (!node.firstChild) {
+                this.showPanelInfo('root_empty');
+            } else if (this.infoText) {
+               Ext.fly(this.infoText).un('click', this._onExpandAllClick, this);
+               this.innerCt.dom.removeChild(this.infoText);
+               this.treeLoader.un('beforeload', this._onTreeLoaderBeforeLoad, this);
+               this.treeLoader.un('load',       this._onTreeLoaderLoad,       this);
+               this.infoText = null;
+
+            }
+        }
+
+    },
+
+    /**
+     * Similiar to the emptyText config in a GridPanel, this method will show
+     * an information message in the treepanel.
+     *
+     * @param {String} type The type of info to show, can be any of "root_failed"
+     * (root node failed to load), "root_empty" (root node has no child nodes) or
+     * "root_loading" (root node currently loads its children)
+     *
+     * @private
+     */
+    showPanelInfo : function(type)
+    {
+        if (!this.innerCt) {
+            return;
+        }
+        if (!this.infoText) {
+            this.infoText = document.createElement('div');
+        }
+
+        this.infoText.className = 'infoText';
+        Ext.fly(this.infoText).un('click', this._onExpandAllClick, this);
+        this.innerCt.dom.appendChild(this.infoText);
+
+        switch (type) {
+            case 'root_failed':
+                Ext.fly(this.infoText).on('click', this._onExpandAllClick, this);
+                Ext.fly(this.infoText).addClass('rootFailed');
+                Ext.fly(this.infoText).update(
+                    com.conjoon.Gettext.gettext("An error occured while trying to load your email folders. Click here to try again.")
+                );
+            break;
+
+            case 'root_loading':
+                Ext.fly(this.infoText).addClass('rootLoading');
+                Ext.fly(this.infoText).update(
+                    com.conjoon.Gettext.gettext("Loading...")
+                );
+            break;
+
+            case 'root_empty':
+                Ext.fly(this.infoText).addClass('rootEmpty');
+                Ext.fly(this.infoText).on('click', this._onExpandAllClick, this);
+                Ext.fly(this.infoText).update(
+                    com.conjoon.Gettext.gettext("There are currently no email folders available. Make sure you have added an email-account first. Click here to reload your email-folders.")
+                );
+            break;
+        }
+
     },
 
     /**

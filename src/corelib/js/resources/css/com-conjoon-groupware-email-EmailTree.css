@@ -30,6 +30,33 @@
     margin-left:5px !important;
 }
 
+.com-conjoon-groupware-email-EmailTree .infoText {
+    background-position:0px 0px;
+    background-repeat:no-repeat;
+    font-size:11px;
+    padding:2px 0px 2px 22px;
+    font-family:Tahoma, Verdana, Helvetica, Arial;
+}
+
+.com-conjoon-groupware-email-EmailTree .infoText.rootFailed:hover,
+.com-conjoon-groupware-email-EmailTree .infoText.rootEmpty:hover {
+    text-decoration:underline;
+}
+
+.com-conjoon-groupware-email-EmailTree .infoText.rootEmpty {
+    background-image:url(../images/16x16/apps/groupware-email-folderloadempty.png);
+}
+
+.com-conjoon-groupware-email-EmailTree .infoText.rootLoading {
+    font-style:italic;
+    color:#b0b0b0;
+    background-image:url(../images/loading.gif);
+}
+
+.com-conjoon-groupware-email-EmailTree .infoText.rootFailed {
+    background-image:url(../images/16x16/apps/groupware-email-folderloaderror.png);
+}
+
 .com-conjoon-groupware-email-EmailTree .com-conjoon-groupware-email-EmailTree-itemPending {
     margin-left:0px !important;
     background:none !important;
