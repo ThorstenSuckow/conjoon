@@ -159,28 +159,31 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.accountGridPanel = accountGridPanel;
 
         var Checkbox  = Ext.form.Checkbox;
-        var TextField = com.conjoon.form.TextField;
-        var TextArea  = com.conjoon.form.TextArea;
+        var TextField = Ext.form.TextField;
 
         this.fields = {
             'name' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Account name"),
-                allowBlank : false,
-                validator  : this.isAccountNameValid.createDelegate(this)
+                fieldLabel      : com.conjoon.Gettext.gettext("Account name"),
+                allowBlank      : false,
+                validator       : this.isAccountNameValid.createDelegate(this),
+                enableKeyEvents : true
             }),
             'userName' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Your name"),
-                allowBlank : false
+                fieldLabel      : com.conjoon.Gettext.gettext("Your name"),
+                allowBlank      : false,
+                enableKeyEvents : true
             }),
             'address' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Email address"),
-                allowBlank : false,
-                validator  : Ext.form.VTypes.email
+                fieldLabel      : com.conjoon.Gettext.gettext("Email address"),
+                allowBlank      : false,
+                validator       : Ext.form.VTypes.email,
+                enableKeyEvents : true
             }),
-            'replyAddress' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Reply to"),
-                allowBlank : true,
-                vtype      : 'email'
+            'replyAddress'      : new TextField({
+                fieldLabel      : com.conjoon.Gettext.gettext("Reply to"),
+                allowBlank      : true,
+                vtype           : 'email',
+                enableKeyEvents : true
             }),
             'protocol' : new TextField({
                 labelStyle : 'width:50px;font-size:11px',
@@ -190,79 +193,87 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 width      : 50
             }),
             'serverInbox' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Host"),
-                itemCls    : 'com-conjoon-float-left',
-                width      : 100,
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
-                allowBlank : false,
-                labelStyle : 'width:90px;font-size:11px',
-                validator  : this.isServerInboxValid.createDelegate(this)
+                fieldLabel      : com.conjoon.Gettext.gettext("Host"),
+                itemCls         : 'com-conjoon-float-left',
+                width           : 100,
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                allowBlank      : false,
+                labelStyle      : 'width:90px;font-size:11px',
+                validator       : this.isServerInboxValid.createDelegate(this),
+                enableKeyEvents : true
             }),
             'portInbox' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Port"),
-                itemCls    : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
-                width      : 50,
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
-                labelStyle : 'width:55px;font-size:11px',
-                allowBlank : false,
-                validator  : this.isPortValid.createDelegate(this)
+                fieldLabel      : com.conjoon.Gettext.gettext("Port"),
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                width           : 50,
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                labelStyle      : 'width:55px;font-size:11px',
+                allowBlank      : false,
+                validator       : this.isPortValid.createDelegate(this),
+                enableKeyEvents : true
             }),
             'usernameInbox' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("User name"),
-                itemCls    : 'com-conjoon-float-left',
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
-                width      : 100,
-                labelStyle : 'width:90px;font-size:11px',
-                allowBlank : false
+                fieldLabel      : com.conjoon.Gettext.gettext("User name"),
+                itemCls         : 'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                width           : 100,
+                labelStyle      : 'width:90px;font-size:11px',
+                allowBlank      : false,
+                enableKeyEvents : true
             }),
             'passwordInbox' : new TextField({
-                inputType  : 'password',
-                itemCls    : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
-                fieldLabel : com.conjoon.Gettext.gettext("Password"),
-                width      : 50,
-                labelStyle : 'width:55px;font-size:11px',
-                allowBlank : false
+                inputType       : 'password',
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                fieldLabel      : com.conjoon.Gettext.gettext("Password"),
+                width           : 50,
+                labelStyle      : 'width:55px;font-size:11px',
+                allowBlank      : false,
+                enableKeyEvents : true
             }),
             'serverOutbox' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Host"),
-                itemCls    : 'com-conjoon-float-left',
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
-                width      : 100,
-                labelStyle : 'width:90px;font-size:11px',
-                allowBlank : false
+                fieldLabel      : com.conjoon.Gettext.gettext("Host"),
+                itemCls         : 'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                width           : 100,
+                labelStyle      : 'width:90px;font-size:11px',
+                allowBlank      : false,
+                enableKeyEvents : true
             }),
             'portOutbox' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("Port"),
-                itemCls    : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
-                width      : 50,
-                allowBlank : false,
-                labelStyle : 'width:55px;font-size:11px',
-                validator  : this.isPortValid.createDelegate(this)
+                fieldLabel      : com.conjoon.Gettext.gettext("Port"),
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                width           : 50,
+                allowBlank      : false,
+                labelStyle      : 'width:55px;font-size:11px',
+                validator       : this.isPortValid.createDelegate(this),
+                enableKeyEvents : true
             }),
             'isOutboxAuth' : new Checkbox({
                 fieldLabel : com.conjoon.Gettext.gettext("Server requires authorization"),
                 labelStyle : 'width:175px;font-size:11px'
             }),
             'usernameOutbox' : new TextField({
-                fieldLabel : com.conjoon.Gettext.gettext("User name"),
-                itemCls    : 'com-conjoon-float-left',
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
-                width      : 100,
-                disabled   : true,
-                labelStyle : 'width:90px;font-size:11px',
-                allowBlank : false
+                fieldLabel      : com.conjoon.Gettext.gettext("User name"),
+                itemCls         : 'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
+                width           : 100,
+                disabled        : true,
+                labelStyle      : 'width:90px;font-size:11px',
+                allowBlank      : false,
+                enableKeyEvents : true
             }),
             'passwordOutbox' : new TextField({
-                inputType  : 'password',
-                itemCls    : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
-                ctCls      : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
-                fieldLabel : com.conjoon.Gettext.gettext("Password"),
-                width      : 50,
-                disabled   : true,
-                labelStyle : 'width:55px;font-size:11px',
-                allowBlank : false
+                inputType       : 'password',
+                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
+                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                fieldLabel      : com.conjoon.Gettext.gettext("Password"),
+                width           : 50,
+                disabled        : true,
+                labelStyle      : 'width:55px;font-size:11px',
+                allowBlank      : false,
+                enableKeyEvents : true
             }),
             'isCopyLeftOnServer' : new Checkbox({
                 labelStyle : 'width:165px;font-size:11px',
@@ -272,13 +283,14 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 fieldLabel : com.conjoon.Gettext.gettext("Use signature"),
                 labelStyle : 'width:105px;font-size:11px'
             }),
-            'signature' : new TextArea({
-                disabled   : true,
-                labelStyle : 'width:105px;font-size:11px',
-                fieldLabel : com.conjoon.Gettext.gettext("Signature"),
-                style      : 'font-family:Courier new, Times new Roman, helvetica, Arial, Verdana',
-                width      : 250,
-                height     : 95
+            'signature' : new Ext.form.TextArea({
+                disabled        : true,
+                labelStyle      : 'width:105px;font-size:11px',
+                fieldLabel      : com.conjoon.Gettext.gettext("Signature"),
+                style           : 'font-family:Courier new, Times new Roman, helvetica, Arial, Verdana',
+                width           : 250,
+                height          : 95,
+                enableKeyEvents : true
             })
         };
 
@@ -852,54 +864,59 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      */
     installListeners : function()
     {
-        this.okButton.on('click', this.onOkButton, this);
-        this.applyButton.on('click', this.onApplyButton, this);
-        this.cancelButton.on('click', this.onCancelButton, this);
+        this.mon(this.okButton,     'click', this.onOkButton, this);
+        this.mon(this.applyButton,  'click', this.onApplyButton, this);
+        this.mon(this.cancelButton, 'click', this.onCancelButton, this);
 
         var selModel = this.accountGridPanel.selModel;
-        selModel.on('rowselect',        this.onRowSelect,       this);
-        selModel.on('beforerowselect',  this.onBeforeRowSelect, this);
-        selModel.on('rowdeselect',      this.onRowDeselect,     this);
+        this.mon(selModel, 'rowselect',       this.onRowSelect,       this);
+        this.mon(selModel, 'beforerowselect', this.onBeforeRowSelect, this);
+        this.mon(selModel, 'rowdeselect',     this.onRowDeselect,     this);
 
         var fields = this.fields;
-        fields['isOutboxAuth'].on('check', function(checkbox, checked) {
+
+        this.mon(fields['isOutboxAuth'], 'check', function(checkbox, checked) {
             fields['usernameOutbox'].allowBlank = !checked;
             fields['passwordOutbox'].allowBlank = !checked;
             fields['usernameOutbox'].isValid();
             fields['passwordOutbox'].isValid();
             fields['usernameOutbox'].setDisabled(!checked);
             fields['passwordOutbox'].setDisabled(!checked);
-
             this.onConfigChange();
         }, this);
 
-        fields['isSignatureUsed'].on('check', function(checkbox, checked) {
+        this.mon(fields['isSignatureUsed'], 'check', function(checkbox, checked) {
             fields['signature'].setDisabled(!checked);
             this.onConfigChange();
         }, this);
 
-        fields['isCopyLeftOnServer'].on('check', this.onConfigChange, this);
+        this.mon(fields['isCopyLeftOnServer'], 'check', this.onConfigChange, this);
 
-        fields['name'].on('regularkey', function() {
-            this.clkRecord.set('name', this.fields['name'].getValue().trim());
-            this.onConfigChange();
-        }, this);
-        fields['userName'].on('regularkey', this.onConfigChange, this);
-        fields['address'].on('regularkey', this.onConfigChange, this);
-        fields['replyAddress'].on('regularkey', this.onConfigChange, this);
-        fields['serverInbox'].on('regularkey', this.onConfigChange, this);
-        fields['portInbox'].on('regularkey', this.onConfigChange, this);
-        fields['usernameInbox'].on('regularkey', this.onConfigChange, this);
-        fields['passwordInbox'].on('regularkey', this.onConfigChange, this);
-        fields['serverOutbox'].on('regularkey', this.onConfigChange, this);
-        fields['portOutbox'].on('regularkey', this.onConfigChange, this);
-        fields['usernameOutbox'].on('regularkey', this.onConfigChange, this);
-        fields['passwordOutbox'].on('regularkey', this.onConfigChange, this);
-        fields['signature'].on('regularkey', this.onConfigChange, this);
+        var lConfig = {
+            keyup    : this.onConfigChange,
+            keypress : this.onConfigChange,
+            keydown  : this.onConfigChange,
+            scope    : this
+        };
 
-        this.accountStore.on('update', this.onUpdate, this);
+        this.mon(fields['name'],           lConfig);
+        this.mon(fields['userName'],       lConfig);
+        this.mon(fields['address'],        lConfig);
+        this.mon(fields['replyAddress'],   lConfig);
+        this.mon(fields['serverInbox'],    lConfig);
+        this.mon(fields['portInbox'],      lConfig);
+        this.mon(fields['usernameInbox'],  lConfig);
+        this.mon(fields['passwordInbox'],  lConfig);
+        this.mon(fields['serverOutbox'],   lConfig);
+        this.mon(fields['portOutbox'],     lConfig);
+        this.mon(fields['usernameOutbox'], lConfig);
+        this.mon(fields['passwordOutbox'], lConfig);
+        this.mon(fields['signature'],      lConfig);
+
+        this.mon(this.accountStore, 'update', this.onUpdate, this);
+
         this.on('beforeclose', this.onBeforeClose, this);
-        this.on('show', this.onShow, this);
+        this.on('show',        this.onShow,        this);
 
     },
 
@@ -1134,7 +1151,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         if (this.requestId !== null) {
             return false;
         } else {
-            this.accountStore.un('update', this.onUpdate, this);
             this.rejectChanges();
             return true;
         }
