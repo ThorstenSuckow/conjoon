@@ -14,18 +14,7 @@
 
 Ext.namespace('com.conjoon.groupware.forms');
 
-/**
- * com.conjoon.groupware.forms.QuickContactFormFieldConfigs
- * com.conjoon.groupware.forms.QuickEmailFormFieldConfigs
- */
-
 com.conjoon.groupware.forms.QuickContactForm = function() {
-
-    // shorthands
-    var _fieldConfigs    = com.conjoon.groupware.forms.QuickContactFormFieldConfigs;
-    var _textFieldConfig = _fieldConfigs.textField;
-    var _buttonConfig    = _fieldConfigs.button;
-    var _checkboxConfig  = _fieldConfigs.checkbox;
 
     var _firstname = null;
     var _lastname = null;
@@ -58,15 +47,42 @@ com.conjoon.groupware.forms.QuickContactForm = function() {
 
     var _initComponents = function()
     {
-        _firstname    = new Ext.form.TextField(_textFieldConfig.firstname);
-        _lastname     = new Ext.form.TextField(_textFieldConfig.lastname);
-        _emailAddress = new Ext.form.TextField(_textFieldConfig.email);
+        _firstname    = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("First name"),
+            name       : 'first',
+            emptyText  : com.conjoon.Gettext.gettext("<First name>"),
+            anchor     : '100%'
+         });
 
-        _switchToEdit = new Ext.form.Checkbox(_checkboxConfig.switchToEdit);
-        _switchToEdit.ctCls = 'com-conjoon-groupware-quickpanel-SmallEditorFont';
+        _lastname     = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Last name"),
+            emptyText  : com.conjoon.Gettext.gettext("<Last name>"),
+            name       : 'true',
+            anchor     : '100%'
+        });
 
-        _saveButton   = new Ext.Button(_buttonConfig.save);
-        _cancelButton = new Ext.Button(_buttonConfig.cancel);
+
+        _emailAddress = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Email"),
+            name       : 'email',
+            emptyText  : com.conjoon.Gettext.gettext("<Email address>"),
+            vtype      : 'email',
+            anchor     : '100%'
+        });
+
+        _switchToEdit = new Ext.form.Checkbox({
+            boxLabel : com.conjoon.Gettext.gettext("switch to edit mode"),
+            ctCls    : 'com-conjoon-groupware-quickpanel-SmallEditorFont'
+        });
+
+
+
+        _saveButton   = new Ext.Button({
+            text : com.conjoon.Gettext.gettext("Save")
+        });
+        _cancelButton = new Ext.Button({
+            text : com.conjoon.Gettext.gettext("Cancel")
+        });
 
         _installListeners.call(this);
         _createLayout.call(this);
