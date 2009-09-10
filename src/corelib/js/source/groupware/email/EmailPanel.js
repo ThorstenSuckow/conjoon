@@ -1539,7 +1539,7 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
 
         this.lastClkNodeId = this.clkNodeId;
         this.clkNodeId = null;
-        this.gridPanel.loadMask.hide();
+
         /*var proxy = this.gridPanel.store.proxy;
         if (proxy.activeRequest[Ext.data.Api.READ]) {
             proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
