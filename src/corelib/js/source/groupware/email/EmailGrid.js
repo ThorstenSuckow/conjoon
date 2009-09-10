@@ -14,146 +14,160 @@
 
 Ext.namespace('com.conjoon.groupware.email');
 
-com.conjoon.groupware.email.EmailGrid = function(config, controller) {
-
-    Ext.apply(this, config);
-
-    this.controller = controller;
-
-// ------------------------- set up buffered grid ------------------------------
-
-    var reader = new Ext.ux.grid.livegrid.JsonReader({
-        root            : 'items',
-        totalProperty   : 'totalCount',
-        versionProperty : 'version',
-        id              : 'id'
-    }, com.conjoon.groupware.email.EmailItemRecord);
-
-    reader.read = function(response){
-        var json = response.responseText;
-        var o = eval("("+json+")");
-        if(!o) {
-            throw {message: "JsonReader.read: Json object not found"};
-        }
-
-        var z = this.readRecords(o);
-        if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
-            z.pendingItems = parseInt(o.pendingItems);
-        }
-
-        return z;
-    };
-
-    // we receive the pendingItems count through a property
-    // in the response object. We store it in the options
-    var MyStore = Ext.extend(Ext.ux.grid.livegrid.Store, {
-
-        loadRecords: function(o, options, success)
-        {
-            if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
-                this.pendingItems = o.pendingItems;
-            } else {
-                this.pendingItems = -1;
-            }
-
-            MyStore.superclass.loadRecords.call(this, o, options, success);
-        }
-    });
-
-    this.store = new MyStore({
-        storeId     : Ext.id(),
-        bufferSize  : 300,
-        autoLoad    : false,
-        reader      : reader,
-        sortInfo   : {field: 'date', direction: 'DESC'},
-        pruneModifiedRecords : true,
-        remoteSort  : true,
-        listeners   : {
-            remove : function (store, record, index) {
-                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.remove', {
-                    items : [record]
-                });
-            },
-            bulkremove : function (store, items) {
-                var records = [];
-                for (var i = 0, len = items.length; i < len; i++) {
-                    records.push(items[i][0]);
-                }
-
-                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.remove', {
-                    items : records
-                });
-            },
-            update : function (store, record, operation) {
-                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.update', {
-                    item      : record,
-                    operation : operation
-                });
-            }
-        },
-        url         : './groupware/email/get.email.items/format/json'
-    });
-
-
-    this.view = new Ext.ux.grid.livegrid.GridView({
-        nearLimit   : 100,
-        scrollDelay : 0,
-        loadMask    : {
-            msg : com.conjoon.Gettext.gettext("Please wait...")
-        },
-        getRowClass : function(record, rowIndex, p, ds){
-            if (record.data.isRead) {
-                return 'com-conjoon-groupware-email-EmailGrid-itemRead';
-            } else {
-                return 'com-conjoon-groupware-email-EmailGrid-itemUnread';
-            }
-        }
-    });
-
-    this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel();
+com.conjoon.groupware.email.EmailGrid = Ext.extend(Ext.ux.grid.livegrid.GridPanel, {
 
     /**
-     * You can use an instance of BufferedGridToolbar for keeping track of the
-     * current scroll position. It also gives you a refresh button and a loading
-     * image that gets activated when the store buffers.
-     * ...Yeah, I pretty much stole this one from the PagingToolbar!
+     * @cfg {Ext.Panel} controller The panel that owns this grid
      */
-    this.bbar = new Ext.ux.grid.livegrid.Toolbar({
-        view        : this.view,
-        displayInfo : true,
-        displayMsg  : com.conjoon.Gettext.gettext("Emails {0} - {1} of {2}"),
-        emptyMsg    : com.conjoon.Gettext.gettext("No emails available")
-    });
+    controller : null,
 
-// ------------------------- ^^ EO set up buffered grid ------------------------
+    initComponent : function()
+    {
 
-    this.colModel = new com.conjoon.groupware.email.data.DefaultColumnModel();
 
-    com.conjoon.groupware.email.EmailGrid.superclass.constructor.call(this, {
-        loadMask       : {msg: com.conjoon.Gettext.gettext("Loading...")},
-        autoScroll     : true,
-        plugins     : [
-            new com.conjoon.groupware.email.view.GridViewMenuPlugin()
-        ],
-        stripeRows     : true,
-        cls            : 'com-conjoon-groupware-email-EmailGrid',
-        trackMouseOver : false,
-        enableDragDrop : true,
-        ddGroup        : 'com.conjoon.groupware-email-Email',
-        ddText         : com.conjoon.Gettext.gettext("{0} selected email(s)")
-    });
+    // ------------------------- set up buffered grid ------------------------------
 
-    this.on('contextmenu',    this.onContextClick, this);
-    this.on('rowcontextmenu', this.onRowContextClick, this);
+        var reader = new Ext.ux.grid.livegrid.JsonReader({
+            root            : 'items',
+            totalProperty   : 'totalCount',
+            versionProperty : 'version',
+            id              : 'id'
+        }, com.conjoon.groupware.email.EmailItemRecord);
 
-    this.store.on('beforeselectionsload', this.onBeforeSelectionsLoad, this);
-    this.store.on('selectionsload',       this.onSelectionsLoad,       this);
+        reader.read = function(response){
+            var json = response.responseText;
+            var o = eval("("+json+")");
+            if(!o) {
+                throw {message: "JsonReader.read: Json object not found"};
+            }
 
-    this.store.on('exception', this._onException, this);
+            var z = this.readRecords(o);
+            if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
+                z.pendingItems = parseInt(o.pendingItems);
+            }
 
-};
+            return z;
+        };
 
-Ext.extend(com.conjoon.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel, {
+        // we receive the pendingItems count through a property
+        // in the response object. We store it in the options
+        var MyStore = Ext.extend(Ext.ux.grid.livegrid.Store, {
+
+            loadRecords: function(o, options, success)
+            {
+                if (o && (o.pendingItems === 0 || o.pendingItems > 0)) {
+                    this.pendingItems = o.pendingItems;
+                } else {
+                    this.pendingItems = -1;
+                }
+
+                MyStore.superclass.loadRecords.call(this, o, options, success);
+            }
+        });
+
+        this.store = new MyStore({
+            storeId     : Ext.id(),
+            bufferSize  : 300,
+            autoLoad    : false,
+            reader      : reader,
+            sortInfo   : {field: 'date', direction: 'DESC'},
+            pruneModifiedRecords : true,
+            remoteSort  : true,
+            listeners   : {
+                remove : function (store, record, index) {
+                    Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.remove', {
+                        items : [record]
+                    });
+                },
+                bulkremove : function (store, items) {
+                    var records = [];
+                    for (var i = 0, len = items.length; i < len; i++) {
+                        records.push(items[i][0]);
+                    }
+
+                    Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.remove', {
+                        items : records
+                    });
+                },
+                update : function (store, record, operation) {
+                    Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.EmailGrid.store.update', {
+                        item      : record,
+                        operation : operation
+                    });
+                }
+            },
+            url         : './groupware/email/get.email.items/format/json'
+        });
+
+
+        this.view = new Ext.ux.grid.livegrid.GridView({
+            nearLimit   : 100,
+            scrollDelay : 0,
+            loadMask    : {
+                msg : com.conjoon.Gettext.gettext("Please wait...")
+            },
+            getRowClass : function(record, rowIndex, p, ds){
+                if (record.data.isRead) {
+                    return 'com-conjoon-groupware-email-EmailGrid-itemRead';
+                } else {
+                    return 'com-conjoon-groupware-email-EmailGrid-itemUnread';
+                }
+            }
+        });
+
+        this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel();
+
+        /**
+         * You can use an instance of BufferedGridToolbar for keeping track of the
+         * current scroll position. It also gives you a refresh button and a loading
+         * image that gets activated when the store buffers.
+         * ...Yeah, I pretty much stole this one from the PagingToolbar!
+         */
+        this.bbar = new Ext.ux.grid.livegrid.Toolbar({
+            view        : this.view,
+            displayInfo : true,
+            displayMsg  : com.conjoon.Gettext.gettext("Emails {0} - {1} of {2}"),
+            emptyMsg    : com.conjoon.Gettext.gettext("No emails available")
+        });
+
+    // ------------------------- ^^ EO set up buffered grid ------------------------
+
+        this.colModel = new com.conjoon.groupware.email.data.DefaultColumnModel();
+
+        Ext.apply(this, {
+            loadMask       : {msg: com.conjoon.Gettext.gettext("Loading...")},
+            autoScroll     : true,
+            plugins     : [
+                new com.conjoon.groupware.email.view.GridViewMenuPlugin()
+            ],
+            stripeRows     : true,
+            cls            : 'com-conjoon-groupware-email-EmailGrid',
+            trackMouseOver : false,
+            enableDragDrop : true,
+            ddGroup        : 'com.conjoon.groupware-email-Email',
+            ddText         : com.conjoon.Gettext.gettext("{0} selected email(s)")
+        });
+
+        com.conjoon.groupware.email.EmailGrid.superclass.initComponent.call(this);
+    },
+
+    initEvents : function()
+    {
+        com.conjoon.groupware.email.EmailGrid.superclass.initEvents.call(this);
+
+        this.on('contextmenu',    this.onContextClick, this);
+        this.on('rowcontextmenu', this.onRowContextClick, this);
+
+        this.mon(this.store, 'beforeselectionsload', this.onBeforeSelectionsLoad, this);
+        this.mon(this.store, 'selectionsload',       this.onSelectionsLoad,       this);
+
+        this.mon(this.store, 'exception', this._onException, this);
+
+        if (this.loadMask) {
+            this.store.un('beforeload', this.loadMask.onBeforeLoad, this.loadMask);
+            this.store.on('beforeload', this.loadMask.onBeforeLoad, this.loadMask, {delay : 1});
+        }
+    },
 
     /**
      *
@@ -194,16 +208,6 @@ Ext.extend(com.conjoon.groupware.email.EmailGrid, Ext.ux.grid.livegrid.GridPanel
                 scope : this
             }
         });
-    },
-
-    initEvents : function()
-    {
-        com.conjoon.groupware.email.EmailGrid.superclass.initEvents.call(this);
-
-        if (this.loadMask) {
-            this.store.un('beforeload', this.loadMask.onBeforeLoad, this.loadMask);
-            this.store.on('beforeload', this.loadMask.onBeforeLoad, this.loadMask, {delay : 1});
-        }
     },
 
     onBeforeSelectionsLoad : function()

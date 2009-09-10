@@ -19,139 +19,7 @@ Ext.namespace('com.conjoon.groupware.email');
 * Controller for the emailpanels tree, preview and grid.
 *
 */
-com.conjoon.groupware.email.EmailTree = function(config) {
-
-    /**
-     * The default value for an editing text field, if a new node is created.
-     */
-    anonymousNodeText : "New folder",
-
-    Ext.apply(this, config);
-
-
-    /**
-     * The context menu for this tree. Will be lazyly instantiated
-     * in createContextMenu
-     */
-    this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
-
-    /**
-     * The root node for the email tree.
-     * @param {Ext.tree.TreeNode}
-     */
-    this.root = new Ext.tree.AsyncTreeNode({
-        id            : 'root',
-        iconCls       : 'com-conjoon-groupware-email-EmailTree-rootIcon',
-        draggable     : false,
-        isTarget      : false,
-        allowChildren : false,
-        expanded      : true,
-        type          : 'root'
-    });
-
-    /**
-     * The store for keeping track of read/ unread messages.
-     */
-    this.pendingItemStore = new Ext.data.SimpleStore({
-        reader      : new Ext.data.ArrayReader(
-                          com.conjoon.groupware.email.PendingNodeItemRecord),
-        fields : [{name : 'pending', type : 'int'}]
-    });
-
-    var store = com.conjoon.groupware.email.AccountStore.getInstance();
-    store.on('add', this._onAccountStoreAdd, this);
-
-
-
-
-    /**
-     * The loader responsible for loading nodes into the tree.
-     * Events will be captured by the onNodeLoaded method.
-     */
-    this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
-        dataUrl   : './groupware/email/get.folder/format/json',
-        baseAttrs : {
-            uiProvider : com.conjoon.groupware.email.PendingNodeUI
-        }
-    });
-
-    var actionDecorator = com.conjoon.groupware.email.decorator.AccountActionComp;
-
-    /**
-     * The top toolbar for the tree panel
-     * @param {Ext.Toolbar}
-     */
-    this.tbar = [actionDecorator.decorate(new Ext.Toolbar.Button({
-        iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
-        tooltip : com.conjoon.Gettext.gettext("Show all folders"),
-        handler : this._onExpandAllClick,
-        scope   : this
-      })),'-', actionDecorator.decorate(new Ext.Toolbar.Button({
-        iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
-        tooltip : com.conjoon.Gettext.gettext("Hide all folders"),
-        handler : function(){ this.root.collapse(true); },
-        scope   : this
-    }))];
-
-
-    /**
-    * Constructor call.
-    */
-    com.conjoon.groupware.email.EmailTree.superclass.constructor.call(this, {
-        bodyStyle       : 'background-color:#FFFFFF',
-        rootVisible     : false,
-        autoScroll      : true,
-        cls             : 'com-conjoon-groupware-email-EmailTree',
-        minSize         : 175,
-        maxSize         : 500,
-        collapsible     : true,
-        collapseMode    :'mini',
-        lines           : false,
-        useArrows       : true,
-        ddGroup         : 'com.conjoon.groupware-email-Email',
-        enableDD        : true,
-        containerScroll : true,
-        ddAppendOnly    : true,
-        loader          : this.treeLoader,
-        animate         : false
-    });
-
-    // this.on('nodedragover', function(overEvent){return overEvent.point == 'append';});
-
-    this.nodeEditor = new com.conjoon.groupware.email.NodeEditor(this);
-
-    // register the listeners
-    this.treeLoader.on('nodeloaded',    this.onNodeLoaded, this);
-    this.treeLoader.on('loadexception', this._onTreeLoaderException,  this);
-    this.treeLoader.on('beforeload',    this._onTreeLoaderBeforeLoad, this);
-    this.treeLoader.on('load',          this._onTreeLoaderLoad,       this);
-
-    this.contextMenu.getMenu().on('itemclick', this.contextMenuItemClicked, this);
-    this.on('contextmenu', this.onContextMenu, this);
-    this.on('mousedown',   this.onMouseDown, this);
-    this.on('render',      this.onTreeRender, this);
-    this.on('click',       this.onPanelClick, this);
-
-    this.on('beforecollapsenode', this.onBeforeCollapseNode, this);
-    this.on('beforeexpandnode',   this.onBeforeExpandNode,   this);
-
-    this.on('beforemovenode',  this.onBeforeFolderMove, this);
-    this.on('beforeappend',    this.onBeforeFolderAppend,   this);
-    this.on('movenode',        this.onFolderMove, this);
-
-    this.on('nodedragover',   this.onNodeDragOver, this);
-    this.on('beforenodedrop', this.onBeforeNodeDrop, this);
-
-    this.on('destroy', function(){this.pendingItemStore.destroy();}, this);
-
-    this.pendingItemStore.on('update', this.updatePendingNodes, this);
-
-
-
-
-};
-
-Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
+com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
     /**
      * Shorthands for the none-editable folders. They get assigned in the
@@ -200,6 +68,136 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      * since it's not needed anymore.
      */
     infoText : null,
+
+    /**
+     * The default value for an editing text field, if a new node is created.
+     */
+    anonymousNodeText : "New folder",
+
+    /**
+     * The context menu for this tree. Will be lazyly instantiated
+     * in createContextMenu
+     */
+    contextMenu : null,
+
+    /**
+     * The root node for the email tree.
+     * @param {Ext.tree.TreeNode}
+     */
+    root : null,
+
+    /**
+     * The store for keeping track of read/ unread messages.
+     */
+    pendingItemStore : null,
+
+    initComponent : function()
+    {
+        this.contextMenu = com.conjoon.groupware.email.NodeContextMenu;
+
+        this.root = new Ext.tree.AsyncTreeNode({
+            id            : 'root',
+            iconCls       : 'com-conjoon-groupware-email-EmailTree-rootIcon',
+            draggable     : false,
+            isTarget      : false,
+            allowChildren : false,
+            expanded      : true,
+            type          : 'root'
+        });
+
+        this.pendingItemStore = new Ext.data.SimpleStore({
+            reader      : new Ext.data.ArrayReader(
+                              com.conjoon.groupware.email.PendingNodeItemRecord),
+            fields : [{name : 'pending', type : 'int'}]
+        });
+
+        var store = com.conjoon.groupware.email.AccountStore.getInstance();
+        this.mon(store, 'add', this._onAccountStoreAdd, this);
+
+        /**
+         * The loader responsible for loading nodes into the tree.
+         * Events will be captured by the onNodeLoaded method.
+         */
+        this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
+            dataUrl   : './groupware/email/get.folder/format/json',
+            baseAttrs : {
+                uiProvider : com.conjoon.groupware.email.PendingNodeUI
+            }
+        });
+
+        var actionDecorator = com.conjoon.groupware.email.decorator.AccountActionComp;
+
+        /**
+         * The top toolbar for the tree panel
+         * @param {Ext.Toolbar}
+         */
+        this.tbar = [actionDecorator.decorate(new Ext.Toolbar.Button({
+            iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
+            tooltip : com.conjoon.Gettext.gettext("Show all folders"),
+            handler : this._onExpandAllClick,
+            scope   : this
+          })),'-', actionDecorator.decorate(new Ext.Toolbar.Button({
+            iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
+            tooltip : com.conjoon.Gettext.gettext("Hide all folders"),
+            handler : function(){ this.root.collapse(true); },
+            scope   : this
+        }))];
+
+        Ext.apply(this, {
+            bodyStyle       : 'background-color:#FFFFFF',
+            rootVisible     : false,
+            autoScroll      : true,
+            cls             : 'com-conjoon-groupware-email-EmailTree',
+            minSize         : 175,
+            maxSize         : 500,
+            lines           : false,
+            useArrows       : true,
+            ddGroup         : 'com.conjoon.groupware-email-Email',
+            enableDD        : true,
+            containerScroll : true,
+            ddAppendOnly    : true,
+            loader          : this.treeLoader,
+            animate         : false
+        });
+
+        // this.on('nodedragover', function(overEvent){return overEvent.point == 'append';});
+
+        this.nodeEditor = new com.conjoon.groupware.email.NodeEditor(this);
+
+        this.on('render', this.onTreeRender, this, {single : true});
+
+        com.conjoon.groupware.email.EmailTree.superclass.initComponent.call(this);
+    },
+
+    initEvents : function()
+    {
+        com.conjoon.groupware.email.EmailTree.superclass.initEvents.call(this);
+
+        // register the listeners
+        this.mon(this.treeLoader, 'nodeloaded', this.onNodeLoaded, this);
+        this.treeLoader.on('loadexception',     this._onTreeLoaderException,  this);
+        this.treeLoader.on('beforeload',        this._onTreeLoaderBeforeLoad, this);
+        this.treeLoader.on('load',              this._onTreeLoaderLoad,       this);
+
+        this.mon(this.contextMenu.getMenu(), 'itemclick', this.contextMenuItemClicked, this);
+        this.on('contextmenu', this.onContextMenu, this);
+        this.on('mousedown',   this.onMouseDown, this);
+        this.on('click',       this.onPanelClick, this);
+
+        this.on('beforecollapsenode', this.onBeforeCollapseNode, this);
+        this.on('beforeexpandnode',   this.onBeforeExpandNode,   this);
+
+        this.on('beforemovenode',  this.onBeforeFolderMove, this);
+        this.on('beforeappend',    this.onBeforeFolderAppend,   this);
+        this.on('movenode',        this.onFolderMove, this);
+
+        this.on('nodedragover',   this.onNodeDragOver, this);
+        this.on('beforenodedrop', this.onBeforeNodeDrop, this);
+
+        this.on('destroy', function(){this.pendingItemStore.destroy();}, this);
+
+        this.mon(this.pendingItemStore, 'update', this.updatePendingNodes, this);
+    },
 
 
 //------------------------- Node related methods -------------------------------
@@ -1091,7 +1089,6 @@ Ext.extend(com.conjoon.groupware.email.EmailTree, Ext.tree.TreePanel, {
      */
     _onTreeLoaderException : function(treeLoader, node, response)
     {
-        console.log("EXCEPTION");
         this.lastFailedNode = node;
 
         if (node == this.root && !this.root.firstChild) {

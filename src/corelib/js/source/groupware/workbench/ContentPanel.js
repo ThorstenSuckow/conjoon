@@ -103,7 +103,7 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
         this.on('beforedrop',   this._onBeforeDrop,   this);
         this.on('drop',         this._onDrop,         this);
 
-        this.header.on('mousedown', this._handleHeaderMouseDown, this);
+        this.mon(this.header, 'mousedown', this._handleHeaderMouseDown, this);
 
         this._createDragDrop();
     },

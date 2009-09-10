@@ -236,8 +236,8 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
                                 com.conjoon.Gettext.gettext("Email");
 
         var store = com.conjoon.groupware.email.AccountStore.getInstance();
-        store.on('add',    this._onAccountStoreAdd, this);
-        store.on('remove', this._onAccountStoreRemove, this);
+        this.mon(store, 'add',    this._onAccountStoreAdd, this);
+        this.mon(store, 'remove', this._onAccountStoreRemove, this);
     },
 
 
@@ -297,10 +297,6 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
     onDestroy : function()
     {
         Ext.fly(this.readEmailLink).un('click', this._onReadEmailClick, this);
-
-        var store = com.conjoon.groupware.email.AccountStore.getInstance();
-        store.un('add',    this._onAccountStoreAdd, this);
-        store.un('remove', this._onAccountStoreRemove, this);
     },
 
     /**

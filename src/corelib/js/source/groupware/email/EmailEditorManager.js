@@ -84,7 +84,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         if (form == null) {
 
-            form = new com.conjoon.groupware.email.EmailForm({
+            form = new com.conjoon.groupware.email.form.EmailForm({
                 id                : 'DOM:com.conjoon.groupware.email.EmailEditor.form',
                 layout            : 'border',
                 region            : 'center',
@@ -95,7 +95,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             form.on('render', function(){
                 this.loadMask = new Ext.LoadMask(this.el.dom.id, {msg : messages.loading});
                 this.loadMask.el.dom.style.zIndex = 1;
-            }, form);
+            }, form, {single : true});
 
 
             masterPanel = new Ext.Panel({
@@ -108,24 +108,28 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             });
 
             subjectField = form.subjectField;
-            subjectField.on('render', function(){
-                subjectField.el.on('keyup',    onSubjectValueChange, com.conjoon.groupware.email.EmailEditorManager);
-                subjectField.el.on('keydown',  onSubjectValueChange, com.conjoon.groupware.email.EmailEditorManager);
-                subjectField.el.on('keypress', onSubjectValueChange, com.conjoon.groupware.email.EmailEditorManager);
-            }, this);
+
+            var lConfig = {
+                keyup    : onSubjectValueChange,
+                keydown  : onSubjectValueChange,
+                keypress : onSubjectValueChange,
+                scope    : com.conjoon.groupware.email.EmailEditorManager
+            };
+
+            form.mon(subjectField, lConfig);
 
             recipientsGrid = form.grid;
-            recipientsGrid.on('afteredit', onAfterEdit, com.conjoon.groupware.email.EmailEditorManager);
+            form.mon(recipientsGrid, 'afteredit', onAfterEdit, com.conjoon.groupware.email.EmailEditorManager);
 
             accountField   = form.fromComboBox;
-            accountField.on('select', onAccountSelect, com.conjoon.groupware.email.EmailEditorManager);
+            form.mon(accountField, 'select', onAccountSelect, com.conjoon.groupware.email.EmailEditorManager);
 
             htmlEditor     = form.htmlEditor;
             htmlEditor.on('initialize' , function(){
                 var fly = Ext.fly(this.doc);
                 fly.addKeyListener([10, 13], onHtmlEditorEdit,
                     com.conjoon.groupware.email.EmailEditorManager, {stopEvent:true});
-            }, htmlEditor);
+            }, htmlEditor, {single : true});
 
             recipientStore = form.gridStore;
 
@@ -300,7 +304,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         var type  = data.type;
 
         var recRecs         = [];
-        var recipientRecord = com.conjoon.groupware.email.RecipientRecord;
+        var recipientRecord = com.conjoon.groupware.email.data.RecipientRecord;
         var add = null;
 
         // get all the recipients
@@ -971,7 +975,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (value.trim() != "" && store.getAt(row).data.address.trim() != "" &&
             store.getAt(row+1) == null) {
 
-            var tmpRecord = new com.conjoon.groupware.email.RecipientRecord({
+            var tmpRecord = new com.conjoon.groupware.email.data.RecipientRecord({
                 receiveType : 'to',
                 address : ''
             });
@@ -1298,333 +1302,3 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
 
 }();
-
-com.conjoon.groupware.email.EmailForm = function(config){
-
-    Ext.apply(this, config);
-
-    var accSt        = com.conjoon.groupware.email.AccountStore;
-    var accountStore = accSt.getInstance();
-
-    var view = new Ext.grid.GridView({
-        getRowClass : function(record, rowIndex, p, ds){
-            return 'com-conjoon-groupware-email-EmailForm-gridrow';
-        }
-    });
-
-    var standardAcc = accSt.getStandardAccount(false);
-
-    this.fromComboBox = new Ext.form.ComboBox({
-       name : 'from',
-       tpl : '<tpl for="."><div class="x-combo-list-item">{address:htmlEncode} - {name:htmlEncode}</div></tpl>',
-       fieldLabel : com.conjoon.Gettext.gettext("From"),
-       anchor     : '100%',
-       typeAhead: false,
-       triggerAction: 'all',
-       editable : false,
-       lazyRender:true,
-       displayField  : 'address',
-       value : (standardAcc ? standardAcc.id : undefined),
-       mode : 'local',
-       valueField    : 'id',
-       listClass: 'x-combo-list-small',
-       store : accountStore
-    });
-
-    var addressQueryComboBox = new com.conjoon.groupware.email.form.RecipientComboBox();
-
-    this.gridStore = new Ext.data.JsonStore({
-        id       : 'id',
-        fields   : ['receiveType', 'address']
-    });
-
-    var receiveTypeEditor = new Ext.form.ComboBox({
-        typeAhead     : false,
-        triggerAction : 'all',
-        lazyRender    : true,
-        editable      : false,
-        mode          : 'local',
-        value         : 'gg',
-        listClass     : 'x-combo-list-small',
-        store         : [
-            ['to',  com.conjoon.Gettext.gettext('To:')],
-            ['cc',  com.conjoon.Gettext.gettext('CC:')],
-            ['bcc', com.conjoon.Gettext.gettext('BCC:')]
-        ]
-    });
-
-    this.grid = new Ext.grid.EditorGridPanel({
-        hideHeaders : true,
-        region  : 'center',
-        margins : '2 5 2 5',
-        style   : 'background:none',
-        store   : this.gridStore,
-        columns : [{
-            id        : 'receiveType',
-            header    : 'receiveType',
-            width     : 100,
-            dataIndex : 'receiveType',
-            editor    : receiveTypeEditor,
-            renderer  : function(value, metadata, record, rowIndex, colIndex, store) {
-                var st  = receiveTypeEditor.store;
-                var ind = st.find('field1', value, 0, false, true);
-                var sRecord = null;
-                if (ind >= 0) {
-                    sRecord = st.getAt(ind);
-                }
-                if(sRecord) {
-                    return sRecord.get('field2');
-                } else {
-                    '';
-                }
-            }
-        },{
-            id : 'address',
-            header: "address",
-            dataIndex: 'address',
-            editor: addressQueryComboBox,
-            renderer: function(value, p, record) {
-                return Ext.util.Format.htmlEncode(value);
-            }
-        }],
-        view : view,
-        header : false,
-        clicksToEdit:1
-    });
-
-    this.grid.store.on('update', this.onUpdate, this);
-
-    this.subjectField = new Ext.form.TextField({
-        name : 'subject',
-        fieldLabel : com.conjoon.Gettext.gettext("Subject"),
-        anchor     : '100%'
-    });
-
-    this.htmlEditor = new Ext.form.HtmlEditor({
-        hideMode    : 'offsets',
-        hideLabel   : true,
-        name        : 'msg',
-        anchor      : '100% -0',
-        enableLinks : false,
-        defaultFont : 'courier new',
-        enableSourceEdit : false,
-        defaultAutoCreate : {
-            tag: "textarea",
-            style:"width:500px;height:300px;font-family:Courier New;font-size:14px;",
-            autocomplete: "off"
-        }
-    });
-
-    this.htmlEditor.initEditor = function() {
-        Ext.form.HtmlEditor.prototype.initEditor.call(this);
-
-        if (Ext.isSafari) {
-            Ext.EventManager.on(this.doc, 'keydown', function(e){
-                if (e.getKey() == e.ENTER) {
-                    // adjust behavior of webkit based browsers.
-                    // we need a simple br tag inserted for linebreaks
-                    // overrides the standard behavior of inserting
-                    // div elements
-                    e.stopEvent();
-                    var r = this.win.getSelection().getRangeAt(0);
-                    var br = this.doc.createElement('br');
-                    r.insertNode(br);
-                    this.win.getSelection().collapse(br, 2);
-                    this.deferFocus();
-                }
-            }, this);
-        }
-
-        // unbind the Ext default fixKeeys implementation and use custom one so that
-        // blockqouotes will be quoted properly
-        if (Ext.isIE) {
-            Ext.EventManager.un(this.doc, 'keydown', this.fixKeys, this);
-
-            Ext.EventManager.on(this.doc, 'keydown', function(e){
-                var k = e.getKey(), r;
-                if(k == e.TAB){
-                    e.stopEvent();
-                    r = this.doc.selection.createRange();
-                    if(r){
-                        r.collapse(true);
-                        r.pasteHTML('&nbsp;&nbsp;&nbsp;&nbsp;');
-                        this.deferFocus();
-                    }
-                }else if(k == e.ENTER){
-                    r = this.doc.selection.createRange();
-                    if(r){
-                        var target = r.parentElement();
-                        var targetName = target
-                                         ? target.tagName.toLowerCase()
-                                         : '';
-                        if(!target || (targetName != 'li' && targetName != 'blockquote')){
-                            e.stopEvent();
-                            r.pasteHTML('<br />');
-                            r.collapse(false);
-                            r.select();
-                        }
-                    }
-                }
-            }, this);
-
-        }
-    };
-
-
-    this.htmlEditor.getDocMarkup = function(){
-
-        if (!this.__doc_markup__) {
-
-            var excludeMask = {
-                href : '*/ext-all.css'
-            };
-
-            var getCssTextFromStyleSheet = com.conjoon.util.Dom.getCssTextFromStyleSheet;
-
-            var body = getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body',
-                excludeMask
-            );
-
-            var insertDiv = getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.text',
-                excludeMask
-            );
-
-            var signature = getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.signature',
-                excludeMask
-            );
-
-            var blockquote = "";
-
-            var abs = [];
-            for (var i = 0; i <10; i++) {
-                abs.push('blockquote');
-                blockquote += getCssTextFromStyleSheet(
-                     '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '+abs.join(' '),
-                    excludeMask
-                );
-            }
-
-            this.__doc_markup__ = '<html>'
-                                  + '<head>'
-                                  + '<META http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-                                  + '<title></title>'
-                                  + '<style type="text/css">'
-                                  + body
-                                  + ' '
-                                  + blockquote
-                                  + ' '
-                                  + getCssTextFromStyleSheet(
-                                       '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '
-                                       + (Ext.isIE ? 'div.editorBodyWrap' : 'pre'),
-                                       excludeMask
-                                   )
-                                  + ' '
-                                  + getCssTextFromStyleSheet(
-                                       '.com-conjoon-groupware-email-EmailForm-htmlEditor-body a',
-                                       excludeMask
-                                   )
-                                  + ' '
-                                  + insertDiv
-                                  + ' '
-                                  + signature
-                                  + '</style>'
-                                  + '</head>'
-                                  + '<body class="com-conjoon-groupware-email-EmailForm-htmlEditor-body">'
-                                  + '</body></html>';
-        }
-
-        return this.__doc_markup__;
-    };
-
-    com.conjoon.groupware.email.EmailForm.superclass.constructor.call(this, {
-        items : [{
-            layout : 'border',
-            bodyStyle : 'background-color:#F6F6F6',
-            region : 'north',
-            split : true,
-            hideMode : 'offsets',
-            height:125,
-            minSize:125,
-            items  : [
-                new Ext.form.FormPanel({
-                    labelWidth  : 30,
-                    region : 'north',
-                    height : 20,
-                    minSize: 20,
-                    hideMode : 'offsets',
-                    margins: '4 5 2 5',
-                    style  : 'background:none',
-                    baseCls     : 'x-small-editor',
-                    border : false,
-                    defaults : {
-                        labelStyle : 'width:30px;font-size:11px'
-                    },
-                    defaultType : 'textfield',
-                    items : [
-                        this.fromComboBox
-                    ]
-              }), this.grid,
-                new Ext.form.FormPanel({
-                    labelWidth  : 45,
-                    region : 'south',
-                    height : 20,
-                    hideMode : 'offsets',
-                    minSize: 20,
-                    style  : 'background:none',
-                    margins: '2 5 4 5',
-                    baseCls     : 'x-small-editor',
-                    border : false,
-                    defaults : {
-                        labelStyle : 'width:45px;font-size:11px'
-                    },
-                    defaultType : 'textfield',
-                    items : [
-                        this.subjectField
-                    ]
-              })
-          ]},
-            new Ext.form.FormPanel({
-                region : 'center',
-                hideMode : 'offsets',
-                baseCls     : 'x-small-editor',
-                border:false,
-                items  : [this.htmlEditor]
-            })
-        ]
-
-    });
-
-    this.loadMask = null;
-
-    this.grid.on('resize', function() {
-        var cm = this.getColumnModel();
-        var rem = this.getGridEl().getWidth(true)-this.view.scrollOffset
-                  - cm.getColumnWidth(0)-2;
-
-        cm.setColumnWidth(1, rem);
-        this.view.focusEl.setWidth(rem);
-    }, this.grid);
-
-    com.conjoon.util.Registry.register('com.conjoon.groupware.email.EmailForm', this, true);
-};
-
-
-Ext.extend(com.conjoon.groupware.email.EmailForm, Ext.Panel, {
-
-    __is : 'com.conjoon.groupware.email.EmailForm',
-
-
-    onUpdate : function(store, record, operation)
-    {
-
-    }
-});
-
-
-com.conjoon.groupware.email.RecipientRecord = Ext.data.Record.create([
-    {name: 'receiveType'},
-    {name: 'address'}
-]);

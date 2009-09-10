@@ -14,333 +14,7 @@
 
 Ext.namespace('com.conjoon.groupware.feeds');
 
-com.conjoon.groupware.feeds.AddFeedDialog = function(config) {
-
-    Ext.apply(this, config);
-
-    /**
-     * The panel for displaying error messages if subscribing to a feed
-     * fails in any way (malformed url, network issues etc.)
-     * @param {Ext.Panel}
-     */
-    this.errorPanel = new Ext.Panel({
-        columnWidth : .82,
-        height      : 130,
-        autoScroll  : true,
-        html        : ""
-    });
-
-    /**
-     * The trigger field for submitting the feed's url.
-     * @param {Ext.form.TriggerField}
-     */
-    this.urlTrigger = new Ext.form.TriggerField({
-        fieldLabel   : com.conjoon.Gettext.gettext("Feed url"),
-        vtype        : 'url',
-        //allowBlank   : false,
-        triggerClass : 'com-conjoon-go-trigger',
-        anchor       : '100%'
-    });
-
-    /**
-     * Textfield for submitting a custom name for identifying the feed later on.
-     */
-    this.feedNameTextField = new Ext.form.TextField({
-        fieldLabel   : com.conjoon.Gettext.gettext("Feed name"),
-        itemCls      : 'com-conjoon-margin-b-10',
-        allowBlank   : false,
-        anchor       : '95%',
-        validator    : function(v){
-                           var alphanum = /^[a-zA-Z0-9_()\/ :.]+$/;
-                           return alphanum.test(v);
-                       }
-    });
-
-    /**
-     * Combobox for choosing the request timeout in seconds.
-     *
-     * @type Ext.form.ComboBox
-     */
-    this.requestTimeoutComboBox = new Ext.form.ComboBox({
-        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
-        listClass     : 'com-conjoon-smalleditor',
-        displayField  : 'text',
-        itemCls       : 'com-conjoon-margin-b-10',
-        valueField    : 'id',
-        mode          : 'local',
-        anchor       : '95%',
-        editable      : false,
-        triggerAction : 'all',
-        store         : new Ext.data.SimpleStore({
-            data   : [
-                [30, com.conjoon.Gettext.gettext("30 seconds")],
-                [20, com.conjoon.Gettext.gettext("20 seconds")],
-                [10, com.conjoon.Gettext.gettext("10 seconds")]
-            ],
-            fields : ['id', 'text']
-        })
-    });
-
-    /**
-     * Combobox to store the duration of how long to store the entries before
-     * wiped in the DB.
-     */
-    this.keepEntriesComboBox = new Ext.form.ComboBox({
-        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
-        listClass     : 'com-conjoon-smalleditor',
-        itemCls       : 'com-conjoon-margin-b-10',
-        displayField  : 'text',
-        valueField    : 'id',
-        mode          : 'local',
-        anchor        : '95%',
-        editable      : false,
-        triggerAction : 'all',
-        store         : new Ext.data.SimpleStore({
-            data   : [
-                [2419200, com.conjoon.Gettext.gettext("for 2 weeks")],
-                [1209600, com.conjoon.Gettext.gettext("for one week")],
-                [432000,  com.conjoon.Gettext.gettext("for 5 days")],
-                [172800,  com.conjoon.Gettext.gettext("for 2 days")],
-                [86400,   com.conjoon.Gettext.gettext("for one day")],
-                [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
-                [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
-                [7200,    com.conjoon.Gettext.gettext("for 2 hours")],
-                [3600,    com.conjoon.Gettext.gettext("for one hour")]
-            ],
-            fields : ['id', 'text']
-        })
-    });
-
-
-    /**
-     * @ext-bug beta 1 not setting listWidth renders not correct
-     */
-    /**
-     * Combobox to store update/refresh behavior.
-     */
-    this.updateComboBox = new Ext.form.ComboBox({
-        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : com.conjoon.Gettext.gettext("Refresh"),
-        listClass     : 'com-conjoon-smalleditor',
-        itemCls       : 'com-conjoon-margin-b-10',
-        displayField  : 'text',
-        valueField    : 'id',
-        mode          : 'local',
-        anchor        : '95%',
-        editable      : false,
-        triggerAction : 'all',
-        store         : new Ext.data.SimpleStore({
-            data   : [
-                [172800, com.conjoon.Gettext.gettext("every 2 days")],
-                [86400,  com.conjoon.Gettext.gettext("every day")],
-                [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
-                [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
-                [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
-                [3600,   com.conjoon.Gettext.gettext("every hour")],
-                [1800,   com.conjoon.Gettext.gettext("every 30 minutes")],
-                [900,    com.conjoon.Gettext.gettext("every 15 minutes")]
-            ],
-            fields : ['id', 'text']
-        })
-    });
-
-
-    /**
-     * @ext-bug beta 1 using hideLabel renders causes jumpy checkbox
-     */
-    /**
-     * Checkbox telling wether to close the dialog after a feed was successfully
-     * added. If checked, the dialog won't close and stay in input mode.
-     */
-    this.keepAddModeCheckbox = new Ext.form.Checkbox({
-        fieldLabel : '&#160',
-        labelSeparator : '',
-        boxLabel   : com.conjoon.Gettext.gettext("add another feed after saving"),
-        ctCls      : 'com-conjoon-smalleditor',
-        anchor     : '95%',
-        autoWidth  : true
-        //style      : 'margin-left:105px'
-    });
-
-    /**
-     * @ext-bug something breaks a reference to button.el if using the button and
-     *          its return value
-     */
-    /**
-     * The button for submitting the dialogs form.
-     */
-    this.okButton = new Ext.Button({
-        text     : com.conjoon.Gettext.gettext("Add"),
-        disabled : true,
-        tooltip  : com.conjoon.Gettext.gettext("Saves and adds the configuration to the feed reader"),
-        handler  : this.onOk,
-        scope    : this,
-        minWidth : 75
-    });
-
-    /**
-     * The button for resetting the dialogs form and starting a new input
-     * procedure.
-     */
-    this.resetButton = new Ext.Button({
-        text    : com.conjoon.Gettext.gettext("Reset"),
-        handler : this.onReset,
-        scope   : this,
-        tooltip : com.conjoon.Gettext.gettext("Cancels and resets all fields"),
-        handler : this.onReset,
-        scope   : this,
-        minWidth : 75
-    });
-
-    /**
-     * Cancels and closes the dialog.
-     */
-    this.cancelButton = new Ext.Button({
-        text    : com.conjoon.Gettext.gettext("Cancel"),
-        tooltip : com.conjoon.Gettext.gettext("Cancels and closes this dialog"),
-        handler : this.onCancel,
-        scope   : this,
-        minWidth : 75
-    });
-
-    /**
-     * The card layout either displaying additional form fields or the panel
-     * showing error messages.
-     * @param {Ext.Panel}
-     */
-    this.card = new Ext.Panel({
-       region     : 'south',
-        height   : 170,
-        border         : false,
-        deferredRender : true,
-        bodyStyle      : 'background-color:#F6F6F6;padding:0px 10px 5px 10px',
-        layout         : 'card',
-        activeItem    : 0,
-        defaults      : {
-            border    : false,
-            bodyStyle : 'background:none'
-        },
-        items : [{
-            // empty card
-            html : ""
-          },{
-            // error card
-            id        : 'DOM:com.conjoon.groupware.feeds.AddFeedDialog.errorPanel',
-            layout    : 'column',
-            defaults  : {
-                bodyStyle : 'background:none;padding-top:10px;',
-                border    : false
-            },
-            items     : [{
-                columnWidth : .18,
-                html        : '<div class="com-conjoon-groupware-feeds-AddFeedDialog-errorCard-imagePanel">&nbsp;</div>'
-              },
-                this.errorPanel
-            ]
-          },{
-            hideMode : 'visibility',
-              // form card
-            id    : 'DOM:com.conjoon.groupware.feeds.AddFeedDialog.additionalFormPanel',
-            items : new Ext.FormPanel({
-                labelAlign : 'left',
-                border     : false,
-                baseCls    : 'x-small-editor',
-                cls        : 'com-conjoon-groupware-feeds-AddFeedDialog-formCard',
-                defaults   : {
-                    labelStyle : 'font-size:11px'
-                },
-                items : [
-                    this.feedNameTextField,
-                    this.updateComboBox,
-                    this.keepEntriesComboBox,
-                    this.requestTimeoutComboBox,
-                    this.keepAddModeCheckbox
-                ]
-            })
-        }]
-    });
-
-    this.items = [{
-        region    : 'center',
-        height    : 120,
-        border    : false,
-        items     : [
-            new com.conjoon.groupware.util.FormIntro({
-                style      : 'padding:10px 10px 0px 10px;',
-                label      : com.conjoon.Gettext.gettext("Feed address"),
-                imageClass : 'com-conjoon-groupware-feeds-AddFeedDialog-introImage',
-                text       : com.conjoon.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished.")
-            }),
-            new Ext.FormPanel({
-                labelAlign : 'right',
-                border     : false,
-                hideLabels : true,
-                cls        : 'x-small-editor',
-                bodyStyle  : 'background:none;padding:0 10px 0 68px',
-                items      : [
-                    this.urlTrigger
-                ]
-            }),
-            new Ext.BoxComponent({
-                style  : 'margin:0px 10px 0 10px',
-                autoEl : {
-                    tag : 'div',
-                    cls : 'com-conjoon-groupware-util-FormIntro-sepx',
-                    html : '&#160;'
-                }
-            })
-         ]
-      },
-        this.card
-    ];
-
-    com.conjoon.groupware.feeds.AddFeedDialog.superclass.constructor.call(this,  {
-        iconCls   : 'com-conjoon-groupware-feeds-Icon',
-        title     : com.conjoon.Gettext.gettext("Add feed"),
-        bodyStyle : 'background-color:#F6F6F6',
-        modal     : true,
-        height    : 355,
-        width     : 450,
-        defaults  : {
-            bodyStyle : 'background:none;'
-        },
-        resizable : false,
-        /**
-         * @ext-bug beta1 not setting the layout mode to border does not render
-         *                the form intro right, i.e. text not displayed when the
-         *                dialog reopens or when it is showed over an already modal
-         *                window
-         */
-        layout    : 'border',
-        buttons : [
-            this.okButton,
-            this.resetButton,
-            this.cancelButton
-        ]
-    });
-
-   /* this.animContainer = Ext.DomHelper.append(this.el, {
-                        id:'DOM:com.conjoon.groupware.feeds.FeedPreview.container',
-                        style:"height:120px;background-color:red"
-                     }, true);*/
-
-    // install listeners
-    this.urlTrigger.onTriggerClick = this.onTriggerClick.createDelegate(this);
-
-
-    // finish other components
-    this.keepEntriesComboBox.setValue(2419200);
-    this.updateComboBox.setValue(172800);
-    this.requestTimeoutComboBox.setValue(10);
-    this.feedNameTextField.on('valid',   this.onValid, this);
-    this.feedNameTextField.on('invalid', this.onInvalid, this);
-
-    this.on('beforeclose', this.onBeforeClose, this);
-};
-
-Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
+com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
 
     EMPTY_PANEL : 0,
     ERROR_PANEL : 1,
@@ -371,22 +45,376 @@ Ext.extend(com.conjoon.groupware.feeds.AddFeedDialog, Ext.Window, {
     /**
      * Configuration for the loadMask
      */
-    loadMaskConfig : {
-        msg : com.conjoon.Gettext.gettext("Validating feed url...")
-    },
+    loadMaskConfig : null,
 
     /**
      * Configuration for the loadMask on checking for a valid feedname
      */
-    loadMaskConfigFeedName : {
-        msg : com.conjoon.Gettext.gettext("Validating feed name...")
-    },
+    loadMaskConfigFeedName : null,
 
     /**
      * Configuration for the loadMask while saving the new feed
      */
-    loadMaskConfigSaveFeed : {
-        msg : com.conjoon.Gettext.gettext("Saving...")
+    loadMaskConfigSaveFeed : null,
+
+    /**
+     * The panel for displaying error messages if subscribing to a feed
+     * fails in any way (malformed url, network issues etc.)
+     * @param {Ext.Panel}
+     */
+    errorPanel : null,
+
+    /**
+     * The trigger field for submitting the feed's url.
+     * @param {Ext.form.TriggerField}
+     */
+    urlTrigger : null,
+
+    /**
+     * Textfield for submitting a custom name for identifying the feed later on.
+     */
+    feedNameTextField : null,
+
+    /**
+     * Combobox for choosing the request timeout in seconds.
+     *
+     * @type Ext.form.ComboBox
+     */
+    requestTimeoutComboBox : null,
+
+    /**
+     * Combobox to store the duration of how long to store the entries before
+     * wiped in the DB.
+     */
+    keepEntriesComboBox : null,
+
+    /**
+     * Combobox to store update/refresh behavior.
+     */
+    updateComboBox : null,
+
+    /**
+     * Checkbox telling wether to close the dialog after a feed was successfully
+     * added. If checked, the dialog won't close and stay in input mode.
+     */
+    keepAddModeCheckbox : null,
+
+
+    /**
+     * The button for submitting the dialogs form.
+     */
+    okButton : null,
+
+    /**
+     * The button for resetting the dialogs form and starting a new input
+     * procedure.
+     */
+    resetButton : null,
+
+    /**
+     * Cancels and closes the dialog.
+     */
+    cancelButton : null,
+
+    /**
+     * The card layout either displaying additional form fields or the panel
+     * showing error messages.
+     * @param {Ext.Panel}
+     */
+    card : null,
+
+    initComponent : function()
+    {
+        this.loadMaskConfig = {
+            msg : com.conjoon.Gettext.gettext("Validating feed url...")
+        };
+
+        this.loadMaskConfigFeedName = {
+            msg : com.conjoon.Gettext.gettext("Validating feed name...")
+        };
+
+        this.loadMaskConfigSaveFeed = {
+            msg : com.conjoon.Gettext.gettext("Saving...")
+        };
+
+        this.errorPanel = new Ext.Panel({
+            columnWidth : .82,
+            height      : 130,
+            autoScroll  : true,
+            html        : ""
+        });
+
+        this.urlTrigger = new Ext.form.TriggerField({
+            fieldLabel   : com.conjoon.Gettext.gettext("Feed url"),
+            vtype        : 'url',
+            //allowBlank   : false,
+            triggerClass : 'com-conjoon-go-trigger',
+            anchor       : '100%'
+        });
+
+        this.feedNameTextField = new Ext.form.TextField({
+            fieldLabel   : com.conjoon.Gettext.gettext("Feed name"),
+            itemCls      : 'com-conjoon-margin-b-10',
+            allowBlank   : false,
+            anchor       : '95%',
+            validator    : function(v){
+                               var alphanum = /^[a-zA-Z0-9_()\/ :.]+$/;
+                               return alphanum.test(v);
+                           }
+        });
+
+        this.requestTimeoutComboBox = new Ext.form.ComboBox({
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
+            listClass     : 'com-conjoon-smalleditor',
+            displayField  : 'text',
+            itemCls       : 'com-conjoon-margin-b-10',
+            valueField    : 'id',
+            mode          : 'local',
+            anchor       : '95%',
+            editable      : false,
+            triggerAction : 'all',
+            store         : new Ext.data.SimpleStore({
+                data   : [
+                    [30, com.conjoon.Gettext.gettext("30 seconds")],
+                    [20, com.conjoon.Gettext.gettext("20 seconds")],
+                    [10, com.conjoon.Gettext.gettext("10 seconds")]
+                ],
+                fields : ['id', 'text']
+            })
+        });
+
+        this.keepEntriesComboBox = new Ext.form.ComboBox({
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
+            listClass     : 'com-conjoon-smalleditor',
+            itemCls       : 'com-conjoon-margin-b-10',
+            displayField  : 'text',
+            valueField    : 'id',
+            mode          : 'local',
+            anchor        : '95%',
+            editable      : false,
+            triggerAction : 'all',
+            store         : new Ext.data.SimpleStore({
+                data   : [
+                    [2419200, com.conjoon.Gettext.gettext("for 2 weeks")],
+                    [1209600, com.conjoon.Gettext.gettext("for one week")],
+                    [432000,  com.conjoon.Gettext.gettext("for 5 days")],
+                    [172800,  com.conjoon.Gettext.gettext("for 2 days")],
+                    [86400,   com.conjoon.Gettext.gettext("for one day")],
+                    [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
+                    [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
+                    [7200,    com.conjoon.Gettext.gettext("for 2 hours")],
+                    [3600,    com.conjoon.Gettext.gettext("for one hour")]
+                ],
+                fields : ['id', 'text']
+            })
+        });
+
+
+        /**
+         * @ext-bug beta 1 not setting listWidth renders not correct
+         */
+        this.updateComboBox = new Ext.form.ComboBox({
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel    : com.conjoon.Gettext.gettext("Refresh"),
+            listClass     : 'com-conjoon-smalleditor',
+            itemCls       : 'com-conjoon-margin-b-10',
+            displayField  : 'text',
+            valueField    : 'id',
+            mode          : 'local',
+            anchor        : '95%',
+            editable      : false,
+            triggerAction : 'all',
+            store         : new Ext.data.SimpleStore({
+                data   : [
+                    [172800, com.conjoon.Gettext.gettext("every 2 days")],
+                    [86400,  com.conjoon.Gettext.gettext("every day")],
+                    [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
+                    [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
+                    [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
+                    [3600,   com.conjoon.Gettext.gettext("every hour")],
+                    [1800,   com.conjoon.Gettext.gettext("every 30 minutes")],
+                    [900,    com.conjoon.Gettext.gettext("every 15 minutes")]
+                ],
+                fields : ['id', 'text']
+            })
+        });
+
+
+        /**
+         * @ext-bug beta 1 using hideLabel renders causes jumpy checkbox
+         */
+        this.keepAddModeCheckbox = new Ext.form.Checkbox({
+            fieldLabel : '&#160',
+            labelSeparator : '',
+            boxLabel   : com.conjoon.Gettext.gettext("add another feed after saving"),
+            ctCls      : 'com-conjoon-smalleditor',
+            anchor     : '95%',
+            autoWidth  : true
+            //style      : 'margin-left:105px'
+        });
+
+        /**
+         * @ext-bug something breaks a reference to button.el if using the button and
+         *          its return value
+         */
+        this.okButton = new Ext.Button({
+            text     : com.conjoon.Gettext.gettext("Add"),
+            disabled : true,
+            tooltip  : com.conjoon.Gettext.gettext("Saves and adds the configuration to the feed reader"),
+            handler  : this.onOk,
+            scope    : this,
+            minWidth : 75
+        });
+
+        this.resetButton = new Ext.Button({
+            text    : com.conjoon.Gettext.gettext("Reset"),
+            handler : this.onReset,
+            scope   : this,
+            tooltip : com.conjoon.Gettext.gettext("Cancels and resets all fields"),
+            handler : this.onReset,
+            scope   : this,
+            minWidth : 75
+        });
+
+        this.cancelButton = new Ext.Button({
+            text    : com.conjoon.Gettext.gettext("Cancel"),
+            tooltip : com.conjoon.Gettext.gettext("Cancels and closes this dialog"),
+            handler : this.onCancel,
+            scope   : this,
+            minWidth : 75
+        });
+
+        this.card = new Ext.Panel({
+           region     : 'south',
+            height   : 170,
+            border         : false,
+            deferredRender : true,
+            bodyStyle      : 'background-color:#F6F6F6;padding:0px 10px 5px 10px',
+            layout         : 'card',
+            activeItem    : 0,
+            defaults      : {
+                border    : false,
+                bodyStyle : 'background:none'
+            },
+            items : [{
+                // empty card
+                html : ""
+              },{
+                // error card
+                id        : 'DOM:com.conjoon.groupware.feeds.AddFeedDialog.errorPanel',
+                layout    : 'column',
+                defaults  : {
+                    bodyStyle : 'background:none;padding-top:10px;',
+                    border    : false
+                },
+                items     : [{
+                    columnWidth : .18,
+                    html        : '<div class="com-conjoon-groupware-feeds-AddFeedDialog-errorCard-imagePanel">&nbsp;</div>'
+                  },
+                    this.errorPanel
+                ]
+              },{
+                hideMode : 'visibility',
+                  // form card
+                id    : 'DOM:com.conjoon.groupware.feeds.AddFeedDialog.additionalFormPanel',
+                items : new Ext.FormPanel({
+                    labelAlign : 'left',
+                    border     : false,
+                    baseCls    : 'x-small-editor',
+                    cls        : 'com-conjoon-groupware-feeds-AddFeedDialog-formCard',
+                    defaults   : {
+                        labelStyle : 'font-size:11px'
+                    },
+                    items : [
+                        this.feedNameTextField,
+                        this.updateComboBox,
+                        this.keepEntriesComboBox,
+                        this.requestTimeoutComboBox,
+                        this.keepAddModeCheckbox
+                    ]
+                })
+            }]
+        });
+
+        this.items = [{
+            region    : 'center',
+            height    : 120,
+            border    : false,
+            items     : [
+                new com.conjoon.groupware.util.FormIntro({
+                    style      : 'padding:10px 10px 0px 10px;',
+                    label      : com.conjoon.Gettext.gettext("Feed address"),
+                    imageClass : 'com-conjoon-groupware-feeds-AddFeedDialog-introImage',
+                    text       : com.conjoon.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished.")
+                }),
+                new Ext.FormPanel({
+                    labelAlign : 'right',
+                    border     : false,
+                    hideLabels : true,
+                    cls        : 'x-small-editor',
+                    bodyStyle  : 'background:none;padding:0 10px 0 68px',
+                    items      : [
+                        this.urlTrigger
+                    ]
+                }),
+                new Ext.BoxComponent({
+                    style  : 'margin:0px 10px 0 10px',
+                    autoEl : {
+                        tag : 'div',
+                        cls : 'com-conjoon-groupware-util-FormIntro-sepx',
+                        html : '&#160;'
+                    }
+                })
+             ]
+          },
+            this.card
+        ];
+
+        Ext.apply(this,  {
+            iconCls   : 'com-conjoon-groupware-feeds-Icon',
+            title     : com.conjoon.Gettext.gettext("Add feed"),
+            bodyStyle : 'background-color:#F6F6F6',
+            modal     : true,
+            height    : 355,
+            width     : 450,
+            defaults  : {
+                bodyStyle : 'background:none;'
+            },
+            resizable : false,
+            /**
+             * @ext-bug beta1 not setting the layout mode to border does not render
+             *                the form intro right, i.e. text not displayed when the
+             *                dialog reopens or when it is showed over an already modal
+             *                window
+             */
+            layout    : 'border',
+            buttons : [
+                this.okButton,
+                this.resetButton,
+                this.cancelButton
+            ]
+        });
+
+        this.urlTrigger.onTriggerClick = this.onTriggerClick.createDelegate(this);
+
+        // finish other components
+        this.keepEntriesComboBox.setValue(2419200);
+        this.updateComboBox.setValue(172800);
+        this.requestTimeoutComboBox.setValue(10);
+
+        com.conjoon.groupware.feeds.AddFeedDialog.superclass.initComponent.call(this);
+    },
+
+    initEvents : function()
+    {
+        com.conjoon.groupware.feeds.AddFeedDialog.superclass.initEvents.call(this);
+
+        this.mon(this.feedNameTextField, 'valid',   this.onValid, this);
+        this.mon(this.feedNameTextField, 'invalid', this.onInvalid, this);
+
+        this.on('beforeclose', this.onBeforeClose, this);
     },
 
     /**

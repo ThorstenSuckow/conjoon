@@ -14,149 +14,156 @@
 
 Ext.namespace('com.conjoon.groupware.feeds');
 
-com.conjoon.groupware.feeds.FeedGrid = function(config) {
-
-    Ext.ux.util.MessageBus.subscribe(
-       'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
-       this.onFeedItemLoaded,
-       this
-    );
-
-    Ext.ux.util.MessageBus.subscribe(
-       'com.conjoon.groupware.feeds.FeedPreview.onLoadSuccess',
-       this.onFeedItemLoaded,
-       this
-    );
-
-    Ext.apply(this, config);
-
-    this.store = com.conjoon.groupware.feeds.FeedStore.getInstance();
-
-    this.store.setDefaultSort('pubDate', "DESC");
-
-    this.columns = [{
-        id:'name',
-        header: com.conjoon.Gettext.gettext("Feed"),
-        hidden:true,
-        width: 120,
-        sortable: true,
-        dataIndex: 'name'
-      },{
-        id:'title',
-        header: com.conjoon.Gettext.gettext("Title"),
-        width: 220,
-        sortable: true,
-        dataIndex: 'title',
-        renderer : function(value, metadata, record){
-            metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
-            return value;
-        }
-      },{
-        header: com.conjoon.Gettext.gettext("Description"),
-        hidden:true,
-        width: 180,
-        sortable: true,
-        dataIndex: 'description'
-      },{
-        header: com.conjoon.Gettext.gettext("Date"),
-        width: 120,
-        hidden:true,
-        sortable: true,
-        renderer: Ext.util.Format.dateRenderer('d.m.Y H:i'),
-        dataIndex: 'pubDate'
-      }
-    ];
-
-    var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})';
-    this.groupTextTpl = new Ext.XTemplate(groupTextTpl);
-    this.groupTextTpl.compile();
-
-    this.view = new Ext.grid.GroupingView({
-        forceFit      : false,
-        showGroupName : false,
-        groupTextTpl  : groupTextTpl,
-        getRowClass   : this.applyRowClass
-    });
-
-    var displayOptionsMenu = new Ext.menu.Menu({
-        items: [{
-            id : 'groupFeeds',
-            text: com.conjoon.Gettext.gettext("group after feeds"),
-            checked: true,
-            //group: 'com.conjoon.groupware.FeedGrid.display',
-            checkHandler: this.toggleGroupView,
-            scope: this
-          },
-          "-",{
-            iconCls : 'com-conjoon-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon',
-            text    : com.conjoon.Gettext.gettext("Settings..."),
-            scope   : this,
-            handler : function() {
-                var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
-                optDialog.show();
-            }
-
-          }]
-    });
-
-
-    this.tbar = new Ext.Toolbar([{
-        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
-        handler : function(){
-            var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({
-                animateTarget : this.getTopToolbar().items.get(0).el.dom.id
-            });
-            dialog.show();
-        },
-        scope : this
-      },{
-        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon',
-        handler : function(){
-            this.clkRow    = null;
-            this.clkRecord = null;
-            com.conjoon.groupware.feeds.AccountStore.getInstance().reload();
-            this.store.reload();},
-        scope: this
-      },{
-        iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-configureItem-icon',
-        handler : function() {
-            var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
-            optDialog.show();
-        }
-      }
-    ]);
-
-    com.conjoon.groupware.feeds.FeedGrid.superclass.constructor.call(this, {
-        loadMask    : {msg: com.conjoon.Gettext.gettext("Loading feeds...")},
-        autoScroll  : true,
-        style       : 'cursor:default',
-        title       : com.conjoon.Gettext.gettext("Feeds"),
-        iconCls     : 'com-conjoon-groupware-feeds-Icon',
-        hideBorders : true,
-        plugins     : [
-            new Ext.ux.grid.GridViewMenuPlugin()
-        ]
-    });
-
-    // install listeners
-    this.on('cellclick',    this.onCellClick, this, {buffer : 200});
-    this.on('celldblclick', this.onCellDblClick, this);
-
-    var preview = com.conjoon.groupware.feeds.FeedPreview;
-
-    this.on('resize',         preview.hide.createDelegate(preview, [true]));
-    this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
-    this.on('contextmenu',    preview.hide.createDelegate(preview, [false]));
-
-    this.on('contextmenu', this.onContextClick, this);
-    this.on('rowcontextmenu', this.onRowContextClick, this);
-};
-
-Ext.extend(com.conjoon.groupware.feeds.FeedGrid, Ext.grid.GridPanel, {
+com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
 
     clkRow          : null,
     clkRecord       : null,
     cellClickActive : false,
+
+    initComponent : function()
+    {
+        this.store = com.conjoon.groupware.feeds.FeedStore.getInstance();
+
+        this.store.setDefaultSort('pubDate', "DESC");
+
+        this.columns = [{
+            id:'name',
+            header: com.conjoon.Gettext.gettext("Feed"),
+            hidden:true,
+            width: 120,
+            sortable: true,
+            dataIndex: 'name'
+          },{
+            id:'title',
+            header: com.conjoon.Gettext.gettext("Title"),
+            width: 220,
+            sortable: true,
+            dataIndex: 'title',
+            renderer : function(value, metadata, record){
+                metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
+                return value;
+            }
+          },{
+            header: com.conjoon.Gettext.gettext("Description"),
+            hidden:true,
+            width: 180,
+            sortable: true,
+            dataIndex: 'description'
+          },{
+            header: com.conjoon.Gettext.gettext("Date"),
+            width: 120,
+            hidden:true,
+            sortable: true,
+            renderer: Ext.util.Format.dateRenderer('d.m.Y H:i'),
+            dataIndex: 'pubDate'
+          }
+        ];
+
+        var groupTextTpl  = '{text} ({[values.rs.length]}/{[function(){var b = 0;for (var i = 0, rs = values.rs, max_i = rs.length; i < max_i; i++) {if (!rs[i].data.isRead) {b++;}}return b;}()]})';
+        this.groupTextTpl = new Ext.XTemplate(groupTextTpl);
+        this.groupTextTpl.compile();
+
+        this.view = new Ext.grid.GroupingView({
+            forceFit      : false,
+            showGroupName : false,
+            groupTextTpl  : groupTextTpl,
+            getRowClass   : this.applyRowClass
+        });
+
+        var displayOptionsMenu = new Ext.menu.Menu({
+            items: [{
+                id : 'groupFeeds',
+                text: com.conjoon.Gettext.gettext("group after feeds"),
+                checked: true,
+                //group: 'com.conjoon.groupware.FeedGrid.display',
+                checkHandler: this.toggleGroupView,
+                scope: this
+              },
+              "-",{
+                iconCls : 'com-conjoon-groupware-feeds-FeedGrid-optionsMenu-configureItem-icon',
+                text    : com.conjoon.Gettext.gettext("Settings..."),
+                scope   : this,
+                handler : function() {
+                    var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
+                    optDialog.show();
+                }
+
+              }]
+        });
+
+
+        this.tbar = new Ext.Toolbar([{
+            iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-addFeedButton-icon',
+            handler : function(){
+                var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({
+                    animateTarget : this.getTopToolbar().items.get(0).el.dom.id
+                });
+                dialog.show();
+            },
+            scope : this
+          },{
+            iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-refreshFeedsButton-icon',
+            handler : function(){
+                this.clkRow    = null;
+                this.clkRecord = null;
+                com.conjoon.groupware.feeds.AccountStore.getInstance().reload();
+                this.store.reload();},
+            scope: this
+          },{
+            iconCls : 'com-conjoon-groupware-feeds-FeedGrid-toolbar-configureItem-icon',
+            handler : function() {
+                var optDialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
+                optDialog.show();
+            }
+          }
+        ]);
+
+
+        Ext.apply(this, {
+            loadMask    : {msg: com.conjoon.Gettext.gettext("Loading feeds...")},
+            autoScroll  : true,
+            style       : 'cursor:default',
+            title       : com.conjoon.Gettext.gettext("Feeds"),
+            iconCls     : 'com-conjoon-groupware-feeds-Icon',
+            hideBorders : true,
+            plugins     : [
+                new Ext.ux.grid.GridViewMenuPlugin()
+            ]
+        });
+
+        com.conjoon.groupware.feeds.FeedGrid.superclass.initComponent.call(this);
+    },
+
+    initEvents : function()
+    {
+        Ext.ux.util.MessageBus.subscribe(
+           'com.conjoon.groupware.feeds.FeedViewBaton.onFeedLoadSuccess',
+           this.onFeedItemLoaded,
+           this
+        );
+
+        Ext.ux.util.MessageBus.subscribe(
+           'com.conjoon.groupware.feeds.FeedPreview.onLoadSuccess',
+           this.onFeedItemLoaded,
+           this
+        );
+
+        // install listeners
+        this.on('cellclick',    this.onCellClick, this, {buffer : 200});
+        this.on('celldblclick', this.onCellDblClick, this);
+
+        var preview = com.conjoon.groupware.feeds.FeedPreview;
+
+        this.on('resize',         preview.hide.createDelegate(preview, [true]));
+        this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
+        this.on('contextmenu',    preview.hide.createDelegate(preview, [false]));
+
+        this.on('contextmenu', this.onContextClick, this);
+        this.on('rowcontextmenu', this.onRowContextClick, this);
+
+        com.conjoon.groupware.feeds.FeedGrid.superclass.initEvents.call(this);
+    },
+
 
     // within this function "this" is actually the GridView
     applyRowClass: function(record, rowIndex, p, ds)

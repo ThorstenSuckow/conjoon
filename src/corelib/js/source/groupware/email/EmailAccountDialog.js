@@ -1157,17 +1157,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
     },
 
-    /**
-     * Listener for destroy method. Removes the listener for this compoenent
-     * from the accontStore
-     */
-    onDestroy : function()
-    {
-        com.conjoon.groupware.email.EmailAccountDialog.superclass.onDestroy.call(this);
-
-        this.accountStore.un('update', this.onUpdate, this);
-    },
-
 // -------- form elements key listeners
     /**
      * gets called whenever a config option changed. Renders the applyButton as enabled.

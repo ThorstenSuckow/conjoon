@@ -42,21 +42,21 @@ com.conjoon.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButton
         });
 
         var l = com.conjoon.groupware.email.Letterman;
-        l.on('load',       this._onLettermanLoad, this);
-        l.on('beforeload', this._onLettermanBeforeLoad, this);
-        l.on('exception',  this._onLettermanLoadException, this);
+        this.mon(l, 'load',       this._onLettermanLoad, this);
+        this.mon(l, 'beforeload', this._onLettermanBeforeLoad, this);
+        this.mon(l, 'exception',  this._onLettermanLoadException, this);
 
         var store = com.conjoon.groupware.email.AccountStore.getInstance();
 
-        store.on('load',   this._onAccountStoreAdd,    this);
-        store.on('remove', this._onAccountStoreRemove, this);
-        store.on('add',    this._onAccountStoreAdd,    this);
-        store.on('update', this._onAccountStoreUpdate, this);
+        this.mon(store, 'load',   this._onAccountStoreAdd,    this);
+        this.mon(store, 'remove', this._onAccountStoreRemove, this);
+        this.mon(store, 'add',    this._onAccountStoreAdd,    this);
+        this.mon(store, 'update', this._onAccountStoreUpdate, this);
 
         this.on('render', function() {
             this.setDisabled((store.getCount() == 0));
             this._onAccountStoreAdd(store, store.getRange());
-        }, this);
+        }, this, {single : true});
 
         com.conjoon.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
     },

@@ -137,7 +137,7 @@ com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
         this._updateButton = this.getUpdateButton();
         this._updateButton.render(Ext.DomQuery.selectNode('div[class=buttonContainer]', this.el.dom));
 
-        this._textArea.on({
+        this.mon(this._textArea, {
             keydown  : this._onKeyEvent,
             keypress : this._onKeyEvent,
             keyup    : this._onKeyEvent,

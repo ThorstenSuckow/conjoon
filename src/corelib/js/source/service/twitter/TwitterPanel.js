@@ -192,35 +192,36 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         com.conjoon.service.twitter.TwitterPanel.superclass.initEvents.call(this);
 
-        this.tweetPoller.on('updateavailable', this._onTweetPollerUpdateAvailable, this);
+        this.mon(this.tweetPoller, 'updateavailable', this._onTweetPollerUpdateAvailable, this);
 
-        this.friendsList.on('show', this._onFriendsListShow, this);
+        this.mon(this.friendsList, 'show', this._onFriendsListShow, this);
 
-        this.inputBox.on('render', this.showInputBox.createDelegate(this, [false]), this);
+        this.mon(this.inputBox, 'render', this.showInputBox.createDelegate(this, [false]), this);
 
-        this.recentTweets.on('click', this._onRecentTweetClick, this);
-        this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
-        this.friendsList.on('click',  this._onFriendsListClick, this);
+        this.mon(this.recentTweets,      'click', this._onRecentTweetClick, this);
+        this.mon(this.usersRecentTweets, 'click', this._onRecentTweetClick, this);
+        this.mon(this.friendsList,       'click', this._onFriendsListClick, this);
 
-        this.userInfoBox.tweetStore.on('beforeload', this._onBeforeUsersRecentTweetStoreLoad, this);
-        this.userInfoBox.on('userload',       this._onUserLoad, this);
-        this.userInfoBox.on('userloadfailed', this._onUserLoadFailed, this);
+        this.mon(this.userInfoBox.tweetStore, 'beforeload', this._onBeforeUsersRecentTweetStoreLoad, this);
+
+        this.mon(this.userInfoBox, 'userload',       this._onUserLoad, this);
+        this.mon(this.userInfoBox, 'userloadfailed', this._onUserLoadFailed, this);
 
         this.on('resize', function() {
             this.inputBox.setWidth(this.el.getSize().width);
         }, this);
 
 
-        this.getUsersRecentTweetsContainer().on('hide', this._onUsersRecentTweetsHide, this);
+        this.mon( this.getUsersRecentTweetsContainer(), 'hide', this._onUsersRecentTweetsHide, this);
 
-        this.recentTweets.store.on('beforeload', this._onRecentTweetBeforeLoad, this);
-        this.recentTweets.store.on('load',       this._onRecentTweetLoad,       this);
+        this.mon(this.recentTweets.store, 'beforeload', this._onRecentTweetBeforeLoad, this);
+        this.mon(this.recentTweets.store, 'load',       this._onRecentTweetLoad,       this);
 
-        this.inputBox.getUpdateButton().on('click', this._onUpdateButtonClick, this);
+        this.mon(this.inputBox.getUpdateButton(), 'click', this._onUpdateButtonClick, this);
 
-        this.getChooseAccountButton().on('checkchange', this._onAccountButtonCheckChange, this);
+        this.mon(this.getChooseAccountButton(), 'checkchange', this._onAccountButtonCheckChange, this);
 
-        this.getChooseAccountButton().on('exitclick', this._onAccountButtonExitClick, this);
+        this.mon(this.getChooseAccountButton(), 'exitclick', this._onAccountButtonExitClick, this);
     },
 
 // -------- listeners
@@ -1019,7 +1020,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             return;
         }
 
-        this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
+        this.mon(this.usersRecentTweets, 'click', this._onRecentTweetClick, this);
         this.usersRecentTweets.setDisabled(false);
         this.getToolbar().setDisabled(false);
         this.userInfoBox.el.unmask();
@@ -1038,7 +1039,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
      */
     _onSwitchFriendshipFailure : function(response, options)
     {
-        this.usersRecentTweets.on('click', this._onRecentTweetClick, this);
+        this.mon(this.usersRecentTweets, 'click', this._onRecentTweetClick, this);
         this.usersRecentTweets.setDisabled(false);
         this.getToolbar().setDisabled(false);
         this.userInfoBox.el.unmask();

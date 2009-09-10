@@ -371,10 +371,10 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
         });
 
         win.on('render', function() {
-            this.header.on('dblclick', function(){
+            this.mon(this.header, 'dblclick', function(){
                 onMove();
-            });
-        }, win);
+            }, this);
+        }, win, {single : true});
 
         win.initDraggable = function() {
             Ext.Window.prototype.initDraggable.call(this);

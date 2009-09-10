@@ -273,7 +273,7 @@ com.conjoon.groupware.feeds.FeedViewBaton = function() {
             if (hide) {
                 tbarManager.hide('com.conjoon.groupware.feeds.FeedView.toolbar');
             }
-        });
+        }, view, {single : true});
 
 
         view.on('activate', function(panel) {

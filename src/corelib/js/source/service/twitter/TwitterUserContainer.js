@@ -70,7 +70,7 @@ com.conjoon.service.twitter.TwitterUserContainer = Ext.extend(Ext.BoxComponent, 
 
         this.syncSize();
 
-        this.userInfoBox.on('userload', function(userInfoBox, record) {
+        this.mon(this.userInfoBox, 'userload', function(userInfoBox, record) {
             this.syncSize();
         }, this);
     },

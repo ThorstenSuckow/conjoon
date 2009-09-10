@@ -120,7 +120,7 @@ com.conjoon.groupware.reception._LogoutWindowButton = Ext.extend(Ext.BoxComponen
             }
         });
 
-        this.on('render', this._onRender, this);
+        this.on('render', this._onRender, this, {single : true});
 
         com.conjoon.groupware.reception._LogoutWindowButton.superclass.initComponent.call(this);
     },

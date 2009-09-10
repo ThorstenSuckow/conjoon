@@ -18,379 +18,7 @@ Ext.namespace('com.conjoon.groupware.email');
 * Controller for the emailpanels tree, preview and grid.
 *
 */
-com.conjoon.groupware.email.EmailPanel = function(config) {
-
-    Ext.apply(this, config);
-
-    this.addEvents({
-         /**
-          * @event emaildeleted
-          * Fires when an email has been permanently deleted from the grid's store
-          * @param {Array} records
-          */
-        'emailsdeleted' : true
-    });
-
-    /**
-     * The tree panel that holds the tree representing the folder structure
-     * of the user.
-     */
-    this.treePanel = new com.conjoon.groupware.email.EmailTree({
-        region            : 'west',
-        anonymousNodeText : com.conjoon.Gettext.gettext("New folder"),
-        width             : 200,
-        split             : true
-    }, this);
-
-
-    /**
-     * Preview panel for the emails
-     */
-
-    this.preview = new com.conjoon.groupware.email.EmailViewPanel({
-        autoLoad     : false,
-        border       : false,
-        hideMode     : 'offsets',
-        refreshFrame : true
-    });
-
-    /**
-     * Subscribe to com.conjoon.groupware.email.view.onEmailLoad
-     */
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.view.onEmailLoad',
-        this.onEmailLoad,
-        this
-    );
-
-    this.preview.on('emailloadfailure', this.onEmailLoadFailure, this);
-    this.preview.on('show',             this._onPreviewShow, this);
-
-    /**
-     * The grid that shows the email items.
-     */
-    this.gridPanel = new com.conjoon.groupware.email.EmailGrid({
-        region : 'center',
-        split: true
-    }, this);
-
-    this.gridPanel.on('rowdblclick', this.openEmailView, this);
-
-    this.introductionPanel = new com.conjoon.groupware.email.view.IntroductionPanel();
-
-    this.mainContentPanel = new Ext.Container({
-        layout   : 'border',
-        border   : false,
-        hideMode : 'offsets',
-        items    : [
-            this.gridPanel, {
-            id:'com.conjoon.groupware.email.rightPreview',
-            layout:'fit',
-            hideMode : 'offsets',
-            region:'east',
-            width:350,
-            split: true,
-            hidden:true
-        },{
-            id:'com.conjoon.groupware.email.bottomPreview',
-            layout:'fit',
-            items:this.preview,
-            hideMode : 'offsets',
-            height: 250,
-            split: true,
-            region:'south'
-        }]
-    });
-
-    this.centerPanel = new Ext.Container({
-        region     : 'center',
-        layout     : 'card',
-        border     : false,
-        activeItem : 0,
-        hideMode   : 'offsets',
-        items:[
-            this.introductionPanel,
-            this.mainContentPanel
-        ]
-    });
-
-    this.items = [
-        this.treePanel,
-        this.centerPanel
-    ];
-
-    /**
-     * Top toolbar
-     * @param {Ext.Toolbar}
-     */
-    var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
-
-    this.sendNowButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id      : 'com.conjoon.groupware.email.toolbar.SendButton',
-        iconCls : 'com-conjoon-groupware-email-EmailPanel-toolbar-sendNowButton-icon',
-        cls     : 'x-btn-text-icon',
-        text    : com.conjoon.Gettext.gettext("Send now"),
-        hidden  : true,
-        handler : function(){this.sendPendingItems();},
-        scope   : this
-    }));
-    this.forwardButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.ForwardButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-forwardButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("Forward"),
-        handler  : function(){this.openEmailEditPanel(true, 'forward');},
-        disabled : true,
-        scope    : this
-    }));
-    this.replyButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.ReplyButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-replyButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("Reply"),
-        handler  : function(){this.openEmailEditPanel(true, 'reply');},
-        disabled : true,
-        scope    : this
-    }));
-    this.replyAllButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.ReplyAllButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-replyAllButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("Reply all"),
-        handler  : function(){this.openEmailEditPanel(true, 'reply_all');},
-        disabled : true,
-        scope    : this
-    }));
-    this.deleteButton = new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.DeleteButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-deleteButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("Delete"),
-        disabled : true,
-        handler  : function(){this.deleteEmails(this.gridPanel.selModel.getSelections());},
-        scope    : this
-    });
-    this.spamButton = new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.SpamButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-spamButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("Spam"),
-        disabled : true,
-        handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), true);},
-        scope    : this
-    });
-    this.noSpamButton = new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.NoSpamButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-noSpamButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("No spam"),
-        disabled : true,
-        hidden   : true,
-        handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), false);},
-        scope    : this
-    });
-    this.editDraftButton = new Ext.Toolbar.Button({
-        id       : 'com.conjoon.groupware.email.toolbar.EditDraftButton',
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-editDraftButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("Edit draft"),
-        disabled : true,
-        hidden   : true,
-        handler  : function(){this.openEmailEditPanel(true, 'edit');},
-        scope    : this
-    });
-    this.newButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
-        cls      : 'x-btn-text-icon',
-        iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-newButton-icon',
-        text     : '&#160;'+com.conjoon.Gettext.gettext("New email"),
-        handler  : function(){this.openEmailEditPanel(false, 'new');},
-        scope    : this
-    }));
-
-    this.previewButton = new Ext.Toolbar.SplitButton({
-        id           : 'com.conjoon.groupware.email.previewButton',
-        split        : true,
-        enableToggle : true,
-        hidden       : true,
-        pressed      : true,
-        handler      : this.hidePreview,
-        scope        : this,
-        cls          : 'x-btn-text-icon',
-        iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
-        text         : com.conjoon.Gettext.gettext("Preview"),
-        menu         : {
-            id    : 'com.conjoon.groupware.email.emailPreviewMenu',
-            cls   : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewMenu',
-            items : [{
-            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
-            text         : com.conjoon.Gettext.gettext("bottom"),
-            checked      : true,
-            group        : 'com.conjoon.groupware.email.emailPreviewGroup',
-            checkHandler : this.hidePreview,
-            scope        : this
-          },{
-            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
-            text         : com.conjoon.Gettext.gettext("right"),
-            checked      : false,
-            group        : 'com.conjoon.groupware.email.emailPreviewGroup',
-            checkHandler : this.hidePreview,
-            scope        : this
-          },{
-            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
-            text         : com.conjoon.Gettext.gettext("hide"),
-            checked      : false,
-            group        : 'com.conjoon.groupware.email.emailPreviewGroup',
-            checkHandler : this.hidePreview,
-            scope        : this
-        }]}
-    });
-
-    this.controlBar = new Ext.Toolbar([
-        new com.conjoon.groupware.email.FetchMenuButton(),
-        this.newButton ,
-        '-',
-        this.sendNowButton,
-        this.replyButton,
-        this.replyAllButton,
-        this.forwardButton,
-        '-',
-        this.deleteButton,
-        this.spamButton,
-        this.noSpamButton,
-        this.editDraftButton,
-        '->',
-        this.previewButton
-    ]);
-
-    var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
-    tbarManager.register('com.conjoon.groupware.email.Toolbar', this.controlBar);
-
-
-    /**
-    * Constructor call.
-    */
-    com.conjoon.groupware.email.EmailPanel.superclass.constructor.call(this,  {
-        title          : com.conjoon.Gettext.gettext("Emails"),
-        iconCls        : 'com-conjoon-groupware-email-EmailPanel-icon',
-        closable       : true,
-        id             : 'DOM:com.conjoon.groupware.EmailPanel',
-        autoScroll     : false,
-        deferredRender : true,
-        layout         : 'border',
-        hideMode       : 'offsets'
-    });
-
-    // install the listeners. As the controller of the emailapp, this class should
-    // be responsible for listening to almost all events and delegating actions
-    // to the various components.
-
-    var letterman = com.conjoon.groupware.email.Letterman;
-    letterman.on('load', this.newEmailsAvailable, this);
-
-    var gs = this.gridPanel.store;
-    gs.on('beforeload',              this.onGridStoreBeforeLoad,  this);
-    gs.on('clear',                   this.onGridStoreClear,       this);
-    gs.on('beforeselectionsload',    this.onBeforeSelectionsLoad, this);
-    gs.on('selectionsload',          this.onSelectionsLoad,       this);
-    gs.on('load',                    this.onStoreLoad,            this);
-    this.gridPanel.view.on('buffer', this.onStoreBuffer,          this);
-
-
-    var gm = this.gridPanel.selModel;
-    gm.on('rowselect', this.onRowSelect,     this, {buffer : 100});
-    gm.on('rowdeselect', this.onRowDeselect, this, {buffer : 100});
-
-    var gv = this.gridPanel.view;
-    gv.on('rowremoved', this.onRowRemoved, this);
-    gv.on('beforebuffer', this.onBeforeBuffer, this);
-
-    var tp = this.treePanel;
-    tp.on('movenode', this.onMoveNode, this);
-    tp.on('render', function(){
-        var sm = this.treePanel.getSelectionModel();
-        sm.on('selectionchange', this.onNodeSelectionChange, this);
-        sm.on('selectionchange', this.introductionPanel._onNodeSelectionChange, this.introductionPanel);
-    }, this, {single : true});
-
-    tp.on('nodedrop', this.onNodeDrop, this);
-    tp.on('remove', this.onNodeRemove, this);
-    tp.pendingItemStore.on('add', this.onPendingStoreAdd, this);
-
-    this.on('render',  this.onPanelRender, this);
-    this.on('hide',    function(){tbarManager.hide('com.conjoon.groupware.email.Toolbar');}, this);
-
-    this.on('destroy', function(){
-        var sub = com.conjoon.util.Registry.get('com.conjoon.groupware.email.QuickPanel');
-        if (sub) {
-            sub.store.un('update', this.onQuickPanelUpdate, this);
-        }
-        letterman.un('load', this.newEmailsAvailable, this);
-        tbarManager.destroy('com.conjoon.groupware.email.Toolbar');
-    }, this);
-    this.on('show',    function(){tbarManager.show('com.conjoon.groupware.email.Toolbar');}, this);
-
-    com.conjoon.util.Registry.register('com.conjoon.groupware.email.EmailPanel', this, true);
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.Smtp.emailSent'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.Smtp.emailSent',
-        this._onSendEmail,
-        this
-    );
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.Smtp.beforeBulkSent'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.Smtp.beforeBulkSent',
-        this._onBeforeBulkSent,
-        this
-    );
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.Smtp.bulkSent'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.Smtp.bulkSentFailure',
-        this._onBulkSentFailure,
-        this
-    );
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.Smtp.bulkSent'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.Smtp.bulkSent',
-        this._onBulkSent,
-        this
-    );
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.editor.draftSaved'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.editor.draftSave',
-        this._onSaveDraft,
-        this
-    );
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.LatestEmailCache.clear'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.LatestEmailCache.clear',
-        this._onLatestCacheClear,
-        this
-    );
-
-    // register listener for MessageBus message
-    // 'com.conjoon.groupware.email.outbox.emailMoved'
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.outbox.emailMove',
-        this._onMoveOutbox,
-        this
-    );
-};
-
-
-
-Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
+com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     buttonsLocked : false,
 
@@ -407,6 +35,382 @@ Ext.extend(com.conjoon.groupware.email.EmailPanel, Ext.Panel, {
      * before it gets set to null
      */
     lastClkNodeId : null,
+
+    initComponent : function()
+    {
+
+        this.addEvents({
+             /**
+              * @event emaildeleted
+              * Fires when an email has been permanently deleted from the grid's store
+              * @param {Array} records
+              */
+            'emailsdeleted' : true
+        });
+
+        /**
+         * The tree panel that holds the tree representing the folder structure
+         * of the user.
+         */
+        this.treePanel = new com.conjoon.groupware.email.EmailTree({
+            region            : 'west',
+            anonymousNodeText : com.conjoon.Gettext.gettext("New folder"),
+            width             : 200,
+            split             : true,
+            collapsible       : true,
+            collapseMode      :'mini'
+        });
+
+
+        /**
+         * Preview panel for the emails
+         */
+        this.preview = new com.conjoon.groupware.email.EmailViewPanel({
+            autoLoad     : false,
+            border       : false,
+            hideMode     : 'offsets',
+            refreshFrame : true
+        });
+
+        /**
+         * The grid that shows the email items.
+         */
+        this.gridPanel = new com.conjoon.groupware.email.EmailGrid({
+            region     : 'center',
+            split      : true,
+            controller : this
+        });
+
+        this.introductionPanel = new com.conjoon.groupware.email.view.IntroductionPanel();
+
+        this.mainContentPanel = new Ext.Container({
+            layout   : 'border',
+            border   : false,
+            hideMode : 'offsets',
+            items    : [
+                this.gridPanel, {
+                id:'com.conjoon.groupware.email.rightPreview',
+                layout:'fit',
+                hideMode : 'offsets',
+                region:'east',
+                width:350,
+                split: true,
+                hidden:true
+            },{
+                id:'com.conjoon.groupware.email.bottomPreview',
+                layout:'fit',
+                items:this.preview,
+                hideMode : 'offsets',
+                height: 250,
+                split: true,
+                region:'south'
+            }]
+        });
+
+        this.centerPanel = new Ext.Container({
+            region     : 'center',
+            layout     : 'card',
+            border     : false,
+            activeItem : 0,
+            hideMode   : 'offsets',
+            items:[
+                this.introductionPanel,
+                this.mainContentPanel
+            ]
+        });
+
+        this.items = [
+            this.treePanel,
+            this.centerPanel
+        ];
+
+        /**
+         * Top toolbar
+         * @param {Ext.Toolbar}
+         */
+        var decorateAccountRelatedClk = com.conjoon.groupware.email.decorator.AccountActionComp.decorate;
+
+
+
+        this.sendNowButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
+            id      : 'com.conjoon.groupware.email.toolbar.SendButton',
+            iconCls : 'com-conjoon-groupware-email-EmailPanel-toolbar-sendNowButton-icon',
+            cls     : 'x-btn-text-icon',
+            text    : com.conjoon.Gettext.gettext("Send now"),
+            hidden  : true,
+            handler : function(){this.sendPendingItems();},
+            scope   : this
+        }));
+        this.forwardButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.ForwardButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-forwardButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("Forward"),
+            handler  : function(){this.openEmailEditPanel(true, 'forward');},
+            disabled : true,
+            scope    : this
+        }));
+        this.replyButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.ReplyButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-replyButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("Reply"),
+            handler  : function(){this.openEmailEditPanel(true, 'reply');},
+            disabled : true,
+            scope    : this
+        }));
+        this.replyAllButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.ReplyAllButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-replyAllButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("Reply all"),
+            handler  : function(){this.openEmailEditPanel(true, 'reply_all');},
+            disabled : true,
+            scope    : this
+        }));
+        this.deleteButton = new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.DeleteButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-deleteButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("Delete"),
+            disabled : true,
+            handler  : function(){this.deleteEmails(this.gridPanel.selModel.getSelections());},
+            scope    : this
+        });
+        this.spamButton = new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.SpamButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-spamButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("Spam"),
+            disabled : true,
+            handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), true);},
+            scope    : this
+        });
+        this.noSpamButton = new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.NoSpamButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-noSpamButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("No spam"),
+            disabled : true,
+            hidden   : true,
+            handler  : function(){this.setItemsAsSpam(this.gridPanel.selModel.getSelections(), false);},
+            scope    : this
+        });
+        this.editDraftButton = new Ext.Toolbar.Button({
+            id       : 'com.conjoon.groupware.email.toolbar.EditDraftButton',
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-editDraftButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("Edit draft"),
+            disabled : true,
+            hidden   : true,
+            handler  : function(){this.openEmailEditPanel(true, 'edit');},
+            scope    : this
+        });
+        this.newButton = decorateAccountRelatedClk(new Ext.Toolbar.Button({
+            cls      : 'x-btn-text-icon',
+            iconCls  : 'com-conjoon-groupware-email-EmailPanel-toolbar-newButton-icon',
+            text     : '&#160;'+com.conjoon.Gettext.gettext("New email"),
+            handler  : function(){this.openEmailEditPanel(false, 'new');},
+            scope    : this
+        }));
+
+        this.previewButton = new Ext.Toolbar.SplitButton({
+            id           : 'com.conjoon.groupware.email.previewButton',
+            split        : true,
+            enableToggle : true,
+            hidden       : true,
+            pressed      : true,
+            handler      : this.hidePreview,
+            scope        : this,
+            cls          : 'x-btn-text-icon',
+            iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
+            text         : com.conjoon.Gettext.gettext("Preview"),
+            menu         : {
+                id    : 'com.conjoon.groupware.email.emailPreviewMenu',
+                cls   : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewMenu',
+                items : [{
+                iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewBottomButton-icon',
+                text         : com.conjoon.Gettext.gettext("bottom"),
+                checked      : true,
+                group        : 'com.conjoon.groupware.email.emailPreviewGroup',
+                checkHandler : this.hidePreview,
+                scope        : this
+              },{
+                iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewRightButton-icon',
+                text         : com.conjoon.Gettext.gettext("right"),
+                checked      : false,
+                group        : 'com.conjoon.groupware.email.emailPreviewGroup',
+                checkHandler : this.hidePreview,
+                scope        : this
+              },{
+                iconCls      : 'com-conjoon-groupware-email-EmailPanel-toolbar-previewHideButton-icon',
+                text         : com.conjoon.Gettext.gettext("hide"),
+                checked      : false,
+                group        : 'com.conjoon.groupware.email.emailPreviewGroup',
+                checkHandler : this.hidePreview,
+                scope        : this
+            }]}
+        });
+
+        this.controlBar = new Ext.Toolbar([
+            new com.conjoon.groupware.email.FetchMenuButton(),
+            this.newButton ,
+            '-',
+            this.sendNowButton,
+            this.replyButton,
+            this.replyAllButton,
+            this.forwardButton,
+            '-',
+            this.deleteButton,
+            this.spamButton,
+            this.noSpamButton,
+            this.editDraftButton,
+            '->',
+            this.previewButton
+        ]);
+
+        this.tbarManager = com.conjoon.groupware.workbench.ToolbarController;
+        this.tbarManager.register('com.conjoon.groupware.email.Toolbar', this.controlBar);
+
+        Ext.apply(this,  {
+            title          : com.conjoon.Gettext.gettext("Emails"),
+            iconCls        : 'com-conjoon-groupware-email-EmailPanel-icon',
+            closable       : true,
+            id             : 'DOM:com.conjoon.groupware.EmailPanel',
+            autoScroll     : false,
+            deferredRender : true,
+            layout         : 'border',
+            hideMode       : 'offsets'
+        });
+
+        this.on('render',  this.onPanelRender, this, {single : true});
+
+        com.conjoon.groupware.email.EmailPanel.superclass.initComponent.call(this);
+    },
+
+    initEvents : function()
+    {
+        // install the listeners. As the controller of the emailapp, this class should
+        // be responsible for listening to almost all events and delegating actions
+        // to the various components.
+
+        /**
+         * Subscribe to com.conjoon.groupware.email.view.onEmailLoad
+         */
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.view.onEmailLoad',
+            this.onEmailLoad,
+            this
+        );
+
+        this.mon(this.gridPanel, 'rowdblclick', this.openEmailView, this);
+
+        this.mon(this.preview, 'emailloadfailure', this.onEmailLoadFailure, this);
+        this.mon(this.preview, 'show',             this._onPreviewShow, this);
+
+        var letterman = com.conjoon.groupware.email.Letterman;
+        this.mon(letterman, 'load', this.newEmailsAvailable, this);
+
+        var gs = this.gridPanel.store;
+        this.mon(gs, 'beforeload',              this.onGridStoreBeforeLoad,  this);
+        this.mon(gs, 'clear',                   this.onGridStoreClear,       this);
+        this.mon(gs, 'beforeselectionsload',    this.onBeforeSelectionsLoad, this);
+        this.mon(gs, 'selectionsload',          this.onSelectionsLoad,       this);
+        this.mon(gs, 'load',                    this.onStoreLoad,            this);
+        this.mon(this.gridPanel.view, 'buffer', this.onStoreBuffer,          this);
+
+
+        var gm = this.gridPanel.selModel;
+        this.mon(gm, 'rowselect', this.onRowSelect,     this, {buffer : 100});
+        this.mon(gm, 'rowdeselect', this.onRowDeselect, this, {buffer : 100});
+
+        var gv = this.gridPanel.view;
+        this.mon(gv, 'rowremoved',   this.onRowRemoved, this);
+        this.mon(gv, 'beforebuffer', this.onBeforeBuffer, this);
+
+        var tp = this.treePanel;
+        this.mon(tp, 'movenode', this.onMoveNode, this);
+        tp.on('render', function(){
+            var sm = this.treePanel.getSelectionModel();
+            sm.on('selectionchange', this.onNodeSelectionChange, this);
+            sm.on('selectionchange', this.introductionPanel._onNodeSelectionChange, this.introductionPanel);
+        }, this, {single : true});
+
+        this.mon(tp, 'nodedrop', this.onNodeDrop, this);
+        this.mon(tp, 'remove', this.onNodeRemove, this);
+        this.mon(tp.pendingItemStore, 'add', this.onPendingStoreAdd, this);
+
+        this.on('hide', function(){this.tbarManager.hide('com.conjoon.groupware.email.Toolbar');}, this);
+
+        this.on('destroy', function(){
+            var sub = com.conjoon.util.Registry.get('com.conjoon.groupware.email.QuickPanel');
+            if (sub) {
+                sub.store.un('update', this.onQuickPanelUpdate, this);
+            }
+            this.tbarManager.destroy('com.conjoon.groupware.email.Toolbar');
+        }, this);
+        this.on('show',    function(){this.tbarManager.show('com.conjoon.groupware.email.Toolbar');}, this);
+
+        com.conjoon.util.Registry.register('com.conjoon.groupware.email.EmailPanel', this, true);
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.Smtp.emailSent'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.Smtp.emailSent',
+            this._onSendEmail,
+            this
+        );
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.Smtp.beforeBulkSent'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.Smtp.beforeBulkSent',
+            this._onBeforeBulkSent,
+            this
+        );
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.Smtp.bulkSent'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.Smtp.bulkSentFailure',
+            this._onBulkSentFailure,
+            this
+        );
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.Smtp.bulkSent'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.Smtp.bulkSent',
+            this._onBulkSent,
+            this
+        );
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.editor.draftSaved'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.editor.draftSave',
+            this._onSaveDraft,
+            this
+        );
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.LatestEmailCache.clear'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.LatestEmailCache.clear',
+            this._onLatestCacheClear,
+            this
+        );
+
+        // register listener for MessageBus message
+        // 'com.conjoon.groupware.email.outbox.emailMoved'
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.outbox.emailMove',
+            this._onMoveOutbox,
+            this
+        );
+        com.conjoon.groupware.email.EmailPanel.superclass.initEvents.call(this);
+    },
+
 
 // ------------------------------- Methods -------------------------------------
 

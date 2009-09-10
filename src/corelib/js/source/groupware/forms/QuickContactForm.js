@@ -93,7 +93,7 @@ com.conjoon.groupware.forms.QuickContactForm = function() {
                 hideLabels  : true
             });
 
-            _form.on('beforerender', _initComponents, this);
+            _form.on('beforerender', _initComponents, this, {single : true});
 
             return _form;
         },

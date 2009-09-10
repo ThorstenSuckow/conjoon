@@ -86,17 +86,17 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
 
         var store = this.accountStore;
 
-        store.on('beforeload', this._onAccountStoreBeforeLoad, this);
+        this.mon(store, 'beforeload', this._onAccountStoreBeforeLoad, this);
 
-        store.on('load',          this._onAccountStoreAdd,           this);
-        store.on('exception',     this._onAccountStoreLoadException, this);
-        store.on('remove',        this._onAccountStoreRemove,        this);
-        store.on('add',           this._onAccountStoreAdd,           this);
-        store.on('update',        this._onAccountStoreUpdate,        this);
+        this.mon(store, 'load',      this._onAccountStoreAdd,           this);
+        this.mon(store, 'exception', this._onAccountStoreLoadException, this);
+        this.mon(store, 'remove',    this._onAccountStoreRemove,        this);
+        this.mon(store, 'add',       this._onAccountStoreAdd,           this);
+        this.mon(store, 'update',    this._onAccountStoreUpdate,        this);
 
         this.on('render', function() {
             this._onAccountStoreAdd(store, store.getRange());
-        }, this);
+        }, this, {single : true});
 
         com.conjoon.service.twitter.AccountButton.superclass.initComponent.call(this);
     },

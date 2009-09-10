@@ -17,323 +17,7 @@
  *
  * @todo Store loading could fail. This should be intercepted in any way.
  */
-com.conjoon.groupware.feeds.FeedOptionsDialog = function(config) {
-
-    Ext.apply(this, config);
-
-    this.store = new Ext.data.Store({
-            storeId     : Ext.id(),
-            autoLoad    : false,
-            reader      : new Ext.data.JsonReader({
-                              id : 'id'
-                          }, com.conjoon.groupware.feeds.AccountRecord)
-        });
-
-
-    /**
-     * The panel that holds the tree nodes. Rendered like a combo box.
-     */
-    this.feedPanel = new Ext.grid.GridPanel({
-        cls        : 'feedPanel',
-        autoScroll : true,
-        height     : 240,
-        hideHeaders : true,
-        enableColumnMove : false,
-        enableHdMenu : false,
-        store  : this.store,
-        sortInfo   : {field: 'name', direction: "DESC"},
-        selModel   : new Ext.grid.RowSelectionModel({singleSelect:true}),
-        columns    : [{
-            id        : 'feed_name',
-            header    : '<b>'+com.conjoon.Gettext.gettext("Feeds")+'</b>',
-            width     : 148,
-            sortable  : true,
-            dataIndex : 'name'
-        }]
-    });
-
-    var tmpStore = com.conjoon.groupware.feeds.AccountStore.getInstance();
-    var records = tmpStore.getRange();
-    tmpStore.on('add', this.addRecordsFromStore, this);
-    for (var i = 0, len = records.length; i < len; i++) {
-        this.store.add(records[i].copy());
-    }
-
-    /**
-     * Button for adding a feed
-     */
-    this.addFeedButton = new Ext.Button({
-        text     : com.conjoon.Gettext.gettext("Add feed"),
-        cls      : 'com-conjoon-margin-b-5',
-        minWidth : 150,
-        scope    : this,
-        handler  : function(){
-            var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({animateTarget : this.addFeedButton.el.dom.id});
-            dialog.show();
-        }
-    });
-
-    /**
-     * Button for removing a feed
-     */
-    this.removeFeedButton = new Ext.Button({
-        text     : com.conjoon.Gettext.gettext("Remove feed"),
-        minWidth : 150,
-        disabled : true,
-        handler  : this.removeSelected,
-        scope    : this
-    });
-
-    /**
-     * Textfield for the feeds url. This is immutable.
-     */
-    this.feedUrl = new Ext.form.TextField({
-        fieldLabel : com.conjoon.Gettext.gettext("Address"),
-        disabled   : true,
-        disabledClass : ''
-    });
-
-    /**
-     * Textfield for the feeds name.
-     */
-    this.feedName = new Ext.form.TextField({
-        fieldLabel : com.conjoon.Gettext.gettext("Name"),
-        allowBlank : false,
-        validator  : this.isFeedNameValid.createDelegate(this),
-        itemCls    : 'com-conjoon-margin-b-10'
-    });
-
-    /**
-     * Combobox for choosing the request timeout in seconds.
-     *
-     * @type Ext.form.ComboBox
-     */
-    this.requestTimeoutComboBox = new Ext.form.ComboBox({
-        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
-        listClass     : 'com-conjoon-smalleditor',
-        displayField  : 'text',
-        valueField    : 'id',
-        mode          : 'local',
-        editable      : false,
-        triggerAction : 'all',
-        store         : new Ext.data.SimpleStore({
-            data   : [
-                [30, com.conjoon.Gettext.gettext("30 seconds")],
-                [20, com.conjoon.Gettext.gettext("20 seconds")],
-                [10, com.conjoon.Gettext.gettext("10 seconds")]
-            ],
-            fields : ['id', 'text']
-        })
-    });
-
-    /**
-     * Combobox to store the duration of how long to store the entries before
-     * wiped in the DB.
-     *
-     * The mode is set to local, since the store gets loaded via a callback
-     * after the dialog is rendered.
-     */
-    this.removeAfter = new Ext.form.ComboBox({
-        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
-        listClass     : 'com-conjoon-smalleditor',
-        itemCls       : 'com-conjoon-margin-b-10',
-        displayField  : 'text',
-        valueField    : 'id',
-        mode          : 'local',
-        editable      : false,
-        triggerAction : 'all',
-        store         : new Ext.data.SimpleStore({
-            data   : [
-                [2419200, com.conjoon.Gettext.gettext("for 2 weeks")],
-                [1209600, com.conjoon.Gettext.gettext("for one week")],
-                [432000,  com.conjoon.Gettext.gettext("for 5 days")],
-                [172800,  com.conjoon.Gettext.gettext("for 2 days")],
-                [86400,   com.conjoon.Gettext.gettext("for one day")],
-                [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
-                [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
-                [7200,    com.conjoon.Gettext.gettext("for 2 hours")],
-                [3600,    com.conjoon.Gettext.gettext("for one hour")]
-            ],
-            fields : ['id', 'text']
-        })
-    });
-
-    /**
-     * Combobox to store update/refresh behavior.
-     *
-     * The mode is set to local, since the store gets loaded via a callback
-     * after the dialog is rendered.
-     */
-    this.updateAfter = new Ext.form.ComboBox({
-        tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-        fieldLabel    : com.conjoon.Gettext.gettext("Check for new entries"),
-        itemCls       : 'com-conjoon-margin-b-10',
-        listClass     : 'com-conjoon-smalleditor',
-        displayField  : 'text',
-        valueField    : 'id',
-        mode          : 'local',
-        editable      : false,
-        triggerAction : 'all',
-        store         : new Ext.data.SimpleStore({
-            data   : [
-                [172800, com.conjoon.Gettext.gettext("every 2 days")],
-                [86400,  com.conjoon.Gettext.gettext("every day")],
-                [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
-                [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
-                [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
-                [3600,   com.conjoon.Gettext.gettext("every hour")],
-                [1800,   com.conjoon.Gettext.gettext("every 30 minutes")],
-                [900,    com.conjoon.Gettext.gettext("every 15 minutes")]
-            ],
-            fields : ['id', 'text']
-        })
-
-    });
-
-    /**
-     * @type {Ext.form.Checkbox} enableImagesCheckbox
-     */
-    this.enableImagesCheckbox = new Ext.form.Checkbox({
-        fieldLabel : com.conjoon.Gettext.gettext("Load images into feed"),
-        itemCls    : 'com-conjoon-margin-t-5'
-    });
-
-    /**
-    * Items
-    */
-    this.items = [{
-        region:'west',
-        width: 150,
-        border: false,
-        margins:'5 5 5 5',
-        bodyStyle : 'background:none',
-        items : [
-            this.feedPanel,
-            this.addFeedButton,
-            this.removeFeedButton
-        ]
-      },
-        new Ext.TabPanel({
-            activeItem : 0,
-            margins   : '5 5 5 5',
-            hideMode  : 'visibility',
-            id        : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
-            region    : 'center',
-            bodyStyle : 'background-color:#F6F6F6;',
-            defaults  : {
-                border : false
-            },
-            cls   : 'tabPanel',
-
-            items : [
-                new Ext.FormPanel({
-                    baseCls    : 'x-small-editor',
-                    defaults   : {
-                        labelStyle : 'font-size:11px',
-                        anchor     : '100%'
-                    },
-                    bodyStyle  : 'margin:10px 0 20px 0px;padding:10px;background:none',
-                    title : com.conjoon.Gettext.gettext("Connection"),
-                    items : [
-                        this.feedUrl,
-                        this.feedName,
-                        new Ext.form.FieldSet({
-                            defaults : {
-                                labelStyle : 'font-size:11px',
-                                anchor     : '100%'
-                            },
-                            title      : com.conjoon.Gettext.gettext("Options"),
-                            labelAlign : 'top',
-                            items      : [
-                                this.updateAfter,
-                                this.removeAfter,
-                                this.requestTimeoutComboBox
-                            ]
-                        })
-                    ]
-                }),
-                new Ext.FormPanel({
-                    baseCls    : 'x-small-editor',
-                    defaults   : {
-                        labelStyle : 'width:150px;font-size:11px'
-                    },
-                    bodyStyle  : 'margin:10px 0 20px 0px;padding:10px;background:none',
-                    title  : com.conjoon.Gettext.gettext("Security"),
-                    items  : [
-                        new com.conjoon.groupware.util.FormIntro({
-                            label : com.conjoon.Gettext.gettext("Allow cross domain resources"),
-                            text  : com.conjoon.Gettext.gettext("Some feeds may be delivered with images, which pose a potential security risc: By loading this images into your browser from another domain, you may expose personal details such as your IP address and there is also a potential risc related to XSS attack (cross site scripting).<br /> You should only enable loading images from those sites that you can trust.")
-                        }),
-                        this.enableImagesCheckbox
-
-                    ]
-                })
-            ]
-        })
-
-    ];
-
-    this.buttons = [{
-        text    : 'OK',
-        handler : function(){this.saveConfiguration(true);},
-        scope   : this
-      },{
-        text    : com.conjoon.Gettext.gettext("Cancel"),
-        handler : this.close,
-        scope   : this
-      },{
-        text     : com.conjoon.Gettext.gettext("Apply"),
-        handler  : this.saveConfiguration,
-        scope    : this,
-        disabled : true
-    }];
-
-    /**
-    * Constructor call.
-    */
-    com.conjoon.groupware.feeds.FeedOptionsDialog.superclass.constructor.call(this,  {
-        iconCls   : 'com-conjoon-groupware-feeds-Icon',
-        cls       : 'com-conjoon-groupware-feeds-FeedOptionsDialog',
-        title     : com.conjoon.Gettext.gettext("Feed settings"),
-        bodyStyle : 'background-color:#F6F6F6',
-        height    : 375,
-        width     : 550,
-        modal     : true,
-        resizable : false,
-        layout    : 'border'
-    });
-
-    this.formPanel = this.getComponent('com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel');
-
-    // add listener
-    this.on('render', this.onDialogRendered, this);
-    this.feedPanel.selModel.on('beforerowselect', this.onBeforeRowSelect, this);
-    this.feedPanel.selModel.on('rowselect',       this.onRowSelect, this);
-    this.feedPanel.selModel.on('rowdeselect',     this.onRowDeselect, this);
-
-    this.removeAfter.on('select', this.configChanged, this);
-    this.updateAfter.on('select', this.configChanged, this);
-    this.requestTimeoutComboBox.on('select', this.configChanged, this);
-    this.enableImagesCheckbox.on('check', this.configChanged, this);
-
-    this.feedName.on('render', function() {
-            this.feedName.el.on('keyup',    this.configChanged, this);
-            this.feedName.el.on('keydown',  this.configChanged, this);
-            this.feedName.el.on('keypress', this.configChanged, this);
-    }, this);
-
-    this.on ('destroy', function() {
-        com.conjoon.groupware.feeds.AccountStore.getInstance().un('add', this.addRecordsFromStore, this);
-    }, this);
-
-
-
-};
-
-
-Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
+com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
 
     LOADING         : 0,
     SAVING          : 1,
@@ -393,6 +77,317 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
      * reading data.
      */
     loadMask : null,
+
+
+    initComponent : function()
+    {
+        this.store = new Ext.data.Store({
+                storeId     : Ext.id(),
+                autoLoad    : false,
+                reader      : new Ext.data.JsonReader({
+                                  id : 'id'
+                              }, com.conjoon.groupware.feeds.AccountRecord)
+            });
+
+
+        /**
+         * The panel that holds the tree nodes. Rendered like a combo box.
+         */
+        this.feedPanel = new Ext.grid.GridPanel({
+            cls        : 'feedPanel',
+            autoScroll : true,
+            height     : 240,
+            hideHeaders : true,
+            enableColumnMove : false,
+            enableHdMenu : false,
+            store  : this.store,
+            sortInfo   : {field: 'name', direction: "DESC"},
+            selModel   : new Ext.grid.RowSelectionModel({singleSelect:true}),
+            columns    : [{
+                id        : 'feed_name',
+                header    : '<b>'+com.conjoon.Gettext.gettext("Feeds")+'</b>',
+                width     : 148,
+                sortable  : true,
+                dataIndex : 'name'
+            }]
+        });
+
+        var tmpStore = com.conjoon.groupware.feeds.AccountStore.getInstance();
+        var records = tmpStore.getRange();
+        this.mon(tmpStore, 'add', this.addRecordsFromStore, this);
+        for (var i = 0, len = records.length; i < len; i++) {
+            this.store.add(records[i].copy());
+        }
+
+        /**
+         * Button for adding a feed
+         */
+        this.addFeedButton = new Ext.Button({
+            text     : com.conjoon.Gettext.gettext("Add feed"),
+            cls      : 'com-conjoon-margin-b-5',
+            minWidth : 150,
+            scope    : this,
+            handler  : function(){
+                var dialog = new com.conjoon.groupware.feeds.AddFeedDialog({animateTarget : this.addFeedButton.el.dom.id});
+                dialog.show();
+            }
+        });
+
+        /**
+         * Button for removing a feed
+         */
+        this.removeFeedButton = new Ext.Button({
+            text     : com.conjoon.Gettext.gettext("Remove feed"),
+            minWidth : 150,
+            disabled : true,
+            handler  : this.removeSelected,
+            scope    : this
+        });
+
+        /**
+         * Textfield for the feeds url. This is immutable.
+         */
+        this.feedUrl = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Address"),
+            disabled   : true,
+            disabledClass : ''
+        });
+
+        /**
+         * Textfield for the feeds name.
+         */
+        this.feedName = new Ext.form.TextField({
+            fieldLabel      : com.conjoon.Gettext.gettext("Name"),
+            allowBlank      : false,
+            validator       : this.isFeedNameValid.createDelegate(this),
+            itemCls         : 'com-conjoon-margin-b-10',
+            enableKeyEvents : true
+        });
+
+        /**
+         * Combobox for choosing the request timeout in seconds.
+         *
+         * @type Ext.form.ComboBox
+         */
+        this.requestTimeoutComboBox = new Ext.form.ComboBox({
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
+            listClass     : 'com-conjoon-smalleditor',
+            displayField  : 'text',
+            valueField    : 'id',
+            mode          : 'local',
+            editable      : false,
+            triggerAction : 'all',
+            store         : new Ext.data.SimpleStore({
+                data   : [
+                    [30, com.conjoon.Gettext.gettext("30 seconds")],
+                    [20, com.conjoon.Gettext.gettext("20 seconds")],
+                    [10, com.conjoon.Gettext.gettext("10 seconds")]
+                ],
+                fields : ['id', 'text']
+            })
+        });
+
+        /**
+         * Combobox to store the duration of how long to store the entries before
+         * wiped in the DB.
+         *
+         * The mode is set to local, since the store gets loaded via a callback
+         * after the dialog is rendered.
+         */
+        this.removeAfter = new Ext.form.ComboBox({
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
+            listClass     : 'com-conjoon-smalleditor',
+            itemCls       : 'com-conjoon-margin-b-10',
+            displayField  : 'text',
+            valueField    : 'id',
+            mode          : 'local',
+            editable      : false,
+            triggerAction : 'all',
+            store         : new Ext.data.SimpleStore({
+                data   : [
+                    [2419200, com.conjoon.Gettext.gettext("for 2 weeks")],
+                    [1209600, com.conjoon.Gettext.gettext("for one week")],
+                    [432000,  com.conjoon.Gettext.gettext("for 5 days")],
+                    [172800,  com.conjoon.Gettext.gettext("for 2 days")],
+                    [86400,   com.conjoon.Gettext.gettext("for one day")],
+                    [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
+                    [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
+                    [7200,    com.conjoon.Gettext.gettext("for 2 hours")],
+                    [3600,    com.conjoon.Gettext.gettext("for one hour")]
+                ],
+                fields : ['id', 'text']
+            })
+        });
+
+        /**
+         * Combobox to store update/refresh behavior.
+         *
+         * The mode is set to local, since the store gets loaded via a callback
+         * after the dialog is rendered.
+         */
+        this.updateAfter = new Ext.form.ComboBox({
+            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel    : com.conjoon.Gettext.gettext("Check for new entries"),
+            itemCls       : 'com-conjoon-margin-b-10',
+            listClass     : 'com-conjoon-smalleditor',
+            displayField  : 'text',
+            valueField    : 'id',
+            mode          : 'local',
+            editable      : false,
+            triggerAction : 'all',
+            store         : new Ext.data.SimpleStore({
+                data   : [
+                    [172800, com.conjoon.Gettext.gettext("every 2 days")],
+                    [86400,  com.conjoon.Gettext.gettext("every day")],
+                    [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
+                    [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
+                    [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
+                    [3600,   com.conjoon.Gettext.gettext("every hour")],
+                    [1800,   com.conjoon.Gettext.gettext("every 30 minutes")],
+                    [900,    com.conjoon.Gettext.gettext("every 15 minutes")]
+                ],
+                fields : ['id', 'text']
+            })
+
+        });
+
+        /**
+         * @type {Ext.form.Checkbox} enableImagesCheckbox
+         */
+        this.enableImagesCheckbox = new Ext.form.Checkbox({
+            fieldLabel : com.conjoon.Gettext.gettext("Load images into feed"),
+            itemCls    : 'com-conjoon-margin-t-5'
+        });
+
+        this.formPanel = new Ext.TabPanel({
+            activeItem : 0,
+            margins   : '5 5 5 5',
+            hideMode  : 'visibility',
+            id        : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
+            region    : 'center',
+            bodyStyle : 'background-color:#F6F6F6;',
+            defaults  : {
+                border : false
+            },
+            cls   : 'tabPanel',
+
+            items : [
+                new Ext.FormPanel({
+                    baseCls    : 'x-small-editor',
+                    defaults   : {
+                        labelStyle : 'font-size:11px',
+                        anchor     : '100%'
+                    },
+                    bodyStyle  : 'margin:10px 0 20px 0px;padding:10px;background:none',
+                    title : com.conjoon.Gettext.gettext("Connection"),
+                    items : [
+                        this.feedUrl,
+                        this.feedName,
+                        new Ext.form.FieldSet({
+                            defaults : {
+                                labelStyle : 'font-size:11px',
+                                anchor     : '100%'
+                            },
+                            title      : com.conjoon.Gettext.gettext("Options"),
+                            labelAlign : 'top',
+                            items      : [
+                                this.updateAfter,
+                                this.removeAfter,
+                                this.requestTimeoutComboBox
+                            ]
+                        })
+                    ]
+                }),
+                new Ext.FormPanel({
+                    baseCls    : 'x-small-editor',
+                    defaults   : {
+                        labelStyle : 'width:150px;font-size:11px'
+                    },
+                    bodyStyle  : 'margin:10px 0 20px 0px;padding:10px;background:none',
+                    title  : com.conjoon.Gettext.gettext("Security"),
+                    items  : [
+                        new com.conjoon.groupware.util.FormIntro({
+                            label : com.conjoon.Gettext.gettext("Allow cross domain resources"),
+                            text  : com.conjoon.Gettext.gettext("Some feeds may be delivered with images, which pose a potential security risc: By loading this images into your browser from another domain, you may expose personal details such as your IP address and there is also a potential risc related to XSS attack (cross site scripting).<br /> You should only enable loading images from those sites that you can trust.")
+                        }),
+                        this.enableImagesCheckbox
+
+                    ]
+                })
+            ]
+        });
+
+        /**
+        * Items
+        */
+        this.items = [{
+            region:'west',
+            width: 150,
+            border: false,
+            margins:'5 5 5 5',
+            bodyStyle : 'background:none',
+            items : [
+                this.feedPanel,
+                this.addFeedButton,
+                this.removeFeedButton
+            ]
+          },
+          this.formPanel
+        ];
+
+        this.buttons = [{
+            text    : 'OK',
+            handler : function(){this.saveConfiguration(true);},
+            scope   : this
+          },{
+            text    : com.conjoon.Gettext.gettext("Cancel"),
+            handler : this.close,
+            scope   : this
+          },{
+            text     : com.conjoon.Gettext.gettext("Apply"),
+            handler  : this.saveConfiguration,
+            scope    : this,
+            disabled : true
+        }];
+
+        Ext.apply(this, {
+            iconCls   : 'com-conjoon-groupware-feeds-Icon',
+            cls       : 'com-conjoon-groupware-feeds-FeedOptionsDialog',
+            title     : com.conjoon.Gettext.gettext("Feed settings"),
+            bodyStyle : 'background-color:#F6F6F6',
+            height    : 375,
+            width     : 550,
+            modal     : true,
+            resizable : false,
+            layout    : 'border'
+        });
+
+        this.on('render', this.onDialogRendered, this, {single : true});
+
+        com.conjoon.groupware.feeds.FeedOptionsDialog.superclass.initComponent.call(this);
+    },
+
+    initEvents : function()
+    {
+        com.conjoon.groupware.feeds.FeedOptionsDialog.superclass.initEvents.call(this);
+
+        // add listener
+        this.mon(this.feedPanel.selModel, 'beforerowselect', this.onBeforeRowSelect, this);
+        this.mon(this.feedPanel.selModel, 'rowselect',       this.onRowSelect, this);
+        this.mon(this.feedPanel.selModel, 'rowdeselect',     this.onRowDeselect, this);
+
+        this.mon(this.removeAfter, 'select', this.configChanged, this);
+        this.mon(this.updateAfter, 'select', this.configChanged, this);
+
+        this.mon(this.requestTimeoutComboBox, 'select', this.configChanged, this);
+        this.mon(this.enableImagesCheckbox, 'check', this.configChanged, this);
+
+        this.mon(this.feedName, 'keyup',    this.configChanged, this);
+        this.mon(this.feedName, 'keydown',  this.configChanged, this);
+        this.mon(this.feedName, 'keypress', this.configChanged, this);
+    },
 
     /**
      * Gets called when a feed was added via the AddFeedDialog and this dialog
@@ -663,13 +658,15 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         this.requestId = null;
         this.buttons[2].disable();
 
-        this.removeAfter.on('select',   this.configChanged, this);
-        this.updateAfter.on('select',   this.configChanged, this);
-        this.requestTimeoutComboBox.on('select',   this.configChanged, this);
-        this.enableImagesCheckbox.on('check', this.configChanged, this);
-        this.feedName.el.on('keyup',    this.configChanged, this);
-        this.feedName.el.on('keydown',  this.configChanged, this);
-        this.feedName.el.on('keypress', this.configChanged, this);
+        this.mon(this.removeAfter, 'select',   this.configChanged, this);
+        this.mon(this.updateAfter, 'select',   this.configChanged, this);
+
+        this.mon(this.requestTimeoutComboBox, 'select', this.configChanged, this);
+        this.mon(this.enableImagesCheckbox,   'check',  this.configChanged, this);
+
+        this.mon(this.feedName, 'keyup',    this.configChanged, this);
+        this.mon(this.feedName, 'keydown',  this.configChanged, this);
+        this.mon(this.feedName, 'keypress', this.configChanged, this);
 
         this.deletedRecordCount  = 0;
         this.modifiedRecordCount = 0;
@@ -687,11 +684,13 @@ Ext.extend(com.conjoon.groupware.feeds.FeedOptionsDialog, Ext.Window, {
         // detacht listeners, don't need them anymore
         this.removeAfter.un('select',   this.configChanged, this);
         this.updateAfter.un('select',   this.configChanged, this);
+
         this.requestTimeoutComboBox.un('select',   this.configChanged, this);
         this.enableImagesCheckbox.un('check', this.configChanged, this);
-        this.feedName.el.un('keyup',    this.configChanged, this);
-        this.feedName.el.un('keydown',  this.configChanged, this);
-        this.feedName.el.un('keypress', this.configChanged, this);
+
+        this.feedName.un('keyup',    this.configChanged, this);
+        this.feedName.un('keydown',  this.configChanged, this);
+        this.feedName.un('keypress', this.configChanged, this);
     },
 
     /**

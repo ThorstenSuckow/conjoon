@@ -82,7 +82,8 @@ com.conjoon.groupware.email.form.RecipientComboBox = Ext.extend(Ext.form.ComboBo
     {
         com.conjoon.groupware.email.form.RecipientComboBox.superclass.initEvents.call(this);
 
-        this.store.on('load',  this._onLoad,        this);
+        this.mon(this.store, 'load', this._onLoad, this);
+
         this.on('beforequery', this._onBeforeQuery, this);
         this.on('blur',        this._onBlur, this);
      },

@@ -78,7 +78,7 @@ com.conjoon.groupware.reception.StateIndicator = Ext.extend(Ext.BoxComponent, {
             }
         });
 
-        this.on('render', this._onRender, this);
+        this.on('render', this._onRender, this, {single : true});
 
         com.conjoon.groupware.reception.StateIndicator.superclass.initComponent.call(this);
     },

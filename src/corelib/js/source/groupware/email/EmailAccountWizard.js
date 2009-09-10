@@ -312,7 +312,7 @@ com.conjoon.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ext.
             name       : 'isOutboxAuth'
         });
 
-        this.useAuthField.on('check', this.onAuthCheck, this);
+        this.mon(this.useAuthField, 'check', this.onAuthCheck, this);
 
         this.usernameField = new Ext.form.TextField({
             fieldLabel : com.conjoon.Gettext.gettext("User name"),
@@ -487,7 +487,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
             this.contentPanel
         ];
 
-        this.contentPanel.on('render', this.addContent, this);
+        this.contentPanel.on('render', this.addContent, this, {single : true});
 
         com.conjoon.groupware.email.EmailAccountWizardFinishCard.superclass.initComponent.call(this);
     },
@@ -532,7 +532,6 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
 
         this.contentPanel.el.update(html);
 
-        this.contentPanel.un('render', this.addContent, this);
         this.on('show', this.addContent, this);
     }
 

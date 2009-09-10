@@ -122,8 +122,8 @@ com.conjoon.service.twitter.UserInfoBox = Ext.extend(Ext.BoxComponent, {
         });
 
         if (this.tweetStore) {
-            this.tweetStore.on('load',       this._onTweetStoreLoad, this);
-            this.tweetStore.on('beforeload', this._onBeforeTweetStoreLoad, this);
+            this.mon(this.tweetStore, 'load',       this._onTweetStoreLoad, this);
+            this.mon(this.tweetStore, 'beforeload', this._onBeforeTweetStoreLoad, this);
         }
 
         var clickListener = com.conjoon.groupware.util.LinkInterceptor.getListener();

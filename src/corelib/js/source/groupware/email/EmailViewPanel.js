@@ -127,8 +127,8 @@ com.conjoon.groupware.email.EmailViewPanel = Ext.extend(Ext.Panel, {
             this
         );
 
-        this.on('render',  com.conjoon.groupware.util.LinkInterceptor.getListener().render);
-        this.on('destroy', this.abortRequest, this);
+        this.on('render',  com.conjoon.groupware.util.LinkInterceptor.getListener().render, {single : true});
+        this.on('destroy', this.abortRequest, this, {single : true});
 
         com.conjoon.groupware.email.EmailViewPanel.superclass.initComponent.call(this);
     },

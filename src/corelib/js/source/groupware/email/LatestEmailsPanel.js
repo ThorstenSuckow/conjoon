@@ -15,147 +15,152 @@
 Ext.namespace('com.conjoon.groupware.email');
 
 
+com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.GridPanel, {
 
-com.conjoon.groupware.email.LatestEmailsPanel = function(config) {
+    cellClickActive : false,
 
-    config = config || {};
+    initComponent : function()
+    {
 
-    config.enableHdMenu = false;
-
-    Ext.apply(this, config);
-
-    Ext.ux.util.MessageBus.subscribe(
-        'com.conjoon.groupware.email.view.onEmailLoad',
-        this.onEmailItemLoad,
-        this
-    );
-
-
-
-// ------------------------- set up buffered grid ------------------------------
-    this.store = new Ext.ux.grid.livegrid.Store({
-        bufferSize  : 100,
-        autoLoad    : false,
-        reader      : new Ext.ux.grid.livegrid.JsonReader({
-                          root            : 'items',
-                          totalProperty   : 'totalCount',
-                          versionProperty : 'version',
-                          id              : 'id'
-                      },
-                      com.conjoon.groupware.email.EmailItemRecord
-                      ),
-        sortInfo   : {field: 'id', direction: 'DESC'},
-        baseParams : {
-            minDate : Math.floor(new Date().getTime()/1000)
-        },
-        listeners   : {
-            remove : function (store, record, index) {
-                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.remove', {
-                    items : [record]
-                });
+    // ------------------------- set up buffered grid ------------------------------
+        this.store = new Ext.ux.grid.livegrid.Store({
+            bufferSize  : 100,
+            autoLoad    : false,
+            reader      : new Ext.ux.grid.livegrid.JsonReader({
+                              root            : 'items',
+                              totalProperty   : 'totalCount',
+                              versionProperty : 'version',
+                              id              : 'id'
+                          },
+                          com.conjoon.groupware.email.EmailItemRecord
+                          ),
+            sortInfo   : {field: 'id', direction: 'DESC'},
+            baseParams : {
+                minDate : Math.floor(new Date().getTime()/1000)
             },
-            bulkremove : function (store, items) {
-                var records = [];
-                for (var i = 0, len = items.length; i < len; i++) {
-                    records.push(items[i][0]);
+            listeners   : {
+                remove : function (store, record, index) {
+                    Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.remove', {
+                        items : [record]
+                    });
+                },
+                bulkremove : function (store, items) {
+                    var records = [];
+                    for (var i = 0, len = items.length; i < len; i++) {
+                        records.push(items[i][0]);
+                    }
+
+                    Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.remove', {
+                        items : records
+                    });
+                },
+                update : function (store, record, operation) {
+                    Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.update', {
+                        item      : record,
+                        operation : operation
+                    });
                 }
-
-                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.remove', {
-                    items : records
-                });
             },
-            update : function (store, record, operation) {
-                Ext.ux.util.MessageBus.publish('com.conjoon.groupware.email.LatestEmailsPanel.store.update', {
-                    item      : record,
-                    operation : operation
-                });
+            url : './groupware/email/get.email.items/format/json'
+        });
+
+        this.view = new Ext.ux.grid.livegrid.GridView({
+            nearLimit : 25,
+            loadMask  : {
+                msg : com.conjoon.Gettext.gettext("Please wait...")
+            },
+            getRowClass : function(record, rowIndex, p, ds){
+                if (record.data.isRead) {
+                    return 'com-conjoon-groupware-email-LatestEmailsPanel-itemRead';
+                } else {
+                    return 'com-conjoon-groupware-email-LatestEmailsPanel-itemUnread';
+                }
             }
-        },
-        url : './groupware/email/get.email.items/format/json'
-    });
+        });
 
-    this.view = new Ext.ux.grid.livegrid.GridView({
-        nearLimit : 25,
-        loadMask  : {
-            msg : com.conjoon.Gettext.gettext("Please wait...")
-        },
-        getRowClass : function(record, rowIndex, p, ds){
-            if (record.data.isRead) {
-                return 'com-conjoon-groupware-email-LatestEmailsPanel-itemRead';
-            } else {
-                return 'com-conjoon-groupware-email-LatestEmailsPanel-itemUnread';
+        this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel({singleSelect:true});
+    // ------------------------- ^^ EO set up buffered grid ------------------------
+
+        this.columns = [{
+            header    : com.conjoon.Gettext.gettext("Subject"),
+            width     : 160,
+            sortable  : false,
+            dataIndex : 'subject',
+            renderer : function(value, metadata, record){
+                metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
+                return value;
             }
-        }
-    });
-
-    this.selModel = new Ext.ux.grid.livegrid.RowSelectionModel({singleSelect:true});
-// ------------------------- ^^ EO set up buffered grid ------------------------
-
-    this.columns = [{
-        header    : com.conjoon.Gettext.gettext("Subject"),
-        width     : 160,
-        sortable  : false,
-        dataIndex : 'subject',
-        renderer : function(value, metadata, record){
-            metadata.attr = 'qtip="'+value.replace(/"/g, '&quot;')+'"';
-            return value;
-        }
-      },{
-        header    : com.conjoon.Gettext.gettext("Sender"),
-        width     : 160,
-        sortable  : false,
-        dataIndex : 'sender'
-      }
-    ];
+          },{
+            header    : com.conjoon.Gettext.gettext("Sender"),
+            width     : 160,
+            sortable  : false,
+            dataIndex : 'sender'
+          }
+        ];
 
 
-    /**
-     * Top toolbar
-     * @param {Ext.Toolbar}
-     */
-    this.tbar = new Ext.Toolbar([
-        new com.conjoon.groupware.email.FetchMenuButton()
-    ]);
+        /**
+         * Top toolbar
+         * @param {Ext.Toolbar}
+         */
+        this.tbar = new Ext.Toolbar([
+            new com.conjoon.groupware.email.FetchMenuButton()
+        ]);
 
 
-    com.conjoon.groupware.email.EmailGrid.superclass.constructor.call(this, {
-        title          : com.conjoon.Gettext.gettext("Newest Emails"),
-        iconCls        : 'com-conjoon-groupware-quickpanel-EmailIcon',
-        loadMask       : {
-            msg : com.conjoon.Gettext.gettext("Loading...")
-        },
-        autoScroll     : true//,
-        //cls            : 'com-conjoon-groupware-email-EmailGrid'
-    });
+        Ext.apply(this, {
+            enableHdMenu   : false,
+            title          : com.conjoon.Gettext.gettext("Newest Emails"),
+            iconCls        : 'com-conjoon-groupware-quickpanel-EmailIcon',
+            loadMask       : {
+                msg : com.conjoon.Gettext.gettext("Loading...")
+            },
+            autoScroll     : true//,
+            //cls            : 'com-conjoon-groupware-email-EmailGrid'
+        });
 
-    com.conjoon.groupware.email.Letterman.on('load', this.newEmailsAvailable, this);
+
+        com.conjoon.util.Registry.register('com.conjoon.groupware.email.QuickPanel', this);
+
+        var preview       = com.conjoon.groupware.email.EmailPreview;
+        this.emailPreview = preview;
+
+        this.on('render', this.onPanelRender, this, {single : true});
+
+        com.conjoon.groupware.email.LatestEmailsPanel.superclass.initComponent.call(this);
+    },
 
 
-    this.on('contextmenu',    this.onContextClick, this);
-    this.on('rowcontextmenu', this.onRowContextClick, this);
-    this.on('beforedestroy',  this.onBeforeCmpDestroy, this);
+    initEvents : function()
+    {
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.view.onEmailLoad',
+            this.onEmailItemLoad,
+            this
+        );
 
-    this.on('render', this.onPanelRender, this);
+        this.mon(com.conjoon.groupware.email.Letterman, 'load', this.newEmailsAvailable, this);
 
-    com.conjoon.util.Registry.on('register', this.onRegister, this);
+        this.on('contextmenu',    this.onContextClick, this);
+        this.on('rowcontextmenu', this.onRowContextClick, this);
+        this.on('beforedestroy',  this.onBeforeCmpDestroy, this);
 
-    com.conjoon.util.Registry.register('com.conjoon.groupware.email.QuickPanel', this);
+        this.mon(com.conjoon.util.Registry, 'register', this.onRegister, this);
 
-    var preview       = com.conjoon.groupware.email.EmailPreview;
-    this.emailPreview = preview;
+        this.on('celldblclick',   this.onCellDblClick, this);
+        this.on('cellclick',      this.onCellClick,    this, {buffer : 200});
 
-    this.on('celldblclick',   this.onCellDblClick, this);
-    this.on('cellclick',      this.onCellClick,    this, {buffer : 200});
-    this.on('resize',         preview.hide.createDelegate(preview, [true]));
-    this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
-    this.on('contextmenu',    preview.hide.createDelegate(preview, [true]));
+        var preview = com.conjoon.groupware.email.EmailPreview;
+        this.on('resize',         preview.hide.createDelegate(preview, [true]));
+        this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
+        this.on('contextmenu',    preview.hide.createDelegate(preview, [true]));
 
-};
+        com.conjoon.groupware.email.LatestEmailsPanel.superclass.initEvents.call(this);
+    },
 
-Ext.extend(com.conjoon.groupware.email.LatestEmailsPanel, Ext.ux.grid.livegrid.GridPanel, {
 
 // -------- listeners
-    cellClickActive : false,
+
 
     onCellClick : function(grid, rowIndex, columnIndex, eventObject)
     {

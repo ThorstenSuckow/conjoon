@@ -293,10 +293,6 @@ com.conjoon.groupware.email.EmailPreview = function() {
             }
         });
 
-        emailView.on('emailload', onLoadSuccess, com.conjoon.groupware.email.EmailPreview);
-        emailView.on('beforeemailload', onBeforeLoad, com.conjoon.groupware.email.EmailPreview);
-        emailView.on('emailloadfailure', onLoadFailure, com.conjoon.groupware.email.EmailPreview);
-
         var win =  new Ext.Window({
             bodyStyle  : 'background:white;',
             autoScroll : false,
@@ -311,11 +307,15 @@ com.conjoon.groupware.email.EmailPreview = function() {
             width      : width
         });
 
+        win.mon(emailView, 'emailload',        onLoadSuccess, com.conjoon.groupware.email.EmailPreview);
+        win.mon(emailView, 'beforeemailload',  onBeforeLoad, com.conjoon.groupware.email.EmailPreview);
+        win.mon(emailView, 'emailloadfailure', onLoadFailure, com.conjoon.groupware.email.EmailPreview);
+
         win.on('render', function() {
-            this.header.on('dblclick', function(){
+            this.mon(this.header, 'dblclick', function(){
                onMove();
-            });
-        }, win);
+            }, this);
+        }, win, {single : true});
 
         win.initDraggable = function() {
             Ext.Window.prototype.initDraggable.call(this);

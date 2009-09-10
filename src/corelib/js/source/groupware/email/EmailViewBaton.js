@@ -241,7 +241,7 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
                     view.on('render', function(){
                         this.renderView();
                         loadedViews[emailItem.id] = true;
-                    }, view);
+                    }, view, {single : true});
                 }
 
                 view.on('destroy', function(panel){
