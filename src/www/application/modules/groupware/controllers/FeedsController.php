@@ -374,7 +374,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 }
             }
 
-            $this->view->success        = empty($updatedFailed) ? true : false;
+            $this->view->success        = empty($updatedFailed) && empty($deletedFailed)
+                                          ? true : false;
             $this->view->updatedFailed = $updatedFailed;
             $this->view->deletedFailed = $deletedFailed;
             $this->view->error         = null;
