@@ -64,6 +64,13 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
      */
     modifiedRecordCount : 0,
 
+    /**
+     * @type {Boolean} ignoreConfigChange Whether the configChange method should
+     * get processed. Will be temporarily set to true when the form fields get
+     * filled automatically
+     */
+    ignoreConfigChange : false,
+
 
     /**
      * LoadMask configuration
@@ -81,12 +88,15 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
 
     initComponent : function()
     {
+        this.deletedRecords = [];
+
         this.store = new Ext.data.Store({
-                storeId     : Ext.id(),
-                autoLoad    : false,
-                reader      : new Ext.data.JsonReader({
-                                  id : 'id'
-                              }, com.conjoon.groupware.feeds.AccountRecord)
+                pruneModifiedRecords : true,
+                storeId              : Ext.id(),
+                autoLoad             : false,
+                reader               : new Ext.data.JsonReader({
+                     id : 'id'
+                }, com.conjoon.groupware.feeds.AccountRecord)
             });
 
 
@@ -262,13 +272,14 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
         });
 
         this.formPanel = new Ext.TabPanel({
-            activeItem : 0,
-            margins   : '5 5 5 5',
-            hideMode  : 'visibility',
-            id        : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
-            region    : 'center',
-            bodyStyle : 'background-color:#F6F6F6;',
-            defaults  : {
+            deferredRender : false,
+            activeItem     : 0,
+            margins        : '5 5 5 5',
+            hideMode       : 'visibility',
+            id             : 'com.conjoon.groupware.feeds.FeedOptionsDialog.formPanel',
+            region         : 'center',
+            bodyStyle      : 'background-color:#F6F6F6;',
+            defaults       : {
                 border : false
             },
             cls   : 'tabPanel',
@@ -373,6 +384,8 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
     {
         com.conjoon.groupware.feeds.FeedOptionsDialog.superclass.initEvents.call(this);
 
+        this.on('beforeclose', this._onBeforeClose, this);
+
         // add listener
         this.mon(this.feedPanel.selModel, 'beforerowselect', this.onBeforeRowSelect, this);
         this.mon(this.feedPanel.selModel, 'rowselect',       this.onRowSelect, this);
@@ -455,11 +468,6 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
         var rData  = record.data;
         var delRecord = record.copy();
 
-
-        if (this.deletedRecords  == null) {
-            this.deletedRecords = new Array();
-        }
-
         this.deletedRecordCount++;
 
         this.deletedRecords.push(delRecord);
@@ -498,10 +506,8 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
         var deleted = [];
         var updated = [];
         // merge deleted, if any
-        if (this.deletedRecords) {
-            for (var a = 0, max_a = this.deletedRecords.length; a < max_a; a++) {
-                deleted.push(this.deletedRecords[a].id);
-            }
+        for (var a = 0, max_a = this.deletedRecords.length; a < max_a; a++) {
+            deleted.push(this.deletedRecords[a].id);
         }
 
         for (var i = 0, max_i = records.length; i < max_i; i++) {
@@ -513,6 +519,10 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
             this.saved();
             return;
         }
+
+        this.buttons[0].disable();
+        this.buttons[1].disable();
+        this.buttons[2].disable();
 
         this.requestId = Ext.Ajax.request({
             url            : './groupware/feeds/update.accounts/format/json',
@@ -532,18 +542,16 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
     * Method gets executed when records have been successfully saved.
     * @access private
     */
-    saved : function()
+    saved : function(failed)
     {
-        this.deletedRecords = null;
-
-        this.feedPanel.store.commitChanges();
-
-        if (this.closeAfterSave == true) {
+        if (!failed && this.closeAfterSave) {
             this.close();
             return;
         }
 
-        this.resetState();
+        this.fillFormFields(this.clkRecord);
+
+        this.resetState(failed);
     },
 
     /**
@@ -551,44 +559,128 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
      */
     onSuccess : function(response, parameters)
     {
+        this.requestId = null;
+
         // shorthands
         var json = com.conjoon.util.Json;
         var msg  = Ext.MessageBox;
+
+        var failed = false;
 
         if (json.isError(response.responseText)) {
             this.onFailure(response, parameters);
             return;
         }
 
-        var values = json.getResponseValues(response.responseText);
+        var values        = json.getResponseValues(response.responseText);
+        var updatedFailed = values.updatedFailed;
+        var deletedFailed = values.deletedFailed;
+
+        failed = !updatedFailed || !deletedFailed
+                 || (updatedFailed && updatedFailed.length)
+                 || (deletedFailed && deletedFailed.length);
+
+        this.syncStores(updatedFailed, deletedFailed);
 
         if (values.success != true) {
-            // Fallback. Usually, the returntype should be boolean, always
-            // set to true. If that fails, this message will be shown
-            // with no further indication of what the error caused.
-            // This should never been evaluated by runtime, since the
-            // server will send an error back if updating the record fails.
-            // If you take this to the code-wtf, I'll suspend your account ;)
+            failed = true;
+            var updf = [];
+            var delf = [];
+            if (updatedFailed) {
+                for (var i = 0, len = updatedFailed.length; i < len; i++) {
+                    var rec = this.feedPanel.store.getById(updatedFailed[i]);
+                    if (rec) {
+                        updf.push(rec.get('name'));
+                    }
+                }
+            }
+            if (deletedFailed) {
+                for (var i = 0, len = this.deletedRecords.length; i < len; i++) {
+                    if (deletedFailed.indexOf(this.deletedRecords[i].id) != -1) {
+                        delf.push(this.deletedRecords[i].get('name'));
+                    }
+                }
+            }
+
             msg.show({
                 title   : com.conjoon.Gettext.gettext("Error"),
-                msg     : com.conjoon.Gettext.gettext("Could not update the feed configurations."),
+                msg     : com.conjoon.Gettext.gettext("The server could not process all of the changes.") +
+                          (updf.length
+                          ? "<br />" +
+                             String.format(
+                                com.conjoon.Gettext.gettext("The following entries could not be updated: {0}") + "<br />",
+                                updf.join("<br />")
+                             )
+                          : "") +
+                          (
+                          delf.length
+                          ? "<br />" +
+                             String.format(
+                                com.conjoon.Gettext.gettext("The following entries could not be removed: {0}") + "<br />",
+                                delf.join("<br />")
+                             )
+                           : ""),
                 buttons : msg.OK,
                 icon    : msg.ERROR,
                 cls     :'com-conjoon-msgbox-error',
                 width   : 400
             });
-            this.loadMask.hide();
-            return;
+        }
+
+        this.saved(failed);
+    },
+
+    /**
+     * Syncs the account store with the store created for this dialog.
+     * Removes all deleted records which are not found in deletedFailed, and
+     * updates all records which are found in updatedFailed.
+     *
+     * @param {Array} updatedFailed array with ids of records which could not
+     * be updated on the server
+     * @param {Array} deletedFailed array with ids of records which could not
+     * be removed from the server
+     *
+     */
+    syncStores : function(updatedFailed, deletedFailed)
+    {
+        // assume that updating all records failed if updatedFailed is
+        // not an array
+        if (!updatedFailed) {
+            updatedFailed = [];
+            var recs = this.feedPanel.store.getModifiedRecords();
+            for (var i = 0, len = recs.length; i < len; i++) {
+                updatedFailed.push(recs[i].id);
+            }
+        }
+
+        // assume that deleting all records failed if deletedFailed is
+        // not an array
+        if (!deletedFailed) {
+            deletedFailed = [];
+            for (var i = 0, len = this.deletedRecords.length; i < len; i++) {
+                deletedFailed.push(this.deletedRecords[i].id);
+            }
         }
 
         var accountStore = com.conjoon.groupware.feeds.AccountStore.getInstance();
-        var store = com.conjoon.groupware.feeds.FeedStore.getInstance();
-        var updatedFailed = values.updatedFailed;
-        var records = this.feedPanel.store.getModifiedRecords();
-        var items = store.getRange();
+        var store        = com.conjoon.groupware.feeds.FeedStore.getInstance();
+
+        var trecords = this.feedPanel.store.getModifiedRecords();
+        var items   = store.getRange();
+
         var up = null;
+
+        // copy into new array, otherwise a reference to the store's
+        // modified records will be created which will lead to problems
+        // when we commit a single record later on.
+        var records = [];
+        for (var i = 0, len = trecords.length; i < len; i++) {
+            records.push(trecords[i]);
+        }
+
         for (var i = 0, len = records.length; i < len; i++) {
             if (updatedFailed.indexOf(records[i].id) == -1) {
+                records[i].commit();
                 up = accountStore.getById(records[i].id);
                 up.set('name', records[i].get('name'));
                 up.set('updateInterval', records[i].get('updateInterval'));
@@ -612,61 +704,82 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
 
         accountStore.commitChanges();
 
-        var deletedFailed = values.deletedFailed;
         var feedRecords = store.getRange();
-        if (this.deletedRecords && this.deletedRecords.length) {
-            for (var i = 0, len = this.deletedRecords.length; i < len; i++) {
-                if (deletedFailed.indexOf(this.deletedRecords[i].id) == -1) {
-                    // remove accounts
-                    accountStore.remove(accountStore.getById(this.deletedRecords[i].id));
-                    // remove feed items
-                    for (var a = 0, lena = feedRecords.length; a < lena; a++) {
-                        if (feedRecords[a].get('groupwareFeedsAccountsId') == this.deletedRecords[i].id) {
-                            store.remove(feedRecords[a]);
-                        }
+        for (var i = 0, len = this.deletedRecords.length; i < len; i++) {
+            if (deletedFailed.indexOf(this.deletedRecords[i].id) == -1) {
+                // remove accounts
+                accountStore.remove(accountStore.getById(this.deletedRecords[i].id));
+                // remove feed items
+                for (var a = 0, lena = feedRecords.length; a < lena; a++) {
+                    if (feedRecords[a].get('groupwareFeedsAccountsId') == this.deletedRecords[i].id) {
+                        store.remove(feedRecords[a]);
                     }
-                } else {
-                    this.feedPanel.store.add(this.deletedRecords[i]);
                 }
+            } else {
+                this.feedPanel.store.add(this.deletedRecords[i]);
             }
         }
-
-
-
-        this.saved();
-
     },
 
     /**
      * Callback if saving the configuration fails due to network problems or
      * else.
+     *
+     * The method will also consider a failure due to an error returned by the server,
+     * but the updatedFailed/deletedFailed properties may be set. The method will
+     * then reject changes for all records with the id found in updated Failed, and add
+     * again the records from deletedFailed.
      */
     onFailure : function(response, parameters)
     {
+        this.requestId = null;
+
         com.conjoon.groupware.ResponseInspector.handleFailure(response);
 
-        this.feedPanel.store.rejectChanges();
-        this.resetState();
+        var values = {};
+
+        try {
+            values = json.getResponseValues(response.responseText);
+        } catch (e) {
+            // ignore
+        }
+
+        this.syncStores(values.updatedFailed, values.deletedFailed);
+        this.saved(true);
+    },
+
+    fillFormFields : function(record)
+    {
+        this.ignoreConfigChange = true;
+
+        if (record) {
+            this.feedUrl.setValue(record.get('uri'));
+            this.feedName.setValue(record.get('name'));
+            this.updateAfter.setValue(record.get('updateInterval'));
+            this.requestTimeoutComboBox.setValue(record.get('requestTimeout'));
+            this.enableImagesCheckbox.setValue(record.get('isImageEnabled'));
+            this.removeAfter.setValue(record.get('deleteInterval'));
+        }
+
+        this.ignoreConfigChange = false;
     },
 
     /**
      * Resets listeners and compoenents to their initial state.
      */
-    resetState : function()
+    resetState : function(failed)
     {
+        this.deletedRecords = [];
         this.loadMask.hide();
         this.requestId = null;
-        this.buttons[2].disable();
 
-        this.mon(this.removeAfter, 'select',   this.configChanged, this);
-        this.mon(this.updateAfter, 'select',   this.configChanged, this);
-
-        this.mon(this.requestTimeoutComboBox, 'select', this.configChanged, this);
-        this.mon(this.enableImagesCheckbox,   'check',  this.configChanged, this);
-
-        this.mon(this.feedName, 'keyup',    this.configChanged, this);
-        this.mon(this.feedName, 'keydown',  this.configChanged, this);
-        this.mon(this.feedName, 'keypress', this.configChanged, this);
+        this.buttons[0].enable();
+        this.buttons[1].enable();
+        if (failed === true) {
+            this.buttons[2].enable();
+        } else {
+            this.buttons[2].disable();
+        }
 
         this.deletedRecordCount  = 0;
         this.modifiedRecordCount = 0;
@@ -679,18 +792,17 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
      */
     configChanged : function(box, record, index)
     {
+        if (this.ignoreConfigChange) {
+            return;
+        }
+
+        if (!this.feedName.isValid()) {
+            this.buttons[0].setDisabled(true);
+            this.buttons[2].setDisabled(true);
+            return;
+        }
+        this.buttons[0].setDisabled(false);
         this.buttons[2].setDisabled(false);
-
-        // detacht listeners, don't need them anymore
-        this.removeAfter.un('select',   this.configChanged, this);
-        this.updateAfter.un('select',   this.configChanged, this);
-
-        this.requestTimeoutComboBox.un('select',   this.configChanged, this);
-        this.enableImagesCheckbox.un('check', this.configChanged, this);
-
-        this.feedName.un('keyup',    this.configChanged, this);
-        this.feedName.un('keydown',  this.configChanged, this);
-        this.feedName.un('keypress', this.configChanged, this);
     },
 
     /**
@@ -861,12 +973,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
             this.formPanel.setVisible(true);
         }
 
-        this.feedUrl.setValue(record.get('uri'));
-        this.feedName.setValue(record.get('name'));
-        this.updateAfter.setValue(record.get('updateInterval'));
-        this.requestTimeoutComboBox.setValue(record.get('requestTimeout'));
-        this.enableImagesCheckbox.setValue(record.get('isImageEnabled'));
-        this.removeAfter.setValue(record.get('deleteInterval'));
+        this.fillFormFields(record);
 
         this.removeFeedButton.setDisabled(false);
     },
@@ -881,6 +988,14 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
         this.formPanel.setVisible(false);
     },
 
+    _onBeforeClose : function()
+    {
+        if (this.requestId != null) {
+            return false;
+        }
+
+        return true;
+    },
 
     /**
      * Shows the load mask and configures it's message text based on the passed
