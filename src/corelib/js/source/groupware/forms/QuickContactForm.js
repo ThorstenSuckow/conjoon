@@ -40,11 +40,6 @@ com.conjoon.groupware.forms.QuickContactForm = function() {
 
     };
 
-    var _installListeners = function()
-    {
-
-    };
-
     var _initComponents = function()
     {
         _firstname    = new Ext.form.TextField({
@@ -84,7 +79,6 @@ com.conjoon.groupware.forms.QuickContactForm = function() {
             text : com.conjoon.Gettext.gettext("Cancel")
         });
 
-        _installListeners.call(this);
         _createLayout.call(this);
     };
 
