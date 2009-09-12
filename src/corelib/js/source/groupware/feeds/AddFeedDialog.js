@@ -566,14 +566,12 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
         com.conjoon.groupware.feeds.AccountStore.getInstance().add(rec);
 
         var store = com.conjoon.groupware.feeds.FeedStore.getInstance();
-        var recs = [];
         var item = null;
         var recordClass = com.conjoon.groupware.feeds.ItemRecord;
         for (var i = 0, len = items.length; i < len; i++) {
             item = items[i];
-            recs.push(convertTo(recordClass, item, item.id));
+            store.addSorted(convertTo(recordClass, item, item.id));
         }
-        store.add(recs);
 
         this.reset();
 
