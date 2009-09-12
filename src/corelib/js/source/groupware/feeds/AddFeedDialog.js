@@ -164,48 +164,50 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
         });
 
         this.requestTimeoutComboBox = new Ext.form.ComboBox({
-            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-            fieldLabel    : com.conjoon.Gettext.gettext("Request timeout"),
-            listClass     : 'com-conjoon-smalleditor',
-            displayField  : 'text',
-            itemCls       : 'com-conjoon-margin-b-10',
-            valueField    : 'id',
-            mode          : 'local',
-            anchor       : '95%',
-            editable      : false,
-            triggerAction : 'all',
-            store         : new Ext.data.SimpleStore({
+            tpl            : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel     : com.conjoon.Gettext.gettext("Request timeout"),
+            listClass      : 'com-conjoon-smalleditor',
+            displayField   : 'text',
+            itemCls        : 'com-conjoon-margin-b-10',
+            valueField     : 'id',
+            mode           : 'local',
+            value          : 10,
+            anchor         : '95%',
+            editable       : false,
+            triggerAction  : 'all',
+            store          : new Ext.data.SimpleStore({
                 data   : [
-                    [30, com.conjoon.Gettext.gettext("30 seconds")],
+                    [10, com.conjoon.Gettext.gettext("10 seconds")],
                     [20, com.conjoon.Gettext.gettext("20 seconds")],
-                    [10, com.conjoon.Gettext.gettext("10 seconds")]
+                    [30, com.conjoon.Gettext.gettext("30 seconds")]
                 ],
                 fields : ['id', 'text']
             })
         });
 
         this.keepEntriesComboBox = new Ext.form.ComboBox({
-            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-            fieldLabel    : com.conjoon.Gettext.gettext("Save entries"),
-            listClass     : 'com-conjoon-smalleditor',
-            itemCls       : 'com-conjoon-margin-b-10',
-            displayField  : 'text',
-            valueField    : 'id',
-            mode          : 'local',
-            anchor        : '95%',
-            editable      : false,
-            triggerAction : 'all',
-            store         : new Ext.data.SimpleStore({
+            tpl            : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel     : com.conjoon.Gettext.gettext("Save entries"),
+            listClass      : 'com-conjoon-smalleditor',
+            itemCls        : 'com-conjoon-margin-b-10',
+            displayField   : 'text',
+            valueField     : 'id',
+            mode           : 'local',
+            anchor         : '95%',
+            value          : 86400,
+            editable       : false,
+            triggerAction  : 'all',
+            store          : new Ext.data.SimpleStore({
                 data   : [
-                    [2419200, com.conjoon.Gettext.gettext("for 2 weeks")],
-                    [1209600, com.conjoon.Gettext.gettext("for one week")],
-                    [432000,  com.conjoon.Gettext.gettext("for 5 days")],
-                    [172800,  com.conjoon.Gettext.gettext("for 2 days")],
-                    [86400,   com.conjoon.Gettext.gettext("for one day")],
-                    [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
-                    [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
+                    [3600,    com.conjoon.Gettext.gettext("for one hour")],
                     [7200,    com.conjoon.Gettext.gettext("for 2 hours")],
-                    [3600,    com.conjoon.Gettext.gettext("for one hour")]
+                    [21600,   com.conjoon.Gettext.gettext("for 6 hours")],
+                    [43200,   com.conjoon.Gettext.gettext("for 12 hours")],
+                    [86400,   com.conjoon.Gettext.gettext("for one day")],
+                    [172800,  com.conjoon.Gettext.gettext("for 2 days")],
+                    [432000,  com.conjoon.Gettext.gettext("for 5 days")],
+                    [1209600, com.conjoon.Gettext.gettext("for one week")],
+                    [2419200, com.conjoon.Gettext.gettext("for 2 weeks")]
                 ],
                 fields : ['id', 'text']
             })
@@ -216,26 +218,26 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
          * @ext-bug beta 1 not setting listWidth renders not correct
          */
         this.updateComboBox = new Ext.form.ComboBox({
-            tpl           : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
-            fieldLabel    : com.conjoon.Gettext.gettext("Refresh"),
-            listClass     : 'com-conjoon-smalleditor',
-            itemCls       : 'com-conjoon-margin-b-10',
-            displayField  : 'text',
-            valueField    : 'id',
-            mode          : 'local',
-            anchor        : '95%',
-            editable      : false,
-            triggerAction : 'all',
-            store         : new Ext.data.SimpleStore({
+            tpl            : '<tpl for="."><div class="x-combo-list-item">{text:htmlEncode}</div></tpl>',
+            fieldLabel     : com.conjoon.Gettext.gettext("Refresh"),
+            listClass      : 'com-conjoon-smalleditor',
+            itemCls        : 'com-conjoon-margin-b-10',
+            displayField   : 'text',
+            valueField     : 'id',
+            mode           : 'local',
+            anchor         : '95%',
+            editable       : false,
+            triggerAction  : 'all',
+            store          : new Ext.data.SimpleStore({
                 data   : [
-                    [172800, com.conjoon.Gettext.gettext("every 2 days")],
-                    [86400,  com.conjoon.Gettext.gettext("every day")],
-                    [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
-                    [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
-                    [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
-                    [3600,   com.conjoon.Gettext.gettext("every hour")],
+                    [900,    com.conjoon.Gettext.gettext("every 15 minutes")],
                     [1800,   com.conjoon.Gettext.gettext("every 30 minutes")],
-                    [900,    com.conjoon.Gettext.gettext("every 15 minutes")]
+                    [3600,   com.conjoon.Gettext.gettext("every hour")],
+                    [7200,   com.conjoon.Gettext.gettext("every 2 hours")],
+                    [21600,  com.conjoon.Gettext.gettext("every 6 hours")],
+                    [43200,  com.conjoon.Gettext.gettext("every 12 hours")],
+                    [86400,  com.conjoon.Gettext.gettext("every day")],
+                    [172800, com.conjoon.Gettext.gettext("every 2 days")]
                 ],
                 fields : ['id', 'text']
             })
@@ -791,9 +793,9 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
         }
 
         this.feedNameTextField.reset();
-        this.keepEntriesComboBox.reset();
-        this.updateComboBox.reset();
-        this.requestTimeoutComboBox.reset();
+        this.keepEntriesComboBox.setValue(86400);
+        this.updateComboBox.setValue(3600);
+        this.requestTimeoutComboBox.setValue(10);
 
         this.urlTrigger.setDisabled(false);
         this.okButton.setDisabled(true);
