@@ -40,15 +40,9 @@
 // | Before doing anything else, load the config and set the include path if
 // | necessary, so that the lib files can be loaded
 // +----------------------------------------------------------------------------
-   /**
-    * @todo cache the config
-    */
-   $initialConfig = parse_ini_file('./config.ini.php', true);
+   include_once './configCacheFunctions.php';
 
-   // check if the library_path is set, and adjust the include_path if necessary
-   if (($incPath = $initialConfig['environment']['include_path']) != null) {
-       set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
-   }
+   $config = conjoon_initConfigCache();
 
 /**
  * @see Zend_Controller_Front
@@ -109,7 +103,9 @@ require_once 'Conjoon/Modules/Default/User.php';
 // | Apply default configs to objects
 // +----------------------------------------------------------------------------
    // load config
-   $config = new Conjoon_Config_Array($initialConfig);
+   if (!($config instanceof Conjoon_Config_Array)) {
+        $config = new Conjoon_Config_Array($config);
+   }
    Zend_Registry::set(Conjoon_Keys::REGISTRY_CONFIG_OBJECT, $config);
 
    // set as default adapter for all db operations
