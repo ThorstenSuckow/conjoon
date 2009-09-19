@@ -57,7 +57,7 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
     }
 
     /**
-     * Called before an action is dispatched.
+     * Called before teh disptach loop gets processed.
      *
      * This callback allows for proxy or filter behavior.  By altering the
      * request and resetting its dispatched flag (via
@@ -73,7 +73,7 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
      * @param  Zend_Controller_Request_Abstract $request
      * @return void
      */
-    public function preDispatch(Zend_Controller_Request_Abstract $request)
+    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
         // check here if the user's authentity is already set
         if ($this->auth->hasIdentity()) {
@@ -143,8 +143,9 @@ class Conjoon_Controller_Plugin_Auth extends Zend_Controller_Plugin_Abstract {
         }
 
         // anything other means the user is not logged in
-        $request->setModuleName('default');
-        $request->setControllerName('reception');
-        $request->setActionName('index');
+        $request->setModuleName('default')
+                ->setControllerName('reception')
+                ->setActionName('index')
+                ->setDispatched(false);
    }
 }

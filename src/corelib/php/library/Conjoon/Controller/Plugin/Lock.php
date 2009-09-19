@@ -35,7 +35,7 @@ class Conjoon_Controller_Plugin_Lock extends Zend_Controller_Plugin_Abstract {
 
 
     /**
-     * Called before an action is dispatched.
+     * Called before the dispatch loop gets processed.
      *
      * This callback allows for proxy or filter behavior.  By altering the
      * request and resetting its dispatched flag (via
@@ -47,7 +47,7 @@ class Conjoon_Controller_Plugin_Lock extends Zend_Controller_Plugin_Abstract {
      * @param  Zend_Controller_Request_Abstract $request
      * @return void
      */
-    public function preDispatch(Zend_Controller_Request_Abstract $request)
+    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
         require_once 'Zend/Session/Namespace.php';
         require_once 'Conjoon/Keys.php';
@@ -88,9 +88,10 @@ class Conjoon_Controller_Plugin_Lock extends Zend_Controller_Plugin_Abstract {
             }
 
             // deny access and route to index action of reception
-            $request->setModuleName('default');
-            $request->setControllerName('reception');
-            $request->setActionName('index');
+            $request->setModuleName('default')
+                    ->setControllerName('reception')
+                    ->setActionName('index')
+                    ->setDispatched(false);
         }
    }
 }
