@@ -349,7 +349,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
         ];
 
         this.buttons = [{
-            text    : 'OK',
+            text    : com.conjoon.Gettext.gettext("OK"),
             handler : function(){this.saveConfiguration(true);},
             scope   : this
           },{
