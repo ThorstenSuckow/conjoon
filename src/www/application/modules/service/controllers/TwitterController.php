@@ -33,7 +33,7 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->contextSwitch();
+        $contextSwitch = $this->_helper->conjoonContext();
 
         $contextSwitch->addActionContext('get.recent.tweets', self::CONTEXT_JSON)
                       ->addActionContext('get.friends',       self::CONTEXT_JSON)

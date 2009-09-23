@@ -29,7 +29,7 @@ class RegistryController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->contextSwitch();
+        $contextSwitch = $this->_helper->conjoonContext();
 
         $contextSwitch->addActionContext('get.entries', self::CONTEXT_JSON)
                       ->initContext();

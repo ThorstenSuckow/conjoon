@@ -36,7 +36,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->contextSwitch();
+        $contextSwitch = $this->_helper->conjoonContext();
 
         $contextSwitch
                       // account actions
