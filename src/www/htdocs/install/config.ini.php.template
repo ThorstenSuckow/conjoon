@@ -45,9 +45,9 @@
 
 ; if your hoster does not allow you to configure php's include path, set this to
 ; the path where the "lib" folder resides.
-; Notice: since the bootstrapper has to
-; re-set the include path on every request, it is better to hardcode this value
-; in your webserver's config.
+; Notice: since the bootstrapper has to re-set the include path on every request,
+; it is better to hardcode this value in your webserver's config. We strongly advise
+; to set the include path in the webserver's config, as it will speed things up.
 ; Example:
 ; UNIX: "/path1:/path2"
 ; Windows: "\path1;\path2"
@@ -75,6 +75,32 @@ base_url = {BASE_URL}
 ; If you are running the software from an USB stick, the value for this property could
 ; be somewhat like "USB installation"
 edition = {EDITION}
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   APPLICATION    ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+[application]
+; Since V0.1RC1, conjoon is able to detect if the Ext frontend has merged
+; multiple requests into one, split them up and process them as if each
+; was a single request made to the webserver.
+; Set this to "0", if conjoon should always use the specific plugins that
+; process requests and look the ext.direct.request.parameter up for requests made
+; by the Ext.direct API, set it to "1" so that conjoon tries to decide
+; first if it should use the needed plugins for a request. Setting to "1"
+; might give you a slight performance increase.
+ext.direct.request.autoLookup = {APPLICATION.EXT.DIRECT.REQUEST.AUTOLOOKUP}
+
+; This is the name of the parameter that gets send by the Ext framework to the
+; application which holds data send by the Ext.direct API. If you change this,
+; make sure you apply the changes accordingly in the client code.
+ext.direct.request.parameter = {APPLICATION.EXT.DIRECT.REQUEST.PARAMETER}
+
+; This property defines whether an exception that occured while processing
+; the initial request for a merged Ext.Direct-request should be copied for
+; each request that was merged and send ack to the client, or if a single
+; exception should be thrown. For 3.0.0, this should be set to "0"
+ext.direct.request.singleException = 0
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
