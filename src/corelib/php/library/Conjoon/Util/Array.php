@@ -42,11 +42,31 @@ class Conjoon_Util_Array  {
      */
     public static function apply(Array &$array1, Array $array2)
     {
+        self::_apply($array1, $array2, false);
+    }
+
+    /**
+     * Applies the key/value pairs from array 2 to array 1, if, and only
+     * if the key for the value exists in $array1.
+     *
+     * @param array $array1
+     * @param array $array2
+     *
+     */
+    public static function applyStrict(Array &$array1, Array $array2)
+    {
+        self::_apply($array1, $array2, true);
+    }
+
+    private static function _apply(Array &$array1, Array $array2, $strict = false)
+    {
         foreach ($array2 as $key => $value) {
+            if ($strict && !array_key_exists($key, $array1)) {
+                continue;
+            }
             $array1[$key] = $value;
         }
     }
-
 
     /**
      * Camelizes the keys of an assoziative array and returns
