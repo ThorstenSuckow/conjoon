@@ -157,6 +157,39 @@ require_once 'Conjoon/Modules/Default/User.php';
    $lockPlugin = new Conjoon_Controller_Plugin_Lock();
    $controller->registerPlugin($lockPlugin);
 
+
+   // add the ExtDirect plugins
+   $loadExtDirect = false;
+   if ($config->application->ext->direct->request->autoLookup) {
+       if (isset($_POST[$config->application->ext->direct->request->parameter])) {
+           $loadExtDirect = true;
+       }
+   } else {
+       $loadExtDirect = true;
+   }
+
+   if ($loadExtDirect) {
+       /**
+        * @see Conjoon_Controller_Plugin_ExtRequest
+        */
+       require_once 'Conjoon/Controller/Plugin/ExtRequest.php';
+
+       $extDirect = new Conjoon_Controller_Plugin_ExtRequest(array(
+           'extParameter'      => $config->application->ext->direct->request
+                                         ->parameter,
+           'additionalHeaders' => array('Content-Type' => 'application/json'),
+           'additionalParams'  => array('format' => 'json'),
+           'action'            => 'multi.request',
+           'controller'        => 'ext',
+           'module'            => 'default',
+           'singleException'   => $config->application->ext->direct->request->singleException
+       ));
+
+       Zend_Registry::set(Conjoon_Keys::EXT_REQUEST_OBJECT, $extDirect);
+       $extDirect->registerPlugins();
+   }
+
+
     // add helper namespace
     Zend_Controller_Action_HelperBroker::addPrefix('Conjoon_Controller_Action_Helper');
 
@@ -169,4 +202,9 @@ require_once 'Conjoon/Modules/Default/User.php';
 // +----------------------------------------------------------------------------
 // | We are all set, dispatch!
 // +----------------------------------------------------------------------------
-   $controller->dispatch();
+   /**
+    * @see Conjoon_Controller_DispatchHelper
+    */
+   require_once 'Conjoon/Controller/DispatchHelper.php';
+
+   Conjoon_Controller_DispatchHelper::dispatch();

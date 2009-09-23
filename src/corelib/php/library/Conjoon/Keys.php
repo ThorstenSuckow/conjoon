@@ -23,6 +23,9 @@ interface Conjoon_Keys {
 // -------- registry
     const REGISTRY_AUTH_OBJECT = 'com.conjoon.registry.authObject';
 
+// -------- ext request object
+    const EXT_REQUEST_OBJECT = 'com.conjoon.registry.extRequestObject';
+
 // -------- app config in registry
     const REGISTRY_CONFIG_OBJECT = 'com.conjoon.registry.config';
 

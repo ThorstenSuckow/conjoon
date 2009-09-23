@@ -34,7 +34,7 @@ class ErrorController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->contextSwitch();
+        $contextSwitch = $this->_helper->conjoonContext();
 
         $contextSwitch->addActionContext('error', 'json')
                       ->initContext();
@@ -49,24 +49,19 @@ class ErrorController extends Zend_Controller_Action {
      */
     public function errorAction()
     {
-        require_once 'Conjoon/BeanContext/Inspector.php';
-        require_once 'Conjoon/Error.php';
+        /**
+         * @see Conjoon_Controller_DispatchHelper
+         */
+        require_once 'Conjoon/Controller/DispatchHelper.php';
 
-        $errors = $this->_getParam('error_handler');
-
-        $error = array();
-
-        switch ($errors->type) {
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_OTHER:
-                $error = Conjoon_Error::fromException($errors->exception);
-            break;
-        }
+        $exception = $this->_getParam('error_handler')->exception;
+        $result = Conjoon_Controller_DispatchHelper::transformExceptions(array($exception));
 
         $this->getResponse()->clearBody();
-        $this->view->success = false;
-        $this->view->error   = $error->getDto();
+
+        foreach ($result as $key => $value) {
+            $this->view->{$key} = $value;
+        }
     }
 
 }
