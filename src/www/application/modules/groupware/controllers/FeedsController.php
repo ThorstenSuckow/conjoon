@@ -198,6 +198,12 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $this->view->success = true;
         $this->view->error = null;
 
+        // clean accounts' cache in any case
+        Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_FEED_ACCOUNTS,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->cleanCacheForTags(array('userId' => $userId));
+
         try {
             $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
                 $_POST,
@@ -317,6 +323,15 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
         );
 
+        // clean the feed accounts' cache in any case
+        Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_FEED_ACCOUNTS,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->cleanCacheForTags(array(
+            'userId' => Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)
+                        ->getIdentity()->getId()
+        ));
+
         $toDelete      = array();
         $toUpdate      = array();
         $deletedFailed = array();
@@ -386,17 +401,28 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      * Queries and assigns all feed accounts belonging to the currently logged in
      * user to the view
      */
-    public function getFeedAccountsAction()
+   public function getFeedAccountsAction()
     {
+        /**
+         * @see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
-        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
-        require_once 'Conjoon/BeanContext/Decorator.php';
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
-        );
+        $user = Zend_Registry::get(
+            Conjoon_Keys::REGISTRY_AUTH_OBJECT
+        )->getIdentity();
 
-        $data = $decoratedModel->getAccountsForUserAsDto($user->getId());
+        $userId = $user->getId();
+
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
+        $data = Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_FEED_ACCOUNTS,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->get(array('userId' => $userId));
 
         $this->view->success  = true;
         $this->view->accounts = $data;

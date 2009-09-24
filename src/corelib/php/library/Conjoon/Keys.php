@@ -39,7 +39,10 @@ interface Conjoon_Keys {
     const CACHE_EMAIL_MESSAGE = 'com.conjoon.cache.email.message';
 
 // -------- cache key feed items
-    const CACHE_FEED_ITEM = 'com.conjoon.cache.email.item';
+    const CACHE_FEED_ITEM = 'com.conjoon.cache.feed.item';
+
+// -------- cache key feed items
+    const CACHE_FEED_ACCOUNTS = 'com.conjoon.cache.feed.accounts';
 
 // -------- cache db metadata
     const CACHE_DB_METADATA = 'com.conjoon.cache.db.metadata';

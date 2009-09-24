@@ -225,6 +225,16 @@ feed.item.backend_type = file
 feed.item.backend.cache_dir = cache/feed/items
 feed.item.backend.hashed_directory_level = 1
 
+feed.accounts.frontend_type = core
+feed.accounts.frontend.automatic_cleaning_factor = 10
+feed.accounts.frontend.lifetime = 31536000
+feed.accounts.frontend.caching = 1
+feed.accounts.frontend.automatic_serialization = 1
+feed.accounts.frontend.ignore_user_abort = 1
+feed.accounts.backend_type = file
+feed.accounts.backend.cache_dir = cache/feed/accounts
+feed.accounts.backend.hashed_directory_level = 1
+
 
 ;;;;;;;;;;;;;;;;
 ;; CACHE DB   ;;

@@ -71,6 +71,17 @@ class Conjoon_Builder_Factory {
 
             break;
 
+            case Conjoon_Keys::CACHE_FEED_ACCOUNTS:
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Feeds_Account_Builder
+                 */
+                require_once 'Conjoon/Modules/Groupware/Feeds/Account/Builder.php';
+
+                return new Conjoon_Modules_Groupware_Feeds_Account_Builder($cache);
+
+            break;
+
             case Conjoon_Keys::CACHE_TWITTER_ACCOUNTS:
 
                 /**
