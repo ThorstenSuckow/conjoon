@@ -35,16 +35,16 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->conjoonContext();
+        $conjoonContext = $this->_helper->conjoonContext();
 
-        $contextSwitch->addActionContext('is.feed.address.valid', self::CONTEXT_JSON)
-                      ->addActionContext('get.feed.items', self::CONTEXT_JSON)
-                      ->addActionContext('get.feed.accounts', self::CONTEXT_JSON)
-                      ->addActionContext('set.item.read', self::CONTEXT_JSON)
-                      ->addActionContext('add.feed', self::CONTEXT_JSON)
-                      ->addActionContext('update.accounts', self::CONTEXT_JSON)
-                      ->addActionContext('get.feed.content', self::CONTEXT_JSON)
-                      ->initContext();
+        $conjoonContext->addActionContext('is.feed.address.valid', self::CONTEXT_JSON)
+                       ->addActionContext('get.feed.items', self::CONTEXT_JSON)
+                       ->addActionContext('get.feed.accounts', self::CONTEXT_JSON)
+                       ->addActionContext('set.item.read', self::CONTEXT_JSON)
+                       ->addActionContext('add.feed', self::CONTEXT_JSON)
+                       ->addActionContext('update.accounts', self::CONTEXT_JSON)
+                       ->addActionContext('get.feed.content', self::CONTEXT_JSON)
+                       ->initContext();
     }
 
 // -------- items
@@ -342,7 +342,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $data  = array();
         $error = null;
 
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toDelete = Zend_Json::decode($_POST['deleted'], Zend_Json::TYPE_ARRAY);
             $toUpdate = Zend_Json::decode($_POST['updated'], Zend_Json::TYPE_ARRAY);
@@ -461,7 +461,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function setItemReadAction()
     {
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toUpdate = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
         }

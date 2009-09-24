@@ -34,16 +34,16 @@ class ErrorController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->conjoonContext();
+        $conjoonContext = $this->_helper->conjoonContext();
 
-        $contextSwitch->addActionContext('error', 'json')
-                      ->initContext();
+        $conjoonContext->addActionContext('error', 'json')
+                       ->initContext();
     }
 
     /**
      * Automatically called by the controller instance whenever
      * an exception was thrown and not trapped in a catch clause.
-     * Since this controller supports contextSwitch, the format
+     * Since this controller supports conjoonContext, the format
      * of the values assigned to the view-variables may differ depending
      * on the format used (e.g. json encoded sting for context 'json').
      */

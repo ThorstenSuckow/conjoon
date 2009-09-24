@@ -33,17 +33,17 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->conjoonContext();
+        $conjoonContext = $this->_helper->conjoonContext();
 
-        $contextSwitch->addActionContext('get.recent.tweets', self::CONTEXT_JSON)
-                      ->addActionContext('get.friends',       self::CONTEXT_JSON)
-                      ->addActionContext('get.accounts',      self::CONTEXT_JSON)
-                      ->addActionContext('send.update',       self::CONTEXT_JSON)
-                      ->addActionContext('delete.tweet',      self::CONTEXT_JSON)
-                      ->addActionContext('favorite.tweet',    self::CONTEXT_JSON)
-                      ->addActionContext('switch.friendship', self::CONTEXT_JSON)
-                      ->addActionContext('get.users.recent.tweets', self::CONTEXT_JSON)
-                      ->initContext();
+        $conjoonContext->addActionContext('get.recent.tweets',       self::CONTEXT_JSON)
+                       ->addActionContext('get.friends',             self::CONTEXT_JSON)
+                       ->addActionContext('get.accounts',            self::CONTEXT_JSON)
+                       ->addActionContext('send.update',             self::CONTEXT_JSON)
+                       ->addActionContext('delete.tweet',            self::CONTEXT_JSON)
+                       ->addActionContext('favorite.tweet',          self::CONTEXT_JSON)
+                       ->addActionContext('switch.friendship',       self::CONTEXT_JSON)
+                       ->addActionContext('get.users.recent.tweets', self::CONTEXT_JSON)
+                       ->initContext();
     }
 
 

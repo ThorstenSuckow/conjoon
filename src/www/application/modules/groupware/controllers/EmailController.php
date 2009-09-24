@@ -36,35 +36,35 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->conjoonContext();
+        $conjoonContext = $this->_helper->conjoonContext();
 
-        $contextSwitch
-                      // account actions
-                      ->addActionContext('add.email.account', self::CONTEXT_JSON)
-                      ->addActionContext('get.email.accounts', self::CONTEXT_JSON)
-                      ->addActionContext('update.email.accounts', self::CONTEXT_JSON)
-                      // item actions
-                      ->addActionContext('fetch.emails', self::CONTEXT_JSON)
-                      ->addActionContext('move.items', self::CONTEXT_JSON)
-                      ->addActionContext('delete.items', self::CONTEXT_JSON)
-                      ->addActionContext('get.email.items', self::CONTEXT_JSON)
-                      ->addActionContext('get.email', self::CONTEXT_JSON)
-                      ->addActionContext('set.email.flag', self::CONTEXT_JSON)
-                      // folder actions
-                      ->addActionContext('get.folder', self::CONTEXT_JSON)
-                      ->addActionContext('rename.folder', self::CONTEXT_JSON)
-                      ->addActionContext('add.folder', self::CONTEXT_JSON)
-                      ->addActionContext('move.folder', self::CONTEXT_JSON)
-                      ->addActionContext('delete.folder', self::CONTEXT_JSON)
-                      // editing emails
-                      ->addActionContext('get.recipient', self::CONTEXT_JSON)
-                      ->addActionContext('get.draft', self::CONTEXT_JSON)
-                      ->addActionContext('save.draft', self::CONTEXT_JSON)
-                      ->addActionContext('move.to.outbox', self::CONTEXT_JSON)
-                      // send emails
-                      ->addActionContext('send', self::CONTEXT_JSON)
-                      ->addActionContext('bulk.send', self::CONTEXT_JSON)
-                      ->initContext();
+        $conjoonContext
+                       // account actions
+                       ->addActionContext('add.email.account', self::CONTEXT_JSON)
+                       ->addActionContext('get.email.accounts', self::CONTEXT_JSON)
+                       ->addActionContext('update.email.accounts', self::CONTEXT_JSON)
+                       // item actions
+                       ->addActionContext('fetch.emails', self::CONTEXT_JSON)
+                       ->addActionContext('move.items', self::CONTEXT_JSON)
+                       ->addActionContext('delete.items', self::CONTEXT_JSON)
+                       ->addActionContext('get.email.items', self::CONTEXT_JSON)
+                       ->addActionContext('get.email', self::CONTEXT_JSON)
+                       ->addActionContext('set.email.flag', self::CONTEXT_JSON)
+                       // folder actions
+                       ->addActionContext('get.folder', self::CONTEXT_JSON)
+                       ->addActionContext('rename.folder', self::CONTEXT_JSON)
+                       ->addActionContext('add.folder', self::CONTEXT_JSON)
+                       ->addActionContext('move.folder', self::CONTEXT_JSON)
+                       ->addActionContext('delete.folder', self::CONTEXT_JSON)
+                       // editing emails
+                       ->addActionContext('get.recipient', self::CONTEXT_JSON)
+                       ->addActionContext('get.draft', self::CONTEXT_JSON)
+                       ->addActionContext('save.draft', self::CONTEXT_JSON)
+                       ->addActionContext('move.to.outbox', self::CONTEXT_JSON)
+                       // send emails
+                       ->addActionContext('send', self::CONTEXT_JSON)
+                       ->addActionContext('bulk.send', self::CONTEXT_JSON)
+                       ->initContext();
     }
 
 // -------- fetching emails
@@ -491,7 +491,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function deleteItemsAction()
     {
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toDelete = Zend_Json::decode($_POST['itemsToDelete'], Zend_Json::TYPE_ARRAY);
         }
@@ -535,7 +535,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function moveItemsAction()
     {
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toMove = Zend_Json::decode($_POST['itemsToMove'], Zend_Json::TYPE_ARRAY);
         }
@@ -745,7 +745,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function setEmailFlagAction()
     {
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toUpdate = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
         }
@@ -888,7 +888,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $data  = array();
         $error = null;
 
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toDelete = Zend_Json::decode($_POST['deleted'], Zend_Json::TYPE_ARRAY);
             $toUpdate = Zend_Json::decode($_POST['updated'], Zend_Json::TYPE_ARRAY);
@@ -1845,7 +1845,7 @@ class Groupware_EmailController extends Zend_Controller_Action {
     {
         $toSend = $_POST['ids'];
 
-        if ($this->_helper->contextSwitch()->getCurrentContext() == self::CONTEXT_JSON) {
+        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
             require_once 'Zend/Json.php';
             $toSend = Zend_Json::decode($toSend, Zend_Json::TYPE_ARRAY);
         }

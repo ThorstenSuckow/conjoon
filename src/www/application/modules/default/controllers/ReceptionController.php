@@ -38,21 +38,21 @@ class ReceptionController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->conjoonContext();
+        $conjoonContext = $this->_helper->conjoonContext();
 
-        $contextSwitch->addActionContext('logout',   self::CONTEXT_JSON)
-                      ->addActionContext('process',  self::CONTEXT_JSON)
-                      ->addActionContext('login',    self::CONTEXT_JSON)
-                      ->addActionContext('index',    array(
-                          self::CONTEXT_JSON,
-                          self::CONTEXT_IPHONE,
-                      ))
-                      ->addActionContext('ping',               self::CONTEXT_JSON)
-                      ->addActionContext('lock',               self::CONTEXT_JSON)
-                      ->addActionContext('unlock',             self::CONTEXT_JSON)
-                      ->addActionContext('auth.token.failure', self::CONTEXT_JSON)
-                      ->addActionContext('get.user',           self::CONTEXT_JSON)
-                      ->initContext();
+        $conjoonContext->addActionContext('logout',   self::CONTEXT_JSON)
+                       ->addActionContext('process',  self::CONTEXT_JSON)
+                       ->addActionContext('login',    self::CONTEXT_JSON)
+                       ->addActionContext('index',    array(
+                           self::CONTEXT_JSON,
+                           self::CONTEXT_IPHONE,
+                       ))
+                       ->addActionContext('ping',               self::CONTEXT_JSON)
+                       ->addActionContext('lock',               self::CONTEXT_JSON)
+                       ->addActionContext('unlock',             self::CONTEXT_JSON)
+                       ->addActionContext('auth.token.failure', self::CONTEXT_JSON)
+                       ->addActionContext('get.user',           self::CONTEXT_JSON)
+                       ->initContext();
     }
 
     /**
