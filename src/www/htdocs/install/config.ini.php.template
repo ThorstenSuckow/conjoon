@@ -100,7 +100,7 @@ ext.direct.request.parameter = {APPLICATION.EXT.DIRECT.REQUEST.PARAMETER}
 ; the initial request for a merged Ext.Direct-request should be copied for
 ; each request that was merged and send ack to the client, or if a single
 ; exception should be thrown. For 3.0.0, this should be set to "0"
-ext.direct.request.singleException = 0
+ext.direct.request.singleException = {APPLICATION.EXT.DIRECT.REQUEST.SINGLE_EXCEPTION}
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
