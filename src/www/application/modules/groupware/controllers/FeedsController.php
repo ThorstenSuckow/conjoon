@@ -323,15 +323,6 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
         );
 
-        // clean the feed accounts' cache in any case
-        Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_FEED_ACCOUNTS,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->cleanCacheForTags(array(
-            'userId' => Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)
-                        ->getIdentity()->getId()
-        ));
-
         $toDelete      = array();
         $toUpdate      = array();
         $deletedFailed = array();
@@ -348,7 +339,22 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $toUpdate = Zend_Json::decode($_POST['updated'], Zend_Json::TYPE_ARRAY);
         }
 
-        for ($i = 0, $len = count($toDelete); $i < $len; $i++) {
+        $numToUpdate = count($toUpdate);
+        $numToDelete = count($toDelete);
+
+        // clean the feed accounts' cache only if updated or deleted are not 0
+        if ($numToUpdate != 0 || $numToDelete != 0) {
+            Conjoon_Builder_Factory::getBuilder(
+                Conjoon_Keys::CACHE_FEED_ACCOUNTS,
+                Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+            )->cleanCacheForTags(array(
+                'userId' => Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)
+                            ->getIdentity()->getId()
+            ));
+        }
+
+
+        for ($i = 0; $i < $numToDelete; $i++) {
             $affected = $model->deleteAccount($toDelete[$i]);
             if (!$affected) {
                 $deletedFailed[] = $toDelete[$i];
@@ -357,7 +363,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             }
         }
 
-        for ($i = 0, $len = count($toUpdate); $i < $len; $i++) {
+        for ($i = 0; $i < $numToUpdate; $i++) {
             $_ = $toUpdate[$i];
             $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
                 $_,
