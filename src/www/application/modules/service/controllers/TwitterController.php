@@ -58,11 +58,6 @@ class Service_TwitterController extends Zend_Controller_Action {
     public function getAccountsAction()
     {
         /**
-         * @see Conjoon_Modules_Service_Twitter_Account_Builder
-         */
-        require_once 'Conjoon/Modules/Service/Twitter/Account/Builder.php';
-
-        /**
          * @see Conjoon_Keys
          */
         require_once 'Conjoon/Keys.php';
