@@ -199,6 +199,11 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $this->view->error = null;
 
         // clean accounts' cache in any case
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
         Conjoon_Builder_Factory::getBuilder(
             Conjoon_Keys::CACHE_FEED_ACCOUNTS,
             Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()

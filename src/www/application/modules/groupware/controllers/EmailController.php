@@ -898,6 +898,11 @@ class Groupware_EmailController extends Zend_Controller_Action {
         $numToDelete = count($toDelete);
 
         if ($numToUpdate != 0 || $numToDelete != 0) {
+            /**
+             * @see Conjoon_Builder_Factory
+             */
+            require_once 'Conjoon/Builder/Factory.php';
+
             Conjoon_Builder_Factory::getBuilder(
                 Conjoon_Keys::CACHE_EMAIL_ACCOUNTS,
                 Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
