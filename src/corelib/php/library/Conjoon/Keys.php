@@ -38,6 +38,9 @@ interface Conjoon_Keys {
 // -------- cache key emails
     const CACHE_EMAIL_MESSAGE = 'com.conjoon.cache.email.message';
 
+// -------- cache key email accounts
+    const CACHE_EMAIL_ACCOUNTS = 'com.conjoon.cache.email.accounts';
+
 // -------- cache key feed items
     const CACHE_FEED_ITEM = 'com.conjoon.cache.feed.item';
 

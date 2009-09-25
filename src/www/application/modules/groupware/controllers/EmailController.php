@@ -894,14 +894,27 @@ class Groupware_EmailController extends Zend_Controller_Action {
             $toUpdate = Zend_Json::decode($_POST['updated'], Zend_Json::TYPE_ARRAY);
         }
 
-        for ($i = 0, $len = count($toDelete); $i < $len; $i++) {
+        $numToUpdate = count($toUpdate);
+        $numToDelete = count($toDelete);
+
+        if ($numToUpdate != 0 || $numToDelete != 0) {
+            Conjoon_Builder_Factory::getBuilder(
+                Conjoon_Keys::CACHE_EMAIL_ACCOUNTS,
+                Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+            )->cleanCacheForTags(array(
+                'userId' => Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)
+                            ->getIdentity()->getId()
+            ));
+        }
+
+        for ($i = 0; $i < $numToDelete; $i++) {
             $affected = $model->deleteAccount($toDelete[$i]);
             if ($affected == 0) {
                 $deletedFailed[] = $toDelete[$i];
             }
         }
 
-        for ($i = 0, $len = count($toUpdate); $i < $len; $i++) {
+        for ($i = 0; $i < $numToUpdate; $i++) {
             $_ = $toUpdate[$i];
             $filter = new Conjoon_Modules_Groupware_Email_Account_Filter_Account(
                 $_,
@@ -947,25 +960,26 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function getEmailAccountsAction()
     {
+        /**
+         * @see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
-        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
-        require_once 'Conjoon/BeanContext/Decorator.php';
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
-        );
+        $user = Zend_Registry::get(
+            Conjoon_Keys::REGISTRY_AUTH_OBJECT
+        )->getIdentity();
 
-        $data = $decoratedModel->getAccountsForUserAsDto($user->getId());
+        $userId = $user->getId();
 
-        for ($i = 0, $len = count($data); $i < $len; $i++) {
-            $dto =& $data[$i];
-            if (!$dto->isOutboxAuth) {
-                $dto->usernameOutbox = "";
-                $dto->passwordOutbox = "";
-            }
-            $dto->passwordOutbox = str_pad("", strlen($dto->passwordOutbox), '*');
-            $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
-        }
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
+        $data = Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_EMAIL_ACCOUNTS,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->get(array('userId' => $userId));
 
         $this->view->success  = true;
         $this->view->accounts = $data;
@@ -1028,6 +1042,17 @@ class Groupware_EmailController extends Zend_Controller_Action {
 
         $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
         $userId = $auth->getIdentity()->getId();
+
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
+        // clean cache in any case
+        Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_EMAIL_ACCOUNTS,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        )->cleanCacheForTags(array('userId' => $userId));
 
         $classToCreate = 'Conjoon_Modules_Groupware_Email_Account';
 

@@ -60,6 +60,17 @@ class Conjoon_Builder_Factory {
 
             break;
 
+            case Conjoon_Keys::CACHE_EMAIL_ACCOUNTS:
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Account_Builder
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Account/Builder.php';
+
+                return new Conjoon_Modules_Groupware_Email_Account_Builder($cache);
+
+            break;
+
             case Conjoon_Keys::CACHE_FEED_ITEM:
 
                 /**

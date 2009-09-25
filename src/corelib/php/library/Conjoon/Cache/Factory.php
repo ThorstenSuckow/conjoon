@@ -50,6 +50,10 @@ class Conjoon_Cache_Factory {
                 $cacheOptions = $options['cache']['email']['message'];
             break;
 
+            case Conjoon_Keys::CACHE_EMAIL_ACCOUNTS:
+                $cacheOptions = $options['cache']['email']['accounts'];
+            break;
+
             case Conjoon_Keys::CACHE_FEED_ITEM:
                 $cacheOptions = $options['cache']['feed']['item'];
             break;

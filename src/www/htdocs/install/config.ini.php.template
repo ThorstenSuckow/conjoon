@@ -210,6 +210,16 @@ email.message.backend_type = file
 email.message.backend.cache_dir = cache/email/messages
 email.message.backend.hashed_directory_level = 1
 
+email.accounts.frontend_type = core
+email.accounts.frontend.automatic_cleaning_factor = 10
+email.accounts.frontend.lifetime = 31536000
+email.accounts.frontend.caching = 1
+email.accounts.frontend.automatic_serialization = 1
+email.accounts.frontend.ignore_user_abort = 1
+email.accounts.backend_type = file
+email.accounts.backend.cache_dir = cache/email/accounts
+email.accounts.backend.hashed_directory_level = 1
+
 
 ;;;;;;;;;;;;;;;;;;;
 ;;  CACHE FEEDS  ;;
