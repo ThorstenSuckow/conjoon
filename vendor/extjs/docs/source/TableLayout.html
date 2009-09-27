@@ -5,7 +5,13 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js"><div id="cls-Ext.layout.TableLayout"></div>/**
+    <pre class="prettyprint lang-js">/*!
+ * Ext JS Library 3.0.2
+ * Copyright(c) 2006-2009 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
+<div id="cls-Ext.layout.TableLayout"></div>/**
  * @class Ext.layout.TableLayout
  * @extends Ext.layout.ContainerLayout
  * <p>This layout allows you to easily render content into an HTML table.  The total number of columns can be
@@ -174,10 +180,7 @@ Ext.layout.TableLayout = Ext.extend(Ext.layout.ContainerLayout, {
     renderItem : function(c, position, target){
         if(c && !c.rendered){
             c.render(this.getNextCell(c));
-            if(this.extraCls){
-                var t = c.getPositionEl ? c.getPositionEl() : c;
-                t.addClass(this.extraCls);
-            }
+            this.configureItem(c, position);
         }
     },
 
@@ -192,6 +195,6 @@ Ext.layout.TableLayout = Ext.extend(Ext.layout.ContainerLayout, {
      */
 });
 
-Ext.Container.LAYOUTS['table'] = Ext.layout.TableLayout;</pre>    
+Ext.Container.LAYOUTS['table'] = Ext.layout.TableLayout;</pre>
 </body>
 </html>

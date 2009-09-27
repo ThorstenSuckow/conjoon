@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.0
+ * Ext JS Library 3.0.2
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -52,7 +52,7 @@ paramOrder: 'param1|param2|param'
 
         switch (action) {
             case Ext.data.Api.actions.create:
-                args.push(params[reader.meta.root]);		// <-- create(Hash)
+                args.push(params.jsonData[reader.meta.root]);		// <-- create(Hash)
                 break;
             case Ext.data.Api.actions.read:
                 if(this.paramOrder){
@@ -64,19 +64,20 @@ paramOrder: 'param1|param2|param'
                 }
                 break;
             case Ext.data.Api.actions.update:
-                args.push(params[reader.meta.idProperty]);  // <-- save(Integer/Integer[], Hash/Hash[])
-                args.push(params[reader.meta.root]);
+                args.push(params.jsonData[reader.meta.root]);        // <-- update(Hash/Hash[])
                 break;
             case Ext.data.Api.actions.destroy:
-                args.push(params[reader.meta.root]);        // <-- destroy(Int/Int[])
+                args.push(params.jsonData[reader.meta.root]);        // <-- destroy(Int/Int[])
                 break;
         }
 
         var trans = {
             params : params || {},
-            callback : callback,
-            scope : scope,
-            arg : options,
+            request: {
+                callback : callback,
+                scope : scope,
+                arg : options
+            },
             reader: reader
         };
 
@@ -93,7 +94,7 @@ paramOrder: 'param1|param2|param'
                     this.fireEvent("loadexception", this, trans, res, null);
                 }
                 this.fireEvent('exception', this, 'remote', action, trans, res, null);
-                trans.callback.call(trans.scope, null, trans.arg, false);
+                trans.request.callback.call(trans.request.scope, null, trans.request.arg, false);
                 return;
             }
             if (action === Ext.data.Api.actions.read) {
@@ -120,11 +121,11 @@ paramOrder: 'param1|param2|param'
             this.fireEvent("loadexception", this, trans, res, ex);
 
             this.fireEvent('exception', this, 'response', action, trans, res, ex);
-            trans.callback.call(trans.scope, null, trans.arg, false);
+            trans.request.callback.call(trans.request.scope, null, trans.request.arg, false);
             return;
         }
-        this.fireEvent("load", this, res, trans.arg);
-        trans.callback.call(trans.scope, records, trans.arg, true);
+        this.fireEvent("load", this, res, trans.request.arg);
+        trans.request.callback.call(trans.request.scope, records, trans.request.arg, true);
     },
     /**
      * Callback for write actions
@@ -134,8 +135,9 @@ paramOrder: 'param1|param2|param'
      * @private
      */
     onWrite : function(action, trans, result, res, rs) {
-        this.fireEvent("write", this, action, result, res, rs, trans.arg);
-        trans.callback.call(trans.scope, result, res, true);
+        var data = trans.reader.extractData(result);
+        this.fireEvent("write", this, action, data, res, rs, trans.request.arg);
+        trans.request.callback.call(trans.request.scope, data, res, true);
     }
 });
 

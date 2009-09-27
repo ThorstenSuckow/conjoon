@@ -46,6 +46,13 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
              * @param {Number} rowIndex The rowIndex of the row just edited
              */
             'beforeedit',
+            <div id="event-Ext.ux.grid.RowEditor-canceledit"></div>/**
+             * @event canceledit
+             * Fired when the editor is cancelled.
+             * @param {Ext.ux.grid.RowEditor} roweditor This object
+             * @param {Boolean} forced True if the cancel button is pressed, false is the editor was invalid. 
+             */
+            'canceledit',
             <div id="event-Ext.ux.grid.RowEditor-validateedit"></div>/**
              * @event validateedit
              * Fired after a row is edited and passes validation.
@@ -123,11 +130,11 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             this.showTooltip('You need to commit or cancel your changes');
             return;
         }
-        this.editing = true;
-        if(typeof rowIndex == 'object'){
+        if(Ext.isObject(rowIndex)){
             rowIndex = this.grid.getStore().indexOf(rowIndex);
         }
         if(this.fireEvent('beforeedit', this, rowIndex) !== false){
+            this.editing = true;
             var g = this.grid, view = g.getView();
             var row = view.getRow(rowIndex);
             var record = g.store.getAt(rowIndex);
@@ -147,7 +154,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
                 val = this.preEditValue(record, cm.getDataIndex(i));
                 f = fields[i];
                 f.setValue(val);
-                this.values[f.id] = val || '';
+                this.values[f.id] = Ext.isEmpty(val) ? '' : val;
             }
             this.verifyLayout(true);
             if(!this.isVisible()){
@@ -171,6 +178,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
         if(saveChanges === false || !this.isValid()){
             this.hide();
+            this.fireEvent('canceledit', this, saveChanges === false);
             return;
         }
         var changes = {}, r = this.record, hasChange = false;
@@ -204,14 +212,11 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
     verifyLayout: function(force){
         if(this.el && (this.isVisible() || force === true)){
             var row = this.grid.getView().getRow(this.rowIndex);
-            this.setSize(Ext.fly(row).getWidth(), Ext.isIE ? Ext.fly(row).getHeight() + (Ext.isBorderBox ? 9 : 0) : undefined);
+            this.setSize(Ext.fly(row).getWidth(), Ext.isIE ? Ext.fly(row).getHeight() + 9 : undefined);
             var cm = this.grid.colModel, fields = this.items.items;
             for(var i = 0, len = cm.getColumnCount(); i < len; i++){
                 if(!cm.isHidden(i)){
                     var adjust = 0;
-                    if(i === 0){
-                        adjust += 0; // outer padding
-                    }
                     if(i === (len - 1)){
                         adjust += 3; // outer padding
                     } else{
@@ -458,14 +463,23 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
                 mouseOffset: [40,0]
             });
         }
-        t.initTarget(this.items.last().getEl());
-        if(!t.rendered){
+        var v = this.grid.getView(),
+            top = parseInt(this.el.dom.style.top, 10),
+            scroll = v.scroller.dom.scrollTop,
+            h = this.el.getHeight();
+                
+        if(top + h >= scroll){
+            t.initTarget(this.items.last().getEl());
+            if(!t.rendered){
+                t.show();
+                t.hide();
+            }
+            t.body.update(msg);
+            t.doAutoWidth();
             t.show();
+        }else if(t.rendered){
             t.hide();
         }
-        t.body.update(msg);
-        t.doAutoWidth();
-        t.show();
     },
 
     getErrorText: function(){
@@ -520,6 +534,6 @@ Ext.override(Ext.ToolTip, {
         }
     }
 });
-</pre>    
+</pre>
 </body>
 </html>

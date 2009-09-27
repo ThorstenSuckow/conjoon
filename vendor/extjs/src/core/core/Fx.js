@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.0
+ * Ext JS Library 3.0.2
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -570,9 +570,9 @@ el.frame("C3DAF9", 1, {
             active;
 
         me.queueFx(o, function(){
-            color = color || "#C3DAF9"
+            color = color || '#C3DAF9'
             if(color.length == 6){
-                color = "#" + color;
+                color = '#' + color;
             }            
             count = count || 1;
             fly(dom).show();
@@ -582,10 +582,9 @@ el.frame("C3DAF9", 1, {
                 queue = function(){
                     proxy = fly(document.body || document.documentElement).createChild({
                         style:{
-                            visbility: HIDDEN,
                             position : ABSOLUTE,
-                            "z-index": 35000, // yee haw
-                            border : "0px solid " + color
+                            'z-index': 35000, // yee haw
+                            border : '0px solid ' + color
                         }
                     });
                     return proxy.queueFx({}, animFn);
@@ -1004,7 +1003,7 @@ el.ghost('b', {
 
     /* @private */
     queueFx : function(o, fn){
-        var me = this;
+        var me = fly(this.dom);
         if(!me.hasFxBlock()){
             Ext.applyIf(o, me.fxDefaults);
             if(!o.concurrent){
@@ -1053,7 +1052,8 @@ el.ghost('b', {
         fly(dom).clearPositioning();
         fly(dom).setPositioning(pos);
         if(!o.wrap){
-            wrap.parentNode.insertBefore(dom, wrap);
+            var pn = fly(wrap).dom.parentNode;
+            pn.insertBefore(dom, wrap); 
             fly(wrap).remove();
         }
     },
@@ -1067,8 +1067,7 @@ el.ghost('b', {
     /* @private */
     afterFx : function(o){
         var dom = this.dom,
-            id = dom.id,
-            notConcurrent = !o.concurrent;
+            id = dom.id;
         if(o.afterStyle){
             fly(dom).setStyle(o.afterStyle);            
         }
@@ -1078,13 +1077,11 @@ el.ghost('b', {
         if(o.remove == TRUE){
             fly(dom).remove();
         }
-        if(notConcurrent){
-            getQueue(id).shift();
-        }
         if(o.callback){
             o.callback.call(o.scope, fly(dom));
         }
-        if(notConcurrent){
+        if(!o.concurrent){
+            getQueue(id).shift();
             fly(dom).nextFx();
         }
     },

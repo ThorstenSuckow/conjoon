@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.0
+ * Ext JS Library 3.0.2
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -406,8 +406,8 @@ ul.x-tab-strip-bottom{
     background-image:url(../images/default/button/s-arrow-noline.gif);
 }
 
-.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split, 
-.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split 
+.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split,
+.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split
 {
     background-image:url(../images/default/button/s-arrow-o.gif);
 }
@@ -416,8 +416,8 @@ ul.x-tab-strip-bottom{
     background-image:url(../images/default/button/s-arrow-b-noline.gif);
 }
 
-.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split-bottom, 
-.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split-bottom 
+.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split-bottom,
+.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split-bottom
 {
     background-image:url(../images/default/button/s-arrow-bo.gif);
 }
@@ -472,14 +472,6 @@ ul.x-tab-strip-bottom{
 
 .x-toolbar-more-icon {
     background-image: url(../images/default/toolbar/more.gif) !important;
-}
-
-.x-statusbar .x-status-busy {
-    background-image: url(../images/default/grid/loading.gif);
-}
-
-.x-statusbar .x-status-text-panel {
-    border-color: #99bbe8 #fff #fff #99bbe8;
 }.x-resizable-handle {
 	background-color:#fff;
 }
@@ -776,10 +768,6 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
     border-right-color:#ededed;
 }
 
-.x-grid-with-col-lines .x-grid3-row{
-    border-top-color:#ededed;
-}
-
 .x-grid-with-col-lines .x-grid3-row-selected {
 	border-top-color:#a3bae9;
 }.x-dd-drag-ghost{
@@ -827,11 +815,6 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 .x-tree-node-loading a span{
 	 font-style: italic;
 	 color:#444444;
-}
-
-.ext-ie .x-tree-node-el input {
-    width:15px;
-    height:15px;
 }
 
 .x-tree-lines .x-tree-elbow{
