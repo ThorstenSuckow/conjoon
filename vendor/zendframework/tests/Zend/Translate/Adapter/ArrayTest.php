@@ -1,9 +1,30 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ArrayTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
+
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Translate_Adapter_ArrayTest::main');
+}
+
+require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * Zend_Translate_Adapter_Array
@@ -11,14 +32,12 @@
 require_once 'Zend/Translate/Adapter/Array.php';
 
 /**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
  * @category   Zend
- * @package    Zend_Config
+ * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Translate
  */
 class Zend_Translate_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
 {
@@ -96,7 +115,7 @@ class Zend_Translate_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($adapter->isTranslated('Message 1', false, 'es'));
         $this->assertFalse($adapter->isTranslated('Message 1', 'es'));
         $this->assertFalse($adapter->isTranslated('Message 1', 'xx_XX'));
-        $this->assertFalse($adapter->isTranslated('Message 1', 'en_XX'));
+        $this->assertTrue($adapter->isTranslated('Message 1', 'en_XX'));
     }
 
     public function testLoadTranslationData()
@@ -124,7 +143,18 @@ class Zend_Translate_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new Zend_Translate_Adapter_Array(dirname(__FILE__) . '/_files/translation_en.php', 'en');
         $adapter->setOptions(array('testoption' => 'testkey'));
-        $this->assertEquals(array('testoption' => 'testkey', 'clear' => false, 'scan' => null, 'locale' => 'en', 'ignore' => '.', 'disableNotices' => false), $adapter->getOptions());
+        $this->assertEquals(
+            array(
+                'testoption' => 'testkey',
+                'clear' => false,
+                'scan' => null,
+                'locale' => 'en',
+                'ignore' => '.',
+                'disableNotices' => false,
+                'log'             => false,
+                'logMessage'      => 'Untranslated message within \'%locale%\': %message%',
+                'logUntranslated' => false),
+            $adapter->getOptions());
         $this->assertEquals('testkey', $adapter->getOptions('testoption'));
         $this->assertTrue(is_null($adapter->getOptions('nooption')));
     }
@@ -254,8 +284,15 @@ class Zend_Translate_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
         $cache   = Zend_Translate_Adapter_Array::getCache();
         $this->assertTrue($cache instanceof Zend_Cache_Core);
 
-        $cache   = Zend_Translate_Adapter_Array::removeCache();
+        Zend_Translate_Adapter_Array::removeCache();
         $this->assertFalse(Zend_Translate_Adapter_Array::hasCache());
+
+        $cache->save('testdata', 'testid');
+        Zend_Translate_Adapter_Array::setCache($cache);
+        $adapter = new Zend_Translate_Adapter_Array(dirname(__FILE__) . '/_files/translation_en.php', 'en');
+        Zend_Translate_Adapter_Array::removeCache();
+        $temp = $cache->load('testid');
+        $this->assertEquals('testdata', $temp);
     }
 
     /**

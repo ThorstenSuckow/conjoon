@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateTest.php 13687 2009-01-18 15:33:52Z thomas $
+ * @version    $Id: DateTest.php 17696 2009-08-20 20:12:33Z thomas $
  */
 
 /**
@@ -34,8 +34,9 @@ require_once 'Zend/Validate/Date.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
 {
@@ -139,7 +140,7 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_validator->setFormat('dd.MM.YYYY')->isValid('10.01.2008'));
         $this->assertEquals('dd.MM.YYYY', $this->_validator->getFormat());
 
-        $this->assertTrue($this->_validator->setFormat('MMM yyyy')->isValid('Jan 2010'));
+        $this->assertTrue($this->_validator->setFormat('MM yyyy')->isValid('01 2010'));
         $this->assertFalse($this->_validator->setFormat('dd/MM/yyyy')->isValid('2008/10/22'));
         $this->assertTrue($this->_validator->setFormat('dd/MM/yy')->isValid('22/10/08'));
         $this->assertFalse($this->_validator->setFormat('dd/MM/yy')->isValid('22/10'));
@@ -202,6 +203,43 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
     {
         $valid = new Zend_Validate_Date('dd.MM.YYYY', 'de');
         $this->assertTrue($valid->isValid('10.April.2008'));
+    }
+
+    /**
+     * @ZF-4352
+     */
+    public function testNonStringValidation()
+    {
+        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
+    }
+
+    /**
+     * @ZF-6374
+     */
+    public function testUsingApplicationLocale()
+    {
+        Zend_Registry::set('Zend_Locale', new Zend_Locale('de'));
+        $valid = new Zend_Validate_Date();
+        $this->assertTrue($valid->isValid('10.April.2008'));
+    }
+
+    /**
+     * ZF-7630
+     */
+    public function testDateObjectVerification()
+    {
+        $date = new Zend_Date();
+        $this->assertTrue($this->_validator->isValid($date), "'$date' expected to be valid");
+    }
+
+    /**
+     * ZF-6457
+     */
+    public function testArrayVerification()
+    {
+        $date  = new Zend_Date();
+        $array = $date->toArray();
+        $this->assertTrue($this->_validator->isValid($array), "array expected to be valid");
     }
 
     /**

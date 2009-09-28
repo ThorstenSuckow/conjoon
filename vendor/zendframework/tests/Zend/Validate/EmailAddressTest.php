@@ -15,10 +15,14 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EmailAddressTest.php 13253 2008-12-14 20:28:06Z thomas $
+ * @version    $Id: EmailAddressTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
+
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Validate_EmailAddressTest::main');
+}
 
 /**
  * Test helper
@@ -34,8 +38,9 @@ require_once 'Zend/Validate/EmailAddress.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
 {
@@ -45,6 +50,17 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
      * @var Zend_Validate_EmailAddress
      */
     protected $_validator;
+
+    /**
+     * Runs this test suite
+     *
+     * @return void
+     */
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
 
     /**
      * Creates a new Zend_Validate_EmailAddress object for each test method
@@ -204,7 +220,7 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
         $messages = $this->_validator->getMessages();
         $this->assertThat(count($messages), $this->greaterThanOrEqual(3));
         $this->assertContains('not a valid hostname', current($messages));
-        $this->assertContains('cannot extract TLD part', next($messages));
+        $this->assertContains('cannot match TLD', next($messages));
         $this->assertContains('does not appear to be a valid local network name', next($messages));
     }
 
@@ -259,7 +275,7 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
             'Abc..123@example.com'
             );
         foreach ($emailAddresses as $input) {
-            $this->assertFalse($this->_validator->isValid($input));
+            $this->assertFalse($this->_validator->isValid($input), implode("\n", $this->_validator->getMessages()) . $input);
         }
     }
 
@@ -276,7 +292,8 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
             'Bob&Jones@domain.com',
             '/Bob.Jones@domain.com',
             '#Bob.Jones@domain.com',
-            'Bob.Jones?@domain.com'
+            'Bob.Jones?@domain.com',
+            'Bob~Jones@domain.com'
             );
         foreach ($emailAddresses as $input) {
             $this->assertTrue($this->_validator->isValid($input));
@@ -291,6 +308,13 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
      */
     public function testMXRecords()
     {
+        if (!defined('TESTS_ZEND_VALIDATE_ONLINE_ENABLED')
+            || !constant('TESTS_ZEND_VALIDATE_ONLINE_ENABLED')
+        ) {
+            $this->markTestSkipped('Testing MX records only works when a valid internet connection is available');
+            return;
+        }
+
         $validator = new Zend_Validate_EmailAddress(Zend_Validate_Hostname::ALLOW_DNS, true);
 
         // Are MX checks supported by this system?
@@ -329,7 +353,7 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
         $validator = new Zend_Validate_EmailAddress();
 
         // Check no IDN matching
-        $validator->hostnameValidator->setValidateIdn(false);
+        $validator->getHostnameValidator()->setValidateIdn(false);
         $valuesExpected = array(
             array(false, array('name@b�rger.de', 'name@h�llo.de', 'name@h�llo.se'))
             );
@@ -340,7 +364,7 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
         }
 
         // Check no TLD matching
-        $validator->hostnameValidator->setValidateTld(false);
+        $validator->getHostnameValidator()->setValidateTld(false);
         $valuesExpected = array(
             array(true, array('name@domain.xx', 'name@domain.zz', 'name@domain.madeup'))
             );
@@ -408,4 +432,16 @@ class Zend_Validate_EmailAddressTest extends PHPUnit_Framework_TestCase
             $this->assertFalse($this->_validator->isValid($input));
         }
     }
+
+    /**
+     * @ZF-4352
+     */
+    public function testNonStringValidation()
+    {
+        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
+    }
+}
+
+if (PHPUnit_MAIN_METHOD == 'Zend_Validate_EmailAddressTest::main') {
+    Zend_Validate_EmailAddressTest::main();
 }

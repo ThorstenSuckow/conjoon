@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OnlineTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: OnlineTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -42,13 +40,14 @@ require_once 'Zend/Service/Amazon/Query.php';
  */
 require_once 'Zend/Http/Client/Adapter/Socket.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Amazon
  */
 class Zend_Service_Amazon_OnlineTest extends PHPUnit_Framework_TestCase
 {
@@ -80,9 +79,21 @@ class Zend_Service_Amazon_OnlineTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->_amazon = new Zend_Service_Amazon(constant('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID'));
+        if(!defined('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID') || !defined('TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY')) {
+            $this->markTestSkipped('Constants AccessKeyId and SecretKey have to be set.');
+        }
 
-        $this->_query = new Zend_Service_Amazon_Query(constant('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID'));
+        $this->_amazon = new Zend_Service_Amazon(
+            TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID,
+            'US',
+            TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY
+        );
+
+        $this->_query = new Zend_Service_Amazon_Query(
+            TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID,
+            'US',
+            TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY
+        );
 
         $this->_httpClientAdapterSocket = new Zend_Http_Client_Adapter_Socket();
 
@@ -96,7 +107,7 @@ class Zend_Service_Amazon_OnlineTest extends PHPUnit_Framework_TestCase
 
     /**
      * Ensures that itemSearch() works as expected when searching for PHP books
-     *
+     * @group ItemSearchPhp
      * @return void
      */
     public function testItemSearchBooksPhp()
@@ -323,6 +334,15 @@ class Zend_Service_Amazon_OnlineTest extends PHPUnit_Framework_TestCase
 }
 
 
+/**
+ * @category   Zend
+ * @package    Zend_Service_Amazon
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Amazon
+ */
 class Zend_Service_Amazon_OnlineTest_Skip extends PHPUnit_Framework_TestCase
 {
     public function setUp()

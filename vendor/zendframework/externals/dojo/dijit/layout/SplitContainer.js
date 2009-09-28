@@ -12,13 +12,16 @@ dojo.declare("dijit.layout.SplitContainer",
 	dijit.layout._LayoutWidget,
 	{
 	// summary: 
-	//	A Container widget with sizing handles in-between each child
+	//		Deprecated.  Use `dijit.layout.BorderContainer` instead.
 	// description:
+	//		A Container widget with sizing handles in-between each child.
 	//		Contains multiple children widgets, all of which are displayed side by side
 	//		(either horizontally or vertically); there's a bar between each of the children,
 	//		and you can adjust the relative size of each child by dragging the bars.
 	//
 	//		You must specify a size (width and height) for the SplitContainer.
+	// tags:
+	//		deprecated
 
 	constructor: function(){
 		dojo.deprecated("dijit.layout.SplitContainer is deprecated", "use BorderContainer with splitter instead", 2.0);
@@ -65,7 +68,8 @@ dojo.declare("dijit.layout.SplitContainer",
 				this.sizerWidth = parseInt(this.sizerWidth.toString());
 			}catch(e){ this.sizerWidth = 7; }
 		}
-		var sizer = this.virtualSizer = dojo.doc.createElement('div');
+		var sizer = dojo.doc.createElement('div');
+		this.virtualSizer = sizer;
 		sizer.style.position = 'relative';
 
 		// #1681: work around the dreaded 'quirky percentages in IE' layout bug
@@ -112,11 +116,25 @@ dojo.declare("dijit.layout.SplitContainer",
 		dojo.addClass(child.domNode, "dijitSplitPane");
 	},
 
-	_addSizer: function(){
-		var i = this.sizers.length;
+	_onSizerMouseDown: function(e){
+		if(e.target.id){
+			for(var i=0;i<this.sizers.length;i++){
+				if(this.sizers[i].id==e.target.id){
+					break;
+				}
+			}
+			if(i<this.sizers.length){
+				this.beginSizing(e,i);
+			}
+		}
+	},
+	_addSizer: function(index){
+		index = index===undefined?this.sizers.length:index;
 
 		// TODO: use a template for this!!!
-		var sizer = this.sizers[i] = dojo.doc.createElement('div');
+		var sizer = dojo.doc.createElement('div');
+		sizer.id=dijit.getUniqueId('dijit_layout_SplitterContainer_Splitter');
+		this.sizers.splice(index,0,sizer);
 		this.domNode.appendChild(sizer);
 
 		sizer.className = this.isHorizontal ? 'dijitSplitContainerSizerH' : 'dijitSplitContainerSizerV';
@@ -124,12 +142,11 @@ dojo.declare("dijit.layout.SplitContainer",
 		// add the thumb div
 		var thumb = dojo.doc.createElement('div');
 		thumb.className = 'thumb';
+		thumb.id = sizer.id;
 		sizer.appendChild(thumb);
 
 		// FIXME: are you serious? why aren't we using mover start/stop combo?
-		var self = this;
-		var handler = (function(){ var sizer_i = i; return function(e){ self.beginSizing(e, sizer_i); } })();
-		this.connect(sizer, "onmousedown", handler);
+		this.connect(sizer, "onmousedown", '_onSizerMouseDown');
 		
 		dojo.setSelectable(sizer, false);
 	},
@@ -143,7 +160,7 @@ dojo.declare("dijit.layout.SplitContainer",
 				if(i==this.sizers.length){
 					i--;
 				}
-				dojo._destroyElement(this.sizers[i]);
+				dojo.destroy(this.sizers[i]);
 				this.sizers.splice(i,1);
 			}
 		}
@@ -156,9 +173,12 @@ dojo.declare("dijit.layout.SplitContainer",
 	},
 
 	addChild: function(/*Widget*/ child, /*Integer?*/ insertIndex){
-		// summary: Add a child widget to the container
-		// child: a widget to add
-		// insertIndex: postion in the "stack" to add the child widget
+		// summary:
+		//		Add a child widget to the container
+		// child:
+		//		a widget to add
+		// insertIndex:
+		//		postion in the "stack" to add the child widget
 		
 		this.inherited(arguments); 
 
@@ -166,7 +186,7 @@ dojo.declare("dijit.layout.SplitContainer",
 			// Do the stuff that startup() does for each widget
 			var children = this.getChildren();
 			if(children.length > 1){
-				this._addSizer();
+				this._addSizer(insertIndex);
 			}
 
 			// and then reposition (ie, shrink) every pane to make room for the new guy
@@ -357,19 +377,20 @@ dojo.declare("dijit.layout.SplitContainer",
 		this.sizingSplitter = this.sizers[i];
 
 		if(!this.cover){
-			this.cover = dojo.doc.createElement('div');
-			this.domNode.appendChild(this.cover);
-			var s = this.cover.style;
-			s.position = 'absolute';
-			s.zIndex = 1;
-			s.top = 0;
-			s.left = 0;
-			s.width = "100%";
-			s.height = "100%";
+			this.cover = dojo.create('div', {
+					style: {
+						position:'absolute',
+						zIndex:5,
+						top: 0,
+						left: 0,
+						width: "100%",
+						height: "100%"
+					}
+				}, this.domNode);
 		}else{
-			this.cover.style.zIndex = 1;
+			this.cover.style.zIndex = 5;
 		}
-		this.sizingSplitter.style.zIndex = 2;
+		this.sizingSplitter.style.zIndex = 6;
 
 		// TODO: REVISIT - we want MARGIN_BOX and core hasn't exposed that yet (but can't we use it anyway if we pay attention? we do elsewhere.)
 		this.originPos = dojo.coords(children[0].domNode, true);
@@ -541,14 +562,14 @@ dojo.declare("dijit.layout.SplitContainer",
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.extend(dijit._Widget, {
 	// sizeMin: Integer
-	//	Minimum size (width or height) of a child of a SplitContainer.
-	//	The value is relative to other children's sizeShare properties.
+	//		Minimum size (width or height) of a child of a SplitContainer.
+	//		The value is relative to other children's sizeShare properties.
 	sizeMin: 10,
 
 	// sizeShare: Integer
-	//	Size (width or height) of a child of a SplitContainer.
-	//	The value is relative to other children's sizeShare properties.
-	//	For example, if there are two children and each has sizeShare=10, then
-	//	each takes up 50% of the available space.
+	//		Size (width or height) of a child of a SplitContainer.
+	//		The value is relative to other children's sizeShare properties.
+	//		For example, if there are two children and each has sizeShare=10, then
+	//		each takes up 50% of the available space.
 	sizeShare: 10
 });

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -418,7 +418,7 @@ function showEditMenu() {
       if ($editLink == $_POST['edit']) {
         $baseAttributeArr = $feed_entry->getGbaseAttribute('cooking_time');
         if (isset($baseAttributeArr[0]) && is_object($baseAttributeArr[0])) {
-          $splitCookingTime = split(' ', $baseAttributeArr[0]->text);
+          $splitCookingTime = explode(' ', $baseAttributeArr[0]->text);
         }
         
         $baseAttributeArr = $feed_entry->getGbaseAttribute('cuisine');

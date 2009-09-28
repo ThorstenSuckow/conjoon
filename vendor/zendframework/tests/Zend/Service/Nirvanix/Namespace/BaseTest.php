@@ -13,10 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Service
- * @subpackage Nirvanix
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @package    Zend_Service_Nirvanix
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: BaseTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
  
 /**
@@ -31,10 +32,12 @@ require_once 'Zend/Service/Nirvanix/FunctionalTestCase.php';
 
 /**
  * @category   Zend
- * @package    Zend_Service
+ * @package    Zend_Service_Nirvanix
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Nirvanix
  */
 class Zend_Service_Nirvanix_Namespace_BaseTest extends Zend_Service_Nirvanix_FunctionalTestCase
 {

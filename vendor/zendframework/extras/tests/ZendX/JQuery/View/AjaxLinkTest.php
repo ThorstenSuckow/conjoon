@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: AjaxLinkTest.php 12829 2008-11-25 15:48:57Z beberlei $
+ * @version     $Id: AjaxLinkTest.php 12804 2008-11-24 17:28:27Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";

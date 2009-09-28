@@ -61,7 +61,7 @@ dojo.declare("dojox.data.CssClassStore", dojox.data.CssRuleStore, {
 		//		parsing out all available class names.
 		var obj = {};
 		var s = rule['selectorText'].split(" ");
-		for(j = 0; j < s.length; j++){
+		for(var j=0; j<s.length; j++){
 			var tmp = s[j];
 			var first = tmp.indexOf('.');
 			if(tmp && tmp.length > 0 && first !== -1){
@@ -115,7 +115,7 @@ dojo.declare("dojox.data.CssClassStore", dojox.data.CssRuleStore, {
 		var items = request._items;
 		// Per https://bugs.webkit.org/show_bug.cgi?id=17935 , Safari 3.x always returns the selectorText 
 		// of a rule in full lowercase.
-		var item = items[(dojo.isSafari?request.identity.toLowerCase():request.identity)];
+		var item = items[(dojo.isWebKit?request.identity.toLowerCase():request.identity)];
 		if(!this.isItem(item)){
 			item = null;
 		}

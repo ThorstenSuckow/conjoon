@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ContextSwitchTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_Controller_Action_Helper_ContextSwitchTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     require_once dirname(__FILE__) . '/../../../../TestHelper.php';
@@ -23,6 +44,15 @@ require_once 'Zend/View/Interface.php';
 
 /**
  * Test class for Zend_Controller_Action_Helper_ContextSwitch.
+ *
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Action
+ * @group      Zend_Controller_Action_Helper
  */
 class Zend_Controller_Action_Helper_ContextSwitchTest extends PHPUnit_Framework_TestCase
 {
@@ -48,7 +78,7 @@ class Zend_Controller_Action_Helper_ContextSwitchTest extends PHPUnit_Framework_
      */
     public function setUp()
     {
-        Zend_Controller_Action_Helper_ContextSwitchTest_LayoutOverride::$_mvcInstance = null;
+        Zend_Controller_Action_Helper_ContextSwitchTest_LayoutOverride::resetMvcInstance();
         Zend_Controller_Action_HelperBroker::resetHelpers();
 
         $this->front = Zend_Controller_Front::getInstance();
@@ -869,6 +899,30 @@ class Zend_Controller_Action_Helper_ContextSwitchTest extends PHPUnit_Framework_
         $suffix = $this->viewRenderer->getViewSuffix();
         $this->assertNotContains('xml', $suffix, $suffix);
     }
+
+    /** 
+     * @group ZF-4866
+     */
+    public function testForwardingShouldNotPrependMultipleViewSuffixesForCustomContexts()
+    {
+        $this->helper->addContext('foo', array('suffix' => 'foo'));
+        $this->helper->setActionContext('foo', 'foo');
+        $this->helper->setActionContext('bar', 'foo');
+        $this->request->setParam('format', 'foo')
+                      ->setActionName('foo');
+        $this->helper->initContext();
+        $this->assertEquals('foo', $this->helper->getCurrentContext());
+        $suffix = $this->viewRenderer->getViewSuffix();
+        $this->assertContains('foo', $suffix, $suffix);
+
+        $this->request->setActionName('bar');
+        $this->helper->init();
+        $this->helper->initContext();
+        $this->assertEquals('foo', $this->helper->getCurrentContext());
+        $suffix = $this->viewRenderer->getViewSuffix();
+        $this->assertContains('foo', $suffix, $suffix);
+        $this->assertNotContains('foo.foo', $suffix, $suffix);
+    }
 }
 
 class Zend_Controller_Action_Helper_ContextSwitchTestController extends Zend_Controller_Action
@@ -908,7 +962,10 @@ class Zend_Controller_Action_Helper_ContextSwitchTestController extends Zend_Con
 
 class Zend_Controller_Action_Helper_ContextSwitchTest_LayoutOverride extends Zend_Layout
 {
-    public static $_mvcInstance;
+    public static function resetMvcInstance()
+    {
+        self::$_mvcInstance = null;
+    }
 }
 
 class Zend_Controller_Action_Helper_ContextSwitchText_CustomView implements Zend_View_Interface

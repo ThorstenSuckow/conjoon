@@ -1,12 +1,28 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: CommonBackendTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 require_once 'PHPUnit/Util/Filter.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
-/**
- * @package    Zend_Cache
- * @subpackage UnitTests
- */
 
 /**
  * PHPUnit test case
@@ -14,8 +30,12 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
+ * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
  */
 class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
 
@@ -154,13 +174,14 @@ class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
     {
         $this->assertTrue($this->_instance->remove('bar'));
         $this->assertFalse($this->_instance->test('bar'));
-        $this->assertFalse($this->_instance->remove('barbar'));
+
+        $this->_instance->remove('barbar');
         $this->assertFalse($this->_instance->test('barbar'));
     }
 
     public function testTestWithAnExistingCacheId()
     {
-        $res = $this->_instance->test('bar');
+    	$res = $this->_instance->test('bar');
         if (!$res) {
             $this->fail('test() return false');
         }

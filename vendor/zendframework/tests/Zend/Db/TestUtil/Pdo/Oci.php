@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,26 +15,23 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Oci.php 12016 2008-10-19 12:44:29Z mikaelkael $
+ * @version    $Id: Oci.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * @see Zend_Db_TestUtil_Pdo_Common
  */
 require_once 'Zend/Db/TestUtil/Pdo/Common.php';
 
-
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_TestUtil_Pdo_Oci extends Zend_Db_TestUtil_Pdo_Common
@@ -152,6 +148,11 @@ class Zend_Db_TestUtil_Pdo_Oci extends Zend_Db_TestUtil_Pdo_Common
             $row['product_id'] = new Zend_Db_Expr($this->_db->quoteIdentifier('zfproducts_seq', true).'.NEXTVAL');
         }
         return $data;
+    }
+
+    protected function _getSqlCreateView($viewName)
+    {
+        return 'CREATE OR REPLACE VIEW ' . $this->_db->quoteIdentifier($viewName, true);
     }
 
     /**

@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: DatePickerTest.php 13959 2009-02-03 18:43:11Z beberlei $
+ * @version     $Id: DatePickerTest.php 13902 2009-02-01 13:34:59Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";

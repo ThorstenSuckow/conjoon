@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_View
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: HtmlListTest.php 17691 2009-08-20 16:08:08Z alexander $
+ */
+
 // Call Zend_View_Helper_HtmlListTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HtmlListTest::main");
@@ -11,6 +32,15 @@ require_once "PHPUnit/Framework/TestSuite.php";
 require_once 'Zend/View.php';
 require_once 'Zend/View/Helper/HtmlList.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_View
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_View
+ * @group      Zend_View_Helper
+ */
 class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase 
 {
     /**
@@ -108,29 +138,37 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         }
     } 
 
+    /*
+     * @see ZF-5018
+     */
     public function testMakeNestedUnorderedList()
     {
         $items = array('one', array('four', 'five', 'six'), 'two', 'three');
 
         $list = $this->helper->htmlList($items);
 
-        $this->assertContains('<ul>', $list);
-        $this->assertContains('</ul>', $list);
-        $this->assertContains('one<ul><li>four', $list);
-        $this->assertContains('<li>six</li></ul></li><li>two', $list);
+        $this->assertContains('<ul>' . Zend_View_Helper_HtmlList::EOL, $list);
+        $this->assertContains('</ul>' . Zend_View_Helper_HtmlList::EOL, $list);
+        $this->assertContains('one<ul>' . Zend_View_Helper_HtmlList::EOL.'<li>four', $list);
+        $this->assertContains('<li>six</li>' . Zend_View_Helper_HtmlList::EOL . '</ul>' .
+            Zend_View_Helper_HtmlList::EOL . '</li>' . Zend_View_Helper_HtmlList::EOL . '<li>two', $list);
     } 
-
+    
+    /*
+     * @see ZF-5018
+     */
     public function testMakeNestedDeepUnorderedList()
     {
         $items = array('one', array('four', array('six', 'seven', 'eight'), 'five'), 'two', 'three');
 
         $list = $this->helper->htmlList($items);
 
-        $this->assertContains('<ul>', $list);
-        $this->assertContains('</ul>', $list);
-        $this->assertContains('one<ul><li>four', $list);
-        $this->assertContains('<li>four<ul><li>six', $list);
-        $this->assertContains('<li>five</li></ul></li><li>two', $list);
+        $this->assertContains('<ul>' . Zend_View_Helper_HtmlList::EOL, $list);
+        $this->assertContains('</ul>' . Zend_View_Helper_HtmlList::EOL, $list);
+        $this->assertContains('one<ul>' . Zend_View_Helper_HtmlList::EOL . '<li>four', $list);
+        $this->assertContains('<li>four<ul>' . Zend_View_Helper_HtmlList::EOL . '<li>six', $list);
+        $this->assertContains('<li>five</li>' . Zend_View_Helper_HtmlList::EOL . '</ul>' . 
+            Zend_View_Helper_HtmlList::EOL . '</li>' . Zend_View_Helper_HtmlList::EOL . '<li>two', $list);
     } 
 
     public function testListWithValuesToEscapeForZF2283()
@@ -175,16 +213,18 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
 
     /**
      * @see ZF-2527
+     * Added the s modifier to match newlines after @see ZF-5018
      */
     public function testAttribsPassedIntoMultidimensionalLists()
     {
         $items = array('one', array('four', 'five', 'six'), 'two', 'three');
 
         $list = $this->helper->htmlList($items, false, array('class' => 'foo'));
-
+        
         foreach ($items[1] as $item) {
-            $this->assertRegexp('#<ul[^>]*?class="foo"[^>]*>.*?(<li>' . $item . ')#', $list);
+            $this->assertRegexp('#<ul[^>]*?class="foo"[^>]*>.*?(<li>' . $item . ')#s', $list);
         }
+        
     }
 
     /**
@@ -209,6 +249,9 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
 
         $this->assertContains('<ul>', $list);
         $this->assertContains('</ul>', $list);
+
+        $this->markTestSkipped('Wrong array_walk_recursive behavior.');
+
         array_walk_recursive($items, array($this, 'validateItems'), $list);
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AtomPublishingTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AtomPublishingTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -37,13 +35,13 @@ require_once 'Zend/Feed/Entry/Atom.php';
  */
 require_once 'Zend/Http/Client.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Feed
  */
 class Zend_Feed_AtomPublishingTest extends PHPUnit_Framework_TestCase
 {

@@ -13,9 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @package    Zend_Soap
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ServerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 require_once dirname(__FILE__)."/../../TestHelper.php";
@@ -28,15 +30,19 @@ require_once 'Zend/Soap/Server.php';
 
 require_once 'Zend/Soap/Server/Exception.php';
 
+require_once "Zend/Config.php";
+
 /**
  * Zend_Soap_Server
  *
  * @category   Zend
- * @package    UnitTests
+ * @package    Zend_Soap
+ * @subpackage UnitTests
  * @uses       Zend_Server_Interface
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ServerTest.php 13821 2009-01-29 19:37:15Z beberlei $
+ * @group      Zend_Soap
+ * @group      Zend_Soap_Server
  */
 class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
 {
@@ -510,6 +516,11 @@ class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGetLastRequest()
     {
+        if (headers_sent()) {
+            $this->markTestSkipped('Cannot run testGetLastRequest() when headers have already been sent; enable output buffering to run this test');
+            return;
+        }
+
     	$server = new Zend_Soap_Server();
         $server->setOptions(array('location'=>'test://', 'uri'=>'http://framework.zend.com'));
         $server->setReturnResponse(true);
@@ -561,6 +572,11 @@ class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
 
     public function testGetLastResponse()
     {
+        if (headers_sent()) {
+            $this->markTestSkipped('Cannot run testGetLastResponse() when headers have already been sent; enable output buffering to run this test');
+            return;
+        }
+
     	$server = new Zend_Soap_Server();
         $server->setOptions(array('location'=>'test://', 'uri'=>'http://framework.zend.com'));
         $server->setReturnResponse(true);
@@ -604,6 +620,11 @@ class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
 
     public function testHandle()
     {
+        if (headers_sent()) {
+            $this->markTestSkipped('Cannot run testHandle() when headers have already been sent; enable output buffering to run this test');
+            return;
+        }
+
     	$server = new Zend_Soap_Server();
         $server->setOptions(array('location'=>'test://', 'uri'=>'http://framework.zend.com'));
 
@@ -781,6 +802,11 @@ class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
 
     public function testErrorHandlingOfSoapServerChangesToThrowingSoapFaultWhenInHandleMode()
     {
+        if (headers_sent()) {
+            $this->markTestSkipped('Cannot run ' . __METHOD__ . '() when headers have already been sent; enable output buffering to run this test');
+            return;
+        }
+
         $server = new Zend_Soap_Server();
         $server->setOptions(array('location'=>'test://', 'uri'=>'http://framework.zend.com'));
         $server->setReturnResponse(true);
@@ -807,13 +833,61 @@ class Zend_Soap_ServerTest extends PHPUnit_Framework_TestCase
             $response
         );
     }
+
+    /**
+     * @group ZF-5597
+     */
+    public function testServerAcceptsZendConfigObject()
+    {
+        $options = array('soap_version' => SOAP_1_1,
+                         'actor' => 'http://framework.zend.com/Zend_Soap_ServerTest.php',
+                         'classmap' => array('TestData1' => 'Zend_Soap_Server_TestData1',
+                                             'TestData2' => 'Zend_Soap_Server_TestData2',),
+                         'encoding' => 'ISO-8859-1',
+                         'uri' => 'http://framework.zend.com/Zend_Soap_ServerTest.php'
+                        );
+        $config = new Zend_Config($options);
+
+        $server = new Zend_Soap_Server();
+        $server->setOptions($config);
+        $this->assertEquals($options, $server->getOptions());
+    }
+
+    /**
+     * @group ZF-5300
+     */
+    public function testSetAndGetFeatures()
+    {
+        $server = new Zend_Soap_Server();
+        $this->assertNull($server->getSoapFeatures());
+        $server->setSoapFeatures(100);
+        $this->assertEquals(100, $server->getSoapFeatures());
+        $options = $server->getOptions();
+        $this->assertTrue(isset($options['features']));
+        $this->assertEquals(100, $options['features']);
+    }
+
+    /**
+     * @group ZF-5300
+     */
+    public function testSetAndGetWsdlCache()
+    {
+        $server = new Zend_Soap_Server();
+        $this->assertNull($server->getWsdlCache());
+        $server->setWsdlCache(100);
+        $this->assertEquals(100, $server->getWsdlCache());
+        $options = $server->getOptions();
+        $this->assertTrue(isset($options['cache_wsdl']));
+        $this->assertEquals(100, $options['cache_wsdl']);
+    }
 }
 
 
 if (extension_loaded('soap')) {
 
 /** Local SOAP client */
-class Zend_Soap_Server_TestLocalSoapClient extends SoapClient {
+class Zend_Soap_Server_TestLocalSoapClient extends SoapClient 
+{
 	/**
 	 * Server object
 	 *
@@ -828,16 +902,17 @@ class Zend_Soap_Server_TestLocalSoapClient extends SoapClient {
 	 * @param string $wsdl
 	 * @param array $options
 	 */
-    function __construct(Zend_Soap_Server $server, $wsdl, $options) {
+    function __construct(Zend_Soap_Server $server, $wsdl, $options) 
+    {
         $this->server = $server;
     	parent::__construct($wsdl, $options);
     }
 
-    function __doRequest($request, $location, $action, $version) {
+    function __doRequest($request, $location, $action, $version, $one_way = 0) 
+    {
         ob_start();
         $this->server->handle($request);
-        $response = ob_get_contents();
-        ob_end_clean();
+        $response = ob_get_clean();
 
         return $response;
     }

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CaptchaTest.php 12329 2008-11-06 16:58:15Z matthew $
+ * @version    $Id: CaptchaTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Form_Element_CaptchaTest::main() if this source file is executed directly.
@@ -37,8 +37,9 @@ require_once 'Zend/Captcha/Dumb.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Form
  */
 class Zend_Form_Element_CaptchaTest extends PHPUnit_Framework_TestCase
 {
@@ -153,8 +154,25 @@ class Zend_Form_Element_CaptchaTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists('Zend_Form_Decorator_HtmlTag', $decorators), 'Missing HtmlTag decorator' . var_export(array_keys($decorators), 1));
         $this->assertTrue(array_key_exists('Zend_Form_Decorator_Label', $decorators), 'Missing Label decorator' . var_export(array_keys($decorators), 1));
     }
+
+    /**
+     * @group ZF-5855
+     */
+    public function testHelperDoesNotShowUpInAttribs()
+    {
+        require_once 'Zend/View.php';
+        $this->assertFalse(array_key_exists('helper', $this->element->getAttribs()));
+    }
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Form
+ */
 class Zend_Form_Element_CaptchaTest_SessionContainer
 {
     protected static $_word;

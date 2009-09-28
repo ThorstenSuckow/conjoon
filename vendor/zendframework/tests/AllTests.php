@@ -13,10 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @package    Zend
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 14513 2009-03-27 13:44:05Z alexander $
+ * @version    $Id: AllTests.php 18376 2009-09-22 19:43:08Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -33,6 +34,13 @@ require_once 'TestHelper.php';
  */
 require_once 'Zend/AllTests.php';
 
+/**
+ * @category   Zend
+ * @package    Zend
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class AllTests
 {
     public static function main()
@@ -48,9 +56,40 @@ class AllTests
             setlocale(LC_ALL, TESTS_ZEND_LOCALE_FORMAT_SETLOCALE);
         }
 
+        // Run buffered tests as a separate suite first
+        ob_start();
+        PHPUnit_TextUI_TestRunner::run(self::suiteBuffered(), $parameters);
+        if (ob_get_level()) {
+            ob_end_flush();
+        }
+
         PHPUnit_TextUI_TestRunner::run(self::suite(), $parameters);
     }
 
+    /**
+     * Buffered test suites
+     *
+     * These tests require no output be sent prior to running as they rely
+     * on internal PHP functions.
+     * 
+     * @return PHPUnit_Framework_TestSuite
+     */
+    public static function suiteBuffered()
+    {
+        $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Buffered');
+
+        $suite->addTest(Zend_AllTests::suiteBuffered());
+
+        return $suite;
+    }
+
+    /**
+     * Regular suite
+     *
+     * All tests except those that require output buffering.
+     * 
+     * @return PHPUnit_Framework_TestSuite
+     */
     public static function suite()
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework');

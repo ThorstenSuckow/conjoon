@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CountTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: CountTest.php 18293 2009-09-18 22:16:07Z padraic $
  */
-
 
 /**
  * Test helper
@@ -32,13 +30,13 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  */
 require_once 'Zend/Feed.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Feed
  */
 class Zend_Feed_CountTest extends PHPUnit_Framework_TestCase
 {
@@ -47,6 +45,15 @@ class Zend_Feed_CountTest extends PHPUnit_Framework_TestCase
     {
         $f = Zend_Feed::importFile(dirname(__FILE__) . '/_files/TestAtomFeed.xml');
         $this->assertEquals($f->count(), 2, 'Feed count should be 2');
+    }
+
+    /**
+    * ZF-3848
+    */
+    public function testCountableInterface()
+    {
+        $f = Zend_Feed::importFile(dirname(__FILE__) . '/_files/TestAtomFeed.xml');
+        $this->assertEquals(count($f), 2, 'Feed count should be 2');
     }
 
 }

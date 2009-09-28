@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DijitTest.php 13261 2008-12-15 14:32:20Z matthew $
+ * @version    $Id: DijitTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Dojo_Form_Element_DijitTest::main() if this source file is executed directly.
@@ -42,10 +42,13 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
 /**
  * Test class for Zend_Dojo_Form_Element_Dijit.
  *
+ * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Dojo
+ * @group      Zend_Dojo_Form
  */
 class Zend_Dojo_Form_Element_DijitTest extends PHPUnit_Framework_TestCase 
 {

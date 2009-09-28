@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: Spinner.php 11941 2008-10-13 19:41:38Z matthew $
+ * @version     $Id: Spinner.php 14483 2009-03-25 17:48:17Z beberlei $
  */
 
 /**
@@ -55,11 +55,7 @@ class ZendX_JQuery_View_Helper_Spinner extends ZendX_JQuery_View_Helper_UiWidget
 	    }
 
 	    if(count($params)) {
-	        /**
-	         * @see Zend_Json
-	         */
-	        require_once "Zend/Json.php";
-	        $params = Zend_Json::encode($params);
+	        $params = ZendX_JQuery::encodeJson($params);
 	    } else {
 	        $params = '{}';
 	    }

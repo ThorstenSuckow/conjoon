@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTableSelectTest.php 11762 2008-10-09 01:38:48Z mratzloff $
+ * @version    $Id: DbTableSelectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -25,16 +25,22 @@
  */
 require_once 'Zend/Paginator/Adapter/DbTableSelect.php';
 
+/**
+ * @see Zend_Paginator
+ */
+require_once 'Zend/Paginator.php';
+
 require_once dirname(__FILE__) . '/DbSelectTest.php';
 
 /**
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Paginator
  */
-class Zend_Paginator_Adapter_DbTableSelectTest extends Zend_Paginator_Adapter_DbSelectTest 
+class Zend_Paginator_Adapter_DbTableSelectTest extends Zend_Paginator_Adapter_DbSelectTest
 {
     /**
      * @group ZF-3775
@@ -44,7 +50,14 @@ class Zend_Paginator_Adapter_DbTableSelectTest extends Zend_Paginator_Adapter_Db
         $query   = $this->_table->select();
         $adapter = new Zend_Paginator_Adapter_DbTableSelect($query);
         $items   = $adapter->getItems(0, 10);
-        
+
         $this->assertType('Zend_Db_Table_Rowset', $items);
+    }
+
+    public function testToJsonWithRowset()
+    {
+        $query   = $this->_table->select();
+        $paginator = new Zend_Paginator(new Zend_Paginator_Adapter_DbTableSelect($query));
+        $this->assertGreaterThan(2, strlen($paginator->toJson()));
     }
 }

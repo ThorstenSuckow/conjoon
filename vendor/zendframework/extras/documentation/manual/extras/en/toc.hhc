@@ -56,6 +56,9 @@
 </UL><LI><OBJECT type="text/sitemap">
 <param name="Name" value="Refactoring jQuery environment with setRenderMode()">
 <param name="Local" value="./zendx.jquery.view.html#zendx.jquery.view.jquery.refactor"></OBJECT></LI>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Migrations">
+<param name="Local" value="./zendx.jquery.view.html#zendx.jquery.view.jquery.migrations"></OBJECT></LI>
 </UL><LI><OBJECT type="text/sitemap">
 <param name="Name" value="JQuery Helpers">
 <param name="Local" value="./zendx.jquery.view.html#zendx.jquery.view.helpers"></OBJECT></LI>

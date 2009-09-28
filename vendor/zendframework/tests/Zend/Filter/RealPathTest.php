@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RealPathTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: RealPathTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -32,13 +30,13 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  */
 require_once 'Zend/Filter/RealPath.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Filter
  */
 class Zend_Filter_RealPathTest extends PHPUnit_Framework_TestCase
 {
@@ -56,7 +54,7 @@ class Zend_Filter_RealPathTest extends PHPUnit_Framework_TestCase
      */
     public function __construct()
     {
-        $this->_filesPath = dirname(__FILE__) . '/_files';
+        $this->_filesPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files';
     }
 
     /**
@@ -84,7 +82,7 @@ class Zend_Filter_RealPathTest extends PHPUnit_Framework_TestCase
     public function testFileExists()
     {
         $filename = 'file.1';
-        $this->assertContains($filename, $this->_filter->filter("$this->_filesPath/$filename"));
+        $this->assertContains($filename, $this->_filter->filter($this->_filesPath . DIRECTORY_SEPARATOR . $filename));
     }
 
     /**
@@ -100,5 +98,42 @@ class Zend_Filter_RealPathTest extends PHPUnit_Framework_TestCase
         } else {
             $this->assertEquals(false, $this->_filter->filter($path));
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetAndSetExistsParameter()
+    {
+        $this->assertTrue($this->_filter->getExists());
+        $this->_filter->setExists(false);
+        $this->assertFalse($this->_filter->getExists());
+
+        $this->_filter->setExists(true);
+        $this->_filter->setExists(array('exists' => false));
+        $this->assertFalse($this->_filter->getExists());
+
+        $this->_filter->setExists(array('unknown'));
+        $this->assertTrue($this->_filter->getExists());
+    }
+
+    /**
+     * @return void
+     */
+    public function testNonExistantPath()
+    {
+        $this->_filter->setExists(false);
+
+        $path = dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files';
+        $this->assertEquals($path, $this->_filter->filter($path));
+
+        $path2 = dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files'
+               . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '_files';
+        $this->assertEquals($path, $this->_filter->filter($path2));
+
+        $path3 = dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files'
+               . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '.'
+               . DIRECTORY_SEPARATOR . '_files';
+        $this->assertEquals($path, $this->_filter->filter($path3));
     }
 }

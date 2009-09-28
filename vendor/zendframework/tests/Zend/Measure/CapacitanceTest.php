@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CapacitanceTest.php 6799 2007-11-09 22:44:42Z thomas $
+ * @version    $Id: CapacitanceTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -31,10 +30,13 @@ require_once 'Zend/Measure/Capacitance.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Measure
  */
 class Zend_Measure_CapacitanceTest extends PHPUnit_Framework_TestCase
 {
@@ -155,7 +157,7 @@ class Zend_Measure_CapacitanceTest extends PHPUnit_Framework_TestCase
      */
     public function testCapacitanceValueString()
     {
-        $value = new Zend_Measure_Capacitance('string -100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $value = new Zend_Measure_Capacitance('-100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
         $this->assertEquals(-100100.200, $value->getValue(),'Zend_Measure_Capacitance Object not returned');
     }
 
@@ -166,8 +168,8 @@ class Zend_Measure_CapacitanceTest extends PHPUnit_Framework_TestCase
      */
     public function testCapacitanceEquality()
     {
-        $value = new Zend_Measure_Capacitance('string -100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
-        $newvalue = new Zend_Measure_Capacitance('otherstring -100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $value = new Zend_Measure_Capacitance('-100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $newvalue = new Zend_Measure_Capacitance('-100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
         $this->assertTrue($value->equals($newvalue),'Zend_Measure_Capacitance Object should be equal');
     }
 
@@ -178,8 +180,8 @@ class Zend_Measure_CapacitanceTest extends PHPUnit_Framework_TestCase
      */
     public function testCapacitanceNoEquality()
     {
-        $value = new Zend_Measure_Capacitance('string -100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
-        $newvalue = new Zend_Measure_Capacitance('otherstring -100,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $value = new Zend_Measure_Capacitance('-100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $newvalue = new Zend_Measure_Capacitance('-100,200',Zend_Measure_Capacitance::STANDARD,'de');
         $this->assertFalse($value->equals($newvalue),'Zend_Measure_Capacitance Object should be not equal');
     }
 
@@ -238,8 +240,8 @@ class Zend_Measure_CapacitanceTest extends PHPUnit_Framework_TestCase
      */
     public function testCapacitanceSetString()
     {
-        $value = new Zend_Measure_Capacitance('string -100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
-        $value->setValue('otherstring -200.200,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $value = new Zend_Measure_Capacitance('-100.100,200',Zend_Measure_Capacitance::STANDARD,'de');
+        $value->setValue('-200.200,200',Zend_Measure_Capacitance::STANDARD,'de');
         $this->assertEquals(-200200.200, $value->getValue(),'Zend_Measure_Capacitance Object not returned');
     }
 
@@ -252,7 +254,7 @@ class Zend_Measure_CapacitanceTest extends PHPUnit_Framework_TestCase
     {
         try {
             $value = new Zend_Measure_Capacitance('100',Zend_Measure_Capacitance::STANDARD,'de');
-            $value->setValue('otherstring -200.200,200','Capacitance::UNKNOWN','de');
+            $value->setValue('-200.200,200','Capacitance::UNKNOWN','de');
             $this->fail('Exception expected because of unknown type');
         } catch (Zend_Measure_Exception $e) {
             // success

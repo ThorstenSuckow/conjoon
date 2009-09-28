@@ -12,11 +12,12 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
- * @category  Zend
- * @package   Zend_Filter
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: StringEquals.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @category   Zend
+ * @package    Zend_Filter
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: StringEquals.php 17758 2009-08-22 21:07:23Z thomas $
  */
 
 
@@ -30,10 +31,11 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 /**
  * Mock file for testbed
  *
- * @category  Zend
- * @package   Zend_Filter
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd     New BSD License
+ * @category   Zend
+ * @package    Zend_Filter
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class TestNamespace_StringEquals extends Zend_Validate_Abstract
 {
@@ -65,7 +67,7 @@ class TestNamespace_StringEquals extends Zend_Validate_Abstract
         $initial = (string) current((array) $value);
         foreach ((array) $value as $element) {
             if ((string) $element !== $initial) {
-                $this->_error();
+                $this->_error(self::NOT_EQUALS);
                 return false;
             }
         }

@@ -250,7 +250,7 @@ if(!dijit.range._w3c){
 			var startContainer = firstnode.parentNode, endContainer = lastnode.parentNode;
 			var startOffset = dijit.range.getIndex(firstnode, startContainer).o;
 			var endOffset = dijit.range.getIndex(lastnode, endContainer).o+1;
-			return [[startContainer, startOffset],[endContainer, endOffset]];
+			return [startContainer, startOffset,endContainer, endOffset];
 		},
 		getEndPoint: function(range, end){
 			var atmrange = range.duplicate();
@@ -335,42 +335,27 @@ if(!dijit.range._w3c){
 			//text node
 			var atmrange = range.duplicate(), node, len;
 			if(container.nodeType!=3){ //normal node
-				atmrange.moveToElementText(container);
-				atmrange.collapse(true);
-				if(offset == container.childNodes.length){
-					if(offset > 0){
-						//a simple atmrange.collapse(false); won't work here:
-						//although moveToElementText(node) is supposed to encompass the content of the node,
-						//but when collapse to end, it is in fact after the ending tag of node (collapse to start
-						//is after the begining tag of node as expected)
-						node = container.lastChild;
-						len = 0;
-						while(node && node.nodeType == 3){
-							len += node.length;
-							container = node; //pass through
-							node = node.previousSibling;
-						}
-						if(node){
-							atmrange.moveToElementText(node);
-						}
-						atmrange.collapse(false);
-						offset = len; //pass through
-					}else{ //no childNodes
-						atmrange.moveToElementText(container);
-						atmrange.collapse(true);
-					}
-				}else{
-					if(offset > 0){
-						node = container.childNodes[offset-1];
-						if(node.nodeType==3){
-							container = node;
-							offset = node.length;
+				if(offset > 0){
+					node = container.childNodes[offset-1];
+					if(node.nodeType==3){
+						container = node;
+						offset = node.length;
+						//pass through
+					}else{
+						if(node.nextSibling && node.nextSibling.nodeType==3){
+							container=node.nextSibling;
+							offset=0;
 							//pass through
 						}else{
-							atmrange.moveToElementText(node);
+							atmrange.moveToElementText(node.nextSibling?node:container);
+							var tempnode=node.parentNode.insertBefore(document.createTextNode(' '),node.nextSibling);
 							atmrange.collapse(false);
+							tempnode.parentNode.removeChild(tempnode);
 						}
 					}
+				}else{
+					atmrange.moveToElementText(container);
+					atmrange.collapse(true);
 				}
 			}
 			if(container.nodeType==3){
@@ -413,17 +398,17 @@ if(!dijit.range._w3c){
 					endContainter = tmpary[0], endOffset = tmpary[1];
 				}
 			}
-			return [[startContainter, startOffset],[endContainter, endOffset]];
+			return [startContainter, startOffset,endContainter, endOffset];
 		},
 		setRange: function(range, startContainter,
 			startOffset, endContainter, endOffset, collapsed){
-			var startrange = dijit.range.ie.setEndPoint(range, startContainter, startOffset);
-			range.setEndPoint('StartToStart', startrange);
-			var endrange=startrange;
+			var start=dijit.range.ie.setEndPoint(range, startContainter, startOffset);
+
+			range.setEndPoint('StartToStart',start);
 			if(!collapsed){
-				endrange = dijit.range.ie.setEndPoint(range, endContainter, endOffset);
+				var end=dijit.range.ie.setEndPoint(range, endContainter, endOffset);	
 			}
-			range.setEndPoint('EndToEnd', endrange);
+			range.setEndPoint('EndToEnd',end||start);
 
 			return range;
 		}
@@ -432,8 +417,8 @@ if(!dijit.range._w3c){
 dojo.declare("dijit.range.W3CRange",null, {
 	constructor: function(){
 		if(arguments.length>0){
-			this.setStart(arguments[0][0][0],arguments[0][0][1]);
-			this.setEnd(arguments[0][1][0],arguments[0][1][1]);
+			this.setStart(arguments[0][0],arguments[0][1]);
+			this.setEnd(arguments[0][2],arguments[0][3]);
 		}else{
 			this.commonAncestorContainer = null;
 			this.startContainer = null;
@@ -442,16 +427,6 @@ dojo.declare("dijit.range.W3CRange",null, {
 			this.endOffset = 0;
 			this.collapsed = true;
 		}
-	},
-	_simpleSetEndPoint: function(node, range, end){
-		var r = (this._body||node.ownerDocument.body).createTextRange();
-		if(node.nodeType!=1){
-			r.moveToElementText(node.parentNode);
-		}else{
-			r.moveToElementText(node);
-		}
-		r.collapse(true);
-		range.setEndPoint(end?'EndToEnd':'StartToStart',r);
 	},
 	_updateInternal: function(){
 		if(this.startContainer !== this.endContainer){
@@ -528,8 +503,8 @@ dojo.declare("dijit.range.W3CRange",null, {
 		this.collapsed = true;
 	},
 	cloneRange: function(){
-		var r = new dijit.range.W3CRange([[this.startContainer,this.startOffset],
-			[this.endContainer,this.endOffset]]);
+		var r = new dijit.range.W3CRange([this.startContainer,this.startOffset,
+			this.endContainer,this.endOffset]);
 		r._body = this._body;
 		return r;
 	},

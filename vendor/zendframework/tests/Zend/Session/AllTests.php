@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -33,13 +32,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 
-/**
- * Zend_Session tests need to be output buffered because they depend on headers_sent() === false
- *
- * @see http://framework.zend.com/issues/browse/ZF-700
- */
-ob_start();
-
 require_once 'SessionTest.php';
 
 /** Zend_Session_SaveHandler_AllTests */
@@ -49,8 +41,9 @@ require_once 'Zend/Session/SaveHandler/AllTests.php';
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Session
  */
 class Zend_Session_AllTests
 {

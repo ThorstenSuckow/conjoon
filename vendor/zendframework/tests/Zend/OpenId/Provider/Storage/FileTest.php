@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: FileTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -30,10 +31,13 @@ require_once dirname(__FILE__) . '/../../../../TestHelper.php';
  */
 require_once 'Zend/OpenId/Provider/Storage/File.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_OpenId
  */
 class Zend_OpenId_Provider_Storage_FileTest extends PHPUnit_Framework_TestCase
 {

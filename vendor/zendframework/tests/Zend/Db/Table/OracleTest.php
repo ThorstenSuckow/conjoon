@@ -15,18 +15,33 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once 'Zend/Db/Table/TestCommon.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
+/**
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Table
+ */
 class Zend_Db_Table_OracleTest extends Zend_Db_Table_TestCommon
 {
 
     public function testTableInsert()
+    {
+        $this->markTestSkipped($this->getDriver().' does not support auto-increment columns.');
+    }
+
+    public function testIsIdentity()
     {
         $this->markTestSkipped($this->getDriver().' does not support auto-increment columns.');
     }
@@ -39,7 +54,7 @@ class Zend_Db_Table_OracleTest extends Zend_Db_Table_TestCommon
         $schemaName = $this->_util->getSchema();
         $tableName = 'zfbugs';
         $identifier = join('.', array_filter(array($schemaName, $tableName)));
-        $table = $this->_getTable('Zend_Db_Table_TableSpecial',
+        $table = $this->_getTable('My_ZendDbTable_TableSpecial',
             array('name' => $tableName, 'schema' => $schemaName, Zend_Db_Table_Abstract::SEQUENCE => 'zfbugs_seq')
         );
 
@@ -65,7 +80,7 @@ class Zend_Db_Table_OracleTest extends Zend_Db_Table_TestCommon
 
     public function testTableInsertSequence()
     {
-        $table = $this->_getTable('Zend_Db_Table_TableBugs',
+        $table = $this->_getTable('My_ZendDbTable_TableBugs',
             array(Zend_Db_Table_Abstract::SEQUENCE => 'zfbugs_seq'));
         $row = array (
             'bug_description' => 'New bug',

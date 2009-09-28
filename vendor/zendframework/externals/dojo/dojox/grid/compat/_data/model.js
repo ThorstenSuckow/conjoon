@@ -165,7 +165,7 @@ dojo.declare("dojox.grid.data.Table", dojox.grid.data.Rows, {
 		return (this.data && this.data.length ? this.data[0].length : this.fields.count());
 	},
 	badIndex: function(inCaller, inDescriptor){
-		console.debug('dojox.grid.data.Table: badIndex');
+		console.error('dojox.grid.data.Table: badIndex');
 	},
 	isGoodIndex: function(inRowIndex, inColIndex){
 		return (inRowIndex >= 0 && inRowIndex < this.count && (arguments.length < 2 || (inColIndex >= 0 && inColIndex < this.colCount)));
@@ -373,7 +373,7 @@ dojo.declare("dojox.grid.data.Dynamic", dojox.grid.data.Table, {
 			row[inColIndex] = inDatum;
 			this.datumChange(inDatum, inRowIndex, inColIndex);
 		}else{
-			console.debug('[' + this.declaredClass + '] dojox.grid.data.dynamic.set: cannot set data on an non-loaded row');
+			console.error('[' + this.declaredClass + '] dojox.grid.data.dynamic.set: cannot set data on a non-loaded row');
 		}
 	},
 	// sort
@@ -482,7 +482,7 @@ dojo.declare("dojox.grid.data.DojoData", dojox.grid.data.Dynamic, {
 		var row = {}; 
 		row.__dojo_data_item = item;
 		dojo.forEach(this.fields.values, function(a){
-			value = this.store.getValue(item, a.name);
+			var value = this.store.getValue(item, a.name);
 			row[a.name] = (value === undefined || value === null)?"":value;
 		}, this);
 		return row;

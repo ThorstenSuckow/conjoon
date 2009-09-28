@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -14,10 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Gdata
+ * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
@@ -27,8 +27,13 @@ require_once 'Zend/Gdata/YouTube/VideoQuery.php';
 require_once 'Zend/Gdata/ClientLogin.php';
 
 /**
- * @package Zend_Gdata
+ * @category   Zend
+ * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Gdata
+ * @group      Zend_Gdata_YouTube
  */
 class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 {
@@ -36,6 +41,8 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->ytAccount = constant('TESTS_ZEND_GDATA_YOUTUBE_ACCOUNT');
+        $this->user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
+        $this->pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $this->subscriptionTypeSchema = 'http://gdata.youtube.com/schemas/' .
             '2007/subscriptiontypes.cat';
         $this->gdata = new Zend_Gdata_YouTube();
@@ -136,13 +143,11 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     public function testRetrieveAndUpdatePlaylistList()
     {
 
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL= 'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $user,
-                                          $password = $pass,
+                                          $username = $this->user,
+                                          $password = $this->pass,
                                           $service = $service,
                                           $client = null,
                                           $source = 'Google-UnitTests-1.0',
@@ -304,14 +309,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     
     public function testAddUpdateAndDeletePlaylistV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $user,
-                                          $password = $pass,
+                                          $username = $this->user,
+                                          $password = $this->pass,
                                           $service = $service,
                                           $client = null,
                                           $source = 'Google-UnitTests-1.0',
@@ -389,14 +392,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     
     public function testAddAndDeleteSubscriptionToChannelV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $user,
-                                          $password = $pass,
+                                          $username = $this->user,
+                                          $password = $this->pass,
                                           $service = $service,
                                           $client = null,
                                           $source = 'Google-UnitTests-1.0',
@@ -486,14 +487,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
     public function testAddAndDeleteSubscriptionToFavoritesV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $user,
-                                          $password = $pass,
+                                          $username = $this->user,
+                                          $password = $this->pass,
                                           $service = $service,
                                           $client = null,
                                           $source = 'Google-UnitTests-1.0',
@@ -583,14 +582,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     
     public function testAddAndDeleteSubscriptionToPlaylistV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $user,
-                                          $password = $pass,
+                                          $username = $this->user,
+                                          $password = $this->pass,
                                           $service = $service,
                                           $client = null,
                                           $source = 'Google-UnitTests-1.0',
@@ -680,8 +677,6 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
     public function testAddAndDeleteSubscriptionToQueryV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant('TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant('TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
 
@@ -689,8 +684,8 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $user,
-                                          $password = $pass,
+                                          $username = $this->user,
+                                          $password = $this->pass,
                                           $service = $service,
                                           $client = null,
                                           $source = 'Google-UnitTests-1.0',
@@ -698,7 +693,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
                                           $loginCaptcha = null,
                                           $authenticationURL);
 
-        $yt = new Zend_Gdata_YouTube($httpClient, $clientId, $developerKey);
+        $yt = new Zend_Gdata_YouTube($httpClient, 'Google-UnitTests-1.0', $clientId, $developerKey);
 
         $yt->setMajorProtocolVersion(2);
         $queryStringToSubscribeTo = 'zend';
@@ -784,14 +779,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
     public function testRetrieveActivityFeed()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -822,14 +815,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     
     public function testRetrieveActivityFeedForMultipleUsers()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -846,14 +837,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     
     public function testRetrieveFriendFeed()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -893,14 +882,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
     public function testGetInboxFeedForCurrentUserV1()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -921,14 +908,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
     public function testGetInboxFeedForCurrentUserV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -951,12 +936,10 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
     
     public function testSendAMessageV2()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant('TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant('TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -978,14 +961,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
     public function testSendAMessageV1()
     {
-        $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
-        $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
         $developerKey = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
         $clientId = constant(
             'TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
         $client = Zend_Gdata_ClientLogin::getHttpClient(
-            $user, $pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
             'https://www.google.com/youtube/accounts/ClientLogin');
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
@@ -1016,6 +997,38 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         }
         $this->assertTrue($exceptionCaught, 'Was expecting an exception if ' .
             'sending a message without a video');
+    }
+    
+    public function testCommentOnAComment()
+    {
+        $developerKey = constant('TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
+        $clientId = constant('TESTS_ZEND_GDATA_YOUTUBE_CLIENT_ID');
+        $client = Zend_Gdata_ClientLogin::getHttpClient(
+            $this->user, $this->pass, 'youtube' , null, 'ZF_UnitTest', null, null,
+            'https://www.google.com/youtube/accounts/ClientLogin');
+        $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
+            $clientId, $developerKey);
+        $youtube->setMajorProtocolVersion(2);
+        
+        $mostDiscussedFeed = $youtube->getVideoFeed(
+            'http://gdata.youtube.com/feeds/api/standardfeeds/most_discussed');
+        
+        // get first entry
+        $mostDiscussedFeed->rewind();
+        $firstEntry = $mostDiscussedFeed->current();
+        
+        $this->assertTrue($firstEntry instanceof Zend_Gdata_YouTube_VideoEntry);
+        
+        $commentFeed = $youtube->getVideoCommentFeed($firstEntry->getVideoId());
+
+        // get first comment
+        $commentFeed->rewind();
+        $firstCommentEntry = $commentFeed->current();
+        
+        $commentedComment = $youtube->replyToCommentEntry($firstCommentEntry,
+            'awesome ! (ZFUnitTest-test)');
+        $this->assertTrue(
+            $commentedComment instanceof Zend_Gdata_YouTube_CommentEntry);
     }
 
 }

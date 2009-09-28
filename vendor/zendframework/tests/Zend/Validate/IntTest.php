@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IntTest.php 12336 2008-11-06 19:11:46Z thomas $
+ * @version    $Id: IntTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -37,8 +36,9 @@ require_once 'Zend/Validate/Int.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_IntTest extends PHPUnit_Framework_TestCase
 {
@@ -66,6 +66,7 @@ class Zend_Validate_IntTest extends PHPUnit_Framework_TestCase
      */
     public function testBasic()
     {
+        $this->_validator->setLocale('en');
         $valuesExpected = array(
             array(1.00, true),
             array(0.00, true),
@@ -78,8 +79,10 @@ class Zend_Validate_IntTest extends PHPUnit_Framework_TestCase
             array(true, false),
             array(false, false),
             );
+
         foreach ($valuesExpected as $element) {
-            $this->assertEquals($element[1], $this->_validator->isValid($element[0]));
+            $this->assertEquals($element[1], $this->_validator->isValid($element[0]),
+                'Test failed with ' . var_export($element, 1));
         }
     }
 
@@ -91,5 +94,24 @@ class Zend_Validate_IntTest extends PHPUnit_Framework_TestCase
     public function testGetMessages()
     {
         $this->assertEquals(array(), $this->_validator->getMessages());
+    }
+
+    /**
+     * Ensures that set/getLocale() works
+     */
+    public function testSettingLocales()
+    {
+        $this->_validator->setLocale('de');
+        $this->assertEquals('de', $this->_validator->getLocale());
+        $this->assertEquals(false, $this->_validator->isValid('10 000'));
+        $this->assertEquals(true, $this->_validator->isValid('10.000'));
+    }
+
+    /**
+     * @ZF-4352
+     */
+    public function testNonStringValidation()
+    {
+        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
     }
 }

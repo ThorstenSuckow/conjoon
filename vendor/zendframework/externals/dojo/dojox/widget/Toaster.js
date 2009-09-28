@@ -8,7 +8,7 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 		// summary:
 		//		Message that slides in from the corner of the screen, used for notifications
 		//		like "new email".
-		
+
 		templateString: '<div dojoAttachPoint="clipNode"><div dojoAttachPoint="containerNode" dojoAttachEvent="onclick:onSelect"><div dojoAttachPoint="contentNode"></div></div></div>',
 
 		// messageTopic: String
@@ -17,8 +17,6 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 		//		{message: "hello word", type: "error", duration: 500}
 		messageTopic: "",
 
-		_uniqueId: 0,
-		
 		// messageTypes: Enumeration
 		//		Possible message types.
 		messageTypes: {
@@ -45,7 +43,12 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 
 		// duration: Integer
 		//		Number of milliseconds to show message
-		duration: "2000",
+		duration: 2000,
+
+		// slideDuration: Integer
+		//		Number of milliseconds for the slide animation, increasing will cause the Toaster 
+		//    to slide in more slowly.
+		slideDuration: 500,
 
 		//separator: String
 		//		String used to separate messages if consecutive calls are made to setContent before previous messages go away
@@ -120,9 +123,9 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 			if(this.isVisible){
 				this._placeClip();
 				//update hide timer if no sticky message in stack 
-				if (!this._stickyMessage)
+				if(!this._stickyMessage) {
 					this._setHideTimer(duration);
-
+				}
 			}else{
 				var style = this.containerNode.style;
 				var pd = this.positionDirection;
@@ -145,7 +148,7 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 				this.slideAnim = dojo.fx.slideTo({
 					node: this.containerNode,
 					top: 0, left: 0,
-					duration: 450});
+					duration: this.slideDuration});
 				this.connect(this.slideAnim, "onEnd", function(nodes, anim){
 						//we build the fadeAnim here so we dont have to duplicate it later
 						// can't do a fadeHide because we're fading the
@@ -235,7 +238,7 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 			style.clip = "rect(0px, " + nodeSize.w + "px, " + nodeSize.h + "px, 0px)";
 			if(dojo.isIE){
 				if(!this.bgIframe){
-					this.clipNode.id = "__dojoXToaster_"+this._uniqueId++;
+					this.clipNode.id = dijit.getUniqueId("dojox_widget_Toaster_clipNode");
 					this.bgIframe = new dijit.BackgroundIframe(this.clipNode);
 				}
 				var iframe = this.bgIframe.iframe;

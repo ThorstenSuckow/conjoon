@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ArrayTest.php 12221 2008-10-31 20:32:43Z dasprid $
+ * @version    $Id: ArrayTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -39,8 +39,9 @@ require_once 'Zend/Config/Writer/Array.php';
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Config
  */
 class Zend_Config_Writer_ArrayTest extends PHPUnit_Framework_TestCase
 {

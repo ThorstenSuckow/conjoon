@@ -2,9 +2,10 @@ dojo.provide("dijit.form.MultiSelect");
 
 dojo.require("dijit.form._FormWidget");
 
-dojo.declare("dijit.form.MultiSelect",dijit.form._FormWidget,{
-	// summary: Wrapper for a native select multiple="true" element to
-	//		interact with dijit.form.Form
+dojo.declare("dijit.form.MultiSelect", dijit.form._FormWidget, {
+	// summary:
+	//		Widget version of a <select multiple=true> element,
+	//		for selecting multiple options.
 
 	// size: Number
 	//		Number of elements to display on a page
@@ -12,20 +13,25 @@ dojo.declare("dijit.form.MultiSelect",dijit.form._FormWidget,{
 	//		set the size via style="..." or CSS class names instead.
 	size: 7,
 	
-	templateString: "<select multiple='true' name='${name}' dojoAttachPoint='containerNode,focusNode' dojoAttachEvent='onchange: _onChange'></select>",
+	templateString: "<select multiple='true' ${nameAttrSetting} dojoAttachPoint='containerNode,focusNode' dojoAttachEvent='onchange: _onChange'></select>",
 
-	attributeMap: dojo.mixin(dojo.clone(dijit.form._FormWidget.prototype.attributeMap),
-		{size:"focusNode"}),
+	attributeMap: dojo.delegate(dijit.form._FormWidget.prototype.attributeMap, {
+		size: "focusNode"
+	}),
 
 	reset: function(){
+		// summary:
+		//		Reset the widget's value to what it was at initialization time
+
 		// TODO: once we inherit from FormValueWidget this won't be needed
 		this._hasBeenBlurred = false;
 		this._setValueAttr(this._resetValue, true);
 	},
 
-	addSelected: function(/* dijit.form.MultiSelect */select){
-		// summary: Move the selected nodes af an passed Select widget
-		//			instance to this Select widget.
+	addSelected: function(/* dijit.form.MultiSelect */ select){
+		// summary:
+		//		Move the selected nodes of a passed Select widget
+		//		instance to this Select widget.
 		//
 		// example:
 		// |	// move all the selected values from "bar" to "foo"
@@ -33,14 +39,6 @@ dojo.declare("dijit.form.MultiSelect",dijit.form._FormWidget,{
 		
 		select.getSelected().forEach(function(n){
 			this.containerNode.appendChild(n);
-			if(dojo.isIE){ // tweak the node to force IE to refresh (aka _layoutHack on FF2)
-				var s = dojo.getComputedStyle(n);
-				if(s){
-					var filter = s.filter;
-					n.style.filter = "alpha(opacity=99)";
-					n.style.filter = filter;
-				}
-			}
 			// scroll to bottom to see item
 			// cannot use scrollIntoView since <option> tags don't support all attributes
 			// does not work on IE due to a bug where <select> always shows scrollTop = 0
@@ -53,10 +51,11 @@ dojo.declare("dijit.form.MultiSelect",dijit.form._FormWidget,{
 	},
 					
 	getSelected: function(){
-		// summary: Access the NodeList of the selected options directly
+		// summary:
+		//		Access the NodeList of the selected options directly
 		return dojo.query("option",this.containerNode).filter(function(n){
 			return n.selected; // Boolean
-		});
+		}); // dojo.NodeList
 	},
 	
 	_getValueAttr: function(){
@@ -82,7 +81,8 @@ dojo.declare("dijit.form.MultiSelect",dijit.form._FormWidget,{
 	},
 		
 	invertSelection: function(onChange){
-		// summary: Invert the selection
+		// summary:
+		//		Invert the selection
 		// onChange: Boolean
 		//		If null, onChange is not fired.
 		dojo.query("option",this.containerNode).forEach(function(n){

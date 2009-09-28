@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,30 +15,28 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ArrayAccessTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ArrayAccessTest.php 18184 2009-09-17 18:26:40Z padraic $
  */
-
 
 /**
  * Test helper
  */
 require_once dirname(__FILE__) . '/../../TestHelper.php';
 
-
 /**
  * @see Zend_Feed
  */
 require_once 'Zend/Feed.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Feed
  */
 class Zend_Feed_ArrayAccessTest extends PHPUnit_Framework_TestCase
 {
@@ -94,6 +91,16 @@ class Zend_Feed_ArrayAccessTest extends PHPUnit_Framework_TestCase
         unset($nsfeed['version']);
         $this->assertFalse(isset($nsfeed['version']), 'Version should be unset');
         $this->assertEquals('', $nsfeed['version'], 'Version should be equal to the empty string');
+    }
+
+    /**
+     * @issue ZF-5354
+     */
+    public function testGetsLinkWithEmptyOrMissingRelAsAlternateRel()
+    {
+        $feed = Zend_Feed::importFile(dirname(__FILE__) . '/_files/AtomHOnline.xml');
+        $entry = $feed->current();
+        $this->assertEquals('http://www.h-online.com/security/Google-acquires-reCAPTCHA--/news/114266/from/rss', $entry->link('alternate'));
     }
 
 }

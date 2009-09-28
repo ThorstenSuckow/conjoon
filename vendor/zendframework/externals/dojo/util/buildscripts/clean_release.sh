@@ -29,8 +29,6 @@ rm_dojo_files ()
 }
 
 # FIXME: refs #6616 - could be able to set a global copyright file and null out build_release.txt
-#mv copyright.txt _copyright.txt
-#cp copyright_mini.txt copyright.txt
 #mv build_notice.txt _build_notice.txt
 #touch build_notice.txt
 
@@ -38,7 +36,7 @@ if [ -d $releaseDir ]; then
 
 	cd $releaseDir
 
-	# remove dojox tests and demos - they all follow this convetion
+	# remove dojox tests and demos - they all follow this convention
 	for i in $buildName/dojox/* 
 	do
 	  if [ -d $i ]; then
@@ -50,19 +48,26 @@ if [ -d $releaseDir ]; then
 	# removed dijit tests
 	rm_dojo_files "dijit/tests" "dijit/demos" "dijit/bench" "dojo/tests" "dojo/tests.js" "util"
 
-	# noir isn't worth including yet
-	if [ -d $buildName/dijit/themes/noir ]; then
-		rm -rf $buildName/dijit/themes/noir/
+	# cleanup dijit/themes/ selectively
+	if [ -d $buildName/dijit/themes ]; then
+
+		# noir isn't worth including yet		
+		if [ -d $buildName/dijit/themes/noir ]; then
+			rm -rf $buildName/dijit/themes/noir/
+		fi
 		
 		# so the themes are there, lets assume that, piggyback on noir: FIXME later
 		find ./$buildName/dijit/themes/ -name *.html -exec rm '{}' ';'
+
+		# remove themeTester from minified build. 
+		rm -f $buildName/dijit/themes/templateThemeTest.html
+		rm -f $buildName/dijit/themes/themeTester*.html
 		rm -rf $buildName/dijit/themes/themeTesterImages/	
 
 	fi
-	# TODO: merge down to a single theme.css for any theme?
 
-	# remove uncompressed .js files
-	find . -name *.uncompressed.js -exec rm '{}' ';'
+	# remove uncompressed .js files (leave for official release)
+	# find . -name *.uncompressed.js -exec rm '{}' ';'
 
 	# WARNING: templates have been inlined into the .js -- if you are using dynamic templates,
 	# or other build trickery, these lines might not work!
@@ -91,5 +96,4 @@ if [ -d $releaseDir ]; then
 fi
 
 # cleanup from above, refs #6616
-#mv _copyright.txt copyright.txt
 #mv _build_notice.txt build_notice.txt

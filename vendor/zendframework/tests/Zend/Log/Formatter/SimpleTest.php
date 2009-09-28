@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTest.php 10725 2008-08-06 16:01:05Z cadorn $
+ * @version    $Id: SimpleTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -30,9 +30,9 @@ require_once 'Zend/Log/Formatter/Simple.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTest.php 10725 2008-08-06 16:01:05Z cadorn $
+ * @group      Zend_Log
  */
 class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
 {

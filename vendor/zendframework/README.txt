@@ -1,74 +1,144 @@
-Welcome to Zend Framework 1.7.8! This is a bug fix/maintenance release in the 
-Zend Framework 1.7 series. This release maintains backwards compatibility
-with all Zend Framework 1.x releases.
+Welcome to the Zend Framework 1.9 Release! 
 
 RELEASE INFORMATION
----------------
-
-Zend Framework 1.7.8 (r14537).
-Released on 2009-03-30.
-
-SPECIAL NOTICE
---------------
-
-Since it implements a binary protocol, the Zend_Amf component must be
-aware of the processor architecture on which it is executed. Currently
-Zend_Amf has been tested on machines with 32- and 64-bit Intel-based
-processors. Specifically, it has not been tested on Power (i5),
-PowerPC, and Sparc processors. Zend_Amf may work with these
-architectures, but is not currently supported. We intend to add support
-for additional architectures in upcoming mini releases.
-
-NEW FEATURES
-------------
-
-* Zend_Amf with support for AMF0 and AMF3 protocols
-* Dojo Toolkit 1.2.1
-* Support for dijit editor available in the Dojo Toolkit
-* ZendX_JQuery in extras library (see extras folder in the full package)
-* Metadata API in Zend_Cache
-* Google book search API in Zend_Gdata
-* Preliminary support for GData Protocol v2 in Zend_Gdata
-* Support for skip data processing in Zend_Search_Lucene
-* Support for Open Office XML documents in Zend_Search_Lucene indexer
-* Performance enhancements in Zend_Loader, Zend_Controller, and server
-  components
-* Zend_Mail_Storage_Writable_Maildir enhancements for mail delivery
-* Zend_Tool in incubator (see incubator folder in the full package)
-* Zend_Text_Table for formatting table using characters
-* Zend_ProgressBar
-* Zend_Config_Writer
-* ZendX_Console_Unix_Process in the extras library
-* Zend_Db_Table_Select support for Zend_Paginator
-* Global parameters for routes
-* Using Chain-Routes for Hostname-Routes via Zend_Config
-* I18N improvements
-    - Application wide locale for all classes
-    - Data retrieving methods are now static
-    - Additional cache handling methods in all I18N classes
-    - Zend_Translate API simplified
-* File transfer enhancements
-    - Support for file elements in subforms
-    - Support for multifile elements
-    - Support for MAX_FILES_SIZE in form
-    - Support for breaking validation chain
-    - Support for translation of failure ,messages
-    - New IsCompressed, IsImage, ExcludeMimeType, ExcludeExtension validators
-    - Support for FileInfo extension in MimeType validator
-* Zend_Db_Table_Select adapater for Zend_Paginator
-* Support for custom adapters in Zend_Paginator
-* More flexible handling of complex types in Zend_Soap
+-------------------
+Zend Framework 1.9.3PL1 (r18376).
+Released on September 23, 2009.
 
 A detailed list of all features and bug fixes in this release may be found at:
 
-http://framework.zend.com/issues/secure/IssueNavigator.jspa?requestId=10990
+    http://framework.zend.com/changelog/1.9.3PL1
+
+This release marks the conclusion of the first monthly Zend Framework
+bug hunt days. As such, the changelog reflects over 100 issues resolved
+in two days by an army of volunteer contributors. If you would like to
+participate in Bug Hunt Days in the future, they occur on the third
+Thursday and Friday of each month; please be sure to have a CLA on file
+before attending.
+
+Note: A BC regression in 1.9.3 was identified and patched for this
+release. If you were using 1.9.3, we recommend upgrading to 1.9.3PL1.
+
+NEW FEATURES
+------------
+* Zend_Queue and Zend_Service_Amazon_Sqs, which provide the ability to
+  use local and remote messaging and queue services for offloading
+  asynchronous processes. (Contributed by Justin Plock and Daniel Lo)
+
+* Zend_Queue_Adapter_PlatformJobQueue, a Zend_Queue adapter for Zend
+  Platform's Job Queue. (Contributed by Zend Technologies)
+
+* Zend_Rest_Route, Zend_Rest_Controller, and
+  Zend_Controller_Plugin_PutHandler, which aid in providing RESTful
+  resources via the MVC layer. (Contributed by Luke Crouch, SourceForge)
+
+* Zend_Feed_Reader, which provides a common API to RSS and Atom feeds,
+  as well as extensions to each format, caching, and a slew of other
+  functionality. (Contributed by Pádraic Brady and Jurrien Stutterheim)
+
+* Zend_Db_Adapter_Sqlsrv, a Zend_Db adapter for Microsoft's SQL Server
+  driver for PHP. (Contributed by Juozas Kaziukenas and Rob Allen)
+
+* Zend_Db_Table updates to allow using Zend_Db_Table as a concrete
+  class by passing it one or more table definitions via the
+  constructor. (Contributed by Ralph Schindler)
+
+* Zend_Test_PHPUnit_Db, which provides Zend_Db support for PHPUnit's
+  DBUnit support, allowing developers to do functional and integration
+  testing against databases using data fixtures. (Contributed by
+  Benjamin Eberlei)
+
+* Annotation processing support for Zend_Pdf, as well as performance
+  improvements. (Contributed by Alexander Veremyev)
+
+* Zend_Dojo custom build layer support. (Contributed by Matthew Weier
+  O'Phinney)
+
+* Dojo upgraded to 1.3.2.
+
+* Numerous Zend_Ldap improvements, including full support for CRUD
+  operations, search, and manipulating tree structures. (Contributed by
+  Stefan Gehrig)
+
+* Zend_Log_Writer_Syslog, a Zend_Log writer for writing to your system
+  log. (Contributed by Thomas Gelf)
+
+* Zend_View_Helper_BaseUrl, a view helper for returning the current base
+  URL to your application, as well as for constructing URLs to public
+  resources. (Contributed by Robin Skoglund and Geoffrey Tran)
+
+* Zend_Date now has support for the DateTime extension. (Contributed by
+  Thomas Weidner)
+
+* Zend_Locale has been upgraded to CLDR 1.7. (Contributed by Thomas
+  Weidner)
+
+* Zend_Translate now has plurals support for the Gettext, Csv, and Array
+  adapters. (Contributed by Thomas Weidner)
+
+* PHP 5.3 compatibility, including support for new features in the
+  mysqli extension. All components are fully tested on both PHP 5.2.x
+  and PHP 5.3.0.
+
+In addition, a large number of smaller improvements were made throughout
+the framework, and around 700 issues have been resolved or closed since
+the release of 1.8.0!
+
+A detailed list of all features and bug fixes in this release may be found at:
+
+    http://framework.zend.com/changelog/1.9.3
+
+IMPORTANT CHANGES
+-----------------
+Zend_Http_Client:
+A change was made in Zend_Http_Client to correct ZF-5744 (Multiple file uploads
+using the same $formname in setFileUpload). Instead of returning an associative
+array of element name => upload information pairs, it now returns an array of
+arrays, with the element name as part of the upload information. This allows
+multiple file uploads using the same element name.
+
+Zend_Config_Xml:
+One deciding factor for many when choosing which Zend_Config format to use for
+their application config had to do with support for constants. Our application
+recommendations include defining two constants, APPLICATION_ENV and
+APPLICATION_PATH, and many developers have found it useful that in INI and PHP
+configurations, these constants are expanded during parsing. Zend_Config_Xml
+now supports this via an XML namespace as follows:
+
+    <config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
+        <production>
+            <includePath><zf:const
+                zf:name="APPLICATION_PATH"/>/library</includePath>
+        </production>
+    </config>
+
+On the PHP side, nothing changes.
+
+Zend_Translate_Adapter_Ini:
+Prior to PHP 5.3, parse_ini_file() and parse_ini_string() handled non-ASCII
+characters in INI option values without an issue. However, starting in PHP 5.3,
+such options will now be silently dropped in the array returned. If you are
+upgrading to PHP 5.3 and using Zend_Translate_Adapter_Ini, this could cause
+potential issues for you. If you use UTF-8 or Latin-1 characters in your INI
+option keys (which are the message IDs for translation), you should either
+modify these to use only ASCII characters, or choose a different translation
+adapter.
+
+Zend_Service_Amazon:
+Zend_Service_Amazon has been updated to comply with the latest Amazon
+ECommerce APIs -- which, as of 15 August 2009, will require an API key
+for authentication. As a result, if you now use Zend_Service_Amazon, you
+will need to pass your API key to the Zend_Service_Amazon constructor:
+    
+    $amazon = new Zend_Service_Amazon($appId, $countryCode, $apiKey);
+
+Otherwise, usage of this component remains the same.
 
 SYSTEM REQUIREMENTS
 -------------------
 
-Zend recommends the most current release of PHP for critical security and
-performance enhancements, and currently supports PHP 5.2.4 or later.
-Please see our reference guide for more detailed system requirements:
+Zend Framework requires PHP 5.2.4 or later. Please see our reference
+guide for more detailed system requirements:
 
 http://framework.zend.com/manual/en/requirements.html
 
@@ -80,32 +150,31 @@ Please see INSTALL.txt.
 QUESTIONS AND FEEDBACK
 ----------------------
 
-Online documentation can be found at http://framework.zend.com/manual. Questions
-that are not addressed in the manual should be directed to the appropriate
-mailing list:
+Online documentation can be found at http://framework.zend.com/manual.
+Questions that are not addressed in the manual should be directed to the
+appropriate mailing list:
 
 http://framework.zend.com/wiki/display/ZFDEV/Mailing+Lists
 
-If you find code in this release behaving in an unexpected manner or contrary to
-its documented behavior, please create an issue in the Zend Framework issue
-tracker at:
+If you find code in this release behaving in an unexpected manner or
+contrary to its documented behavior, please create an issue in the Zend
+Framework issue tracker at:
 
 http://framework.zend.com/issues
 
-If you would like to be notified of new releases- including further
-maintenance releases of Zend Framework 1.7- you can subscribe to the fw-announce
-mailing list by sending a blank message to fw-announce-subscribe@lists.zend.com.
+If you would like to be notified of new releases, you can subscribe to
+the fw-announce mailing list by sending a blank message to
+fw-announce-subscribe@lists.zend.com.
 
 LICENSE
 -------
 
-The files in this archive are released under the Zend Framework license. You can
-find a copy of this license in LICENSE.txt.
+The files in this archive are released under the Zend Framework license.
+You can find a copy of this license in LICENSE.txt.
 
 ACKNOWLEDGEMENTS
 ----------------
 
 The Zend Framework team would like to thank all the contributors to the Zend
-Framework project, our corporate sponsor (Zend Technologies), and you- the Zend
-Framework user. Please visit us sometime soon at http://framework.zend.com!
-
+Framework project, our corporate sponsor, and you, the Zend Framework user.
+Please visit us sometime soon at http://framework.zend.com.

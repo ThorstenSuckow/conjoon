@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -25,14 +25,14 @@ require_once 'Zend/Filter.php';
 require_once 'Zend/Validate/Interface.php';
 
 /**
- * Zend_Form_Element 
- * 
+ * Zend_Form_Element
+ *
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Element
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Element.php 12787 2008-11-23 14:17:44Z matthew $
+ * @version    $Id: Element.php 18190 2009-09-17 20:29:52Z matthew $
  */
 class Zend_Form_Element implements Zend_Validate_Interface
 {
@@ -68,7 +68,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
     protected $_belongsTo;
 
     /**
-     * Element decorators 
+     * Element decorators
      * @var array
      */
     protected $_decorators = array();
@@ -120,6 +120,12 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * @var bool
      */
     protected $_isError = false;
+
+    /**
+     * Has the element been manually marked as invalid?
+     * @var bool
+     */
+    protected $_isErrorForced = false;
 
     /**
      * Element label
@@ -204,8 +210,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * - string: name of element
      * - array: options with which to configure element
      * - Zend_Config: Zend_Config with options for configuring element
-     * 
-     * @param  string|array|Zend_Config $spec 
+     *
+     * @param  string|array|Zend_Config $spec
      * @return void
      * @throws Zend_Form_Exception if no element name after initialization
      */
@@ -217,8 +223,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
             $this->setOptions($spec);
         } elseif ($spec instanceof Zend_Config) {
             $this->setConfig($spec);
-        } 
-        
+        }
+
         if (is_string($spec) && is_array($options)) {
             $this->setOptions($options);
         } elseif (is_string($spec) && ($options instanceof Zend_Config)) {
@@ -243,7 +249,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Initialize object; used by extending classes
-     * 
+     *
      * @return void
      */
     public function init()
@@ -252,8 +258,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set flag to disable loading default decorators
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Form_Element
      */
     public function setDisableLoadDefaultDecorators($flag)
@@ -264,7 +270,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Should we load the default decorators?
-     * 
+     *
      * @return bool
      */
     public function loadDefaultDecoratorsIsDisabled()
@@ -274,7 +280,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Load default decorators
-     * 
+     *
      * @return void
      */
     public function loadDefaultDecorators()
@@ -288,15 +294,16 @@ class Zend_Form_Element implements Zend_Validate_Interface
             $this->addDecorator('ViewHelper')
                 ->addDecorator('Errors')
                 ->addDecorator('Description', array('tag' => 'p', 'class' => 'description'))
-                ->addDecorator('HtmlTag', array('tag' => 'dd'))
+                ->addDecorator('HtmlTag', array('tag' => 'dd',
+                                                'id'  => $this->getName() . '-element'))
                 ->addDecorator('Label', array('tag' => 'dt'));
         }
     }
 
     /**
      * Set object state from options array
-     * 
-     * @param  array $options 
+     *
+     * @param  array $options
      * @return Zend_Form_Element
      */
     public function setOptions(array $options)
@@ -336,8 +343,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set object state from Zend_Config object
-     * 
-     * @param  Zend_Config $config 
+     *
+     * @param  Zend_Config $config
      * @return Zend_Form_Element
      */
     public function setConfig(Zend_Config $config)
@@ -350,8 +357,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set translator object for localization
-     * 
-     * @param  Zend_Translate|null $translator 
+     *
+     * @param  Zend_Translate|null $translator
      * @return Zend_Form_Element
      */
     public function setTranslator($translator = null)
@@ -371,7 +378,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve localization translator object
-     * 
+     *
      * @return Zend_Translate_Adapter|null
      */
     public function getTranslator()
@@ -389,8 +396,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Indicate whether or not translation should be disabled
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Form_Element
      */
     public function setDisableTranslator($flag)
@@ -401,7 +408,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Is translation disabled?
-     * 
+     *
      * @return bool
      */
     public function translatorIsDisabled()
@@ -413,8 +420,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Filter a name to only allow valid variable characters
-     * 
-     * @param  string $value 
+     *
+     * @param  string $value
      * @param  bool $allowBrackets
      * @return string
      */
@@ -429,8 +436,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set element name
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return Zend_Form_Element
      */
     public function setName($name)
@@ -447,7 +454,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Return element name
-     * 
+     *
      * @return string
      */
     public function getName()
@@ -459,7 +466,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Get fully qualified name
      *
      * Places name as subitem of array and/or appends brackets.
-     * 
+     *
      * @return string
      */
     public function getFullyQualifiedName()
@@ -479,7 +486,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Get element id
-     * 
+     *
      * @return string
      */
     public function getId()
@@ -508,8 +515,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set element value
-     * 
-     * @param  mixed $value 
+     *
+     * @param  mixed $value
      * @return Zend_Form_Element
      */
     public function setValue($value)
@@ -520,9 +527,9 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Filter a value
-     * 
-     * @param  string $value 
-     * @param  string $key 
+     *
+     * @param  string $value
+     * @param  string $key
      * @return void
      */
     protected function _filterValue(&$value, &$key)
@@ -534,7 +541,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve filtered element value
-     * 
+     *
      * @return mixed
      */
     public function getValue()
@@ -552,7 +559,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve unfiltered element value
-     * 
+     *
      * @return mixed
      */
     public function getUnfilteredValue()
@@ -562,8 +569,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set element label
-     * 
-     * @param  string $label 
+     *
+     * @param  string $label
      * @return Zend_Form_Element
      */
     public function setLabel($label)
@@ -574,7 +581,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve element label
-     * 
+     *
      * @return string
      */
     public function getLabel()
@@ -584,8 +591,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set element order
-     * 
-     * @param  int $order 
+     *
+     * @param  int $order
      * @return Zend_Form_Element
      */
     public function setOrder($order)
@@ -596,7 +603,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve element order
-     * 
+     *
      * @return int
      */
     public function getOrder()
@@ -606,7 +613,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set required flag
-     * 
+     *
      * @param  bool $flag Default value is true
      * @return Zend_Form_Element
      */
@@ -618,7 +625,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Is the element required?
-     * 
+     *
      * @return bool
      */
     public function isRequired()
@@ -628,8 +635,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set flag indicating whether a NotEmpty validator should be inserted when element is required
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Form_Element
      */
     public function setAutoInsertNotEmptyValidator($flag)
@@ -640,7 +647,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Get flag indicating whether a NotEmpty validator should be inserted when element is required
-     * 
+     *
      * @return bool
      */
     public function autoInsertNotEmptyValidator()
@@ -650,8 +657,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set element description
-     * 
-     * @param  string $description 
+     *
+     * @param  string $description
      * @return Zend_Form_Element
      */
     public function setDescription($description)
@@ -662,7 +669,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve element description
-     * 
+     *
      * @return string
      */
     public function getDescription()
@@ -675,8 +682,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
      *
      * When the allow empty flag is enabled and the required flag is false, the
      * element will validate with empty values.
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Form_Element
      */
     public function setAllowEmpty($flag)
@@ -687,7 +694,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Get 'allow empty' flag
-     * 
+     *
      * @return bool
      */
     public function getAllowEmpty()
@@ -697,8 +704,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set ignore flag (used when retrieving values at form level)
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Form_Element
      */
     public function setIgnore($flag)
@@ -709,7 +716,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Get ignore flag (used when retrieving values at form level)
-     * 
+     *
      * @return bool
      */
     public function getIgnore()
@@ -719,8 +726,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set flag indicating if element represents an array
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Form_Element
      */
     public function setIsArray($flag)
@@ -731,7 +738,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Is the element representing an array?
-     * 
+     *
      * @return bool
      */
     public function isArray()
@@ -741,8 +748,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set array to which element belongs
-     * 
-     * @param  string $array 
+     *
+     * @param  string $array
      * @return Zend_Form_Element
      */
     public function setBelongsTo($array)
@@ -757,7 +764,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Return array name to which element belongs
-     * 
+     *
      * @return string
      */
     public function getBelongsTo()
@@ -767,7 +774,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Return element type
-     * 
+     *
      * @return string
      */
     public function getType()
@@ -781,9 +788,9 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set element attribute
-     * 
-     * @param  string $name 
-     * @param  mixed $value 
+     *
+     * @param  string $name
+     * @param  mixed $value
      * @return Zend_Form_Element
      * @throws Zend_Form_Exception for invalid $name values
      */
@@ -806,8 +813,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set multiple attributes at once
-     * 
-     * @param  array $attribs 
+     *
+     * @param  array $attribs
      * @return Zend_Form_Element
      */
     public function setAttribs(array $attribs)
@@ -821,8 +828,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve element attribute
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return string
      */
     public function getAttrib($name)
@@ -837,7 +844,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Return all attributes
-     * 
+     *
      * @return array
      */
     public function getAttribs()
@@ -856,8 +863,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Overloading: retrieve object property
      *
      * Prevents access to properties beginning with '_'.
-     * 
-     * @param  string $key 
+     *
+     * @param  string $key
      * @return mixed
      */
     public function __get($key)
@@ -890,9 +897,9 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Overloading: allow rendering specific decorators
      *
      * Call renderDecoratorName() to render a specific decorator.
-     * 
-     * @param  string $method 
-     * @param  array $args 
+     *
+     * @param  string $method
+     * @param  array $args
      * @return string
      * @throws Zend_Form_Exception for invalid decorator or invalid method call
      */
@@ -921,8 +928,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set plugin loader to use for validator or filter chain
-     * 
-     * @param  Zend_Loader_PluginLoader_Interface $loader 
+     *
+     * @param  Zend_Loader_PluginLoader_Interface $loader
      * @param  string $type 'decorator', 'filter', or 'validate'
      * @return Zend_Form_Element
      * @throws Zend_Form_Exception on invalid type
@@ -945,10 +952,10 @@ class Zend_Form_Element implements Zend_Validate_Interface
     /**
      * Retrieve plugin loader for validator or filter chain
      *
-     * Instantiates with default rules if none available for that type. Use 
+     * Instantiates with default rules if none available for that type. Use
      * 'decorator', 'filter', or 'validate' for $type.
-     * 
-     * @param  string $type 
+     *
+     * @param  string $type
      * @return Zend_Loader_PluginLoader
      * @throws Zend_Loader_Exception on invalid type.
      */
@@ -981,15 +988,17 @@ class Zend_Form_Element implements Zend_Validate_Interface
     /**
      * Add prefix path for plugin loader
      *
-     * If no $type specified, assumes it is a base path for both filters and 
+     * If no $type specified, assumes it is a base path for both filters and
      * validators, and sets each according to the following rules:
      * - decorators: $prefix = $prefix . '_Decorator'
      * - filters: $prefix = $prefix . '_Filter'
      * - validators: $prefix = $prefix . '_Validate'
      *
      * Otherwise, the path prefix is set on the appropriate plugin loader.
-     * 
-     * @param  string $path 
+     *
+     * @param  string $prefix
+     * @param  string $path
+     * @param  string $type
      * @return Zend_Form_Element
      * @throws Zend_Form_Exception for invalid type
      */
@@ -1022,15 +1031,15 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add many prefix paths at once
-     * 
-     * @param  array $spec 
+     *
+     * @param  array $spec
      * @return Zend_Form_Element
      */
     public function addPrefixPaths(array $spec)
     {
         if (isset($spec['prefix']) && isset($spec['path'])) {
             return $this->addPrefixPath($spec['prefix'], $spec['path']);
-        } 
+        }
         foreach ($spec as $type => $paths) {
             if (is_numeric($type) && is_array($paths)) {
                 $type = null;
@@ -1068,10 +1077,10 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Add validator to validation chain
      *
      * Note: will overwrite existing validators if they are of the same class.
-     * 
-     * @param  string|Zend_Validate_Interface $validator 
+     *
+     * @param  string|Zend_Validate_Interface $validator
      * @param  bool $breakChainOnFailure
-     * @param  array $options 
+     * @param  array $options
      * @return Zend_Form_Element
      * @throws Zend_Form_Exception if invalid validator type
      */
@@ -1103,8 +1112,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add multiple validators
-     * 
-     * @param  array $validators 
+     *
+     * @param  array $validators
      * @return Zend_Form_Element
      */
     public function addValidators(array $validators)
@@ -1153,8 +1162,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set multiple validators, overwriting previous validators
-     * 
-     * @param  array $validators 
+     *
+     * @param  array $validators
      * @return Zend_Form_Element
      */
     public function setValidators(array $validators)
@@ -1165,8 +1174,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve a single validator by name
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return Zend_Validate_Interface|false False if not found, validator otherwise
      */
     public function getValidator($name)
@@ -1196,7 +1205,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve all validators
-     * 
+     *
      * @return array
      */
     public function getValidators()
@@ -1215,8 +1224,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Remove a single validator by name
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return bool
      */
     public function removeValidator($name)
@@ -1241,7 +1250,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Clear all validators
-     * 
+     *
      * @return Zend_Form_Element
      */
     public function clearValidators()
@@ -1253,15 +1262,15 @@ class Zend_Form_Element implements Zend_Validate_Interface
     /**
      * Validate element value
      *
-     * If a translation adapter is registered, any error messages will be 
-     * translated according to the current locale, using the given error code; 
-     * if no matching translation is found, the original message will be 
+     * If a translation adapter is registered, any error messages will be
+     * translated according to the current locale, using the given error code;
+     * if no matching translation is found, the original message will be
      * utilized.
      *
      * Note: The *filtered* value is validated.
-     * 
-     * @param  mixed $value 
-     * @param  mixed $context 
+     *
+     * @param  mixed $value
+     * @param  mixed $context
      * @return boolean
      */
     public function isValid($value, $context = null)
@@ -1269,15 +1278,15 @@ class Zend_Form_Element implements Zend_Validate_Interface
         $this->setValue($value);
         $value = $this->getValue();
 
-        if ((('' === $value) || (null === $value)) 
-            && !$this->isRequired() 
+        if ((('' === $value) || (null === $value))
+            && !$this->isRequired()
             && $this->getAllowEmpty()
         ) {
             return true;
         }
 
-        if ($this->isRequired() 
-            && $this->autoInsertNotEmptyValidator() 
+        if ($this->isRequired()
+            && $this->autoInsertNotEmptyValidator()
             && !$this->getValidator('NotEmpty'))
         {
             $validators = $this->getValidators();
@@ -1336,13 +1345,18 @@ class Zend_Form_Element implements Zend_Validate_Interface
             }
         }
 
+        // If element manually flagged as invalid, return false
+        if ($this->_isErrorForced) {
+            return false;
+        }
+
         return $result;
     }
 
     /**
      * Add a custom error message to return in the event of failed validation
-     * 
-     * @param  string $message 
+     *
+     * @param  string $message
      * @return Zend_Form_Element
      */
     public function addErrorMessage($message)
@@ -1353,8 +1367,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add multiple custom error messages to return in the event of failed validation
-     * 
-     * @param  array $messages 
+     *
+     * @param  array $messages
      * @return Zend_Form_Element
      */
     public function addErrorMessages(array $messages)
@@ -1367,8 +1381,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Same as addErrorMessages(), but clears custom error message stack first
-     * 
-     * @param  array $messages 
+     *
+     * @param  array $messages
      * @return Zend_Form_Element
      */
     public function setErrorMessages(array $messages)
@@ -1379,7 +1393,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve custom error messages
-     * 
+     *
      * @return array
      */
     public function getErrorMessages()
@@ -1389,7 +1403,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Clear custom error messages stack
-     * 
+     *
      * @return Zend_Form_Element
      */
     public function clearErrorMessages()
@@ -1400,7 +1414,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Mark the element as being in a failed validation state
-     * 
+     *
      * @return Zend_Form_Element
      */
     public function markAsError()
@@ -1413,13 +1427,14 @@ class Zend_Form_Element implements Zend_Validate_Interface
         } else {
             $this->_messages = $messages;
         }
+        $this->_isErrorForced = true;
         return $this;
     }
 
     /**
      * Add an error message and mark element as failed validation
-     * 
-     * @param  string $message 
+     *
+     * @param  string $message
      * @return Zend_Form_Element
      */
     public function addError($message)
@@ -1431,8 +1446,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add multiple error messages and flag element as failed validation
-     * 
-     * @param  array $messages 
+     *
+     * @param  array $messages
      * @return Zend_Form_Element
      */
     public function addErrors(array $messages)
@@ -1445,8 +1460,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Overwrite any previously set error messages and flag as failed validation
-     * 
-     * @param  array $messages 
+     *
+     * @param  array $messages
      * @return Zend_Form_Element
      */
     public function setErrors(array $messages)
@@ -1457,7 +1472,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Are there errors registered?
-     * 
+     *
      * @return bool
      */
     public function hasErrors()
@@ -1467,7 +1482,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve validator chain errors
-     * 
+     *
      * @return array
      */
     public function getErrors()
@@ -1477,7 +1492,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve error messages
-     * 
+     *
      * @return array
      */
     public function getMessages()
@@ -1490,8 +1505,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add a filter to the element
-     * 
-     * @param  string|Zend_Filter_Interface $filter 
+     *
+     * @param  string|Zend_Filter_Interface $filter
      * @return Zend_Form_Element
      */
     public function addFilter($filter, $options = array())
@@ -1501,7 +1516,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
         } elseif (is_string($filter)) {
             $name = $filter;
             $filter = array(
-                'filter'  => $filter, 
+                'filter'  => $filter,
                 'options' => $options,
             );
             $this->_filters[$name] = $filter;
@@ -1517,8 +1532,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add filters to element
-     * 
-     * @param  array $filters 
+     *
+     * @param  array $filters
      * @return Zend_Form_Element
      */
     public function addFilters(array $filters)
@@ -1561,8 +1576,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add filters to element, overwriting any already existing
-     * 
-     * @param  array $filters 
+     *
+     * @param  array $filters
      * @return Zend_Form_Element
      */
     public function setFilters(array $filters)
@@ -1573,8 +1588,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve a single filter by name
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return Zend_Filter_Interface
      */
     public function getFilter($name)
@@ -1605,7 +1620,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Get all filters
-     * 
+     *
      * @return array
      */
     public function getFilters()
@@ -1624,8 +1639,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Remove a filter by name
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return Zend_Form_Element
      */
     public function removeFilter($name)
@@ -1650,7 +1665,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Clear all filters
-     * 
+     *
      * @return Zend_Form_Element
      */
     public function clearFilters()
@@ -1663,8 +1678,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Set view object
-     * 
-     * @param  Zend_View_Interface $view 
+     *
+     * @param  Zend_View_Interface $view
      * @return Zend_Form_Element
      */
     public function setView(Zend_View_Interface $view = null)
@@ -1677,7 +1692,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * Retrieve view object
      *
      * Retrieves from ViewRenderer if none previously set.
-     * 
+     *
      * @return null|Zend_View_Interface
      */
     public function getView()
@@ -1692,9 +1707,9 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Instantiate a decorator based on class name or class name fragment
-     * 
-     * @param  string $name 
-     * @param  null|array $options 
+     *
+     * @param  string $name
+     * @param  null|array $options
      * @return Zend_Form_Decorator_Interface
      */
     protected function _getDecorator($name, $options)
@@ -1711,8 +1726,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add a decorator for rendering the element
-     * 
-     * @param  string|Zend_Form_Decorator_Interface $decorator 
+     *
+     * @param  string|Zend_Form_Decorator_Interface $decorator
      * @param  array|Zend_Config $options Options with which to initialize decorator
      * @return Zend_Form_Element
      */
@@ -1754,8 +1769,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Add many decorators at once
-     * 
-     * @param  array $decorators 
+     *
+     * @param  array $decorators
      * @return Zend_Form_Element
      */
     public function addDecorators(array $decorators)
@@ -1798,8 +1813,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Overwrite all decorators
-     * 
-     * @param  array $decorators 
+     *
+     * @param  array $decorators
      * @return Zend_Form_Element
      */
     public function setDecorators(array $decorators)
@@ -1810,8 +1825,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve a registered decorator
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return false|Zend_Form_Decorator_Abstract
      */
     public function getDecorator($name)
@@ -1842,7 +1857,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve all decorators
-     * 
+     *
      * @return array
      */
     public function getDecorators()
@@ -1857,9 +1872,9 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Remove a single decorator
-     * 
-     * @param  string $name 
-     * @return bool
+     *
+     * @param  string $name
+     * @return Zend_Form_Element
      */
     public function removeDecorator($name)
     {
@@ -1883,7 +1898,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Clear all decorators
-     * 
+     *
      * @return Zend_Form_Element
      */
     public function clearDecorators()
@@ -1894,8 +1909,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Render form element
-     * 
-     * @param  Zend_View_Interface $view 
+     *
+     * @param  Zend_View_Interface $view
      * @return string
      */
     public function render(Zend_View_Interface $view = null)
@@ -1916,7 +1931,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
      * String representation of form element
      *
      * Proxies to {@link render()}.
-     * 
+     *
      * @return string
      */
     public function __toString()
@@ -1932,8 +1947,8 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Lazy-load a filter
-     * 
-     * @param  array $filter 
+     *
+     * @param  array $filter
      * @return Zend_Filter_Interface
      */
     protected function _loadFilter(array $filter)
@@ -1981,7 +1996,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Lazy-load a validator
-     * 
+     *
      * @param  array $validator Validator definition
      * @return Zend_Validate_Interface
      */
@@ -2046,7 +2061,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Lazy-load a decorator
-     * 
+     *
      * @param  array $decorator Decorator type and options
      * @param  mixed $name Decorator name or alias
      * @return Zend_Form_Decorator_Interface
@@ -2084,7 +2099,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Retrieve error messages and perform translation and value substitution
-     * 
+     *
      * @return array
      */
     protected function _getErrorMessages()
@@ -2111,7 +2126,7 @@ class Zend_Form_Element implements Zend_Validate_Interface
 
     /**
      * Are there custom error messages registered?
-     * 
+     *
      * @return bool
      */
     protected function _hasErrorMessages()

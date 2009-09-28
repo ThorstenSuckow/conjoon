@@ -202,13 +202,15 @@ dojo.declare("dojox.widget.Pager",
 		}
 		
 		var _PagerItem = dojo.getObject(this.itemClass);
-		var paddingLead = (_h ? "paddingLeft" : "paddingTop");
-		var paddingTrail = (_h ? "paddingRight" : "paddingBottom");
+		var paddingLead = "padding" + (_h ? "Left" : "Top");
+		var paddingTrail = "padding" + (_h ? "Right" : "Bottom");
 			
 		dojo.forEach(this.items, function(item, cnt){
 			
-			var contentContainer = dojo.doc.createElement('div');
-			contentContainer.innerHTML = item.content;
+			var contentContainer = dojo.create('div', {
+				innerHTML: item.content
+			});
+
 			var pagerItem = new _PagerItem({
 				id: this.id + '-item-' + (cnt + 1)
 			}, contentContainer);
@@ -283,7 +285,7 @@ dojo.declare("dojox.widget.Pager",
 		this.iconsLoaded = 0;
 		this._iconConnects = [];
 		
-		for (var i=1; i<=this._totalPages; i++){
+		for (var i = 1; i <= this._totalPages; i++){
 			var icon = new Image();
 			
 			var pointer = i;
@@ -415,13 +417,13 @@ dojo.declare("dojox.widget.Pager",
 			this._currentPage++;
 		}
 		
-		cnt = this.itemsPage;
+		var cnt = this.itemsPage;
 		for (var i=this._currentPage*this.itemsPage; i>(this._currentPage-1)*this.itemsPage; i--){
 			if (dojo.byId(this.id+'-item-'+i)){
 				var currentItem = dojo.byId(this.id+'-item-'+i);
 				var marginBox = dojo.marginBox(currentItem);
 				if (this.orientation == "horizontal") {
-					newPos = (dojo.style(this.pagerContainerView, 'width')+((cnt-1)*marginBox.w))-1;
+					var newPos = (dojo.style(this.pagerContainerView, 'width')+((cnt-1)*marginBox.w))-1;
 					dojo.style(currentItem, 'left', newPos+'px');
 					dojo.style(currentItem, 'top', '0px');
 					
@@ -477,7 +479,7 @@ dojo.declare("dojox.widget.Pager",
 				this._currentPage--;
 		}
    
-		cnt = this.itemsPage;
+		var cnt = this.itemsPage;
 		var j=1;
 		for (var i=this._currentPage*this.itemsPage; i>(this._currentPage-1)*this.itemsPage; i--){
 			if(dojo.byId(this.id+'-item-'+i)){
@@ -485,7 +487,7 @@ dojo.declare("dojox.widget.Pager",
 				var marginBox = dojo.marginBox(currentItem);
    
 				if (this.orientation == "horizontal") {
-					newPos = -(j * marginBox.w) + 1;
+					var newPos = -(j * marginBox.w) + 1;
 					dojo.style(currentItem, 'left', newPos+'px');
 					dojo.style(currentItem, 'top', '0px');
 			   

@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_XmlRpc
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version $Id: FaultTest.php 17786 2009-08-23 22:26:33Z lars $
+ */
+
 // Call Zend_XmlRpc_Server_FaultTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     require_once dirname(__FILE__) . '/../../../TestHelper.php';
@@ -14,9 +35,12 @@ require_once 'Zend/XmlRpc/Server/Fault.php';
 /**
  * Test case for Zend_XmlRpc_Server_Fault
  *
- * @package Zend_XmlRpc
+ * @category   Zend
+ * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: FaultTest.php 12568 2008-11-11 19:54:06Z matthew $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_XmlRpc
  */
 class Zend_XmlRpc_Server_FaultTest extends PHPUnit_Framework_TestCase 
 {
@@ -140,6 +164,8 @@ class Zend_XmlRpc_Server_FaultTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($f instanceof Zend_XmlRpc_Server_Fault);
         $this->assertEquals('Checking observers', $f->getMessage());
         $this->assertEquals(411, $f->getCode());
+
+        $this->assertFalse(Zend_XmlRpc_Server_Fault::attachObserver('foo'));
     }
 
     /**
@@ -157,6 +183,8 @@ class Zend_XmlRpc_Server_FaultTest extends PHPUnit_Framework_TestCase
         $fault = Zend_XmlRpc_Server_Fault::getInstance($e);
         $observed = zxrs_fault_observer::getObserved();
         $this->assertTrue(empty($observed));
+
+        $this->assertFalse(Zend_XmlRpc_Server_Fault::detachObserver('foo'));
     }
 
     /**
@@ -168,6 +196,17 @@ class Zend_XmlRpc_Server_FaultTest extends PHPUnit_Framework_TestCase
         $fault = Zend_XmlRpc_Server_Fault::getInstance($e);
 
         $this->assertEquals(411, $fault->getCode());
+    }
+
+    /**
+     * getException() test
+     */
+    public function testGetException()
+    {
+        $e = new Zend_XmlRpc_Server_Exception('Testing fault', 411);
+        $fault = Zend_XmlRpc_Server_Fault::getInstance($e);
+
+        $this->assertSame($e, $fault->getException());
     }
 
     /**

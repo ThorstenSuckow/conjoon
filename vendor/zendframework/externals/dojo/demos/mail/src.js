@@ -1,5 +1,7 @@
 dojo.require("dojo.parser");
 dojo.require("dojo.data.ItemFileWriteStore");
+dojo.require("dojo.date.locale");
+dojo.require("dojo.date.stamp");
 
 dojo.require("dijit.dijit");
 dojo.require("dijit.Declaration");
@@ -23,6 +25,7 @@ dojo.require("dijit.form.TextBox");
 dojo.require("dijit.form.ComboBox");
 dojo.require("dijit.form.FilteringSelect");
 dojo.require("dijit.form.Textarea");
+dojo.require("dijit.form.Form")
 
 dojo.require("dijit.layout.BorderContainer");
 dojo.require("dijit.layout.AccordionContainer");
@@ -31,6 +34,7 @@ dojo.require("dijit.layout.ContentPane");
 
 dojo.require("dojox.grid.DataGrid");
 dojo.require("dojox.widget.FisheyeLite");
+dojo.require("dojox.analytics.Urchin");
 
 dojo.addOnLoad(function(){
 
@@ -66,6 +70,13 @@ dojo.addOnLoad(function(){
 	
 	// Write A-Z "links" on contactIndex tab to do filtering
 	genIndex();
+
+	new dojox.analytics.Urchin({ 
+		acct: "UA-3572741-1", 
+		GAonLoad: function(){
+			this.trackPageView("/demos/dijitmail");
+		}
+	});	
 
 });
 
@@ -187,5 +198,9 @@ var showSendBar = function(){
 	dijit.byId('fakeSend').update({ indeterminate: true });
 	dijit.byId('sendDialog').show();
 	setTimeout(function(){stopSendBar();}, 3000);
+}
+
+var formatDate = function(inDatum){
+    return dojo.date.locale.format(dojo.date.stamp.fromISOString(inDatum), {selector: "date"});
 }
 

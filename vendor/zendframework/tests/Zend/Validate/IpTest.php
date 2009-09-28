@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IpTest.php 13242 2008-12-14 17:49:11Z thomas $
+ * @version    $Id: IpTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -34,8 +34,9 @@ require_once 'Zend/Validate/Ip.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_IpTest extends PHPUnit_Framework_TestCase
 {
@@ -106,5 +107,13 @@ class Zend_Validate_IpTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertTrue($this->_validator->isValid('::127.0.0.1'));
+    }
+
+    /**
+     * @ZF-4352
+     */
+    public function testNonStringValidation()
+    {
+        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
     }
 }

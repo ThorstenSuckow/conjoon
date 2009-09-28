@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: TestCommon.php 17857 2009-08-27 22:01:47Z ralph $
  */
 
 require_once 'Zend/Db/TestSetup.php';
@@ -25,6 +26,15 @@ require_once 'Zend/Db/Statement/Exception.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
+/**
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Statement
+ */
 abstract class Zend_Db_Statement_TestCommon extends Zend_Db_TestSetup
 {
 
@@ -848,5 +858,14 @@ abstract class Zend_Db_Statement_TestCommon extends Zend_Db_TestSetup
         $this->assertEquals($valueArray, $stmt->getAttribute(1235), "Expected array #2");
         $this->assertEquals($value, $stmt->getAttribute(1234), "Expected '$value' #2");
     }
-
+    
+    /**
+     * @group ZF-7706
+     */
+    public function testStatementCanReturnDriverStatement()
+    {
+        $statement = $this->_db->query('SELECT * FROM zfproducts');
+        $this->assertNotNull($statement->getDriverStatement());
+        return $statement;
+    }
 }

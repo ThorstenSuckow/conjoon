@@ -1,8 +1,23 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: IniTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -19,6 +34,9 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Translate
  */
 class Zend_Translate_Adapter_IniTest extends PHPUnit_Framework_TestCase
 {
@@ -63,7 +81,11 @@ class Zend_Translate_Adapter_IniTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Message 1 (en)', $adapter->_('Message_1'));
         $this->assertEquals('Message_6', $adapter->translate('Message_6'));
         $this->assertEquals('Küchen Möbel (en)', $adapter->translate('Cooking_furniture'));
-        $this->assertEquals('Cooking furniture (en)', $adapter->translate('Küchen_Möbel'));
+        if (0 > version_compare(PHP_VERSION, '5.3.0')) {
+            $this->assertEquals('Cooking furniture (en)', $adapter->translate('Küchen_Möbel'), var_export($adapter->getMessages('en'), 1));
+        } else {
+            $this->markTestSkipped('PHP 5.3 cannot utilize non-ASCII characters for INI option keys');
+        }
     }
 
     public function testIsTranslated()
@@ -101,7 +123,18 @@ class Zend_Translate_Adapter_IniTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new Zend_Translate_Adapter_Ini(dirname(__FILE__) . '/_files/translation_en.ini', 'en');
         $adapter->setOptions(array('testoption' => 'testkey'));
-        $this->assertEquals(array('testoption' => 'testkey', 'clear' => false, 'scan' => null, 'locale' => 'en', 'ignore' => '.', 'disableNotices' => false), $adapter->getOptions());
+        $this->assertEquals(
+            array(
+                'testoption' => 'testkey',
+                'clear' => false,
+                'scan' => null,
+                'locale' => 'en',
+                'ignore' => '.',
+                'disableNotices' => false,
+                'log'             => false,
+                'logMessage'      => 'Untranslated message within \'%locale%\': %message%',
+                'logUntranslated' => false),
+            $adapter->getOptions());
         $this->assertEquals('testkey', $adapter->getOptions('testoption'));
         $this->assertTrue(is_null($adapter->getOptions('nooption')));
     }

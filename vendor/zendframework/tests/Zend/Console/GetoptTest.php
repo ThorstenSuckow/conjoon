@@ -13,11 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend
+ * @package    Zend_Console_Getop
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: GetoptTest.php 13770 2009-01-24 14:24:21Z letssurf $
+ * @version    $Id: GetoptTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -39,9 +39,20 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Console_Getopt
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Console_Getopt
  */
 class Zend_Console_GetoptTest extends PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        if(ini_get('register_argc_argv') == false) {
+            $this->markTestSkipped("Cannot Test Zend_Console_Getopt without 'register_argc_argv' ini option true.");
+        }
+        $_SERVER['argv'] = array('getopttest');
+    }
+
     public function testGetoptShortOptionsGnuMode()
     {
         $opts = new Zend_Console_Getopt('abp:', array('-a', '-p', 'p_arg'));
@@ -466,6 +477,24 @@ class Zend_Console_GetoptTest extends PHPUnit_Framework_TestCase
         $opts->setArguments(array('-k', 'string'));
         $this->assertEquals('string', $opts->k);
 
+    }
+
+    /**
+     * @group ZF-2295
+     */
+    public function testRegisterArgcArgvOffThrowsException()
+    {
+        $argv = $_SERVER['argv'];
+        unset($_SERVER['argv']);
+
+        try {
+            $opts = new Zend_Console_GetOpt('abp:');
+            $this->fail();
+        } catch(Zend_Console_GetOpt_Exception $e) {
+            $this->assertContains('$_SERVER["argv"]', $e->getMessage());
+        }
+
+        $_SERVER['argv'] = $argv;
     }
     
     /**

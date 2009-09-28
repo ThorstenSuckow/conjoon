@@ -14,10 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_Db
- * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OracleStatement.php 9577 2008-05-31 01:50:27Z peptolab $
+ * @version    $Id: OracleStatement.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -40,8 +40,8 @@ require_once 'Zend/Db/Statement/Oracle.php';
  *
  * @category   Zend
  * @package    Zend_Db
- * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Test_OracleStatement extends Zend_Db_Statement_Oracle

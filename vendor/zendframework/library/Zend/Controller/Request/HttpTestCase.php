@@ -14,8 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Controller
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: HttpTestCase.php 18227 2009-09-18 09:30:59Z beberlei $
  */
 
 /**
@@ -44,7 +45,7 @@ class Zend_Controller_Request_HttpTestCase extends Zend_Controller_Request_Http
      * Request method
      * @var string
      */
-    protected $_method;
+    protected $_method = 'GET';
 
     /**
      * Raw POST body

@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ElementTest.php 18190 2009-09-17 20:29:52Z matthew $
+ */
+
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Form_ElementTest::main');
 }
@@ -20,6 +41,14 @@ require_once 'Zend/Validate/NotEmpty.php';
 require_once 'Zend/Validate/EmailAddress.php';
 require_once 'Zend/View.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Form
+ */
 class Zend_Form_ElementTest extends PHPUnit_Framework_TestCase
 {
     public static function main()
@@ -773,8 +802,8 @@ class Zend_Form_ElementTest extends PHPUnit_Framework_TestCase
         $this->_checkZf2794();
 
         $message = 'My custom empty message';
-        $this->element->setRequired(true)
-                      ->addValidator('notEmpty', false, array('messages' => $message));
+        $this->element->addValidator('notEmpty', false, array('messages' => $message))
+                      ->setRequired(true);
 
         $this->element->isValid('');
         $messages = $this->element->getMessages();
@@ -1178,7 +1207,7 @@ class Zend_Form_ElementTest extends PHPUnit_Framework_TestCase
 
     public function testShouldUseFilterConstructorOptionsAsPassedToAddFilter()
     {
-        $this->element->addFilter('HtmlEntities', array('quoteStyle' => ENT_QUOTES, 'charSet' => 'UTF-8'));
+        $this->element->addFilter('HtmlEntities', array(array('quotestyle' => ENT_QUOTES, 'charset' => 'UTF-8')));
         $filter = $this->element->getFilter('HtmlEntities');
         $this->assertTrue($filter instanceof Zend_Filter_HtmlEntities);
         $this->assertEquals(ENT_QUOTES, $filter->getQuoteStyle());
@@ -1947,6 +1976,15 @@ class Zend_Form_ElementTest extends PHPUnit_Framework_TestCase
         $html = $this->element->bogusMethodCall();
     }
 
+    /**
+     * @group ZF-5150
+     */
+    public function testMarkingAsErrorShouldCauseIsErrorToReturnFalse()
+    {
+        $this->element->setValue('foo');
+        $this->element->markAsError();
+        $this->assertFalse($this->element->isValid('foo'));
+    }
 
     /**
      * Used by test methods susceptible to ZF-2794, marks a test as incomplete

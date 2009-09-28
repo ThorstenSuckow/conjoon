@@ -1,4 +1,24 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Http_Client
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: TestAdapterTest.php 17869 2009-08-28 10:37:13Z cogo $
+ */
 
 require_once realpath(dirname(__FILE__) . '/../../../') . '/TestHelper.php';
 
@@ -12,24 +32,46 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @version    $Id: TestAdapterTest.php 12036 2008-10-20 18:37:47Z shahar $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Http
+ * @group      Zend_Http_Client
  */
 class Zend_Http_Client_TestAdapterTest extends PHPUnit_Framework_TestCase
 {
-	public function setUp()
-	{
-        $this->adapter = new Zend_Http_Client_Adapter_Test();
-	}
+    /**
+     * Test adapter
+     *
+     * @var Zend_Http_Client_Adapter_Test
+     */
+    protected $adapter;
 
+    /**
+     * Set up the test adapter before running the test
+     *
+     */
+    public function setUp()
+    {
+        $this->adapter = new Zend_Http_Client_Adapter_Test();
+    }
+
+    /**
+     * Tear down the test adapter after running the test
+     *
+     */
+    public function tearDown()
+    {
+        $this->adapter = null;
+    }
+
+    /**
+     * Make sure an exception is thrown on invalid cofiguration
+     *
+     * @expectedException Zend_Http_Client_Adapter_Exception
+     */
     public function testSetConfigThrowsOnInvalidConfig()
     {
-        try {
-            $this->adapter->setConfig('foo');
-        } catch (Exception $e) {
-            $class = 'Zend_Http_Client_Adapter_Exception';
-            $this->assertType($class, $e);
-            $this->assertRegexp('/expects an array/i', $e->getMessage());
-        }
+        $this->adapter->setConfig('foo');
     }
 
     public function testSetConfigReturnsQuietly()
@@ -74,6 +116,35 @@ class Zend_Http_Client_TestAdapterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected[0], $this->adapter->read());
     }
 
+    /**
+     * Test that responses could be added as strings
+     *
+     * @dataProvider validHttpResponseProvider
+     */
+    public function testAddResponseAsString($testResponse)
+    {
+        $this->adapter->read(); // pop out first response
+
+        $this->adapter->addResponse($testResponse);
+        $this->assertEquals($testResponse, $this->adapter->read());
+    }
+
+    /**
+     * Test that responses could be added as objects (ZF-7009)
+     *
+     * @link http://framework.zend.com/issues/browse/ZF-7009
+     * @dataProvider validHttpResponseProvider
+     */
+    public function testAddResponseAsObject($testResponse)
+    {
+        $this->adapter->read(); // pop out first response
+
+        $respObj = Zend_Http_Response::fromString($testResponse);
+
+        $this->adapter->addResponse($respObj);
+        $this->assertEquals($testResponse, $this->adapter->read());
+    }
+
     public function testReadingResponseCyclesWhenSetByArray()
     {
         $expected = array("HTTP/1.1 200 OK\r\n\r\n",
@@ -114,5 +185,37 @@ class Zend_Http_Client_TestAdapterTest extends PHPUnit_Framework_TestCase
                 $this->assertRegexp('/out of range/i', $e->getMessage());
             }
         }
+    }
+
+    /**
+     * Data Providers
+     */
+
+    /**
+     * Provide valid HTTP responses as string
+     *
+     * @return array
+     */
+    static public function validHttpResponseProvider()
+    {
+        return array(
+           array("HTTP/1.1 200 OK\r\n\r\n"),
+           array("HTTP/1.1 302 Moved Temporarily\r\nLocation: http://example.com/baz\r\n\r\n"),
+           array("HTTP/1.1 404 Not Found\r\n" .
+                 "Date: Sun, 14 Jun 2009 10:40:06 GMT\r\n" .
+                 "Server: Apache/2.2.3 (CentOS)\r\n" .
+                 "Content-length: 281\r\n" .
+                 "Connection: close\r\n" .
+                 "Content-type: text/html; charset=iso-8859-1\r\n\r\n" .
+                 "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n" .
+                 "<html><head>\n" .
+                 "<title>404 Not Found</title>\n" .
+                 "</head><body>\n" .
+                 "<h1>Not Found</h1>\n" .
+                 "<p>The requested URL /foo/bar was not found on this server.</p>\n" .
+                 "<hr>\n" .
+                 "<address>Apache/2.2.3 (CentOS) Server at example.com Port 80</address>\n" .
+                 "</body></html>")
+        );
     }
 }

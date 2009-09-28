@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AlphaTest.php 12856 2008-11-26 07:47:31Z thomas $
+ * @version    $Id: AlphaTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -37,8 +36,9 @@ require_once 'Zend/Filter/Alpha.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Filter
  */
 class Zend_Filter_AlphaTest extends PHPUnit_Framework_TestCase
 {
@@ -151,7 +151,7 @@ class Zend_Filter_AlphaTest extends PHPUnit_Framework_TestCase
      */
     public function testAllowWhiteSpace()
     {
-        $this->_filter->allowWhiteSpace = true;
+        $this->_filter->setAllowWhiteSpace(true);
         if (!self::$_unicodeEnabled) {
             // POSIX named classes are not supported, use alternative a-zA-Z match
             $valuesExpected = array(

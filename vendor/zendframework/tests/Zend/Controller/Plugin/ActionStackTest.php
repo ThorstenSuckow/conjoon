@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ActionStackTest.php 18175 2009-09-17 17:05:48Z matthew $
+ */
+
 // Call Zend_Controller_Plugin_ActionStackTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     require_once dirname(__FILE__) . '/../../../TestHelper.php';
@@ -14,6 +35,14 @@ require_once 'Zend/Registry.php';
 
 /**
  * Test class for Zend_Controller_Plugin_ActionStack.
+ *
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Plugin
  */
 class Zend_Controller_Plugin_ActionStackTest extends PHPUnit_Framework_TestCase 
 {
@@ -251,6 +280,29 @@ class Zend_Controller_Plugin_ActionStackTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($next->getControllerName(), $request->getControllerName());
         $this->assertEquals($next->getModuleName(), $request->getModuleName());
         $this->assertFalse($request->isDispatched());
+    }
+
+    public function testForwardResetsRequestParamsIfFlagSet()
+    {
+        $plugin   = new Zend_Controller_Plugin_ActionStack();
+        $request  = $this->getNewRequest();
+        $params   = array('foo' => 'bar','baz'=>'bat');
+        $request->setParams($params);
+        $plugin->setRequest($request);
+
+        $this->assertEquals($params,$plugin->getRequest()->getParams());
+
+        $next = $this->getNewRequest();
+        $plugin->forward($next);
+
+        $this->assertEquals($params,$plugin->getRequest()->getParams());
+
+        $plugin->setClearRequestParams(true);
+
+        $next = $this->getNewRequest();
+        $plugin->forward($next);
+
+        $this->assertEquals(array(),$plugin->getRequest()->getParams());
     }
 
     /**

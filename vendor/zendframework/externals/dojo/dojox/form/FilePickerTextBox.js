@@ -28,6 +28,11 @@ dojo.declare(
 		//		The item, in our store, of the directory relating to our value
 		valueItem: null,
 		
+		// numPanes: number
+		//	The number of panes to display in our box (if we don't have any
+		//	minPaneWidth specified by our constraints)
+		numPanes: 2.25,
+		
 		postMixInProperties: function(){
 			this.inherited(arguments);
 			this.dropDown = new dojox.widget.FilePicker(this.constraints);
@@ -44,12 +49,18 @@ dojo.declare(
 			});
 		},
 		
-		_setValueAttr: function(/*string*/value){
+		_setValueAttr: function(/*string*/value, priorityChange, fromWidget){
 			// summary: sets the value of this widget
 			if(!this._searchInProgress){
 				this.inherited(arguments);
-				this._skip = true;
-				this.dropDown.attr("pathValue", value);
+				value = value||"";
+				var tVal = this.dropDown.attr("pathValue")||"";
+				if(value !== tVal){
+					this._skip = true;
+					var fx = dojo.hitch(this, "_setBlurValue");
+					this.dropDown._setPathValueAttr(value, !fromWidget, 
+											this._settingBlurValue ? fx : null);
+				}
 			}
 		},
 		
@@ -57,18 +68,17 @@ dojo.declare(
 			// summary: called when the path gets changed in the dropdown
 			if(!item && this.focusNode.value){
 				this._hasValidPath = false;
+				this.focusNode.value = "";
 			}else{
 				this.valueItem = item;
 				var value = this.dropDown._getPathValueAttr(item);
-				if(value || !this._skipInvalidSet){
-					if(value){
-						this._hasValidPath = true;
-					}
-					if(!this._skip){
-						this.attr("value", value);
-					}
-					delete this._skip;
+				if(value){
+					this._hasValidPath = true;
 				}
+				if(!this._skip){
+					this._setValueAttr(value, undefined, true);
+				}
+				delete this._skip;
 			}
 			this.validate();
 		},
@@ -83,6 +93,9 @@ dojo.declare(
 		openDropDown: function(){
 			// set width to 0 so that it will resize automatically
 			this.dropDown.domNode.style.width="0px";
+			if(!("minPaneWidth" in (this.constraints||{}))){
+				this.dropDown.attr("minPaneWidth", (this.domNode.offsetWidth / this.numPanes));
+			}
 			this.inherited(arguments);
 		},
 		
@@ -136,10 +149,13 @@ dojo.declare(
 		
 		_setBlurValue: function(){
 			// summary: sets the value of the widget once focus has left
-			if(this.dropDown){
+			if(this.dropDown && !this._settingBlurValue){
+				this._settingBlurValue = true;
 				this.attr("value", this.focusNode.value);
+			}else{
+				delete this._settingBlurValue;
+				this.inherited(arguments);
 			}
-			this.inherited(arguments);
 		},
 		
 		parse: function(/* String */ value, /* Object */ constraints){
@@ -161,7 +177,7 @@ dojo.declare(
 				return v;
 			};
 			ddVal = norm(ddVal);
-			val = norm(value);
+			var val = norm(value);
 			if(val == ddVal){
 				return value;
 			}

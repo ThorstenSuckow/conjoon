@@ -15,14 +15,24 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once 'Zend/Db/Adapter/Pdo/TestCommon.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
+/**
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Adapter
+ */
 class Zend_Db_Adapter_Pdo_OciTest extends Zend_Db_Adapter_Pdo_TestCommon
 {
 
@@ -88,42 +98,6 @@ class Zend_Db_Adapter_Pdo_OciTest extends Zend_Db_Adapter_Pdo_TestCommon
         $result = $this->_db->fetchAll($select);
         $this->assertType('array', $result);
         $this->assertEquals('SOLARIS', $result[0]['product_name']);
-    }
-
-    /**
-     * Test the Adapter's limit() method.
-     * Fetch 1 row.  Then fetch 1 row offset by 1 row.
-     */
-    public function testAdapterLimit()
-    {
-        $products = $this->_db->quoteIdentifier('zfproducts');
-
-        $sql = $this->_db->limit("SELECT * FROM $products", 1);
-
-        $stmt = $this->_db->query($sql);
-        $result = $stmt->fetchAll();
-        $this->assertEquals(1, count($result),
-            'Expecting row count to be 1');
-        $this->assertEquals(3, count($result[0]),
-            'Expecting column count to be 3');
-        $this->assertEquals(1, $result[0]['product_id'],
-            'Expecting to get product_id 1');
-    }
-
-    public function testAdapterLimitOffset()
-    {
-        $products = $this->_db->quoteIdentifier('zfproducts');
-
-        $sql = $this->_db->limit("SELECT * FROM $products", 1, 1);
-
-        $stmt = $this->_db->query($sql);
-        $result = $stmt->fetchAll();
-        $this->assertEquals(1, count($result),
-            'Expecting row count to be 1');
-        $this->assertEquals(3, count($result[0]),
-            'Expecting column count to be 3');
-        $this->assertEquals(2, $result[0]['product_id'],
-            'Expecting to get product_id 2');
     }
 
     /**

@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Loader
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: PluginLoaderTest.php 18207 2009-09-17 22:29:50Z beberlei $
+ */
+
 // Call Zend_Loader_PluginLoaderTest::main() if this source file is executed directly.
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Loader_PluginLoaderTest::main');
@@ -13,6 +34,13 @@ require_once 'Zend/Loader/PluginLoader.php';
 
 /**
  * Test class for Zend_Loader_PluginLoader.
+ *
+ * @category   Zend
+ * @package    Zend_Loader
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Loader
  */
 class Zend_Loader_PluginLoaderTest extends PHPUnit_Framework_TestCase
 {
@@ -83,6 +111,17 @@ class Zend_Loader_PluginLoaderTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists('Zend_Loader_', $paths));
         $this->assertEquals(1, count($paths['Zend_View_']));
         $this->assertEquals(2, count($paths['Zend_Loader_']));
+    }
+
+    public function testAddPrefixPathMultipleTimes()
+    {
+        $loader = new Zend_Loader_PluginLoader();
+        $loader->addPrefixPath('Zend_Loader', $this->libPath . '/Zend/Loader')
+               ->addPrefixPath('Zend_Loader', $this->libPath . '/Zend/Loader');
+        $paths = $loader->getPaths();
+
+        $this->assertType('array', $paths);
+        $this->assertEquals(1, count($paths['Zend_Loader_']));
     }
 
     public function testAddPrefixPathStatically()

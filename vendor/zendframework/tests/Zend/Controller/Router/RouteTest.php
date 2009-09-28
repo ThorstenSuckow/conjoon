@@ -1,8 +1,23 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: RouteTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -20,6 +35,12 @@ require_once 'Zend/Controller/Request/Http.php';
 /** @see Zend_Controller_Router_Route */
 require_once 'Zend/Controller/Router/Route.php';
 
+/** @see Zend_Translate */
+require_once 'Zend/Translate.php';
+
+/** @see Zend_Registry */
+require_once 'Zend/Registry.php';
+
 /** PHPUnit test case */
 require_once 'PHPUnit/Framework/TestCase.php';
 
@@ -27,6 +48,10 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Router
  */
 class Zend_Controller_Router_RouteTest extends PHPUnit_Framework_TestCase
 {
@@ -50,6 +75,13 @@ class Zend_Controller_Router_RouteTest extends PHPUnit_Framework_TestCase
         // Clean host env
         unset($_SERVER['HTTP_HOST'],
             $_SERVER['HTTPS'], $_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT']);
+            
+       // Set translator
+       $translator = new Zend_Translate('array', array('foo' => 'en_foo', 'bar' => 'en_bar'), 'en');
+       $translator->addTranslation(array('foo' => 'de_foo', 'bar' => 'de_bar'), 'de');
+       $translator->setLocale('en');
+       
+       Zend_Registry::set('Zend_Translate', $translator);
     }
 
     /**
@@ -61,6 +93,12 @@ class Zend_Controller_Router_RouteTest extends PHPUnit_Framework_TestCase
     {
         // Restore server array
         $_SERVER = $this->_server;
+        
+        // Remove translator and locale
+        Zend_Registry::set('Zend_Translate', null);
+        Zend_Registry::set('Zend_Locale', null);
+        Zend_Controller_Router_Route::setDefaultTranslator(null);
+        Zend_Controller_Router_Route::setDefaultLocale(null);
     }
 
     public function testStaticMatch()
@@ -582,8 +620,6 @@ class Zend_Controller_Router_RouteTest extends PHPUnit_Framework_TestCase
     
     public function testPartialMatch()
     {
-        $this->markTestSkipped('Route features not ready');
-        
         $route = new Zend_Controller_Router_Route(':lang/:temp', array('lang' => 'pl'), array('temp' => '\d+'));
 
         $values = $route->match('en/tmp/ctrl/action/id/1', true);
@@ -591,17 +627,164 @@ class Zend_Controller_Router_RouteTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($values);
         
         $route = new Zend_Controller_Router_Route(':lang/:temp', array('lang' => 'pl'));
-
+        
         $values = $route->match('en/tmp/ctrl/action/id/1', true);
 
         $this->assertType('array', $values);
         $this->assertEquals('en', $values['lang']);
         $this->assertEquals('tmp', $values['temp']);
-        $this->assertEquals(6, $values[null]);
+        $this->assertEquals('en/tmp', $route->getMatchedPath());
         
     }
     
+    /**
+     * Translated behaviour
+     */
+    public function testStaticTranslationAssemble()
+    {
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/en_foo', $url);       
+    }
 
+    public function testStaticTranslationMatch()
+    {
+        $route  = new Zend_Controller_Router_Route('foo/@foo');
+        $values = $route->match('foo/en_foo');
+        
+        $this->assertTrue(is_array($values));
+    }
+ 
+    public function testDynamicTranslationAssemble()
+    {
+        $route = new Zend_Controller_Router_Route('foo/:@myvar');
+        $url   = $route->assemble(array('myvar' => 'foo'));
+        
+        $this->assertEquals('foo/en_foo', $url);
+    }
+    
+    public function testDynamicTranslationMatch()
+    {
+        $route  = new Zend_Controller_Router_Route('foo/:@myvar');
+        $values = $route->match('foo/en_foo');
+        
+        $this->assertEquals($values['myvar'], 'foo');
+    }
+    
+    public function testTranslationMatchWrongLanguage()
+    {
+        $route  = new Zend_Controller_Router_Route('foo/@foo');
+        $values = $route->match('foo/de_foo');
+        
+        $this->assertFalse($values);
+    }
+
+    public function testTranslationAssembleLocaleInstanceOverride()
+    {
+        $route = new Zend_Controller_Router_Route('foo/@foo', null, null, null, 'de');
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/de_foo', $url);
+    }
+    
+    public function testTranslationAssembleLocaleParamOverride()
+    {
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        $url   = $route->assemble(array('@locale' => 'de'));
+        
+        $this->assertEquals('foo/de_foo', $url);
+    }
+    
+    public function testTranslationAssembleLocaleStaticOverride()
+    {
+        Zend_Controller_Router_Route::setDefaultLocale('de');
+        
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/de_foo', $url);
+    }
+    
+    public function testTranslationAssembleLocaleRegistryOverride()
+    {
+        Zend_Registry::set('Zend_Locale', 'de');
+        
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/de_foo', $url);
+    }
+    
+    public function testTranslationAssembleTranslatorInstanceOverride()
+    {
+        $translator = new Zend_Translate('array', array('foo' => 'en_baz'), 'en');
+        
+        $route = new Zend_Controller_Router_Route('foo/@foo', null, null, $translator);
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/en_baz', $url);
+    }
+       
+    public function testTranslationAssembleTranslatorStaticOverride()
+    {
+        $translator = new Zend_Translate('array', array('foo' => 'en_baz'), 'en');
+        
+        Zend_Controller_Router_Route::setDefaultTranslator($translator);
+        
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/en_baz', $url);
+    }
+    
+    public function testTranslationAssembleTranslatorRegistryOverride()
+    {
+        $translator = new Zend_Translate('array', array('foo' => 'en_baz'), 'en');
+        
+        Zend_Registry::set('Zend_Translate', $translator);
+        
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        $url   = $route->assemble();
+        
+        $this->assertEquals('foo/en_baz', $url);
+    }
+    
+    public function testTranslationAssembleTranslatorNotFound()
+    {
+        Zend_Registry::set('Zend_Translate', null);
+        
+        $route = new Zend_Controller_Router_Route('foo/@foo');
+        
+        try {
+            $url = $route->assemble();
+            $this->fail('Expected Zend_Controller_Router_Exception was not raised');
+        } catch (Zend_Controller_Router_Exception $e) {
+            $this->assertEquals('Could not find a translator', $e->getMessage());
+        }
+    }
+    
+    public function testEscapedSpecialCharsWithoutTranslation()
+    {
+        $route = new Zend_Controller_Router_Route('::foo/@@bar/:foo');
+        
+        $path = $route->assemble(array('foo' => 'bar'));
+        $this->assertEquals($path, ':foo/@bar/bar');
+        
+        $values = $route->match(':foo/@bar/bar');
+        $this->assertEquals($values['foo'], 'bar');
+    }
+    
+    public function testEscapedSpecialCharsWithTranslation()
+    {
+        $route = new Zend_Controller_Router_Route('::foo/@@bar/:@myvar');
+        
+        $path = $route->assemble(array('myvar' => 'foo'));
+        $this->assertEquals($path, ':foo/@bar/en_foo');
+        
+        $values = $route->match(':foo/@bar/en_foo');
+        $this->assertEquals($values['myvar'], 'foo');
+    }
 }
 
 if (PHPUnit_MAIN_METHOD == 'Zend_Controller_Router_RouteTests::main') {

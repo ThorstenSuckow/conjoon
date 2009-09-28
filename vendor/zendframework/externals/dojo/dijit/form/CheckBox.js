@@ -26,7 +26,9 @@ dojo.declare(
 
 		baseClass: "dijitCheckBox",
 
-		//	Value of "type" attribute for <input>
+		// type: [private] String
+		//		type attribute on <input> node.
+		//		Overrides `dijit.form.Button.type`.   Users should not change this value.
 		type: "checkbox",
 
 		// value: String
@@ -63,7 +65,6 @@ dojo.declare(
 				this.attr('checked', newValue);
 			}
 		},
-
 		_getValueAttr: function(){
 			// summary:
 			//		Hook so attr('value') works.
@@ -77,6 +78,12 @@ dojo.declare(
 			if(this.value == ""){
 				this.value = "on";
 			}
+
+			// Need to set initial checked state as part of template, so that form submit works.
+			// dojo.attr(node, "checked", bool) doesn't work on IEuntil node has been attached
+			// to <body>, see #8666
+			this.checkedAttrSetting = this.checked ? "checked" : "";
+
 			this.inherited(arguments);
 		},
 		
@@ -86,6 +93,8 @@ dojo.declare(
 		},
 
 		reset: function(){
+			// Override ToggleButton.reset()
+
 			this._hasBeenBlurred = false;
 
 			this.attr('checked', this.params.checked || false);
@@ -126,9 +135,9 @@ dojo.declare(
 			if(value){
 				var _this = this;
 				// search for radio buttons with the same name that need to be unchecked
-				dojo.query('INPUT[type=radio][name='+this.name+']', this.focusNode.form||dojo.doc).forEach(
+				dojo.query("INPUT[type=radio]", this.focusNode.form||dojo.doc).forEach( // can't use name= since dojo.query doesn't support [] in the name
 					function(inputNode){
-						if(inputNode != _this.focusNode && inputNode.form == _this.focusNode.form){
+						if(inputNode.name == _this.name && inputNode != _this.focusNode && inputNode.form == _this.focusNode.form){
 							var widget = dijit.getEnclosingWidget(inputNode);
 							if(widget && widget.checked){
 								widget.attr('checked', false);

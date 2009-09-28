@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ComboBoxTest.php 14300 2009-03-13 15:24:35Z matthew $
+ * @version    $Id: ComboBoxTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Dojo_View_Helper_ComboBoxTest::main() if this source file is executed directly.
@@ -42,10 +42,13 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
 /**
  * Test class for Zend_Dojo_View_Helper_ComboBox.
  *
+ * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Dojo
+ * @group      Zend_Dojo_View
  */
 class Zend_Dojo_View_Helper_ComboBoxTest extends PHPUnit_Framework_TestCase 
 {
@@ -163,7 +166,7 @@ class Zend_Dojo_View_Helper_ComboBoxTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($this->view->dojo()->getDijit('elementId'));
 
         $found = false;
-        $scripts = $this->view->dojo()->getJavascript();
+        $scripts = $this->view->dojo()->getOnLoadActions();
         foreach ($scripts as $js) {
             if (strstr($js, 'var stateStore = new ')) {
                 $found = true;
@@ -202,7 +205,7 @@ class Zend_Dojo_View_Helper_ComboBoxTest extends PHPUnit_Framework_TestCase
     {
         Zend_Dojo_View_Helper_Dojo::setUseProgrammatic(true);
         $html = $this->getElementAsRemoter();
-        $js   = $this->view->dojo()->getJavascript();
+        $js   = $this->view->dojo()->getOnLoadActions();
         $storeDeclarationFound = false;
         foreach ($js as $statement) {
             if (strstr($statement, 'var stateStore = new ')) {
@@ -210,7 +213,7 @@ class Zend_Dojo_View_Helper_ComboBoxTest extends PHPUnit_Framework_TestCase
                 break;
             }
         }
-        $this->assertTrue($storeDeclarationFound, 'Store declaration not found');
+        $this->assertTrue($storeDeclarationFound, 'Store definition not found');
     }
 }
 

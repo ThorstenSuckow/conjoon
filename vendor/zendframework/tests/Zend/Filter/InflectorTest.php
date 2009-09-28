@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: InflectorTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: InflectorTest.php 17698 2009-08-20 21:43:00Z thomas $
  */
 
 
@@ -49,8 +48,9 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Filter
  */
 class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
 {
@@ -429,15 +429,15 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
         $inflector->setConfig($config);
         $this->_testOptions($inflector);
     }
-    
+
     /**
      * Added str_replace('\\', '\\\\', ..) to all processedParts values to disable backreferences
-     * 
+     *
      * @issue ZF-2538 Zend_Filter_Inflector::filter() fails with all numeric folder on Windows
      */
     public function testCheckInflectorWithPregBackreferenceLikeParts()
     {
-        
+
         $this->inflector = new Zend_Filter_Inflector(
             ':moduleDir' . DIRECTORY_SEPARATOR . ':controller' . DIRECTORY_SEPARATOR . ':action.:suffix',
             array(
@@ -450,10 +450,10 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
             );
 
         $this->inflector->setStaticRule('moduleDir', 'C:\htdocs\public\cache\00\01\42\app\modules');
-        
+
         try {
             $filtered = $this->inflector->filter(array(
-                'controller' => 'FooBar', 
+                'controller' => 'FooBar',
                 'action' => 'MooToo'
                 ));
             $this->assertEquals($filtered, 'C:\htdocs\public\cache\00\01\42\app\modules' . DIRECTORY_SEPARATOR . 'foo-bar' . DIRECTORY_SEPARATOR . 'Moo-Too.phtml');
@@ -461,7 +461,7 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
             $this->fail($e->getMessage());
         }
     }
-    
+
     /**
      * @issue ZF-2522
      */
@@ -473,7 +473,7 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
         $inflector = new Zend_Filter_Inflector('something', array(), false, '#');
         $this->assertEquals($inflector->getTargetReplacementIdentifier(), '#');
     }
-    
+
     /**
      * @issue ZF-2964
      */
@@ -483,7 +483,27 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
         $inflector->addRules(array(':foo' => array()));
         $this->assertEquals($inflector->filter(array('fo' => 'bar')), 'abc');
     }
-    
+
+    /**
+     * @issue ZF-7544
+     */
+    public function testAddFilterRuleMultipleTimes()
+    {
+        $rules = $this->inflector->getRules();
+        $this->assertEquals(0, count($rules));
+        $this->inflector->setFilterRule('controller', 'PregReplace');
+        $rules = $this->inflector->getRules('controller');
+        $this->assertEquals(1, count($rules));
+        $this->inflector->addFilterRule('controller', array('Alpha', 'StringToLower'));
+        $rules = $this->inflector->getRules('controller');
+        $this->assertEquals(3, count($rules));
+        $this->_context = 'StringToLower';
+        $this->inflector->setStaticRuleReference('context' , $this->_context);
+        $this->inflector->addFilterRule('controller', array('Alpha', 'StringToLower'));
+        $rules = $this->inflector->getRules('controller');
+        $this->assertEquals(5, count($rules));
+    }
+
 }
 
 // Call Zend_Filter_InflectorTest::main() if this source file is executed directly.

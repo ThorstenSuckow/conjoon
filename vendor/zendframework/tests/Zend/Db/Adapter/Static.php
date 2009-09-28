@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -15,10 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_Db
- * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Static.php 13281 2008-12-15 20:53:30Z mikaelkael $
+ * @version    $Id: Static.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -48,8 +47,8 @@ require_once 'Zend/Db/Statement/Static.php';
  *
  * @category   Zend
  * @package    Zend_Db
- * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_Adapter_Static extends Zend_Db_Adapter_Abstract

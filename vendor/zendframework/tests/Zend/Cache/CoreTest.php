@@ -1,10 +1,26 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: CoreTest.php 18255 2009-09-18 17:26:32Z padraic $
  */
 
- /**
+/**
  * Zend_Cache
  */
 require_once 'Zend/Cache.php';
@@ -17,11 +33,17 @@ require_once 'Zend/Cache/Backend/Test.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
+require_once 'Zend/Config.php';
+
 /**
+ * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
  */
-class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase 
+class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
 {
     private $_instance;
 
@@ -42,6 +64,27 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
     public function testConstructorCorrectCall()
     {
         $test = new Zend_Cache_Core(array('lifetime' => 3600, 'caching' => true));
+    }
+
+    /**
+     * @issue ZF-7568
+     */
+    public function testConstructorCorrectCallWithZendConfig()
+    {
+        $test = new Zend_Cache_Core(
+            new Zend_Config(array('lifetime' => 3600, 'caching' => true))
+        );
+    }
+
+    /**
+     * @issue ZF-7568
+     */
+    public function testSettingOptionsWithZendConfig()
+    {
+        $config = new Zend_Config(array('lifetime' => 3600, 'caching' => true));
+        $test = new Zend_Cache_Core();
+        $test->setConfig($config);
+        $this->assertEquals(3600, $test->getOption('lifetime'));
     }
 
     public function testConstructorBadOption()
@@ -90,7 +133,7 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Unknown options are okay and should be silently ignored. Non-string 
+     * Unknown options are okay and should be silently ignored. Non-string
      * options, however, should throw exceptions.
      *
      * @group ZF-5034
@@ -437,5 +480,3 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
     }
 
 }
-
-

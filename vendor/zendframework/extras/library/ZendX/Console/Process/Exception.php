@@ -16,7 +16,7 @@
  * @package   ZendX_Console
  * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: Exception.php 12992 2008-12-03 01:23:24Z dasprid $
+ * @version   $Id: Exception.php 12991 2008-12-03 01:21:33Z dasprid $
  */
 
 /**

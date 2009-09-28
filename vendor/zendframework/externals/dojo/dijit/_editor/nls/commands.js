@@ -39,7 +39,6 @@
 	'fontName': 'Font Name',
 	'tabIndent': 'Tab Indent',
 	/* Error messages */
-	'systemShortcutFF': 'The "${0}" action is only available in Mozilla Firefox using a keyboard shortcut. Use ${1}.',
 	'systemShortcut': 'The "${0}" action is only available in your browser using a keyboard shortcut. Use ${1}.',
 	'ctrlKey':'ctrl+${0}',
 	'appleKey':'\u2318${0}' // "command" or open-apple key on Macintosh

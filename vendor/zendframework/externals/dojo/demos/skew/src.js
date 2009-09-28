@@ -6,20 +6,22 @@ dojo.require("dojo.NodeList-fx");
 dojo.require("dojo.fx.easing");
 dojo.require("dojox.widget.Dialog");
 dojo.require("dojox.layout.RadioGroup");
+dojo.require("dojox.analytics.Urchin");
 
 (function($){
 	
-	var _stuffMoving = false;
-	var _started = false;
-	var _stalltime = 650; // ms
-	var _doneAnim = null;
-	var _needed = null;
-	var _loaded = [];
-	var _connects = [];
-	var profileWidget = null;
-	var stack = null;
-	var timer = null;
-	var _profiletimer = null;
+	var _stuffMoving = false,
+		_started = false,
+		_stalltime = 650, // ms
+		_doneAnim = null,
+		_needed = null,
+		_loaded = [],
+		_connects = [],
+		profileWidget = null,
+		stack = null,
+		timer = null,
+		_profiletimer = null
+	;
 	
 	var _doneAnim = function(){
 		
@@ -84,6 +86,14 @@ dojo.require("dojox.layout.RadioGroup");
 	// the onLoad function
 	var init = function(){
 	
+		// tracking demo:
+		var u = new dojox.analytics.Urchin({ 
+			acct: "UA-3572741-1", 
+			GAonLoad: function(){
+				this.trackPageView("/demos/skew");
+			}
+		});	
+	
 		$.style("whoNode","opacity", 0);
 	
 		// see, the page "degrades" ;) . This contributor listing page is only a link to
@@ -123,7 +133,7 @@ dojo.require("dojox.layout.RadioGroup");
 							overflow:"hidden"
 						})
 						return page; // dijit._Widget
-					}						
+					}
 				},"stack");
 		
 				// iterate over each of the returned committers, setting up the canvas
@@ -261,8 +271,8 @@ dojo.require("dojox.layout.RadioGroup");
 			// FIXME: weirdness w/ IE7 and no respecting -42 marginLegf
 			$.anim("profileArea",{ 
 				opacity:{ start:0, end: 0.99 }, 
-				paddingLeft:{ start:72, end:0 } }, 520, $.fx.easing.bounceOut
-			); 
+				paddingLeft:{ start:72, end:0 } 
+			}, 520, $.fx.easing.bounceOut); 
 		}
 	});
 

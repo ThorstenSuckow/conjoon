@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_InfoCard
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProcessTest.php 12608 2008-11-13 12:51:00Z alexander $
+ * @version    $Id: ProcessTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_InfoCard_ProcessTest::main() if this source file is executed directly.
@@ -35,6 +36,14 @@ require_once "PHPUnit/Framework/TestSuite.php";
 require_once 'Zend/InfoCard.php';
 require_once 'Zend/InfoCard/Adapter/Default.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_InfoCard
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_InfoCard
+ */
 class Zend_InfoCard_ProcessTest extends PHPUnit_Framework_TestCase
 {
     protected $_xmlDocument;

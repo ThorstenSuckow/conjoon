@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -151,7 +151,7 @@ class InstallationChecker {
     }
 
     /**
-     * Validate that the Gdata component of the Zend Framework is installed
+     * Validate that the Gdata component of Zend Framework is installed
      * properly. Also checks that the required YouTube API helper methods are
      * found.
      *
@@ -192,7 +192,7 @@ class InstallationChecker {
             if (count($zendFrameworkInstallationErrors) < 1) {
                 $zendFrameworkInstallationErrors[] = 'Exception thrown trying' .
                     ' to access Zend/Loader.php using \'use_include_path\' =' .
-                    ' true. Make sure you include the Zend Framework in your' .
+                    ' true. Make sure you include Zend Framework in your' .
                     ' include_path which currently contains: ' .
                     ini_get('include_path');
             }

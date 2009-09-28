@@ -3,7 +3,9 @@ dojo.require("dojo._base.connect");
 
 // this file courtesy of the TurboAjax Group, licensed under a Dojo CLA
 
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
+//>>excludeEnd("webkitMobile");
 	// DOM event listener machinery
 	var del = (dojo._event_listener = {
 		add: function(/*DOMNode*/node, /*String*/name, /*Function*/fp){
@@ -11,16 +13,23 @@ dojo.require("dojo._base.connect");
 			name = del._normalizeEventName(name);
 			fp = del._fixCallback(name, fp);
 			var oname = name;
-			if(!dojo.isIE && (name == "mouseenter" || name == "mouseleave")){
+			if(
+				//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+				!dojo.isIE && 
+				//>>excludeEnd("webkitMobile");
+				(name == "mouseenter" || name == "mouseleave")
+			){
 				var ofp = fp;
 				//oname = name;
 				name = (name == "mouseenter") ? "mouseover" : "mouseout";
-				fp = function(e){
-					// check tagName to fix a FF2 bug with invalid nodes (hidden child DIV of INPUT)
-					// which causes isDecendant to return false which causes
-					// spurious, and more importantly, incorrect mouse events to fire.
-					// TODO: remove tagName check when Firefox 2 is no longer supported
-					try{ e.relatedTarget.tagName; } catch(e2){ return; }
+				fp = function(e){		
+					if(dojo.isFF <= 2) {
+						// check tagName to fix a FF2 bug with invalid nodes (hidden child DIV of INPUT)
+						// which causes isDescendant to return false which causes
+						// spurious, and more importantly, incorrect mouse events to fire.
+						// TODO: remove tagName check when Firefox 2 is no longer supported
+						try{ e.relatedTarget.tagName; }catch(e2){ return; }
+					}
 					if(!dojo.isDescendant(e.relatedTarget, node)){
 						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
 						return ofp.call(this, e); 
@@ -39,7 +48,7 @@ dojo.require("dojo._base.connect");
 			//		the name of the handler to remove the function from
 			// handle:
 			//		the handle returned from add
-			if (node){
+			if(node){
 				event = del._normalizeEventName(event);
 				if(!dojo.isIE && (event == "mouseenter" || event == "mouseleave")){
 					event = (event == "mouseenter") ? "mouseover" : "mouseout";
@@ -130,7 +139,7 @@ dojo.require("dojo._base.connect");
 		var isNode = obj && (obj.nodeType||obj.attachEvent||obj.addEventListener);
 		// choose one of three listener options: raw (connect.js), DOM event on a Node, custom event on a Node
 		// we need the third option to provide leak prevention on broken browsers (IE)
-		var lid = !isNode ? 0 : (!dontFix ? 1 : 2), l = [dojo._listener, del, node_listener][lid];
+		var lid = isNode ? (dontFix ? 2 : 1) : 0, l = [dojo._listener, del, node_listener][lid];
 		// create a listener
 		var h = l.add(obj, event, dojo.hitch(context, method));
 		// formerly, the disconnect package contained "l" directly, but if client code
@@ -212,6 +221,7 @@ dojo.require("dojo._base.connect");
 		SCROLL_LOCK: 145
 	};
 	
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	// IE event normalization
 	if(dojo.isIE){ 
 		var _trySetKeyCode = function(e, code){
@@ -226,7 +236,7 @@ dojo.require("dojo._base.connect");
 
 		// by default, use the standard listener
 		var iel = dojo._listener;
-		var listenersName = dojo._ieListenersName = "_" + dojo._scopeName + "_listeners";
+		var listenersName = (dojo._ieListenersName = "_" + dojo._scopeName + "_listeners");
 		// dispatcher tracking property
 		if(!dojo.config._allow_leaks){
 			// custom listener that handles leak protection for DOM events
@@ -366,7 +376,7 @@ dojo.require("dojo._base.connect");
 				var k=evt.keyCode;
 				// These are Windows Virtual Key Codes
 				// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
-				var unprintable = (k!=13)&&(k!=32)&&(k!=27)&&(k<48||k>90)&&(k<96||k>111)&&(k<186||k>192)&&(k<219||k>222);
+				var unprintable = k!=13 && k!=32 && k!=27 && (k<48||k>90) && (k<96||k>111) && (k<186||k>192) && (k<219||k>222);
 				// synthesize keypress for most unprintables and CTRL-keys
 				if(unprintable||evt.ctrlKey){
 					var c = unprintable ? 0 : k;
@@ -413,6 +423,7 @@ dojo.require("dojo._base.connect");
 			del._preventDefault.call(evt);
 		}
 	}
+	//>>excludeEnd("webkitMobile");
 
 	del._synthesizeEvent = function(evt, props){
 			var faux = dojo.mixin({}, evt, props);
@@ -425,6 +436,7 @@ dojo.require("dojo._base.connect");
 			return faux;
 	}
 	
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	// Opera event normalization
 	if(dojo.isOpera){
 		dojo.mixin(del, {
@@ -437,8 +449,8 @@ dojo.require("dojo._base.connect");
 						}
 						// can't trap some keys at all, like INSERT and DELETE
 						// there is no differentiating info between DELETE and ".", or INSERT and "-"
-						c = ((c<41)&&(!evt.shiftKey) ? 0 : c);
-						if((evt.ctrlKey)&&(!evt.shiftKey)&&(c>=65)&&(c<=90)){
+						c = c<41 && !evt.shiftKey ? 0 : c;
+						if(evt.ctrlKey && !evt.shiftKey && c>=65 && c<=90){
 							// lowercase CTRL-[A-Z] keys
 							c += 32;
 						}
@@ -448,9 +460,12 @@ dojo.require("dojo._base.connect");
 			}
 		});
 	}
+	//>>excludeEnd("webkitMobile");
 
-	// Safari event normalization
-	if(dojo.isSafari){
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+	// Webkit event normalization
+	if(dojo.isWebKit){
+		//>>excludeEnd("webkitMobile");
 		del._add = del.add;
 		del._remove = del.remove;
 
@@ -468,16 +483,16 @@ dojo.require("dojo._base.connect");
 						var k=evt.keyCode;
 						// These are Windows Virtual Key Codes
 						// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
-						var unprintable = (k!=13)&&(k!=32)&&(k!=27)&&(k<48||k>90)&&(k<96||k>111)&&(k<186||k>192)&&(k<219||k>222);
+						var unprintable = k!=13 && k!=32 && k!=27 && (k<48 || k>90) && (k<96 || k>111) && (k<186 || k>192) && (k<219 || k>222);
 						// synthesize keypress for most unprintables and CTRL-keys
-						if(unprintable||evt.ctrlKey){
+						if(unprintable || evt.ctrlKey){
 							var c = unprintable ? 0 : k;
 							if(evt.ctrlKey){
 								if(k==3 || k==13){
 									return; // IE will post CTRL-BREAK, CTRL-ENTER as keypress natively 
 								}else if(c>95 && c<106){ 
 									c -= 48; // map CTRL-[numpad 0-9] to ASCII
-								}else if((!evt.shiftKey)&&(c>=65&&c<=90)){ 
+								}else if(!evt.shiftKey && c>=65 && c<=90){ 
 									c += 32; // map CTRL-[A-Z] to lowercase
 								}else{ 
 									c = del._punctMap[c] || c; // map other problematic CTRL combinations to ASCII
@@ -505,15 +520,20 @@ dojo.require("dojo._base.connect");
 					case "keypress":
 						if(evt.faux){ return evt; }
 						var c = evt.charCode;
-						c = c>=32? c : 0;
+						c = c>=32 ? c : 0;
 						return del._synthesizeEvent(evt, {charCode: c, faux: true});
 				}
 				return evt;
 			}
 		});
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	}
+	//>>excludeEnd("webkitMobile");
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
+//>>excludeEnd("webkitMobile");
 
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 if(dojo.isIE){
 	// keep this out of the closure
 	// closing over 'iel' or 'ieh' b0rks leak prevention
@@ -526,8 +546,9 @@ if(dojo.isIE){
 		var lls = [].concat(ls);
 		// invoke listeners after target function
 		for(var i in lls){
-			if(!(i in ap)){
-				h[lls[i]].apply(sender, args);
+			var f = h[lls[i]];
+			if(!(i in ap) && f){
+				f.apply(sender, args);
 			}
 		}
 		return r;
@@ -542,3 +563,4 @@ if(dojo.isIE){
 		return function(e){ return fp.call(this, f(e, this)); };
 	}
 }
+//>>excludeEnd("webkitMobile");

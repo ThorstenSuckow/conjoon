@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Amf
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: RequestTest.php 17689 2009-08-20 13:33:05Z alexander $
+ */
+
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Amf_RequestTest::main');
 }
@@ -9,13 +30,15 @@ require_once 'Zend/Amf/Parse/TypeLoader.php';
 require_once 'Zend/Locale.php';
 require_once 'Contact.php';
 
-
 /**
  * Test case for Zend_Amf_Request
  *
- * @package Zend_Amf
+ * @category   Zend
+ * @package    Zend_Amf
  * @subpackage UnitTests
- * @version $Id: RequestTest.php 14455 2009-03-24 04:03:47Z wadearnold $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Amf
  */
 class Zend_Amf_RequestTest extends PHPUnit_Framework_TestCase
 {
@@ -369,9 +392,9 @@ class Zend_Amf_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $data[0]->a);
         $this->assertEquals('bar', $data[0]->b);
     }
-    
+
     /**
-     * Test to make sure that a generic object as the first paramater does not crash 
+     * Test to make sure that a generic object as the first paramater does not crash
      * @group ZF-5346
      */
     public function testAmf0ObjectFirstParameter()
@@ -604,18 +627,19 @@ class Zend_Amf_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('arnold', (string) $data[0]->lastname);
     }
 
-    public function testAmf0TypedObjecDeserializedToNativePHPObjectException()
+    public function testAmf0TypedObjecDeserializedToNativePHPObjectUnknownType()
     {
         $myRequest = file_get_contents(dirname(__FILE__) .'/Request/mock/bogusTypedObjectAmf0Request.bin');
         // send the mock object request to be deserialized
-        try {
-            $this->_request->initialize($myRequest);
-        } catch (Zend_Amf_Exception $expected) {
-            return;
-        }
-        $this->fail('Class Map worked when not defined');
-    }
+        $this->_request->initialize($myRequest);
 
+        $requestBodies = $this->_request->getAmfBodies();
+        $messageBody   = reset($requestBodies);
+        $data          = $messageBody->getData();
+        $dataObject    = reset($data);
+
+        $this->assertEquals('stdClass', get_class($dataObject));
+    }
 
     /**
      * Test Amf0 credentials sent to the server
@@ -638,7 +662,6 @@ class Zend_Amf_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('admin', $data->userid);
         $this->assertEquals('pw123', $data->password);
     }
-
 }
 
 if (PHPUnit_MAIN_METHOD == 'Zend_Amf_RequestTest::main') {

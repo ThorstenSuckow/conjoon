@@ -10,7 +10,7 @@
 	<script type="text/javascript" src="src.js" charset="utf-8"></script>
 
 </head>
-<body class="soria">
+<body class="soria" role="application">
 	<div id="preLoader"><p></p></div>
 	<div dojoType="dojo.data.ItemFileWriteStore" jsId="mailStore"
 		url="mail.json"></div>
@@ -82,7 +82,7 @@
 	<div dojoType="dijit.layout.BorderContainer" id="main">
 
 		<!-- toolbar with new mail button, etc. -->
-		<div dojoType="dijit.Toolbar" region="top" style="height:25px;">
+		<div dojoType="dijit.Toolbar" region="top">
 			<div id="getMail" dojoType="dijit.form.ComboButton"
 				iconClass="mailIconGetMail" optionsTitle="Mail Source Options">
 				<script type="dojo/method" event="onClick">
@@ -128,7 +128,8 @@
 		<div dojoType="dijit.layout.TabContainer" id="tabs" jsId="tabs" region="center">
 			<!-- main section with tree, table, and preview -->
 			<div dojoType="dijit.layout.BorderContainer" id="inbox" title="Inbox" design="sidebar">
-				<div dojoType="dijit.layout.AccordionContainer" region="leading" minSize="20" style="width:20%;" splitter="true">
+				<div dojoType="dijit.layout.AccordionContainer" id="accordion"
+						region="leading" minSize="20" style="width:20%;" splitter="true">
 					<div dojoType="dijit.layout.AccordionPane" title="Folders">
 						<div dojoType="dijit.Tree" id="mytree" store="mailStore"
 							childrenAttr="folders" query="{type:'folder'}" label="Folders">
@@ -163,7 +164,7 @@
 									<td><input dojoType="dijit.form.TextBox" id="bodySearch" name="text"></td>
 								</tr>
 								<tr>
-									<td colspan=2 align=center><button dojoType="dijit.form.Button" onClick="searchMessages">Search</button</td>
+									<td colspan=2 align=center><button dojoType="dijit.form.Button" onClick="searchMessages">Search</button></td>
 								</tr>
 							</table>
 						</form>
@@ -174,20 +175,21 @@
 				<table dojoType="dojox.grid.DataGrid"
 					region="top" minSize="20" splitter="true"
 					jsId="table"
+					id="table"
 					store="mailStore" query="{ type: 'message' }"
 					onRowClick="onMessageClick"
-					style="height: 150px; width: 100%;">
+					style="height: 150px;">
 					<thead>
 						<tr>
 							<th field="sender" width="10%">Sender</th>
 							<th field="label" width="80%">Subject</th>
-							<th field="sent" width="10%">Date</th>
+							<th field="sent" width="10%" formatter="formatDate">Date</th>
 						</tr>
 					</thead>
 				</table> <!-- end of listPane -->
 
 				<!-- message preview pane -->
-				<div id="message" dojoType="dijit.layout.ContentPane" region="center" minSize="20">
+				<div id="message" dojoType="dijit.layout.ContentPane" region="center" role="region" aria-live="assertive" aria-atomic="true" minSize="20">
 					<p>
 					This is a simple application mockup showing some of the dojo widgets:
 					</p>
@@ -213,7 +215,7 @@
 			</div> <!-- end of inbox -->
 			
 			<div dojoType="dijit.layout.BorderContainer" title="Contacts">
-				<div dojoType="dijit.layout.ContentPane" region="top" style="height: 1.5em;">
+				<div dojoType="dijit.layout.ContentPane" region="top">
 					<center id="contactIndex"></center>
 				</div>
 				<table dojoType="dojox.grid.DataGrid" jsId="contactTable" store="contactStore" region="center" editable="true">

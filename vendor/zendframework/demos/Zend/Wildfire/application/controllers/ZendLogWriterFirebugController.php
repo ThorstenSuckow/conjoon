@@ -14,27 +14,24 @@
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /** Zend_Controller_Action */
 require_once 'Zend/Controller/Action.php';
 
-/** Zend_Exception */
-require_once 'Zend/Exception.php';
-
 /**
  * Tests for Zend_Log_Writer_Firebug
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendLogWriterFirebugController extends Zend_Controller_Action
 {
-  
+
     public function testloggingAction()
     {
         $logger = Zend_Registry::get('logger');
@@ -48,9 +45,9 @@ class ZendLogWriterFirebugController extends Zend_Controller_Action
         $logger->log('Informational: informational messages',    Zend_Log::INFO);
         $logger->log('Debug: debug messages',                    Zend_Log::DEBUG);
         $logger->log(array('$_SERVER',$_SERVER),                 Zend_Log::DEBUG);
-        
+
         $logger->trace('Trace to here');
-        
+
         $table = array('Summary line for the table',
                        array(
                            array('Column 1', 'Column 2'),
@@ -60,24 +57,23 @@ class ZendLogWriterFirebugController extends Zend_Controller_Action
                       );
         $logger->table($table);
     }
-    
-    
+
+
     public function testerrorcontrollerAction()
     {
+        require_once 'Zend/Exception.php';
         throw new Zend_Exception('Test Exception');
     }
 
     public function testlargemessageAction()
     {
         $message = array();
-           
-        for ( $i=0 ; $i<300 ; $i++ ) {        
+
+        for ( $i=0 ; $i<300 ; $i++ ) {
             $message[] = 'This is message #' . $i;
         }
-        
+
         $logger = Zend_Registry::get('logger');
         $logger->log($message, Zend_Log::INFO);
     }
-
 }
-

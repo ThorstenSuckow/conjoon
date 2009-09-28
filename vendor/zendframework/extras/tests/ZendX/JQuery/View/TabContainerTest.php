@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: TabContainerTest.php 13958 2009-02-03 18:41:14Z beberlei $
+ * @version     $Id: TabContainerTest.php 13957 2009-02-03 18:38:02Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";

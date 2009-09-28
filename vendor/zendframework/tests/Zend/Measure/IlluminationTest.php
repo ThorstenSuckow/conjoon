@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IlluminationTest.php 6799 2007-11-09 22:44:42Z thomas $
+ * @version    $Id: IlluminationTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -32,10 +31,13 @@ require_once 'Zend/Measure/Illumination.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Measure
  */
 class Zend_Measure_IlluminationTest extends PHPUnit_Framework_TestCase
 {
@@ -156,7 +158,7 @@ class Zend_Measure_IlluminationTest extends PHPUnit_Framework_TestCase
      */
     public function testIlluminationValueString()
     {
-        $value = new Zend_Measure_Illumination('string -100.100,200',Zend_Measure_Illumination::STANDARD,'de');
+        $value = new Zend_Measure_Illumination('-100.100,200',Zend_Measure_Illumination::STANDARD,'de');
         $this->assertEquals(-100100.200, $value->getValue(),'Zend_Measure_v Object not returned');
     }
 
@@ -167,8 +169,8 @@ class Zend_Measure_IlluminationTest extends PHPUnit_Framework_TestCase
      */
     public function testIlluminationEquality()
     {
-        $value = new Zend_Measure_Illumination('string -100.100,200',Zend_Measure_Illumination::STANDARD,'de');
-        $newvalue = new Zend_Measure_Illumination('otherstring -100.100,200',Zend_Measure_Illumination::STANDARD,'de');
+        $value = new Zend_Measure_Illumination('-100.100,200',Zend_Measure_Illumination::STANDARD,'de');
+        $newvalue = new Zend_Measure_Illumination('-100.100,200',Zend_Measure_Illumination::STANDARD,'de');
         $this->assertTrue($value->equals($newvalue),'Zend_Measure_Illumination Object should be equal');
     }
 
@@ -179,8 +181,8 @@ class Zend_Measure_IlluminationTest extends PHPUnit_Framework_TestCase
      */
     public function testIlluminationNoEquality()
     {
-        $value = new Zend_Measure_Illumination('string -100.100,200',Zend_Measure_Illumination::STANDARD,'de');
-        $newvalue = new Zend_Measure_Illumination('otherstring -100,200',Zend_Measure_Illumination::STANDARD,'de');
+        $value = new Zend_Measure_Illumination('-100.100,200',Zend_Measure_Illumination::STANDARD,'de');
+        $newvalue = new Zend_Measure_Illumination('-100,200',Zend_Measure_Illumination::STANDARD,'de');
         $this->assertFalse($value->equals($newvalue),'Zend_Measure_Illumination Object should be not equal');
     }
 
@@ -239,8 +241,8 @@ class Zend_Measure_IlluminationTest extends PHPUnit_Framework_TestCase
      */
     public function testIlluminationSetString()
     {
-        $value = new Zend_Measure_Illumination('string -100.100,200',Zend_Measure_Illumination::STANDARD,'de');
-        $value->setValue('otherstring -200.200,200',Zend_Measure_Illumination::STANDARD,'de');
+        $value = new Zend_Measure_Illumination('-100.100,200',Zend_Measure_Illumination::STANDARD,'de');
+        $value->setValue('-200.200,200',Zend_Measure_Illumination::STANDARD,'de');
         $this->assertEquals(-200200.200, $value->getValue(),'Zend_Measure_Illumination Object not returned');
     }
 
@@ -253,7 +255,7 @@ class Zend_Measure_IlluminationTest extends PHPUnit_Framework_TestCase
     {
         try {
             $value = new Zend_Measure_Illumination('100',Zend_Measure_Illumination::STANDARD,'de');
-            $value->setValue('otherstring -200.200,200','Illumination::UNKNOWN','de');
+            $value->setValue('-200.200,200','Illumination::UNKNOWN','de');
             $this->fail('Exception expected because of unknown type');
         } catch (Zend_Measure_Exception $e) {
             // success

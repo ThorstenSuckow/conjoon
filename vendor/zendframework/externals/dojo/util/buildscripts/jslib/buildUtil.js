@@ -48,8 +48,8 @@ buildUtil.DojoBuildOptions = {
 		defaultValue: "",
 		helpText: "Specifies how to optimize module files. If \"comments\" is specified, "
 			+ "then code comments are stripped. If \"shrinksafe\" is specified, then "
-			+ "the Dojo compressor will be used on the files, and line returns will be removed. "
-			+ "If \"shrinksafe.keepLines\" is specified, then the Dojo compressor will be used "
+			+ "Dojo Shrinksafe will be used on the files, and line returns will be removed. "
+			+ "If \"shrinksafe.keepLines\" is specified, then Dojo Shrinksafe will be used "
 			+ "on the files, and line returns will be preserved. If \"packer\" is specified, "
 			+ "Then Dean Edwards' Packer will be used."
 	},
@@ -57,8 +57,8 @@ buildUtil.DojoBuildOptions = {
 		defaultValue: "shrinksafe",
 		helpText: "Specifies how to optimize the layer files. If \"comments\" is specified, "
 			+ "then code comments are stripped. If \"shrinksafe\" is specified, then "
-			+ "the Dojo compressor will be used on the files, and line returns will be removed. "
-			+ "If \"shrinksafe.keepLines\" is specified, then the Dojo compressor will be used "
+			+ "Dojo Shrinksafe will be used on the files, and line returns will be removed. "
+			+ "If \"shrinksafe.keepLines\" is specified, then Dojo Shrinksafe will be used "
 			+ "on the layer files, and line returns will be preserved. If \"packer\" is specified, "
 			+ "Then Dean Edwards' Packer will be used."
 	},
@@ -83,7 +83,10 @@ buildUtil.DojoBuildOptions = {
 		helpText: "Strips console method calls from JS source. Applied to layers and individual modules "
 			+ "resource files. Valid values are \"normal\" (strips all but console.warn and console.error "
 			+ "calls), \"all\" (strips all console calls), \"normal,warn\" (strips all but console.error "
-			+ "calls), \"normal,error\" (strips all but console.warn errors)."
+			+ "calls), \"normal,error\" (strips all but console.warn errors). WARNING: stripConsole is "
+			+ "regexp-based and could cause code side effects. Make sure to only "
+			+ "call console methods on their own line, not as part of an expression and always be sure "
+			+ "to use braces around code blocks that have console calls (like if/else)."
 	},
 
 	"copyTests": {
@@ -145,11 +148,23 @@ buildUtil.DojoBuildOptions = {
 			+ "will be used instead of 'dojo' for the 'dojo._xdResourceLoaded()' calls that are done in the .xd.js files. "
 			+ "This allows for dojo to be under a different scope name but still allow xdomain loading with that scope name."
 	},
+	"expandProvide": {
+		defaultValue: false,
+		helpText: "Expands dojo.provide calls with faster calls at the expense of a larger file size. Only use the option "
+			+ "if your profiling reveals that dojo.provide calls are taking a noticeable amount of time. It replaces "
+			+ "dojo.provide(\"foo.bar\") statements with the shortest valid programmatic equivalent:\n"
+			+ "if(typeof foo==\"undefined\"){foo={};};foo.bar=foo.bar||{};"
+	},
 	"buildLayers": {
 		defaultValue: "",
 		helpText: "A comma-separated list of layer names to build. Using this option means that only those layers will be built. "
 			+ "This helps if you are doing quick development and test cycles with layers. If you have problems using this option, "
 			+ "try removing it and doing a full build with action=clean,release. This build option assumes you have done at least one full build first."
+	},
+	"query": {
+		defaultValue: "default",
+		helpText: "Select a DOM query engine. Default value is the normal dojo.query engine. Using query=sizzle will use the Sizzle engine."
+			+ "Normal Dojo tests are not run routinely with the Sizzle engine. See dojo/_base/sizzle.js for the version of Sizzle."
 	}
 };
 
@@ -173,9 +188,10 @@ buildUtil.makeBuildOptions = function(/*Array*/scriptArgs){
 			kwArgs.profileProperties = profileProperties;
 			dependencies = kwArgs.profileProperties.dependencies;
 			
-			//Allow setting build options from on the profile's dependencies object
+			//Allow setting build options from on the profile's dependencies object.
+			//Do not override existing values from the command line though.
 			for(param in dependencies){
-				if(param != "layers" && param != "prefixes"){
+				if(!(param in kwArgs) && param != "layers" && param != "prefixes"){
 					kwArgs[param] = dependencies[param];
 				}
 			}
@@ -193,11 +209,24 @@ buildUtil.makeBuildOptions = function(/*Array*/scriptArgs){
 		}
 	}
 
+	//Make sure releaseDir uses / since rest of build assumes / paths.
+	kwArgs.releaseDir = kwArgs.releaseDir.replace(/\\/g, "/");
+
 	//Set up some compound values
-	kwArgs.releaseDir += kwArgs["releaseName"];
+	if(kwArgs["releaseName"]){
+		///Make sure releaseDir ends in a / so releaseName concat works.
+		if(!kwArgs.releaseDir.match(/\/$/)){
+			kwArgs.releaseDir += "/";
+		}
+		kwArgs.releaseDir += kwArgs["releaseName"];
+	}else{
+		//No releaseName, so strip off trailing slash
+		kwArgs.releaseDir = kwArgs.releaseDir.replace(/\/$/, "");
+	}
+
 	kwArgs.action = kwArgs.action.split(",");
 	kwArgs.localeList = kwArgs.localeList.split(",");
-	
+
 	//Attach the final loader type to the dependencies
 	dependencies.loader = kwArgs.loader;
 
@@ -343,7 +372,7 @@ buildUtil.getDependencyList = function(/*Object*/dependencies, /*String or Array
 			}
 		
 			dojo._name = hostenvType;
-			if(hostenvType == "browser"){
+			if(hostenvType == "browser" || hostenvType == "ff_ext"){
 				//Make sure we setup the env so that dojo
 				//thinks we are running in a browser.
 				dojo.isBrowser = true;
@@ -706,6 +735,24 @@ buildUtil.createLayerContents = function(
 			+ "\r\n";
 	}
 
+	//Find out if the layer has any dojo.require calls we should not strip out,
+	//via the layer.keepRequires array. If there is one, convert to an object
+	//for each key lookup.
+	var keepRequires = null;
+	var layers = kwArgs.profileProperties.dependencies.layers;
+	for(i = 0; i < layers.length; i++){
+		if(layerName == layers[i].name){
+			var keepArray = layers[i].keepRequires;
+			if(keepArray){
+				keepRequires = {};
+				for(var j = 0; j < keepArray.length; j++){
+					keepRequires[keepArray[j]] = true;
+				}
+			}
+			break;
+		}
+	}
+
 	//Construct a string of all the dojo.provide statements.
 	//This string will be used to construct the regexp that will be
 	//used to remove matching dojo.require statements.
@@ -714,12 +761,16 @@ buildUtil.createLayerContents = function(
 	provideList = provideList.sort(); 
 	var depRegExpString = "";
 	for(i = 0; i < provideList.length; i++){
-		if(i != 0){
+		//Skip keepRequire matches.
+		if(keepRequires && keepRequires[provideList[i]]){
+			continue;
+		}
+		if(depRegExpString){
 			depRegExpString += "|";
 		}
 		depRegExpString += '([\'"]' + provideList[i] + '[\'"])';
 	}
-		
+
 	//If we have a string for a regexp, do the dojo.require() and requireIf() removal now.
 	if(depRegExpString){
 		//Make to escape regexp-sensitive characters
@@ -727,6 +778,54 @@ buildUtil.createLayerContents = function(
 		//Build the regexp
 		var depRegExp = new RegExp("dojo\\.(require|requireIf)\\(.*?(" + depRegExpString + ")\\)(;?)", "g");
 		dojoContents = dojoContents.replace(depRegExp, "");
+	}
+
+	if(kwArgs.expandProvide){
+		// replace dojo.provide("foo.bar.Baz") statements with the shortest valid
+		// programmatic equivalent:
+		//		foo = foo||{};
+		//		foo.bar = foo.bar||{};
+		//		foo.bar.Baz = foo.bar.Baz||{};
+		//		dojo._loadedModules["foo.bar.Baz"] = foo.bar.Baz = foo.bar.Baz||{};
+	
+		var seenProvides = {};
+		var provideRegExp = /dojo.provide\(([\w\W]*?)\)/mg;
+		dojoContents = dojoContents.replace(provideRegExp, function(s, p1){
+			if(p1){
+				var ret = "";
+				p1 = p1.slice(1, -1); // trim the " or ' chars
+				var splits = p1.split(".");
+				splits.forEach(function(i, idx, a){
+					var simpleShortName = a.slice(0, idx+1).join(".");
+					var shortName = a[0];
+					for(var x=1; x<(idx+1); x++){
+						if(a[x].indexOf("-") >= 0){
+							shortName += '["'+a[x]+'"]';
+						}else{
+							shortName += "."+a[x];
+						}
+					}
+					// make sure that if, in a given module, we've already seen a
+					// parent that we don't re-generate its stub detection
+					if(!seenProvides[simpleShortName]){
+						seenProvides[simpleShortName] = true;
+						if(idx == 0){
+							ret += 'if(typeof ' + shortName + '=="undefined"){' + shortName + '={};};';
+						}else{
+							ret += shortName+'='+shortName+'||{};';
+						}
+					}
+					// at the last one?
+					if(idx == (a.length-1)){
+						// register in _loadedModules:
+						ret += 'dojo._loadedModules["'+simpleShortName+'"] = '+shortName+';';
+					}
+				});
+				return ret;
+			}else{
+				return s;
+			}
+		});
 	}
 
 	//Set version number.
@@ -1086,15 +1185,15 @@ buildUtil.optimizeJs = function(/*String fileName*/fileName, /*String*/fileConte
 		// Use the interpreter for interactive input (copied this from Main rhino class).
 		context.setOptimizationLevel(-1);
 
-		var script = context.compileString(fileContents, fileName, 1, null);
 		if(optimizeType.indexOf("shrinksafe") == 0){
 			//Apply compression using custom compression call in Dojo-modified rhino.
-			fileContents = new String(context.compressScript(script, 0, fileContents, 1));
+			fileContents = new String(Packages.org.dojotoolkit.shrinksafe.Compressor.compressScript(fileContents, 0, 1));
 			if(optimizeType.indexOf(".keepLines") == -1){
 				fileContents = fileContents.replace(/[\r\n]/g, "");
 			}
 		}else if(optimizeType == "comments" || optimizeType == "packer"){
 			//Strip comments
+			var script = context.compileString(fileContents, fileName, 1, null);
 			fileContents = new String(context.decompileScript(script, 0));
 			
 			if(optimizeType == "packer"){
@@ -1507,6 +1606,7 @@ buildUtil.baseMappings = {
 	"_getIeDispatcher": "event",
 	
 	"byId": "html",
+	"destroy": "html",
 	"_destroyElement": "html",
 	"isDescendant": "html",
 	"setSelectable": "html",
@@ -1537,7 +1637,10 @@ buildUtil.baseMappings = {
 	"coords": "html", 
 	"hasAttr": "html", 
 	"attr": "html",
-	"removeAttr": "html", 
+	"removeAttr": "html",
+	"create": "html",
+	"empty": "html",
+	"_toDom": "html",
 	"hasClass": "html", 
 	"addClass": "html", 
 	"removeClass": "html",
@@ -1806,9 +1909,14 @@ buildUtil.extractMatchedParens = function(/*RegExp*/ regexp, /*String*/fileConte
 	var parenRe = /[\(\)]/g;
 	parenRe.lastIndex = 0;
 
-	var results = [];
-	var matches;
+	var results = [],
+		matches,
+		cleanedContent = [],
+		previousLastIndex = 0
+	;
+	
 	while((matches = regexp.exec(fileContents))){
+		
 		//Find end of the call by finding the matching end paren
 		parenRe.lastIndex = regexp.lastIndex;
 		var matchCount = 1;
@@ -1828,25 +1936,27 @@ buildUtil.extractMatchedParens = function(/*RegExp*/ regexp, /*String*/fileConte
 			throw "unmatched paren around character " + parenRe.lastIndex + " in: " + fileContents;
 		}
 
-		//Put the master matching string in the results.
+		// Put the master matching string in the results.
 		var startIndex = regexp.lastIndex - matches[0].length;
 		results.push(fileContents.substring(startIndex, parenRe.lastIndex));
-
-		//Remove the matching section. Account for ending semicolon if desired.
+		// add file's fragment from previous console.* match to current match 
+		cleanedContent.push(fileContents.substring(previousLastIndex, startIndex));
+		
+		// Account for ending semicolon if desired.
 		var endPoint = parenRe.lastIndex;
 		if(removeTrailingComma && fileContents.charAt(endPoint) == ";"){
 			endPoint += 1;
 		}
-		var remLength = endPoint - startIndex;
 
-		fileContents = fileContents.substring(0, startIndex) + fileContents.substring(endPoint, fileContents.length);
+		previousLastIndex = regexp.lastIndex = endPoint;
 
-		//Move the master regexp past the last matching paren point.
-		regexp.lastIndex = endPoint - remLength;
 	}
 
+	// add the last matched fragment to the cleaned output
+	cleanedContent.push(fileContents.substring(previousLastIndex, fileContents.length));
+
 	if(results.length > 0){
-		results.unshift(fileContents);
+		results.unshift(cleanedContent.join(''));
 	}
 
 	return (results.length ? results : null);

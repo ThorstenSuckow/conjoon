@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: DbTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -30,20 +30,20 @@ require_once 'Zend/Log/Writer/Db.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @group      Zend_Log
  */
 class Zend_Log_Writer_DbTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->tableName = 'db-table-name';
-        
+
         $this->db     = new Zend_Log_Writer_DbTest_MockDbAdapter();
         $this->writer = new Zend_Log_Writer_Db($this->db, $this->tableName);
     }
-    
+
     public function testFormattingIsNotSupported()
     {
         try {
@@ -54,7 +54,7 @@ class Zend_Log_Writer_DbTest extends PHPUnit_Framework_TestCase
             $this->assertRegExp('/does not support formatting/i', $e->getMessage());
         }
     }
-    
+
     public function testWriteWithDefaults()
     {
         // log to the mock db adapter
@@ -68,9 +68,9 @@ class Zend_Log_Writer_DbTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($this->db->calls['insert']));
 
         // ...with the correct table and binds for the database
-        $binds = array('message'  => $fields['message'], 
+        $binds = array('message'  => $fields['message'],
                        'priority' => $fields['priority']);
-        $this->assertEquals(array($this->tableName, $binds), 
+        $this->assertEquals(array($this->tableName, $binds),
                             $this->db->calls['insert'][0]);
     }
 
@@ -79,20 +79,20 @@ class Zend_Log_Writer_DbTest extends PHPUnit_Framework_TestCase
         $this->writer = new Zend_Log_Writer_Db($this->db, $this->tableName,
                                                 array('new-message-field'  => 'message',
                                                       'new-message-field' => 'priority'));
-    
+
         // log to the mock db adapter
         $message  = 'message-to-log';
         $priority = 2;
         $this->writer->write(array('message' => $message, 'priority' => $priority));
-        
+
         // insert should be called once...
         $this->assertContains('insert', array_keys($this->db->calls));
         $this->assertEquals(1, count($this->db->calls['insert']));
-    
+
         // ...with the correct table and binds for the database
-        $binds = array('new-message-field' => $message, 
+        $binds = array('new-message-field' => $message,
                        'new-message-field' => $priority);
-        $this->assertEquals(array($this->tableName, $binds), 
+        $this->assertEquals(array($this->tableName, $binds),
                             $this->db->calls['insert'][0]);
     }
 
@@ -106,7 +106,7 @@ class Zend_Log_Writer_DbTest extends PHPUnit_Framework_TestCase
             $this->fail();
         } catch (Exception $e) {
             $this->assertType('Zend_Log_Exception', $e);
-            $this->assertRegExp('/shutdown$/i', $e->getMessage());            
+            $this->assertEquals('Database adapter is null', $e->getMessage());
         }
     }
 }
@@ -116,9 +116,9 @@ class Zend_Log_Writer_DbTest_MockDbAdapter
 {
     public $calls = array();
 
-    public function __call($method, $params) 
-    { 
-        $this->calls[$method][] = $params; 
+    public function __call($method, $params)
+    {
+        $this->calls[$method][] = $params;
     }
 
 }

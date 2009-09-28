@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MimeTypeTest.php 12852 2008-11-26 07:29:09Z thomas $
+ * @version    $Id: MimeTypeTest.php 18148 2009-09-16 19:27:43Z thomas $
  */
 
 // Call Zend_Validate_File_MimeTypeTest::main() if this source file is executed directly.
@@ -41,8 +41,9 @@ require_once 'Zend/Validate/File/MimeType.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_File_MimeTypeTest extends PHPUnit_Framework_TestCase
 {
@@ -65,19 +66,22 @@ class Zend_Validate_File_MimeTypeTest extends PHPUnit_Framework_TestCase
     public function testBasic()
     {
         $valuesExpected = array(
-            array('image/gif', true),
+            array(array('image/jpg', 'image/jpeg'), true),
             array('image', true),
             array('test/notype', false),
-            array('image/gif, image/jpeg', true),
-            array(array('image/vasa', 'image/gif'), true),
-            array(array('image/jpeg', 'gif'), true),
-            array(array('image/jpeg', 'jpeg'), false),
+            array('image/gif, image/jpg, image/jpeg', true),
+            array(array('image/vasa', 'image/jpg', 'image/jpeg'), true),
+            array(array('image/jpg', 'image/jpeg', 'gif'), true),
+            array(array('image/gif', 'gif'), false),
+            array('image/jp', false),
+            array('image/jpg2000', false),
+            array('image/jpeg2000', false),
         );
 
-        $filetest = dirname(__FILE__) . '/_files/testsize.mo';
+        $filetest = dirname(__FILE__) . '/_files/picture.jpg';
         $files = array(
-            'name'     => 'testsize.mo',
-            'type'     => 'image/gif',
+            'name'     => 'picture.jpg',
+            'type'     => 'image/jpg',
             'size'     => 200,
             'tmp_name' => $filetest,
             'error'    => 0
@@ -87,6 +91,7 @@ class Zend_Validate_File_MimeTypeTest extends PHPUnit_Framework_TestCase
             $options   = array_shift($element);
             $expected  = array_shift($element);
             $validator = new Zend_Validate_File_MimeType($options);
+            $validator->enableHeaderCheck();
             $this->assertEquals(
                 $expected,
                 $validator->isValid($filetest, $files),

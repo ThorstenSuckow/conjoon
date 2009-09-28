@@ -1,6 +1,7 @@
 dojo.provide("dijit.Editor");
 dojo.require("dijit._editor.RichText");
 dojo.require("dijit.Toolbar");
+dojo.require("dijit.ToolbarSeparator");
 dojo.require("dijit._editor._Plugin");
 dojo.require("dijit._editor.plugins.EnterKeyHandling");
 dojo.require("dijit._editor.range");
@@ -13,27 +14,32 @@ dojo.declare(
 	dijit._editor.RichText,
 	{
 		// summary:
-		//	A rich text Editing widget
+		//		A rich text Editing widget
 		//
 		// description:
-		//	This widget provides basic WYSIWYG editing features, based on the browser's
-		//	underlying rich text editing capability, accompanied by a toolbar (dijit.Toolbar).
-		//  A plugin model is available to extend the editor's capabilities as well as the
-		//	the options available in the toolbar.  Content generation may vary across
-		//	browsers, and clipboard operations may have different results, to name
-		//	a few limitations.  Note: this widget should not be used with the HTML
-		//	&lt;TEXTAREA&gt; tag -- see dijit._editor.RichText for details.
+		//		This widget provides basic WYSIWYG editing features, based on the browser's
+		//		underlying rich text editing capability, accompanied by a toolbar (dijit.Toolbar).
+		//		A plugin model is available to extend the editor's capabilities as well as the
+		//		the options available in the toolbar.  Content generation may vary across
+		//		browsers, and clipboard operations may have different results, to name
+		//		a few limitations.  Note: this widget should not be used with the HTML
+		//		&lt;TEXTAREA&gt; tag -- see dijit._editor.RichText for details.
 
-		// plugins: Array
-		//		a list of plugin names (as strings) or instances (as objects)
+		// plugins: String[]
+		//		A list of plugin names (as strings) or instances (as objects)
 		//		for this widget.
 		plugins: null,
 
-		// extraPlugins: Array
-		//		a list of extra plugin names which will be appended to plugins array
+		// extraPlugins: String[]
+		//		A list of extra plugin names which will be appended to plugins array
 		extraPlugins: null,
 
 		constructor: function(){
+			// summary:
+			//		Runs on widget initialization to setup arrays etc.
+			// tags:
+			//		private
+
 			if(!dojo.isArray(this.plugins)){
 				this.plugins=["undo","redo","|","cut","copy","paste","|","bold","italic","underline","strikethrough","|",
 				"insertOrderedList","insertUnorderedList","indent","outdent","|","justifyLeft","justifyRight","justifyCenter","justifyFull",
@@ -54,8 +60,8 @@ dojo.declare(
 			//only lost after onmousedown event is fired, so we can obtain correct caret pos.)
 			//2) when user tabs away from the editor, which is handled in onKeyDown below.
 			if(dojo.isIE){
-	            this.events.push("onBeforeDeactivate");
-							}
+				this.events.push("onBeforeDeactivate");
+			}
 		},
 
 		postCreate: function(){
@@ -96,11 +102,12 @@ dojo.declare(
 				}
 			});
 			this._plugins=[];
-			this.toolbar.destroy(); delete this.toolbar;
+			this.toolbar.destroyRecursive();
+			delete this.toolbar;
 			this.inherited(arguments);
 		},
 		addPlugin: function(/*String||Object*/plugin, /*Integer?*/index){
-			//	summary:
+			// summary:
 			//		takes a plugin name as a string or a plugin instance and
 			//		adds it to the toolbar and associates it with this editor
 			//		instance. The resulting plugin is added to the Editor's
@@ -108,11 +115,12 @@ dojo.declare(
 			//		array at that index. No big magic, but a nice helper for
 			//		passing in plugin names via markup.
 			//
-			//	plugin: String, args object or plugin instance
+			// plugin: String, args object or plugin instance
 			//
-			//	args: This object will be passed to the plugin constructor
+			// args:
+			//		This object will be passed to the plugin constructor
 			//
-			//	index: Integer
+			// index: Integer
 			//		Used when creating an instance from
 			//		something already in this.plugins. Ensures that the new
 			//		instance is assigned to this.plugins at that index.
@@ -144,19 +152,45 @@ dojo.declare(
 		},
 		//the following 3 functions are required to make the editor play nice under a layout widget, see #4070
 		startup: function(){
+			// summary:
+			//		Exists to make Editor work as a child of a layout widget.
+			//		Developers don't need to call this method.
+			// tags:
+			//		protected
 			//console.log('startup',arguments);
 		},
-		resize: function(){
+		resize: function(size){
+			// summary:
+			//		Resize the editor to the specified size, see `dijit.layout._LayoutWidget.resize`
 			dijit.layout._LayoutWidget.prototype.resize.apply(this,arguments);
 		},
 		layout: function(){
+			// summary:
+			//		Called from `dijit.layout._LayoutWidget.resize`.  This shouldn't be called directly
+			// tags:
+			//		protected
 			this.editingArea.style.height=(this._contentBox.h - dojo.marginBox(this.toolbar.domNode).h)+"px";
 			if(this.iframe){
 				this.iframe.style.height="100%";
 			}
 			this._layoutMode = true;
 		},
+		_onIEMouseDown: function(/*Event*/ e){
+			// summary:
+			//		IE only to prevent 2 clicks to focus
+			// tags:
+			//		private
+			delete this._savedSelection; // new mouse position overrides old selection
+			if(e.target.tagName == "BODY"){
+				setTimeout(dojo.hitch(this, "placeCursorAtEnd"), 0);
+			}
+			this.inherited(arguments);
+		},
 		onBeforeDeactivate: function(e){
+			// summary:
+			//		Called on IE right before focus is lost.   Saves the selected range.
+			// tags:
+			//		private
 			if(this.customUndo){
 				this.endEditing(true);
 			}
@@ -164,7 +198,8 @@ dojo.declare(
 			//let's save focus before the editor is deactivated
 			this._saveSelection();
 	        //console.log('onBeforeDeactivate',this);
-	    },
+		},
+
 		/* beginning of custom undo/redo support */
 
 		// customUndo: Boolean
@@ -174,15 +209,21 @@ dojo.declare(
 		//		support other browsers which have W3C DOM2 Range API implemented.
 		customUndo: dojo.isIE,
 
-		//	editActionInterval: Integer
+		// editActionInterval: Integer
 		//		When using customUndo, not every keystroke will be saved as a step.
 		//		Instead typing (including delete) will be grouped together: after
-		//		a user stop typing for editActionInterval seconds, a step will be
+		//		a user stops typing for editActionInterval seconds, a step will be
 		//		saved; if a user resume typing within editActionInterval seconds,
 		//		the timeout will be restarted. By default, editActionInterval is 3
 		//		seconds.
 		editActionInterval: 3,
+
 		beginEditing: function(cmd){
+			// summary:
+			//		Called to note that the user has started typing alphanumeric characters, if it's not already noted.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
 			if(!this._inEditing){
 				this._inEditing=true;
 				this._beginEditing(cmd);
@@ -197,6 +238,11 @@ dojo.declare(
 		_steps:[],
 		_undoedSteps:[],
 		execCommand: function(cmd){
+			// summary:
+			//		Main handler for executing any commands to the editor, like paste, bold, etc.
+			//      Called by plugins, but not meant to be called by end users.
+			// tags:
+			//		protected
 			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
 				return this[cmd]();
 			}else{
@@ -205,18 +251,18 @@ dojo.declare(
 					this._beginEditing();
 				}
 				try{
-					var r = this.inherited('execCommand',arguments);
-                    if(dojo.isSafari && cmd=='paste' && !r){ //see #4598: safari does not support invoking paste from js
-                        var su = dojo.string.substitute, _isM = navigator.userAgent.indexOf("Macintosh") != -1;
-                        alert(su(this.commands.systemShortcut, [this.commands[cmd], su(this.commands[_isM ? 'appleKey' : 'ctrlKey'], ['V'])]));
+					var r = this.inherited('execCommand', arguments);
+                    if(dojo.isWebKit && cmd=='paste' && !r){ //see #4598: safari does not support invoking paste from js
+						throw { code: 1011 }; // throw an object like Mozilla's error
                     }
 				}catch(e){
-					if(dojo.isMoz && /copy|cut|paste/.test(cmd)){
-						// Warn user of platform limitation.  Cannot programmatically access keyboard. See ticket #4136
+					//TODO: when else might we get an exception?  Do we need the Mozilla test below?
+					if(e.code == 1011 /* Mozilla: service denied */ && /copy|cut|paste/.test(cmd)){
+						// Warn user of platform limitation.  Cannot programmatically access clipboard. See ticket #4136
 						var sub = dojo.string.substitute,
 							accel = {cut:'X', copy:'C', paste:'V'},
 							isMac = navigator.userAgent.indexOf("Macintosh") != -1;
-						alert(sub(this.commands.systemShortcutFF,
+						alert(sub(this.commands.systemShortcut,
 							[this.commands[cmd], sub(this.commands[isMac ? 'appleKey' : 'ctrlKey'], [accel[cmd]])]));
 					}
 					r = false;
@@ -228,6 +274,11 @@ dojo.declare(
 			}
 		},
 		queryCommandEnabled: function(cmd){
+			// summary:
+			//		Returns true if specified editor command is enabled.
+			//      Used by the plugins to know when to highlight/not highlight buttons.
+			// tags:
+			//		protected
 			if(this.customUndo && (cmd=='undo' || cmd=='redo')){
 				return cmd=='undo'?(this._steps.length>1):(this._undoedSteps.length>0);
 			}else{
@@ -236,6 +287,8 @@ dojo.declare(
 		},
 
 		focus: function(){
+			// summary:
+			//		Set focus inside the editor
 			var restore=0;
 			//console.log('focus',dijit._curFocus==this.editNode)
 			if(this._savedSelection && dojo.isIE){
@@ -247,6 +300,10 @@ dojo.declare(
 		    }
 		},
 		_moveToBookmark: function(b){
+			// summary:
+			//		Selects the text specified in bookmark b
+			// tags:
+			//		private
 			var bookmark=b;
 			if(dojo.isIE){
 				if(dojo.isArray(b)){//IE CONTROL
@@ -263,13 +320,21 @@ dojo.declare(
 			}
 			dojo.withGlobal(this.window,'moveToBookmark',dijit,[bookmark]);
 		},
-		_changeToStep: function(from,to){
+		_changeToStep: function(from, to){
+			// summary:
+			//		Reverts editor to "to" setting, from the undo stack.
+			// tags:
+			//		private
 			this.setValue(to.text);
 			var b=to.bookmark;
 			if(!b){ return; }
 			this._moveToBookmark(b);
 		},
 		undo: function(){
+			// summary:
+			//		Handler for editor undo (ex: ctrl-z) operation
+			// tags:
+			//		private
 //			console.log('undo');
 			this.endEditing(true);
 			var s=this._steps.pop();
@@ -283,6 +348,11 @@ dojo.declare(
 			return false;
 		},
 		redo: function(){
+			// summary:
+			//		Handler for editor redo (ex: ctrl-y) operation
+			// tags:
+			//		private
+
 //			console.log('redo');
 			this.endEditing(true);
 			var s=this._undoedSteps.pop();
@@ -296,6 +366,11 @@ dojo.declare(
 			return false;
 		},
 		endEditing: function(ignore_caret){
+			// summary:
+			//		Called to note that the user has stopped typing alphanumeric characters, if it's not already noted.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
 			if(this._editTimer){
 				clearTimeout(this._editTimer);
 			}
@@ -305,6 +380,10 @@ dojo.declare(
 			}
 		},
 		_getBookmark: function(){
+			// summary:
+			//		Get the currently selected text
+			// tags:
+			//		protected
 			var b=dojo.withGlobal(this.window,dijit.getBookmark);
 			var tmp=[];
 			if(dojo.isIE){
@@ -324,24 +403,39 @@ dojo.declare(
 			return b;
 		},
 		_beginEditing: function(cmd){
+			// summary:
+			//		Called when the user starts typing alphanumeric characters.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
 			if(this._steps.length===0){
 				this._steps.push({'text':this.savedContent,'bookmark':this._getBookmark()});
 			}
 		},
 		_endEditing: function(ignore_caret){
+			// summary:
+			//		Called when the user stops typing alphanumeric characters.
+			//		Deals with saving undo; see editActionInterval parameter.
+			// tags:
+			//		private
 			var v=this.getValue(true);
 
 			this._undoedSteps=[];//clear undoed steps
 			this._steps.push({text: v, bookmark: this._getBookmark()});
 		},
 		onKeyDown: function(e){
+			// summary:
+			//		Handler for onkeydown event.
+			// tags:
+			//		private
+
 			//We need to save selection if the user TAB away from this editor
 			//no need to call _saveSelection for IE, as that will be taken care of in onBeforeDeactivate
 			if(!dojo.isIE && !this.iframe && e.keyCode==dojo.keys.TAB && !this.tabIndent){
 				this._saveSelection();
 			}
 			if(!this.customUndo){
-				this.inherited('onKeyDown',arguments);
+				this.inherited(arguments);
 				return;
 			}
 			var k = e.keyCode, ks = dojo.keys;
@@ -356,7 +450,7 @@ dojo.declare(
 					return;
 				}
 			}
-			this.inherited('onKeyDown',arguments);
+			this.inherited(arguments);
 
 			switch(k){
 					case ks.ENTER:
@@ -407,40 +501,64 @@ dojo.declare(
 				}
 		},
 		_onBlur: function(){
+			// summary:
+			//		Called from focus manager when focus has moved away from this editor
+			// tags:
+			//		protected
+
 			//this._saveSelection();
 			this.inherited('_onBlur',arguments);
 			this.endEditing(true);
 		},
 		_saveSelection: function(){
+			// summary:
+			//		Save the currently selected text in _savedSelection attribute
+			// tags:
+			//		private
 			this._savedSelection=this._getBookmark();
 			//console.log('save selection',this._savedSelection,this);
 		},
 		_restoreSelection: function(){
+			// summary:
+			//		Re-select the text specified in _savedSelection attribute;
+			//		see _saveSelection().
+			// tags:
+			//		private
 			if(this._savedSelection){
 				//only restore the selection if the current range is collapsed
-    			//if not collapsed, then it means the editor does not lose 
-    			//selection and there is no need to restore it
-    			//if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
-    				//console.log('_restoreSelection true')
+    				//if not collapsed, then it means the editor does not lose 
+    				//selection and there is no need to restore it
+    				if(dojo.withGlobal(this.window,'isCollapsed',dijit)){
+    					//console.log('_restoreSelection true')
 					this._moveToBookmark(this._savedSelection);
-				//}
+				}
 				delete this._savedSelection;
 			}
 		},
 		_onFocus: function(){
+			// summary:
+			//		Called from focus manager when focus has moved into this editor
+			// tags:
+			//		protected
+
 			//console.log('_onFocus');
-			this._restoreSelection();
+			setTimeout(dojo.hitch(this, "_restoreSelection"), 0); // needs input caret first
 			this.inherited(arguments);
 		},
+
 		onClick: function(){
+			// summary:
+			//		Handler for when editor is clicked
+			// tags:
+			//		protected
 			this.endEditing(true);
-			this.inherited('onClick',arguments);
+			this.inherited(arguments);
 		}
 		/* end of custom undo/redo support */
 	}
 );
 
-/* the following code is to registered a handler to get default plugins */
+// Register the "default plugins", ie, the built-in editor commands
 dojo.subscribe(dijit._scopeName + ".Editor.getPlugin",null,function(o){
 	if(o.plugin){ return; }
 	var args = o.args, p;

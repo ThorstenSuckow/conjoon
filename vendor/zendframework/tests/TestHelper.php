@@ -13,16 +13,12 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @package    Zend
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestHelper.php 14513 2009-03-27 13:44:05Z alexander $
+ * @version    $Id: TestHelper.php 18376 2009-09-22 19:43:08Z matthew $
  */
-
-/*
- * Start output buffering
- */
-ob_start();
 
 /*
  * Include PHPUnit dependencies
@@ -76,6 +72,13 @@ if (is_readable($zfCoreTests . DIRECTORY_SEPARATOR . 'TestConfiguration.php')) {
     require_once $zfCoreTests . DIRECTORY_SEPARATOR . 'TestConfiguration.php';
 } else {
     require_once $zfCoreTests . DIRECTORY_SEPARATOR . 'TestConfiguration.php.dist';
+}
+
+/**
+ * Start output buffering, if enabled
+ */
+if (defined('TESTS_ZEND_OB_ENABLED') && constant('TESTS_ZEND_OB_ENABLED')) {
+    ob_start();
 }
 
 /*

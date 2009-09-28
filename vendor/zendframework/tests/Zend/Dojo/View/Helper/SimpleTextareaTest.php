@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTextareaTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: SimpleTextareaTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Dojo_View_Helper_SimpleTextareaTest::main() if this source file is executed directly.
@@ -33,20 +33,25 @@ require_once 'Zend/Dojo/View/Helper/SimpleTextarea.php';
 /** Zend_View */
 require_once 'Zend/View.php';
 
-/** Zend_Registry */
-require_once 'Zend/Registry.php';
-
 /** Zend_Dojo */
 require_once 'Zend/Dojo.php';
+
+/** Zend_Registry */
+require_once 'Zend/Registry.php';
 
 /** Zend_Dojo_View_Helper_Dojo */
 require_once 'Zend/Dojo/View/Helper/Dojo.php';
 
 /**
- * Test class for SimpleTextarea dijit view helper.
+ * Test class for Zend_Dojo_View_Helper_SimpleTextarea.
  *
- * @group My
- * @group View_Helper
+ * @category   Zend
+ * @package    Zend_Dojo
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Dojo
+ * @group      Zend_Dojo_View
  */
 class Zend_Dojo_View_Helper_SimpleTextareaTest extends PHPUnit_Framework_TestCase 
 {
@@ -69,15 +74,12 @@ class Zend_Dojo_View_Helper_SimpleTextareaTest extends PHPUnit_Framework_TestCas
      */
     public function setUp()
     {
-        $registry = Zend_Registry::getInstance();
-        if (isset($registry['Zend_Dojo_View_Helper_Dojo'])) {
-            unset($registry['Zend_Dojo_View_Helper_Dojo']);
-        }
-        Zend_Dojo_View_Helper_Dojo::setUseProgrammatic(true);
-        $view = new Zend_View;
-        Zend_Dojo::enableView($view);
+        Zend_Registry::_unsetInstance();
+        Zend_Dojo_View_Helper_Dojo::setUseDeclarative();
+
+        $this->view   = $this->getView();
         $this->helper = new Zend_Dojo_View_Helper_SimpleTextarea();
-        $this->helper->setView($view);
+        $this->helper->setView($this->view);
     }
 
     /**
@@ -90,24 +92,42 @@ class Zend_Dojo_View_Helper_SimpleTextareaTest extends PHPUnit_Framework_TestCas
     {
     }
 
-    public function testDeclarativeUseShouldCreateTextareaWithSimpleTextareaDojoType()
+    public function getView()
     {
-        Zend_Dojo_View_Helper_Dojo::setUseDeclarative(true);
-        $html = $this->helper->simpleTextarea('foo', 'seeded text');
-        $this->assertContains('id="foo"', $html);
-        $this->assertContains('<textarea', $html);
-        $this->assertContains('dojoType="dijit.form.SimpleTextarea"', $html);
+        require_once 'Zend/View.php';
+        $view = new Zend_View();
+        Zend_Dojo::enableView($view);
+        return $view;
     }
 
-    public function testProgrammaticUseShouldCreateTextareaWithSimpleTextareaDojoType()
+    public function getElement()
     {
-        $html = $this->helper->simpleTextarea('foo', 'seeded text');
-        $this->assertContains('id="foo"', $html);
-        $this->assertContains('<textarea', $html);
-        $this->assertNotContains('dojoType="dijit.form.SimpleTextarea"', $html);
-        $this->assertTrue($this->helper->view->dojo()->hasDijit('foo'));
-        $modules = $this->helper->view->dojo()->getModules();
-        $this->assertTrue(in_array('dijit.form.SimpleTextarea', $modules));
+        return $this->helper->simpleTextarea(
+            'elementId', 
+            'some content', 
+            array(),
+            array()
+        );
+    }
+
+    public function testShouldAllowDeclarativeDijitCreation()
+    {
+        $html = $this->getElement();
+        $this->assertRegexp('/<textarea[^>]*(dojoType="dijit.form.SimpleTextarea")/', $html, $html);
+    }
+
+    public function testShouldAllowProgrammaticDijitCreation()
+    {
+        Zend_Dojo_View_Helper_Dojo::setUseProgrammatic();
+        $html = $this->getElement();
+        $this->assertNotRegexp('/<textarea[^>]*(dojoType="dijit.form.SimpleTextarea")/', $html);
+        $this->assertNotNull($this->view->dojo()->getDijit('elementId'));
+    }
+
+    public function testPassingIdAsAttributeShouldOverrideUsingNameAsId()
+    {
+        $html = $this->helper->simpleTextarea('foo[bar]', '', array(), array('id' => 'foo-bar'));
+        $this->assertContains('id="foo-bar"', $html);
     }
 }
 

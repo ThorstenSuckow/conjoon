@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: RedirectorTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_Controller_Action_Helper_RedirectorTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Controller_Action_Helper_RedirectorTest::main");
@@ -15,8 +36,17 @@ require_once 'Zend/Controller/Response/Http.php';
 
 /**
  * Test class for Zend_Controller_Action_Helper_Redirector.
+ *
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Action
+ * @group      Zend_Controller_Action_Helper
  */
-class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_TestCase 
+class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_Controller_Action_Helper_Redirector
@@ -52,7 +82,7 @@ class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_Tes
     /**
      * Set up redirector
      *
-     * Creates request, response, and action controller objects; sets action 
+     * Creates request, response, and action controller objects; sets action
      * controller in redirector, and sets exit to false.
      *
      * Also resets the front controller instance.
@@ -119,7 +149,7 @@ class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_Tes
     {
         $this->redirector->setCode('303');
         $this->assertEquals(303, $this->redirector->getCode());
-        
+
         try {
             $this->redirector->setCode('251');
             $this->fail('Invalid redirect code should throw exception');
@@ -130,7 +160,7 @@ class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_Tes
             $this->redirector->setCode('351');
             $this->fail('Invalid redirect code should throw exception');
         } catch (Exception $e) {
-        }        
+        }
     }
 
     public function testRedirectorShouldOnlyAllowValidHttpRedirectCodes()
@@ -139,12 +169,12 @@ class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_Tes
             $this->redirector->setCode('306');
             $this->fail('Invalid redirect code should throw exception');
         } catch (Zend_Controller_Action_Exception $e) {
-        }        
+        }
         try {
             $this->redirector->setCode('304');
             $this->fail('Invalid redirect code should throw exception');
         } catch (Zend_Controller_Action_Exception $e) {
-        }        
+        }
     }
 
     public function testExit()
@@ -159,6 +189,13 @@ class Zend_Controller_Action_Helper_RedirectorTest extends PHPUnit_Framework_Tes
         $this->assertTrue($this->redirector->getPrependBase());
         $this->redirector->setPrependBase(false);
         $this->assertFalse($this->redirector->getPrependBase());
+    }
+
+    public function testCloseSessionOnExit()
+    {
+        $this->assertTrue($this->redirector->getCloseSessionOnExit());
+        $this->redirector->setCloseSessionOnExit(false);
+        $this->assertFalse($this->redirector->getCloseSessionOnExit());
     }
 
     public function testGetRedirectUrlNullByDefault()
@@ -470,5 +507,6 @@ class Zend_Controller_Action_Helper_Redirector_TestController extends Zend_Contr
 if (PHPUnit_MAIN_METHOD == "Zend_Controller_Action_Helper_RedirectorTest::main") {
     Zend_Controller_Action_Helper_RedirectorTest::main();
 }
+
 
 

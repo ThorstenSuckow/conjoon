@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Statement
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Oracle.php 17857 2009-08-27 22:01:47Z ralph $
  */
 
 /**
@@ -30,16 +31,11 @@ require_once 'Zend/Db/Statement.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Statement
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_Statement_Oracle extends Zend_Db_Statement
 {
-
-    /**
-     * The connection_stmt object.
-     */
-    protected $_stmt;
 
     /**
      * Column names.
@@ -352,6 +348,10 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
             throw new Zend_Db_Statement_Oracle_Exception($error);
         }
 
+        if (is_array($row) && array_key_exists('zend_db_rownum', $row)) {
+            unset($row['zend_db_rownum']);
+        }
+
         return $row;
     }
 
@@ -435,6 +435,11 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
             }
             if ($style == Zend_Db::FETCH_COLUMN) {
                 $result = $result[$col];
+            }
+            foreach ($result as &$row) {
+                if (is_array($row) && array_key_exists('zend_db_rownum', $row)) {
+                    unset($row['zend_db_rownum']);
+                }
             }
         } else {
             while (($row = oci_fetch_object($this->_stmt)) !== false) {

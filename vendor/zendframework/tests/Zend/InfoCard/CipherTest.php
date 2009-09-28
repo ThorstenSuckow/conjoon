@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_InfoCard
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CipherTest.php 12594 2008-11-12 18:30:23Z alexander $
+ * @version    $Id: CipherTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_InfoCard_ProcessTest::main() if this source file is executed directly.
@@ -35,6 +36,14 @@ require_once "PHPUnit/Framework/TestSuite.php";
 require_once 'Zend/InfoCard.php';
 require_once 'Zend/InfoCard/Cipher/Pki/Adapter/Rsa.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_InfoCard
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_InfoCard
+ */
 class Zend_InfoCard_CipherTest extends PHPUnit_Framework_TestCase
 {
 

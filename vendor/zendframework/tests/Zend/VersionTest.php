@@ -15,10 +15,14 @@
  * @category   Zend
  * @package    Zend_Version
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: VersionTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: VersionTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
+
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_VersionTest::main');
+}
 
 /**
  * Test helper
@@ -34,11 +38,18 @@ require_once 'Zend/Version.php';
  * @category   Zend
  * @package    Zend_Version
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Version
  */
 class Zend_VersionTest extends PHPUnit_Framework_TestCase
 {
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+
     /**
      * Tests that version_compare() and its "proxy"
      * Zend_Version::compareVersion() work as expected.
@@ -50,7 +61,7 @@ class Zend_VersionTest extends PHPUnit_Framework_TestCase
         for ($i=0; $i <= 1; $i++) {
             for ($j=0; $j < 10; $j++) {
                 for ($k=0; $k < 20; $k++) {
-                    foreach (array('PR', 'dev', 'alpha', 'beta', 'RC', 'RC1', 'RC2', 'RC3', '', 'pl') as $rel) {
+                    foreach (array('PR', 'dev', 'alpha', 'a1', 'a2', 'beta', 'b1', 'b2', 'RC', 'RC1', 'RC2', 'RC3', '', 'pl') as $rel) {
                         $ver = "$i.$j.$k$rel";
                         if ($ver === Zend_Version::VERSION
                             || "$i.$j.$k-$rel" === Zend_Version::VERSION
@@ -79,4 +90,8 @@ class Zend_VersionTest extends PHPUnit_Framework_TestCase
         }
     }
 
+}
+
+if (PHPUnit_MAIN_METHOD == "Zend_VersionTest::main") {
+    Zend_VersionTest::main();
 }

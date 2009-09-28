@@ -12,11 +12,12 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
- * @category  Zend
- * @package   Zend_Http
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: testHttpAuth.php 9354 2008-05-04 21:26:53Z thomas $
+ * @category   Zend
+ * @package    Zend_Http
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: testHttpAuth.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 $user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : null;
@@ -26,7 +27,7 @@ $gpass = isset($_GET['pass']) ? $_GET['pass'] : null;
 $method = isset($_GET['method']) ? $_GET['method'] : 'Basic';
 
 if (! $user || ! $pass || $user != $guser || $pass != $gpass) {
-	header('WWW-Authenticate: ' . $method . ' realm="ZendTest"');
+    header('WWW-Authenticate: ' . $method . ' realm="ZendTest"');
     header('HTTP/1.0 401 Unauthorized');
 }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Date
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateObjectTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: DateObjectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -32,22 +30,31 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  */
 require_once 'Zend/Date.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Date
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Date
  */
 class Zend_Date_DateObjectTest extends PHPUnit_Framework_TestCase
 {
 
     public function setUp()
     {
+        $this->originalTimezone = date_default_timezone_get();
         date_default_timezone_set('Europe/Paris');
         require_once 'Zend/Cache.php';
         $cache = Zend_Cache::factory('Core', 'File',
                  array('lifetime' => 120, 'automatic_serialization' => true),
                  array('cache_dir' => dirname(__FILE__) . '/../_files/'));
         Zend_Date_DateObjectTestHelper::setOptions(array('cache' => $cache));
+    }
+
+    public function tearDown()
+    {
+        date_default_timezone_set($this->originalTimezone);
     }
 
     /**

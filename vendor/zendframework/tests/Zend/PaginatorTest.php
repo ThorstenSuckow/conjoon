@@ -15,10 +15,15 @@
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PaginatorTest.php 12581 2008-11-12 08:57:09Z norm2782 $
+ * @version    $Id: PaginatorTest.php 17631 2009-08-16 12:29:46Z norm2782 $
  */
+
+// Call Zend_PaginatorTest::main() if this source file is executed directly.
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_PaginatorTest::main');
+}
 
 /**
  * Test helper
@@ -29,6 +34,11 @@ require_once dirname(__FILE__) . '/../TestHelper.php';
  * @see Zend_Paginator
  */
 require_once 'Zend/Paginator.php';
+
+/**
+ * @see Zend_Paginator_AdapterAggregate
+ */
+require_once 'Zend/Paginator/AdapterAggregate.php';
 
 /**
  * @see PHPUnit_Framework_TestCase
@@ -71,14 +81,36 @@ require_once 'Zend/Paginator/_files/Zf4207.php';
 require_once 'Zend/Paginator/_files/TestTable.php';
 
 /**
+ * @see Zend_Cache
+ */
+require_once 'Zend/Cache.php';
+
+/**
+ * @see Zend_Filter_Callback
+ */
+require_once 'Zend/Filter/Callback.php';
+
+/**
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Paginator
  */
 class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * Runs the test methods of this class.
+     *
+     * @return void
+     */
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+
     /**
      * Paginator instance
      *
@@ -87,6 +119,8 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
     protected $_paginator = null;
 
     protected $_testCollection = null;
+
+    protected $_cache;
 
     protected $_query = null;
 
@@ -113,6 +147,13 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
         // get a fresh new copy of ViewRenderer in each tests
         Zend_Controller_Action_HelperBroker::resetHelpers();
 
+        $fO = array('lifetime' => 3600, 'automatic_serialization' => true);
+        $bO = array('cache_dir'=> $this->_getTmpDir());
+
+        $this->_cache = Zend_Cache::factory('Core', 'File', $fO, $bO);
+
+        Zend_Paginator::setCache($this->_cache);
+
         $this->_restorePaginatorDefaults();
     }
 
@@ -121,6 +162,33 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
         $this->_dbConn = null;
         $this->_testCollection = null;
         $this->_paginator = null;
+    }
+
+    protected function _getTmpDir()
+    {
+        $tmpDir = sys_get_temp_dir() . '/zend_paginator';
+        if (file_exists($tmpDir)) {
+            $this->_rmDirRecursive($tmpDir);
+        }
+        mkdir($tmpDir);
+        $this->cacheDir = $tmpDir;
+        return $tmpDir;
+    }
+
+    protected function _rmDirRecursive($path)
+    {
+        $dir = new DirectoryIterator($path);
+        foreach ($dir as $file) {
+            if (!$file->isDir()) {
+                unlink($file->getPathname());
+            } elseif (!in_array($file->getFilename(), array('.', '..'))) {
+                $this->_rmDirRecursive($file->getPathname());
+            }
+        }
+        if (!rmdir($path)) {
+            throw new Exception('Unable to remove temporary directory ' . $path
+                                . '; perhaps it has a nested structure?');
+        }
     }
 
     protected function _restorePaginatorDefaults()
@@ -138,6 +206,9 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
         $loader = Zend_Paginator::getScrollingStyleLoader();
         $loader->clearPaths();
         $loader->addPrefixPath('Zend_Paginator_ScrollingStyle', 'Zend/Paginator/ScrollingStyle');
+
+        $this->_cache->clean();
+        $this->_paginator->setCacheEnabled(true);
     }
 
     public function testFactoryReturnsArrayAdapter()
@@ -437,11 +508,13 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
 
     public function testGetsAndSetsItemCountPerPage()
     {
+        Zend_Paginator::setConfig(new Zend_Config(array()));
+        $this->_paginator = new Zend_Paginator(new Zend_Paginator_Adapter_Array(range(1, 101)));
         $this->assertEquals(10, $this->_paginator->getItemCountPerPage());
         $this->_paginator->setItemCountPerPage(15);
         $this->assertEquals(15, $this->_paginator->getItemCountPerPage());
         $this->_paginator->setItemCountPerPage(0);
-        $this->assertEquals(1, $this->_paginator->getItemCountPerPage());
+        $this->assertEquals(10, $this->_paginator->getItemCountPerPage());
         $this->_paginator->setItemCountPerPage(10);
     }
 
@@ -678,36 +751,82 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
         $this->assertType('ArrayObject', $paginator->getCurrentItems());
     }
 
+    public function testCachedItem()
+    {
+        $this->_paginator->setCurrentPageNumber(1)->getCurrentItems();
+        $this->_paginator->setCurrentPageNumber(2)->getCurrentItems();
+        $this->_paginator->setCurrentPageNumber(3)->getCurrentItems();
+
+        $pageItems = $this->_paginator->getPageItemCache();
+        $expected = array(
+           1 => new ArrayIterator(range(1, 10)),
+           2 => new ArrayIterator(range(11, 20)),
+           3 => new ArrayIterator(range(21, 30))
+        );
+        $this->assertEquals($expected, $pageItems);
+    }
+
     public function testClearPageItemCache()
     {
-    	$this->_paginator->setCurrentPageNumber(1)->getCurrentItems();
+        $this->_paginator->setCurrentPageNumber(1)->getCurrentItems();
     	$this->_paginator->setCurrentPageNumber(2)->getCurrentItems();
     	$this->_paginator->setCurrentPageNumber(3)->getCurrentItems();
 
-    	$pageItems = $this->_paginator->getPageItemCache();
-
-    	$expected = array(
-    	   1 => new ArrayIterator(range(1, 10)),
-    	   2 => new ArrayIterator(range(11, 20)),
-    	   3 => new ArrayIterator(range(21, 30))
-    	);
-
-    	$this->assertEquals($expected, $pageItems);
-
-    	$this->_paginator->clearPageItemCache(2);
-    	$pageItems = $this->_paginator->getPageItemCache();
-
+        // clear only page 2 items
+        $this->_paginator->clearPageItemCache(2);
+        $pageItems = $this->_paginator->getPageItemCache();
     	$expected = array(
            1 => new ArrayIterator(range(1, 10)),
            3 => new ArrayIterator(range(21, 30))
         );
-
         $this->assertEquals($expected, $pageItems);
 
+        // clear all
         $this->_paginator->clearPageItemCache();
         $pageItems = $this->_paginator->getPageItemCache();
-
         $this->assertEquals(array(), $pageItems);
+    }
+
+    public function testWithCacheDisabled()
+    {
+        $this->_paginator->setCacheEnabled(false);
+        $this->_paginator->setCurrentPageNumber(1)->getCurrentItems();
+
+        $cachedPageItems = $this->_paginator->getPageItemCache();
+        $expected = new ArrayIterator(range(1, 10));
+
+        $this->assertEquals(array(), $cachedPageItems);
+
+        $pageItems = $this->_paginator->getCurrentItems();
+
+        $this->assertEquals($expected, $pageItems);
+    }
+
+    public function testCacheDoesNotDisturbResultsWhenChangingParam()
+    {
+        $this->_paginator->setCurrentPageNumber(1)->getCurrentItems();
+        $pageItems = $this->_paginator->setItemCountPerPage(5)->getCurrentItems();
+
+        $expected = new ArrayIterator(range(1, 5));
+        $this->assertEquals($expected, $pageItems);
+
+        $pageItems = $this->_paginator->getItemsByPage(2);
+        $expected = new ArrayIterator(range(6, 10));
+        $this->assertEquals($expected, $pageItems);
+
+        // change the inside Paginator scale
+        $pageItems = $this->_paginator->setItemCountPerPage(8)->setCurrentPageNumber(3)->getCurrentItems();
+
+        $pageItems = $this->_paginator->getPageItemCache();
+        $expected = array(3 => new ArrayIterator(range(17, 24)));
+        $this->assertEquals($expected, $pageItems);
+
+        // get back to already cached data
+        $this->_paginator->setItemCountPerPage(5);
+        $pageItems = $this->_paginator->getPageItemCache();
+        $expected =array(1 => new ArrayIterator(range(1, 5)),
+                         2 => new ArrayIterator(range(6, 10)));
+        $this->assertEquals($expected, $pageItems);
     }
 
     public function testToJson()
@@ -717,7 +836,104 @@ class Zend_PaginatorTest extends PHPUnit_Framework_TestCase
     	$json = $this->_paginator->toJson();
 
     	$expected = '"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7,"7":8,"8":9,"9":10';
-    	
+
         $this->assertContains($expected, $json);
     }
+
+    // ZF-5519
+    public function testFilter()
+    {
+        $filter = new Zend_Filter_Callback(array($this, 'filterCallback'));
+        $paginator = Zend_Paginator::factory(range(1, 10));
+        $paginator->setFilter($filter);
+
+        $page = $paginator->getCurrentItems();
+
+        $this->assertEquals(new ArrayIterator(range(10, 100, 10)), $page);
+    }
+
+    public function filterCallback($value)
+    {
+        $data = array();
+
+        foreach ($value as $number) {
+            $data[] = ($number * 10);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @group ZF-5785
+     */
+    public function testGetSetDefaultItemCountPerPage()
+    {
+        Zend_Paginator::setConfig(new Zend_Config(array()));
+
+        $paginator = Zend_Paginator::factory(range(1, 10));
+        $this->assertEquals(10, $paginator->getItemCountPerPage());
+
+        Zend_Paginator::setDefaultItemCountPerPage(20);
+        $this->assertEquals(20, Zend_Paginator::getDefaultItemCountPerPage());
+
+        $paginator = Zend_Paginator::factory(range(1, 10));
+        $this->assertEquals(20, $paginator->getItemCountPerPage());
+
+        $this->_restorePaginatorDefaults();
+    }
+    /**
+     * @group ZF-7207
+     */
+    public function testItemCountPerPageByDefault()
+    {
+        $paginator = Zend_Paginator::factory(range(1,20));
+        $this->assertEquals(2, $paginator->count());
+    }
+
+    /**
+     * @group ZF-7602
+     */
+    public function testAcceptAndHandlePaginatorAdapterAggregateDataInFactory()
+    {
+        $p = Zend_Paginator::factory(new Zend_Paginator_TestArrayAggregate());
+
+        $this->assertEquals(1, count($p));
+        $this->assertType('Zend_Paginator_Adapter_Array', $p->getAdapter());
+        $this->assertEquals(4, count($p->getAdapter()));
+    }
+
+    /**
+     * @group ZF-7602
+     */
+    public function testAcceptAndHandlePaginatorAdapterAggreageInConstructor()
+    {
+        $p = new Zend_Paginator(new Zend_Paginator_TestArrayAggregate());
+
+        $this->assertEquals(1, count($p));
+        $this->assertType('Zend_Paginator_Adapter_Array', $p->getAdapter());
+        $this->assertEquals(4, count($p->getAdapter()));
+    }
+
+    /**
+     * @group ZF-7602
+     */
+    public function testInvalidDataInConstructor_ThrowsException()
+    {
+        $this->setExpectedException("Zend_Paginator_Exception");
+
+        $p = new Zend_Paginator(array());
+    }
+}
+
+class Zend_Paginator_TestArrayAggregate implements Zend_Paginator_AdapterAggregate
+{
+    public function getPaginatorAdapter()
+    {
+        return new Zend_Paginator_Adapter_Array(array(1, 2, 3, 4));
+    }
+}
+
+// Call Zend_PaginatorTest::main() if this source file is executed directly.
+if (PHPUnit_MAIN_METHOD === 'Zend_PaginatorTest::main') {
+    Zend_PaginatorTest::main();
 }

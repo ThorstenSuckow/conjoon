@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NumberTest.php 7047 2007-12-06 07:46:26Z thomas $
+ * @version    $Id: NumberTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -32,10 +31,13 @@ require_once 'Zend/Measure/Number.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Measure
  */
 class Zend_Measure_NumberTest extends PHPUnit_Framework_TestCase
 {
@@ -59,7 +61,7 @@ class Zend_Measure_NumberTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(100, $value->getValue(), 'Zend_Measure_Number value expected to be a decimal value');
         $value = new Zend_Measure_Number('-100.100,200',Zend_Measure_Number::STANDARD,'de');
         $this->assertEquals(100100, $value->getValue(),'Zend_Measure_Number Object not returned');
-        $value = new Zend_Measure_Number('string -100.100,200',Zend_Measure_Number::STANDARD,'de');
+        $value = new Zend_Measure_Number('-100.100,200',Zend_Measure_Number::STANDARD,'de');
         $this->assertEquals(100100, $value->getValue(),'Zend_Measure_Number Object not returned');
 
         try {
@@ -89,12 +91,12 @@ class Zend_Measure_NumberTest extends PHPUnit_Framework_TestCase
      */
     public function testNumberEquality()
     {
-        $value = new Zend_Measure_Number('string -100.100,200',Zend_Measure_Number::STANDARD,'de');
-        $newvalue = new Zend_Measure_Number('otherstring -100.100,200',Zend_Measure_Number::STANDARD,'de');
+        $value = new Zend_Measure_Number('-100.100,200',Zend_Measure_Number::STANDARD,'de');
+        $newvalue = new Zend_Measure_Number('-100.100,200',Zend_Measure_Number::STANDARD,'de');
         $this->assertTrue($value->equals($newvalue),'Zend_Measure_Number Object should be equal');
 
-        $value = new Zend_Measure_Number('string -100.100,200',Zend_Measure_Number::STANDARD,'de');
-        $newvalue = new Zend_Measure_Number('otherstring -100,200',Zend_Measure_Number::STANDARD,'de');
+        $value = new Zend_Measure_Number('-100.100,200',Zend_Measure_Number::STANDARD,'de');
+        $newvalue = new Zend_Measure_Number('-100,200',Zend_Measure_Number::STANDARD,'de');
         $this->assertFalse($value->equals($newvalue),'Zend_Measure_Number Object should be not equal');
     }
 
@@ -114,12 +116,12 @@ class Zend_Measure_NumberTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(200, $value->getValue(), 'Zend_Measure_Number value expected to be a decimal value');
         $value->setValue('-200.200,200',Zend_Measure_Number::STANDARD,'de');
         $this->assertEquals(200200, $value->getValue(),'Zend_Measure_Number Object not returned');
-        $value->setValue('otherstring -200.200,200',Zend_Measure_Number::STANDARD,'de');
+        $value->setValue('-200.200,200',Zend_Measure_Number::STANDARD,'de');
         $this->assertEquals(200200, $value->getValue(),'Zend_Measure_Number Object not returned');
 
         try {
             $value = new Zend_Measure_Number('100',Zend_Measure_Number::STANDARD,'de');
-            $value->setValue('otherstring -200.200,200','Number::UNKNOWN','de');
+            $value->setValue('-200.200,200','Number::UNKNOWN','de');
             $this->fail('Exception expected because of unknown type');
         } catch (Zend_Measure_Exception $e) {
             // success
@@ -255,6 +257,6 @@ class Zend_Measure_NumberTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('25 ⑽', $value->convertTo(Zend_Measure_Number::DECIMAL));
 
         $value = new Zend_Measure_Number('_X',Zend_Measure_Number::ROMAN, 'en');
-        $this->assertEquals('10000 ⑽', $value->convertTo(Zend_Measure_Number::DECIMAL));
+        $this->assertEquals('10,000 ⑽', $value->convertTo(Zend_Measure_Number::DECIMAL));
     }
 }

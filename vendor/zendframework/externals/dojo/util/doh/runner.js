@@ -41,7 +41,7 @@ doh._mixin = function(/*Object*/ obj, /*Object*/ props){
 		// inherited from Object.prototype.  For example, if obj has a custom
 		// toString() method, don't overwrite it with the toString() method
 		// that props inherited from Object.protoype
-		if((typeof tobj[x] == "undefined") || (tobj[x] != props[x])){
+		if(tobj[x] === undefined || tobj[x] != props[x]){
 			obj[x] = props[x];
 		}
 	}
@@ -128,6 +128,18 @@ doh.Deferred = function(canceller){
 };
 
 doh.extend(doh.Deferred, {
+	getTestErrback: function(cb, scope){
+		// summary: Replaces outer getTextCallback's in nested situations to avoid multiple callback(true)'s
+		var _this = this;
+		return function(){
+			try{
+				cb.apply(scope||doh.global||_this, arguments);
+			}catch(e){
+				_this.errback(e);
+			}
+		};
+	},
+
 	getTestCallback: function(cb, scope){
 		var _this = this;
 		return function(){
@@ -660,6 +672,14 @@ doh._arrayEq = function(expected, actual){
 }
 
 doh._objPropEq = function(expected, actual){
+	// Degenerate case: if they are both null, then their "properties" are equal.
+	if(expected === null && actual === null){
+		return true;
+	}
+	// If only one is null, they aren't equal.
+	if(expected === null || actual === null){
+		return false;
+	}
 	if(expected instanceof Date){
 		return actual instanceof Date && expected.getTime()==actual.getTime();
 	}
@@ -769,7 +789,7 @@ doh._runFixture = function(groupName, fixture){
 					if(fixture["tearDown"]){ fixture.tearDown(doh); }
 					tg.inFlight--;
 					if((!tg.inFlight)&&(tg.iterated)){
-						doh._groupFinished(groupName, (!tg.failures));
+						doh._groupFinished(groupName, !tg.failures);
 					}
 					doh._testFinished(groupName, fixture, ret.results[0]);
 					if(doh._paused){
@@ -806,10 +826,10 @@ doh._runFixture = function(groupName, fixture){
 		if(threw){
 			this._handleFailure(groupName, fixture, err);
 		}
-		this._testFinished(groupName, fixture, (!threw));
+		this._testFinished(groupName, fixture, !threw);
 
 		if((!tg.inFlight)&&(tg.iterated)){
-			doh._groupFinished(groupName, (!tg.failures));
+			doh._groupFinished(groupName, !tg.failures);
 		}else if(tg.inFlight > 0){
 			setTimeout(this.hitch(this, function(){
 				doh.runGroup(groupName); // , idx);
@@ -844,7 +864,7 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		if(idx<=tg.length){
 			if((!tg.inFlight)&&(tg.iterated == true)){
 				if(tg["tearDown"]){ tg.tearDown(this); }
-				doh._groupFinished(groupName, (!tg.failures));
+				doh._groupFinished(groupName, !tg.failures);
 				return;
 			}
 		}
@@ -877,7 +897,7 @@ doh.runGroup = function(/*String*/ groupName, /*Integer*/ idx){
 		tg.iterated = true;
 		if(!tg.inFlight){
 			if(tg["tearDown"]){ tg.tearDown(this); }
-			doh._groupFinished(groupName, (!tg.failures));
+			doh._groupFinished(groupName, !tg.failures);
 		}
 	}
 }
@@ -995,20 +1015,28 @@ tests = doh;
 				// document.write() call.
 
 				// find runner.js, load _browserRunner relative to it
-				var scripts = document.getElementsByTagName("script");
+				var scripts = document.getElementsByTagName("script"), runnerFile;
 				for(x=0; x<scripts.length; x++){
 					var s = scripts[x].src;
-					if(s && (s.substr(s.length - 9) == "runner.js")){
-						document.write("<scri"+"pt src='" + s.substr(0, s.length - 9)
-							+ "_browserRunner.js' type='text/javascript'></scr"+"ipt>");
+					if(s){
+						if(!runnerFile && s.substr(s.length - 9) == "runner.js"){
+							runnerFile = s;
+						}else if(s.substr(s.length - 17) == "_browserRunner.js"){
+							runnerFile = null;
+							break;
+						}
 					}
+				}
+				if(runnerFile){
+					document.write("<scri"+"pt src='" + runnerFile.substr(0, runnerFile.length - 9)
+						+ "_browserRunner.js' type='text/javascript'></scr"+"ipt>");
 				}
 			}
 		}
 	}catch(e){
 		print("\n"+doh._line);
-		print("The Dojo Unit Test Harness, $Rev$");
-		print("Copyright (c) 2007, The Dojo Foundation, All Rights Reserved");
+		print("The Dojo Unit Test Harness, $Rev: 18820 $");
+		print("Copyright (c) 2009, The Dojo Foundation, All Rights Reserved");
 		print(doh._line, "\n");
 
 		load("_rhinoRunner.js");

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SkipTests.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: SkipTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * PHPUnit_Framework_TestCase
@@ -31,13 +29,13 @@ require_once 'PHPUnit/Util/Filter.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
-
 /**
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
  */
 abstract class Zend_Cache_BackendTest_SkipTests extends PHPUnit_Framework_TestCase
 {
@@ -56,26 +54,86 @@ abstract class Zend_Cache_BackendTest_SkipTests extends PHPUnit_Framework_TestCa
 
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
 class Zend_Cache_ApcBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
 class Zend_Cache_XcacheBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
 class Zend_Cache_MemcachedBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
 class Zend_Cache_SqliteBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
 class Zend_Cache_ZendPlatformBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }
 
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
 class Zend_Cache_TwoLevelsBackendTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
+{
+}
+
+/**
+ * @category   Zend
+ * @package    Zend_Cache
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
+ */
+class Zend_Cache_ZendServerTest_SkipTests extends Zend_Cache_BackendTest_SkipTests
 {
 }

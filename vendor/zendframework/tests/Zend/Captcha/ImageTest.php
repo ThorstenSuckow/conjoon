@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ImageTest.php 14290 2009-03-13 12:40:14Z alexander $
+ * @version    $Id: ImageTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Captcha_ImageTest::main() if this source file is executed directly.
@@ -34,8 +34,9 @@ require_once 'Zend/Captcha/Adapter.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Captcha
  */
 class Zend_Captcha_ImageTest extends PHPUnit_Framework_TestCase
 {

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Common.php 13284 2008-12-15 21:41:49Z mikaelkael $
+ * @version    $Id: Common.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -40,7 +39,7 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_TestUtil_Common
@@ -223,7 +222,7 @@ abstract class Zend_Db_TestUtil_Common
         'noprimarykey'  => 'zfnoprimarykey',
         'Documents'     => 'zfdocuments',
         'Price'         => 'zfprice',
-        'AltBugsProducts' => 'zfalt_bugs_products',
+        'AltBugsProducts' => 'zfalt_bugs_products'
     );
 
     public function getTableName($tableId)
@@ -438,10 +437,19 @@ abstract class Zend_Db_TestUtil_Common
         }
     }
 
+    protected function _getSqlCreateView($viewName)
+    {
+        return 'CREATE VIEW ' . $this->_db->quoteIdentifier($viewName, true);
+    }
+
+    protected function _getSqlDropView($viewName)
+    {
+        return 'DROP VIEW ' . $this->_db->quoteIdentifier($viewName, true);
+    }
+
     public function createView()
     {
-        $sql = 'CREATE VIEW '
-             . $this->_db->quoteIdentifier('temp_view', true)
+        $sql = $this->_getSqlCreateView('temp_view')
              . ' AS SELECT * FROM '
              . $this->_db->quoteIdentifier('zfbugs', true);
         $result = $this->_rawQuery($sql);
@@ -452,7 +460,10 @@ abstract class Zend_Db_TestUtil_Common
 
     public function dropView()
     {
-        $sql = 'DROP VIEW ' . $this->_db->quoteIdentifier('temp_view', true);
+        $sql = $this->_getSqlDropView('temp_view');
+        if (!$sql) {
+            return;
+        }
         $result = $this->_rawQuery($sql);
         if ($result === false) {
             throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);

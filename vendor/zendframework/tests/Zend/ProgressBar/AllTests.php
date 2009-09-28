@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_ProgressBar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11259 2008-09-06 12:50:53Z dasprid $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -36,8 +36,9 @@ require_once 'Zend/ProgressBar/Adapter/AllTests.php';
  * @category   Zend
  * @package    Zend_ProgressBar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_ProgressBar
  */
 class Zend_ProgressBar_AllTests
 {

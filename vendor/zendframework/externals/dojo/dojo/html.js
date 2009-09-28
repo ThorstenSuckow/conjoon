@@ -20,16 +20,15 @@ dojo.require("dojo.parser");
 		return cont.replace(/(?:\s*<!DOCTYPE\s[^>]+>|<title[^>]*>[\s\S]*?<\/title>)/ig, ""); // String
 	};
 
-	dojo.html._emptyNode = function(/* DomNode */ node){
+/*====
+	dojo.html._emptyNode = function(node){
 		// summary:
 		//		removes all child nodes from the given node
-		//	node:
+		//	node: DOMNode
 		//		the parent element
-
-		while(node.firstChild){
-			dojo._destroyElement(node.firstChild);
-		}
 	};
+=====*/
+	dojo.html._emptyNode = dojo.empty;
 
 	dojo.html._setNodeContent = function(/* DomNode */ node, /* String|DomNode|NodeList */ cont, /* Boolean? */ shouldEmptyFirst){
 		// summary:
@@ -314,7 +313,14 @@ dojo.require("dojo.parser");
 
 	dojo.html.set = function(/* DomNode */ node, /* String|DomNode|NodeList */ cont, /* Object? */ params){
 			// summary:
-			//		inserts (replaces) the given content into the given node
+			//		inserts (replaces) the given content into the given node. dojo.place(cont, node, "only")
+			//		may be a better choice for simple HTML insertion.
+			// description:
+			//		Unless you need to use the params capabilities of this method, you should use
+			//		dojo.place(cont, node, "only"). dojo.place() has more robust support for injecting
+			//		an HTML string into the DOM, but it only handles inserting an HTML string as DOM
+			//		elements, or inserting a DOM node. dojo.place does not handle NodeList insertions
+			//		or the other capabilities as defined by the params object for this method.
 			//	node:
 			//		the parent element that will receive the content
 			//	cont:

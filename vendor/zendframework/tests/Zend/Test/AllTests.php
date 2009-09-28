@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -30,13 +30,16 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Zend/Test/PHPUnit/AllTests.php';
+require_once 'Zend/Test/DbAdapterTest.php';
+require_once 'Zend/Test/DbStatementTest.php';
 
 /**
  * @category   Zend
  * @package    Zend_Test
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Test
  */
 class Zend_Test_AllTests
 {
@@ -49,6 +52,8 @@ class Zend_Test_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Test');
 
+        $suite->addTestSuite('Zend_Test_DbAdapterTest');
+        $suite->addTestSuite('Zend_Test_DbStatementTest');
         $suite->addTest(Zend_Test_PHPUnit_AllTests::suite());
 
         return $suite;

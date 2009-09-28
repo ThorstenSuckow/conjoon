@@ -13,11 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Text
+ * @package    Zend_ProgressBar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProgressBarTest.php 12297 2008-11-05 12:04:44Z dasprid $
+ * @version    $Id: ProgressBarTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Console_ProgressBarTest::main() if this source file is executed directly.
@@ -44,8 +44,9 @@ require_once 'Zend/ProgressBar/Adapter.php';
  * @category   Zend
  * @package    Zend_Console
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_ProgressBar
  */
 class Zend_ProgressBar_ProgressBarTest extends PHPUnit_Framework_TestCase
 {
@@ -74,12 +75,12 @@ class Zend_ProgressBar_ProgressBarTest extends PHPUnit_Framework_TestCase
     {
         $progressBar = $this->_getProgressBar(0, 100, 'foobar');
         $progressBar->update(25);
-        
+
         $progressBar = $this->_getProgressBar(0, 100, 'foobar');
         $progressBar->update();
         $this->assertEquals(25, $progressBar->getCurrent());
     }
-    
+
     public function testDefaultPercentage()
     {
         $progressBar = $this->_getProgressBar(0, 100);

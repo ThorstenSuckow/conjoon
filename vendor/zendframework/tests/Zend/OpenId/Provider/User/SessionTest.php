@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SessionTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: SessionTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -30,10 +31,13 @@ require_once 'Zend/OpenId/Provider/User/Session.php';
  */
 require_once 'PHPUnit/Framework.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_OpenId
  */
 class Zend_OpenId_Provider_User_SessionTest extends PHPUnit_Framework_TestCase
 {

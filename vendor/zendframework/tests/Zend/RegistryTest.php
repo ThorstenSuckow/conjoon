@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Registry
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RegistryTest.php 12065 2008-10-21 20:56:32Z doctorrock83 $
+ * @version    $Id: RegistryTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -34,8 +34,9 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_Registry
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Registry
  */
 class Zend_RegistryTest extends PHPUnit_Framework_TestCase
 {

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Format
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormatTest.php 14171 2009-02-26 12:39:23Z alexander $
+ * @version    $Id: FormatTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Zend_Locale_Format
@@ -32,14 +30,16 @@ require_once 'Zend/Locale/Format.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Locale
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Locale
  */
 class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * teardown / cleanup
      */
@@ -57,7 +57,6 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
     /**
      * test getNumber
      * expected integer
@@ -74,9 +73,9 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(       0,         Zend_Locale_Format::getNumber(         '0',         $options));
         $this->assertEquals(-1234567,         Zend_Locale_Format::getNumber(  '-1234567',         $options));
         $this->assertEquals( 1234567,         Zend_Locale_Format::getNumber(   '1234567',         $options));
-        $this->assertEquals(       0.1234567, Zend_Locale_Format::getNumber('         0,1234567', $options));
+        $this->assertEquals(       0.1234567, Zend_Locale_Format::getNumber('0,1234567', $options));
         $this->assertEquals(-1234567.12345,   Zend_Locale_Format::getNumber('-1.234.567,12345',   $options));
-        $this->assertEquals( 1234567.12345,   Zend_Locale_Format::getNumber(' 1.234.567,12345',   $options));
+        $this->assertEquals( 1234567.12345,   Zend_Locale_Format::getNumber('1.234.567,12345',   $options));
         $options = array('locale' => 'de_AT');
         $this->assertEquals(       0,         Zend_Locale_Format::getNumber(         '0',         $options));
         $this->assertEquals(-1234567,         Zend_Locale_Format::getNumber(  '-1234567',         $options));
@@ -85,7 +84,6 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(-1234567.12345,   Zend_Locale_Format::getNumber('-1.234.567,12345',   $options));
         $this->assertEquals( 1234567.12345,   Zend_Locale_Format::getNumber( '1.234.567,12345',   $options));
     }
-
 
     /**
      * test to number
@@ -106,10 +104,11 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(    '1234567٫12345',   Zend_Locale_Format::toNumber( 1234567.12345,  array('locale' => 'ar_QA')));
         $this->assertEquals(    '1234567٫12345-',  Zend_Locale_Format::toNumber(-1234567.12345,  array('locale' => 'ar_QA')));
         $this->assertEquals(  '12,34,567.12345',   Zend_Locale_Format::toNumber( 1234567.12345,  array('locale' => 'dz_BT')));
-        $this->assertEquals('-(1.234.567,12345)',  Zend_Locale_Format::toNumber(-1234567.12345,  array('locale' => 'mk_MK')));
+        $this->assertEquals(  '-1.234.567,12345',  Zend_Locale_Format::toNumber(-1234567.12345,  array('locale' => 'mk_MK')));
         $this->assertEquals(        '452.25',      Zend_Locale_Format::toNumber(     452.25,     array('locale' => 'en_US')));
         $this->assertEquals(     '54,321.1234',    Zend_Locale_Format::toNumber(   54321.1234,   array('locale' => 'en_US')));
         $this->assertEquals(          '1,23',      Zend_Locale_Format::toNumber(       1.234567, array('locale' => 'de_DE', 'precision' => 2, 'number_format' => '0.00')));
+        $this->assertEquals(         '-0,75',      Zend_Locale_Format::toNumber(      -0.75,     array('locale' => 'de_DE', 'precision' => 2)));
     }
 
 
@@ -121,6 +120,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue( Zend_Locale_Format::isNumber('-1.234.567,12345',  array('locale' => 'de_AT')));
         $this->assertFalse(Zend_Locale_Format::isNumber('textwithoutnumber', array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isNumber('', array('locale' => 'de_AT')));
     }
 
     /**
@@ -132,7 +132,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
     public function testIsNumberENotation()
     {
         $this->assertTrue( Zend_Locale_Format::isNumber('5,0004E+5',  array('locale' => 'de_AT')));
-        $this->assertTrue( Zend_Locale_Format::isNumber('2.34E-7',    array('locale' => 'de_AT')));
+        $this->assertTrue( Zend_Locale_Format::isNumber('2,34E-7',    array('locale' => 'de_AT')));
         $this->assertFalse(Zend_Locale_Format::isNumber('2.34E-7E-7', array('locale' => 'de_AT')));
     }
 
@@ -207,7 +207,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(    '1234567٫12345',  Zend_Locale_Format::toFloat( 1234567.12345, $options                  ));
         $this->assertEquals(    '1234567٫12345-', Zend_Locale_Format::toFloat(-1234567.12345, $options                  ));
         $this->assertEquals(  '12,34,567.12345',  Zend_Locale_Format::toFloat( 1234567.12345, array('locale' => 'dz_BT')));
-        $this->assertEquals('-(1.234.567,12345)', Zend_Locale_Format::toFloat(-1234567.12345, array('locale' => 'mk_MK')));
+        $this->assertEquals(  '-1.234.567,12345', Zend_Locale_Format::toFloat(-1234567.12345, array('locale' => 'mk_MK')));
 
         $options = array('precision' => 2, 'locale' => 'de_AT');
         $this->assertEquals(         '0,00', Zend_Locale_Format::toFloat(       0,         $options));
@@ -230,6 +230,17 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue( Zend_Locale_Format::isFloat('-1.234.567,12345',  array('locale' => 'de_AT')));
         $this->assertFalse(Zend_Locale_Format::isFloat('textwithoutnumber', array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isFloat(''));
+        $this->assertFalse(Zend_Locale_Format::isFloat('', array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isFloat(null));
+        $this->assertFalse(Zend_Locale_Format::isFloat(null, array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isFloat(',', array('locale' => 'de_AT')));
+        $this->assertTrue(Zend_Locale_Format::isFloat('1e20', array('locale' => 'de_AT')));
+        $this->assertTrue(Zend_Locale_Format::isFloat('1e-20', array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isFloat('1-e20', array('locale' => 'de_AT')));
+        $this->assertFalse(Zend_Locale_Format::isFloat('1-20', array('locale' => 'de_AT')));
+        $this->assertTrue(Zend_Locale_Format::isFloat('123.345'));
+        $this->assertTrue(Zend_Locale_Format::isFloat('+123.345'));
     }
 
 
@@ -283,7 +294,10 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(    '1234567',  Zend_Locale_Format::toInteger( 1234567.12345,   array('locale' => 'ar_QA')));
         $this->assertEquals(    '1234567-', Zend_Locale_Format::toInteger(-1234567.12345,   array('locale' => 'ar_QA')));
         $this->assertEquals(  '12,34,567',  Zend_Locale_Format::toInteger( 1234567.12345,   array('locale' => 'dz_BT')));
-        $this->assertEquals('-(1.234.567)', Zend_Locale_Format::toInteger(-1234567.12345,   array('locale' => 'mk_MK')));
+        $this->assertEquals(  '-1.234.567', Zend_Locale_Format::toInteger(-1234567.12345,   array('locale' => 'mk_MK')));
+
+        $this->assertEquals('-45', Zend_Locale_Format::toInteger(-45.23, $options));
+        $this->assertEquals('-46', Zend_Locale_Format::toInteger(-45.99, $options));
     }
 
 
@@ -293,7 +307,8 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
      */
     public function testIsInteger()
     {
-        $this->assertTrue( Zend_Locale_Format::isInteger('-1.234.567,12345',  array('locale' => 'de_AT')));
+        $this->assertTrue( Zend_Locale_Format::isInteger('-1.234.567',  array('locale' => 'de_AT')));
+        $this->assertFalse( Zend_Locale_Format::isInteger('-1.234.567,12345',  array('locale' => 'de_AT')));
         $this->assertFalse(Zend_Locale_Format::isInteger('textwithoutnumber', array('locale' => 'de_AT')));
     }
 
@@ -313,10 +328,15 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array(Zend_Locale_Format::getDate('10.10.06')));
         $this->assertEquals(5, count(Zend_Locale_Format::getDate('10.10.06', array('date_format' => 'dd.MM.yy'))));
 
+        $value = Zend_Locale_Format::getDate('10.11.6', array('date_format' => 'dd.MM.yy'));
+        $this->assertEquals(10, $value['day']  );
+        $this->assertEquals(11, $value['month']);
+        $this->assertEquals(2006, $value['year'] );
+
         $value = Zend_Locale_Format::getDate('10.11.06', array('date_format' => 'dd.MM.yy'));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(11, $value['month']);
-        $this->assertEquals(06, $value['year'] );
+        $this->assertEquals(2006, $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10.11.2006', array('date_format' => 'dd.MM.yy'));
         $this->assertEquals(10,   $value['day']  );
@@ -350,7 +370,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $value = Zend_Locale_Format::getDate('101106', array('date_format' => 'ddMMyy'));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(11, $value['month']);
-        $this->assertEquals(6,  $value['year'] );
+        $this->assertEquals(2006,  $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10112006', array('date_format' => 'ddMMyyyy'));
         $this->assertEquals(10,   $value['day']  );
@@ -413,17 +433,17 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $value = Zend_Locale_Format::getDate('10.11.06', array('date_format' => 'yy.dd.MM'));
         $this->assertEquals(11, $value['day']  );
         $this->assertEquals(6,  $value['month']);
-        $this->assertEquals(10, $value['year'] );
+        $this->assertEquals(2010, $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10.11.06', array('date_format' => 'dd.yy.MM'));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(6,  $value['month']);
-        $this->assertEquals(11, $value['year'] );
+        $this->assertEquals(2011, $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10.11.06', array('locale' => 'de_AT'));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(11, $value['month']);
-        $this->assertEquals(6,  $value['year'] );
+        $this->assertEquals(2006,  $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10.11.2006', array('locale' => 'de_AT'));
         $this->assertEquals(10,   $value['day']  );
@@ -457,7 +477,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $value = Zend_Locale_Format::getDate('101106', array('locale' => 'de_AT'));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(11, $value['month']);
-        $this->assertEquals(6,  $value['year'] );
+        $this->assertEquals(2006,  $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10112006', array('locale' => 'de_AT'));
         $this->assertEquals(10,   $value['day']  );
@@ -544,12 +564,12 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $value = Zend_Locale_Format::getDate('10.11.06', array('date_format' => 'd.m.Y'));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(11, $value['month']);
-        $this->assertEquals(6,  $value['year'] );
+        $this->assertEquals(2006,  $value['year'] );
 
         $value = Zend_Locale_Format::getDate('10.11.06', array('date_format' => 'd.m.Y', 'fix_date' => true));
         $this->assertEquals(10, $value['day']  );
         $this->assertEquals(11, $value['month']);
-        $this->assertEquals(6,  $value['year'] );
+        $this->assertEquals(2006,  $value['year'] );
 
         $this->assertTrue(is_array(Zend_Locale_Format::getTime('13:14:55', array('date_format' => 'HH:mm:ss'))));
         Zend_Locale_Format::setOptions(array('format_type' => 'iso'));
@@ -564,7 +584,6 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2,    $value['month']);
         $this->assertEquals(2007, $value['year'] );
     }
-
 
     /**
      * test getTime
@@ -600,12 +619,10 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
             // success
         }
 
-        try {
-            $value = Zend_Locale_Format::getTime('13:14:55', array('date_format' => 'HH:mm:ss.x'));
-            $this->fail("exception expected");
-        } catch (Zend_Locale_Exception $e) {
-            // success
-        }
+        $value = Zend_Locale_Format::getTime('13:14:55', array('date_format' => 'HH:mm:ss.x'));
+        $this->assertEquals(13, $value['hour']  );
+        $this->assertEquals(14, $value['minute']);
+        $this->assertEquals(55, $value['second']);
 
         $this->assertEquals(5, count(Zend_Locale_Format::getTime('13:14:55', array('date_format' => 'HH:mm:ss'))));
 
@@ -619,7 +636,6 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(14, $value['minute']);
         $this->assertEquals(55, $value['second']);
     }
-
 
     /**
      * test isDate
@@ -635,7 +651,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertTrue( Zend_Locale_Format::checkDateFormat('20.01.2006', array('date_format' => 'd-M-y')));
 
         $this->assertFalse(Zend_Locale_Format::checkDateFormat('20.April',      array('date_format' => 'dd.MMMM.YYYY')));
-        $this->assertFalse(Zend_Locale_Format::checkDateFormat('20.April',      array('date_format' => 'MMMM.YYYY'   )));
+        $this->assertTrue(Zend_Locale_Format::checkDateFormat('20.April',      array('date_format' => 'MMMM.YYYY'   )));
         $this->assertFalse(Zend_Locale_Format::checkDateFormat('20',            array('date_format' => 'dd.MMMM.YYYY')));
         $this->assertTrue( Zend_Locale_Format::checkDateFormat('April.2007',    array('date_format' => 'MMMM.YYYY'   )));
         $this->assertTrue( Zend_Locale_Format::checkDateFormat('20.April.2007', array('date_format' => 'dd.YYYY'     )));
@@ -738,7 +754,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
      */
     public function testSetOption()
     {
-        $this->assertEquals(7, count(Zend_Locale_Format::setOptions(array('format_type' => 'php'))));
+        $this->assertEquals(8, count(Zend_Locale_Format::setOptions(array('format_type' => 'php'))));
         $this->assertTrue(is_array(Zend_Locale_Format::setOptions()));
 
         try {
@@ -754,7 +770,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
             // success
         }
 
-        $format = Zend_Locale_Format::setOptions(array('locale' => 'de', 'number_format' => Zend_Locale_Format::STANDARD));
+        $format = Zend_Locale_Format::setOptions(array('locale' => 'de', 'number_format' => Zend_Locale_FORMAT::STANDARD));
         $test   = Zend_Locale_Data::getContent('de', 'decimalnumber');
         $this->assertEquals($test, $format['number_format']);
 
@@ -784,7 +800,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
 
         $format = Zend_Locale_Format::setOptions(array('locale' => Zend_Locale_Format::STANDARD));
         $locale = new Zend_Locale();
-        $this->assertEquals($locale, $format['locale']);
+        $this->assertEquals($locale->toString(), $format['locale']);
 
         try {
             $this->assertFalse(is_array(Zend_Locale_Format::setOptions(array('locale' => 'nolocale'))));
@@ -800,9 +816,9 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         }
         // test interaction between class-wide default date format and using locale's default format
         try {
-            $result = array('date_format' => 'MMM d, yyyy', 'locale' => 'en_US', 'month' => '7',
+            $result = array('date_format' => 'MMM d, y', 'locale' => 'en_US', 'month' => '7',
                     'day' => '4', 'year' => '2007');
-            Zend_Locale_Format::setOptions(array('format_type' => 'iso', 'date_format' => 'MMM d, yyyy', 'locale' => 'en_US')); // test setUp
+            Zend_Locale_Format::setOptions(array('format_type' => 'iso', 'date_format' => 'MMM d, y', 'locale' => 'en_US')); // test setUp
         } catch (Zend_Locale_Exception $e) {
             $this->fail("exception expected");
         }
@@ -835,7 +851,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
             $this->fail("exception expected");
         }
         try {
-            // the following should not be used... instead of null, Zend_Locale_Format::STANDARD should be used
+            // the following should not be used... instead of null, Zend_Locale::ZFDEFAULT should be used
             // uses given local with standard format from this locale
             $this->assertSame($result,
                 Zend_Locale_Format::getDate('July 4, 2007', array('locale' => 'en_US', 'date_format' => null)));
@@ -854,7 +870,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
             // uses standard locale with standard format from this locale
             $expect = Zend_Locale_Format::getDate('July 4, 2007', array('locale' => Zend_Locale_Format::STANDARD));
             $testlocale = new Zend_Locale();
-            $this->assertEquals($testlocale, $expect['locale']);
+            $this->assertEquals($testlocale->toString(), $expect['locale']);
         } catch (Zend_Locale_Exception $e) {
             $this->fail("exception expected");
         }
@@ -876,7 +892,7 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertSame('SS',   Zend_Locale_Format::convertPhpToIsoFormat('S'));
         $this->assertSame('eee',  Zend_Locale_Format::convertPhpToIsoFormat('w'));
         $this->assertSame('D',    Zend_Locale_Format::convertPhpToIsoFormat('z'));
-        $this->assertSame('w',    Zend_Locale_Format::convertPhpToIsoFormat('W'));
+        $this->assertSame('ww',   Zend_Locale_Format::convertPhpToIsoFormat('W'));
         $this->assertSame('MMMM', Zend_Locale_Format::convertPhpToIsoFormat('F'));
         $this->assertSame('MM',   Zend_Locale_Format::convertPhpToIsoFormat('m'));
         $this->assertSame('MMM',  Zend_Locale_Format::convertPhpToIsoFormat('M'));
@@ -928,5 +944,96 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("1 234,50", $test1);
         $this->assertEquals("1,234.50", $test2);
         // placing tearDown here (i.e. restoring locale) won't work, if test already failed/aborted above.
+    }
+
+    /**
+     * ZF-3473
+     */
+    public function testRoundingOfNear10Values()
+    {
+        $this->assertEquals(9.72, Zend_Locale_Format::getNumber(9.72));
+        $this->assertEquals(-9.72, Zend_Locale_Format::getNumber(-9.72));
+        $this->assertEquals(9.72, Zend_Locale_Format::getNumber(9.72, array('locale' => 'de')));
+        $this->assertEquals(-9.72, Zend_Locale_Format::getNumber('-9,72', array('locale' => 'de')));
+        $this->assertEquals('9,72',   Zend_Locale_Format::toNumber(9.72, array('locale' => 'de')));
+        $this->assertEquals('-9,72',   Zend_Locale_Format::toNumber(-9.72, array('locale' => 'de')));
+        $this->assertTrue(Zend_Locale_Format::isNumber('9,72', array('locale' => 'de')));
+        $this->assertTrue(Zend_Locale_Format::isNumber('-9,72', array('locale' => 'de')));
+        $this->assertEquals(9.72,   Zend_Locale_Format::getFloat(9.72));
+        $this->assertEquals('14,23',   Zend_Locale_Format::toNumber(14.2278, array('precision' => 2, 'locale' => 'pt_PT')));
+    }
+
+    /**
+     * Tests getDateTime
+     */
+    public function testgetDateTime()
+    {
+        try {
+            $value = Zend_Locale_Format::getDateTime('no content');
+            $this->fail("exception expected");
+        } catch (Zend_Locale_Exception $e) {
+            // success
+        }
+
+        $this->assertTrue(is_array(Zend_Locale_Format::getDateTime('10.11.2006 13:14:55', array('date_format' => 'dd.MM.yyyy HH:mm:ss'))));
+        $options = array('date_format' => 'dd.MM.yy h:mm:ss a', 'locale' => 'en');
+        $this->assertTrue(is_array(Zend_Locale_Format::getDateTime('15.10.09 11:14:55 am', $options)));
+        $this->assertTrue(is_array(Zend_Locale_Format::getDateTime('15.10.09 12:14:55 am', $options)));
+        $this->assertTrue(is_array(Zend_Locale_Format::getDateTime('15.10.09 11:14:55 pm', $options)));
+        $this->assertTrue(is_array(Zend_Locale_Format::getDateTime('15.10.09 12:14:55 pm', $options)));
+
+        try {
+            $value = Zend_Locale_Format::getDateTime('15.10.09 13:14:55', array('date_format' => 'nocontent'));
+            $this->fail("exception expected");
+        } catch (Zend_Locale_Exception $e) {
+            // success
+        }
+
+        try {
+            $value = Zend_Locale_Format::getDateTime('15.10.09 13:14:55', array('date_format' => 'ZZZZ'));
+            $this->fail("exception expected");
+        } catch (Zend_Locale_Exception $e) {
+            // success
+        }
+
+        $value = Zend_Locale_Format::getDateTime('15.10.09 13:14:55', array('date_format' => 'dd.MM.yy HH:mm:ss.x'));
+        $this->assertEquals(15, $value['day']  );
+        $this->assertEquals(10, $value['month']);
+        $this->assertEquals(2009, $value['year']);
+        $this->assertEquals(13, $value['hour']  );
+        $this->assertEquals(14, $value['minute']);
+        $this->assertEquals(55, $value['second']);
+
+        $this->assertEquals(8, count(Zend_Locale_Format::getDateTime('15.10.09 13:14:55', array('date_format' => 'dd.MM.yy HH:mm:ss'))));
+
+        $value = Zend_Locale_Format::getDateTime('15.10.09 13:14:55', array('date_format' => 'dd.MM.yy HH:mm:ss'));
+        $this->assertEquals(15, $value['day']  );
+        $this->assertEquals(10, $value['month']);
+        $this->assertEquals(2009, $value['year']);
+        $this->assertEquals(13, $value['hour']  );
+        $this->assertEquals(14, $value['minute']);
+        $this->assertEquals(55, $value['second']);
+
+        $value = Zend_Locale_Format::getDateTime('151009131455', array('date_format' => 'dd.MM.yy HH:mm:ss'));
+        $this->assertEquals(15, $value['day']  );
+        $this->assertEquals(10, $value['month']);
+        $this->assertEquals(2009, $value['year']);
+        $this->assertEquals(13, $value['hour']  );
+        $this->assertEquals(14, $value['minute']);
+        $this->assertEquals(55, $value['second']);
+    }
+
+    /**
+     * Tests conversion from scientific numbers to decimal notation
+     */
+    public function testScientificNumbers()
+    {
+        $this->assertEquals(   '0,0', Zend_Locale_Format::toNumber(  1E-2, array('precision' => 1, 'locale' => 'de_AT')));
+        $this->assertEquals(   '0,0100', Zend_Locale_Format::toNumber(  1E-2, array('precision' => 4, 'locale' => 'de_AT')));
+        $this->assertEquals(   '100,0', Zend_Locale_Format::toNumber(  1E+2, array('precision' => 1, 'locale' => 'de_AT')));
+        $this->assertEquals(   '100,0000', Zend_Locale_Format::toNumber(  1E+2, array('precision' => 4, 'locale' => 'de_AT')));
+        $this->assertEquals(   '0', Zend_Locale_Format::toNumber(  1E-5, array('precision' => 0, 'locale' => 'de_AT')));
+        $this->assertEquals(   '0,00001', Zend_Locale_Format::toNumber(  1.3E-5, array('precision' => 5, 'locale' => 'de_AT')));
+        $this->assertEquals(   '0,000013', Zend_Locale_Format::toNumber(  1.3E-5, array('precision' => 6, 'locale' => 'de_AT')));
     }
 }

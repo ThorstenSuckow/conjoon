@@ -1,6 +1,7 @@
 dojo.require("dojox.form.FileUploader");
 dojo.require("dijit.form.Button"); 
 dojo.require("dojo.parser");
+dojo.require("dojox.analytics.Urchin");
 
 //using this early for the forceNoFlash test:
 dojo.require("dojox.embed.Flash");
@@ -124,6 +125,7 @@ dojo.addOnLoad(function(){
 
 	console.log("LOC:", window.location)
 	console.log("UPLOAD URL:",uploadUrl);
+	
 	var f0 = new dojox.form.FileUploader({
 		button:dijit.byId("btn0"), 
 		degradable:true,
@@ -172,6 +174,13 @@ dojo.addOnLoad(function(){
 	Destroy = function(){
 		f0.destroyAll();
 	}
+	
+	new dojox.analytics.Urchin({ 
+		acct: "UA-3572741-1", 
+		GAonLoad: function(){
+			this.trackPageView("/demos/uploader");
+		}
+	});	
 	
 });
 

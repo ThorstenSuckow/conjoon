@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: MultiselectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_Form_Element_MultiselectTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Element_MultiselectTest::main");
@@ -11,6 +32,13 @@ require_once 'Zend/Translate.php';
 
 /**
  * Test class for Zend_Form_Element_Multiselect
+ *
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Form
  */
 class Zend_Form_Element_MultiselectTest extends PHPUnit_Framework_TestCase
 {
@@ -257,6 +285,50 @@ class Zend_Form_Element_MultiselectTest extends PHPUnit_Framework_TestCase
     public function testMultiselectIsArrayByDefault()
     {
         $this->assertTrue($this->element->isArray());
+    }
+
+    /**
+     * @group ZF-5568
+     */
+    public function testOptGroupTranslationsShouldWorkAfterPopulatingElement()
+    {
+        $translations = array(
+            'ThisIsTheLabel'      => 'Optgroup label',
+            'ThisShouldNotShow'   => 'Foo Value',
+            'ThisShouldNeverShow' => 'Bar Value'
+        );
+        require_once 'Zend/Translate.php';
+        $translate = new Zend_Translate('array', $translations, 'en');
+        $translate->setLocale('en');
+
+        $options = array(
+            'ThisIsTheLabel' => array(
+                'foovalue' => 'ThisShouldNotShow',
+                'barvalue' => 'ThisShouldNeverShow',
+            ),
+        );
+
+        $this->element->setTranslator($translate)
+                      ->addMultiOptions($options);
+
+        $this->element->setValue('barValue');
+
+        $html = $this->element->render($this->getView());
+        $this->assertContains($translations['ThisIsTheLabel'], $html, $html);
+    }
+
+    /**
+     * @group ZF-5937
+     */
+    public function testAddMultiOptionShouldWorkAfterTranslatorIsDisabled()
+    {
+        $options = array(
+            'foovalue' => 'Foo',
+        );
+        $this->element->setDisableTranslator(true)
+                      ->addMultiOptions($options);
+        $test = $this->element->getMultiOption('foovalue');
+        $this->assertEquals($options['foovalue'], $test);
     }
 
     /**

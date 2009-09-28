@@ -3,8 +3,7 @@
 // this repo as a testing place for versioned demos to be pushed onto dojotoolkit.org 
 dependencies = {
 	layers: [
-		// these are from standard.profile.js, and are used only for nightly building
-		// so we don't break any tests relying on these roll-up layers:
+		// standard:
 		{
 			name: "../dijit/dijit.js",
 			dependencies: [
@@ -27,7 +26,7 @@ dependencies = {
 			]
 		},
 			
-		// Here are the various demos/
+		// Here are the various demos with promotion:
 		{
 			// the dojo.moj.oe demo
 			name: "../demos/mojo/src.js",
@@ -69,9 +68,43 @@ dependencies = {
 			dependencies: [
 				"demos.castle.src"
 			]
+		},
+		{
+			// The Offline demos
+			name: "../demos/offline/src.js",
+			dependencies: [
+				"demos.offline.src"
+			]
+		},
+		{
+			// the Image Preview demo:
+			name: "../demos/cropper/src.js",
+			dependencies:[
+				"demos.cropper.src"
+			]
+		},
+		{
+			// the Survey demo
+			name: "../demos/survey/src.js",
+			dependencies:[
+				"demos.survey.src"
+			]
+		},
+		{
+			// the BabelChat demo
+			name: "../demos/babelChat/src.js",
+			dependencies:[
+				"demos.babelChat.src"
+			]
+		},
+		{
+			name: "../demos/faces/src.js",
+			dependencies:[
+				"demos.faces.src"
+			]
 		}
 	],
-
+	
 	prefixes: [
 		[ "dijit", "../dijit" ],
 		[ "dojox", "../dojox" ],

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: OfflineTest.php 17787 2009-08-24 14:41:49Z sgehrig $
  */
 
 
@@ -32,11 +32,17 @@ require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 require_once 'Zend/Auth/Adapter/Ldap.php';
 
 /**
+ * @see Zend_Ldap
+ */
+require_once 'Zend/Ldap.php';
+
+/**
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Auth
  */
 class Zend_Auth_Adapter_Ldap_OfflineTest extends PHPUnit_Framework_TestCase
 {
@@ -57,6 +63,12 @@ class Zend_Auth_Adapter_Ldap_OfflineTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_adapter = new Zend_Auth_Adapter_Ldap();
+    }
+
+    public function testGetSetLdap()
+    {
+        $this->_adapter->setLdap(new Zend_Ldap());
+        $this->assertType('Zend_Ldap', $this->_adapter->getLdap());
     }
 
     public function testUsernameIsNullIfNotSet()
@@ -81,6 +93,22 @@ class Zend_Auth_Adapter_Ldap_OfflineTest extends PHPUnit_Framework_TestCase
     {
         $passwordExpected = 'somePassword';
         $passwordActual = $this->_adapter->setPassword($passwordExpected)
+                                         ->getPassword();
+        $this->assertSame($passwordExpected, $passwordActual);
+    }
+
+    public function testSetIdentityProxiesToSetUsername()
+    {
+        $usernameExpected = 'someUsername';
+        $usernameActual = $this->_adapter->setIdentity($usernameExpected)
+                                         ->getUsername();
+        $this->assertSame($usernameExpected, $usernameActual);
+    }
+
+    public function testSetCredentialProxiesToSetPassword()
+    {
+        $passwordExpected = 'somePassword';
+        $passwordActual = $this->_adapter->setCredential($passwordExpected)
                                          ->getPassword();
         $this->assertSame($passwordExpected, $passwordActual);
     }

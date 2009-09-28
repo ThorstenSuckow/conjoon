@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HttpTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: HttpTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -37,8 +37,10 @@ require_once 'Zend/Controller/Response/Exception.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Response
  */
 class Zend_Controller_Response_HttpTest extends PHPUnit_Framework_TestCase
 {
@@ -196,7 +198,11 @@ class Zend_Controller_Response_HttpTest extends PHPUnit_Framework_TestCase
     public function test__toString()
     {
 
-        //$skipHeadersTest = headers_sent();
+        $skipHeadersTest = headers_sent();
+        if ($skipHeadersTest) {
+            $this->markTestSkipped('Unable to run Zend_Controller_Response_Http::__toString() test as headers have already been sent');
+            return;
+        }
 
         $this->_response->setHeader('Content-Type', 'text/plain');
         $this->_response->setBody('Content');

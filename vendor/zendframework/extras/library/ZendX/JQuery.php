@@ -17,8 +17,13 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: JQuery.php 11945 2008-10-13 21:22:41Z beberlei $
+ * @version     $Id: JQuery.php 15478 2009-05-10 09:02:43Z beberlei $
  */
+
+/**
+ * @see Zend_Json
+ */
+require_once "Zend/Json.php";
 
 /**
  * jQuery Global Class holding constants and static convienience methods.
@@ -31,10 +36,40 @@
 class ZendX_JQuery
 {
     /**
+     * Current default supported jQuery library version with ZendX_JQuery
+     * 
+     * @const string
+     */
+    const DEFAULT_JQUERY_VERSION = "1.3.2";
+
+    /**
+     * Currently supported jQuery UI library version with ZendX_JQuery
+     *
+     * @const string
+     */
+    const DEFAULT_UI_VERSION = "1.7.1";
+
+    /**
      * @see http://code.google.com/apis/ajaxlibs/documentation/index.html#jquery
      * @const string Base path to CDN
      */
-    const CDN_BASE_GOOGLE = 'http://ajax.googleapis.com/ajax/libs/jquery/';
+    const CDN_BASE_GOOGLE = 'http://ajax.googleapis.com/ajax/libs/';
+
+    /**
+     * @see http://code.google.com/apis/ajaxlibs/documentation/index.html#jquery
+     * @const string Base path to CDN
+     */
+    const CDN_BASE_GOOGLE_SSL = 'https://ajax.googleapis.com/ajax/libs/';
+
+    /**
+     * @const string
+     */
+    const CDN_SUBFOLDER_JQUERY = 'jquery/';
+
+    /**
+     * @const string
+     */
+    const CDN_SUBFOLDER_JQUERYUI = 'jqueryui/';
 
     /**
      * Always uses compressed version, because this is assumed to be the use case
@@ -93,5 +128,26 @@ class ZendX_JQuery
         if (null !== ($view = $form->getView())) {
             self::enableView($view);
         }
+    }
+
+    /**
+     * Encode Json that may include javascript expressions.
+     *
+     * Take care of using the Zend_Json_Encoder to alleviate problems with the json_encode
+     * magic key mechanism as of now.
+     *
+     * @see Zend_Json::encode
+     * @param  mixed $value
+     * @return mixed
+     */
+    public static function encodeJson($value)
+    {
+        if(!class_exists('Zend_Json')) {
+            /**
+             * @see Zend_Json
+             */
+            require_once "Zend/Json.php";
+        }
+        return Zend_Json::encode($value, false, array('enableJsonExprFinder' => true));
     }
 }

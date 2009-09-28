@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 13281 2008-12-15 20:53:30Z mikaelkael $
+ * @version    $Id: StaticTest.php 18373 2009-09-22 19:16:25Z ralph $
  */
 
 
@@ -49,12 +48,16 @@ require_once 'Zend/Db/Adapter/Static.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Adapter
  */
 class Zend_Db_Adapter_StaticTest extends PHPUnit_Framework_TestCase
 {
 
+    protected static $_isCaseSensitiveFileSystem = null;
+    
     public function testDbConstructor()
     {
         $db = new Zend_Db_Adapter_Static( array('dbname' => 'dummy') );
@@ -108,7 +111,8 @@ class Zend_Db_Adapter_StaticTest extends PHPUnit_Framework_TestCase
         set_include_path($newIp);
 
         try {
-            $db = Zend_Db::factory('Static', array('dbname' => 'dummy', 'adapterNamespace' => 'TestNamespace'));
+            // this test used to read as 'TestNamespace', but due to ZF-5606 has been changed
+            $db = Zend_Db::factory('Static', array('dbname' => 'dummy', 'adapterNamespace' => 'Testnamespace'));
         } catch (Zend_Exception $e) {
             set_include_path($ip);
             $this->fail('Caught exception of type '.get_class($e).' where none was expected: '.$e->getMessage());
@@ -303,6 +307,88 @@ class Zend_Db_Adapter_StaticTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($db->isConnected());
     }
 
+    /**
+     * @group ZF-5606
+     */
+    public function testDbFactoryDoesNotNormalizeNamespace()
+    {
+        $newIncludePath = realpath(dirname(__FILE__) . '/_files/') . PATH_SEPARATOR . get_include_path();
+        $oldIncludePath = set_include_path($newIncludePath);
+        
+        try {
+            $adapter = Zend_Db::factory(
+                'Dbadapter',
+                array('dbname' => 'dummy', 'adapterNamespace' => 'Test_MyCompany1')
+                );
+        } catch (Exception $e) {
+            set_include_path($oldIncludePath);
+            $this->fail('Could not load file for reason: ' . $e->getMessage());
+        }
+        $this->assertEquals('Test_MyCompany1_Dbadapter', get_class($adapter));
+        set_include_path($oldIncludePath);
+        
+    }
+    
+    /**
+     * @group ZF-5606
+     */
+    public function testDbFactoryWillThrowExceptionWhenAssumingBadBehavior()
+    {
+        $newIncludePath = realpath(dirname(__FILE__) . '/_files/') . PATH_SEPARATOR . get_include_path();
+        $oldIncludePath = set_include_path($newIncludePath);
+        
+        if (!$this->_isCaseSensitiveFileSystem()) {
+            set_include_path($oldIncludePath);
+            $this->markTestSkipped('This test is irrelevant on case-inspecific file systems.');
+            return;
+        }
+        
+        try {
+            $adapter = Zend_Db::factory(
+                'Dbadapter',
+                array('dbname' => 'dummy', 'adapterNamespace' => 'Test_MyCompany2')
+                );
+        } catch (Exception $e) {
+            set_include_path($oldIncludePath);
+            $this->assertContains('failed to open stream', $e->getMessage());
+            return;
+        }
+        
+        $this->assertFalse($adapter instanceof Test_Mycompany2_Dbadapter);
+        set_include_path($oldIncludePath);
+    }
+    
+    /**
+     * @group ZF-7924
+     */
+    public function testDbFactoryWillLoadCaseInsensitiveAdapterName()
+    {
+        $newIncludePath = realpath(dirname(__FILE__) . '/_files/') . PATH_SEPARATOR . get_include_path();
+        $oldIncludePath = set_include_path($newIncludePath);
+        
+        try {
+            $adapter = Zend_Db::factory(
+                'DB_ADAPTER',
+                array('dbname' => 'dummy', 'adapterNamespace' => 'Test_MyCompany1')
+                );
+        } catch (Exception $e) {
+            set_include_path($oldIncludePath);
+            $this->fail('Could not load file for reason: ' . $e->getMessage());
+        }
+        $this->assertEquals('Test_MyCompany1_Db_Adapter', get_class($adapter));
+        set_include_path($oldIncludePath);
+        
+    }
+    
+    protected function _isCaseSensitiveFileSystem()
+    {
+        if (self::$_isCaseSensitiveFileSystem === null) {
+            self::$_isCaseSensitiveFileSystem = !(@include 'Test/MyCompany1/iscasespecific.php');
+        }
+        
+        return self::$_isCaseSensitiveFileSystem;
+    }
+    
     public function getDriver()
     {
         return 'Static';

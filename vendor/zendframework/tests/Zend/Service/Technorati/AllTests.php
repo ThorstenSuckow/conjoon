@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -62,8 +61,10 @@ require_once 'Zend/Service/Technorati/UtilsTest.php';
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Technorati
  */
 class Zend_Service_Technorati_AllTests
 {
@@ -100,3 +101,6 @@ class Zend_Service_Technorati_AllTests
     }
 }
 
+if (defined('PHPUnit_MAIN_METHOD') && (PHPUnit_MAIN_METHOD == 'Zend_Service_Technorati_AllTests::main')) {
+    Zend_Service_Technorati_AllTests::main();
+}

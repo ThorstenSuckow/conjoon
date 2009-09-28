@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: AccordionContainerTest.php 11837 2008-10-10 15:58:41Z matthew $
+ * @version     $Id: AccordionContainerTest.php 18045 2009-09-09 17:31:25Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";
@@ -154,7 +154,6 @@ class ZendX_JQuery_View_AccordionContainerTest extends PHPUnit_Framework_TestCas
     {
         $this->view->accordionPane("container1", "Lorem Ipsum!", array('title' => 'elem1'));
         $this->view->accordionPane("container1", 'This is captured and displayed: contentUrl does not exist for Accordion.', array('title' => 'elem2', 'contentUrl' => 'foo.html'));
-
         $accordion = $this->view->accordionContainer("container1", array(), array());
 
         $this->assertEquals(array('$("#container1").accordion({});'), $this->jquery->getOnLoadActions());
@@ -163,6 +162,71 @@ class ZendX_JQuery_View_AccordionContainerTest extends PHPUnit_Framework_TestCas
         $this->assertContains('Lorem Ipsum!', $accordion);
         $this->assertNotContains('href="foo.html"', $accordion);
         $this->assertContains('This is captured and displayed: contentUrl does not exist for Accordion.', $accordion);
+    }
+
+    /**
+     * @group ZF-6321
+     */
+    public function testAccordingHtmlRenderingWithUi15()
+    {
+        $this->view->jQuery()->setUiVersion("1.5.3");
+
+        $this->view->accordionPane("container1", "foo", array('title' => 'foo'));
+        $this->view->accordionPane("container1", 'bar', array('title' => 'bar'));
+        $accordion = $this->view->accordionContainer("container1", array(), array());
+
+        $this->assertEquals(
+            '<ul id="container1">
+<li class="ui-accordion-group"><a href="#" class="ui-accordion-header">foo</a><div class="ui-accordion-content">foo</div></li>
+<li class="ui-accordion-group"><a href="#" class="ui-accordion-header">bar</a><div class="ui-accordion-content">bar</div></li>
+</ul>
+',
+            $accordion
+        );
+    }
+
+    /**
+     * @group ZF-6321
+     */
+    public function testAccordingHtmlRenderingWithUi17()
+    {
+        $this->view->jQuery()->setUiVersion("1.7.0");
+
+        $this->view->accordionPane("container1", "foo", array('title' => 'foo'));
+        $this->view->accordionPane("container1", 'bar', array('title' => 'bar'));
+        $accordion = $this->view->accordionContainer("container1", array(), array());
+
+        $this->assertEquals(
+            '<div id="container1">
+<h3><a href="#">foo</a></h3><div>foo</div>
+<h3><a href="#">bar</a></h3><div>bar</div>
+</div>
+',
+            $accordion
+        );
+    }
+
+    public function testAccordionSetWrongHtmlTemplate_ThrowsException()
+    {
+        $this->setExpectedException("ZendX_JQuery_View_Exception");
+
+        $this->view->getHelper('accordionContainer')->setElementHtmlTemplate("foo");
+    }
+
+    public function testAccordionSetHtmlTemplate()
+    {
+        $this->view->getHelper('accordionContainer')->setElementHtmlTemplate("<h3>%s</h3><p>%s</p>");
+
+        $this->view->accordionPane("container1", "foo", array('title' => 'foo'));
+        $accordion = $this->view->accordionContainer("container1", array(), array());
+
+        $this->assertEquals(
+            '<div id="container1">
+<h3>foo</h3><p>foo</p>
+</div>
+',
+            $accordion
+        );
     }
 }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PgsqlTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: PgsqlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -35,8 +34,10 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Table
  */
 class Zend_Db_Table_Pdo_PgsqlTest extends Zend_Db_Table_TestCommon
 {
@@ -86,7 +87,7 @@ class Zend_Db_Table_Pdo_PgsqlTest extends Zend_Db_Table_TestCommon
 
     public function testTableInsertSequence()
     {
-        $table = $this->_getTable('Zend_Db_Table_TableProducts',
+        $table = $this->_getTable('My_ZendDbTable_TableProducts',
             array(Zend_Db_Table_Abstract::SEQUENCE => 'zfproducts_seq'));
         $row = array (
             'product_name' => 'Solaris'
@@ -125,7 +126,7 @@ class Zend_Db_Table_Pdo_PgsqlTest extends Zend_Db_Table_TestCommon
             'schema'    => $schema
             );
 
-        $table = new Zend_Db_Table_TableBugs($config);
+        $table = new My_ZendDbTable_TableBugs($config);
 
         $tableInfo = $table->info();
 
@@ -148,7 +149,7 @@ class Zend_Db_Table_Pdo_PgsqlTest extends Zend_Db_Table_TestCommon
             'name'      => $tableName
             );
 
-        $table = new Zend_Db_Table_TableBugs($config);
+        $table = new My_ZendDbTable_TableBugs($config);
 
         $tableInfo = $table->info();
 
@@ -173,7 +174,7 @@ class Zend_Db_Table_Pdo_PgsqlTest extends Zend_Db_Table_TestCommon
             'name'      => $tableName
             );
 
-        $table = new Zend_Db_Table_TableBugs($config);
+        $table = new My_ZendDbTable_TableBugs($config);
 
         $tableInfo = $table->info();
 
@@ -194,7 +195,7 @@ class Zend_Db_Table_Pdo_PgsqlTest extends Zend_Db_Table_TestCommon
             'schema'    => $schema,
             );
 
-        $table = new Zend_Db_Table_TableBugs($config);
+        $table = new My_ZendDbTable_TableBugs($config);
 
         $rowset = $table->fetchAll();
 

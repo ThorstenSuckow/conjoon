@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Date
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11977 2008-10-15 19:46:49Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 error_reporting( E_ALL | E_STRICT ); // now required for each test suite
@@ -32,6 +31,14 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 require_once 'Zend/Date/DateObjectTest.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Date
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Date
+ */
 class Zend_Date_AllTests
 {
     public static function main()

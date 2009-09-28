@@ -1,4 +1,26 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_XmlRpc
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version $Id: ResponseTest.php 17786 2009-08-23 22:26:33Z lars $
+ */
+
+require_once dirname(__FILE__)."/../../TestHelper.php";
 require_once 'Zend/XmlRpc/Response.php';
 require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'PHPUnit/Framework/IncompleteTestError.php';
@@ -6,9 +28,12 @@ require_once 'PHPUnit/Framework/IncompleteTestError.php';
 /**
  * Test case for Zend_XmlRpc_Response
  *
- * @package Zend_XmlRpc
+ * @category   Zend
+ * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @version $Id: ResponseTest.php 5478 2007-06-28 20:20:08Z matthew $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_XmlRpc
  */
 class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase 
 {
@@ -102,6 +127,38 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
         $parsed = $this->_response->loadXml($xml);
         $this->assertTrue($parsed, $xml);
         $this->assertEquals('Return value', $this->_response->getReturnValue());
+    }
+
+    public function testLoadXmlWithInvalidValue()
+    {
+        $this->assertFalse($this->_response->loadXml(new stdClass()));
+        $this->assertTrue($this->_response->isFault());
+        $this->assertSame(650, $this->_response->getFault()->getCode());
+    }
+
+    /**
+     * @group ZF-5404
+     */
+    public function testNilResponseFromXmlRpcServer()
+    {
+        $rawResponse = <<<EOD
+<methodResponse><params><param><value><array><data><value><struct><member><name>id</name><value><string>1</string></value></member><member><name>name</name><value><string>birdy num num!</string></value></member><member><name>description</name><value><nil/></value></member></struct></value></data></array></value></param></params></methodResponse>
+EOD;
+        try {
+            $response = new Zend_XmlRpc_Response();
+            $ret      = $response->loadXml($rawResponse);
+        } catch(Exception $e) {
+            $this->fail("Parsing the response should not throw an exception.");
+        }
+
+        $this->assertTrue($ret);
+        $this->assertEquals(array(
+            0 => array(
+                'id'            => 1,
+                'name'          => 'birdy num num!',
+                'description'   => null,
+            )
+        ), $response->getReturnValue());
     }
 
     /**

@@ -18,7 +18,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 13882 2009-01-31 03:15:42Z yoshida@zend.co.jp $
+ * @version    $Id: AllTests.php 12678 2008-11-17 14:33:11Z kgbfernando $
  */
 
 /**

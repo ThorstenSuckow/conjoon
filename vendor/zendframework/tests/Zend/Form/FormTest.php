@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: FormTest.php 18190 2009-09-17 20:29:52Z matthew $
+ */
+
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Form_FormTest::main');
 }
@@ -15,12 +36,21 @@ require_once 'Zend/Form/Decorator/Form.php';
 require_once 'Zend/Form/DisplayGroup.php';
 require_once 'Zend/Form/Element.php';
 require_once 'Zend/Form/Element/Text.php';
+require_once 'Zend/Form/Element/File.php';
 require_once 'Zend/Form/SubForm.php';
 require_once 'Zend/Loader/PluginLoader.php';
 require_once 'Zend/Registry.php';
 require_once 'Zend/Translate.php';
 require_once 'Zend/View.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Form
+ */
 class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
 {
     public static function main()
@@ -1370,7 +1400,7 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
         $subForm->addElement('text', 'test')->test
             ->setRequired(true)->addValidator('Identical', false, array('Test Value'));
         $this->form->addSubForm($subForm, 'sub');
-        
+
         $this->form->setElementsBelongTo('foo[bar]');
         $subForm->setElementsBelongTo('my[subform]');
 
@@ -1400,7 +1430,7 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
         $subSubForm->addElement('text', 'test2')->test2
             ->setRequired(true)->addValidator('Identical', false, array('Test2 Value'));
         $subForm->addSubForm($subSubForm, 'subSub');
-        
+
         $this->form->setElementsBelongTo('form[first]');
         // Notice we skipped subForm, to mix manual and auto elementsBelongTo.
         $subSubForm->setElementsBelongTo('subsubform[first]');
@@ -1969,7 +1999,7 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($form->isValidPartial($data), var_export($data, 1));
         $this->assertEquals('0', $form->sub->subSub->home->getValue());
     }
-    
+
     public function testCanGetMessagesOfNestedFormsWithMultiLevelElementsBelongingToArrays()
     {
         $this->_checkZf2794();
@@ -2010,7 +2040,7 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
                 'lastName'  => 'Cow',
             ),
         ));
-        
+
 
         $form->sub->subSub->home->addValidator('StringLength', false, array(4, 6));
         $data['foo']['bar']['baz'] = array('bat' => array('quux' => array('home' => 'ab')));
@@ -3570,6 +3600,140 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
     public function testOverloadingToInvalidMethodsShouldThrowAnException()
     {
         $html = $this->form->bogusMethodCall();
+    }
+
+    /**
+     * @group ZF-2950
+     */
+    public function testDtDdElementsWithLabelGetUniqueId()
+    {
+        $form = new Zend_Form();
+        $form->setView($this->getView());
+
+        $fooElement = new Zend_Form_Element_Text('foo');
+        $fooElement->setLabel('Foo');
+
+        $form->addElement($fooElement);
+
+        $html = $form->render();
+
+        $this->assertContains('<dt id="foo-label">', $html);
+        $this->assertContains('<dd id="foo-element">', $html);
+    }
+
+    /**
+     * @group ZF-2950
+     */
+    public function testDtDdElementsWithoutLabelGetUniqueId()
+    {
+        $form = new Zend_Form();
+        $form->setView($this->getView())
+             ->addElement(new Zend_Form_Element_Text('foo'));
+
+        $html = $form->render();
+
+        $this->assertContains('<dt id="foo-label">&nbsp;</dt>', $html);
+        $this->assertContains('<dd id="foo-element">', $html);
+    }
+
+    /**
+     * @group ZF-2950
+     */
+    public function testSubFormGetsUniqueIdWithName()
+    {
+        $form = new Zend_Form();
+        $form->setView($this->getView())
+             ->setName('testform')
+             ->addSubForm(new Zend_Form_SubForm(), 'testform');
+
+        $html = $form->render();
+
+        $this->assertContains('<dt id="testform-label">&nbsp;</dt>', $html);
+        $this->assertContains('<dd id="testform-element">', $html);
+    }
+
+    /**
+     * @group ZF-5370
+     */
+    public function testEnctypeDefaultsToMultipartWhenFileElementIsAttachedToForm()
+    {
+        $file = new Zend_Form_Element_File('txt');
+        $this->form->addElement($file);
+
+        $html = $this->form->render($this->getView());
+        $this->assertFalse(empty($html));
+        $this->assertRegexp('#<form[^>]+enctype="multipart/form-data"#', $html);
+    }
+
+    /**
+     * @group ZF-5370
+     */
+    public function testEnctypeDefaultsToMultipartWhenFileElementIsAttachedToSubForm()
+    {
+        $subForm = new Zend_Form_SubForm();
+        $subForm->addElement('file', 'txt');
+        $this->form->addSubForm($subForm, 'page1')
+                   ->setView(new Zend_View);
+        $html = $this->form->render();
+
+        $this->assertContains('id="txt"', $html);
+        $this->assertContains('name="txt"', $html);
+        $this->assertRegexp('#<form[^>]+enctype="multipart/form-data"#', $html, $html);
+    }
+
+    /**
+     * @group ZF-5370
+     */
+    public function testEnctypeDefaultsToMultipartWhenFileElementIsAttachedToDisplayGroup()
+    {
+        $this->form->addElement('file', 'txt')
+                   ->addDisplayGroup(array('txt'), 'txtdisplay')
+                   ->setView(new Zend_View);
+        $html = $this->form->render();
+
+        $this->assertContains('id="txt"', $html);
+        $this->assertContains('name="txt"', $html);
+        $this->assertRegexp('#<form[^>]+enctype="multipart/form-data"#', $html, $html);
+    }
+
+    /**
+     * @group ZF-6070
+     */
+    public function testIndividualElementDecoratorsShouldOverrideGlobalElementDecorators()
+    {
+        $this->form->setOptions(array(
+            'elementDecorators' => array(
+                'ViewHelper',
+                'Label',
+            ),
+            'elements' => array(
+                'foo' => array(
+                    'type' => 'text',
+                    'options' => array(
+                        'decorators' => array(
+                            'Errors',
+                            'ViewHelper',
+                        ),
+                    ),
+                ),
+            ),
+        ));
+        $element    = $this->form->getElement('foo');
+        $expected   = array('Zend_Form_Decorator_Errors', 'Zend_Form_Decorator_ViewHelper');
+        $actual     = array();
+        foreach ($element->getDecorators() as $decorator) {
+            $actual[] = get_class($decorator);
+        }
+        $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * @group ZF-5150
+     */
+    public function testIsValidShouldFailIfAddErrorHasBeenCalled()
+    {
+        $this->form->addError('Error');
+        $this->assertFalse($this->form->isValid(array()));
     }
 
     /**

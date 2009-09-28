@@ -204,10 +204,12 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
                         integration.</p></li>
 <li><p><code class="code">isEnabled()</code>: determine whether or not
                         jQuery integration is enabled.</p></li>
-<li><p><code class="code">setCdnVersion()</code>: set the jQuery version
-                        that should be loaded from the Google Ajax Library CDN</p></li>
-<li><p><code class="code">getCdnVersion()</code>: get the current jQuery
-                        version that is set for CDN inclusion.</p></li>
+<li><p><code class="code">setVersion()</code>: set the jQuery version
+                        that is used. This also decides on the library loaded
+                        from the Google Ajax Library CDN</p></li>
+<li><p><code class="code">getVersion()</code>: get the current jQuery
+                        that is used. This also decides on the library loaded
+                        from the Google Ajax Library CDN</p></li>
 <li><p><code class="code">useCdn()</code>: Return true, if CDN usage is
                         currently enabled</p></li>
 <li><p><code class="code">useLocalPath()</code>: Return true, if local usage
@@ -228,10 +230,12 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
                         integration.</p></li>
 <li><p><code class="code">uiIsEnabled()</code>: determine whether or not
                         jQuery UI integration is enabled.</p></li>
-<li><p><code class="code">setUiCdnVersion()</code>: set the jQuery UI version
-                        that should be loaded from the Google Ajax Library CDN</p></li>
-<li><p><code class="code">getUiCdnVersion()</code>: get the current jQuery UI
-                        version that is set for CDN inclusion.</p></li>
+<li><p><code class="code">setUiVersion()</code>: set the jQuery UI version
+                        that is used. This also decides on the library loaded
+                        from the Google Ajax Library CDN</p></li>
+<li><p><code class="code">getUiVersion()</code>: get the current jQuery UI
+                        that is used. This also decides on the library loaded
+                        from the Google Ajax Library CDN</p></li>
 <li><p><code class="code">useUiCdn()</code>: Return true, if CDN usage is
                         currently enabled for jQuery UI</p></li>
 <li><p><code class="code">useUiLocal()</code>: Return true, if local usage
@@ -277,11 +281,13 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
                         is the default behaviour.</p></li>
 <li><p><code class="code">getRenderMode()</code>: Return the current
                         jQuery environment rendering mode.</p></li>
+<li><p><code class="code">setCdnSsl($bool)</code>: Set if the CDN Google Ajax Library should be loaded
+                        from an SSL or a Non-SSL location.</p></li>
 </ul></div>
 <p>These are quite a number of methods, but many of them are used for internally by all the
                 additional view helpers and during the printing of the jQuery environment. Unless you
                 want to build your own jQuery helper or have a complex use-case, you will probably only
-                get in contact with a view methods of these.</p>
+                get in contact with a few methods of these.</p>
 </div>
 </div>
 <div class="sect3" lang="en">
@@ -317,6 +323,18 @@ $view-&gt;jQuery
 
         </pre>
 <p>This statement makes sure only the required javascript statements and onLoad blocks of the current page are rendered by the jQuery helper.</p>
+</div>
+<div class="sect3" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="zendx.jquery.view.jquery.migrations"></a>2.2.1.5. Migrations</h4></div></div></div>
+<p>Prior to 1.8 the methods <code class="code">setCdnVersion()</code>, <code class="code">setLocalPath()</code>
+            <code class="code">setUiCdnVersion()</code> and <code class="code">setUiLocalPath()</code> all enabled the view
+            helper upon calling, which is considered a bug from the following perspective: If
+            you want to use the any non-default library option, you would have to manually disable the
+            jQuery helper aftwards if you only require it to be loaded in some scenarios. With version
+            1.8 the jQuery helper does only enable itsself, when <code class="code">enable()</code> is called,
+            which all internal jQuery View helpers do upon being called.
+        </p>
 </div>
 </div>
 <div class="sect2" lang="en">
@@ -525,15 +543,16 @@ $view-&gt;jQuery
 </ul></div>
 <p>The following UI widgets are available as form view helpers. Make sure you use the correct
                 version of jQuery UI library to be able to use them. The Google CDN only offers jQuery UI up
-                to version 1.5.2 since 1.6 is still in late-development.</p>
+                to version 1.5.2. Some other components are only available from jQuery UI SVN, since they
+                have been removed from the announced 1.6 release.</p>
 <div class="itemizedlist"><ul type="disc">
 <li><p><code class="code">autoComplete($id, $value, $params, $attribs)</code>: The AutoComplete View helper
-                    works since jQuery UI 1.6 and creates a text field and registeres it to have auto complete functionality.
-                    The completion data source has to be given as jQuery related parameters 'url' or 'data' as described
-                    in the jQuery UI manual.
+                    will be included in a future jQuery UI version (currently only via jQuery SVN) and creates a text field and registeres
+                    it to have auto complete functionality. The completion data source has to be given as jQuery
+                    related parameters 'url' or 'data' as described in the jQuery UI manual.
                 </p></li>
-<li><p><code class="code">colorPicker($id, $value, $params, $attribs)</code>: ColorPicker is available
-                    in jQuery UI since 1.6 and creates a text field that opens up a color picking tool when activated.
+<li><p><code class="code">colorPicker($id, $value, $params, $attribs)</code>: ColorPicker is currently available
+                    in jQuery UI only from SVN and creates a text field that opens up a color picking tool when activated.
                 </p></li>
 <li><p><code class="code">datePicker($id, $value, $params, $attribs)</code>: Create a DatePicker
                     inside a text field. This widget is available since jQuery UI 1.5 and can therefore currently be used
@@ -543,7 +562,7 @@ $view-&gt;jQuery
                     that updates its value into a hidden form field. Available since jQuery UI 1.5.</p></li>
 <li><p><code class="code">spinner($id, $value, $params, $attribs)</code>: Create a Spinner element
                     that can spin through numeric values in a specified range. This is set on top of a form text field
-                    and is available only since jQuery UI 1.6.</p></li>
+                    and is available only from jQuery UI SVN</p></li>
 </ul></div>
 <div class="example">
 <a name="zendx.jquery.view.helpers.form.example"></a><p class="title"><b>Example 2.3. Showing jQuery Form View Helper Usage</b></p>
@@ -644,7 +663,7 @@ class MyIndexController extends Zend_Controller_Action
                 offer a secondary view helper for pane generation. The following view helpers exist in the jQuery view helpers collection,
                 an example accompanies them to show their usage.</p>
 <div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">dialog($id, $content, $params, $attribs)</code>: Create a Dialog Box that is rendered with
+<li><p><code class="code">dialogContainer($id, $content, $params, $attribs)</code>: Create a Dialog Box that is rendered with
                         the given content.on startup. If the option 'autoOpen' set to false is specified the box will not be displayed
                         on load but can be shown with the additional <code class="code">dialog("open")</code> javascript function. See UI docs
                         for details.</p></li>
@@ -671,11 +690,11 @@ class MyIndexController extends Zend_Controller_Action
                     an array of news items to the view script. This array contains at most 5 news elements, so we don't have to care
                     about the tab container getting to many tabs.</p>
 <pre class="programlisting">
-&lt;?= foreach($this-&gt;news AS $article): ?&gt;
-&lt;? $this-&gt;tabPane("newstab",
+&lt;?php foreach($this-&gt;news AS $article): ?&gt;
+&lt;?php $this-&gt;tabPane("newstab",
                   $article-&gt;body,
                   array('title' =&gt; $article-&gt;title)); ?&gt;
-&lt;?= endforeach; ?&gt;
+&lt;?php endforeach; ?&gt;
 
 &lt;h2&gt;Latest News&lt;/h2&gt;
 &lt;?= $this-&gt;tabContainer("newstab",

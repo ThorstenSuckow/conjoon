@@ -1,6 +1,7 @@
 dojo.require("dojo._base.lang");
 dojo.provide("dojo._base.array");
 
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
 	var _getParts = function(arr, obj, cb){
 		return [ 
@@ -65,7 +66,7 @@ dojo.provide("dojo._base.array");
 			//	|	dojo.forEach(
 			//	|		[ "thinger", "blah", "howdy", 10 ],
 			//	|		function(item){
-			//	|			console.debug(item);
+			//	|			console.log(item);
 			//	|		}
 			//	|	);
 			//	example:
@@ -73,7 +74,7 @@ dojo.provide("dojo._base.array");
 			//	|	dojo.forEach(
 			//	|		[ "thinger", "blah", "howdy", 10 ],
 			//	|		function(item, idx, arr){
-			//	|			console.debug(item, "at index:", idx);
+			//	|			console.log(item, "at index:", idx);
 			//	|		}
 			//	|	);
 			//	example:
@@ -82,7 +83,7 @@ dojo.provide("dojo._base.array");
 			//	|	var obj = {
 			//	|		prefix: "logged via obj.callback:", 
 			//	|		callback: function(item){
-			//	|			console.debug(this.prefix, item);
+			//	|			console.log(this.prefix, item);
 			//	|		}
 			//	|	};
 			//	|	
@@ -142,7 +143,7 @@ dojo.provide("dojo._base.array");
 			// example:
 			//	|	// returns true 
 			//	|	dojo.every([1, 2, 3, 4], function(item){ return item>0; });
-			return this._everyOrSome(true, arr, callback, thisObject); // Boolean
+			return dojo._everyOrSome(true, arr, callback, thisObject); // Boolean
 		},
 
 		some: function(/*Array|String*/arr, /*Function|String*/callback, /*Object?*/thisObject){
@@ -166,7 +167,7 @@ dojo.provide("dojo._base.array");
 			// example:
 			//	|	// is false
 			//	|	dojo.some([1, 2, 3, 4], function(item){ return item<1; });
-			return this._everyOrSome(false, arr, callback, thisObject); // Boolean
+			return dojo._everyOrSome(false, arr, callback, thisObject); // Boolean
 		},
 
 		map: function(/*Array|String*/arr, /*Function|String*/callback, /*Function?*/thisObject){
@@ -229,3 +230,22 @@ dojo.provide("dojo._base.array");
 		}
 	});
 })();
+//>>excludeEnd("webkitMobile");
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+/*
+//>>excludeEnd("webkitMobile");
+//>>includeStart("webkitMobile", kwArgs.webkitMobile);
+["indexOf", "lastIndexOf", "forEach", "map", "some", "every", "filter"].forEach(
+	function(name, idx){
+		dojo[name] = function(arr, callback, thisObj){
+			if((idx > 1)&& dojo.isString(callback)){
+				callback = new Function("item", "index", "array", callback);
+			}
+			return Array.prototype[name].call(arr, callback, thisObj);
+		}
+	}
+);
+//>>includeEnd("webkitMobile");
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+*/
+//>>excludeEnd("webkitMobile");

@@ -1,9 +1,24 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: VolumeTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Zend_Measure_Cooking_Volume
@@ -15,10 +30,13 @@ require_once 'Zend/Measure/Cooking/Volume.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Measure
  */
 class Zend_Measure_Cooking_VolumeTest extends PHPUnit_Framework_TestCase
 {
@@ -139,7 +157,7 @@ class Zend_Measure_Cooking_VolumeTest extends PHPUnit_Framework_TestCase
      */
     public function testCooking_VolumeValueString()
     {
-        $value = new Zend_Measure_Cooking_Volume('string -100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $value = new Zend_Measure_Cooking_Volume('-100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
         $this->assertEquals(-100100.200, $value->getValue(),'Zend_Measure_Cooking_Volume Object not returned');
     }
 
@@ -150,8 +168,8 @@ class Zend_Measure_Cooking_VolumeTest extends PHPUnit_Framework_TestCase
      */
     public function testCooking_VolumeEquality()
     {
-        $value = new Zend_Measure_Cooking_Volume('string -100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
-        $newvalue = new Zend_Measure_Cooking_Volume('otherstring -100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $value = new Zend_Measure_Cooking_Volume('-100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $newvalue = new Zend_Measure_Cooking_Volume('-100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
         $this->assertTrue($value->equals($newvalue),'Zend_Measure_Cooking_Volume Object should be equal');
     }
 
@@ -162,8 +180,8 @@ class Zend_Measure_Cooking_VolumeTest extends PHPUnit_Framework_TestCase
      */
     public function testCooking_VolumeNoEquality()
     {
-        $value = new Zend_Measure_Cooking_Volume('string -100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
-        $newvalue = new Zend_Measure_Cooking_Volume('otherstring -100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $value = new Zend_Measure_Cooking_Volume('-100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $newvalue = new Zend_Measure_Cooking_Volume('-100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
         $this->assertFalse($value->equals($newvalue),'Zend_Measure_Cooking_Volume Object should be not equal');
     }
 
@@ -222,8 +240,8 @@ class Zend_Measure_Cooking_VolumeTest extends PHPUnit_Framework_TestCase
      */
     public function testCooking_VolumeSetString()
     {
-        $value = new Zend_Measure_Cooking_Volume('string -100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
-        $value->setValue('otherstring -200.200,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $value = new Zend_Measure_Cooking_Volume('-100.100,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
+        $value->setValue('-200.200,200',Zend_Measure_Cooking_Volume::STANDARD,'de');
         $this->assertEquals(-200200.200, $value->getValue(),'Zend_Measure_Cooking_Volume Object not returned');
     }
 
@@ -236,7 +254,7 @@ class Zend_Measure_Cooking_VolumeTest extends PHPUnit_Framework_TestCase
     {
         try {
             $value = new Zend_Measure_Cooking_Volume('100',Zend_Measure_Cooking_Volume::STANDARD,'de');
-            $value->setValue('otherstring -200.200,200','Cooking_Volume::UNKNOWN','de');
+            $value->setValue('-200.200,200','Cooking_Volume::UNKNOWN','de');
             $this->fail('Exception expected because of unknown type');
         } catch (Zend_Measure_Exception $e) {
             // success

@@ -13,11 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Session_SaveHandler
+ * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTableTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: DbTableTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -31,14 +31,16 @@ require_once dirname(__FILE__) . '/../../../TestHelper.php';
 require_once 'Zend/Session/SaveHandler/DbTable.php';
 
 /**
- * Unit testing for Zend_Session_SaveHandler_DbTable include all tests for regular session handling
+ * Unit testing for Zend_Session_SaveHandler_DbTable include all tests for
+ * regular session handling
  *
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @see        http://en.wikipedia.org/wiki/Black_box_testing
+ * @group      Zend_Session
+ * @group      Zend_Db_Table
  */
 class Zend_Session_SaveHandler_DbTableTest extends PHPUnit_Framework_TestCase
 {
@@ -117,8 +119,6 @@ class Zend_Session_SaveHandler_DbTableTest extends PHPUnit_Framework_TestCase
 
     public function testTableNameSchema()
     {
-        //this is thrown AFTER what we want to test...
-        $this->setExpectedException('Zend_Db_Statement_Exception');
         $config = $this->_saveHandlerTableConfig;
         $config['name'] = 'schema.session';
         $this->_usedSaveHandlers[] =

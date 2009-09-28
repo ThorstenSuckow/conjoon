@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TimeTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: TimeTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -31,8 +31,12 @@ require_once 'Zend/Measure/Time.php';
 require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Measure
  */
 class Zend_Measure_TimeTest extends PHPUnit_Framework_TestCase
 {
@@ -149,7 +153,7 @@ class Zend_Measure_TimeTest extends PHPUnit_Framework_TestCase
      */
     public function testTimeValueString()
     {
-        $value = new Zend_Measure_Time('string -100.100,200',Zend_Measure_Time::STANDARD,'de');
+        $value = new Zend_Measure_Time('-100.100,200',Zend_Measure_Time::STANDARD,'de');
         $this->assertEquals(-100100.200, $value->getValue(),'Zend_Measure_Time Object not returned');
     }
 
@@ -160,8 +164,8 @@ class Zend_Measure_TimeTest extends PHPUnit_Framework_TestCase
      */
     public function testTimeEquality()
     {
-        $value = new Zend_Measure_Time('string -100.100,200',Zend_Measure_Time::STANDARD,'de');
-        $newvalue = new Zend_Measure_Time('otherstring -100.100,200',Zend_Measure_Time::STANDARD,'de');
+        $value = new Zend_Measure_Time('-100.100,200',Zend_Measure_Time::STANDARD,'de');
+        $newvalue = new Zend_Measure_Time('-100.100,200',Zend_Measure_Time::STANDARD,'de');
         $this->assertTrue($value->equals($newvalue),'Zend_Measure_Time Object should be equal');
     }
 
@@ -172,8 +176,8 @@ class Zend_Measure_TimeTest extends PHPUnit_Framework_TestCase
      */
     public function testTimeNoEquality()
     {
-        $value = new Zend_Measure_Time('string -100.100,200',Zend_Measure_Time::STANDARD,'de');
-        $newvalue = new Zend_Measure_Time('otherstring -100,200',Zend_Measure_Time::STANDARD,'de');
+        $value = new Zend_Measure_Time('-100.100,200',Zend_Measure_Time::STANDARD,'de');
+        $newvalue = new Zend_Measure_Time('-100,200',Zend_Measure_Time::STANDARD,'de');
         $this->assertFalse($value->equals($newvalue),'Zend_Measure_Time Object should be not equal');
     }
 
@@ -232,8 +236,8 @@ class Zend_Measure_TimeTest extends PHPUnit_Framework_TestCase
      */
     public function testTimeSetString()
     {
-        $value = new Zend_Measure_Time('string -100.100,200',Zend_Measure_Time::STANDARD,'de');
-        $value->setValue('otherstring -200.200,200',Zend_Measure_Time::STANDARD,'de');
+        $value = new Zend_Measure_Time('-100.100,200',Zend_Measure_Time::STANDARD,'de');
+        $value->setValue('-200.200,200',Zend_Measure_Time::STANDARD,'de');
         $this->assertEquals(-200200.200, $value->getValue(),'Zend_Measure_Time Object not returned');
     }
 
@@ -246,7 +250,7 @@ class Zend_Measure_TimeTest extends PHPUnit_Framework_TestCase
     {
         try {
             $value = new Zend_Measure_Time('100',Zend_Measure_Time::STANDARD,'de');
-            $value->setValue('otherstring -200.200,200','Time::UNKNOWN','de');
+            $value->setValue('-200.200,200','Time::UNKNOWN','de');
             $this->fail('Exception expected because of unknown type');
         } catch (Exception $e) {
             return true; // Test OK

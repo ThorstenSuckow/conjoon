@@ -15,10 +15,14 @@
  * @category   Zend
  * @package    Zend_Wildfire
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: WildfireTest.php 13691 2009-01-19 05:33:06Z cadorn $
+ * @version    $Id: WildfireTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
+
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Wildfire_WildfireTest::main');
+}
 
 require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
@@ -31,11 +35,14 @@ require_once 'Zend/Wildfire/Plugin/FirePhp.php';
 /** Zend_Wildfire_Plugin_FirePhp_Message */
 require_once 'Zend/Wildfire/Plugin/FirePhp/Message.php';
 
-/** Zend_Controller_Request_Http */
-require_once 'Zend/Controller/Request/Http.php';
+/** Zend_Wildfire_Plugin_FirePhp_TableMessage */
+require_once 'Zend/Wildfire/Plugin/FirePhp/TableMessage.php';
+
+/** Zend_Controller_Request_HttpTestCase */
+require_once 'Zend/Controller/Request/HttpTestCase.php';
 
 /** Zend_Controller_Response_Http */
-require_once 'Zend/Controller/Response/Http.php';
+require_once 'Zend/Controller/Response/HttpTestCase.php';
 
 /** Zend_Controller_Front **/
 require_once 'Zend/Controller/Front.php';
@@ -50,8 +57,9 @@ require_once 'Zend/Json/Encoder.php';
  * @category   Zend
  * @package    Zend_Wildfire
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Wildfire
  */
 class Zend_Wildfire_WildfireTest extends PHPUnit_Framework_TestCase
 {
@@ -68,8 +76,6 @@ class Zend_Wildfire_WildfireTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
-
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Wildfire_WildfireTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
     }
@@ -77,6 +83,8 @@ class Zend_Wildfire_WildfireTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         date_default_timezone_set('America/Los_Angeles');
+        Zend_Wildfire_Channel_HttpHeaders::destroyInstance();
+        Zend_Wildfire_Plugin_FirePhp::destroyInstance();
     }
 
     public function tearDown()
@@ -88,8 +96,8 @@ class Zend_Wildfire_WildfireTest extends PHPUnit_Framework_TestCase
 
     protected function _setupWithFrontController()
     {
-        $this->_request = new Zend_Wildfire_WildfireTest_Request();
-        $this->_response = new Zend_Wildfire_WildfireTest_Response();
+        $this->_request    = new Zend_Wildfire_WildfireTest_Request();
+        $this->_response   = new Zend_Wildfire_WildfireTest_Response();
         $this->_controller = Zend_Controller_Front::getInstance();
         $this->_controller->resetInstance();
         $this->_controller->setControllerDirectory(dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files')
@@ -441,6 +449,91 @@ class Zend_Wildfire_WildfireTest extends PHPUnit_Framework_TestCase
                                             [Zend_Wildfire_Plugin_FirePhp::PLUGIN_URI][0],
                             '[{"Type":"INFO","Label":"Label 1"},"Message 2"]');
     }
+    
+
+    /**
+     * @group ZF-5742
+     */
+    public function testTableMessage()
+    {
+        $table = new Zend_Wildfire_Plugin_FirePhp_TableMessage('TestMessage');
+        
+        $this->assertEquals($table->getLabel(), 'TestMessage');
+
+        try {
+            $table->getLastRow();
+            $this->fail('Should throw exception when no rows exist');
+        } catch (Exception $e) {
+            // success
+        }
+        
+        $row = array('col1','col2');
+
+        $this->assertEquals($table->getRowCount(), 0);
+        
+        try {
+            $table->getRowAt(1);
+            $this->fail('Should throw exception as no rows present');
+        } catch (Exception $e) {
+            // success
+        }
+
+        try {
+            $table->setRowAt(1,array());
+            $this->fail('Should throw exception as no rows present');
+        } catch (Exception $e) {
+            // success
+        }
+        
+        $table->addRow($row);
+
+        $this->assertEquals($table->getMessage(), array($row));
+        $this->assertEquals($table->getLastRow(), $row);
+        
+        $this->assertEquals($table->getRowCount(), 1);
+        
+        $table->addRow($row);
+
+        $this->assertEquals($table->getMessage(), array($row,
+                                                        $row));
+        
+        $this->assertEquals($table->getRowCount(), 2);
+        $this->assertEquals($table->getLastRow(), $row);
+        
+        try {
+            $table->getRowAt(2);
+            $this->fail('Should throw exception as index is out of bounds');
+        } catch (Exception $e) {
+            // success
+        }
+
+        try {
+            $table->setRowAt(2,array());
+            $this->fail('Should throw exception as index is out of bounds');
+        } catch (Exception $e) {
+            // success
+        }
+       
+        $rowOld = $table->getRowAt(1);
+        $this->assertEquals($rowOld, $row);
+
+        $rowOld[1] = 'Column2';
+        $table->setRowAt(1, $rowOld);
+        
+        $this->assertEquals($table->getRowAt(1), $rowOld);
+        $this->assertEquals($table->getLastRow(), $rowOld);
+
+        $this->assertEquals($table->getMessage(), array($row,
+                                                        $rowOld));
+
+        $header = array('hc1', 'hc2');
+        $table->setHeader($header);
+        
+        $this->assertEquals($table->getMessage(), array($header,
+                                                        $row,
+                                                        $rowOld));
+    }
+    
 
     public function testMessageGroups()
     {
@@ -832,7 +925,7 @@ class Zend_Wildfire_WildfireTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($message,
                             '[{"Type":"TABLE","Label":"Label"},[["Col1","Col2"],[{"__className":"Zend_Wildfire_WildfireTest_TestObject3","public:name":"Name","public:value":"Value","undeclared:testArray":["val1","** Max Array Depth (1) **"],"undeclared:child":{"__className":"Zend_Wildfire_WildfireTest_TestObject3","public:name":"Name","public:value":"Value","undeclared:testArray":["val1","** Max Array Depth (1) **"],"undeclared:child":"** Max Object Depth (2) **"}},{"__className":"Zend_Wildfire_WildfireTest_TestObject3","public:name":"Name","public:value":"Value","undeclared:testArray":["val1","** Max Array Depth (1) **"],"undeclared:child":{"__className":"Zend_Wildfire_WildfireTest_TestObject3","public:name":"Name","public:value":"Value","undeclared:testArray":["val1","** Max Array Depth (1) **"],"undeclared:child":"** Max Object Depth (2) **"}}]]]');
     }
-        
+    
 }
 
 class Zend_Wildfire_WildfireTest_TestObject1
@@ -872,7 +965,7 @@ class Zend_Wildfire_WildfireTest_HttpHeadersChannel extends Zend_Wildfire_Channe
 {
 }
 
-class Zend_Wildfire_WildfireTest_Request extends Zend_Controller_Request_Http
+class Zend_Wildfire_WildfireTest_Request extends Zend_Controller_Request_HttpTestCase
 {
 
     protected $_enabled = false;
@@ -881,7 +974,7 @@ class Zend_Wildfire_WildfireTest_Request extends Zend_Controller_Request_Http
         $this->_enabled = $enabled;
     }
 
-    public function getHeader($header)
+    public function getHeader($header, $default = null)
     {
         if ($header == 'User-Agent') {
             if ($this->_enabled) {
@@ -894,7 +987,7 @@ class Zend_Wildfire_WildfireTest_Request extends Zend_Controller_Request_Http
 }
 
 
-class Zend_Wildfire_WildfireTest_Response extends Zend_Controller_Response_Http
+class Zend_Wildfire_WildfireTest_Response extends Zend_Controller_Response_HttpTestCase
 {
 
     public function getHeadersForTesting()
@@ -942,4 +1035,8 @@ class Zend_Wildfire_WildfireTest_Response extends Zend_Controller_Response_Http
         return true;
     }
 
+}
+
+if (PHPUnit_MAIN_METHOD == 'Zend_Wildfire_WildfireTest::main') {
+    Zend_Wildfire_WildfireTest::main();
 }

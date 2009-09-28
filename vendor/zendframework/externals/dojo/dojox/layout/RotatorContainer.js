@@ -2,6 +2,10 @@ dojo.provide("dojox.layout.RotatorContainer");
 
 dojo.require("dojo.fx");
 dojo.require("dijit.layout.StackContainer");
+dojo.require("dijit.layout.StackController");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+dojo.require("dijit._Contained");
 
 dojo.declare("dojox.layout.RotatorContainer", 
 	[dijit.layout.StackContainer, dijit._Templated], {

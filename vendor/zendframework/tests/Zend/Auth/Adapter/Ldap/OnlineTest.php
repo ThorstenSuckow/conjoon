@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OnlineTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: OnlineTest.php 17787 2009-08-24 14:41:49Z sgehrig $
  */
 
 /**
@@ -39,8 +39,9 @@ require_once 'Zend/Auth/Adapter/Ldap.php';
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Auth
  */
 class Zend_Auth_Adapter_Ldap_OnlineTest extends PHPUnit_Framework_TestCase
 {
@@ -64,16 +65,21 @@ class Zend_Auth_Adapter_Ldap_OnlineTest extends PHPUnit_Framework_TestCase
             'password' => TESTS_ZEND_LDAP_PASSWORD,
             'baseDn' => TESTS_ZEND_LDAP_BASE_DN,
         );
-        if (defined('TESTS_ZEND_LDAP_PORT') && TESTS_ZEND_LDAP_PORT != 389)
+        if (defined('TESTS_ZEND_LDAP_PORT'))
             $this->_options['port'] = TESTS_ZEND_LDAP_PORT;
+        if (defined('TESTS_ZEND_LDAP_USE_START_TLS'))
+            $this->_options['useStartTls'] = TESTS_ZEND_LDAP_USE_START_TLS;
         if (defined('TESTS_ZEND_LDAP_USE_SSL'))
             $this->_options['useSsl'] = TESTS_ZEND_LDAP_USE_SSL;
         if (defined('TESTS_ZEND_LDAP_BIND_REQUIRES_DN'))
             $this->_options['bindRequiresDn'] = TESTS_ZEND_LDAP_BIND_REQUIRES_DN;
+        if (defined('TESTS_ZEND_LDAP_ACCOUNT_FILTER_FORMAT'))
+            $this->_options['accountFilterFormat'] = TESTS_ZEND_LDAP_ACCOUNT_FILTER_FORMAT;
         if (defined('TESTS_ZEND_LDAP_ACCOUNT_DOMAIN_NAME'))
             $this->_options['accountDomainName'] = TESTS_ZEND_LDAP_ACCOUNT_DOMAIN_NAME;
         if (defined('TESTS_ZEND_LDAP_ACCOUNT_DOMAIN_NAME_SHORT'))
             $this->_options['accountDomainNameShort'] = TESTS_ZEND_LDAP_ACCOUNT_DOMAIN_NAME_SHORT;
+
         if (defined('TESTS_ZEND_LDAP_ALT_USERNAME')) {
             $this->_names[Zend_Ldap::ACCTNAME_FORM_USERNAME] = TESTS_ZEND_LDAP_ALT_USERNAME;
             if (defined('TESTS_ZEND_LDAP_ACCOUNT_DOMAIN_NAME')) {
@@ -96,6 +102,7 @@ class Zend_Auth_Adapter_Ldap_OnlineTest extends PHPUnit_Framework_TestCase
         );
 
         $result = $adapter->authenticate();
+
         $this->assertTrue($result instanceof Zend_Auth_Result);
         $this->assertTrue($result->isValid());
         $this->assertTrue($result->getCode() == Zend_Auth_Result::SUCCESS);
@@ -170,5 +177,21 @@ class Zend_Auth_Adapter_Ldap_OnlineTest extends PHPUnit_Framework_TestCase
         $this->assertThat($result->getCode(), $this->lessThanOrEqual(Zend_Auth_Result::FAILURE));
         $messages = $result->getMessages();
         $this->assertContains('not found', $messages[0]);
+    }
+
+    public function testAccountObjectRetrieval()
+    {
+        $adapter = new Zend_Auth_Adapter_Ldap(
+            array($this->_options),
+            TESTS_ZEND_LDAP_ALT_USERNAME,
+            TESTS_ZEND_LDAP_ALT_PASSWORD
+        );
+
+        $result = $adapter->authenticate();
+        $account = $adapter->getAccountObject();
+
+        $this->assertTrue($result->isValid());
+        $this->assertType('stdClass', $account);
+        $this->assertEquals(TESTS_ZEND_LDAP_ALT_DN, $account->dn);
     }
 }

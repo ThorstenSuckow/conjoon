@@ -1,22 +1,21 @@
 dojo.require("dijit.layout.AccordionContainer");
 dojo.require("dojox.layout.ScrollPane");
 dojo.require("dojox.widget.FisheyeLite");
-//dojo.require("dojox.layout.DragPane");
 dojo.require("dojo.NodeList-fx");
 dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
+dojo.require("dojox.analytics.Urchin");
 
-var show = null;
-(function($){
-
-	show = function(id){
-		var contents = dojo.byId(id).innerHTML;
-		$("#content").style("opacity", 0).forEach(function(n){ n.innerHTML = contents; }).anim({ opacity:1 });
-	}
+;(function(){
 	
+	window.show = function(id){
+		var contents = dojo.byId(id).innerHTML;
+		dojo.query("#content").style("opacity", 0).forEach(function(n){ n.innerHTML = contents; }).anim({ opacity:1 });
+	}
+
 	var init = function(){
 			// turn li's in this page into fisheye items, presumtiously:  
-		 $("#hidden ul > li").forEach(function(n){
+		dojo.query("#hidden ul > li").forEach(function(n){
 			new dojox.widget.FisheyeLite({
 				properties:{
 				  fontSize:1.5
@@ -25,43 +24,43 @@ var show = null;
 				durationIn: 100,
 				easeOut: dojo.fx.easing.linear,
 				durationOut: 100
-			  }, n);
-		  });
-	
-		panes = [];
-		var paneType = dojo.getObject("dojox.layout.ScrollPane");
-	
-		dojo.forEach(["day1s","day2s","day3s"], function(id){
-			var scroll = new paneType({
-				  style: "width:450px; height:170px"
-			}, id);
-			scroll.startup();
-			panes.push(scroll);			
+			}, n);
 		});
-	
-		//accordion widget
-		accordion = new dijit.layout.AccordionContainer({}, "accordionPanel");
-		var content1 = new dijit.layout.AccordionPane({ id:'pane1', title: '25.07.2008', selected: true },'day1').placeAt(accordion);
-		var content2 = new dijit.layout.AccordionPane({ id:'pane2', title: '26.07.2008' }, 'day2').placeAt(accordion);
-		var content3 = new dijit.layout.AccordionPane({ id:'pane3', title: '27.07.2008' }, 'day3').placeAt(accordion);
-	
-		dojo.forEach([content1, content2, content3], function(pane,i){
-			// store a ref to the scrollpane contained within each accordionpane
-			dojo.mixin(pane, {
-				innerScroller: panes[i]
-			});
+ 
+	  	//accordion widget
+	  	accordion = new dijit.layout.AccordionContainer({}, "accordionPanel");
+
+		// children are scrollpanes, add titles (and id for css styles)
+		var dates = ["25.07.2008", "26.07.2008", "27.07.2008"];
+		dojo.forEach(["day1","day2","day3"], function(id,i){
+			new dojox.layout.ScrollPane({ 
+				id: "pane" + (i+1), 
+				style: "width:450px;height:170px", 
+				title: dates[i] 
+			}, id).placeAt(accordion);
 		});
 
+		// we do this because despite accordion passing correct sizes, scrollpane uses 
+		// it's scrollheight/etc for sizing
 		dojo.subscribe("accordionPanel-selectChild", function(child){
-			setTimeout(dojo.hitch(child.innerScroller,"layout"), 300);
+			setTimeout(dojo.hitch(child, "resize"), accordion.duration + 50);
 		});
 
+		// start the accordion:
 		accordion.startup();
-		content1.innerScroller.layout();
-	
-		$('.dijitAccordionText').style('opacity', 0.01);
+
+		dojo.query('.dijitAccordionText').style('opacity', 0.01);
+
+		// demo usage tracking: 
+		new dojox.analytics.Urchin({ 
+			acct: "UA-3572741-1", 
+			GAonLoad: function(){
+				this.trackPageView("/demos/castle");
+			}
+		});	
+		
 	}
 
 	dojo.addOnLoad(init);
 
-})(dojo.query);
+})();

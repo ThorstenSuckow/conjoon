@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -61,8 +60,9 @@ require_once 'Zend/Db/Profiler/AllTests.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
  */
 class Zend_Db_AllTests
 {
@@ -90,7 +90,7 @@ class Zend_Db_AllTests
         self::_addDbTestSuites($suite, 'Db2');
         self::_addDbTestSuites($suite, 'Mysqli');
         self::_addDbTestSuites($suite, 'Oracle');
-		self::_addDbTestSuites($suite, 'Firebird');
+        self::_addDbTestSuites($suite, 'Sqlsrv');
 
         /**
          * @todo  self::_addDbTestSuites($suite, 'Odbc');
@@ -101,7 +101,6 @@ class Zend_Db_AllTests
         self::_addDbTestSuites($suite, 'Pdo_Oci');
         self::_addDbTestSuites($suite, 'Pdo_Pgsql');
         self::_addDbTestSuites($suite, 'Pdo_Sqlite');
-		self::_addDbTestSuites($suite, 'Pdo_Firebird');
 
         if (self::$_skipTestSuite !== null) {
             $suite->addTest(self::$_skipTestSuite);
@@ -125,7 +124,7 @@ class Zend_Db_AllTests
             'Oracle' => 'oci8',
             'Db2'    => 'ibm_db2',
             'Mysqli' => 'mysqli',
-			'Firebird' => 'interbase',
+			'Sqlsrv' => 'sqlsrv',
             /**
              * @todo  'Odbc'
              */

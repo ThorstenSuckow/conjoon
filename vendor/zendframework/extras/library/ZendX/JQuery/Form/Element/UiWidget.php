@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: UiWidget.php 12288 2008-11-04 21:56:42Z beberlei $
+ * @version     $Id: UiWidget.php 13015 2008-12-04 15:00:03Z beberlei $
  */
 
 require_once "Zend/Form/Element.php";
@@ -143,5 +143,37 @@ class ZendX_JQuery_Form_Element_UiWidget extends Zend_Form_Element
             }
         }
         return parent::setView($view);
+    }
+
+    /**
+     * Retrieve all decorators
+     *
+     * @throws ZendX_JQuery_Form_Exception
+     * @return array
+     */
+    public function getDecorators()
+    {
+        $decorators = parent::getDecorators();
+        if(count($decorators) > 0) {
+            // Only check this if there are decorators present, otherwise it could
+            // be that the decorators have not been initialized yet.
+            $foundUiWidgetElementMarker = false;
+            foreach($decorators AS $decorator) {
+                if($decorator instanceof ZendX_JQuery_Form_Decorator_UiWidgetElementMarker) {
+                    $foundUiWidgetElementMarker = true;
+                }
+            }
+            if($foundUiWidgetElementMarker === false) {
+                require_once "ZendX/JQuery/Form/Exception.php";
+                throw new ZendX_JQuery_Form_Exception(
+                    "Cannot render jQuery form element without at least one decorator ".
+                    "implementing the 'ZendX_JQuery_Form_Decorator_UiWidgetElementMarker' interface. ".
+                    "Default decorator for this marker interface is the 'ZendX_JQuery_Form_Decorator_UiWidgetElement'. ".
+                    "Hint: The ViewHelper decorator does not render jQuery elements correctly."
+                );
+            }
+        }
+
+        return $decorators;
     }
 }

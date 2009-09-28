@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Amf
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ServerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_Amf_ServerTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Amf_ServerTest::main");
@@ -16,6 +37,14 @@ require_once 'ServiceA.php';
 require_once 'ServiceB.php';
 require_once 'Zend/Session.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Amf
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Amf
+ */
 class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
 {
     protected $_server;
@@ -30,11 +59,13 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
     {
         $this->_server = new Zend_Amf_Server();
         $this->_server->setProduction(false);
+        Zend_Amf_Parse_TypeLoader::resetMap();
     }
 
-    public function testDown()
+    public function tearDown()
     {
         unset($this->_server);
+        //Zend_Amf_Parse_TypeLoader::resetMap();
     }
 
     /**
@@ -946,6 +977,7 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testSessionAmf3()
     {
+        Zend_Session::$_unitTestEnabled = true;
         Zend_Session::start(); 
         $this->_server->setClass('Zend_Amf_testSession');
         $this->_server->setSession();
@@ -975,6 +1007,111 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         
         // Do not stop session since it still can be used by other tests
         // Zend_Session::stop();
+    }
+    
+    public function testAddDirectory()
+    {
+    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+    	$this->_server->addDirectory(dirname(__FILE__)."/_files/");
+    	$dirs = $this->_server->getDirectory();
+    	$this->assertContains(dirname(__FILE__)."/_files/services/", $dirs);
+    	$this->assertContains(dirname(__FILE__)."/_files/", $dirs);
+    }
+    
+    public function testAddDirectoryService()
+    {
+    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+    	// should take it from the path above, not include path
+        $origPath = get_include_path();
+    	set_include_path($origPath.PATH_SEPARATOR.dirname(__FILE__));
+    	// create a mock remoting message
+        $message = new Zend_Amf_Value_Messaging_RemotingMessage();
+        $message->operation = 'getMenu';
+        $message->source = 'ServiceC';
+        $message->body = array();
+        // create a mock message body to place th remoting message inside
+        $newBody = new Zend_Amf_Value_MessageBody(null,"/1", $message);
+        $request = new Zend_Amf_Request();
+        // at the requested service to a request
+        $request->addAmfBody($newBody);
+        $request->setObjectEncoding(0x03);
+        // let the server handle mock request
+        $this->_server->handle($request);
+        set_include_path($origPath);
+        $response = $this->_server->getResponse()->getAMFBodies();
+        $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
+        $this->assertEquals("Service: MenuC", $response[0]->getData()->body);
+    }
+    
+    public function testAddDirectoryService2()
+    {
+    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+    	// create a mock remoting message
+        $message = new Zend_Amf_Value_Messaging_RemotingMessage();
+        $message->operation = 'getMenu';
+        $message->source = 'My.ServiceA';
+        $message->body = array();
+        // create a mock message body to place th remoting message inside
+        $newBody = new Zend_Amf_Value_MessageBody(null,"/1", $message);
+        $request = new Zend_Amf_Request();
+        // at the requested service to a request
+        $request->addAmfBody($newBody);
+        $request->setObjectEncoding(0x03);
+        // let the server handle mock request
+        $this->_server->handle($request);
+        $response = $this->_server->getResponse()->getAMFBodies();
+        $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
+        $this->assertEquals("Service: myMenuA", $response[0]->getData()->body);
+    }
+    
+    /*
+     * See ZF-6625
+     */
+    public function testAddDirectoryServiceNotFound()
+    {
+    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+    	// create a mock remoting message
+        $message = new Zend_Amf_Value_Messaging_RemotingMessage();
+        $message->operation = 'encode';
+        $message->source = 'Zend_Json';
+        $message->body = array("123");
+        // create a mock message body to place th remoting message inside
+        $newBody = new Zend_Amf_Value_MessageBody(null,"/1", $message);
+        $request = new Zend_Amf_Request();
+        // at the requested service to a request
+        $request->addAmfBody($newBody);
+        $request->setObjectEncoding(0x03);
+        // let the server handle mock request
+        $this->_server->handle($request);
+        $response = $this->_server->getResponse()->getAMFBodies();
+        $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
+		// test the same while ensuring Zend_Json is loaded
+		require_once 'Zend/Json.php';
+		$this->_server->handle($request);
+		$response = $this->_server->getResponse()->getAMFBodies();
+		$this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
+    }
+
+    /* See ZF-7102 */
+    public function testCtorExcection()
+    {
+		$this->_server->setClass('Zend_Amf_testException');
+		$this->_server->setProduction(false);
+        $message = new Zend_Amf_Value_Messaging_RemotingMessage();
+        $message->operation = 'hello';
+        $message->source = 'Zend_Amf_testException';
+        $message->body = array("123");
+        // create a mock message body to place th remoting message inside
+        $newBody = new Zend_Amf_Value_MessageBody(null,"/1", $message);
+        $request = new Zend_Amf_Request();
+        // at the requested service to a request
+        $request->addAmfBody($newBody);
+        $request->setObjectEncoding(0x03);
+        // let the server handle mock request
+        $this->_server->handle($request);
+        $response = $this->_server->getResponse()->getAMFBodies();
+        $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
+        $this->assertContains("Oops, exception!", $response[0]->getData()->faultString);
     }
     
 }
@@ -1116,6 +1253,18 @@ class Zend_Amf_testclass
     {
         return array_merge($arrayOne, $arrayTwo);
     }
+    
+}
+
+class Zend_Amf_testException
+{
+	public function __construct() {
+		throw new Exception("Oops, exception!");
+	}
+	
+	public function hello() {
+		return "hello";
+	}
 }
 
 /**
@@ -1138,6 +1287,11 @@ class Zend_Amf_testclassPrivate
     public function test1($string = '')
     {
         return 'String: '. (string) $string;
+    }
+
+    public function hello() 
+    {
+	return "hello";
     }
 }
 

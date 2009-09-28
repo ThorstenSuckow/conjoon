@@ -1,8 +1,23 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: XmlTmTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -19,6 +34,9 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Translate
  */
 class Zend_Translate_Adapter_XmlTmTest extends PHPUnit_Framework_TestCase
 {
@@ -104,7 +122,18 @@ class Zend_Translate_Adapter_XmlTmTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new Zend_Translate_Adapter_XmlTm(dirname(__FILE__) . '/_files/translation_en.xmltm', 'en');
         $adapter->setOptions(array('testoption' => 'testkey'));
-        $this->assertEquals(array('testoption' => 'testkey', 'clear' => false, 'scan' => null, 'locale' => 'en', 'ignore' => '.', 'disableNotices' => false), $adapter->getOptions());
+        $this->assertEquals(
+            array(
+                'testoption'      => 'testkey',
+                'clear'           => false,
+                'scan'            => null,
+                'locale'          => 'en',
+                'ignore'          => '.',
+                'disableNotices'  => false,
+                'log'             => false,
+                'logMessage'      => 'Untranslated message within \'%locale%\': %message%',
+                'logUntranslated' => false),
+            $adapter->getOptions());
         $this->assertEquals('testkey', $adapter->getOptions('testoption'));
         $this->assertTrue(is_null($adapter->getOptions('nooption')));
     }
@@ -173,12 +202,12 @@ class Zend_Translate_Adapter_XmlTmTest extends PHPUnit_Framework_TestCase
         $adapter = new Zend_Translate_Adapter_XmlTm(dirname(__FILE__) . '/_files/translation_en3.xmltm', 'en');
         $this->assertEquals('Message 1 (en)', $adapter->translate('Message 1'));
         $this->assertEquals('Message 6', $adapter->_('Message 6'));
-        
+
         if (PHP_OS == 'AIX') {
             return;
             // 'Charsets below are not supported on AIX';
         }
-        
+
         $this->assertEquals(iconv('UTF-8', 'ISO-8859-1', 'Küchen Möbel (en)'), $adapter->translate('Cooking furniture'));
         $this->assertEquals('Cooking furniture (en)', $adapter->translate(iconv('UTF-8', 'ISO-8859-1', 'Küchen Möbel')));
     }

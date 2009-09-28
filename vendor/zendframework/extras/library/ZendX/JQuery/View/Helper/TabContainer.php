@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: TabContainer.php 13959 2009-02-03 18:43:11Z beberlei $
+ * @version     $Id: TabContainer.php 14483 2009-03-25 17:48:17Z beberlei $
  */
 
 /**
@@ -110,11 +110,7 @@ class ZendX_JQuery_View_Helper_TabContainer extends ZendX_JQuery_View_Helper_UiW
         }
 
         if(count($params)) {
-            /**
-             * @see Zend_Json
-             */
-            require_once "Zend/Json.php";
-            $params = Zend_Json::encode($params);
+            $params = ZendX_JQuery::encodeJson($params);
         } else {
             $params = '{}';
         }

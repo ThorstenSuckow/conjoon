@@ -1,6 +1,6 @@
 dojo.provide("dojox.dtl.contrib.dijit");
 
-dojo.require("dojox.dtl.html");
+dojo.require("dojox.dtl.dom");
 dojo.require("dojo.parser");
 
 (function(){
@@ -139,14 +139,14 @@ dojo.require("dojo.parser");
 			node = cloneNode(node);
 			var old = ddcd.widgetsInTemplate;
 			ddcd.widgetsInTemplate = false;
-			this._template = new dd.HtmlTemplate(node);
+			this._template = new dd.DomTemplate(node);
 			ddcd.widgetsInTemplate = old;
 		}
 	},
 	{
 		render: function(context, buffer){
 			if(this._parsed){
-				var _buffer = new dd.HtmlBuffer();
+				var _buffer = new dd.DomBuffer();
 				this._template.render(context, _buffer);
 				var root = cloneNode(_buffer.getRootNode());
 				var div = document.createElement("div");
@@ -192,16 +192,20 @@ dojo.require("dojo.parser");
 			return new ddcd.EventNode(token.contents.slice(16));
 		},
 		dojoType: function(parser, token){
+			var parsed = false;
+			if(token.contents.slice(-7) == " parsed"){
+				parsed = true;
+			}
+			var contents = token.contents.slice(9);
+			var dojoType = parsed ? contents.slice(0, -7) : contents.toString();
+
 			if(ddcd.widgetsInTemplate){
 				var node = parser.swallowNode();
-				var parsed = false;
-				if(token.contents.slice(-7) == " parsed"){
-					parsed = true;
-					node.setAttribute("dojoType", token.contents.slice(0, -7));
-				}
+				node.setAttribute("dojoType", dojoType);
 				return new ddcd.DojoTypeNode(node, parsed);
 			}
-			return dd._noOpNode;
+
+			return new dd.AttributeNode("dojoType", dojoType);
 		},
 		on: function(parser, token){
 			// summary: Associates an event type to a function (on the current widget) by name

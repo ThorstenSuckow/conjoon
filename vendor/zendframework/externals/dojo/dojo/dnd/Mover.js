@@ -40,7 +40,7 @@ dojo.declare("dojo.dnd.Mover", null, {
 		dojo.stopEvent(e);
 	},
 	onMouseUp: function(e){
-		if(dojo.isSafari && dojo.dnd._isMac && this.mouseButton == 2 ? 
+		if(dojo.isWebKit && dojo.dnd._isMac && this.mouseButton == 2 ? 
 				e.button == 0 : this.mouseButton == e.button){
 			this.destroy();
 		}
@@ -48,7 +48,8 @@ dojo.declare("dojo.dnd.Mover", null, {
 	},
 	// utilities
 	onFirstMove: function(){
-		// summary: makes the node absolute; it is meant to be called only once
+		// summary: makes the node absolute; it is meant to be called only once. 
+		// 	relative and absolutely positioned nodes are assumed to use pixel units
 		var s = this.node.style, l, t, h = this.host;
 		switch(s.position){
 			case "relative":

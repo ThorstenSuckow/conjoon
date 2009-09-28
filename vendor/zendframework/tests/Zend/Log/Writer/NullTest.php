@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NullTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: NullTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /** PHPUnit_Framework_TestCase */
@@ -30,9 +30,9 @@ require_once 'Zend/Log/Writer/Null.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NullTest.php 8064 2008-02-16 10:58:39Z thomas $
+ * @group      Zend_Log
  */
 class Zend_Log_Writer_NullTest extends PHPUnit_Framework_TestCase
 {

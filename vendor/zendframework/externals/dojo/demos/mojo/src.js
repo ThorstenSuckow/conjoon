@@ -6,6 +6,9 @@ dojo.require("dojo.fx");
 dojo.require("dojo.fx.easing");
 dojo.require("dojox.widget.Roller");
 
+// tracking:
+dojo.require("dojox.analytics.Urchin");
+
 // our custom code:
 dojo.require("demos.mojo.src.drop"); // gravity code
 dojo.require("demos.mojo.src.download"); // download link code
@@ -16,6 +19,9 @@ dojo.require("demos.mojo.src.download"); // download link code
 	
 	dojo.addOnLoad(function(){
 		
+		if(dojo.isIE){
+			dojo.byId("logoImg").src = "images/logo.gif";
+		}
 		nodes = dojo.query("#container > div");
 		// iterate over each div in the container
 		nodes.forEach(function(n){
@@ -30,7 +36,7 @@ dojo.require("demos.mojo.src.download"); // download link code
 			dojo.query("img", n).forEach(function(img){
 				style(img,{
 					width:"1px", height:"1px",
-					top:"155px", left:"155px;"
+					top:"155px", left:"155px"
 				});
 				if(dojo.isIE){
 					// no png's for ie users
@@ -64,10 +70,10 @@ dojo.require("demos.mojo.src.download"); // download link code
 					delay: _delay + 1000,
 					node: img,
 					properties: {
-						width: 310, //{ end:310, unit:"px" },
-						height: 310, //{ end:310, unit:"px" },
-						top: 0, // { end:0 }, 
-						left: 0 // { end: 0 }
+						width: 310, 
+						height: 310, 
+						top: 0, 
+						left: 0 
 					}
 				}));
 			});
@@ -80,8 +86,8 @@ dojo.require("demos.mojo.src.download"); // download link code
 		_anims.push(dojo.animateProperty({
 			node: "header",
 			properties: {
-				top: 5, //{ end: 5, unit:"px" },
-				left: 5 // { end: 5, unit:"px" }
+				top: 5, 
+				left: 5
 			},
 			delay: _delay,
 			duration: 700
@@ -130,6 +136,13 @@ dojo.require("demos.mojo.src.download"); // download link code
 					duration:950 // ms
 				}).play(5); // small delay for performance?
 				style(e.node, "zIndex", _z);
+			}
+		});	
+		
+		new dojox.analytics.Urchin({ 
+			acct: "UA-3572741-1", 
+			GAonLoad: function(){
+				this.trackPageView("/demos/mojo");
 			}
 		});	
 

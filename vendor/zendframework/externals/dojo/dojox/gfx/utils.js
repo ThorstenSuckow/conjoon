@@ -14,7 +14,7 @@ dojo.require("dojox.gfx");
 			f.call(o, object);
 			if(object instanceof g.Surface || object instanceof g.Group){
 				d.forEach(object.children, function(shape){
-					gu.inspect(shape, f, o);
+					gu.forEach(shape, f, o);
 				});
 			}
 		},
@@ -62,7 +62,7 @@ dojo.require("dojox.gfx");
 			/* dojox.gfx.Shape || Array */ object
 		){
 			if(object instanceof Array){
-				return d.map(object, d.hitch(null, gu.serialize, parent));	// Array
+				return d.map(object, d.hitch(null, gu.deserialize, parent));	// Array
 			}
 			var shape = ("shape" in object) ? parent.createShape(object.shape) : parent.createGroup();
 			if("transform" in object){

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ExtensionTest.php 12541 2008-11-11 05:44:35Z matthew $
+ * @version    $Id: ExtensionTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 // Call Zend_Validate_File_ExtensionTest::main() if this source file is executed directly.
@@ -41,8 +41,9 @@ require_once 'Zend/Validate/File/Extension.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_File_ExtensionTest extends PHPUnit_Framework_TestCase
 {

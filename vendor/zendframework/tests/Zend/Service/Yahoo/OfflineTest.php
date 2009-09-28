@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineTest.php 13006 2008-12-03 21:17:01Z matthew $
+ * @version    $Id: OfflineTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -56,8 +55,10 @@ require_once 'Zend/Service/Yahoo/WebResult.php';
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Yahoo
  */
 class Zend_Service_Yahoo_OfflineTest extends PHPUnit_Framework_TestCase
 {

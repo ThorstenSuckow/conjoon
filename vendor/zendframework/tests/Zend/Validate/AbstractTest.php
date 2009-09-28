@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AbstractTest.php 13246 2008-12-14 18:08:13Z thomas $
+ * @version    $Id: AbstractTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -40,8 +40,9 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_AbstractTest extends PHPUnit_Framework_TestCase
 {
@@ -80,6 +81,7 @@ class Zend_Validate_AbstractTest extends PHPUnit_Framework_TestCase
     {
         $this->clearRegistry();
         Zend_Validate_Abstract::setDefaultTranslator(null);
+        Zend_Validate_Abstract::setMessageLength(-1);
     }
 
     public function testTranslatorNullByDefault()
@@ -209,6 +211,72 @@ class Zend_Validate_AbstractTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->validator->isValid(new stdClass()));
         $messages = $this->validator->getMessages();
         $this->assertTrue(array_key_exists('fooMessage', $messages));
+    }
+
+    public function testTranslatorEnabledPerDefault()
+    {
+        set_error_handler(array($this, 'errorHandlerIgnore'));
+        $translator = new Zend_Translate('array', array(), 'en');
+        restore_error_handler();
+        $this->validator->setTranslator($translator);
+        $this->assertFalse($this->validator->translatorIsDisabled());
+    }
+
+    public function testCanDisableTranslator()
+    {
+        set_error_handler(array($this, 'errorHandlerIgnore'));
+        $translator = new Zend_Translate(
+            'array',
+            array('fooMessage' => 'This is the translated message for %value%'),
+            'en'
+        );
+        restore_error_handler();
+        $this->validator->setTranslator($translator);
+
+        $this->assertFalse($this->validator->isValid('bar'));
+        $messages = $this->validator->getMessages();
+        $this->assertTrue(array_key_exists('fooMessage', $messages));
+        $this->assertContains('bar', $messages['fooMessage']);
+        $this->assertContains('This is the translated message for ', $messages['fooMessage']);
+
+        $this->validator->setDisableTranslator(true);
+        $this->assertTrue($this->validator->translatorIsDisabled());
+
+        $this->assertFalse($this->validator->isValid('bar'));
+        $messages = $this->validator->getMessages();
+        $this->assertTrue(array_key_exists('fooMessage', $messages));
+        $this->assertContains('bar', $messages['fooMessage']);
+        $this->assertContains('bar was passed', $messages['fooMessage']);
+    }
+
+    public function testGetMessageTemplates()
+    {
+        $messages = $this->validator->getMessageTemplates();
+        $this->assertEquals(
+            array('fooMessage' => '%value% was passed'), $messages);
+
+        $this->assertEquals(
+            array(
+                Zend_Validate_AbstractTest_Concrete::FOO_MESSAGE => '%value% was passed'), $messages);
+    }
+
+    public function testMaximumErrorMessageLength()
+    {
+        require_once 'Zend/Validate.php';
+        $this->assertEquals(-1, Zend_Validate::getMessageLength());
+        Zend_Validate_Abstract::setMessageLength(10);
+        $this->assertEquals(10, Zend_Validate::getMessageLength());
+
+        $translator = new Zend_Translate(
+            'array',
+            array('fooMessage' => 'This is the translated message for %value%'),
+            'en'
+        );
+        $this->validator->setTranslator($translator);
+        $this->assertFalse($this->validator->isValid('bar'));
+        $messages = $this->validator->getMessages();
+        $this->assertTrue(array_key_exists('fooMessage', $messages));
+        $this->assertEquals('This is...', $messages['fooMessage']);
     }
 
     /**

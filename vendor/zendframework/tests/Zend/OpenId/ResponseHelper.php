@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ResponseHelper.php 8064 2008-02-16 10:58:39Z thomas $
+ * @version    $Id: ResponseHelper.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -27,8 +28,11 @@ require_once 'Zend/OpenId.php';
 Zend_OpenId::$exitOnRedirect = false;
 
 /**
+ * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_OpenId_ResponseHelper extends Zend_Controller_Response_Abstract
 {

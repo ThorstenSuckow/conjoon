@@ -61,7 +61,7 @@ dojo.string.substitute = function(	/*String*/		template,
 	//		exception if any parameter is unmatched.
 	//	template: 
 	//		a string with expressions in the form `${key}` to be replaced or
-	//		`${key:format}` which specifies a format function.
+	//		`${key:format}` which specifies a format function. keys are case-sensitive. 
 	//	map:
 	//		hash to search for substitutions
 	//	transform: 
@@ -119,19 +119,31 @@ dojo.string.substitute = function(	/*String*/		template,
 	}); // string
 };
 
-dojo.string.trim = function(/*String*/ str){
-	// summary:
-	//		trims whitespaces from both sides of the string
-	// description:
+/*=====
+dojo.string.trim = function(str){
+	//	summary:
+	//		Trims whitespace from both sides of the string
+	//	str: String
+	//		String to be trimmed
+	//	returns: String
+	//		Returns the trimmed string
+	//	description:
 	//		This version of trim() was taken from [Steven Levithan's blog](http://blog.stevenlevithan.com/archives/faster-trim-javascript).
 	//		The short yet performant version of this function is dojo.trim(),
-	//		which is part of Dojo base.
-	str = str.replace(/^\s+/, '');
-	for(var i = str.length - 1; i >= 0; i--){
-		if(/\S/.test(str.charAt(i))){
-			str = str.substring(0, i + 1);
-			break;
+	//		which is part of Dojo base.  Uses String.prototype.trim instead, if available.
+	return "";	// String
+}
+=====*/
+
+dojo.string.trim = String.prototype.trim ?
+	dojo.trim : // aliasing to the native function
+	function(str){
+		str = str.replace(/^\s+/, '');
+		for(var i = str.length - 1; i >= 0; i--){
+			if(/\S/.test(str.charAt(i))){
+				str = str.substring(0, i + 1);
+				break;
+			}
 		}
-	}
-	return str;	// String
-};
+		return str;
+	};

@@ -13,13 +13,12 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Service
+ * @package    Zend_Service_StrikeIron
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StrikeIronTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: StrikeIronTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -31,13 +30,14 @@ require_once dirname(__FILE__) . '/../../../TestHelper.php';
  */
 require_once 'Zend/Service/StrikeIron.php';
 
-
 /**
  * @category   Zend
- * @package    Zend_Service
+ * @package    Zend_Service_StrikeIron
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_StrikeIron
  */
 class Zend_Service_StrikeIron_StrikeIronTest extends PHPUnit_Framework_TestCase 
 {    
@@ -103,14 +103,13 @@ class Zend_Service_StrikeIron_StrikeIronTest extends PHPUnit_Framework_TestCase
 
 }
 
-
 /**
  * Stub for Zend_Service_StrikeIron_Base
  * 
  * @category   Zend
- * @package    Zend_Service
+ * @package    Zend_Service_StrikeIron
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Service_StrikeIron_StrikeIronTest_StubbedBase

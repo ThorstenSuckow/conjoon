@@ -13,11 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Log
+ * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
  
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -33,11 +33,12 @@ require_once 'Zend/Db/Profiler/FirebugTest.php';
 
 /**
  * @category   Zend
- * @package    Zend_Log
+ * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @group      Zend_Db
+ * @group      Zend_Db_Profiler
  */
 class Zend_Db_Profiler_AllTests
 {

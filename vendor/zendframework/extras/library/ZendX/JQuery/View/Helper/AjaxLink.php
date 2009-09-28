@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: AjaxLink.php 12829 2008-11-25 15:48:57Z beberlei $
+ * @version     $Id: AjaxLink.php 14483 2009-03-25 17:48:17Z beberlei $
  */
 
 /**
@@ -205,11 +205,7 @@ class ZendX_JQuery_View_Helper_AjaxLink extends Zend_View_Helper_HtmlElement
 		}
 
 		if(isset($params) && count($params) > 0) {
-	        /**
-	         * @see Zend_Json
-	         */
-		    require_once 'Zend/Json.php';
-		    $params = Zend_Json::encode($params);
+            $params = ZendX_JQuery::encodeJson($params);
 		} else {
 		    $params = '{}';
 		}

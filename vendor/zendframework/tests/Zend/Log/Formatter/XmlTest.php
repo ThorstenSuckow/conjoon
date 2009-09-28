@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 12363 2008-11-07 10:45:22Z beberlei $
+ * @version    $Id: XmlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 require_once dirname(__FILE__)."/../../../TestHelper.php";
@@ -32,9 +32,9 @@ require_once 'Zend/Log/Formatter/Xml.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 12363 2008-11-07 10:45:22Z beberlei $
+ * @group      Zend_Log
  */
 class Zend_Log_Formatter_XmlTest extends PHPUnit_Framework_TestCase
 {

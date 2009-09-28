@@ -1,9 +1,24 @@
 <?php
 /**
- * @package 	Zend_Mime
- * @subpackage  UnitTests
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Mime
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: PartTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Zend_Mime_Part
@@ -16,8 +31,12 @@ require_once 'Zend/Mime/Part.php';
 require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
- * @package 	Zend_Mime
- * @subpackage  UnitTests
+ * @category   Zend
+ * @package    Zend_Mime
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Mime
  */
 class Zend_Mime_PartTest extends PHPUnit_Framework_TestCase
 {
@@ -31,7 +50,7 @@ class Zend_Mime_PartTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->_testText = 'safdsafsaölg öögdöö sdöjgösdjgöldögksdögjösdfgödsjögjsdögjödfsjgödsfjödjsög kjhdkj '
+        $this->_testText = 'safdsafsaï¿½lg ï¿½ï¿½gdï¿½ï¿½ sdï¿½jgï¿½sdjgï¿½ldï¿½gksdï¿½gjï¿½sdfgï¿½dsjï¿½gjsdï¿½gjï¿½dfsjgï¿½dsfjï¿½djsï¿½g kjhdkj '
                        . 'fgaskjfdh gksjhgjkdh gjhfsdghdhgksdjhg';
         $this->part = new Zend_Mime_Part($this->_testText);
         $this->part->encoding = Zend_Mime::ENCODING_BASE64;
@@ -48,7 +67,7 @@ class Zend_Mime_PartTest extends PHPUnit_Framework_TestCase
                                  'Content-Transfer-Encoding: ' . Zend_Mime::ENCODING_BASE64,
                                  'Content-Disposition: attachment',
                                  'filename="test.txt"',
-                                 'charset="iso8859-1"',
+                                 'charset=iso8859-1',
                                  'Content-ID: <4711>');
 
         $actual = $this->part->getHeaders();
@@ -72,7 +91,7 @@ class Zend_Mime_PartTest extends PHPUnit_Framework_TestCase
         $content = $this->part->getContent();
         $this->assertEquals($this->_testText, $content);
     }
-    
+
     public function testStreamEncoding()
     {
         $testfile = realpath(__FILE__);
@@ -88,7 +107,7 @@ class Zend_Mime_PartTest extends PHPUnit_Framework_TestCase
         $encoded = stream_get_contents($fp2);
         fclose($fp);
         $this->assertEquals(base64_decode($encoded),$original);
-        
+
         // test QuotedPrintable
         $fp = fopen($testfile,'rb');
         $this->assertTrue(is_resource($fp));

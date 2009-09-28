@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 13363 2008-12-19 06:40:31Z ralph $
+ * @version    $Id: TestCommon.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * @see Zend_Db_TestSetup
@@ -32,15 +30,13 @@ require_once 'Zend/Db/TestSetup.php';
  */
 require_once 'Zend/Loader.php';
 
-
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
@@ -274,6 +270,28 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         $rowsAffected = $this->_db->delete(
             'zfproducts',
             array("$product_id = 1", "$product_name = 'Windows'")
+        );
+        $this->assertEquals(1, $rowsAffected);
+
+        $ids = $this->_db->fetchCol("SELECT $product_id FROM $products ORDER BY $product_id");
+        $this->assertEquals(array(2, 3), $ids);
+    }
+
+    /**
+     * @group ZF-1726
+     */
+    public function testAdapterDeleteWhereArrayWithVariable()
+    {
+        $products = $this->_db->quoteIdentifier('zfproducts');
+        $product_id = $this->_db->quoteIdentifier('product_id');
+        $product_name = $this->_db->quoteIdentifier('product_name');
+
+        $ids = $this->_db->fetchCol("SELECT $product_id FROM $products ORDER BY $product_id");
+        $this->assertEquals(array(1, 2, 3), $ids);
+
+        $rowsAffected = $this->_db->delete(
+            'zfproducts',
+            array("$product_id = ?" => 1, "$product_name = ?" => 'Windows')
         );
         $this->assertEquals(1, $rowsAffected);
 
@@ -692,6 +710,7 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
     /**
      * Test the Adapter's limit() method.
      * Fetch 1 row.  Then fetch 1 row offset by 1 row.
+     * @group ZF-4246
      */
     public function testAdapterLimit()
     {
@@ -708,8 +727,16 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
             'Expecting column count to be 2');
         $this->assertEquals(1, $result[0]['product_id'],
             'Expecting to get product_id 1');
+
+        // Check that extra field ZEND_DB_ROWNUM isn't present
+        // (particulary with Db2 & Oracle)
+        $this->assertArrayNotHasKey('zend_db_rownum', $result[0]);
+        $this->assertArrayNotHasKey('ZEND_DB_ROWNUM', $result[0]);
     }
 
+    /**
+     * @group ZF-4246
+     */
     public function testAdapterLimitOffset()
     {
         $products = $this->_db->quoteIdentifier('zfproducts');
@@ -725,6 +752,11 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
             'Expecting column count to be 2');
         $this->assertEquals(2, $result[0]['product_id'],
             'Expecting to get product_id 2');
+
+        // Check that extra field ZEND_DB_ROWNUM isn't present
+        // (particulary with Db2 & Oracle)
+        $this->assertArrayNotHasKey('zend_db_rownum', $result[0]);
+        $this->assertArrayNotHasKey('ZEND_DB_ROWNUM', $result[0]);
     }
 
     public function testAdapterLimitInvalidArgumentException()
@@ -1694,6 +1726,26 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         $this->assertEquals('ARRAY', $value);
     }
 
+    /**
+     * @group ZF-1726
+     */
+    public function testAdapterUpdateWhereArrayWithVariable()
+    {
+        $bugs = $this->_db->quoteIdentifier('zfbugs');
+        $bug_id = $this->_db->quoteIdentifier('bug_id');
+        $bug_status = $this->_db->quoteIdentifier('bug_status');
+
+        $rowsAffected = $this->_db->update(
+            'zfbugs',
+            array('bug_status' => 'ARRAY'),
+            array("$bug_id = ?" => 1, "$bug_status = ?" => 'NEW')
+        );
+        $this->assertEquals(1, $rowsAffected);
+
+        $value = $this->_db->fetchOne("SELECT $bug_status FROM $bugs WHERE $bug_id = 1");
+        $this->assertEquals('ARRAY', $value);
+    }
+
     public function testAdapterUpdateWhereDbExpr()
     {
         $bugs = $this->_db->quoteIdentifier('zfbugs');
@@ -1872,5 +1924,85 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
                     'this is the clob that never ends...'.
                     'this is the clob that never ends...';
         $this->assertEquals($expected, $value);
+    }
+
+    public function testAdapterSerializationIsOkByDefault()
+    {
+        $serialized = serialize($this->_db);
+        $this->assertType('string', $serialized);
+        $this->assertThat(unserialize($serialized), new PHPUnit_Framework_Constraint_IsInstanceOf('Zend_Db_Adapter_Abstract'));
+    }
+
+    public function testAdapterSerializationFailsWhenNotAllowedToBeSerialized()
+    {
+        $params = $this->_util->getParams();
+        $params['options'] = array(
+            Zend_Db::ALLOW_SERIALIZATION => false
+        );
+        $db = Zend_Db::factory($this->getDriver(), $params);
+        $this->setExpectedException('Zend_Db_Adapter_Exception');
+        $serialized = serialize($db);
+    }
+
+    public function testAdapterUnSerializationAutoReconnection()
+    {
+        $serialized = serialize($this->_db);
+        $db = unserialize($serialized);
+        $this->assertFalse($db->isConnected());
+
+        $params = $this->_util->getParams();
+        $params['options'] = array(
+            Zend_Db::AUTO_RECONNECT_ON_UNSERIALIZE => true
+        );
+        $db = Zend_Db::factory($this->getDriver(), $params);
+        $db = unserialize(serialize($db));
+        $this->assertTrue($db->isConnected());
+    }
+
+    /**
+     * @group ZF-1541
+     */
+    public function testCharacterSetUtf8()
+    {
+        // Create a new adapter
+        $params = $this->_util->getParams();
+
+        $params['charset'] = 'utf8';
+
+        $db = Zend_Db::factory($this->getDriver(), $params);
+
+         // create a new util object, with the new db adapter
+        $driver = $this->getDriver();
+        $utilClass = "Zend_Db_TestUtil_{$driver}";
+        $util = new $utilClass();
+        $util->setAdapter($db);
+
+        // create test table using no identifier quoting
+        $util->createTable('charsetutf8', array(
+            'id'    => 'IDENTITY',
+            'stuff' => 'VARCHAR(32)'
+        ));
+        $tableName = $this->_util->getTableName('charsetutf8');
+
+        // insert into the table
+        $numRows = $db->insert($tableName, array(
+            'id'    => 1,
+            'stuff' => 'äöüß'
+        ));
+
+        // check if the row was inserted as expected
+        $select = $db->select()->from($tableName, array('id', 'stuff'));
+
+        $stmt = $db->query($select);
+        $fetched = $stmt->fetchAll(Zend_Db::FETCH_NUM);
+        $a = array(
+            0 => array(0 => 1, 1 => 'äöüß')
+        );
+        $this->assertEquals($a, $fetched,
+            'result of query not as expected');
+
+        // clean up
+        unset($stmt);
+        $util->dropTable($tableName);
     }
 }

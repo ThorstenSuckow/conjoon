@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12648 2008-11-14 15:46:12Z ralph $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -37,6 +37,7 @@ require_once 'Zend/Log/Writer/DbTest.php';
 if (PHP_OS != 'AIX') {
     require_once 'Zend/Log/Writer/FirebugTest.php';
 }
+require_once 'Zend/Log/Writer/MailTest.php';
 require_once 'Zend/Log/Writer/MockTest.php';
 require_once 'Zend/Log/Writer/NullTest.php';
 require_once 'Zend/Log/Writer/StreamTest.php';
@@ -45,9 +46,9 @@ require_once 'Zend/Log/Writer/StreamTest.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12648 2008-11-14 15:46:12Z ralph $
+ * @group      Zend_Log
  */
 class Zend_Log_AllTests
 {
@@ -74,6 +75,7 @@ class Zend_Log_AllTests
         if (PHP_OS != 'AIX') {
             $suite->addTestSuite('Zend_Log_Writer_FirebugTest');
         }
+        $suite->addTestSuite('Zend_Log_Writer_MailTest');
         $suite->addTestSuite('Zend_Log_Writer_MockTest');
         $suite->addTestSuite('Zend_Log_Writer_NullTest');
         $suite->addTestSuite('Zend_Log_Writer_StreamTest');

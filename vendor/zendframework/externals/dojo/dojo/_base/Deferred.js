@@ -267,7 +267,11 @@ dojo.extend(dojo.Deferred, {
 			if(this.fired == -1){
 				if(!(err instanceof Error)){
 					var res = err;
-					err = new Error("Deferred Cancelled");
+					var msg = "Deferred Cancelled";
+					if(err && err.toString){
+						msg += ": " + err.toString();
+					}
+					err = new Error(msg);
 					err.dojoType = "cancel";
 					err.cancelResult = res;
 				}
@@ -392,7 +396,7 @@ dojo.extend(dojo.Deferred, {
 					this.paused++;
 				}
 			};
-			if(dojo.config.isDebug){
+			if(dojo.config.debugAtAllCosts){
 				func.call(this);
 			}else{
 				try{

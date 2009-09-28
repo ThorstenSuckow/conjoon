@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FilterTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: FilterTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -37,8 +36,9 @@ require_once 'Zend/Filter.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Filter
  */
 class Zend_FilterTest extends PHPUnit_Framework_TestCase
 {
@@ -56,7 +56,18 @@ class Zend_FilterTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->error   = null;
         $this->_filter = new Zend_Filter();
+    }
+
+    /**
+     * Resets the default namespaces
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        Zend_Filter::setDefaultNamespaces(array());
     }
 
     /**
@@ -91,7 +102,7 @@ class Zend_FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testStaticFactory()
     {
-        $filteredValue = Zend_Filter::get('1a2b3c4d', 'Digits');
+        $filteredValue = Zend_Filter::filterStatic('1a2b3c4d', 'Digits');
         $this->assertEquals('1234', $filteredValue);
     }
 
@@ -102,32 +113,110 @@ class Zend_FilterTest extends PHPUnit_Framework_TestCase
     public function testStaticFactoryWithConstructorArguments()
     {
         // Test HtmlEntities with one ctor argument.
-        $filteredValue = Zend_Filter::get('"O\'Reilly"', 'HtmlEntities', array(ENT_COMPAT));
+        $filteredValue = Zend_Filter::filterStatic('"O\'Reilly"', 'HtmlEntities', array(array('quotestyle' => ENT_COMPAT)));
         $this->assertEquals('&quot;O\'Reilly&quot;', $filteredValue);
 
         // Test HtmlEntities with a different ctor argument,
         // and make sure it gives the correct response
         // so we know it passed the arg to the ctor.
-        $filteredValue = Zend_Filter::get('"O\'Reilly"', 'HtmlEntities', array(ENT_QUOTES));
+        $filteredValue = Zend_Filter::filterStatic('"O\'Reilly"', 'HtmlEntities', array(array('quotestyle' => ENT_QUOTES)));
         $this->assertEquals('&quot;O&#039;Reilly&quot;', $filteredValue);
     }
 
     /**
      * Ensures that if we specify a validator class basename that doesn't
      * exist in the namespace, get() throws an exception.
+     *
+     * Refactored to conform with ZF-2724.
+     *
+     * @group  ZF-2724
+     * @return void
      */
     public function testStaticFactoryClassNotFound()
     {
+        set_error_handler(array($this, 'handleNotFoundError'), E_WARNING);
         try {
-            $this->assertTrue(Zend_Filter::get('1234', 'UnknownFilter'));
-            $this->fail('Expected to catch Zend_Filter_Exception');
-        } catch (Zend_Exception $e) {
-            $this->assertType('Zend_Filter_Exception', $e,
-                'Expected exception of type Zend_Filter_Exception, got '.get_class($e));
-            $this->assertEquals("Filter class not found from basename 'UnknownFilter'", $e->getMessage());
+            Zend_Filter::filterStatic('1234', 'UnknownFilter');
+        } catch (Zend_Filter_Exception $e) {
+        }
+        restore_error_handler();
+        $this->assertTrue($this->error);
+        $this->assertTrue(isset($e));
+        $this->assertContains('Filter class not found', $e->getMessage());
+    }
+
+    /**
+     * Handle file not found errors
+     *
+     * @group  ZF-2724
+     * @param  int $errnum
+     * @param  string $errstr
+     * @return void
+     */
+    public function handleNotFoundError($errnum, $errstr)
+    {
+        if (strstr($errstr, 'No such file')) {
+            $this->error = true;
         }
     }
 
+    /**
+     * Testing Namespaces
+     *
+     * @return void
+     */
+    public function testNamespaces()
+    {
+        $this->assertEquals(array(), Zend_Filter::getDefaultNamespaces());
+        $this->assertFalse(Zend_Filter::hasDefaultNamespaces());
+
+        Zend_Filter::setDefaultNamespaces('TestDir');
+        $this->assertEquals(array('TestDir'), Zend_Filter::getDefaultNamespaces());
+
+        Zend_Filter::setDefaultNamespaces('OtherTestDir');
+        $this->assertEquals(array('OtherTestDir'), Zend_Filter::getDefaultNamespaces());
+
+        $this->assertTrue(Zend_Filter::hasDefaultNamespaces());
+
+        Zend_Filter::setDefaultNamespaces(array());
+
+        $this->assertEquals(array(), Zend_Filter::getDefaultNamespaces());
+        $this->assertFalse(Zend_Filter::hasDefaultNamespaces());
+
+        Zend_Filter::addDefaultNamespaces(array('One', 'Two'));
+        $this->assertEquals(array('One', 'Two'), Zend_Filter::getDefaultNamespaces());
+
+        Zend_Filter::addDefaultNamespaces('Three');
+        $this->assertEquals(array('One', 'Two', 'Three'), Zend_Filter::getDefaultNamespaces());
+
+        Zend_Filter::setDefaultNamespaces(array());
+    }
+
+    /**
+     * ZF-2105
+     */
+    public function testUsageOfOldStaticFactory()
+    {
+        set_error_handler(array($this, 'errorHandlerIgnore'));
+        $filteredValue = Zend_Filter::get('1a2b3c4d', 'Digits');
+        $this->assertEquals('1234', $filteredValue);
+        restore_error_handler();
+    }
+
+    /**
+     * Ignores a raised PHP error when in effect, but throws a flag to indicate an error occurred
+     *
+     * @param  integer $errno
+     * @param  string  $errstr
+     * @param  string  $errfile
+     * @param  integer $errline
+     * @param  array   $errcontext
+     * @return void
+     */
+    public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
+    {
+        $this->_errorOccurred = true;
+    }
 }
 
 

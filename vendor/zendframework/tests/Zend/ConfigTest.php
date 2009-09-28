@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConfigTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ConfigTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -34,8 +34,9 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Config
  */
 class Zend_ConfigTest extends PHPUnit_Framework_TestCase
 {
@@ -436,6 +437,108 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
         }
         $this->assertEquals('no', $config2->key->nested);
         
+    }
+
+    /**
+     * @group ZF-5771a
+     *
+     */
+    public function testUnsettingFirstElementDuringForeachDoesNotSkipAnElement()
+    {
+        $config = new Zend_Config(array(
+            'first'  => array(1),
+            'second' => array(2),
+            'third'  => array(3)
+        ), true);
+
+        $keyList = array();
+        foreach ($config as $key => $value)
+        {
+            $keyList[] = $key;
+            if ($key == 'first') {
+                unset($config->$key); // uses magic Zend_Config::__unset() method
+            }
+        }
+
+        $this->assertEquals('first', $keyList[0]);
+        $this->assertEquals('second', $keyList[1]);
+        $this->assertEquals('third', $keyList[2]);
+    }
+
+    /**
+     * @group ZF-5771
+     *
+     */
+    public function testUnsettingAMiddleElementDuringForeachDoesNotSkipAnElement()
+    {
+        $config = new Zend_Config(array(
+            'first'  => array(1),
+            'second' => array(2),
+            'third'  => array(3)
+        ), true);
+
+        $keyList = array();
+        foreach ($config as $key => $value)
+        {
+            $keyList[] = $key;
+            if ($key == 'second') {
+                unset($config->$key); // uses magic Zend_Config::__unset() method
+            }
+        }
+
+        $this->assertEquals('first', $keyList[0]);
+        $this->assertEquals('second', $keyList[1]);
+        $this->assertEquals('third', $keyList[2]);
+    }
+
+    /**
+     * @group ZF-5771
+     *
+     */
+    public function testUnsettingLastElementDuringForeachDoesNotSkipAnElement()
+    {
+        $config = new Zend_Config(array(
+            'first'  => array(1),
+            'second' => array(2),
+            'third'  => array(3)
+        ), true);
+
+        $keyList = array();
+        foreach ($config as $key => $value)
+        {
+            $keyList[] = $key;
+            if ($key == 'third') {
+                unset($config->$key); // uses magic Zend_Config::__unset() method
+            }
+        }
+
+        $this->assertEquals('first', $keyList[0]);
+        $this->assertEquals('second', $keyList[1]);
+        $this->assertEquals('third', $keyList[2]);
+    }
+
+    /**
+     * @group ZF-4728
+     *
+     */
+    public function testSetReadOnlyAppliesToChildren()
+    {
+        $config = new Zend_Config($this->_all, true);
+
+        $config->setReadOnly();
+        $this->assertTrue($config->readOnly());
+        $this->assertTrue($config->one->readOnly(), 'First level children are writable');
+        $this->assertTrue($config->one->two->readOnly(), 'Second level children are writable');
+    }
+    
+    public function testZF6995_toArrayDoesNotDisturbInternalIterator()
+    {
+        $config = new Zend_Config(range(1,10));
+        $config->rewind();
+        $this->assertEquals(1, $config->current());
+
+        $config->toArray();
+        $this->assertEquals(1, $config->current());
     }
 }
 

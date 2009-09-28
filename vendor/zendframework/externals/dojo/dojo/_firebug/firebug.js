@@ -1,6 +1,5 @@
 dojo.provide("dojo._firebug.firebug");
-
-
+	
 dojo.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ removal){
 	// summary: 
 	//		Log a debug message to indicate that a behavior has been
@@ -61,17 +60,17 @@ dojo.experimental = function(/* String */ moduleName, /* String? */ extra){
 	//		Option for console height (ignored for popup)
 	//		|	var djConfig = {isDebug: true, debugHeight:100 }
 
-
-if(	
+if(
+   !window.firebug &&								// Testing for mozilla firebug lite 
    !dojo.config.useCustomLogger &&
-   !dojo.isAIR &&									// isDebug triggers AIRInsector, not Firebug
-   (!dojo.isFF || 									// if not Firefox, there's no firebug
-	(dojo.isFF && !("console" in window)) || 		// Firefox, but Firebug is not installed.
-	(dojo.isFF && !(window.loadFirebugConsole || console.firebug)) && 	// Firefox, but Firebug is disabled (1.2 check, 1.0 check)
-	!dojo.config.noFirebugLite						// Deprecated: Should be isDebug=false
+	!dojo.isAIR &&									// isDebug triggers AIRInsector, not Firebug
+    (!dojo.isMoz || 								// if not Firefox, there's no firebug
+	(dojo.isMoz && !("console" in window)) || 		// Firefox, but Firebug is not installed.
+	(dojo.isMoz && !(window.loadFirebugConsole || console.firebug)) 	// Firefox, but Firebug is disabled (1.2 check, 1.0 check)
 )){
-	
+
 (function(){
+
 	// don't build firebug in iframes
 	try{
 		if(window != window.parent){ 
@@ -84,6 +83,8 @@ if(
 	}catch(e){/*squelch*/}
 
 	// ***************************************************************************
+	// Placing these variables before the functions that use them to avoid a 
+	// shrinksafe bug where variable renaming does not happen correctly otherwise.
 	
 	// most of the objects in this script are run anonomously
 	var _firebugDoc = document;
@@ -101,6 +102,7 @@ if(
 	var messageQueue = [];
 	var groupStack = [];
 	var timeMap = {};
+	var countMap = {};
 	
 	var consoleDomInspector = null;
 	var _inspectionMoveConnection;
@@ -211,16 +213,32 @@ if(
 			}
 		},
 		
-		count: function(){
+		count: function(name){
 			// summary: 
 			//		Not supported
-			this.warn(["count() not supported."]);
+			if(!countMap[name]) countMap[name] = 0;
+			countMap[name]++;
+			logFormatted([name+": "+countMap[name]]);
 		},
 		
-		trace: function(){
-			// summary: 
-			//		Not supported
-			this.warn(["trace() not supported."]);
+		trace: function(_value){
+			var stackAmt = _value || 3;
+			var f = console.trace.caller; //function that called trace
+			console.log(">>> console.trace(stack)");
+			for(var i=0;i<stackAmt;i++){
+				var func = f.toString();
+				var args=[];
+				for (var a = 0; a < f.arguments.length; a++) {
+					args.push(f.arguments[a])
+				}
+				if(f.arguments.length){
+					console.dir({"function":func, "arguments":args});	
+				}else{
+					console.dir({"function":func});
+				}
+				
+				f = f.caller;
+			}	
 		},
 		
 		profile: function(){
@@ -236,7 +254,7 @@ if(
 			//		Clears message console. Do not call this directly
 			if(consoleBody){
 				while(consoleBody.childNodes.length){
-					dojo._destroyElement(consoleBody.firstChild);	
+					dojo.destroy(consoleBody.firstChild);	
 				}
 			}
 			dojo.forEach(this._connects,dojo.disconnect);
@@ -525,7 +543,7 @@ if(
 		groupStack = [];
 		timeMap = {};
 	}
-	dojo.addOnUnload(clearFrame);
+	
 
 	function evalCommandLine(){
 		var text = commandLine.value;
@@ -556,6 +574,9 @@ if(
 		consoleDomInspector.style.height = height;
 		consoleDomInspector.style.top = tHeight + "px";
 		commandLine.style.bottom = 0;
+		
+		// dojo.addOnUnload fires prematurely	
+		dojo.connect(window, "onunload", clearFrame)
 	}
 	
 	function logRow(message, className, handler){
@@ -1097,8 +1118,11 @@ if(
 		// X items in an array
 		// TODO: Firebug Sr. actually goes by char count
 		var isError = (obj instanceof Error);
-		if(obj.nodeType == 1 || obj.nodeType == 3){
+		if(obj.nodeType == 1){
 			return escapeHTML('< '+obj.tagName.toLowerCase()+' id=\"'+ obj.id+ '\" />');
+		}
+		if(obj.nodeType == 3){
+			return escapeHTML('[TextNode: "'+obj.nodeValue+'"]');
 		}
 		var nm = (obj && (obj.id || obj.name || obj.ObjectID || obj.widgetId));
 		if(!isError && nm){ return "{"+nm+"}";	}
@@ -1153,12 +1177,8 @@ if(
 	){
 		toggleConsole(true);
 	}
-	
-	//Warning message that this param will not be used much longer:
-	if(dojo.config.noFirebugLite){ console.warn("DEPRECATED: dojo.config.noFirebugLite - use djConfig.isDebug=false instead"); }
-	
-	// Notice to Firefox users who disable Firebug, and discover that Firebug Lite pops up. 
-	if(dojo.isFF && !window.loadFirebugConsole && !dojo.config.allowFirebugLite){ console.log("To disable Firebug Lite in Firefox, use djConfig.isDebug=false. Suppress this message with djConfig.allowFirebugLite=true");}
+
 	
 })();
+
 }

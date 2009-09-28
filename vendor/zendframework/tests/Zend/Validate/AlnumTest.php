@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AlnumTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AlnumTest.php 17467 2009-08-08 18:06:55Z thomas $
  */
 
 
@@ -37,8 +36,9 @@ require_once 'Zend/Validate/Alnum.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_AlnumTest extends PHPUnit_Framework_TestCase
 {
@@ -99,7 +99,7 @@ class Zend_Validate_AlnumTest extends PHPUnit_Framework_TestCase
      */
     public function testOptionToAllowWhiteSpaceWithBasicInputValues()
     {
-        $this->_validator->allowWhiteSpace = true;
+        $this->_validator->setAllowWhiteSpace(true);
 
         $valuesExpected = array(
             'abc123'  => true,
@@ -174,5 +174,21 @@ class Zend_Validate_AlnumTest extends PHPUnit_Framework_TestCase
             Zend_Validate_Alnum::NOT_ALNUM
             );
         $this->assertThat($errors, $this->identicalTo($arrayExpected));
+    }
+
+    /**
+     * @ZF-4352
+     */
+    public function testNonStringValidation()
+    {
+        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
+    }
+
+    /**
+     * @ZF-7475
+     */
+    public function testIntegerValidation()
+    {
+        $this->assertTrue($this->_validator->isValid(1));
     }
 }

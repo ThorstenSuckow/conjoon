@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StringTrimTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: StringTrimTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -32,13 +30,13 @@ require_once dirname(__FILE__) . '/../../TestHelper.php';
  */
 require_once 'Zend/Filter/StringTrim.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Filter
  */
 class Zend_Filter_StringTrimTest extends PHPUnit_Framework_TestCase
 {
@@ -106,5 +104,13 @@ class Zend_Filter_StringTrimTest extends PHPUnit_Framework_TestCase
     {
         $this->_filter->setCharList('&');
         $this->assertEquals('a&b', $this->_filter->filter('&&a&b&&'));
+    }
+
+    /**
+     * @ZF-7183
+     */
+    public function testZF7183()
+    {
+        $this->assertEquals('Зенд', $this->_filter->filter('Зенд'));
     }
 }

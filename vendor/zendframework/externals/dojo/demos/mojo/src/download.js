@@ -3,7 +3,7 @@ dojo.provide("demos.mojo.src.download");
 dojo.require("dojo.io.iframe");
 (function(){
 
-	var dojo_ver = "1.2.0";
+	var dojo_ver = "1.3.1";
 	
 	var node = null;
 	var _downloadDialog = {
@@ -41,7 +41,7 @@ dojo.require("dojo.io.iframe");
 			dojo.byId("gravity").disabled = false;
 			e.preventDefault();
 			dojo.fx.slideTo({ node:this.node, duration:375, left:-310, top:-50,
-				easing:dojo.fx.easing.backIn				
+				easing:dojo.fx.easing.backIn
 			}).play();
 		},
 
@@ -64,7 +64,7 @@ dojo.require("dojo.io.iframe");
 			
 			if(includeUtils){
 				// and another one if they selected build utils. FIXME: ie7 throws popup warning?
-				var utilUrl = host + "release-" + (ver) + "/dojo-release-"+(ver)+"-buildscripts."+(ext);
+				var utilUrl = host + "release-" + (ver) + "/dojo-release-"+(ver)+"-shrinksafe."+(ext);
 				setTimeout(function(){
 					dojo.io.iframe.send({
 						url: utilUrl,

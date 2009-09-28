@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category     Zend
  * @package      Zend_Gdata_YouTube
  * @subpackage   UnitTests
- * @copyright    Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com);
+ * @copyright    Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com);
  * @license      http://framework.zend.com/license/new-bsd     New BSD License
- * @version      $Id: VideoEntryTest.php 13305 2008-12-16 08:07:39Z jhartmann $
+ * @version      $Id: VideoEntryTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -31,11 +30,13 @@ require_once 'Zend/Gdata/YouTube/Extension/State.php';
 require_once 'Zend/Gdata/YouTube.php';
 
 /**
- * @category     Zend
- * @package      Zend_Gdata_YouTube
- * @subpackage   UnitTests
- * @copyright    Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com);
- * @license      http://framework.zend.com/license/new-bsd     New BSD License
+ * @category   Zend
+ * @package    Zend_Gdata_YouTube
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Gdata
+ * @group      Zend_Gdata_YouTube
  */
 class Zend_Gdata_YouTube_VideoEntryTest extends PHPUnit_Framework_TestCase
 {
@@ -540,7 +541,7 @@ class Zend_Gdata_YouTube_VideoEntryTest extends PHPUnit_Framework_TestCase
         $keywordsString = (string) $keywords;
 
         if (strlen(trim($keywordsString)) > 0) {
-            $keywordArray = split('(, *)|,', $keywordsString);
+            $keywordArray = preg_split('/(, *)|,/', $keywordsString);
         }
 
         $tagArray = $videoEntry->getVideoTags();
@@ -565,7 +566,7 @@ class Zend_Gdata_YouTube_VideoEntryTest extends PHPUnit_Framework_TestCase
         $videoEntry->setVideoTags($newKeywordsString);
 
         if (strlen(trim($newKeywordsString)) > 0) {
-            $keywordArray = split('(, *)|,', $newKeywordsString);
+            $keywordArray = preg_split('/(, *)|,/', $newKeywordsString);
         }
 
         $tagArray = $videoEntry->getVideoTags();

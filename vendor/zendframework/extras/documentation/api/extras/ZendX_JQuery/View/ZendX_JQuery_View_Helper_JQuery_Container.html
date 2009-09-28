@@ -104,14 +104,14 @@
 <p class="short-description">jQuery View Helper. Transports all jQuery stack and render information across all views.</p>
 	<ul class="tags">
 				<li><span class="field">copyright:</span> Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)</li>
-				<li><span class="field">usedby:</span> <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_UiWidget.html">ZendX_JQuery_View_Helper_UiWidget</a></li>
 				<li><span class="field">usedby:</span> <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_UiWidgetPane.html">ZendX_JQuery_View_Helper_UiWidgetPane</a></li>
+				<li><span class="field">usedby:</span> <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_UiWidget.html">ZendX_JQuery_View_Helper_UiWidget</a></li>
 				<li><span class="field">license:</span> <a href="http://framework.zend.com/license/new-bsd">New BSD License</a></li>
 				<li><span class="field">uses:</span> <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></li>
 				<li><span class="field">usedby:</span> <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></li>
 			</ul>
 		<p class="notes">
-			Located in <a class="field" href="_JQuery---View---Helper---JQuery---Container.php.html">/JQuery/View/Helper/JQuery/Container.php</a> (line <span class="field">32</span>)
+			Located in <a class="field" href="_JQuery---View---Helper---JQuery---Container.php.html">/JQuery/View/Helper/JQuery/Container.php</a> (line <span class="field">37</span>)
 		</p>
 		
 				
@@ -134,7 +134,7 @@
 								</div>
 		<div class="info-box-body">
 			<div class="var-summary">
-																																																																																																																																<div class="var-title">
+																																																																																																																																								<div class="var-title">
 					<img src="../../media/images/Variable.png" alt=" " />
 					<span class="var-type">Zend_View_Interface</span>
 					<a href="#$view" title="details" class="var-name">$view</a>
@@ -168,6 +168,11 @@
 					<img src="../../media/images/Variable.png" alt=" " />
 					<span class="var-type">String</span>
 					<a href="#$_jqueryLibraryPath" title="details" class="var-name">$_jqueryLibraryPath</a>
+				</div>
+																<div class="var-title">
+					<img src="../../media/images/Variable.png" alt=" " />
+					<span class="var-type">boolean</span>
+					<a href="#$_loadSslCdnPath" title="details" class="var-name">$_loadSslCdnPath</a>
 				</div>
 																<div class="var-title">
 					<img src="../../media/images/Variable.png" alt=" " />
@@ -220,7 +225,7 @@
 		</div>
 		<div class="info-box-body">			
 			<div class="method-summary">
-																																																																																																																																																																																																																																																																																																																																																							
+																																																																																																																																																																																																																																																																																																																																																																																																																															
 				<div class="method-definition">
 					<img src="../../media/images/Method.png" alt=" "/>
 											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
@@ -260,6 +265,13 @@
 					<img src="../../media/images/Method.png" alt=" "/>
 											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
 										<a href="#clearJavascriptFiles" title="details" class="method-name">clearJavascriptFiles</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+										<a href="#clearOnLoadActions" title="details" class="method-name">clearOnLoadActions</a>
 										()
 									</div>
 															
@@ -349,6 +361,20 @@
 															
 				<div class="method-definition">
 					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result">string</span>
+										<a href="#getUiVersion" title="details" class="method-name">getUiVersion</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result">string</span>
+										<a href="#getVersion" title="details" class="method-name">getVersion</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
 											<span class="method-result">boolean</span>
 										<a href="#isEnabled" title="details" class="method-name">isEnabled</a>
 										()
@@ -385,6 +411,13 @@
 				<div class="method-definition">
 					<img src="../../media/images/Method.png" alt=" "/>
 											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+										<a href="#setCdnSsl" title="details" class="method-name">setCdnSsl</a>
+											(<span class="var-type"></span>&nbsp;<span class="var-name">$flag</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
 										<a href="#setCdnVersion" title="details" class="method-name">setCdnVersion</a>
 											([<span class="var-type">string</span>&nbsp;<span class="var-name">$version</span> = <span class="var-default">null</span>])
 									</div>
@@ -415,6 +448,20 @@
 											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
 										<a href="#setUiLocalPath" title="details" class="method-name">setUiLocalPath</a>
 											(<span class="var-type">String</span>&nbsp;<span class="var-name">$path</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+										<a href="#setUiVersion" title="details" class="method-name">setUiVersion</a>
+											(<span class="var-type">string</span>&nbsp;<span class="var-name">$version</span>)
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+										<a href="#setVersion" title="details" class="method-name">setVersion</a>
+											(<span class="var-type">string</span>&nbsp;<span class="var-name">$version</span>)
 									</div>
 															
 				<div class="method-definition">
@@ -476,7 +523,28 @@
 				<div class="method-definition">
 					<img src="../../media/images/Method.png" alt=" "/>
 											<span class="method-result">string</span>
+										<a href="#_getJQueryLibraryBaseCdnUri" title="details" class="method-name">_getJQueryLibraryBaseCdnUri</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result">string</span>
 										<a href="#_getJQueryLibraryPath" title="details" class="method-name">_getJQueryLibraryPath</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result">string</span>
+										<a href="#_getJQueryUiLibraryBaseCdnUri" title="details" class="method-name">_getJQueryUiLibraryBaseCdnUri</a>
+										()
+									</div>
+															
+				<div class="method-definition">
+					<img src="../../media/images/Method.png" alt=" "/>
+											<span class="method-result">string</span>
+										<a href="#_getJQueryUiLibraryPath" title="details" class="method-name">_getJQueryUiLibraryPath</a>
 										()
 									</div>
 															
@@ -526,14 +594,14 @@
 		<div class="info-box-body">
 			
 <a name="var$view" id="$view"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">Zend_View_Interface</span>
 			<span class="var-name">$view</span>
-			 = <span class="var-default"> null</span>			(line <span class="line-number">131</span>)
+			 = <span class="var-default"> null</span>			(line <span class="line-number">143</span>)
 		</span>
 	</div>
 
@@ -549,14 +617,14 @@
 
 </div>
 <a name="var$_captureLock" id="$_captureLock"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">Boolean</span>
 			<span class="var-name">$_captureLock</span>
-			 = <span class="var-default"> false</span>			(line <span class="line-number">60</span>)
+			 = <span class="var-default"> false</span>			(line <span class="line-number">65</span>)
 		</span>
 	</div>
 
@@ -572,14 +640,14 @@
 
 </div>
 <a name="var$_enabled" id="$_enabled"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">Boolean</span>
 			<span class="var-name">$_enabled</span>
-			 = <span class="var-default"> false</span>			(line <span class="line-number">53</span>)
+			 = <span class="var-default"> false</span>			(line <span class="line-number">58</span>)
 		</span>
 	</div>
 
@@ -595,14 +663,14 @@
 
 </div>
 <a name="var$_isXhtml" id="$_isXhtml"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">Boolean</span>
 			<span class="var-name">$_isXhtml</span>
-			 = <span class="var-default"> false</span>			(line <span class="line-number">88</span>)
+			 = <span class="var-default"> false</span>			(line <span class="line-number">93</span>)
 		</span>
 	</div>
 
@@ -618,14 +686,14 @@
 
 </div>
 <a name="var$_javascriptSources" id="$_javascriptSources"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">Array</span>
 			<span class="var-name">$_javascriptSources</span>
-			 = <span class="var-default">array()</span>			(line <span class="line-number">46</span>)
+			 = <span class="var-default">array()</span>			(line <span class="line-number">51</span>)
 		</span>
 	</div>
 
@@ -641,14 +709,14 @@
 
 </div>
 <a name="var$_javascriptStatements" id="$_javascriptStatements"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">Array</span>
 			<span class="var-name">$_javascriptStatements</span>
-			 = <span class="var-default">array()</span>			(line <span class="line-number">67</span>)
+			 = <span class="var-default">array()</span>			(line <span class="line-number">72</span>)
 		</span>
 	</div>
 
@@ -664,19 +732,42 @@
 
 </div>
 <a name="var$_jqueryLibraryPath" id="$_jqueryLibraryPath"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="../../media/images/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">String</span>
 			<span class="var-name">$_jqueryLibraryPath</span>
-			 = <span class="var-default"> null</span>			(line <span class="line-number">39</span>)
+			 = <span class="var-default"> null</span>			(line <span class="line-number">44</span>)
 		</span>
 	</div>
 
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Path to local webserver jQuery library</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	
+		
+		
+
+</div>
+<a name="var$_loadSslCdnPath" id="$_loadSslCdnPath"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="../../media/images/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">boolean</span>
+			<span class="var-name">$_loadSslCdnPath</span>
+			 = <span class="var-default"> false</span>			(line <span class="line-number">136</span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Load CDN Path from SSL or Non-SSL?</p>
 	<ul class="tags">
 				<li><span class="field">access:</span> protected</li>
 			</ul>
@@ -694,7 +785,7 @@
 		<span class="var-title">
 			<span class="var-type">Array</span>
 			<span class="var-name">$_onLoadActions</span>
-			 = <span class="var-default">array()</span>			(line <span class="line-number">81</span>)
+			 = <span class="var-default">array()</span>			(line <span class="line-number">86</span>)
 		</span>
 	</div>
 
@@ -717,7 +808,7 @@
 		<span class="var-title">
 			<span class="var-type">Integer</span>
 			<span class="var-name">$_renderMode</span>
-			 = <span class="var-default"> ZendX_JQuery::RENDER_ALL</span>			(line <span class="line-number">102</span>)
+			 = <span class="var-default"> ZendX_JQuery::RENDER_ALL</span>			(line <span class="line-number">107</span>)
 		</span>
 	</div>
 
@@ -740,7 +831,7 @@
 		<span class="var-title">
 			<span class="var-type">Array</span>
 			<span class="var-name">$_stylesheets</span>
-			 = <span class="var-default">array()</span>			(line <span class="line-number">74</span>)
+			 = <span class="var-default">array()</span>			(line <span class="line-number">79</span>)
 		</span>
 	</div>
 
@@ -763,7 +854,7 @@
 		<span class="var-title">
 			<span class="var-type">Boolean</span>
 			<span class="var-name">$_uiEnabled</span>
-			 = <span class="var-default"> false</span>			(line <span class="line-number">109</span>)
+			 = <span class="var-default"> false</span>			(line <span class="line-number">114</span>)
 		</span>
 	</div>
 
@@ -786,7 +877,7 @@
 		<span class="var-title">
 			<span class="var-type">String</span>
 			<span class="var-name">$_uiPath</span>
-			 = <span class="var-default"> null</span>			(line <span class="line-number">117</span>)
+			 = <span class="var-default"> null</span>			(line <span class="line-number">122</span>)
 		</span>
 	</div>
 
@@ -809,7 +900,7 @@
 		<span class="var-title">
 			<span class="var-type">String</span>
 			<span class="var-name">$_uiVersion</span>
-			 = <span class="var-default"> &quot;1.5.2&quot;</span>			(line <span class="line-number">124</span>)
+			 = <span class="var-default"> ZendX_JQuery::DEFAULT_UI_VERSION</span>			(line <span class="line-number">129</span>)
 		</span>
 	</div>
 
@@ -832,7 +923,7 @@
 		<span class="var-title">
 			<span class="var-type">String</span>
 			<span class="var-name">$_version</span>
-			 = <span class="var-default"> &quot;1.2.6&quot;</span>			(line <span class="line-number">95</span>)
+			 = <span class="var-default"> ZendX_JQuery::DEFAULT_JQUERY_VERSION</span>			(line <span class="line-number">100</span>)
 		</span>
 	</div>
 
@@ -867,7 +958,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">addJavascript</span> (line <span class="line-number">468</span>)
+		<span class="method-title">addJavascript</span> (line <span class="line-number">526</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -897,7 +988,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">addJavascriptFile</span> (line <span class="line-number">429</span>)
+		<span class="method-title">addJavascriptFile</span> (line <span class="line-number">487</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -927,7 +1018,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">addOnLoad</span> (line <span class="line-number">535</span>)
+		<span class="method-title">addOnLoad</span> (line <span class="line-number">593</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -957,7 +1048,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">addStylesheet</span> (line <span class="line-number">510</span>)
+		<span class="method-title">addStylesheet</span> (line <span class="line-number">568</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -987,7 +1078,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">clearJavascript</span> (line <span class="line-number">498</span>)
+		<span class="method-title">clearJavascript</span> (line <span class="line-number">556</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1012,7 +1103,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">clearJavascriptFiles</span> (line <span class="line-number">456</span>)
+		<span class="method-title">clearJavascriptFiles</span> (line <span class="line-number">514</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1032,12 +1123,37 @@
 		
 			
 	</div>
-<a name="methoddisable" id="disable"><!-- --></a>
+<a name="methodclearOnLoadActions" id="clearOnLoadActions"><!-- --></a>
 <div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">disable</span> (line <span class="line-number">160</span>)
+		<span class="method-title">clearOnLoadActions</span> (line <span class="line-number">616</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Clear the onLoadActions stack.</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+		<span class="method-name">
+			clearOnLoadActions
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methoddisable" id="disable"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">disable</span> (line <span class="line-number">172</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1058,11 +1174,11 @@
 			
 	</div>
 <a name="methodenable" id="enable"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">enable</span> (line <span class="line-number">149</span>)
+		<span class="method-title">enable</span> (line <span class="line-number">161</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1083,16 +1199,17 @@
 			
 	</div>
 <a name="methodgetCdnVersion" id="getCdnVersion"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getCdnVersion</span> (line <span class="line-number">198</span>)
+		<span class="method-title">getCdnVersion</span> (line <span class="line-number">232</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Get CDN version</p>
 	<ul class="tags">
+				<li><span class="field">deprecated:</span> As of version 1.8, use <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html#methodgetVersion">getVersion()</a> instead.</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
 	
@@ -1108,11 +1225,11 @@
 			
 	</div>
 <a name="methodgetJavascript" id="getJavascript"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getJavascript</span> (line <span class="line-number">488</span>)
+		<span class="method-title">getJavascript</span> (line <span class="line-number">546</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1133,11 +1250,11 @@
 			
 	</div>
 <a name="methodgetJavascriptFiles" id="getJavascriptFiles"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getJavascriptFiles</span> (line <span class="line-number">446</span>)
+		<span class="method-title">getJavascriptFiles</span> (line <span class="line-number">504</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1159,11 +1276,11 @@
 			
 	</div>
 <a name="methodgetLocalPath" id="getLocalPath"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getLocalPath</span> (line <span class="line-number">349</span>)
+		<span class="method-title">getLocalPath</span> (line <span class="line-number">407</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1184,11 +1301,11 @@
 			
 	</div>
 <a name="methodgetOnLoadActions" id="getOnLoadActions"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getOnLoadActions</span> (line <span class="line-number">548</span>)
+		<span class="method-title">getOnLoadActions</span> (line <span class="line-number">606</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1209,11 +1326,11 @@
 			
 	</div>
 <a name="methodgetRenderMode" id="getRenderMode"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getRenderMode</span> (line <span class="line-number">574</span>)
+		<span class="method-title">getRenderMode</span> (line <span class="line-number">643</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1234,11 +1351,11 @@
 			
 	</div>
 <a name="methodgetStylesheets" id="getStylesheets"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getStylesheets</span> (line <span class="line-number">524</span>)
+		<span class="method-title">getStylesheets</span> (line <span class="line-number">582</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1259,16 +1376,17 @@
 			
 	</div>
 <a name="methodgetUiCdnVersion" id="getUiCdnVersion"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getUiCdnVersion</span> (line <span class="line-number">280</span>)
+		<span class="method-title">getUiCdnVersion</span> (line <span class="line-number">345</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Return jQuery UI CDN Version</p>
 	<ul class="tags">
+				<li><span class="field">deprecated:</span> As of 1.8 use <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html#methodgetUiVersion">getUiVersion()</a></li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
 	
@@ -1284,11 +1402,11 @@
 			
 	</div>
 <a name="methodgetUiLocalPath" id="getUiLocalPath"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getUiLocalPath</span> (line <span class="line-number">313</span>)
+		<span class="method-title">getUiLocalPath</span> (line <span class="line-number">377</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1309,11 +1427,11 @@
 			
 	</div>
 <a name="methodgetUiPath" id="getUiPath"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">getUiPath</span> (line <span class="line-number">303</span>)
+		<span class="method-title">getUiPath</span> (line <span class="line-number">367</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1333,12 +1451,62 @@
 		
 			
 	</div>
-<a name="methodisEnabled" id="isEnabled"><!-- --></a>
+<a name="methodgetUiVersion" id="getUiVersion"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">getUiVersion</span> (line <span class="line-number">322</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Get jQuery UI Version used.</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			getUiVersion
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodgetVersion" id="getVersion"><!-- --></a>
 <div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">isEnabled</span> (line <span class="line-number">172</span>)
+		<span class="method-title">getVersion</span> (line <span class="line-number">208</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Get the version used with the jQuery library</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			getVersion
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodisEnabled" id="isEnabled"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">isEnabled</span> (line <span class="line-number">184</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1359,11 +1527,11 @@
 			
 	</div>
 <a name="methodjavascriptCaptureEnd" id="javascriptCaptureEnd"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">javascriptCaptureEnd</span> (line <span class="line-number">415</span>)
+		<span class="method-title">javascriptCaptureEnd</span> (line <span class="line-number">473</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1384,11 +1552,11 @@
 			
 	</div>
 <a name="methodjavascriptCaptureStart" id="javascriptCaptureStart"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">javascriptCaptureStart</span> (line <span class="line-number">399</span>)
+		<span class="method-title">javascriptCaptureStart</span> (line <span class="line-number">457</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1409,11 +1577,11 @@
 			
 	</div>
 <a name="methodonLoadCaptureEnd" id="onLoadCaptureEnd"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">onLoadCaptureEnd</span> (line <span class="line-number">385</span>)
+		<span class="method-title">onLoadCaptureEnd</span> (line <span class="line-number">443</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1434,11 +1602,11 @@
 			
 	</div>
 <a name="methodonLoadCaptureStart" id="onLoadCaptureStart"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">onLoadCaptureStart</span> (line <span class="line-number">369</span>)
+		<span class="method-title">onLoadCaptureStart</span> (line <span class="line-number">427</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1458,17 +1626,48 @@
 		
 			
 	</div>
+<a name="methodsetCdnSsl" id="setCdnSsl"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">setCdnSsl</span> (line <span class="line-number">242</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set Use SSL on CDN Flag</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+		<span class="method-name">
+			setCdnSsl
+		</span>
+					(<span class="var-type"></span>&nbsp;<span class="var-name">$flag</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type"></span>
+				<span class="var-name">$flag</span>			</li>
+				</ul>
+		
+			
+	</div>
 <a name="methodsetCdnVersion" id="setCdnVersion"><!-- --></a>
 <div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">setCdnVersion</span> (line <span class="line-number">184</span>)
+		<span class="method-title">setCdnVersion</span> (line <span class="line-number">221</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Use CDN, using version specified. Currently supported  by Googles Ajax Library API are: 1.2.3, 1.2.6</p>
 	<ul class="tags">
+				<li><span class="field">deprecated:</span> As of version 1.8, use <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html#methodsetVersion">setVersion()</a> instead.</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
 	
@@ -1493,7 +1692,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">setLocalPath</span> (line <span class="line-number">219</span>)
+		<span class="method-title">setLocalPath</span> (line <span class="line-number">264</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1523,7 +1722,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">setRenderMode</span> (line <span class="line-number">564</span>)
+		<span class="method-title">setRenderMode</span> (line <span class="line-number">633</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1555,12 +1754,13 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">setUiCdnVersion</span> (line <span class="line-number">265</span>)
+		<span class="method-title">setUiCdnVersion</span> (line <span class="line-number">334</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Set jQuery UI CDN Version</p>
 	<ul class="tags">
+				<li><span class="field">deprecated:</span> As of 1.8 use <a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html#methodsetUiVersion">setUiVersion()</a></li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
 	
@@ -1585,7 +1785,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">setUiLocalPath</span> (line <span class="line-number">291</span>)
+		<span class="method-title">setUiLocalPath</span> (line <span class="line-number">356</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1610,12 +1810,72 @@
 		
 			
 	</div>
+<a name="methodsetUiVersion" id="setUiVersion"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">setUiVersion</span> (line <span class="line-number">309</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set jQuery UI version used.</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+		<span class="method-name">
+			setUiVersion
+		</span>
+					(<span class="var-type">string</span>&nbsp;<span class="var-name">$version</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">string</span>
+				<span class="var-name">$version</span>			</li>
+				</ul>
+		
+			
+	</div>
+<a name="methodsetVersion" id="setVersion"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">setVersion</span> (line <span class="line-number">195</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set the version of the jQuery library used.</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result"><a href="../../ZendX_JQuery/View/ZendX_JQuery_View_Helper_JQuery_Container.html">ZendX_JQuery_View_Helper_JQuery_Container</a></span>
+		<span class="method-name">
+			setVersion
+		</span>
+					(<span class="var-type">string</span>&nbsp;<span class="var-name">$version</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">string</span>
+				<span class="var-name">$version</span>			</li>
+				</ul>
+		
+			
+	</div>
 <a name="methodsetView" id="setView"><!-- --></a>
 <div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">setView</span> (line <span class="line-number">139</span>)
+		<span class="method-title">setView</span> (line <span class="line-number">151</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1645,7 +1905,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">uiDisable</span> (line <span class="line-number">243</span>)
+		<span class="method-title">uiDisable</span> (line <span class="line-number">287</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1670,7 +1930,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">uiEnable</span> (line <span class="line-number">231</span>)
+		<span class="method-title">uiEnable</span> (line <span class="line-number">275</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1695,7 +1955,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">uiIsEnabled</span> (line <span class="line-number">254</span>)
+		<span class="method-title">uiIsEnabled</span> (line <span class="line-number">298</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1720,7 +1980,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">useCdn</span> (line <span class="line-number">208</span>)
+		<span class="method-title">useCdn</span> (line <span class="line-number">253</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1745,7 +2005,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">useLocalPath</span> (line <span class="line-number">359</span>)
+		<span class="method-title">useLocalPath</span> (line <span class="line-number">417</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1770,7 +2030,7 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">useUiCdn</span> (line <span class="line-number">336</span>)
+		<span class="method-title">useUiCdn</span> (line <span class="line-number">397</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1795,11 +2055,11 @@
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">useUiLocal</span> (line <span class="line-number">323</span>)
+		<span class="method-title">useUiLocal</span> (line <span class="line-number">387</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
-<p class="short-description">Is the jQuery Ui enabled and loaded from local scope?</p>
+<p class="short-description">Is the jQuery Ui loaded from local scope?</p>
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
@@ -1815,12 +2075,36 @@
 		
 			
 	</div>
-<a name="method_getJQueryLibraryPath" id="_getJQueryLibraryPath"><!-- --></a>
+<a name="method_getJQueryLibraryBaseCdnUri" id="_getJQueryLibraryBaseCdnUri"><!-- --></a>
 <div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">_getJQueryLibraryPath</span> (line <span class="line-number">729</span>)
+		<span class="method-title">_getJQueryLibraryBaseCdnUri</span> (line <span class="line-number">791</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			_getJQueryLibraryBaseCdnUri
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="method_getJQueryLibraryPath" id="_getJQueryLibraryPath"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">_getJQueryLibraryPath</span> (line <span class="line-number">819</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1840,12 +2124,60 @@
 		
 			
 	</div>
-<a name="method_renderExtras" id="_renderExtras"><!-- --></a>
+<a name="method_getJQueryUiLibraryBaseCdnUri" id="_getJQueryUiLibraryBaseCdnUri"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">_getJQueryUiLibraryBaseCdnUri</span> (line <span class="line-number">804</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			_getJQueryUiLibraryBaseCdnUri
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="method_getJQueryUiLibraryPath" id="_getJQueryUiLibraryPath"><!-- --></a>
 <div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">_renderExtras</span> (line <span class="line-number">681</span>)
+		<span class="method-title">_getJQueryUiLibraryPath</span> (line <span class="line-number">837</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+	<ul class="tags">
+				<li><span class="field">access:</span> protected</li>
+			</ul>
+	
+	<div class="method-signature">
+		<span class="method-result">string</span>
+		<span class="method-name">
+			_getJQueryUiLibraryPath
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="method_renderExtras" id="_renderExtras"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../../media/images/Method.png" />
+		<span class="method-title">_renderExtras</span> (line <span class="line-number">746</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1866,11 +2198,11 @@
 			
 	</div>
 <a name="method_renderScriptTags" id="_renderScriptTags"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">_renderScriptTags</span> (line <span class="line-number">645</span>)
+		<span class="method-title">_renderScriptTags</span> (line <span class="line-number">714</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1891,11 +2223,11 @@
 			
 	</div>
 <a name="method_renderStylesheets" id="_renderStylesheets"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">_renderStylesheets</span> (line <span class="line-number">603</span>)
+		<span class="method-title">_renderStylesheets</span> (line <span class="line-number">672</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1916,11 +2248,11 @@
 			
 	</div>
 <a name="method__toString" id="__toString"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../../media/images/Method.png" />
-		<span class="method-title">__toString</span> (line <span class="line-number">584</span>)
+		<span class="method-title">__toString</span> (line <span class="line-number">653</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -1946,7 +2278,7 @@
 
 	
 	<p class="notes" id="credit">
-		Documentation generated on Mon, 30 Mar 2009 21:44:07 +0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.2</a>
+		Documentation generated on Tue, 22 Sep 2009 14:45:46 -0700 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.2</a>
 	</p>
 	</div></body>
 </html>

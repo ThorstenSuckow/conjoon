@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: StaticTest.php 18347 2009-09-21 16:51:34Z ralph $
  */
 
 
@@ -35,8 +34,11 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Table
+ * @group      Zend_Db_Table_Select
  */
 class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
 {
@@ -62,6 +64,22 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $select = $this->_select();
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts"', $sql);
+        $stmt = $select->query();
+        Zend_Loader::loadClass('Zend_Db_Statement_Static');
+        $this->assertType('Zend_Db_Statement_Static', $stmt);
+    }
+
+    /**
+     * ZF-2017: Test bind use of the Zend_Db_Select class.
+     */
+    public function testSelectQueryWithBinds()
+    {
+        $select = $this->_select()->where('product_id = :product_id')
+                                  ->bind(array(':product_id' => 1));
+
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" WHERE (product_id = :product_id)', $sql);
+
         $stmt = $select->query();
         Zend_Loader::loadClass('Zend_Db_Statement_Static');
         $this->assertType('Zend_Db_Statement_Static', $stmt);
@@ -371,7 +389,7 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $this->assertEquals('SELECT "zfprice".* FROM "zfprice" WHERE ("price_total" = 200.450000)', $sql);
     }
 
-    /** 
+    /**
      *      * Test adding an OR WHERE clause to a Zend_Db_Select object.
      */
 
@@ -597,6 +615,12 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY "product_id" ASC LIMIT 1 OFFSET 0', $sql);
     }
 
+    /**
+     * Not applicable in static test
+     * @group ZF-5263
+     */
+    public function testSelectLimitFetchCol()
+    {}
 
     public function testSelectLimitNone()
     {
@@ -637,6 +661,38 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $select = $this->_selectUnionString();
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "bug_id" AS "id", "bug_status" AS "name" FROM "zfbugs" UNION SELECT "product_id" AS "id", "product_name" AS "name" FROM "zfproducts" ORDER BY "id" ASC', $sql);
+    }
+    
+    public function testSelectOrderByPosition()
+    {
+        $select = $this->_selectOrderByPosition(); 
+        
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY 2 ASC', $sql);
+    }
+
+    public function testSelectOrderByPositionAsc()
+    {
+        $select = $this->_selectOrderByPositionAsc(); 
+        
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY 2 ASC', $sql);
+    }
+
+    public function testSelectOrderByPositionDesc()
+    {
+        $select = $this->_selectOrderByPositionDesc();
+
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY 2 DESC', $sql);
+    }
+
+    public function testSelectOrderByMultiplePositions()
+    {
+        $select = $this->_selectOrderByMultiplePositions();
+
+        $sql = preg_replace('/\\s+/', ' ', $select->__toString());
+        $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY 2 DESC, 1 DESC', $sql);
     }
 
     public function getDriver()

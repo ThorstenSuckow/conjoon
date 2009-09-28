@@ -15,14 +15,24 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once 'Zend/Db/Statement/TestCommon.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
+/*
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Statement
+ */
 abstract class Zend_Db_Statement_Pdo_TestCommon extends Zend_Db_Statement_TestCommon
 {
 
@@ -61,4 +71,54 @@ abstract class Zend_Db_Statement_Pdo_TestCommon extends Zend_Db_Statement_TestCo
         $stmt->closeCursor();
     }
 
+    /**
+     * @group ZF-4486
+     */
+    public function testStatementIsIterableThroughtForeach()
+    {
+        $select = $this->_db->select()->from('zfproducts');
+        $stmt = $this->_db->query($select);
+        $stmt->setFetchMode(Zend_Db::FETCH_OBJ);
+        foreach ($stmt as $test) {
+            $this->assertTrue($test instanceof stdClass);
+        }
+        $this->assertType('int', iterator_count($stmt));
+    }
+
+    public function testStatementConstructExceptionBadSql()
+    {
+        $sql = "SELECT * FROM *";
+        try {
+            $stmt = $this->_db->query($sql);
+            $this->fail('Expected to catch Zend_Db_Statement_Exception');
+        } catch (Zend_Exception $e) {
+            $this->assertType('Zend_Db_Statement_Exception', $e,
+                'Expecting object of type Zend_Db_Statement_Exception, got '.get_class($e));
+            $this->assertTrue($e->hasChainedException());
+            $this->assertType('PDOException', $e->getChainedException());
+        }
+    }
+    
+    /**
+     * 
+     * @group ZF-5868
+     */
+    public function testStatementWillPersistBindParamsInQueryProfilerAfterExecute()
+    {
+        $this->_db->getProfiler()->setEnabled(true);
+        $products = $this->_db->quoteIdentifier('zfproducts');
+        $product_id = $this->_db->quoteIdentifier('product_id');
+
+        $sql = "SELECT * FROM $products WHERE $product_id > :product_id ORDER BY $product_id ASC";
+        $stmt = $this->_db->prepare($sql);
+        $stmt->bindValue('product_id', 1);
+        $stmt->execute();
+        
+        $params = $this->_db->getProfiler()->getLastQueryProfile()->getQueryParams();
+
+        $target = array(':product_id' => 1);
+        $this->assertEquals($target, $params);
+        
+    }
+    
 }

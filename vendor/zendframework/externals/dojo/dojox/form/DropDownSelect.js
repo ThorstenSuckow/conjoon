@@ -7,6 +7,7 @@ dojo.require("dijit.Menu");
 dojo.requireLocalization("dijit.form", "validate");
 
 dojo.declare("dojox.form.DropDownSelect", [dojox.form._FormSelectWidget, dojox.form._HasDropDown], {
+	attributeMap: dojo.mixin(dojo.clone(dojox.form._FormSelectWidget.prototype.attributeMap),{value:"valueNode",name:"valueNode"}),
 	// summary:
 	//		This is a "Styleable" select box - it is basically a DropDownButton which
 	//		can take as its input a <select>.
@@ -107,6 +108,11 @@ dojo.declare("dojox.form.DropDownSelect", [dojox.form._FormSelectWidget, dojox.f
 		this._setValueAttr(this.value);
 	},
 	
+	_setValueAttr: function(value){
+		this.inherited(arguments);
+		dojo.attr(this.valueNode, "value", this.attr("value"));
+	},
+	
 	_setDisplay: function(/*String*/ newDisplay){
 		// summary: sets the display for the given value (or values)
 		this.containerNode.innerHTML = '<span class=" ' + this.baseClass + 'Label">' +
@@ -160,6 +166,9 @@ dojo.declare("dojox.form.DropDownSelect", [dojox.form._FormSelectWidget, dojox.f
 		this.inherited(arguments);
 		if(dojo.attr(this.srcNodeRef, "disabled")){
 			this.attr("disabled", true);
+		}
+		if(this.tableNode.style.width){
+			dojo.addClass(this.domNode, this.baseClass + "FixedWidth");
 		}
 	},
 
@@ -217,6 +226,14 @@ dojo.declare("dojox.form.DropDownSelect", [dojox.form._FormSelectWidget, dojox.f
 		this._iDisabled = value;
 		if(!value && this._childrenLoaded && this.options.length === 0){
 			return;
+		}
+		this.inherited(arguments);
+	},
+
+	uninitialize: function(preserveDom){
+		if(this.dropDown){
+			this.dropDown.destroyRecursive(preserveDom);
+			delete this.dropDown;
 		}
 		this.inherited(arguments);
 	}

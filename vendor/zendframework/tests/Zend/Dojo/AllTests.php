@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -29,6 +29,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Dojo_AllTests::main');
 }
 
+require_once 'Zend/Dojo/BuildLayerTest.php';
 require_once 'Zend/Dojo/DojoTest.php';
 require_once 'Zend/Dojo/DataTest.php';
 require_once 'Zend/Dojo/Form/AllTests.php';
@@ -38,8 +39,9 @@ require_once 'Zend/Dojo/View/AllTests.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Dojo
  */
 class Zend_Dojo_AllTests
 {
@@ -52,6 +54,7 @@ class Zend_Dojo_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Dojo');
 
+        $suite->addTestSuite('Zend_Dojo_BuildLayerTest');
         $suite->addTestSuite('Zend_Dojo_DojoTest');
         $suite->addTestSuite('Zend_Dojo_DataTest');
         $suite->addTest(Zend_Dojo_Form_AllTests::suite());

@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_File
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: AbstractTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_File_Transfer_Adapter_AbstractTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_File_Transfer_Adapter_AbstractTest::main");
@@ -15,6 +36,13 @@ require_once 'Zend/Validate/File/Extension.php';
 
 /**
  * Test class for Zend_File_Transfer_Adapter_Abstract
+ *
+ * @category   Zend
+ * @package    Zend_File
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_File
  */
 class Zend_File_Transfer_Adapter_AbstractTest extends PHPUnit_Framework_TestCase
 {
@@ -48,14 +76,6 @@ class Zend_File_Transfer_Adapter_AbstractTest extends PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-    }
-
-    public function testAdapterShouldImplementValidatorInterface()
-    {
-        // Commented out: The implementation is actually not instancing
-        // Zend_Validate_Interface. This was a failure in the initial implementation.
-        // But it allows to set validators to use within it.
-        // $this->assertTrue($this->adapter instanceof Zend_Validate_Interface);
     }
 
     /**
@@ -301,12 +321,9 @@ class Zend_File_Transfer_Adapter_AbstractTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->adapter->isValid('foo'));
     }
 
-    /**
-     * @expectedException Zend_File_Transfer_Exception
-     */
     public function testValidationShouldThrowExceptionForNonexistentFile()
     {
-        $this->adapter->isValid('bogus');
+        $this->assertFalse($this->adapter->isValid('bogus'));
     }
 
     public function testErrorMessagesShouldBeEmptyByDefault()
@@ -520,32 +537,38 @@ class Zend_File_Transfer_Adapter_AbstractTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
-                'bar' => array('ignoreNoFile' => false),
-                'baz' => array('ignoreNoFile' => false),
-                'foo' => array('ignoreNoFile' => false),
+                'bar' => array('ignoreNoFile' => false, 'useByteString' => true),
+                'baz' => array('ignoreNoFile' => false, 'useByteString' => true),
+                'foo' => array('ignoreNoFile' => false, 'useByteString' => true),
+                'file_0_' => array('ignoreNoFile' => false, 'useByteString' => true),
+                'file_1_' => array('ignoreNoFile' => false, 'useByteString' => true),
             ), $this->adapter->getOptions());
 
         $this->adapter->setOptions(array('ignoreNoFile' => true));
         $this->assertEquals(
             array(
-                'bar' => array('ignoreNoFile' => true),
-                'baz' => array('ignoreNoFile' => true),
-                'foo' => array('ignoreNoFile' => true),
+                'bar' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'baz' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'foo' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'file_0_' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'file_1_' => array('ignoreNoFile' => true, 'useByteString' => true),
             ), $this->adapter->getOptions());
 
         $this->adapter->setOptions(array('ignoreNoFile' => false), 'foo');
         $this->assertEquals(
             array(
-                'bar' => array('ignoreNoFile' => true),
-                'baz' => array('ignoreNoFile' => true),
-                'foo' => array('ignoreNoFile' => false),
+                'bar' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'baz' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'foo' => array('ignoreNoFile' => false, 'useByteString' => true),
+                'file_0_' => array('ignoreNoFile' => true, 'useByteString' => true),
+                'file_1_' => array('ignoreNoFile' => true, 'useByteString' => true),
             ), $this->adapter->getOptions());
     }
 
     public function testGetAllAdditionalFileInfos()
     {
         $files = $this->adapter->getFileInfo();
-        $this->assertEquals(3, count($files));
+        $this->assertEquals(5, count($files));
         $this->assertEquals('baz.text', $files['baz']['name']);
     }
 
@@ -681,6 +704,82 @@ class Zend_File_Transfer_Adapter_AbstractTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->adapter->isPathWriteable($path));
         $this->assertTrue($this->adapter->isPathWriteable($this->adapter->_tmpDir));
     }
+
+    public function testFileSizeButNoFileFound()
+    {
+        try {
+            $this->assertEquals(10, $this->adapter->getFileSize());
+            $this->fail();
+        } catch (Zend_File_Transfer_Exception $e) {
+            $this->assertContains('does not exist', $e->getMessage());
+        }
+    }
+
+    public function testFileSizeByTmpName()
+    {
+        $options = $this->adapter->getOptions();
+        $this->assertTrue($options['baz']['useByteString']);
+        $this->assertEquals('8B', $this->adapter->getFileSize('baz.text'));
+        $this->adapter->setOptions(array('useByteString' => false));
+        $options = $this->adapter->getOptions();
+        $this->assertFalse($options['baz']['useByteString']);
+        $this->assertEquals(8, $this->adapter->getFileSize('baz.text'));
+    }
+
+    public function testMimeTypeButNoFileFound()
+    {
+        try {
+            $this->assertEquals('image/jpeg', $this->adapter->getMimeType());
+            $this->fail();
+        } catch (Zend_File_Transfer_Exception $e) {
+            $this->assertContains('does not exist', $e->getMessage());
+        }
+    }
+
+    public function testMimeTypeByTmpName()
+    {
+        $this->assertEquals('text/plain', $this->adapter->getMimeType('baz.text'));
+    }
+
+    public function testSetOwnErrorMessage()
+    {
+        $this->adapter->addValidator('Count', false, array('min' => 5, 'max' => 5, 'messages' => array(Zend_Validate_File_Count::TOO_LESS => 'Zu wenige')));
+        $this->assertFalse($this->adapter->isValid('foo'));
+        $message = $this->adapter->getMessages();
+        $this->assertContains('Zu wenige', $message);
+
+        try {
+            $this->assertEquals('image/jpeg', $this->adapter->getMimeType());
+            $this->fail();
+        } catch (Zend_File_Transfer_Exception $e) {
+            $this->assertContains('does not exist', $e->getMessage());
+        }
+    }
+
+    public function testTransferDestinationAtNonExistingElement()
+    {
+        $directory = dirname(__FILE__);
+        $this->adapter->setDestination($directory, 'nonexisting');
+        $this->assertEquals($directory, $this->adapter->getDestination('nonexisting'));
+        try {
+            $this->assertTrue(is_string($this->adapter->getDestination('reallynonexisting')));
+            $this->fail();
+        } catch(Exception $e) {
+            $this->assertContains('not found', $e->getMessage());
+        }
+    }
+
+    /**
+     * @ZF-7376
+     */
+    public function testSettingMagicFile()
+    {
+        $this->adapter->setOptions(array('magicFile' => 'test/file'));
+        $this->assertEquals(
+            array(
+                'bar' => array('magicFile' => 'test/file', 'ignoreNoFile' => false, 'useByteString' => true),
+            ), $this->adapter->getOptions('bar'));
+    }
 }
 
 class Zend_File_Transfer_Adapter_AbstractTest_MockAdapter extends Zend_File_Transfer_Adapter_Abstract
@@ -691,13 +790,14 @@ class Zend_File_Transfer_Adapter_AbstractTest_MockAdapter extends Zend_File_Tran
 
     public function __construct()
     {
+        $testfile = dirname(__FILE__) . '/_files/test.txt';
         $this->_files = array(
             'foo' => array(
                 'name'      => 'foo.jpg',
                 'type'      => 'image/jpeg',
                 'size'      => 126976,
                 'tmp_name'  => '/tmp/489127ba5c89c',
-                'options'   => array('ignoreNoFile' => false),
+                'options'   => array('ignoreNoFile' => false, 'useByteString' => true),
                 'validated' => false,
                 'received'  => false,
                 'filtered'  => false,
@@ -707,7 +807,7 @@ class Zend_File_Transfer_Adapter_AbstractTest_MockAdapter extends Zend_File_Tran
                 'type'     => 'image/png',
                 'size'     => 91136,
                 'tmp_name' => '/tmp/489128284b51f',
-                'options'  => array('ignoreNoFile' => false),
+                'options'  => array('ignoreNoFile' => false, 'useByteString' => true),
                 'validated' => false,
                 'received'  => false,
                 'filtered'  => false,
@@ -716,11 +816,35 @@ class Zend_File_Transfer_Adapter_AbstractTest_MockAdapter extends Zend_File_Tran
                 'name'     => 'baz.text',
                 'type'     => 'text/plain',
                 'size'     => 1172,
-                'tmp_name' => '/tmp/4891286cceff3',
-                'options'  => array('ignoreNoFile' => false),
+                'tmp_name' => $testfile,
+                'options'  => array('ignoreNoFile' => false, 'useByteString' => true),
                 'validated' => false,
                 'received'  => false,
                 'filtered'  => false,
+            ),
+            'file_0_' => array(
+                'name'      => 'foo.jpg',
+                'type'      => 'image/jpeg',
+                'size'      => 126976,
+                'tmp_name'  => '/tmp/489127ba5c89c',
+                'options'   => array('ignoreNoFile' => false, 'useByteString' => true),
+                'validated' => false,
+                'received'  => false,
+                'filtered'  => false,
+            ),
+            'file_1_' => array(
+                'name'     => 'baz.text',
+                'type'     => 'text/plain',
+                'size'     => 1172,
+                'tmp_name' => $testfile,
+                'options'  => array('ignoreNoFile' => false, 'useByteString' => true),
+                'validated' => false,
+                'received'  => false,
+                'filtered'  => false,
+            ),
+            'file' => array(
+                'name'      => 'foo.jpg',
+                'multifiles' => array(0 => 'file_0_', 1 => 'file_1_')
             ),
         );
     }
@@ -756,7 +880,7 @@ class Zend_File_Transfer_Adapter_AbstractTest_MockAdapter extends Zend_File_Tran
         return true;
     }
 
-    public function getProgress()
+    public static function getProgress()
     {
         return;
     }

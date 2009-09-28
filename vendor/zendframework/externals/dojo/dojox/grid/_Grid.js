@@ -1,5 +1,8 @@
 dojo.provide("dojox.grid._Grid");
 
+dojo.require("dijit.dijit");
+dojo.require("dijit.Menu");
+
 dojo.require("dojox.html.metrics");
 dojo.require("dojox.grid.util");
 dojo.require("dojox.grid._Scroller");
@@ -13,7 +16,6 @@ dojo.require("dojox.grid.Selection");
 dojo.require("dojox.grid._RowSelector");
 dojo.require("dojox.grid._Events");
 
-dojo.require("dijit.Menu");
 
 dojo.requireLocalization("dijit", "loading");
 
@@ -30,7 +32,6 @@ dojo.requireLocalization("dijit", "loading");
 		job: function(inName, inDelay, inJob){
 			jobs.cancelJob(inName);
 			var job = function(){
-
 				delete jobs.jobs[inName];
 				inJob();
 			}
@@ -41,6 +42,123 @@ dojo.requireLocalization("dijit", "loading");
 			jobs.cancel(jobs.jobs[inName]);
 		}
 	};
+
+	/*=====
+	dojox.grid.__CellDef = function(){
+		//	name: String?
+		//		The text to use in the header of the grid for this cell.
+		//	get: Function?
+		//		function(rowIndex){} rowIndex is of type Integer.  This
+		//		function will be called when a cell	requests data.  Returns the
+		//		unformatted data for the cell.
+		//	value: String?
+		//		If "get" is not specified, this is used as the data for the cell.
+		//	defaultValue: String?
+		//		If "get" and "value" aren't specified or if "get" returns an undefined
+		//		value, this is used as the data for the cell.  "formatter" is not run
+		//		on this if "get" returns an undefined value.
+		//	formatter: Function?
+		//		function(data, rowIndex){} data is of type anything, rowIndex
+		//		is of type Integer.  This function will be called after the cell
+		//		has its data but before it passes it back to the grid to render.
+		//		Returns the formatted version of the cell's data.
+		//	type: dojox.grid.cells._Base|Function?
+		//		TODO
+		//	editable: Boolean?
+		//		Whether this cell should be editable or not.
+		//	hidden: Boolean?
+		//		If true, the cell will not be displayed.
+		//	noresize: Boolean?
+		//		If true, the cell will not be able to be resized.
+		//	width: Integer|String?
+		//		A CSS size.  If it's an Integer, the width will be in em's.
+		//	colSpan: Integer?
+		//		How many columns to span this cell.  Will not work in the first
+		//		sub-row of cells.
+		//	rowSpan: Integer?
+		//		How many sub-rows to span this cell.
+		//	styles: String?
+		//		A string of styles to apply to both the header cell and main
+		//		grid cells.  Must end in a ';'.
+		//	headerStyles: String?
+		//		A string of styles to apply to just the header cell.  Must end
+		//		in a ';'
+		//	cellStyles: String?
+		//		A string of styles to apply to just the main grid cells.  Must
+		//		end in a ';'
+		//	classes: String?
+		//		A space separated list of classes to apply to both the header
+		//		cell and the main grid cells.
+		//	headerClasses: String?
+		//		A space separated list of classes to apply to just the header
+		//		cell.
+		//	cellClasses: String?
+		//		A space separated list of classes to apply to just the main
+		//		grid cells.
+		//	attrs: String?
+		//		A space separated string of attribute='value' pairs to add to
+		//		the header cell element and main grid cell elements.
+		this.name = name;
+		this.value = value;
+		this.get = get;
+		this.formatter = formatter;
+		this.type = type;
+		this.editable = editable;
+		this.hidden = hidden;
+		this.width = width;
+		this.colSpan = colSpan;
+		this.rowSpan = rowSpan;
+		this.styles = styles;
+		this.headerStyles = headerStyles;
+		this.cellStyles = cellStyles;
+		this.classes = classes;
+		this.headerClasses = headerClasses;
+		this.cellClasses = cellClasses;
+		this.attrs = attrs;
+	}
+	=====*/
+
+	/*=====
+	dojox.grid.__ViewDef = function(){
+		//	noscroll: Boolean?
+		//		If true, no scrollbars will be rendered without scrollbars.
+		//	width: Integer|String?
+		//		A CSS size.  If it's an Integer, the width will be in em's. If
+		//		"noscroll" is true, this value is ignored.
+		//	cells: dojox.grid.__CellDef[]|Array[dojox.grid.__CellDef[]]?
+		//		The structure of the cells within this grid.
+		//	type: String?
+		//		A string containing the constructor of a subclass of
+		//		dojox.grid._View.  If this is not specified, dojox.grid._View
+		//		is used.
+		//	defaultCell: dojox.grid.__CellDef?
+		//		A cell definition with default values for all cells in this view.  If
+		//		a property is defined in a cell definition in the "cells" array and
+		//		this property, the cell definition's property will override this
+		//		property's property.
+		//	onBeforeRow: Function?
+		//		function(rowIndex, cells){} rowIndex is of type Integer, cells
+		//		is of type Array[dojox.grid.__CellDef[]].  This function is called
+		//		before each row of data is rendered.  Before the header is
+		//		rendered, rowIndex will be -1.  "cells" is a reference to the
+		//		internal structure of this view's cells so any changes you make to
+		//		it will persist between calls.
+		//	onAfterRow: Function?
+		//		function(rowIndex, cells, rowNode){} rowIndex is of type Integer, cells
+		//		is of type Array[dojox.grid.__CellDef[]], rowNode is of type DOMNode.
+		//		This function is called	after each row of data is rendered.  After the
+		//		header is rendered, rowIndex will be -1.  "cells" is a reference to the
+		//		internal structure of this view's cells so any changes you make to
+		//		it will persist between calls.
+		this.noscroll = noscroll;
+		this.width = width;
+		this.cells = cells;
+		this.type = type;
+		this.defaultCell = defaultCell;
+		this.onBeforeRow = onBeforeRow;
+		this.onAfterRow = onAfterRow;
+	}
+	=====*/
 
 	dojo.declare('dojox.grid._Grid',
 		[ dijit._Widget, dijit._Templated, dojox.grid._Events ],
@@ -136,9 +254,9 @@ dojo.requireLocalization("dijit", "loading");
 		//		if the height: css attribute exists on the source node.
 		height: '',
 
-		// structure: Object|String
-		//		View layout defintion. Can be set to a layout object, or to the (string) name of a layout object.
-		structure: '',
+		// structure: dojox.grid.__ViewDef|dojox.grid.__ViewDef[]|dojox.grid.__CellDef[]|Array[dojox.grid.__CellDef[]]
+		//		View layout defintion.
+		structure: null,
 
 		// elasticView: Integer
 		//	Override defaults and make the indexed grid view elastic, thus filling available horizontal space.
@@ -171,6 +289,10 @@ dojo.requireLocalization("dijit", "loading");
 		// 		menu items.
 		placeholderLabel: "GridColumns",
 		
+		// selectable: Boolean
+		//		Set to true if you want to be able to select the text within the grid.
+		selectable: false,
+		
 		// Used to store the last two clicks, to ensure double-clicking occurs based on the intended row
 		_click: null,
 		
@@ -183,10 +305,21 @@ dojo.requireLocalization("dijit", "loading");
 		errorMessage: "<span class='dojoxGridError'>${errorState}</span>",
 
 		// noDataMessage: String
-		//  Message that shows if the grid has no data - wrap it in a
+		//  Message that shows if the grid has no data - wrap it in a 
 		//  span with class 'dojoxGridNoData' if you want it to be
 		//  styled similar to the loading and error messages
 		noDataMessage: "",
+		
+		// escapeHTMLInData: Boolean
+		//		This will escape HTML brackets from the data to prevent HTML from 
+		// 		user-inputted data being rendered with may contain JavaScript and result in 
+		// 		XSS attacks. This is true by default, and it is recommended that it remain 
+		// 		true. Setting this to false will allow data to be displayed in the grid without 
+		// 		filtering, and should be only used if it is known that the data won't contain 
+		// 		malicious scripts. If HTML is needed in grid cells, it is recommended that 
+		// 		you use the formatter function to generate the HTML (the output of 
+		// 		formatter functions is not filtered, even with escapeHTMLInData set to true).
+		escapeHTMLInData: true,	
 
 		// private
 		sortInfo: 0,
@@ -236,14 +369,17 @@ dojo.requireLocalization("dijit", "loading");
 			// replace stock styleChanged with one that triggers an update
 			this.styleChanged = this._styleChanged;
 			this._placeholders = [];
-			this.setHeaderMenu(this.headerMenu);
-			this.setStructure(this.structure);
+			this._setHeaderMenuAttr(this.headerMenu);
+			this._setStructureAttr(this.structure);
 			this._click = [];
 		},
 
 		destroy: function(){
 			this.domNode.onReveal = null;
 			this.domNode.onSizeChange = null;
+
+			// Fixes IE domNode leak
+			delete this._click;
 
 			this.edit.destroy();
 			delete this.edit;
@@ -273,31 +409,38 @@ dojo.requireLocalization("dijit", "loading");
 					ah = true;
 				}else{
 					ah = window.parseInt(ah, 10);
-					if(isNaN(ah)){
-						ah = false;
-					}
-					// Autoheight must be at least 1, if it's a number.  If it's
-					// less than 0, we'll take that to mean "all" rows (same as 
-					// autoHeight=true - if it is equal to zero, we'll take that
-					// to mean autoHeight=false
-					if(ah < 0){
-						ah = true;
-					}else if (ah === 0){
-						ah = false;
-					}
+				}
+			}
+			if(typeof ah == "number"){
+				if(isNaN(ah)){
+					ah = false;
+				}
+				// Autoheight must be at least 1, if it's a number.  If it's
+				// less than 0, we'll take that to mean "all" rows (same as 
+				// autoHeight=true - if it is equal to zero, we'll take that
+				// to mean autoHeight=false
+				if(ah < 0){
+					ah = true;
+				}else if (ah === 0){
+					ah = false;
 				}
 			}
 			this.autoHeight = ah;
 			if(typeof ah == "boolean"){
 				this._autoHeight = ah;
 			}else if(typeof ah == "number"){
-				this._autoHeight = (ah >= this.rowCount);
+				this._autoHeight = (ah >= this.attr('rowCount'));
 			}else{
 				this._autoHeight = false;
 			}
 			if(this._started && !skipRender){
 				this.render();
 			}
+		},
+
+		_getRowCountAttr: function(){
+			return this.updating && this.invalidated && this.invalidated.rowCount != undefined ?
+				this.invalidated.rowCount : this.rowCount;
 		},
 		
 		styleChanged: function(){
@@ -343,6 +486,8 @@ dojo.requireLocalization("dijit", "loading");
 		},
 
 		createSelection: function(){
+			// summary:	Creates a new Grid selection manager.
+
 			// selection manager
 			this.selection = new dojox.grid.Selection(this);
 		},
@@ -389,26 +534,13 @@ dojo.requireLocalization("dijit", "loading");
 			this.scroller.setContentNodes(this.views.getContentNodes());
 		},
 
-		setStructure: function(inStructure){
-			// summary:
-			//		Install a new structure and rebuild the grid.
-			// inStructure: Object
-			//		Structure object defines the grid layout and provides various
-			//		options for grid views and columns
-			//	description:
-			//		A grid structure is an array of view objects. A view object can
-			//		specify a view type (view class), width, noscroll (boolean flag
-			//		for view scrolling), and cells. Cells is an array of objects
-			//		corresponding to each grid column. The view cells object is an
-			//		array of subrows comprising a single row. Each subrow is an
-			//		array of column objects. A column object can have a name,
-			//		width, value (default), get function to provide data, styles,
-			//		and span attributes (rowSpan, colSpan).
-
-			var s = inStructure;
+		_setStructureAttr: function(structure){
+			var s = structure;
 			if(s && dojo.isString(s)){
+				dojo.deprecated("dojox.grid._Grid.attr('structure', 'objVar')", "use dojox.grid._Grid.attr('structure', objVar) instead", "2.0");
 				s=dojo.getObject(s);
 			}
+			this.structure = s;
 			if(!s){
 				if(this.layout.structure){
 					s = this.layout.structure;
@@ -421,6 +553,13 @@ dojo.requireLocalization("dijit", "loading");
 				this.layout.setStructure(s);
 			}
 			this._structureChanged();
+		},
+
+		setStructure: function(/* dojox.grid.__ViewDef|dojox.grid.__ViewDef[]|dojox.grid.__CellDef[]|Array[dojox.grid.__CellDef[]] */ inStructure){
+			// summary:
+			//		Install a new structure and rebuild the grid.
+			dojo.deprecated("dojox.grid._Grid.setStructure(obj)", "use dojox.grid._Grid.attr('structure', obj) instead.", "2.0");
+			this._setStructureAttr(inStructure);
 		},
 		
 		getColumnTogglingItems: function(){
@@ -469,8 +608,8 @@ dojo.requireLocalization("dijit", "loading");
 			}, this); // dijit.CheckedMenuItem[]
 		},
 
-		setHeaderMenu: function(menu){
-			if(this._placeholders.length){
+		_setHeaderMenuAttr: function(menu){
+			if(this._placeholders && this._placeholders.length){
 				dojo.forEach(this._placeholders, function(p){
 					p.unReplace(true);
 				});
@@ -486,6 +625,11 @@ dojo.requireLocalization("dijit", "loading");
 			if(this.headerMenu.getPlaceholders){
 				this._placeholders = this.headerMenu.getPlaceholders(this.placeholderLabel);
 			}
+		},
+
+		setHeaderMenu: function(/* dijit.Menu */ menu){
+			dojo.deprecated("dojox.grid._Grid.setHeaderMenu(obj)", "use dojox.grid._Grid.attr('headerMenu', obj) instead.", "2.0");
+			this._setHeaderMenuAttr(menu);
 		},
 		
 		setupHeaderMenu: function(){
@@ -532,24 +676,7 @@ dojo.requireLocalization("dijit", "loading");
 		resize: function(changeSize, resultSize){
 			// summary:
 			//		Update the grid's rendering dimensions and resize it
-			// sizeBox: Object?
-			//		{w: int, h: int, l: int, t: int}
-
-			// see dijit.layout._LayoutWidget for details on resize argument meaning
-			// TODO: even when Grid is a child of BorderContainer,
-			// the current code in _resize() calls contentBox() to set the size,
-			// which is inappropriate since BorderContainer has already done that.
-			// Should pass changeSize and resultSize to _resize(), and only act on
-			// changeSize
-			var sizeBox = {};
-			dojo.mixin(sizeBox, resultSize || {});
-			dojo.mixin(sizeBox, changeSize || {});
-
-			// FIXME: If grid is not sized explicitly, sometimes bogus scrollbars
-			// can appear in our container, which may require an extra call to 'resize'
-			// to sort out.
-			this._sizeBox = sizeBox;
-			this._resize();
+			this._resize(changeSize, resultSize);
 			this.sizeChange();
 		},
 
@@ -566,7 +693,7 @@ dojo.requireLocalization("dijit", "loading");
 			return t;
 		},
 		
-		_resize: function(){
+		_resize: function(changeSize, resultSize){
 			// if we have set up everything except the DOM, we cannot resize
 			var pn = this.domNode.parentNode;
 			if(!pn || pn.nodeType != 1 || !this.hasLayout() || pn.style.visibility == "hidden" || pn.style.display == "none"){
@@ -574,12 +701,13 @@ dojo.requireLocalization("dijit", "loading");
 			}
 			// useful measurement
 			var padBorder = this._getPadBorder();
+			var hh = 0;
 			// grid height
 			if(this._autoHeight){
 				this.domNode.style.height = 'auto';
 				this.viewsNode.style.height = '';
 			}else if(typeof this.autoHeight == "number"){
-				var h = this._getHeaderHeight();
+				var h = hh = this._getHeaderHeight();
 				h += (this.scroller.averageRowHeight * this.autoHeight);
 				this.domNode.style.height = h + "px";
 			}else if(this.flex > 0){
@@ -593,8 +721,13 @@ dojo.requireLocalization("dijit", "loading");
 				}
 			}
 			// if we are given dimensions, size the grid's domNode to those dimensions
-			if(this._sizeBox){
-				dojo.contentBox(this.domNode, this._sizeBox);	// TODO: should be marginBox() to match dijit behavior
+			if(resultSize){
+				changeSize = resultSize;
+			}
+			if(changeSize){
+				dojo.marginBox(this.domNode, changeSize);
+				this.height = this.domNode.style.height;
+				delete this.fitTo;
 			}else if(this.fitTo == "parent"){
 				var h = dojo._getContentBox(pn).h;
 				dojo.marginBox(this.domNode, { h: Math.max(0, h) });
@@ -607,7 +740,7 @@ dojo.requireLocalization("dijit", "loading");
 			}else{
 				// Otherwise, show the header and give it an appropriate height.
 				this.viewsHeaderNode.style.display = "block";
-				this._getHeaderHeight();
+				hh = this._getHeaderHeight();
 			}
 
 			// NOTE: it is essential that width be applied before height
@@ -616,7 +749,7 @@ dojo.requireLocalization("dijit", "loading");
 			// Therefore prior to width sizing flex columns with spaces are maximally wrapped
 			// and calculated to be too tall.
 			this.adaptWidth();
-			this.adaptHeight();
+			this.adaptHeight(hh);
 
 			this.postresize();
 		},
@@ -630,10 +763,10 @@ dojo.requireLocalization("dijit", "loading");
 				this.domNode.style.width = vw + "px";
 		},
 
-		adaptHeight: function(){
+		adaptHeight: function(inHeaderHeight){
 			// private: measures and normalizes header height, then sets view heights, and then updates scroller
 			// content extent
-			var t = this._getHeaderHeight();
+			var t = inHeaderHeight || this._getHeaderHeight();
 			var h = (this._autoHeight ? -1 : Math.max(this.domNode.clientHeight - t, 0) || 0);
 			this.views.onEach('setSize', [0, h]);
 			this.views.onEach('adaptHeight');
@@ -650,7 +783,7 @@ dojo.requireLocalization("dijit", "loading");
 					});
 				}
 			}
-			if(this.autoHeight === true || h != -1 || (typeof this.autoHeight == "number" && this.autoHeight >= this.rowCount)){
+			if(this.autoHeight === true || h != -1 || (typeof this.autoHeight == "number" && this.autoHeight >= this.attr('rowCount'))){
 				this.scroller.windowHeight = h;
 			}else{
 				this.scroller.windowHeight = Math.max(this.domNode.clientHeight - t, 0);
@@ -663,7 +796,9 @@ dojo.requireLocalization("dijit", "loading");
 			
 			this.inherited(arguments);
 
-			this.render();
+			if(this.autoRender){
+				this.render();
+			}
 		},
 
 		// render
@@ -685,7 +820,7 @@ dojo.requireLocalization("dijit", "loading");
 		},
 
 		_render: function(){
-			this.scroller.init(this.rowCount, this.keepRows, this.rowsPerPage);
+			this.scroller.init(this.attr('rowCount'), this.keepRows, this.rowsPerPage);
 			this.prerender();
 			this.setScrollTop(0);
 			this.postrender();
@@ -693,7 +828,7 @@ dojo.requireLocalization("dijit", "loading");
 
 		prerender: function(){
 			// if autoHeight, make sure scroller knows not to virtualize; everything must be rendered.
-			this.keepRows = this._autoHeight ? 0 : this.constructor.prototype.keepRows;
+			this.keepRows = this._autoHeight ? 0 : this.keepRows;
 			this.scroller.setKeepInfo(this.keepRows);
 			this.views.render();
 			this._resize();
@@ -703,7 +838,7 @@ dojo.requireLocalization("dijit", "loading");
 			this.postresize();
 			this.focus.initFocusView();
 			// make rows unselectable
-			dojo.setSelectable(this.domNode, false);
+			dojo.setSelectable(this.domNode, this.selectable);
 		},
 
 		postresize: function(){
@@ -1081,13 +1216,13 @@ dojo.requireLocalization("dijit", "loading");
 		addRow: function(){
 			// summary:
 			//		Add a row to the grid.
-			this.updateRowCount(this.rowCount+1);
+			this.updateRowCount(this.attr('rowCount')+1);
 		},
 
 		removeSelectedRows: function(){
 			// summary:
 			//		Remove the selected rows from the grid.
-			this.updateRowCount(Math.max(0, this.rowCount - this.selection.getSelected().length));
+			this.updateRowCount(Math.max(0, this.attr('rowCount') - this.selection.getSelected().length));
 			this.selection.clear();
 		}
 
@@ -1152,7 +1287,7 @@ dojo.requireLocalization("dijit", "loading");
 						viewIdx++;
 						// move to allocating things into the next view
 						lastViewIdx += cView.__span;
-						lastView = cView;
+						var lastView = cView;
 						cView = props.structure[viewIdx];
 					}
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 12245 2008-11-01 15:06:58Z mikaelkael $
+ * @version    $Id: TestCommon.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -36,8 +35,11 @@ require_once 'Zend/Db/Table/Row.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Table
+ * @group      Zend_Db_Table_Row
  */
 abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
 {
@@ -73,8 +75,8 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
             'data'   => $data,
         );
 
-        Zend_Loader::loadClass('Zend_Db_Table_Row_TestTableRow');
-        return new Zend_Db_Table_Row_TestTableRow($config);
+        Zend_Loader::loadClass('My_ZendDbTable_Row_TestTableRow');
+        return new My_ZendDbTable_Row_TestTableRow($config);
     }
 
     public function testTableFindRow()
@@ -122,6 +124,24 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
                 'Expecting object of type Zend_Db_Table_Row_Exception, got '.get_class($e));
             $this->assertEquals("Data must be an array", $e->getMessage());
         }
+    }
+
+    // ZF-1144
+    public function testTableRowContructorWithTableNameSpecifiedInSubclass()
+    {
+        $this->_useMyIncludePath();
+        
+        /**
+         * @see Zend_Db_Table_Row_TestStandaloneRow
+         */
+        require_once 'My/ZendDbTable/Row/TestStandaloneRow.php';
+
+        Zend_Db_Table_Abstract::setDefaultAdapter($this->_db);
+
+        $row = new My_ZendDbTable_Row_TestStandaloneRow();
+        $this->assertType('Zend_Db_Table_Abstract', $row->getTable());
+
+        Zend_Db_Table_Abstract::setDefaultAdapter();
     }
 
     public function testTableRowReadOnly()
@@ -213,6 +233,25 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         if (!isset($row1->$bug_id)) {
             $this->fail('Column "id" is set but isset() returns false');
         }
+    }
+    
+    public function testTableRowMagicUnset()
+    {
+        $table = $this->_table['bugs'];
+        $row   = $table->find(1)->current();
+        
+        unset($row->assigned_to);
+        $this->assertFalse(isset($row->assigned_to));
+        $diff = array_diff_key(array('assigned_to'=>''), $row->toArray());
+        $this->assertEquals(array('assigned_to'),array_keys($diff));
+    }
+    
+    public function testTableRowMagicUnsetWhenUnsettingPkValueThrowsException()
+    {
+        $table = $this->_table['bugs'];
+        $row   = $table->find(1)->current();
+        $this->setExpectedException('Zend_Db_Table_Row_Exception');
+        unset($row->bug_id);
     }
 
     public function testTableRowMagicSet()
@@ -366,7 +405,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
 
     public function testTableRowSaveInsertSequence()
     {
-        $table = $this->_getTable('Zend_Db_Table_TableProducts',
+        $table = $this->_getTable('My_ZendDbTable_TableProducts',
             array(Zend_Db_Table_Abstract::SEQUENCE => 'zfproducts_seq'));
         $product_id   = $this->_db->foldCase('product_id');
         $product_name = $this->_db->foldCase('product_name');
@@ -439,7 +478,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Table_Exception', $e,
                 'Expecting object of type Zend_Db_Table_Row_Exception got '.get_class($e));
-            $this->assertEquals('The specified Table \'Zend_Db_Table_TableBugs\' does not have the same primary key as the Row', $e->getMessage());
+            $this->assertEquals('The specified Table \'My_ZendDbTable_TableBugs\' does not have the same primary key as the Row', $e->getMessage());
         }
     }
 
@@ -471,7 +510,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Table_Exception', $e,
                 'Expecting object of type Zend_Db_Table_Row_Exception got '.get_class($e));
-            $this->assertEquals('The specified Table \'Zend_Db_Table_TableBugs\' does not have the same primary key as the Row', $e->getMessage());
+            $this->assertEquals('The specified Table \'My_ZendDbTable_TableBugs\' does not have the same primary key as the Row', $e->getMessage());
         }
     }
 
@@ -515,7 +554,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Table_Exception', $e,
                 'Expecting object of type Zend_Db_Table_Exception got '.get_class($e));
-            $this->assertEquals('The specified Table is of class Zend_Db_Table_TableProducts, expecting class to be instance of Zend_Db_Table_TableBugs', $e->getMessage());
+            $this->assertEquals('The specified Table is of class My_ZendDbTable_TableProducts, expecting class to be instance of My_ZendDbTable_TableBugs', $e->getMessage());
         }
     }
 
@@ -532,7 +571,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Table_Exception', $e,
                 'Expecting object of type Zend_Db_Table_Row_Exception got '.get_class($e));
-            $this->assertEquals('The specified Table is of class Zend_Db_Table_TableBugs, expecting class to be instance of foo', $e->getMessage());
+            $this->assertEquals('The specified Table is of class My_ZendDbTable_TableBugs, expecting class to be instance of foo', $e->getMessage());
         }
     }
 
@@ -596,7 +635,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Table_Row_Exception', $e,
                 'Expecting object of type Zend_Db_Table_Row_Exception, got '.get_class($e));
-            $this->assertEquals("The specified Table 'Zend_Db_Table_TableBugsProducts' does not have the same primary key as the Row", $e->getMessage());
+            $this->assertEquals("The specified Table 'My_ZendDbTable_TableBugsProducts' does not have the same primary key as the Row", $e->getMessage());
         }
     }
 
@@ -746,18 +785,9 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Table_Row_Exception', $e,
                 'Expecting object of type Zend_Db_Table_Row_Exception, got '.get_class($e));
-            $this->assertEquals('The specified Table is of class Zend_Db_Table_TableProducts, expecting class to be instance of Zend_Db_Table_TableBugs', $e->getMessage());
+            $this->assertEquals('The specified Table is of class My_ZendDbTable_TableProducts, expecting class to be instance of My_ZendDbTable_TableBugs', $e->getMessage());
         }
         $this->assertFalse($connected);
-    }
-
-    /**
-     * Allow adapters with sequences to declare them
-     * @return Zend_Db_Table_Abstract
-     */
-    protected function _testTableRowSetReadOnlyGetTableBugs()
-    {
-        return $this->_table['bugs'];
     }
 
     public function testTableRowSetReadOnly()
@@ -819,5 +849,23 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
             $this->assertEquals('Specified column is not a string', $e->getMessage());
         }
     }
+    
+    
+    
+    /**
+     * Utility methods below
+     */
 
+    
+    
+    
+    /**
+     * Allow adapters with sequences to declare them
+     * @return Zend_Db_Table_Abstract
+     */
+    protected function _testTableRowSetReadOnlyGetTableBugs()
+    {
+        return $this->_table['bugs'];
+    }
+    
 }

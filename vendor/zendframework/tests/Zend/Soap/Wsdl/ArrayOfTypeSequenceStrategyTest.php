@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Soap
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -34,6 +34,15 @@ require_once 'Zend/Soap/Wsdl.php';
 
 require_once 'Zend/Soap/Wsdl/Strategy/ArrayOfTypeSequence.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Soap
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Soap
+ * @group      Zend_Soap_Wsdl
+ */
 class Zend_Soap_Wsdl_ArrayOfTypeSequenceStrategyTest extends PHPUnit_Framework_TestCase
 {
     private $wsdl;
@@ -78,7 +87,7 @@ class Zend_Soap_Wsdl_ArrayOfTypeSequenceStrategyTest extends PHPUnit_Framework_T
 
         // Check for ArrayOfArrayOfString
         $this->assertContains(
-            '<xsd:complexType name="ArrayOfArrayOfString"><xsd:sequence><xsd:element name="item" type="ArrayOfString" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
+            '<xsd:complexType name="ArrayOfArrayOfString"><xsd:sequence><xsd:element name="item" type="tns:ArrayOfString" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
             $wsdl
         );
         // Check for ArrayOfString
@@ -97,12 +106,12 @@ class Zend_Soap_Wsdl_ArrayOfTypeSequenceStrategyTest extends PHPUnit_Framework_T
 
         // Check for ArrayOfArrayOfArrayOfString
         $this->assertContains(
-            '<xsd:complexType name="ArrayOfArrayOfArrayOfString"><xsd:sequence><xsd:element name="item" type="ArrayOfArrayOfString" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
+            '<xsd:complexType name="ArrayOfArrayOfArrayOfString"><xsd:sequence><xsd:element name="item" type="tns:ArrayOfArrayOfString" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
             $wsdl
         );
         // Check for ArrayOfArrayOfString
         $this->assertContains(
-            '<xsd:complexType name="ArrayOfArrayOfString"><xsd:sequence><xsd:element name="item" type="ArrayOfString" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
+            '<xsd:complexType name="ArrayOfArrayOfString"><xsd:sequence><xsd:element name="item" type="tns:ArrayOfString" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
             $wsdl
         );
         // Check for ArrayOfString
@@ -112,33 +121,46 @@ class Zend_Soap_Wsdl_ArrayOfTypeSequenceStrategyTest extends PHPUnit_Framework_T
         );
     }
 
-    public function testSpecifyingNonSimpleArrayTypeThrowsException()
+
+    public function testAddComplexTypeObject()
     {
-        try {
-            $return = $this->wsdl->addComplexType('Zend_Soap_Wsdl_SequenceTest[]');
-            $this->fail();
-        } catch(Zend_Soap_Wsdl_Exception $e) {
-            
-        }
+        $return = $this->wsdl->addComplexType('Zend_Soap_Wsdl_SequenceTest');
+
+        $this->assertEquals("tns:Zend_Soap_Wsdl_SequenceTest", $return);
+
+        $wsdl = $this->wsdl->toXML();
+
+        $this->assertContains(
+            '<xsd:complexType name="Zend_Soap_Wsdl_SequenceTest"><xsd:all><xsd:element name="var" type="xsd:int"/></xsd:all></xsd:complexType>',
+            $wsdl
+        );
     }
 
-    public function testStrategyCannotHandleReturnOfObjectsThrowingException()
+    public function testAddComplexTypeArrayOfObject()
     {
-        try {
-            $return = $this->wsdl->addComplexType('Zend_Soap_Wsdl_SequenceTest');
-            $this->fail();
-        } catch(Zend_Soap_Wsdl_Exception $e) {
-            
-        }
+         
+         $return = $this->wsdl->addComplexType('Zend_Soap_Wsdl_SequenceTest[]');
+
+         $this->assertEquals("tns:ArrayOfZend_soap_wsdl_sequencetest", $return);
+
+         $wsdl = $this->wsdl->toXML();
+
+         $this->assertContains(
+            '<xsd:complexType name="Zend_Soap_Wsdl_SequenceTest"><xsd:all><xsd:element name="var" type="xsd:int"/></xsd:all></xsd:complexType>',
+            $wsdl
+         );
+
+         $this->assertContains(
+            '<xsd:complexType name="ArrayOfZend_soap_wsdl_sequencetest"><xsd:sequence><xsd:element name="item" type="tns:Zend_Soap_Wsdl_SequenceTest" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>',
+            $wsdl
+         );
     }
 
     public function testAddComplexTypeOfNonExistingClassThrowsException()
     {
-        try {
-            $this->wsdl->addComplexType('Zend_Soap_Wsdl_UnknownClass[]');
-        } catch(Zend_Soap_Wsdl_Exception $e) {
+        $this->setExpectedException("Zend_Soap_Wsdl_Exception");
 
-        }
+        $this->wsdl->addComplexType('Zend_Soap_Wsdl_UnknownClass[]');
     }
 }
 

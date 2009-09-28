@@ -270,12 +270,12 @@ dojo.declare("image.Container",
 	
 	_handleKey: function(e){
 		// summary: keyboard handling code
-		var dk = dojo.keys;
-		var key = (e.charCode == dk.SPACE ? dk.SPACE : e.keyCode);
-		var cur = this.nl.indexOf(this.selectedChild.domNode || this.nl[0]);
-		var ni;
+		var dk = dojo.keys,
+			cur = this.nl.indexOf(this.selectedChild.domNode || this.nl[0]),
+			ni
+		;
 		
-		switch(key){
+		switch(e.charOrCode){
 			
 			case dk.RIGHT_ARROW:
 				// goto next item or stop if loop='false' and at end
@@ -305,7 +305,7 @@ dojo.declare("image.Container",
 		dojo.stopEvent(e);
 		var scroll = e[(!dojo.isMozilla ? "wheelDelta" : "detail")] * (!dojo.isMozilla ? 1 : -1);
 		this._handleKey({
-			keyCode: dojo.keys[(scroll > 0 ? "LEFT_ARROW" : "RIGHT_ARROW")]	
+			charOrCode: dojo.keys[(scroll > 0 ? "LEFT_ARROW" : "RIGHT_ARROW")]	
 		});
 		
 	}

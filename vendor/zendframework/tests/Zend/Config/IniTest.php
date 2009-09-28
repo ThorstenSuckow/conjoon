@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IniTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: IniTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -34,8 +34,9 @@ require_once 'Zend/Config/Ini.php';
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Config
  */
 class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
 {
@@ -226,6 +227,11 @@ class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
 
     public function testZF739()
     {
+        if (version_compare('5.3.0', PHP_VERSION) < 1) {
+            $this->markTestSkipped('PHP >= 5.3.0 does not allow : as a nest separator');
+            return;
+        }
+
         $config = new Zend_Config_Ini($this->_iniFileSeparatorConfig, 'all', array('nestSeparator'=>':'));
 
         $this->assertEquals('all', $config->hostname);
@@ -248,7 +254,6 @@ class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
         $filename = dirname(__FILE__) . '/_files/zf2843.ini';
         $config = new Zend_Config_Ini($filename, null, array('nestSeparator' => '.'));
         
-        
         $this->assertEquals('123', $config->abc);
         $this->assertEquals('jkl', $config->ghi);
     }
@@ -259,8 +264,21 @@ class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
             $config = new Zend_Config_Ini($this->_iniFileInvalid);
             $this->fail('An expected Zend_Config_Exception has not been raised');
         } catch (Zend_Config_Exception $expected) {
-            $this->assertContains('Error parsing', $expected->getMessage());
+            $this->assertRegexp('/(Error parsing|syntax error, unexpected)/', $expected->getMessage());
         }
         
+    }
+
+    /*
+     * @group ZF-5800
+     *
+     */
+    public function testArraysOfKeysCreatedUsingAttributesAndKeys()
+    {
+        $filename = dirname(__FILE__) . '/_files/zf5800.ini';
+        $config = new Zend_Config_Ini($filename, 'dev');
+        $this->assertEquals('nice.guy@company.com', $config->receiver->{0}->mail);
+        $this->assertEquals('1', $config->receiver->{0}->html);
+        $this->assertNull($config->receiver->mail);
     }
 }

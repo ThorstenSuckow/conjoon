@@ -1,8 +1,23 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: CsvTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -19,6 +34,9 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Translate
  */
 class Zend_Translate_Adapter_CsvTest extends PHPUnit_Framework_TestCase
 {
@@ -68,7 +86,7 @@ class Zend_Translate_Adapter_CsvTest extends PHPUnit_Framework_TestCase
         $adapter = new Zend_Translate_Adapter_Csv(dirname(__FILE__) . '/_files/translation_en.csv', 'en');
         $this->assertEquals('Message 1 (en)', $adapter->translate('Message 1'));
         $this->assertEquals('Message 1 (en)', $adapter->_('Message 1'));
-        $this->assertEquals('Message 6', $adapter->translate('Message 6'));
+        $this->assertEquals('Message 60', $adapter->translate('Message 60'));
         $this->assertEquals('Küchen Möbel (en)', $adapter->translate('Cooking furniture'));
         $this->assertEquals('Cooking furniture (en)', $adapter->translate('Küchen Möbel'));
     }
@@ -77,7 +95,7 @@ class Zend_Translate_Adapter_CsvTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new Zend_Translate_Adapter_Csv(dirname(__FILE__) . '/_files/translation_en.csv', 'en');
         $this->assertTrue($adapter->isTranslated('Message 1'));
-        $this->assertFalse($adapter->isTranslated('Message 6'));
+        $this->assertFalse($adapter->isTranslated('Message 60'));
         $this->assertTrue($adapter->isTranslated('Message 1', true));
         $this->assertTrue($adapter->isTranslated('Message 1', true, 'en'));
         $this->assertFalse($adapter->isTranslated('Message 1', false, 'es'));
@@ -108,7 +126,21 @@ class Zend_Translate_Adapter_CsvTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new Zend_Translate_Adapter_Csv(dirname(__FILE__) . '/_files/translation_en.csv', 'en');
         $adapter->setOptions(array('testoption' => 'testkey'));
-        $this->assertEquals(array('delimiter' => ';', 'testoption' => 'testkey', 'clear' => false, 'scan' => null, 'locale' => 'en', 'length' => 0, 'enclosure' => '"', 'ignore' => '.', 'disableNotices' => false), $adapter->getOptions());
+        $this->assertEquals(
+            array(
+                'delimiter' => ';',
+                'testoption' => 'testkey',
+                'clear' => false,
+                'scan' => null,
+                'locale' => 'en',
+                'length' => 0,
+                'enclosure' => '"',
+                'ignore' => '.',
+                'disableNotices' => false,
+                'log'             => false,
+                'logMessage'      => 'Untranslated message within \'%locale%\': %message%',
+                'logUntranslated' => false),
+            $adapter->getOptions());
         $this->assertEquals('testkey', $adapter->getOptions('testoption'));
         $this->assertTrue(is_null($adapter->getOptions('nooption')));
     }
@@ -117,7 +149,7 @@ class Zend_Translate_Adapter_CsvTest extends PHPUnit_Framework_TestCase
     {
         $adapter = new Zend_Translate_Adapter_Csv(dirname(__FILE__) . '/_files/translation_en.csv', 'en');
         $this->assertEquals('Message 1 (en)', $adapter->translate('Message 1'));
-        $this->assertEquals('Message 6', $adapter->translate('Message 6'));
+        $this->assertEquals('Message 60', $adapter->translate('Message 60'));
         $adapter->addTranslation(dirname(__FILE__) . '/_files/translation_en2.csv', 'de', array('clear' => true));
         $this->assertEquals('Nachricht 1', $adapter->translate('Message 1'));
         $this->assertEquals('Message 4', $adapter->translate('Message 4'));

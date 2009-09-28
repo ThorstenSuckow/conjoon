@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Layout
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: PluginTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_LayoutTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Layout_PluginTest::main");
@@ -17,6 +38,13 @@ require_once 'Zend/Controller/Response/Cli.php';
 
 /**
  * Test class for Zend_Layout_Controller_Plugin_Layout
+ *
+ * @category   Zend
+ * @package    Zend_Layout
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Layout
  */
 class Zend_Layout_PluginTest extends PHPUnit_Framework_TestCase 
 {
@@ -43,7 +71,7 @@ class Zend_Layout_PluginTest extends PHPUnit_Framework_TestCase
     {
         Zend_Controller_Front::getInstance()->resetInstance();
 
-        Zend_Layout_PluginTest_Layout::$_mvcInstance = null;
+        Zend_Layout_PluginTest_Layout::resetMvcInstance();
 
         if (Zend_Controller_Action_HelperBroker::hasHelper('Layout')) {
             Zend_Controller_Action_HelperBroker::removeHelper('Layout');
@@ -61,6 +89,7 @@ class Zend_Layout_PluginTest extends PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
+        Zend_Layout::resetMvcInstance();
     }
 
     public function testConstructorWithLayoutObject()
@@ -180,7 +209,10 @@ class Zend_Layout_PluginTest extends PHPUnit_Framework_TestCase
  */
 class Zend_Layout_PluginTest_Layout extends Zend_Layout
 {
-    public static $_mvcInstance;
+    public static function resetMvcInstance()
+    {
+        self::$_mvcInstance = null;
+    }
 }
 
 // Call Zend_Layout_PluginTest::main() if this source file is executed directly.

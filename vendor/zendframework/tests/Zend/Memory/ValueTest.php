@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Memory
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ValueTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ValueTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -32,7 +32,7 @@ require_once 'Zend/Memory.php';
  * @category   Zend
  * @package    Zend_Memory
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Memory_Container_Movable_Dummy extends Zend_Memory_Container_Movable
@@ -56,8 +56,12 @@ class Zend_Memory_Container_Movable_Dummy extends Zend_Memory_Container_Movable
 
 
 /**
+ * @category   Zend
  * @package    Zend_Memory
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Memory
  */
 class Zend_Memory_ValueTest extends PHPUnit_Framework_TestCase
 {
@@ -118,7 +122,11 @@ class Zend_Memory_ValueTest extends PHPUnit_Framework_TestCase
         $valueObject[2] = '_';
         $this->assertEquals((string)$valueObject, '01_3456789');
 
+
+        $error_level = error_reporting();
+        error_reporting($error_level & ~E_NOTICE);
         $valueObject[10] = '_';
         $this->assertEquals((string)$valueObject, '01_3456789_');
+        error_reporting($error_level);
     }
 }

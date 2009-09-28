@@ -15,14 +15,25 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once 'Zend/Db/Table/Select/TestCommon.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
+/**
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Table
+ * @group      Zend_Db_Table_Select
+ */
 class Zend_Db_Table_Select_MysqliTest extends Zend_Db_Table_Select_TestCommon
 {
 
@@ -31,4 +42,15 @@ class Zend_Db_Table_Select_MysqliTest extends Zend_Db_Table_Select_TestCommon
         return 'Mysqli';
     }
 
+    /**
+     * Mysqli does not support named binds
+     * ZF-2017: Test bind use of the Zend_Db_Select class.
+     * @group ZF-2017
+     * @expectedException Zend_Db_Statement_Exception
+     */
+    public function testSelectQueryWithBinds()
+    {
+        parent::testSelectQueryWithBinds();
+    }
+    
 }

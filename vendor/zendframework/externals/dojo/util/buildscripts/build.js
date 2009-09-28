@@ -38,12 +38,15 @@ function help(){
 
 	var helpText = "To run the build, you must have Java 1.4.2 or later installed.\n"
 		+ "To run a build run the following command from this directory:\n\n"
-		+ "> java -jar ../shrinksafe/custom_rhino.jar build.js [name=value...]\n\n"
+		+ "> java -classpath ../shrinksafe/js.jar:../shrinksafe/shrinksafe.jar "
+		+ "org.mozilla.javascript.tools.shell.Main build.js [name=value...]\n\n"
 		+ "Here is an example of a typical release build:\n\n"
-		+ "> java -jar ../shrinksafe/custom_rhino.jar build.js profile=base action=release\n\n"
+		+ "> java -classpath ../shrinksafe/js.jar:../shrinksafe/shrinksafe.jar " 
+		+ "org.mozilla.javascript.tools.shell.Main  build.js profile=base action=release\n\n"
 		+ "If you get a 'java.lang.OutOfMemoryError: Java heap space' error, try increasing the "
 		+ "memory Java can use for the command:\n\n"
-		+ "> java -Xms256m -Xmx256m -jar ../shrinksafe/custom_rhino.jar build.js profile=base action=release\n\n"
+		+ "> java -Xms256m -Xmx256m -classpath ../shrinksafe/js.jar:../shrinksafe/shrinksafe.jar "
+		+ "org.mozilla.javascript.tools.shell.Main build.js profile=base action=release\n\n"
 		+ "Change the 256 number to the number of megabytes you want to give Java.\n\n"
 		+ "The possible name=value build options are shown below with the defaults as their values:\n\n"
 		+ buildOptionText;
@@ -269,6 +272,12 @@ function _copyToRelease(/*String*/prefixName, /*String*/prefixPath, /*Object*/kw
 
 	logger.info("Copying: " + prefixPath + " to: " + releasePath);
 	var copiedFiles = fileUtil.copyDir(prefixPath, releasePath, copyRegExps, true);
+
+	//If want a different selector engine, adjust that now.
+	//Copy the new selector js over the dojo._base.query file
+	if(prefixName == "dojo" && kwArgs.query == "sizzle"){
+		fileUtil.copyFile(releasePath + "/_base/query-sizzle.js", releasePath + "/_base/query.js");
+	}
 
 	//Make sure to copy over any "source" files for the layers be targeted by
 	//buildLayers. Otherwise dependencies will not be calculated correctly.

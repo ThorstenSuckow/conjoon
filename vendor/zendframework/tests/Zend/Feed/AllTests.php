@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -46,13 +45,26 @@ require_once 'Zend/Feed/ImportTest.php';
 require_once 'Zend/Feed/IteratorTest.php';
 require_once 'Zend/Feed/Entry/RssTest.php';
 
+require_once 'Zend/Feed/ReaderTest.php';
+require_once 'Zend/Feed/Reader/Feed/RssTest.php';
+require_once 'Zend/Feed/Reader/Entry/RssTest.php';
+require_once 'Zend/Feed/Reader/Feed/AtomTest.php';
+require_once 'Zend/Feed/Reader/Entry/AtomTest.php';
+require_once 'Zend/Feed/Reader/Feed/CommonTest.php';
+require_once 'Zend/Feed/Reader/Entry/CommonTest.php';
+
+require_once 'Zend/Feed/Reader/Integration/WordpressRss2DcAtomTest.php';
+require_once 'Zend/Feed/Reader/Integration/WordpressAtom10Test.php';
+require_once 'Zend/Feed/Reader/Integration/LautDeRdfTest.php';
+require_once 'Zend/Feed/Reader/Integration/H-OnlineComAtom10Test.php';
 
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Feed
  */
 class Zend_Feed_AllTests
 {
@@ -73,6 +85,29 @@ class Zend_Feed_AllTests
         $suite->addTestSuite('Zend_Feed_ImportTest');
         $suite->addTestSuite('Zend_Feed_IteratorTest');
         $suite->addTestSuite('Zend_Feed_Entry_RssTest');
+
+        /* Zend_Feed_Reader tests */
+        // Base parent class
+        $suite->addTestSuite('Zend_Feed_ReaderTest');
+        // RSS - Feed Level
+        $suite->addTestSuite('Zend_Feed_Reader_Feed_RssTest');
+        // RSS - Item Level
+        $suite->addTestSuite('Zend_Feed_Reader_Entry_RssTest');
+        // ATOM - Feed Level
+        $suite->addTestSuite('Zend_Feed_Reader_Feed_AtomTest');
+        // ATOM - Item Level
+        $suite->addTestSuite('Zend_Feed_Reader_Entry_AtomTest');
+        // COMMON - Feed Level
+        $suite->addTestSuite('Zend_Feed_Reader_Feed_CommonTest');
+        // COMMON - Entry Level
+        $suite->addTestSuite('Zend_Feed_Reader_Entry_CommonTest');
+        /**
+         * Real World Feed Tests
+         */
+        $suite->addTestSuite('Zend_Feed_Reader_Integration_WordpressRss2DcAtomTest');
+        $suite->addTestSuite('Zend_Feed_Reader_Integration_WordpressAtom10Test');
+        $suite->addTestSuite('Zend_Feed_Reader_Integration_LautDeRdfTest');
+        $suite->addTestSuite('Zend_Feed_Reader_Integration_HOnlineComAtom10Test');
 
         return $suite;
     }

@@ -1,5 +1,6 @@
 dojo.provide("dojox.form.RangeSlider");
-dojo.require("dijit.form.Slider");
+dojo.require("dijit.form.HorizontalSlider");
+dojo.require("dijit.form.VerticalSlider");
 dojo.require("dojox.fx");
 
 dojo.declare(
@@ -129,6 +130,7 @@ dojo.declare(
     },
     
     _bumpValue: function(signedChange, useMaxValue){
+				var value;
         // we pass an array to _setValueAttr when signedChange is an array
         if(!dojo.isArray(signedChange)){
             value = this._getBumpValue(signedChange, useMaxValue);

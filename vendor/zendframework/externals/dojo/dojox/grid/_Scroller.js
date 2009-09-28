@@ -123,6 +123,11 @@ dojo.provide("dojox.grid._Scroller");
 			this.rowCount = inRowCount;
 			// update page count, adjust document height
 			var oldPageCount = this.pageCount;
+			if(oldPageCount === 0){
+				//We want to have at least 1px in height to keep scroller.  Otherwise with an
+				//empty grid you can't scroll to see the header.
+				this.height = 1;
+			}
 			this.pageCount = this._getPageCount(this.rowCount, this.rowsPerPage);
 			if(this.pageCount < oldPageCount){
 				for(var i=oldPageCount-1; i>=this.pageCount; i--){
@@ -177,7 +182,7 @@ dojo.provide("dojox.grid._Scroller");
 				this.contentNodes[i].appendChild(this.pageNodes[i][inPageIndex]);
 			}
 		},
-		preparePage: function(inPageIndex, inPos, inReuseNode){
+		preparePage: function(inPageIndex, inReuseNode){
 			var p = (inReuseNode ? this.popPage() : null);
 			for(var i=0; i<this.colCount; i++){
 				var nodes = this.pageNodes[i];
@@ -206,7 +211,7 @@ dojo.provide("dojox.grid._Scroller");
 			for(var i=0; i<this.colCount; i++){
 				var n = this.invalidatePageNode(inPageIndex, this.pageNodes[i]);
 				if(n){
-					dojo._destroyElement(n);
+					dojo.destroy(n);
 				}
 			}
 		},
@@ -239,12 +244,14 @@ dojo.provide("dojox.grid._Scroller");
 				this.windowHeight = this.scrollboxNode.clientHeight;
 			}
 			for(var i=0; i<this.colCount; i++){
-				dojox.grid.util.setStyleHeightPx(this.contentNodes[i], this.height);
+				//We want to have 1px in height min to keep scroller.  Otherwise can't scroll
+				//and see header in empty grid.
+				dojox.grid.util.setStyleHeightPx(this.contentNodes[i], Math.max(1,this.height));
 			}
 			
 			// Calculate the average row height and update the defaults (row and page).
 			this.needPage(this.page, this.pageTop);
-			var rowsOnPage = (this.page < this.pageCount - 1) ? this.rowsPerPage : (this.rowCount % this.rowsPerPage);
+			var rowsOnPage = (this.page < this.pageCount - 1) ? this.rowsPerPage : ((this.rowCount % this.rowsPerPage) || this.rowsPerPage);
 			var pageHeight = this.getPageHeight(this.page);
 			this.averageRowHeight = (pageHeight > 0 && rowsOnPage > 0) ? (pageHeight / rowsOnPage) : 0;
 		},
@@ -283,6 +290,7 @@ dojo.provide("dojox.grid._Scroller");
 		},
 		createPageNode: function(){
 			var p = document.createElement('div');
+			dojo.attr(p,"role","presentation");
 			p.style.position = 'absolute';
 			//p.style.width = '100%';
 			p.style[dojo._isBodyLtr() ? "left" : "right"] = '0';

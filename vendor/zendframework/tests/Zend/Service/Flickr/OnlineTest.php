@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,24 +15,24 @@
  * @category   Zend
  * @package    Zend_Service_Flickr
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OnlineTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: OnlineTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
  */
 require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Service_Flickr
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Flickr
  */
 class Zend_Service_Flickr_OnlineTest extends PHPUnit_Framework_TestCase
 {
@@ -212,7 +211,15 @@ class Zend_Service_Flickr_OnlineTest extends PHPUnit_Framework_TestCase
     }
 }
 
-
+/**
+ * @category   Zend
+ * @package    Zend_Service_Flickr
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
+ * @group      Zend_Service_Flickr
+ */
 class Zend_Service_Flickr_OnlineTest_Skip extends PHPUnit_Framework_TestCase
 {
     public function testNothing()

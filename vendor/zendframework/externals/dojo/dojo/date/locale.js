@@ -136,7 +136,7 @@ dojo.requireLocalization("dojo.cldr", "gregorian");
 					s = tz.join("");
 					break;
 //				case 'Y': case 'u': case 'W': case 'F': case 'g': case 'A': case 'e':
-//					console.debug(match+" modifier unimplemented");
+//					console.log(match+" modifier unimplemented");
 				default:
 					throw new Error("dojo.date.locale.format: invalid pattern char: "+pattern);
 			}
@@ -323,7 +323,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 					}
 					v = dojo.indexOf(months, v);
 					if(v == -1){
-//						console.debug("dojo.date.locale.parse: Could not parse month name: '" + v + "'.");
+//						console.log("dojo.date.locale.parse: Could not parse month name: '" + v + "'.");
 						return false;
 					}
 				}else{
@@ -341,7 +341,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 				}
 				v = dojo.indexOf(days, v);
 				if(v == -1){
-//					console.debug("dojo.date.locale.parse: Could not parse weekday name: '" + v + "'.");
+//					console.log("dojo.date.locale.parse: Could not parse weekday name: '" + v + "'.");
 					return false;
 				}
 
@@ -366,7 +366,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 					pm = pm.replace(period,'').toLowerCase();
 				}
 				if(options.strict && v != am && v != pm){
-//					console.debug("dojo.date.locale.parse: Could not parse am/pm part.");
+//					console.log("dojo.date.locale.parse: Could not parse am/pm part.");
 					return false;
 				}
 
@@ -381,7 +381,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 			case 'k': //hour (0-11)
 				//TODO: strict bounds checking, padding
 				if(v > 23){
-//					console.debug("dojo.date.locale.parse: Illegal hours value");
+//					console.log("dojo.date.locale.parse: Illegal hours value");
 					return false;
 				}
 
@@ -402,7 +402,7 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 //TODO				var firstDay = 0;
 //			default:
 //TODO: throw?
-//				console.debug("dojo.date.locale.parse: unsupported pattern char=" + token.charAt(0));
+//				console.log("dojo.date.locale.parse: unsupported pattern char=" + token.charAt(0));
 		}
 		return true;
 	});
@@ -424,11 +424,22 @@ dojo.date.locale.parse = function(/*String*/value, /*dojo.date.locale.__FormatOp
 
 	// Check for overflow.  The Date() constructor normalizes things like April 32nd...
 	//TODO: why isn't this done for times as well?
-	var allTokens = tokens.join("");
+	var allTokens = tokens.join(""),
+		dateToken = allTokens.indexOf('d') != -1,
+		monthToken = allTokens.indexOf('M') != -1;
+
 	if(!valid ||
-		(allTokens.indexOf('M') != -1 && dateObject.getMonth() != result[1]) ||
-		(allTokens.indexOf('d') != -1 && dateObject.getDate() != result[2])){
+		(monthToken && dateObject.getMonth() > result[1]) ||
+		(dateToken && dateObject.getDate() > result[2])){
 		return null;
+	}
+
+	// Check for underflow, due to DST shifts.  See #9366
+	// This assumes a 1 hour dst shift correction at midnight
+	// We could compare the timezone offset after the shift and add the difference instead.
+	if((monthToken && dateObject.getMonth() < result[1]) ||
+		(dateToken && dateObject.getDate() < result[2])){
+		dateObject = dojo.date.add(dateObject, "hour", 1);
 	}
 
 	return dateObject; // Date
@@ -530,7 +541,7 @@ function _buildDateTimeRE(tokens, bundle, options, pattern){
 			// case 'z':
 			// case 'Z':
 				s = ".*";
-//				console.debug("parse of date format, pattern=" + pattern);
+//				console.log("parse of date format, pattern=" + pattern);
 		}
 
 		if(tokens){ tokens.push(match); }
@@ -569,7 +580,7 @@ dojo.date.locale._getGregorianBundle = function(/*String*/locale){
 
 dojo.date.locale.addCustomFormats("dojo.cldr","gregorian");
 
-dojo.date.locale.getNames = function(/*String*/item, /*String*/type, /*String?*/use, /*String?*/locale){
+dojo.date.locale.getNames = function(/*String*/item, /*String*/type, /*String?*/context, /*String?*/locale){
 	// summary:
 	//		Used to get localized strings from dojo.cldr for day or month names.
 	//
@@ -577,15 +588,15 @@ dojo.date.locale.getNames = function(/*String*/item, /*String*/type, /*String?*/
 	//	'months' || 'days'
 	// type:
 	//	'wide' || 'narrow' || 'abbr' (e.g. "Monday", "Mon", or "M" respectively, in English)
-	// use:
+	// context:
 	//	'standAlone' || 'format' (default)
 	// locale:
 	//	override locale used to find the names
 
 	var label;
 	var lookup = dojo.date.locale._getGregorianBundle(locale);
-	var props = [item, use, type];
-	if(use == 'standAlone'){
+	var props = [item, context, type];
+	if(context == 'standAlone'){
 		var key = props.join('-');
 		label = lookup[key];
 		// Fall back to 'format' flavor of name

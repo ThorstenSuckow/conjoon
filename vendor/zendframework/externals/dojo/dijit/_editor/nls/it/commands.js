@@ -37,8 +37,6 @@
 	'formatBlock': 'Stile paragrafo',
 	'fontSize': 'Dimensione carattere',
 	'fontName': 'Nome carattere',
-	'tabIndent': 'Scheda Rientra',
 	/* Error messages */
-	'systemShortcutFF': 'L\'azione "${0}" è disponibile solo in Mozilla Firefox tramite tasti di scelta rapida. Utilizzare ${1}.',
-	'systemShortcut': 'L\'azione "${0}" è disponibile solo nel proprio browser tramite i tasti di scelta rapida. Utilizzare ${1}.'
+	'systemShortcut': 'Azione "${0}" disponibile sul proprio browser solo mediante i tasti di scelta rapida della tastiera. Utilizzare ${1}.'
 })

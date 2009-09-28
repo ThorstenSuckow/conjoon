@@ -1,9 +1,24 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ObjectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /** Zend_Pdf_Element_Object */
 require_once 'Zend/Pdf/Element/Object.php';
@@ -14,10 +29,13 @@ require_once 'Zend/Pdf/Element/Numeric.php';
 /** PHPUnit Test Case */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Pdf
  */
 class Zend_Pdf_Element_ObjectTest extends PHPUnit_Framework_TestCase
 {
@@ -37,7 +55,7 @@ class Zend_Pdf_Element_ObjectTest extends PHPUnit_Framework_TestCase
         try {
             $obj2 = new Zend_Pdf_Element_Object($obj1, 1, 0, new Zend_Pdf_ElementFactory(1));
         } catch (Zend_Pdf_Exception $e) {
-            $this->assertRegExp('/must not be instance of Zend_Pdf_Element_Object/i', $e->getMessage());
+            $this->assertRegExp('/must not be an instance of Zend_Pdf_Element_Object/i', $e->getMessage());
             return;
         }
         $this->fail('Expected Zend_Pdf_Exception to be thrown');

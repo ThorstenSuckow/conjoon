@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: DisplayGroupTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Form_DisplayGroupTest::main');
 }
@@ -18,6 +39,14 @@ require_once 'Zend/Loader/PluginLoader.php';
 require_once 'Zend/Translate.php';
 require_once 'Zend/View.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Form
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Form
+ */
 class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
 {
     public static function main()
@@ -370,7 +399,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
 
         $this->group->addElements(array($foo, $bar));
         $html = $this->group->render($this->getView());
-        $this->assertRegexp('#^<dt>&nbsp;</dt><dd><fieldset.*?</fieldset></dd>$#s', $html, $html);
+        $this->assertRegexp('#^<dt[^>]*>&nbsp;</dt><dd[^>]*><fieldset.*?</fieldset></dd>$#s', $html, $html);
         $this->assertContains('<input', $html, $html);
         $this->assertContains('"foo"', $html);
         $this->assertContains('"bar"', $html);
@@ -384,7 +413,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         $this->group->addElements(array($foo, $bar))
                     ->setView($this->getView());
         $html = $this->group->__toString();
-        $this->assertRegexp('#^<dt>&nbsp;</dt><dd><fieldset.*?</fieldset></dd>$#s', $html, $html);
+        $this->assertRegexp('#^<dt[^>]*>&nbsp;</dt><dd[^>]*><fieldset.*?</fieldset></dd>$#s', $html, $html);
         $this->assertContains('<input', $html);
         $this->assertContains('"foo"', $html);
         $this->assertContains('"bar"', $html);

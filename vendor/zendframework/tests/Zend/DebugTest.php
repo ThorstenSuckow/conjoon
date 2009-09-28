@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_Debug
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 /**
@@ -33,8 +34,9 @@ require_once 'Zend/Debug.php';
  * @category   Zend
  * @package    Zend_Debug
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Debug
  */
 class Zend_DebugTest extends PHPUnit_Framework_TestCase
 {

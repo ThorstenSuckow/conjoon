@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 12544 2008-11-11 09:34:04Z alexander $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -72,9 +71,9 @@ require_once 'Zend/Service/Nirvanix/AllTests.php';
 require_once 'Zend/Service/ReCaptcha/AllTests.php';
 
 /**
- * @see Zend_Service_SimpyTest
+ * @see Zend_Service_Simpy_AllTests
  */
-require_once 'Zend/Service/SimpyTest.php';
+require_once 'Zend/Service/Simpy/AllTests.php';
 
 /**
  * @see Zend_Service_SlideShareTest
@@ -111,8 +110,9 @@ require_once 'Zend/Service/Yahoo/AllTests.php';
  * @category   Zend
  * @package    Zend_Service
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Service
  */
 class Zend_Service_AllTests
 {
@@ -142,16 +142,12 @@ class Zend_Service_AllTests
         $suite->addTest(Zend_Service_Flickr_AllTests::suite());
         $suite->addTest(Zend_Service_Nirvanix_AllTests::suite());
         $suite->addTest(Zend_Service_ReCaptcha_AllTests::suite());
-        if (defined('TESTS_ZEND_SERVICE_SIMPY_ENABLED') && constant('TESTS_ZEND_SERVICE_SIMPY_ENABLED')) {
-            $suite->addTestSuite('Zend_Service_SimpyTest');
-        } else {
-            $suite->addTestSuite('Zend_Service_SimpyTest_Skip');
-        }
+        $suite->addTest(Zend_Service_Simpy_AllTests::suite());
         $suite->addTestSuite('Zend_Service_SlideShareTest');
         $suite->addTest(Zend_Service_StrikeIron_AllTests::suite());
         $suite->addTest(Zend_Service_Technorati_AllTests::suite());
         $suite->addTestSuite('Zend_Service_TwitterTest');
-        $suite->addTestSuite('Zend_Service_Twitter_SearchTest');
+        $suite->addTestSuite('Zend_Service_TwitterSearchTest');
         $suite->addTest(Zend_Service_Yahoo_AllTests::suite());
 
         return $suite;

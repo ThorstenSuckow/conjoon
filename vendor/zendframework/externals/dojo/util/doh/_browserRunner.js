@@ -50,7 +50,7 @@ if(window["dojo"]){
 			return str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;"); // string
 		};
 
-		var _logBacklog = [];
+		var _logBacklog = [], _loggedMsgLen = 0;
 		var sendToLogPane = function(args, skip){
 			var msg = "";
 			for(var x=0; x<args.length; x++){
@@ -72,10 +72,82 @@ if(window["dojo"]){
 					sendToLogPane(tm, true);
 				}
 			}
+			var logBody=byId("logBody");
 			var tn = document.createElement("div");
 			tn.innerHTML = msg;
-			byId("logBody").appendChild(tn);
+			//tn.id="logmsg_"+logBody.childNodes.length;
+			logBody.appendChild(tn);
+			_loggedMsgLen++;
 		}
+
+		var findTarget = function(n){
+			while(n && !n.getAttribute('_target')){
+				n=n.parentNode;
+				if(!n.getAttribute){
+					n=null;
+				}
+			}
+			return n;
+		}
+		
+		doh._jumpToLog = function(e){
+			//console.log(e);
+			
+			var node = findTarget(e?e.target:window.event.srcElement);
+			if(!node){
+				return;
+			}
+			var _t = Number(node.getAttribute('_target'));
+			var lb = byId("logBody");
+			if(_t>=lb.childNodes.length){
+				return;
+			}
+			var t = lb.childNodes[_t];
+			t.scrollIntoView();
+			if(window.dojo){
+				//t.parentNode.parentNode is <div class="tabBody">, only it has a explicitly set background-color,
+				//all children of it are transparent
+				var bgColor = dojo.style(t.parentNode.parentNode,'backgroundColor');
+				//node.parentNode is the tr which has background-color set explicitly
+				var hicolor = dojo.style(node.parentNode,'backgroundColor');
+				var unhilight = dojo.animateProperty({
+					node: t,
+					duration: 500,
+					properties:
+					{
+						backgroundColor: { start:hicolor, end: bgColor }
+					},
+					onEnd: function(){
+						t.style.backgroundColor="";
+					}
+				});
+				var hilight = dojo.animateProperty({
+					node: t,
+					duration: 500,
+					properties:
+					{
+						backgroundColor: { start:bgColor, end: hicolor }
+					},
+					onEnd: function(){
+						unhilight.play();
+					}
+				});
+				hilight.play();
+			}
+		};
+
+		doh._jumpToSuite = function(e){
+			var node = findTarget(e ? e.target : window.event.srcElement);
+			if(!node){
+				return;
+			}
+			var _g = node.getAttribute('_target');
+			var gn = getGroupNode(_g);
+			if(!gn){
+				return;
+			}
+			gn.scrollIntoView();
+		};
 
 		doh._init = (function(oi){
 			return function(){
@@ -85,12 +157,53 @@ if(window["dojo"]){
 					while(lb.firstChild){
 						lb.removeChild(lb.firstChild);
 					}
+					_loggedMsgLen = 0;
 				}
+				this._totalTime = 0;
 				this._suiteCount = 0;
 				oi.apply(doh, arguments);
 			}
 		})(doh._init);
 
+		doh._setupGroupForRun = (function(os){
+			//overload _setupGroupForRun to record which log line to jump to when a suite is clicked
+			return function(groupName){
+				var tg = doh._groups[groupName];
+				doh._curTestCount = tg.length;
+				doh._curGroupCount = 1;
+				var gn = getGroupNode(groupName);
+				if(gn){
+					//two lines will be added, scroll the second line into view
+					gn.getElementsByTagName("td")[2].setAttribute('_target',_loggedMsgLen+1);
+				}
+				os.apply(doh,arguments);
+			}
+		})(doh._setupGroupForRun);
+		
+		doh._report = (function(or){
+			//overload _report to insert a tfoot
+			return function(){
+				var tb = byId("testList");
+				if(tb){
+					var tfoots=tb.getElementsByTagName('tfoot');
+					if(tfoots.length){
+						tb.removeChild(tfoots[0]);
+					}
+					var foot = tb.createTFoot();
+					var row = foot.insertRow(-1);
+					row.className = 'inProgress';
+					var cell=row.insertCell(-1);
+					cell.colSpan=2;
+					cell.innerHTML="Result";
+					cell = row.insertCell(-1);
+					cell.innerHTML=this._testCount+" tests in "+this._groupCount+" groups /<span class='failure'>"+this._errorCount+"</span> errors, <span class='failure'>"+this._failureCount+"</span> failures";
+					cell.setAttribute('_target',_loggedMsgLen+1);
+					row.insertCell(-1).innerHTML=doh._totalTime+"ms";
+				}
+				or.apply(doh,arguments);
+			}
+		})(doh._report);
+		
 		if(this["opera"] && opera.postError){
 			doh.debug = function(){
 				var msg = "";
@@ -146,13 +259,13 @@ if(window["dojo"]){
 					for(x=0; x<nodes.length; x++){
 						nodes[x].style.display = "";
 					}
-					toggle.innerHTML = "&#054;";
+					toggle.innerHTML = "&#9660;";
 				}else{
 					rolledUp = true;
 					for(x=0; x<nodes.length; x++){
 						nodes[x].style.display = "none";
 					}
-					toggle.innerHTML = "&#052;";
+					toggle.innerHTML = "&#9658;";
 				}
 			});
 		};
@@ -245,12 +358,12 @@ if(window["dojo"]){
 				this._currentGlobalProgressBarWidth = 0;
 				this._suiteCount = this._testCount;
 			}
-			this._runedSuite++;
 			// console.debug("_groupStarted", group);
 			if(doh._inGroup != group){
-				doh._totalTime = 0;
+				doh._groupTotalTime = 0;
 				doh._runed = 0;
 				doh._inGroup = group;
+				this._runedSuite++;
 			}
 			var gn = getGroupNode(group);
 			if(gn){
@@ -262,18 +375,19 @@ if(window["dojo"]){
 			// console.debug("_groupFinished", group);
 			var gn = getGroupNode(group);
 			if(gn && doh._inGroup == group){
-				gn.className = (success) ? "success" : "failure";
-				gn.getElementsByTagName("td")[3].innerHTML = doh._totalTime+"ms";
+				doh._totalTime += doh._groupTotalTime;
+				gn.getElementsByTagName("td")[3].innerHTML = doh._groupTotalTime+"ms";
 				gn.getElementsByTagName("td")[2].lastChild.className = "";
 				doh._inGroup = null;
 				//doh._runedSuite++;
-				doh._updateGlobalProgressBar(this._runedSuite/this._suiteCount,success);
+				var failure = doh._updateGlobalProgressBar(this._runedSuite/this._groupCount,success,group);
+				gn.className = failure ? "failure" : "success";
 				//doh._runedSuite--;
-				doh._currentGlobalProgressBarWidth = parseInt(this._runedSuite/this._suiteCount*10000)/100;
+				doh._currentGlobalProgressBarWidth = parseInt(this._runedSuite/this._groupCount*10000)/100;
 				//byId("progressOuter").style.width = parseInt(this._runedSuite/this._suiteCount*100)+"%";
 			}
 			if(doh._inGroup == group){
-				this.debug("Total time for GROUP \"",group,"\" is ",doh._totalTime,"ms");
+				this.debug("Total time for GROUP \"",group,"\" is ",doh._groupTotalTime,"ms");
 			}
 		}
 
@@ -300,7 +414,7 @@ if(window["dojo"]){
 			}
 		}
 
-		doh._updateGlobalProgressBar = function(p,success){
+		doh._updateGlobalProgressBar = function(p,success,group){
 			var outerContainer=byId("progressOuter");
 					
 			var gdiv=outerContainer.childNodes[doh._runedSuite-1];
@@ -308,10 +422,14 @@ if(window["dojo"]){
 				gdiv=document.createElement('div');
 				outerContainer.appendChild(gdiv);
 				gdiv.className='success';
+				gdiv.setAttribute('_target',group);
 			}
-			if(!success){
+			if(!success && !gdiv._failure){
 				gdiv._failure=true;
 				gdiv.className='failure';
+				if(group){
+					gdiv.setAttribute('title','failed group '+group);
+				}
 			}
 			var tp=parseInt(p*10000)/100;
 			gdiv.style.width = (tp-doh._currentGlobalProgressBarWidth)+"%";
@@ -323,7 +441,7 @@ if(window["dojo"]){
 			if(fn){
 				fn.getElementsByTagName("td")[3].innerHTML = elapsed+"ms";
 				fn.className = (success) ? "success" : "failure";
-
+				fn.getElementsByTagName("td")[2].setAttribute('_target', _loggedMsgLen);
 				if(!success){
 					_playSound("doh");
 					var gn = getGroupNode(group);
@@ -338,7 +456,7 @@ if(window["dojo"]){
 				doh._runed++;
 				if(gn && doh._curTestCount){
 					var p = doh._runed/doh._curTestCount;
-					var groupfail = this._updateGlobalProgressBar((doh._runedSuite+p-1)/doh._suiteCount,success);
+					var groupfail = this._updateGlobalProgressBar((doh._runedSuite+p-1)/doh._groupCount,success,group);
 					
 					var pbar = gn.getElementsByTagName("td")[2].lastChild;
 					pbar.className = groupfail?"failure":"success";
@@ -346,7 +464,7 @@ if(window["dojo"]){
 					gn.getElementsByTagName("td")[3].innerHTML = parseInt(p*10000)/100+"%";
 				}
 			}
-			this._totalTime += elapsed;
+			this._groupTotalTime += elapsed;
 			this.debug((success ? "PASSED" : "FAILED"), "test:", fixture.name, elapsed, 'ms');
 		}
 
@@ -363,7 +481,7 @@ if(window["dojo"]){
 					doh.currentUrl = url;
 					this.d = new doh.Deferred();
 					doh.currentTestDeferred = this.d;
-					showTestPage();
+					doh.showTestPage();
 					byId("testBody").src = url;
 				},
 				timeout: timeout||10000, // 10s
@@ -379,7 +497,7 @@ if(window["dojo"]){
 					doh.currentUrl = null;
 					// this.d.errback(false);
 					// byId("testBody").src = "about:blank";
-					showLogPage();
+					doh.showLogPage();
 				}
 			});
 		}
@@ -398,16 +516,16 @@ if(window["dojo"]){
 			}
 		}
 
-		showTestPage = function(){
+		doh.showTestPage = function(){
 			_showTab("testBody", "logBody");
 		}
 
-		showLogPage = function(){
+		doh.showLogPage = function(){
 			_showTab("logBody", "testBody");
 		}
 
 		var runAll = true;
-		toggleRunAll = function(){
+		doh.toggleRunAll = function(){
 			// would be easier w/ query...sigh
 			runAll = !runAll;
 			if(!byId("testList")){ return; }
@@ -515,7 +633,7 @@ if(window["dojo"]){
 				_doh._failureCount += doh._failureCount;
 				_doh._testCount += doh._testCount;
 				// should we be really adding raw group counts?
-				_doh._groupCount += doh._groupCount;
+				//_doh._groupCount += doh._groupCount;
 				_doh.currentTestDeferred.callback(true);
 			}
 			var otr = doh._getTestObj;

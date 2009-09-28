@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,26 +15,23 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Sqlite.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: Sqlite.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * @see Zend_Db_TestUtil_Pdo_Common
  */
 require_once 'Zend/Db/TestUtil/Pdo/Common.php';
 
-
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_TestUtil_Pdo_Sqlite extends Zend_Db_TestUtil_Pdo_Common
@@ -67,4 +63,13 @@ class Zend_Db_TestUtil_Pdo_Sqlite extends Zend_Db_TestUtil_Pdo_Common
         return $type;
     }
 
+    protected function _getSqlCreateView($viewName)
+    {
+        return 'CREATE VIEW IF NOT EXISTS ' . $this->_db->quoteIdentifier($viewName, true);
+    }
+
+    protected function _getSqlDropView($viewName)
+    {
+        return 'DROP VIEW IF EXISTS ' . $this->_db->quoteIdentifier($viewName, true);
+    }
 }

@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -36,6 +37,14 @@ require_once 'Zend/OpenId/Provider/User/SessionTest.php';
 require_once 'Zend/OpenId/ExtensionTest.php';
 require_once 'Zend/OpenId/Extension/SregTest.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_OpenId
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_OpenId
+ */
 class Zend_OpenId_AllTests
 {
     public static function main()

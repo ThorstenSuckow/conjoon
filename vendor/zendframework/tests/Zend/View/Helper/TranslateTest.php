@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_View
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: TranslateTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_View_Helper_TranslateTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_TranslateTest::main");
@@ -22,8 +43,12 @@ require_once 'Zend/Translate/Adapter/Array.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_View
+ * @group      Zend_View_Helper
  */
-class Zend_View_Helper_TranslateTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_TranslateTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_View_Helper_Translate
@@ -195,12 +220,12 @@ class Zend_View_Helper_TranslateTest extends PHPUnit_Framework_TestCase
 
     public function testLocalTranslationObjectIsPreferredOverRegistry()
     {
-        $transReg = new Zend_Translate('array', array());
+        $transReg = new Zend_Translate('array', array('one' => 'eins'));
         Zend_Registry::set('Zend_Translate', $transReg);
 
         $this->assertSame($transReg->getAdapter(), $this->helper->getTranslator());
 
-        $transLoc = new Zend_Translate('array', array());
+        $transLoc = new Zend_Translate('array', array('one' => 'uno'));
         $this->helper->setTranslator($transLoc);
         $this->assertSame($transLoc->getAdapter(), $this->helper->getTranslator());
         $this->assertNotSame($transLoc->getAdapter(), $transReg->getAdapter());
@@ -211,10 +236,24 @@ class Zend_View_Helper_TranslateTest extends PHPUnit_Framework_TestCase
         $helper = $this->helper->translate();
         $this->assertSame($this->helper, $helper);
 
-        $transLoc = new Zend_Translate('array', array());
+        $transLoc = new Zend_Translate('array', array('one' => 'eins'));
         $this->helper->setTranslator($transLoc);
         $helper = $this->helper->translate();
         $this->assertSame($this->helper, $helper);
+    }
+
+    /**
+     * ZF-6724
+     */
+    public function testTranslationWithPercent()
+    {
+        $trans = new Zend_Translate('array', array('one' => 'eins', "two %1\$s" => "zwei %1\$s",
+            "three %1\$s %2\$s" => "drei %1\$s %2\$s", 'vier%ig' => 'four%'), 'de');
+        $trans->setLocale('de');
+
+        $this->helper->setTranslator($trans);
+        $this->assertEquals("four%", $this->helper->translate("vier%ig"));
+        $this->assertEquals("zwei 100", $this->helper->translate("two %1\$s", "100"));
     }
 }
 

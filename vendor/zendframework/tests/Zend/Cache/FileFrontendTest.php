@@ -1,10 +1,26 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: FileFrontendTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
  
- /**
+/**
  * Zend_Cache
  */
 require_once 'Zend/Cache.php';
@@ -17,21 +33,34 @@ require_once 'Zend/Cache/Backend/Test.php';
 require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
+ * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Cache
  */
 class Zend_Cache_FileFrontendTest extends PHPUnit_Framework_TestCase {
     
     private $_instance1;
     private $_instance2;
+    private $_instance3;
+    private $_instance4;
+    private $_masterFile;
+    private $_masterFile1;
+    private $_masterFile2;
     
     
     public function setUp()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->_masterFile = $this->_getTmpDirWindows() . DIRECTORY_SEPARATOR . 'zend_cache_master';
+            $this->_masterFile1 = $this->_getTmpDirWindows() . DIRECTORY_SEPARATOR . 'zend_cache_master1';
+            $this->_masterFile2 = $this->_getTmpDirWindows() . DIRECTORY_SEPARATOR . 'zend_cache_master2';
         } else {
             $this->_masterFile = $this->_getTmpDirUnix() . DIRECTORY_SEPARATOR . 'zend_cache_master';
+        	$this->_masterFile1 = $this->_getTmpDirUnix() . DIRECTORY_SEPARATOR . 'zend_cache_master1';
+        	$this->_masterFile2 = $this->_getTmpDirUnix() . DIRECTORY_SEPARATOR . 'zend_cache_master2';
         }
         if (!$this->_instance1) {
             touch($this->_masterFile, 123455);
@@ -45,13 +74,28 @@ class Zend_Cache_FileFrontendTest extends PHPUnit_Framework_TestCase {
             $this->_backend = new Zend_Cache_Backend_Test();
             $this->_instance2->setBackend($this->_backend);
         }
-        
+        if (!$this->_instance3) {
+        	touch($this->_masterFile1, 123455);
+        	touch($this->_masterFile2, 123455);
+            $this->_instance3 = new Zend_Cache_Frontend_File(array('master_files' => array($this->_masterFile1, $this->_masterFile2)));           
+            $this->_backend = new Zend_Cache_Backend_Test();
+            $this->_instance3->setBackend($this->_backend);
+        }
+        if (!$this->_instance4) {
+            touch($this->_masterFile1);
+            touch($this->_masterFile2);
+            $this->_instance4 = new Zend_Cache_Frontend_File(array('master_files' => array($this->_masterFile1, $this->_masterFile2)));           
+            $this->_backend = new Zend_Cache_Backend_Test();
+            $this->_instance4->setBackend($this->_backend);
+        }       
     }
     
     public function tearDown()
     {
         unset($this->_instance1);
         unlink($this->_masterFile);
+        unlink($this->_masterFile1);
+        unlink($this->_masterFile2);
     }
     
     private function _getTmpDirWindows()
@@ -144,6 +188,16 @@ class Zend_Cache_FileFrontendTest extends PHPUnit_Framework_TestCase {
     public function testGetCorrectCall2()
     {
         $this->assertEquals('foo', $this->_instance1->load('cache_id'));    
+    }
+    
+	public function testTestCorrectCall4()
+    {
+        $this->assertFalse($this->_instance4->test('cache_id'));
+    }
+    
+    public function testTestCorrectCall5()
+    {
+        $this->assertFalse($this->_instance3->load('false')); 
     }
     
     public function testGetCorrectCall3()

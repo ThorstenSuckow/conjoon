@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ReCaptchaTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ReCaptchaTest.php 18166 2009-09-17 13:28:35Z padraic $
  */
 
 // Call Zend_Captcha_ReCaptchaTest::main() if this source file is executed directly.
@@ -34,8 +34,9 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Captcha
  */
 class Zend_Captcha_ReCaptchaTest extends PHPUnit_Framework_TestCase
 {
@@ -63,10 +64,10 @@ class Zend_Captcha_ReCaptchaTest extends PHPUnit_Framework_TestCase
         }
 
         $this->element = new Zend_Form_Element_Captcha(
-            'captchaR', 
+            'captchaR',
             array(
                 'captcha' => array(
-                    'ReCaptcha', 
+                    'ReCaptcha',
                     'sessionClass' => 'Zend_Captcha_ReCaptchaTest_SessionContainer'
                 )
             )
@@ -114,6 +115,57 @@ class Zend_Captcha_ReCaptchaTest extends PHPUnit_Framework_TestCase
         $captcha->setService($try);
         $this->assertSame($captcha->getService(), $try);
     }
+
+    public function testSetAndGetPublicAndPrivateKeys()
+    {
+        $captcha = new Zend_Captcha_ReCaptcha();
+        $pubKey = 'pubKey';
+        $privKey = 'privKey';
+        $captcha->setPubkey($pubKey)
+                ->setPrivkey($privKey);
+
+        $this->assertSame($pubKey, $captcha->getPubkey());
+        $this->assertSame($privKey, $captcha->getPrivkey());
+
+        $this->assertSame($pubKey, $captcha->getService()->getPublicKey());
+        $this->assertSame($privKey, $captcha->getService()->getPrivateKey());
+    }
+
+    /**
+     * Regression tests for ZF-7654
+     */
+
+    public function testConstructorShouldAllowSettingLangOptionOnServiceObject()
+    {
+        $options = array('lang'=>'fr');
+        $captcha = new Zend_Captcha_ReCaptcha($options);
+        $this->assertEquals('fr', $captcha->getService()->getOption('lang'));
+    }
+
+    public function testConstructorShouldAllowSettingThemeOptionOnServiceObject()
+    {
+        $options = array('theme'=>'black');
+        $captcha = new Zend_Captcha_ReCaptcha($options);
+        $this->assertEquals('black', $captcha->getService()->getOption('theme'));
+    }
+
+    public function testAllowsSettingLangOptionOnServiceObject()
+    {
+        $captcha = new Zend_Captcha_ReCaptcha;
+        $captcha->setOption('lang', 'fr');
+        $this->assertEquals('fr', $captcha->getService()->getOption('lang'));
+    }
+
+    public function testAllowsSettingThemeOptionOnServiceObject()
+    {
+        $captcha = new Zend_Captcha_ReCaptcha;
+        $captcha->setOption('theme', 'black');
+        $this->assertEquals('black', $captcha->getService()->getOption('theme'));
+    }
+
+    /**
+     * End ZF-7654 tests
+    */
 }
 
 class Zend_Captcha_ReCaptchaTest_SessionContainer

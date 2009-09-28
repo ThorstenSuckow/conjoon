@@ -15,9 +15,9 @@
  *
  * @category   Zend
  * @package    UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestConfiguration.php.dist 14513 2009-03-27 13:44:05Z alexander $
+ * @version    $Id: TestConfiguration.php.dist 18376 2009-09-22 19:43:08Z matthew $
  */
 
 /**
@@ -32,6 +32,15 @@
  * and edit the new file. Never commit plaintext passwords to the source
  * code repository.
  */
+
+/**
+ * GENERAL SETTINGS
+ *
+ * OB_ENABLED should be enabled for some tests to check if all functionality
+ * works as expected. Such tests include those for Zend_Soap and Zend_Session,
+ * which require that headers not be sent in order to work.
+ */
+define('TESTS_ZEND_OB_ENABLED', false);
 
 /**
  * Zend_Auth_Adapter_DbTable tests
@@ -147,24 +156,24 @@ define('TESTS_ZEND_DB_ADAPTER_DB2_PASSWORD', null);
 define('TESTS_ZEND_DB_ADAPTER_DB2_DATABASE', 'sample');
 
 /**
- * Zend_Http_Client tests
+ * Zend_Db_Adapter_Sqlsrv
+ * Note: Make sure that you create the "test" database and set a 
+ * username and password
  *
- * To enable the dynamic Zend_Http_Client tests, you will need to symbolically
- * link or copy the files in tests/Zend/Http/Client/_files to a directory
- * under your web server(s) document root and set this constant to point to the
- * URL of this directory.
  */
-define('TESTS_ZEND_HTTP_CLIENT_BASEURI', false);
+define('TESTS_ZEND_DB_ADAPTER_SQLSRV_ENABLED',  false);
+define('TESTS_ZEND_DB_ADAPTER_SQLSRV_HOSTNAME', 'localhost\SQLEXPRESS');
+define('TESTS_ZEND_DB_ADAPTER_SQLSRV_USERNAME', null);
+define('TESTS_ZEND_DB_ADAPTER_SQLSRV_PASSWORD', null);
+define('TESTS_ZEND_DB_ADAPTER_SQLSRV_DATABASE', 'test');
 
 /**
- * Zend_Http_Client_Proxy tests
+ * Zend_Feed_Reader tests
  *
- * HTTP proxy to be used for testing the Proxy adapter. Set to a string of
- * the form 'host:port'. Set to null to skip HTTP proxy tests.
+ * If the ONLINE_ENABLED property is false, only tests that can be executed
+ * without network connectivity are run; when enabled, all tests will run.
  */
-define('TESTS_ZEND_HTTP_CLIENT_HTTP_PROXY', false);
-define('TESTS_ZEND_HTTP_CLIENT_HTTP_PROXY_USER', '');
-define('TESTS_ZEND_HTTP_CLIENT_HTTP_PROXY_PASS', '');
+define('TESTS_ZEND_FEED_READER_ONLINE_ENABLED', false);
 
 /**
  * Zend_Gdata tests
@@ -242,16 +251,16 @@ define('TESTS_ZEND_GDATA_GAPPS_PASSWORD', 'password');
 define('TESTS_ZEND_GDATA_GBASE_ONLINE_ENABLED', false);
 
 /*
- * This indicates that online tests for the YouTube data API should
- * be performed.
- */
-define('TESTS_ZEND_GDATA_YOUTUBE_ONLINE_ENABLED', false);
-
-/*
  * This indicates that online tests for the Books Search data API
  * should be performed.
  */
 define('TESTS_ZEND_GDATA_BOOKS_ONLINE_ENABLED', false);
+
+/*
+ * This indicates that online tests for the YouTube data API should
+ * be performed.
+ */
+define('TESTS_ZEND_GDATA_YOUTUBE_ONLINE_ENABLED', false);
 
 /*
  * This is the username to use for retrieving subscriptions, etc
@@ -287,19 +296,59 @@ define('TESTS_ZEND_GDATA_PHOTOS_ONLINE_ENABLED', false);
 define('TESTS_ZEND_GDATA_HEALTH_ONLINE_ENABLED', false);
 
 /**
- * Zend_Date tests
+ * Zend_Http_Client tests
  *
- * If the BCMATH_ENABLED property below is false, all arithmetic
- * operations will use ordinary PHP math operators and functions.
- * Otherwise, the bcmath functions will be used for unlimited precision.
- *
- * If the EXTENDED_COVERAGE property below is false, most of the I18N
- * unit tests will not be computed... this speeds tests up to 80 minutes
- * when doing reports. *
- * Edit TestConfiguration.php, not TestConfiguration.php.dist.
+ * To enable the dynamic Zend_Http_Client tests, you will need to symbolically
+ * link or copy the files in tests/Zend/Http/Client/_files to a directory
+ * under your web server(s) document root and set this constant to point to the
+ * URL of this directory.
  */
-define('TESTS_ZEND_LOCALE_BCMATH_ENABLED', true);
-define('TESTS_ZEND_I18N_EXTENDED_COVERAGE', true);
+define('TESTS_ZEND_HTTP_CLIENT_BASEURI', false);
+
+/**
+ * Zend_Http_Client_Proxy tests
+ *
+ * HTTP proxy to be used for testing the Proxy adapter. Set to a string of
+ * the form 'host:port'. Set to null to skip HTTP proxy tests.
+ */
+define('TESTS_ZEND_HTTP_CLIENT_HTTP_PROXY', false);
+define('TESTS_ZEND_HTTP_CLIENT_HTTP_PROXY_USER', '');
+define('TESTS_ZEND_HTTP_CLIENT_HTTP_PROXY_PASS', '');
+
+/**
+ * Zend_Loader_Autoloader multi-version support tests
+ *
+ * ENABLED:      whether or not to run the multi-version tests
+ * PATH:         path to a directory containing multiple ZF version installs
+ * LATEST:       most recent ZF version in the PATH
+ *               e.g., "1.9.2"
+ * LATEST_MAJOR: most recent ZF major version in the PATH to test against
+ *               e.g., "1.9.2"
+ * LATEST_MINOR: most recent ZF minor version in the PATH to test against
+ *               e.g., "1.8.4PL1"
+ * SPECIFIC:     specific ZF version in the PATH to test against
+ *               e.g., "1.7.6"
+ * As an example, consider the following tree:
+ *     ZendFramework/
+ *     |-- 1.9.2
+ *     |-- ZendFramework-1.9.1-minimal
+ *     |-- 1.8.4PL1
+ *     |-- 1.8.4
+ *     |-- ZendFramework-1.8.3
+ *     |-- 1.7.8
+ *     |-- 1.7.7
+ *     |-- 1.7.6
+ * You would then set the value of "LATEST" and "LATEST_MAJOR" to "1.9.2", and
+ * could choose between "1.9.2", "1.8.4PL1", and "1.7.8" for "LATEST_MINOR",
+ * and any version number for "SPECIFIC". "PATH" would point to the parent
+ * "ZendFramework" directory.
+ */
+define('TESTS_ZEND_LOADER_AUTOLOADER_MULTIVERSION_ENABLED', false);
+define('TESTS_ZEND_LOADER_AUTOLOADER_MULTIVERSION_PATH', false);
+define('TESTS_ZEND_LOADER_AUTOLOADER_MULTIVERSION_LATEST', false);
+define('TESTS_ZEND_LOADER_AUTOLOADER_MULTIVERSION_LATEST_MAJOR', false);
+define('TESTS_ZEND_LOADER_AUTOLOADER_MULTIVERSION_LATEST_MINOR', false);
+define('TESTS_ZEND_LOADER_AUTOLOADER_MULTIVERSION_SPECIFIC', false);
 
 /**
  * Zend_Ldap online tests
@@ -368,6 +417,21 @@ define('TESTS_ZEND_LDAP_ALT_PASSWORD', null);
 //define('TESTS_ZEND_LOCALE_FORMAT_SETLOCALE', 'fr');
 //define('TESTS_ZEND_LOCALE_FORMAT_SETLOCALE', 'fr_FR@euro');
 define('TESTS_ZEND_LOCALE_FORMAT_SETLOCALE', false);
+
+/**
+ * Zend_Date tests
+ *
+ * If the BCMATH_ENABLED property below is false, all arithmetic
+ * operations will use ordinary PHP math operators and functions.
+ * Otherwise, the bcmath functions will be used for unlimited precision.
+ *
+ * If the EXTENDED_COVERAGE property below is false, most of the I18N
+ * unit tests will not be computed... this speeds tests up to 80 minutes
+ * when doing reports. *
+ * Edit TestConfiguration.php, not TestConfiguration.php.dist.
+ */
+define('TESTS_ZEND_LOCALE_BCMATH_ENABLED', true);
+define('TESTS_ZEND_I18N_EXTENDED_COVERAGE', true);
 
 /**
  * Zend_Mail_Storage tests
@@ -446,10 +510,45 @@ define('TESTS_ZEND_MAIL_SMTP_AUTH', false);
 // AUTH can be set to false or a string of AUTH method (e.g. LOGIN, PLAIN, CRAMMD5 or DIGESTMD5)
 
 /**
+ * Zend_Queue Test Configuration constants
+ *
+ * The Zend_Queue_Adapter_Db constant should be a JSON-encoded string
+ * representing a configuration object for Zend_Db::factory(). For example:
+ * {
+ *     type: "pdo_mysql",
+ *     host: "127.0.0.1",
+ *     port: 3306,
+ *     username: "queue",
+ *     password: "queue",
+ *     dbname: "queue"
+ * }
+ *
+ * The PlatformJobQueue adapter expects two parameters, the host and password. 
+ * The HOST string should include both the host and port (typically 10003):
+ *     127.0.0.1:10003
+ * When running tests against PlatformJobQueue, it's best to do so where 
+ * Platform is installed on localhost and has maximum workers set to 20 
+ * (default is 5); do so with this zend.ini setting:
+ *     zend_jq.max_num_of_request_workers=20
+ *
+ * Selectively define the below in order to run tests for them.
+ */
+define('TESTS_ZEND_QUEUE_ACTIVEMQ_SCHEME', false);
+define('TESTS_ZEND_QUEUE_ACTIVEMQ_HOST', false);
+define('TESTS_ZEND_QUEUE_ACTIVEMQ_PORT', false);
+define('TESTS_ZEND_QUEUE_DB', false);
+define('TESTS_ZEND_QUEUE_MEMCACHEQ_HOST', false);
+define('TESTS_ZEND_QUEUE_MEMCACHEQ_PORT', false);
+define('TESTS_ZEND_QUEUE_PLATFORMJQ_HOST', false);
+define('TESTS_ZEND_QUEUE_PLATFORMJQ_PASS', false);
+
+/**
  * Zend_Service_Amazon online tests
  */
 define('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ENABLED', false);
 define('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID', 'Enter AWSAccessKeyId here');
+define('TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY', 'Enter AWSSecretKey here');
+define('TESTS_ZEND_SERVICE_AMAZON_S3_BUCKET', 'zftestamazons3bucket');
 
 /**
  * Zend_Service_Delicious tests
@@ -466,6 +565,8 @@ define('TESTS_ZEND_SERVICE_FLICKR_ONLINE_APIKEY', 'Enter API key here');
  * Zend_Service_Simpy tests
  */
 define('TESTS_ZEND_SERVICE_SIMPY_ENABLED', false);
+define('TESTS_ZEND_SERVICE_SIMPY_USERNAME', 'syapizend');
+define('TESTS_ZEND_SERVICE_SIMPY_PASSWORD', 'mgt37ge');
 
 /**
  * Zend_Service_SlideShare tests
@@ -485,6 +586,20 @@ define('TESTS_ZEND_SERVICE_SLIDESHARE_TAG', 'zend');
 define('TESTS_ZEND_SERVICE_SLIDESHARE_GROUP', '');
 
 /**
+ * Zend_Service_Twitter tests
+ *
+ * ONLINE_ENABLED indicates whether or not to run tests requiring a network
+ * connection.
+ *
+ * TWITTER_USER and TWITTER_PASS are valid Twitter credentials you wish to use
+ * when testing.
+ */
+define('TESTS_ZEND_SERVICE_TWITTER_ONLINE_ENABLED', false);
+define('TESTS_ZEND_SERVICE_TWITTER_USER', 'zftestuser');
+define('TESTS_ZEND_SERVICE_TWITTER_PASS', 'zftestuser');
+
+
+/**
  * Zend_Service_Yahoo online tests
  */
 define('TESTS_ZEND_SERVICE_YAHOO_ONLINE_ENABLED', false);
@@ -499,6 +614,27 @@ define('TESTS_ZEND_SERVICE_RECAPTCHA_PUBLIC_KEY', 'public key');
 define('TESTS_ZEND_SERVICE_RECAPTCHA_PRIVATE_KEY', 'private key');
 define('TESTS_ZEND_SERVICE_RECAPTCHA_MAILHIDE_PUBLIC_KEY', 'public mailhide key');
 define('TESTS_ZEND_SERVICE_RECAPTCHA_MAILHIDE_PRIVATE_KEY', 'private mailhide key');
+
+/**
+ * Zend_Soap_AutoDiscover scenario tests for complex objects and wsdl generation
+ *
+ * Copy all the files of zf/tests/Zend/Soap/_files/fulltests into a directory
+ * that can be reached by webserver and enter the base uri to this directory
+ * into the variable. The test "Zend_Soap_AutoDiscover_OnlineTest" makes use
+ * of the servers and AutoDiscover feature.
+ *
+ * NOTE: Make sure the servers are using the correct Zend Framework copy,
+ * when having more than one version installed and include paths are changing.
+ */
+define('TESTS_ZEND_SOAP_AUTODISCOVER_ONLINE_SERVER_BASEURI', false);
+
+/**
+ * Zend_Validate tests
+ *
+ * Set ONLINE_ENABLED if you wish to run validators that require network 
+ * connectivity.
+ */
+define('TESTS_ZEND_VALIDATE_ONLINE_ENABLED', false);
 
 /**
  * PHPUnit Code Coverage / Test Report

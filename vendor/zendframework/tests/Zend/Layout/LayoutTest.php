@@ -1,4 +1,25 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Layout
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: LayoutTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
+
 // Call Zend_Layout_LayoutTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Layout_LayoutTest::main");
@@ -19,6 +40,13 @@ require_once 'Zend/View.php';
 
 /**
  * Test class for Zend_Layout.
+ *
+ * @category   Zend
+ * @package    Zend_Layout
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Layout
  */
 class Zend_Layout_LayoutTest extends PHPUnit_Framework_TestCase 
 {
@@ -43,7 +71,7 @@ class Zend_Layout_LayoutTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        Zend_Layout_LayoutTest_Override::$_mvcInstance = null;
+        Zend_Layout_LayoutTest_Override::resetMvcInstance();
 
         Zend_Controller_Front::getInstance()->resetInstance();
         if (Zend_Controller_Action_HelperBroker::hasHelper('Layout')) {
@@ -62,6 +90,7 @@ class Zend_Layout_LayoutTest extends PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
+        Zend_Layout::resetMvcInstance();
     }
 
     public function testDefaultLayoutStatusAtInitialization()
@@ -525,7 +554,10 @@ class Zend_Layout_LayoutTest extends PHPUnit_Framework_TestCase
  */
 class Zend_Layout_LayoutTest_Override extends Zend_Layout
 {
-    public static $_mvcInstance;
+    public static function resetMvcInstance()
+    {
+        self::$_mvcInstance = null;
+    }
 }
 
 class Zend_Layout_LayoutTest_Controller_Plugin_Layout extends Zend_Layout_Controller_Plugin_Layout

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysqli.php 12882 2008-11-26 18:21:16Z mikaelkael $
+ * @version    $Id: Mysqli.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -35,7 +34,7 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Table
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_TestUtil_Mysqli extends Zend_Db_TestUtil_Common
@@ -143,5 +142,15 @@ class Zend_Db_TestUtil_Mysqli extends Zend_Db_TestUtil_Common
     protected function _dropTestProcedure()
     {
         $this->_rawQuery('DROP PROCEDURE IF EXISTS zf_test_procedure');
+    }
+
+    protected function _getSqlCreateView($viewName)
+    {
+        return 'CREATE OR REPLACE VIEW ' . $this->_db->quoteIdentifier($viewName, true);
+    }
+
+    protected function _getSqlDropView($viewName)
+    {
+        return 'DROP VIEW IF EXISTS ' . $this->_db->quoteIdentifier($viewName, true);
     }
 }

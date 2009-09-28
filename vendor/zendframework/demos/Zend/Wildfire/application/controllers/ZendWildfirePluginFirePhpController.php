@@ -14,27 +14,23 @@
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /** Zend_Controller_Action */
 require_once 'Zend/Controller/Action.php';
 
-/** Zend_Exception */
-require_once 'Zend/Exception.php';
-
 /**
  * Tests for Zend_Wildfire_Plugin_FirePhp
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendWildfirePluginFirePhpController extends Zend_Controller_Action
 {
-  
     public function testgroupsAction()
     {
         Zend_Wildfire_Plugin_FirePhp::group('Group 1');
@@ -45,6 +41,4 @@ class ZendWildfirePluginFirePhpController extends Zend_Controller_Action
         Zend_Wildfire_Plugin_FirePhp::send('Test Message 3');
         Zend_Wildfire_Plugin_FirePhp::groupEnd();
     }
-    
 }
-

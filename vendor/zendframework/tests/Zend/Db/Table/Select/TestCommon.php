@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: TestCommon.php 18200 2009-09-17 21:25:37Z beberlei $
  */
 
 
@@ -35,12 +34,14 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
 {
 
+    protected $_runtimeIncludePath = null;
+    
     /**
      * @var array of Zend_Db_Table_Abstract
      */
@@ -50,10 +51,17 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
     {
         parent::setUp();
 
-        $this->_table['accounts']      = $this->_getTable('Zend_Db_Table_TableAccounts');
-        $this->_table['bugs']          = $this->_getTable('Zend_Db_Table_TableBugs');
-        $this->_table['bugs_products'] = $this->_getTable('Zend_Db_Table_TableBugsProducts');
-        $this->_table['products']      = $this->_getTable('Zend_Db_Table_TableProducts');
+        $this->_table['accounts']      = $this->_getTable('My_ZendDbTable_TableAccounts');
+        $this->_table['bugs']          = $this->_getTable('My_ZendDbTable_TableBugs');
+        $this->_table['bugs_products'] = $this->_getTable('My_ZendDbTable_TableBugsProducts');
+        $this->_table['products']      = $this->_getTable('My_ZendDbTable_TableProducts');
+    }
+    
+    public function tearDown()
+    {
+        if ($this->_runtimeIncludePath) {
+            $this->_restoreIncludePath();
+        }
     }
 
     protected function _getTable($tableClass, $options = array())
@@ -61,20 +69,38 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
         if (is_array($options) && !isset($options['db'])) {
             $options['db'] = $this->_db;
         }
-        @Zend_Loader::loadClass($tableClass);
+        if (!class_exists($tableClass)) {
+            $this->_useMyIncludePath();
+            Zend_Loader::loadClass($tableClass);
+            $this->_restoreIncludePath();
+        }
         $table = new $tableClass($options);
         return $table;
     }
 
+    protected function _useMyIncludePath()
+    {
+        $this->_runtimeIncludePath = get_include_path();
+        set_include_path(dirname(__FILE__) . '/../_files/' . PATH_SEPARATOR . $this->_runtimeIncludePath);
+    }
+    
+    protected function _restoreIncludePath()
+    {
+        set_include_path($this->_runtimeIncludePath);
+        $this->_runtimeIncludePath = null;
+    }
+
     /**
      * Get a Zend_Db_Table to provide the base select()
+     * 
+     * @return Zend_Db_Table_Abstract
      */
     protected function _getSelectTable($table)
     {
         if (!array_key_exists($table, $this->_table)) {
             throw new Zend_Exception('Non-existent table name');
         }
-        
+
         return $this->_table[$table];
     }
 
@@ -143,7 +169,7 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
         $table = $this->_getSelectTable($tableName);
 
         $select = $table->select();
-        
+
         if ($useTable) {
             $select->from($table, $fields);
         }
@@ -193,7 +219,85 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
     {
         $table = $this->_getSelectTable('products');
         $select = $table->select();
-        
-        $this->assertType('Zend_Db_Table_TableProducts', $select->getTable());
+        $this->assertSame($table, $select->getTable());
     }
+    
+    /**
+     * @group ZF-2798
+     */
+    public function testTableWillReturnSelectObjectWithFromPart()
+    {
+        $table = $this->_getSelectTable('accounts');
+        $select1 = $table->select();
+        $this->assertEquals(0, count($select1->getPart(Zend_Db_Table_Select::FROM)));
+        $this->assertEquals(0, count($select1->getPart(Zend_Db_Table_Select::COLUMNS)));
+        
+        $select2 = $table->select(true);
+        $this->assertEquals(1, count($select2->getPart(Zend_Db_Table_Select::FROM)));
+        $this->assertEquals(1, count($select2->getPart(Zend_Db_Table_Select::COLUMNS)));
+        
+        $this->assertEquals($select1->__toString(), $select2->__toString());
+        
+        $select3 = $table->select();
+        $select3->setIntegrityCheck(false);
+        $select3->joinLeft('tableB', 'tableA.id=tableB.id');
+        $select3Text = $select3->__toString();
+        $this->assertNotContains('zfaccounts', $select3Text);
+        
+        $select4 = $table->select(Zend_Db_Table_Abstract::SELECT_WITH_FROM_PART);
+        $select4->setIntegrityCheck(false);
+        $select4->joinLeft('tableB', 'tableA.id=tableB.id');
+        $select4Text = $select4->__toString();
+        $this->assertContains('zfaccounts', $select4Text);
+        $this->assertContains('tableA', $select4Text);
+        $this->assertContains('tableB', $select4Text);
+    }
+
+    public function testAssembleDbTableUnionSelect()
+    {
+        $table = $this->_getSelectTable('accounts');
+        $select1 = $table->select();
+        $select2 = $table->select();
+
+        $selectUnion = $table->select()->union(array($select1, $select2));
+        $selectUnionSql = $selectUnion->assemble();
+    }
+
+    // ZF-3239
+//    public function testFromPartIsAvailableRightAfterInstantiation()
+//    {
+//        $table = $this->_getSelectTable('products');
+//        $select = $table->select();
+//
+//        $keys = array_keys($select->getPart(Zend_Db_Select::FROM));
+//
+//        $this->assertEquals('zfproducts', array_pop($keys));
+//    }
+
+    // ZF-3239 (from comments)
+//    public function testColumnsMethodDoesntThrowExceptionRightAfterInstantiation()
+//    {
+//        $table = $this->_getSelectTable('products');
+//
+//        try {
+//            $select = $table->select()->columns('product_id');
+//
+//            $this->assertType('Zend_Db_Table_Select', $select);
+//        } catch (Zend_Db_Table_Select_Exception $e) {
+//            $this->fail('Exception thrown: ' . $e->getMessage());
+//        }
+//    }
+
+    // ZF-5424
+//    public function testColumnsPartDoesntContainWildcardAfterSettingColumns()
+//    {
+//        $table = $this->_getSelectTable('products');
+//
+//        $select = $table->select()->columns('product_id');
+//
+//        $columns = $select->getPart(Zend_Db_Select::COLUMNS);
+//
+//        $this->assertEquals(1, count($columns));
+//        $this->assertEquals('product_id', $columns[0][1]);
+//    }
 }

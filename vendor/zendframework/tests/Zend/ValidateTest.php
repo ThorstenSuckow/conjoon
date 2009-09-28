@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ValidateTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ValidateTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * Test helper
@@ -37,13 +35,13 @@ require_once 'Zend/Validate.php';
  */
 require_once 'Zend/Validate/Abstract.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_ValidateTest extends PHPUnit_Framework_TestCase
 {
@@ -62,6 +60,16 @@ class Zend_ValidateTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_validator = new Zend_Validate();
+    }
+
+    /**
+     * Resets the default namespaces
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        Zend_Validate::setDefaultNamespaces(array());
     }
 
     /**
@@ -139,19 +147,71 @@ class Zend_ValidateTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that if we specify a validator class basename that doesn't
      * exist in the namespace, is() throws an exception.
+     *
+     * Refactored to conform with ZF-2724.
+     *
+     * @group  ZF-2724
+     * @return void
      */
     public function testStaticFactoryClassNotFound()
     {
+        set_error_handler(array($this, 'handleNotFoundError'), E_WARNING);
         try {
-            $this->assertTrue(Zend_Validate::is('1234', 'UnknownValidator'));
-            $this->fail('Expected to catch Zend_Validate_Exception');
+            Zend_Validate::is('1234', 'UnknownValidator');
         } catch (Zend_Exception $e) {
-            $this->assertType('Zend_Validate_Exception', $e,
-                'Expected exception of type Zend_Validate_Exception, got '.get_class($e));
-            $this->assertEquals("Validate class not found from basename 'UnknownValidator'", $e->getMessage());
+        }
+        restore_error_handler();
+        $this->assertTrue($this->error);
+        $this->assertTrue(isset($e));
+        $this->assertContains('Validate class not found', $e->getMessage());
+    }
+
+    /**
+     * Handle file not found errors
+     *
+     * @group  ZF-2724
+     * @param  int $errnum
+     * @param  string $errstr
+     * @return void
+     */
+    public function handleNotFoundError($errnum, $errstr)
+    {
+        if (strstr($errstr, 'No such file')) {
+            $this->error = true;
         }
     }
 
+    /**
+     * Testing Namespaces
+     *
+     * @return void
+     */
+    public function testNamespaces()
+    {
+        $this->assertEquals(array(), Zend_Validate::getDefaultNamespaces());
+        $this->assertFalse(Zend_Validate::hasDefaultNamespaces());
+
+        Zend_Validate::setDefaultNamespaces('TestDir');
+        $this->assertEquals(array('TestDir'), Zend_Validate::getDefaultNamespaces());
+
+        Zend_Validate::setDefaultNamespaces('OtherTestDir');
+        $this->assertEquals(array('OtherTestDir'), Zend_Validate::getDefaultNamespaces());
+
+        $this->assertTrue(Zend_Validate::hasDefaultNamespaces());
+
+        Zend_Validate::setDefaultNamespaces(array());
+
+        $this->assertEquals(array(), Zend_Validate::getDefaultNamespaces());
+        $this->assertFalse(Zend_Validate::hasDefaultNamespaces());
+
+        Zend_Validate::addDefaultNamespaces(array('One', 'Two'));
+        $this->assertEquals(array('One', 'Two'), Zend_Validate::getDefaultNamespaces());
+
+        Zend_Validate::addDefaultNamespaces('Three');
+        $this->assertEquals(array('One', 'Two', 'Three'), Zend_Validate::getDefaultNamespaces());
+
+        Zend_Validate::setDefaultNamespaces(array());
+    }
 }
 
 

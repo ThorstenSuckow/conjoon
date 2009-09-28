@@ -16,7 +16,7 @@ if(typeof print == "function"){
 	console.debug = print;
 }
 
-if(typeof dojo["byId"] == "undefined"){
+if(!("byId" in dojo)){
 	dojo.byId = function(id, doc){
 		if(id && (typeof id == "string" || id instanceof String)){
 			if(!doc){ doc = document; }
@@ -44,6 +44,14 @@ dojo._loadUri = function(uri, cb){
 		//FIXME: Use Rhino 1.6 native readFile/readUrl if available?
 		if(cb){
 			var contents = (local ? readText : readUri)(uri, "UTF-8");
+
+			// patch up the input to eval until https://bugzilla.mozilla.org/show_bug.cgi?id=471005 is fixed.
+			if(!eval("'\u200f'").length){
+				contents = String(contents).replace(/[\u200E\u200F\u202A-\u202E]/g, function(match){ 
+					return "\\u" + match.charCodeAt(0).toString(16); 
+				})
+			}
+
 			cb(eval('('+contents+')'));
 		}else{
 			load(uri);
@@ -189,7 +197,7 @@ if(
 
 // summary:
 //		return the document object associated with the dojo.global
-dojo.doc = typeof(document) != "undefined" ? document : null;
+dojo.doc = typeof document != "undefined" ? document : null;
 
 dojo.body = function(){
 	return document.body;	
@@ -199,10 +207,7 @@ dojo.body = function(){
 // Note: this assumes that we define both if one is not provided... there might
 // be a better way to do this if there is a use case where one is defined but
 // not the other
-try{
-	setTimeout;
-	clearTimeout;
-}catch(e){
+if(typeof setTimeout == "undefined" || typeof clearTimeout == "undefined"){
 	dojo._timeouts = [];
 	function clearTimeout(idx){
 		if(!dojo._timeouts[idx]){ return; }

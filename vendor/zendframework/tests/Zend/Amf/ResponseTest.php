@@ -1,4 +1,24 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Amf
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: ResponseTest.php 17689 2009-08-20 13:33:05Z alexander $
+ */
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Amf_ResponseTest::main');
 }
@@ -11,14 +31,18 @@ require_once 'Zend/Amf/Value/MessageHeader.php';
 require_once 'Zend/Amf/Value/Messaging/AcknowledgeMessage.php';
 require_once 'Zend/Amf/Parse/TypeLoader.php';
 require_once 'Contact.php';
+require_once 'ContactVO.php';
 require_once 'Zend/Date.php';
 
 /**
  * Test case for Zend_Amf_Response
  *
- * @package Zend_Amf
+ * @category   Zend
+ * @package    Zend_Amf
  * @subpackage UnitTests
- * @version $Id: ResponseTest.php 14455 2009-03-24 04:03:47Z wadearnold $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Amf
  */
 class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 {
@@ -72,12 +96,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = '1AE5794F-C53D-FB03-5D2A-BEE6ADCD953C';
-        $acknowledgeMessage->clientId = '6FC3B309-11DF-CB49-9A4D-0000579EAF16';
-        $acknowledgeMessage->messageId = '1CCDEA74-75CF-ACE8-0B46-00002C38B1A4';
+        $acknowledgeMessage->correlationId = 'C626EDB9-8CF4-C305-8915-096C8AA80E2E';
+        $acknowledgeMessage->clientId = '49D6F1AF-ADFB-3A48-5B2D-00000A5D0301';
+        $acknowledgeMessage->messageId = '5F58E888-58E8-12A9-7A85-00006D91CCB1';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122297350100';
+        $acknowledgeMessage->timestamp = '124569861800';
         $acknowledgeMessage->body = $data;
 
 
@@ -108,12 +132,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = '014167F1-FCEB-6346-DCEF-BF03441367F5';
-        $acknowledgeMessage->clientId = '6DEB5BBA-AFEE-CCA9-FB3C-00005662BA16';
-        $acknowledgeMessage->messageId = '1822F838-FE49-11E8-730F-00000705B926';
+        $acknowledgeMessage->correlationId = 'D3695635-7308-35A2-8451-09F7CAAB868A';
+        $acknowledgeMessage->clientId = '54A7E9A2-9C2A-9849-5A3D-000070318519';
+        $acknowledgeMessage->messageId = '2E68D735-A68E-D208-9ACC-00006FBCDE26';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122297537400';
+        $acknowledgeMessage->timestamp = '124570774300';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI, null, $acknowledgeMessage);
@@ -141,12 +165,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = '712ECAE3-2888-990E-D91C-E29E11AC7D0E';
-        $acknowledgeMessage->clientId = '5E55BB37-59AA-A969-7373-0000158CEBB7';
-        $acknowledgeMessage->messageId = '67B9E08C-0E35-9168-BA7B-000066ED5FF4';
+        $acknowledgeMessage->correlationId = '1D556448-6DF0-6D0B-79C7-09798CC54A93';
+        $acknowledgeMessage->clientId = '03EB43E5-3ADA-0F69-DA96-00007A54194D';
+        $acknowledgeMessage->messageId = '5E4C2B6B-ADAC-4C49-52B6-0000205BC451';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122357272200';
+        $acknowledgeMessage->timestamp = '124569947000';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI, null, $acknowledgeMessage);
@@ -178,12 +202,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = 'F12B5C25-1302-8A8F-2A64-C14D2B3CB7D5';
-        $acknowledgeMessage->clientId = '4C2A28C0-41BB-DA28-93C3-000018B12642';
-        $acknowledgeMessage->messageId = '0B68113D-6210-20A9-D2AF-00002A9C1CCC';
+        $acknowledgeMessage->correlationId = '77D952FE-47FA-D789-83B6-097D43403C6C';
+        $acknowledgeMessage->clientId = '2D043296-C81C-7189-4325-000007D62DA1';
+        $acknowledgeMessage->messageId = '2A686BAF-7D69-11C8-9A0F-0000513C0958';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122301345100';
+        $acknowledgeMessage->timestamp = '124569971300';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -210,12 +234,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = 'F12B5C25-1302-8A8F-2A64-C14D2B3CB7D5';
-        $acknowledgeMessage->clientId = '4C2A28C0-41BB-DA28-93C3-000018B12642';
-        $acknowledgeMessage->messageId = '0B68113D-6210-20A9-D2AF-00002A9C1CCC';
+        $acknowledgeMessage->correlationId = '77D952FE-47FA-D789-83B6-097D43403C6C';
+        $acknowledgeMessage->clientId = '2D043296-C81C-7189-4325-000007D62DA1';
+        $acknowledgeMessage->messageId = '2A686BAF-7D69-11C8-9A0F-0000513C0958';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122301345100';
+        $acknowledgeMessage->timestamp = '124569971300';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -244,12 +268,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = 'A89F7C97-4D04-8778-18D0-C16C1F29F78E';
-        $acknowledgeMessage->clientId = '336B0697-F30B-FD49-0B7E-00002E34A6BB';
-        $acknowledgeMessage->messageId = '6D9DC7EC-A273-83A9-ABE3-00005FD752D6';
+        $acknowledgeMessage->correlationId = '1D191AC2-8628-2C9A-09B2-0981CBCCF2CC';
+        $acknowledgeMessage->clientId = '13D9DF0B-CCD0-1149-53D2-0000696908C2';
+        $acknowledgeMessage->messageId = '03387968-E9BA-E149-A230-00006366BE67';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122301548000';
+        $acknowledgeMessage->timestamp = '124570001000';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -278,12 +302,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = '12CE12FD-5D4B-AE60-853A-D36339532640';
-        $acknowledgeMessage->clientId = '16927B78-1DBD-64E9-42BB-000019A34253';
-        $acknowledgeMessage->messageId = '6D4F7964-6BF6-22C8-9A16-000046BD6319';
+        $acknowledgeMessage->correlationId = '45B8A430-A13A-FE86-D62F-098900BDF482';
+        $acknowledgeMessage->clientId = '4000C9FB-C97B-D609-DBAA-000048B69D81';
+        $acknowledgeMessage->messageId = '5F9AA1BF-D474-BB69-12C6-0000775127E8';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122331688500';
+        $acknowledgeMessage->timestamp = '124570048300';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -312,12 +336,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = '5B65D04A-6703-3C98-D7F1-D36DE839E97E';
-        $acknowledgeMessage->clientId = '32E9C012-3FC0-F0C9-4A0B-00005FE13CD9';
-        $acknowledgeMessage->messageId = '44777AB6-A085-01A9-1241-000033DFAFEE';
+        $acknowledgeMessage->correlationId = '9C5D0787-7301-432E-FD4F-098681A0EE30';
+        $acknowledgeMessage->clientId = '5AC2D840-E652-86A8-CB7A-00000418AAA4';
+        $acknowledgeMessage->messageId = '200337C4-0932-7D68-BB24-00005EBD5F95';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122331758500';
+        $acknowledgeMessage->timestamp = '124570031900';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -362,12 +386,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = 'C44AE645-4D12-028B-FF5F-D2E42BE5D86C';
-        $acknowledgeMessage->clientId = '40EAAAD2-4A9B-C388-A2FD-00003A809B9E';
-        $acknowledgeMessage->messageId = '275CD08C-6461-BBC8-B27B-000030083B2C';
+        $acknowledgeMessage->correlationId = 'AF307825-478F-C4CA-AC03-09C10CD02CCC';
+        $acknowledgeMessage->clientId = '702B4B03-89F5-34C8-1B4E-0000049466FA';
+        $acknowledgeMessage->messageId = '704B88DF-6D5E-A228-53E3-00001DA3041F';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122330856000';
+        $acknowledgeMessage->timestamp = '124570415500';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -414,12 +438,12 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 
         // Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
-        $acknowledgeMessage->correlationId = 'C44AE645-4D12-028B-FF5F-D2E42BE5D86C';
-        $acknowledgeMessage->clientId = '40EAAAD2-4A9B-C388-A2FD-00003A809B9E';
-        $acknowledgeMessage->messageId = '275CD08C-6461-BBC8-B27B-000030083B2C';
+        $acknowledgeMessage->correlationId = 'AF307825-478F-C4CA-AC03-09C10CD02CCC';
+        $acknowledgeMessage->clientId = '702B4B03-89F5-34C8-1B4E-0000049466FA';
+        $acknowledgeMessage->messageId = '704B88DF-6D5E-A228-53E3-00001DA3041F';
         $acknowledgeMessage->destination = null;
         $acknowledgeMessage->timeToLive = 0;
-        $acknowledgeMessage->timestamp = '122330856000';
+        $acknowledgeMessage->timestamp = '124570415500';
         $acknowledgeMessage->body = $data;
 
         $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
@@ -438,6 +462,57 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+    * The feature test allows for php to just retun it's class name if nothing is specified. Using
+    * _explicitType, setClassMap, getASClassName() should only be used now if you want to override the 
+    * PHP class name for specifying the return type. 
+    * @group ZF-6130
+    */
+    public function testPhpObjectNameSerializedToAmf3ClassName()
+    {
+        $data = array();
+
+        $contact = new Contact();
+        $contact->id = '15';
+        $contact->firstname = 'Joe';
+        $contact->lastname = 'Smith';
+        $contact->email = 'jsmith@adobe.com';
+        $contact->mobile = '123-456-7890';
+        array_push( $data, $contact );
+
+        $contact = new Contact();
+        $contact->id = '23';
+        $contact->firstname = 'Adobe';
+        $contact->lastname = 'Flex';
+        $contact->email = 'was@here.com';
+        $contact->mobile = '123-456-7890';
+        array_push( $data, $contact );
+
+        // Create an acknowlege message for a response to a RemotingMessage
+        $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
+        $acknowledgeMessage->correlationId = 'AF307825-478F-C4CA-AC03-09C10CD02CCC';
+        $acknowledgeMessage->clientId = '702B4B03-89F5-34C8-1B4E-0000049466FA';
+        $acknowledgeMessage->messageId = '704B88DF-6D5E-A228-53E3-00001DA3041F';
+        $acknowledgeMessage->destination = null;
+        $acknowledgeMessage->timeToLive = 0;
+        $acknowledgeMessage->timestamp = '124570415500';
+        $acknowledgeMessage->body = $data;
+
+        $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
+
+        // serialize the data to an AMF output stream
+        $this->_response->setObjectEncoding(0x03);
+        $this->_response->addAmfBody($newBody);
+        $this->_response->finalize();
+        $testResponse = $this->_response->getResponse();
+
+        // Load the expected response.
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/classMapAmf3Response.bin');
+
+        // Check that the response matches the expected serialized value
+        $this->assertEquals($mockResponse, $testResponse);
+    }    
+    
+    /**
      * Returning a DOMDocument object to AMF is serialized into a XMString ready for E4X
      * 
      * @group ZF-4999
@@ -449,8 +524,7 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
 		$data->preserveWhiteSpace = false;
 		$data->loadXML($sXML);
         
-		
-        // Create an acknowlege message for a response to a RemotingMessage
+		// Create an acknowlege message for a response to a RemotingMessage
         $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
         $acknowledgeMessage->correlationId = 'B0B0E583-5A80-826B-C2D1-D67A63D2F5E1';
         $acknowledgeMessage->clientId = '3D281DFB-FAC8-E368-3267-0000696DA53F';
@@ -512,6 +586,41 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
         
         // Check that the response matches the expected serialized value
         $this->assertEquals($mockResponse, $testResponse);
+    }
+    
+    /**
+     * Check to make sure that cyclic references work inside of the AMF3 serializer
+     * @group ZF-6205
+     */
+    public function testReferenceObjectsToAmf3()
+    {
+        $data = new ReferenceTest();
+        $data = $data->getReference();
+        
+        // Create an acknowlege message for a response to a RemotingMessage
+        $acknowledgeMessage = new Zend_Amf_Value_Messaging_AcknowledgeMessage(null);
+        $acknowledgeMessage->correlationId = '839B091C-8DDF-F6DD-2FF1-EAA82AE39608';
+        $acknowledgeMessage->clientId = '21CC629C-58AF-2D68-A292-000006F8D883';
+        $acknowledgeMessage->messageId = '05E70A68-FF7F-D289-1A94-00004CCECA98';
+        $acknowledgeMessage->destination = null;
+        $acknowledgeMessage->timeToLive = 0;
+        $acknowledgeMessage->timestamp = '124518243200';
+        $acknowledgeMessage->body = $data;
+        
+        $newBody = new Zend_Amf_Value_MessageBody($this->responseURI,null,$acknowledgeMessage);
+
+        // serialize the data to an AMF output stream
+        $this->_response->setObjectEncoding(0x03);
+        $this->_response->addAmfBody($newBody);
+        $this->_response->finalize();
+        $testResponse = $this->_response->getResponse();
+
+        // Load the expected response.
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/referenceObjectAmf3Response.bin');
+        
+        // Check that the response matches the expected serialized value
+        $this->assertEquals($mockResponse, $testResponse);
+        
     }
     
     
@@ -736,6 +845,43 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
         // Check that the response matches the expected serialized value
         $this->assertEquals($mockResponse, $testResponse);
     }
+    
+   /**
+    * The feature test allows for php to just retun it's class name if nothing is specified. Using
+    * _explicitType, setClassMap, getASClassName() should only be used now if you want to override the 
+    * PHP class name for specifying the return type. 
+    * @group ZF-6130
+    */
+    public function testPhpObjectNameSerializedToAmf0ClassName()
+    {
+        $data = array();
+
+        $contact = new ContactVO();
+        $contact->id        = '15';
+        $contact->firstname = 'Joe';
+        $contact->lastname  = 'Smith';
+        $contact->email     = 'jsmith@adobe.com';
+        $contact->mobile    = '123-456-7890';
+        
+        array_push( $data, $contact );
+
+        $contact = new ContactVO();
+        $contact->id        = '23';
+        $contact->firstname = 'Adobe';
+        $contact->lastname  = 'Flex';
+        $contact->email     = 'was@here.com';
+        $contact->mobile    = '123-456-7890';
+        array_push( $data, $contact );
+        $newBody = new Zend_Amf_Value_MessageBody('/1/onResult',null,$data);
+        $this->_response->setObjectEncoding(0x00);
+        $this->_response->addAmfBody($newBody);
+        $this->_response->finalize();
+        $testResponse = $this->_response->getResponse();
+        // Load the expected response.
+        $mockResponse = file_get_contents(dirname(__FILE__) .'/Response/mock/typedObjectAmf0Response.bin');
+        // Check that the response matches the expected serialized value
+        $this->assertEquals($mockResponse, $testResponse);
+    }
 
 	/**
      * PHP float to Amf0 Number
@@ -893,6 +1039,25 @@ class Zend_Amf_ResponseTest extends PHPUnit_Framework_TestCase
         $test = $this->_response->__toString();
         $this->assertSame($response, $test);
     }
+}
+
+/*
+ * Used to test recursive cyclic references in the serializer. 
+ *@group ZF-6205
+ */
+class ReferenceTest {
+    public function getReference() { 
+        $o = new TestObject(); 
+        $o->recursive = new TestObject(); 
+        $o->recursive->recursive = $o; 
+        return $o; 
+    }
+}
+/**
+ * @see ReferenceTest
+ */
+class TestObject {
+    public $recursive;
 }
 
 if (PHPUnit_MAIN_METHOD == 'Zend_Amf_ResponseTest::main') {

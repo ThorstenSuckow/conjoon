@@ -15,14 +15,24 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once 'Zend/Db/Select/TestCommon.php';
 
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
+/**
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Select
+ */
 class Zend_Db_Select_Db2Test extends Zend_Db_Select_TestCommon
 {
 
@@ -43,7 +53,16 @@ class Zend_Db_Select_Db2Test extends Zend_Db_Select_TestCommon
                             ->where($product_name . ' = ?', "as'as:x");
         return $select;
     }
-    
+
+    /**
+     * ZF-2017: Test bind use of the Zend_Db_Select class.
+     * @group ZF-2017
+     */
+    public function testSelectQueryWithBinds()
+    {
+        $this->markTestSkipped($this->getDriver() . ' does not support named parameters');
+    }
+
     public function getDriver()
     {
         return 'Db2';

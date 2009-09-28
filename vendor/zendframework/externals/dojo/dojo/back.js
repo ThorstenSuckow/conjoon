@@ -47,7 +47,6 @@ dojo.back = {
 		//summary: private method. Do not call this directly.
 
 		//The "current" page is always at the top of the history stack.
-		//console.debug("handlingBackButton");
 		var current = historyStack.pop();
 		if(!current){ return; }
 		var last = historyStack[historyStack.length-1];
@@ -64,14 +63,12 @@ dojo.back = {
 			}
 		}
 		forwardStack.push(current);
-		//console.debug("done handling back");
 	}
 
 	back.goBack = handleBackButton;
 
 	function handleForwardButton(){
 		//summary: private method. Do not call this directly.
-		//console.debug("handling forward");
 		var last = forwardStack.pop();
 		if(!last){ return; }
 		if(last.kwArgs["forward"]){
@@ -82,7 +79,6 @@ dojo.back = {
 			last.kwArgs.handle("forward");
 		}
 		historyStack.push(last);
-		//console.debug("done handling forward");
 	}
 
 	back.goForward = handleForwardButton;
@@ -108,7 +104,7 @@ dojo.back = {
 		var url = (dojo.config["dojoIframeHistoryUrl"] || dojo.moduleUrl("dojo", "resources/iframe_history.html")) + "?" + (new Date()).getTime();
 		moveForward = true;
         if(historyIframe){
-		    dojo.isSafari ? historyIframe.location = url : window.frames[historyIframe.name].location = url;
+		    dojo.isWebKit ? historyIframe.location = url : window.frames[historyIframe.name].location = url;
         }else{
             //console.warn("dojo.back: Not initialised. You need to call dojo.back.init() from a <script> block that lives inside the <body> tag.");
         }
@@ -116,7 +112,6 @@ dojo.back = {
 	}
 
 	function checkLocation(){
-		//console.debug("checking url");
 		if(!changingUrl){
 			var hsl = historyStack.length;
 			
@@ -154,7 +149,6 @@ dojo.back = {
 			  historyCounter = hisLen;
 			}
 		}
-		//console.debug("done checking");
 	};
 	
 	back.init = function(){
@@ -221,8 +215,8 @@ dojo.back = {
 		//
 	 	//	example:
 		//		|	dojo.back.addToHistory({
-		//		|		back: function(){ console.debug('back pressed'); },
-		//		|		forward: function(){ console.debug('forward pressed'); },
+		//		|		back: function(){ console.log('back pressed'); },
+		//		|		forward: function(){ console.log('forward pressed'); },
 		//		|		changeUrl: true
 		//		|	});
 
@@ -269,9 +263,7 @@ dojo.back = {
 			historyIframe = window.frames["dj_history"];
 		}
 		if(!bookmarkAnchor){
-			bookmarkAnchor = document.createElement("a");
-			dojo.body().appendChild(bookmarkAnchor);
-			bookmarkAnchor.style.display = "none";
+			bookmarkAnchor = dojo.create("a", {style: {display: "none"}}, dojo.body());
 		}
 		if(args["changeUrl"]){
 			hash = ""+ ((args["changeUrl"]!==true) ? args["changeUrl"] : (new Date()).getTime());

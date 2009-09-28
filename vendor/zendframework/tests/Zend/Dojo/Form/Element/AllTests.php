@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -41,6 +41,7 @@ require_once 'Zend/Dojo/Form/Element/NumberSpinnerTest.php';
 require_once 'Zend/Dojo/Form/Element/NumberTextBoxTest.php';
 require_once 'Zend/Dojo/Form/Element/PasswordTextBoxTest.php';
 require_once 'Zend/Dojo/Form/Element/RadioButtonTest.php';
+require_once 'Zend/Dojo/Form/Element/SimpleTextareaTest.php';
 require_once 'Zend/Dojo/Form/Element/SubmitButtonTest.php';
 require_once 'Zend/Dojo/Form/Element/TextBoxTest.php';
 require_once 'Zend/Dojo/Form/Element/TextareaTest.php';
@@ -52,8 +53,10 @@ require_once 'Zend/Dojo/Form/Element/VerticalSliderTest.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Dojo
+ * @group      Zend_Dojo_Form
  */
 class Zend_Dojo_Form_Element_AllTests
 {
@@ -64,7 +67,7 @@ class Zend_Dojo_Form_Element_AllTests
 
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Dojo - Form_Element');
+        $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Dojo_Form_Element');
 
         $suite->addTestSuite('Zend_Dojo_Form_Element_CheckBoxTest');
         $suite->addTestSuite('Zend_Dojo_Form_Element_ComboBoxTest');
@@ -78,6 +81,7 @@ class Zend_Dojo_Form_Element_AllTests
         $suite->addTestSuite('Zend_Dojo_Form_Element_NumberTextBoxTest');
         $suite->addTestSuite('Zend_Dojo_Form_Element_PasswordTextBoxTest');
         $suite->addTestSuite('Zend_Dojo_Form_Element_RadioButtonTest');
+        $suite->addTestSuite('Zend_Dojo_Form_Element_SimpleTextareaTest');
         $suite->addTestSuite('Zend_Dojo_Form_Element_SubmitButtonTest');
         $suite->addTestSuite('Zend_Dojo_Form_Element_TextBoxTest');
         $suite->addTestSuite('Zend_Dojo_Form_Element_TextareaTest');

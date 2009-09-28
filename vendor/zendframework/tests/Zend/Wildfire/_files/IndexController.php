@@ -15,9 +15,9 @@
  * @category  Zend
  * @package   Zend_Controller
  * @subpackage UnitTests
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: IndexController.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version   $Id: IndexController.php 16225 2009-06-21 20:34:55Z thomas $
  */
 
 require_once 'PHPUnit/Util/Filter.php';
@@ -32,7 +32,7 @@ require_once 'Zend/Controller/Action.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class IndexController extends Zend_Controller_Action

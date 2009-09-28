@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 require_once 'PHPUnit/Framework/TestCase.php';
@@ -26,11 +27,23 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 /**
  * @see Zend_Db_Table_Row_TestMockRow
  */
-require_once 'Zend/Db/Table/Row/TestMockRow.php';
+require_once dirname(__FILE__) . '/../_files/My/ZendDbTable/Row/TestMockRow.php';
 
+/**
+ * @category   Zend
+ * @package    Zend_Db
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Table
+ * @group      Zend_Db_Table_Row
+ */
 class Zend_Db_Table_Row_StaticTest extends PHPUnit_Framework_TestCase
 {
 
+    
+    
     public function testTableRowTransformColumnNotUsedInConstructor()
     {
         $data = array(
@@ -38,7 +51,7 @@ class Zend_Db_Table_Row_StaticTest extends PHPUnit_Framework_TestCase
             'column_foo'     => 'value2',
             'column_bar_baz' => 'value3'
         );
-        $row = new Zend_Db_Table_Row_TestMockRow(array('data' => $data));
+        $row = new My_ZendDbTable_Row_TestMockRow(array('data' => $data));
 
         $array = $row->toArray();
         $this->assertEquals($data, $array);
@@ -51,7 +64,7 @@ class Zend_Db_Table_Row_StaticTest extends PHPUnit_Framework_TestCase
             'column_foo'     => 'value2',
             'column_bar_baz' => 'value3'
         );
-        $row = new Zend_Db_Table_Row_TestMockRow(array('data' => $data));
+        $row = new My_ZendDbTable_Row_TestMockRow(array('data' => $data));
 
         $this->assertEquals('value1', $row->column);
         $this->assertEquals('value2', $row->columnFoo);
@@ -65,7 +78,7 @@ class Zend_Db_Table_Row_StaticTest extends PHPUnit_Framework_TestCase
             'column_foo'     => 'value2',
             'column_bar_baz' => 'value3'
         );
-        $row = new Zend_Db_Table_Row_TestMockRow(array('data' => $data));
+        $row = new My_ZendDbTable_Row_TestMockRow(array('data' => $data));
 
         $this->assertEquals('value1', $row->column);
         $this->assertEquals('value2', $row->columnFoo);

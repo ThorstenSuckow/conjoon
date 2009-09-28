@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 
@@ -66,6 +65,11 @@ require_once 'Zend/Validate/CcnumTest.php';
  * @see Zend_Validate_DateTest
  */
 require_once 'Zend/Validate/DateTest.php';
+
+/**
+ * @see Zend_Validate_Db_AllTests
+ */
+require_once 'Zend/Validate/Db/AllTests.php';
 
 /**
  * @see Zend_Validate_DigitsTest
@@ -143,6 +147,11 @@ require_once 'Zend/Validate/NotEmptyTest.php';
 require_once 'Zend/Validate/RegexTest.php';
 
 /**
+ * @see Zend_Validate_Sitemap_AllTests
+ */
+require_once 'Zend/Validate/Sitemap/AllTests.php';
+
+/**
  * @see Zend_Validate_StringLengthTest
  */
 require_once 'Zend/Validate/StringLengthTest.php';
@@ -152,8 +161,9 @@ require_once 'Zend/Validate/StringLengthTest.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_AllTests
 {
@@ -183,6 +193,7 @@ class Zend_Validate_AllTests
         $suite->addTestSuite('Zend_Validate_BetweenTest');
         $suite->addTestSuite('Zend_Validate_CcnumTest');
         $suite->addTestSuite('Zend_Validate_DateTest');
+        $suite->addTest(Zend_Validate_Db_AllTests::suite());
         $suite->addTestSuite('Zend_Validate_DigitsTest');
         $suite->addTestSuite('Zend_Validate_EmailAddressTest');
         $suite->addTest(Zend_Validate_File_AllTests::suite());
@@ -198,6 +209,7 @@ class Zend_Validate_AllTests
         $suite->addTestSuite('Zend_Validate_MessageTest');
         $suite->addTestSuite('Zend_Validate_NotEmptyTest');
         $suite->addTestSuite('Zend_Validate_RegexTest');
+        $suite->addTest(Zend_Validate_Sitemap_AllTests::suite());
         $suite->addTestSuite('Zend_Validate_StringLengthTest');
 
         return $suite;

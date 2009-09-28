@@ -136,7 +136,7 @@ dojo.declare("dojox.wire.Wire", null, {
 				if(this.type == "string"){
 					value = value.toString();
 				}else if(this.type == "number"){
-					value = parseInt(value);
+					value = parseInt(value, 10);
 				}else if(this.type == "boolean"){
 					value = (value != "false");
 				}else if(this.type == "array"){
@@ -184,6 +184,7 @@ dojo.declare("dojox.wire.Wire", null, {
 		}
 
 		var property = undefined;
+		var o;
 		if(this.property){
 			if(!object){
 				if(dojox.wire.isWire(this.object)){
@@ -197,7 +198,7 @@ dojo.declare("dojox.wire.Wire", null, {
 			var last = list.length - 1;
 			for(var i = 0; i < last; i++){
 				var p = list[i];
-				var o = this._getPropertyValue(object, p);
+				o = this._getPropertyValue(object, p);
 				if(!o){
 					o = {};
 					this._setPropertyValue(object, p, o);
@@ -209,7 +210,7 @@ dojo.declare("dojox.wire.Wire", null, {
 
 		if(this._setValue){
 			if(property){
-				var o = this._getPropertyValue(object, property);
+				o = this._getPropertyValue(object, property);
 				if(!o){
 					o = {};
 					this._setPropertyValue(object, property, o);
@@ -276,7 +277,9 @@ dojo.declare("dojox.wire.Wire", null, {
 			value = object.getPropertyValue(property);
 		}else{
 			var getter = "get" + property.charAt(0).toUpperCase() + property.substring(1);
-			if(object[getter]){
+			if(this._useAttr(object)){
+				value = object.attr(property);
+			} else if(object[getter]){
 				value = object[getter]();
 			}else{
 				value = object[property];
@@ -322,11 +325,25 @@ dojo.declare("dojox.wire.Wire", null, {
 			object.setPropertyValue(property, value);
 		}else{
 			var setter = "set" + property.charAt(0).toUpperCase() + property.substring(1);
-			if(object[setter]){
+			if(this._useAttr(object)){
+				object.attr(property, value);
+			}else if(object[setter]){
 				object[setter](value);
 			}else{
 				object[property] = value;
 			}
 		}
+	},
+
+	_useAttr: function(object) {
+		//	summary:
+	   	//		Function to detect if dijit.attr support exists on the target
+		//	object:
+		//		The target object to set the property of.
+		var useAttr = false;
+		if(dojo.isFunction(object.attr)){
+			useAttr = true;
+		}
+		return useAttr;
 	}
 });

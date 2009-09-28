@@ -17,7 +17,7 @@
  * @package    UnitTests
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestConfiguration.php.dist 13882 2009-01-31 03:15:42Z yoshida@zend.co.jp $
+ * @version    $Id: TestConfiguration.php.dist 12732 2008-11-21 00:54:22Z kgbfernando $
  */
 
 /**

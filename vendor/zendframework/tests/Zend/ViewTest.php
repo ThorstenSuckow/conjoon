@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -47,8 +48,9 @@ require_once 'Zend/Loader.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_View
  */
 class Zend_ViewTest extends PHPUnit_Framework_TestCase
 {
@@ -659,6 +661,7 @@ class Zend_ViewTest extends PHPUnit_Framework_TestCase
         ob_start();
         echo $view->render('testZf995.phtml');
         $content = ob_get_flush();
+        ob_end_clean();
         $this->assertTrue(empty($content));
     }
 
@@ -1043,13 +1046,41 @@ class Zend_ViewTest extends PHPUnit_Framework_TestCase
             $this->fail('LFI attack failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * @group ZF-6087
+     */
+    public function testConstructorShouldAllowPassingArrayOfHelperPaths()
+    {
+        $view = new Zend_View(array(
+            'helperPath' => array(
+                'My_View'   => 'My/View/',
+            ),
+        ));
+        $paths = $view->getHelperPaths();
+        $this->assertTrue(array_key_exists('My_View_', $paths), var_export($paths, 1));
+    }
+
+    /**
+     * @group ZF-6087
+     */
+    public function testConstructorShouldAllowPassingArrayOfFilterPaths()
+    {
+        $view = new Zend_View(array(
+            'filterPath' => array(
+                'My_View'   => 'My/View/',
+            ),
+        ));
+        $paths = $view->getFilterPaths();
+        $this->assertTrue(array_key_exists('My_View_', $paths), var_export($paths, 1));
+    }
 }
 
 /**
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_ViewTest_Extension extends Zend_View

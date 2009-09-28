@@ -1,17 +1,26 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Http_Client
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: SocketKeepaliveTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ */
 
-// Read local configuration
-if (! defined('TESTS_ZEND_HTTP_CLIENT_BASEURI') &&
-    is_readable('TestConfiguration.php')) {
-
-    require_once 'TestConfiguration.php';
-}
-
-require_once realpath(dirname(__FILE__) . '/../../../') . '/TestHelper.php';
-
-require_once 'Zend/Http/Client.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'SocketTest.php';
+require_once dirname(__FILE__) . '/SocketTest.php';
 
 /**
  * This Testsuite includes all Zend_Http_Client that require a working web
@@ -29,19 +38,20 @@ require_once 'SocketTest.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @version    $Id: SocketKeepaliveTest.php 12036 2008-10-20 18:37:47Z shahar $
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Http
+ * @group      Zend_Http_Client
  */
 class Zend_Http_Client_SocketKeepaliveTest extends Zend_Http_Client_SocketTest
 {
-	/**
-	 * Configuration array
-	 *
-	 * @var array
-	 */
-	protected $config = array(
-		'adapter'     => 'Zend_Http_Client_Adapter_Socket',
-		'keepalive'   => true
-	);
+    /**
+     * Configuration array
+     *
+     * @var array
+     */
+    protected $config = array(
+        'adapter'     => 'Zend_Http_Client_Adapter_Socket',
+        'keepalive'   => true
+    );
 }

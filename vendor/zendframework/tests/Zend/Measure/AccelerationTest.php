@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2006 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AccelerationTest.php 10502 2008-07-27 18:55:57Z thomas $
+ * @version    $Id: AccelerationTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -31,10 +31,13 @@ require_once 'Zend/Locale.php';
  */
 require_once 'PHPUnit/Framework/TestCase.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_Measure
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Measure
  */
 class Zend_Measure_AccelerationTest extends PHPUnit_Framework_TestCase
 {
@@ -87,7 +90,7 @@ class Zend_Measure_AccelerationTest extends PHPUnit_Framework_TestCase
         $value = new Zend_Measure_Acceleration('-100.100,200',Zend_Measure_Acceleration::STANDARD,$locale);
         $this->assertEquals(-100100.200, $value->getValue(),'Zend_Measure_Acceleration Object not returned');
         // value with string
-        $value = new Zend_Measure_Acceleration('string -100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
+        $value = new Zend_Measure_Acceleration('-100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
         $this->assertEquals(-100100.200, $value->getValue(),'Zend_Measure_Acceleration Object not returned');
     }
 
@@ -98,12 +101,12 @@ class Zend_Measure_AccelerationTest extends PHPUnit_Framework_TestCase
      */
     public function testAccelerationEquals()
     {
-        $value = new Zend_Measure_Acceleration('string -100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
-        $newvalue = new Zend_Measure_Acceleration('otherstring -100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
+        $value = new Zend_Measure_Acceleration('-100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
+        $newvalue = new Zend_Measure_Acceleration('-100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
         $this->assertTrue($value->equals($newvalue),'Zend_Measure_Acceleration Object should be equal');
 
-        $value = new Zend_Measure_Acceleration('string -100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
-        $newvalue = new Zend_Measure_Acceleration('otherstring -100,200',Zend_Measure_Acceleration::STANDARD,'de');
+        $value = new Zend_Measure_Acceleration('-100.100,200',Zend_Measure_Acceleration::STANDARD,'de');
+        $newvalue = new Zend_Measure_Acceleration('-100,200',Zend_Measure_Acceleration::STANDARD,'de');
         $this->assertFalse($value->equals($newvalue),'Zend_Measure_Acceleration Object should be not equal');
     }
 
@@ -129,13 +132,13 @@ class Zend_Measure_AccelerationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(-200.200, $value->getValue(), 'Zend_Measure_Acceleration value expected to be a decimal value');
         $value->setValue('-200.200,200',Zend_Measure_Acceleration::STANDARD,'de');
         $this->assertEquals(-200200.200, $value->getValue(),'Zend_Measure_Acceleration Object not returned');
-        $value->setValue('otherstring -200.200,200',Zend_Measure_Acceleration::STANDARD,'de');
+        $value->setValue('-200.200,200',Zend_Measure_Acceleration::STANDARD,'de');
         $this->assertEquals(-200200.200, $value->getValue(),'Zend_Measure_Acceleration Object not returned');
         $value->setValue('200', Zend_Measure_Acceleration::STANDARD);
         $this->assertEquals(200, $value->getValue(), 'Zend_Measure_Acceleration value expected to be a positive integer');
 
         try {
-            $value->setValue('otherstring -200.200,200','Acceleration::UNKNOWN','de');
+            $value->setValue('-200.200,200','Acceleration::UNKNOWN','de');
             $this->fail('Exception expected because of unknown type');
         } catch (Zend_Measure_Exception $e) {
             // success

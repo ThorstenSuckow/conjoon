@@ -1,8 +1,23 @@
 <?php
 /**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: RewriteTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -44,6 +59,10 @@ require_once 'PHPUnit/Runner/Version.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Router
  */
 class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
 {
@@ -485,16 +504,13 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
         
     public function testRoutingChainedRoutes()
     {
-        $this->markTestSkipped('Router features not ready');
-        
         $request = new Zend_Controller_Router_RewriteTest_Request('http://localhost/foo/bar');
 
         $foo = new Zend_Controller_Router_Route('foo', array('foo' => true));
         $bar = new Zend_Controller_Router_Route('bar', array('bar' => true, 'controller' => 'foo', 'action' => 'bar'));
 
         $chain = new Zend_Controller_Router_Route_Chain();
-        $chain->chain($foo);
-        $foo->chain($bar);
+        $chain->chain($foo)->chain($bar);
 
         $this->_router->addRoute('foo-bar', $chain);
 
@@ -655,6 +671,35 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
         
         $this->assertEquals('/en/articles/1', $url);
     }
+    
+    public function testChainNameSeparatorIsSetCorrectly() {
+        $separators = array('_','unitTestSeparator','-');
+        $results = array();
+
+        foreach($separators as $separator) {
+            $this->_router->setChainNameSeparator($separator);
+            $results[] = $this->_router->getChainNameSeparator();	
+        }
+
+        $this->assertEquals($separators, $results);
+    }
+    
+    public function testChainNameSeparatorisUsedCorrectly() {
+        $config = new Zend_Config(array('chains' => array(
+            'type'=>'Zend_Controller_Router_Route_Static',
+            'route'=>'foo',
+            'chains'=> array('bar'=>
+                array('type'=>'Zend_Controller_Router_Route_Static',
+                    'route'=>'bar',
+                    'defaults'=>array(
+                    'module'=>'module',
+                    'controller'=>'controller',
+                    'action'=>'action'))))));
+        $this->_router->setChainNameSeparator('_separator_')
+                      ->addConfig($config);
+        $url = $this->_router->assemble(array(),'chains_separator_bar');
+        $this->assertEquals('/foo/bar',$url);
+    }
 }
 
 
@@ -718,9 +763,8 @@ class Zend_Controller_Router_RewriteTest_Request_Incorrect extends Zend_Controll
  *
  * @uses Zend_Controller_Request_Abstract
  */
-class Zend_Controller_RouterTest_RouteV2_Stub implements Zend_Controller_Router_Route_Interface
+class Zend_Controller_RouterTest_RouteV2_Stub extends Zend_Controller_Router_Route_Abstract
 {
-    public function getVersion() { return 2; }
     public function match($request) {
         return array('path', $request->getParam('path'));
     }

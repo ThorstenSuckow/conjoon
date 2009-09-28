@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,26 +15,23 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mssql.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: Mssql.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
-
 
 /**
  * @see Zend_Db_TestUtil_Pdo_Common
  */
 require_once 'Zend/Db/TestUtil/Pdo/Common.php';
 
-
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_TestUtil_Pdo_Mssql extends Zend_Db_TestUtil_Pdo_Common
@@ -98,16 +94,31 @@ class Zend_Db_TestUtil_Pdo_Mssql extends Zend_Db_TestUtil_Pdo_Common
         return 'CREATE TABLE ' . $this->_db->quoteIdentifier($tableName);
     }
 
-    protected function _getSqlDropTable($tableName)
+    private function _getSqlDropElement($elementName, $typeElement = 'TABLE')
     {
-        $sql = "exec sp_tables @table_name = " . $this->_db->quoteIdentifier($tableName, true);
+        $sql = "exec sp_tables @table_name = " . $this->_db->quoteIdentifier($elementName, true);
         $stmt = $this->_db->query($sql);
-        $tableList = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
+        $elementList = $stmt->fetchAll(Zend_Db::FETCH_ASSOC);
 
-        if (count($tableList) > 0 && $tableName == $tableList[0]['TABLE_NAME']) {
-            return 'DROP TABLE ' . $this->_db->quoteIdentifier($tableName);
+        if (count($elementList) > 0 && $elementName == $elementList[0]['TABLE_NAME']) {
+            return "DROP $typeElement " . $this->_db->quoteIdentifier($elementName);
         }
         return null;
     }
 
+    protected function _getSqlDropTable($tableName)
+    {
+        return $this->_getSqlDropElement($tableName);
+    }
+
+    protected function _getSqlDropView($viewName)
+    {
+        return $this->_getSqlDropElement($viewName, 'VIEW');
+    }
+    
+    public function createView()
+    {
+        parent::dropView();
+        parent::createView();
+    }
 }

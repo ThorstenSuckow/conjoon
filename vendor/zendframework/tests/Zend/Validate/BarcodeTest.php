@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BarcodeTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: BarcodeTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -36,8 +35,9 @@ require_once 'Zend/Validate/Barcode.php';
  * @package    Zend_Validate
  * @subpackage UnitTests
  * @uses       Zend_Validate_Barcode
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Validate
  */
 class Zend_Validate_BarcodeTest extends PHPUnit_Framework_TestCase
 {
@@ -87,5 +87,19 @@ class Zend_Validate_BarcodeTest extends PHPUnit_Framework_TestCase
 
         $barcode->setType('ean-13');
         $this->assertTrue($barcode->isValid('0075678164125'));
+    }
+
+    /**
+     * @ZF-4352
+     */
+    public function testNonStringValidation()
+    {
+        $barcode = new Zend_Validate_Barcode('upc-a');
+        $this->assertFalse($barcode->isValid(106510000.4327));
+        $this->assertFalse($barcode->isValid(array('065100004327')));
+
+        $barcode = new Zend_Validate_Barcode('ean-13');
+        $this->assertFalse($barcode->isValid(06510000.4327));
+        $this->assertFalse($barcode->isValid(array('065100004327')));
     }
 }

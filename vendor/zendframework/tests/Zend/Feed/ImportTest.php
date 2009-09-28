@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,11 +15,10 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ImportTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: ImportTest.php 18291 2009-09-18 21:00:51Z padraic $
  */
-
 
 /**
  * Test helper
@@ -47,13 +45,13 @@ require_once 'Zend/Http/Client/Adapter/Test.php';
  */
 require_once 'Zend/Http/Client.php';
 
-
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Feed
  */
 class Zend_Feed_ImportTest extends PHPUnit_Framework_TestCase
 {
@@ -192,7 +190,8 @@ class Zend_Feed_ImportTest extends PHPUnit_Framework_TestCase
      */
     public function testRss100Sample1()
     {
-        $this->_importRssValid('RssTest100Sample1.xml');
+        $feed = $this->_importRssValid('RssTest100Sample1.xml');
+        $this->assertEquals(2, $feed->count());
     }
 
     /**
@@ -200,7 +199,8 @@ class Zend_Feed_ImportTest extends PHPUnit_Framework_TestCase
      */
     public function testRss100Sample2()
     {
-        $this->_importRssValid('RssTest100Sample2.xml');
+        $feed = $this->_importRssValid('RssTest100Sample2.xml');
+        $this->assertEquals(1, $feed->count());
     }
 
     /**
@@ -423,6 +423,7 @@ class Zend_Feed_ImportTest extends PHPUnit_Framework_TestCase
 
         $feed = Zend_Feed::import('http://localhost');
         $this->assertType('Zend_Feed_Rss', $feed);
+        return $feed;
     }
 
     /**
@@ -439,5 +440,23 @@ class Zend_Feed_ImportTest extends PHPUnit_Framework_TestCase
         } catch (Zend_Feed_Exception $e) {
             $this->assertType('Zend_Feed_Exception', $e);
         }
+    }
+
+    /**
+     * @issue ZF-5903
+     */
+    public function testFindFeedsIncludesUriAsArrayKey()
+    {
+        if (!defined('TESTS_ZEND_FEED_READER_ONLINE_ENABLED')
+            || !constant('TESTS_ZEND_FEED_READER_ONLINE_ENABLED')
+        ) {
+            $this->markTestSkipped('testFindFeedsIncludesUriAsArrayKey() requires a network connection');
+            return;
+        }
+        Zend_Feed::setHttpClient(new Zend_Http_Client);
+        $feeds = Zend_Feed::findFeeds('http://www.planet-php.net');
+        $this->assertEquals(array(
+            'http://www.planet-php.org:80/rss/', 'http://www.planet-php.org:80/rdf/'
+        ), array_keys($feeds));
     }
 }

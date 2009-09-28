@@ -14,9 +14,10 @@
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProviderTest.php 12194 2008-10-30 13:14:32Z dmitry $
+ * @version    $Id: ProviderTest.php 17363 2009-08-03 07:40:18Z bkarwin $
  */
 
 /**
@@ -36,10 +37,13 @@ require_once 'PHPUnit/Framework.php';
  */
 require_once 'Zend/OpenId/ResponseHelper.php';
 
-
 /**
+ * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_OpenId
  */
 class Zend_OpenId_ProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -50,8 +54,9 @@ class Zend_OpenId_ProviderTest extends PHPUnit_Framework_TestCase
 
     private $_user;
 
-    public function __construct()
+    public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
+        parent::__construct($name, $data, $dataName);
         $this->_user = new Zend_OpenId_Provider_User_Session();
     }
 

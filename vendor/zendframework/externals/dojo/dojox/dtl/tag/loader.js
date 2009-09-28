@@ -43,8 +43,18 @@ dojo.require("dojox.dtl._base");
 			if(nodelist != this.nodelist){
 				this.parent = this;
 			}
-			context["block"] = this;
+			context.block = this;
+
+			if(buffer.getParent){
+				var bufferParent = buffer.getParent();
+				var setParent = dojo.connect(buffer, "onSetParent", function(node, up, root){
+					if(up && root){
+						buffer.setParent(bufferParent);
+					}
+				});
+			}
 			buffer = nodelist.render(context, buffer, this);
+			setParent && dojo.disconnect(setParent);
 			context = context.pop();
 			return buffer;
 		},
@@ -89,7 +99,7 @@ dojo.require("dojox.dtl._base");
 						parent = this.parent = this.parent.toString();
 					}
 				}
-				if(parent && parent.indexOf("shared:") == 0){
+				if(parent && parent.indexOf("shared:") === 0){
 					this.shared = true;
 					parent = this.parent = parent.substring(7, parent.length);
 				}

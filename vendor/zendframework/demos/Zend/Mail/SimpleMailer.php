@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +29,7 @@ require_once 'Zend/Loader.php';
  *
  * This simple mailer demonstrates the most important features of the mail reading classes. You can
  * use the test mbox and maildir files or a Pop3 or Imap server. It's meant to be run in a web enviroment
- * and CLI is not supported. Copy the files to a directory in your webroot and make sure the Zend Framework
+ * and CLI is not supported. Copy the files to a directory in your webroot and make sure Zend Framework
  * is in your include path (including incubator!).
  *
  * SSL and TLS are supported by Zend_Mail_Storage_[Pop3|Imap], but not shown here). You'd need to add
@@ -47,7 +47,7 @@ require_once 'Zend/Loader.php';
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Demo_Zend_Mail_SimpleMailer

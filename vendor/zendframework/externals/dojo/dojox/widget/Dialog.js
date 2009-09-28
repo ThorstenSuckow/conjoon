@@ -10,24 +10,35 @@ dojo.declare('dojox.widget.Dialog',
 	// summary: A Lightbox-like Modal-dialog for HTML Content
 	//
 	// description:
-	//		An HTML 
+	//		An HTML-capable Dialog widget with advanced sizing 
+	//		options, animated show/hide and other useful options.
+	//		
+	//		This Dialog is also very easy to apply custom styles to.
+	//		
+	//		It works identically to a `dijit.Dialog` with several 
+	//		additional parameters.
+	
 	templatePath: dojo.moduleUrl('dojox.widget','Dialog/Dialog.html'),
 	
-	// fixedSize: Boolean
-	//		If false, fix the size of the dialog to the Viewport based on 
+	// sizeToViewport: Boolean
+	//		If true, fix the size of the dialog to the Viewport based on 
 	//		viewportPadding value rather than the calculated or natural 
-	//		stlye. If true, base the size on a passed dimension attribute.
+	//		stlye. If false, base the size on a passed dimension attribute.
 	//		Eitherway, the viewportPadding value is used if the the content
 	//		extends beyond the viewport size for whatever reason.
-	fixedSize: false,
+	sizeToViewport: false,
 	
 	// viewportPadding: Integer
-	//		If fixedSize="true", this is the value  or used when fixed="false" and dimensions exceed) to use
+	//		If sizeToViewport="true", this is the amount of padding in pixels to leave 
+	//    between the dialog border and the viewport edge.
+	//    This value is also used when sizeToViewport="false" and dimensions exceeded
+	//    by dialog content to ensure dialog does not go outside viewport boundary
 	//		 
 	viewportPadding: 35,
 	
 	// dimensions: Array
-	//		A two-element array of [widht,height] to animate the Dialog to. Defaults to [300,300]
+	//		A two-element array of [widht,height] to animate the Dialog to if sizeToViewport="false"
+	//    Defaults to [300,300]
 	dimensions: null, 
 	
 	// easing: Function?|String?
@@ -51,6 +62,12 @@ dojo.declare('dojox.widget.Dialog',
 	//		Make the pane draggable. Differs from dijit.Dialog by setting default to false
 	draggable: false, // simply over-ride the default from dijit.Dialog 
 	
+	// modal: Boolean
+	// 		If true, this Dialog instance will be truly modal and prevent closing until
+	//		explicitly told to by calling hide() - Defaults to false to preserve previous
+	// 		behaviors.
+	modal: false,
+	
 	constructor: function(props, node){
 		this.easing = props.easing || dojo._defaultEasing; 
 		this.dimensions = props.dimensions || [300, 300];
@@ -60,10 +77,7 @@ dojo.declare('dojox.widget.Dialog',
 		// summary: Piggyback on dijit.Dialog's _setup for load-time options, deferred to 
 		//		
 		this.inherited(arguments);
-		if(!this._alreadyInitialized){
-			// FIXME: should this be optional, too?
-			this.connect(this._underlay.domNode,"onclick","onCancel");
-			
+		if(!this._alreadyInitialized){			
 			this._navIn = dojo.fadeIn({ node: this.closeButtonNode });
 			this._navOut = dojo.fadeOut({ node: this.closeButtonNode }); 
 			if(!this.showTitle){
@@ -73,7 +87,6 @@ dojo.declare('dojox.widget.Dialog',
 	},
 	
 	layout: function(e){
-		
 		this._setSize();
 		this.inherited(arguments);
 	},
@@ -81,12 +94,13 @@ dojo.declare('dojox.widget.Dialog',
 	_setSize: function(){
 		// summary: cache and set our desired end position 
 		this._vp = dijit.getViewport();
-		var tc = this.containerNode;
-		var fixed = this.fixedSize;
-		this._displaysize = {
-			w: fixed ? tc.scrollWidth : this.dimensions[0],
-			h: fixed ? tc.scrollHeight : this.dimensions[1]
-		};
+		var tc = this.containerNode,
+			vpSized = this.sizeToViewport
+		;
+		return this._displaysize = {
+			w: vpSized ? tc.scrollWidth : this.dimensions[0],
+			h: vpSized ? tc.scrollHeight : this.dimensions[1]
+		}; // Object
 	},
 	
 	show: function(){
@@ -106,6 +120,19 @@ dojo.declare('dojox.widget.Dialog',
 		
 		this.inherited(arguments);
 
+		if(this.modal){
+			// prevent escape key from closing dialog
+			// connect to body to trap this event from the Dialog a11y code, and stop escape key
+			// from doing anything in the modal:true case:
+			this._modalconnects.push(dojo.connect(dojo.body(), "onkeypress", function(e){
+				if(e.charOrCode == dojo.keys.ESCAPE){
+					dojo.stopEvent(e);
+				}
+			}));
+		}else{
+			// otherwise, allow clicking on the underlay to close
+			this._modalconnects.push(dojo.connect(dijit._underlay.domNode, "onclick", this, "onCancel"));
+		}
 		this._modalconnects.push(dojo.connect(this.domNode,"onmouseenter",this,"_handleNav"));
 		this._modalconnects.push(dojo.connect(this.domNode,"onmouseleave",this,"_handleNav"));
 		
@@ -114,11 +141,11 @@ dojo.declare('dojox.widget.Dialog',
 	_handleNav: function(e){
 		// summary: Handle's showing or hiding the close icon
 
-		var navou = "_navOut"; 
-		var navin = "_navIn";
-
-		var animou = (e.type == "mouseout" ? navin : navou);
-		var animin = (e.type == "mouseout" ? navou : navin);
+		var navou = "_navOut", 
+			navin = "_navIn",
+			animou = (e.type == "mouseout" ? navin : navou),
+			animin = (e.type == "mouseout" ? navou : navin)
+		;
 		
 		this[animou].stop();
 		this[animin].play();
@@ -164,9 +191,12 @@ dojo.declare('dojox.widget.Dialog',
 
 	_position: function(){
 		
+		if(!this._started){ return; } // prevent content: from firing this anim #8914
+		
 		if(this._sizing){
 			this._sizing.stop();	
 			this.disconnect(this._sizingConnect);
+			delete this._sizing; 
 		}
 		
 		this.inherited(arguments);
@@ -181,13 +211,13 @@ dojo.declare('dojox.widget.Dialog',
 			method: this.sizeMethod
 		};
 
-		var ds = this._displaysize;
-		props['width'] = ds.w = (ds.w + pad >= this._vp.w || this.fixedSize) 
+		var ds = this._displaysize || this._setSize();
+		props['width'] = ds.w = (ds.w + pad >= this._vp.w || this.sizeToViewport) 
 			? this._vp.w - pad : ds.w;
 			
-		props['height'] = ds.h = (ds.h + pad >= this._vp.h || this.fixedSize) 
+		props['height'] = ds.h = (ds.h + pad >= this._vp.h || this.sizeToViewport) 
 			? this._vp.h - pad : ds.h;
-
+		
 		this._sizing = dojox.fx.sizeTo(props);
 		this._sizingConnect = this.connect(this._sizing,"onEnd","_showContent");
 		this._sizing.play();

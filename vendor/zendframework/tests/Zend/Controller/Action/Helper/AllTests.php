@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 /**
@@ -42,8 +43,11 @@ require_once 'Zend/Controller/Action/Helper/ViewRendererTest.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Controller
+ * @group      Zend_Controller_Action
+ * @group      Zend_Controller_Action_Helper
  */
 class Zend_Controller_Action_Helper_AllTests
 {
@@ -54,7 +58,7 @@ class Zend_Controller_Action_Helper_AllTests
 
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Controller');
+        $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Controller_Action_Helper');
 
         $suite->addTestSuite('Zend_Controller_Action_Helper_ActionStackTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_AutoCompleteTest');

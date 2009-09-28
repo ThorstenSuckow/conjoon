@@ -58,6 +58,7 @@ dojo.declare("dojox.editor.plugins.GlobalTableHandler", dijit._editor._Plugin,{
 				return dojo.withGlobal(this.window, "getAncestorElement",dijit._editor.selection, [tagName]);
 			},
 			hasAncestorElement: function(tagName){
+				return true
 				return dojo.withGlobal(this.window, "hasAncestorElement",dijit._editor.selection, [tagName]);
 			},
 			selectElement: function(elem){
@@ -85,8 +86,7 @@ dojo.declare("dojox.editor.plugins.GlobalTableHandler", dijit._editor._Plugin,{
 		this.initialized = true;
 		this.editor = editor;
 		
-		
-		this.editorDomNode = this.editor.iframe ? this.editor.document : this.editor.editNode;
+		this.editorDomNode = this.editor.editNode || this.editor.iframe.document.body.firstChild;
 		
 		// RichText should have a mouseup connection to recognize drag-selections
 		// Example would be selecting multiple table cells
@@ -347,6 +347,7 @@ dojo.declare("dojox.editor.plugins.GlobalTableHandler", dijit._editor._Plugin,{
 			var o = this.getTableInfo();
 			//console.log("TAB ", o.tdIndex, o);
 			// modifying the o.tdIndex in the tableData directly, because we may save it
+			// FIXME: tabTo is a global
 			o.tdIndex = (this.shiftKeyDown) ? o.tdIndex-1 : tabTo = o.tdIndex+1;
 			if(o.tdIndex>=0 && o.tdIndex<o.tds.length){
 				
@@ -470,9 +471,9 @@ dojo.declare("dojox.editor.plugins.TablePlugins",
 			// summary
 			//		Building context menu for right-click shortcuts within a table
 			//
-			var node = dojo.isFF ? this.editor.editNode : this.editor.document.firstChild;
+			var node = dojo.isFF ? this.editor.editNode : this.editorDomNode;
 			
-			pMenu = new dijit.Menu({targetNodeIds:[node], id:"progMenu", contextMenuForWindow:dojo.isIE});
+			var pMenu = new dijit.Menu({targetNodeIds:[node], id:"progMenu", contextMenuForWindow:dojo.isIE});
 			var _M = dijit.MenuItem;
 			var messages = dojo.i18n.getLocalization("dojox.editor.plugins", "TableDialog", this.lang);
 			pMenu.addChild(new _M({label: messages.selectTableLabel, onClick: dojo.hitch(this, "selectTable")}));

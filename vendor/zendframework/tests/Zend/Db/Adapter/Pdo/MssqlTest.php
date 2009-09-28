@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Zend Framework
  *
@@ -16,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MssqlTest.php 12004 2008-10-18 14:29:41Z mikaelkael $
+ * @version    $Id: MssqlTest.php 17792 2009-08-24 16:18:02Z ralph $
  */
 
 /**
@@ -37,8 +36,10 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Db
+ * @group      Zend_Db_Adapter
  */
 class Zend_Db_Adapter_Pdo_MssqlTest extends Zend_Db_Adapter_Pdo_TestCommon
 {
@@ -296,28 +297,98 @@ class Zend_Db_Adapter_Pdo_MssqlTest extends Zend_Db_Adapter_Pdo_TestCommon
     }
 
     /**
-      * Test the Adapter's insert() method.
-      * This requires providing an associative array of column=>value pairs.
-      */
-     public function testAdapterInsert()
-     {
-         $row = array (
-             'bug_description' => 'New bug',
-             'bug_status'      => 'NEW',
-             'created_on'      => '2007-04-02',
-             'updated_on'      => '2007-04-02',
-             'reported_by'     => 'micky',
-             'assigned_to'     => 'goofy',
-             'verified_by'     => 'dduck'
-         );
-         $rowsAffected = $this->_db->insert('zfbugs', $row);
-         $this->assertEquals(1, $rowsAffected);
-         $lastInsertId = $this->_db->lastInsertId();
-         $this->assertType('integer', $lastInsertId);
-         $this->assertEquals('5', (string) $lastInsertId,
-             'Expected new id to be 5');
-     }
+     * Test the Adapter's insert() method.
+     * This requires providing an associative array of column=>value pairs.
+     */
+    public function testAdapterInsert()
+    {
+        $row = array (
+            'bug_description' => 'New bug',
+            'bug_status'      => 'NEW',
+            'created_on'      => '2007-04-02',
+            'updated_on'      => '2007-04-02',
+            'reported_by'     => 'micky',
+            'assigned_to'     => 'goofy',
+            'verified_by'     => 'dduck'
+        );
+        $rowsAffected = $this->_db->insert('zfbugs', $row);
+        $this->assertEquals(1, $rowsAffected);
+        $lastInsertId = $this->_db->lastInsertId();
+        $this->assertType('integer', $lastInsertId);
+        $this->assertEquals('5', (string) $lastInsertId,
+            'Expected new id to be 5');
+    }
 
+    /**
+     * @group ZF-4099
+     */
+    public function testAdapterLimitWorksWithOrderByClause()
+    {
+    	// more values
+        $this->_db->insert('zfproducts', array('product_name' => 'Unix'));
+        $this->_db->insert('zfproducts', array('product_name' => 'Windows'));
+        $this->_db->insert('zfproducts', array('product_name' => 'AIX'));
+        $this->_db->insert('zfproducts', array('product_name' => 'I5'));
+        $this->_db->insert('zfproducts', array('product_name' => 'Linux'));
+        
+        $select = $this->_db->select();
+        $select->from('zfproducts')
+           ->order(array('product_name ASC', 'product_id DESC'))
+           ->limit(4, 4);
+        $products = $this->_db->fetchAll($select);
+        $expectedProducts = array(
+            0 => array('product_id' => '3', 'product_name' => 'OS X'),
+            1 => array('product_id' => '4', 'product_name' => 'Unix'),
+            2 => array('product_id' => '5', 'product_name' => 'Windows'),
+            3 => array ('product_id' => '1', 'product_name' => 'Windows')
+            );
+        $this->assertEquals($expectedProducts, $products);
+    }
+    
+    /**
+     * @group ZF-4251
+     */
+    public function testAdapterLimitWorksWithDistinctClause()
+    {
+        $this->_db->insert('zfproducts', array('product_name' => 'Unix'));
+        $this->_db->insert('zfproducts', array('product_name' => 'Windows'));
+        $this->_db->insert('zfproducts', array('product_name' => 'AIX'));
+        $this->_db->insert('zfproducts', array('product_name' => 'I5'));
+        $this->_db->insert('zfproducts', array('product_name' => 'Linux'));
+    	
+    	$sql = 'SELECT DISTINCT product_name FROM zfproducts ORDER BY product_name DESC';
+    	$sql = $this->_db->limit($sql, 3, 3);
+    	$products = $this->_db->fetchAll($sql);
+    	$expectedProducts = array(
+    	   0 => array('product_name' => 'Linux'),
+    	   1 => array('product_name' => 'I5'),
+    	   2 => array('product_name' => 'AIX')
+    	   );
+        $this->assertEquals($expectedProducts, $products);
+    }
+    
+    /**
+     * @group ZF-5823
+     */
+    public function testAdapterLimitWithoutOffsetProducesConciseSql()
+    {
+    	$sql = 'SELECT * FROM foo ORDER BY bar DESC';
+    	$this->assertEquals('SELECT TOP 3 * FROM foo ORDER BY bar DESC', $this->_db->limit($sql, 3));
+    	
+        $sql = 'SELECT DISTINCT * FROM foo ORDER BY bar DESC';
+        $this->assertEquals('SELECT DISTINCT TOP 3 * FROM foo ORDER BY bar DESC', $this->_db->limit($sql, 3));
+    }
+    
+    /**
+     * @group ZF-7629
+     */
+    public function testAdapterDescribeTableWithSchemaName()
+    {
+    	$productsTableInfo = $this->_db->describeTable('zfproducts', 'dbo');
+    	$this->assertArrayHasKey('product_id', $productsTableInfo);
+    	$this->assertArrayHasKey('product_name', $productsTableInfo);
+    }
+    
     public function getDriver()
     {
         return 'Pdo_Mssql';

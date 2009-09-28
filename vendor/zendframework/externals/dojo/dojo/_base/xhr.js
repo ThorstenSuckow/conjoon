@@ -4,7 +4,9 @@ dojo.require("dojo._base.json");
 dojo.require("dojo._base.lang");
 dojo.require("dojo._base.query");
 
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 (function(){
+//>>excludeEnd("webkitMobile");
 	var _d = dojo;
 	function setValue(/*Object*/obj, /*String*/name, /*String*/value){
 		//summary:
@@ -202,8 +204,8 @@ dojo.require("dojo._base.query");
 	dojo._blockAsync = false;
 
 	dojo._contentHandlers = {
-		"text": function(xhr){ return xhr.responseText; },
-		"json": function(xhr){
+		text: function(xhr){ return xhr.responseText; },
+		json: function(xhr){
 			return _d.fromJson(xhr.responseText || null);
 		},
 		"json-comment-filtered": function(xhr){ 
@@ -226,22 +228,27 @@ dojo.require("dojo._base.query");
 			}
 			return _d.fromJson(value.substring(cStartIdx+2, cEndIdx));
 		},
-		"javascript": function(xhr){ 
+		javascript: function(xhr){ 
 			// FIXME: try Moz and IE specific eval variants?
 			return _d.eval(xhr.responseText);
 		},
-		"xml": function(xhr){ 
+		xml: function(xhr){
 			var result = xhr.responseXML;
-			if(_d.isIE && (!result || result.documentElement == null)){
-				_d.forEach(["MSXML2", "Microsoft", "MSXML", "MSXML3"], function(prefix){
+			//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+			if(_d.isIE && (!result || !result.documentElement)){
+				var ms = function(n){ return "MSXML" + n + ".DOMDocument"; }
+				var dp = ["Microsoft.XMLDOM", ms(6), ms(4), ms(3), ms(2)];
+				_d.some(dp, function(p){
 					try{
-						var dom = new ActiveXObject(prefix + ".XMLDOM");
+						var dom = new ActiveXObject(p);
 						dom.async = false;
 						dom.loadXML(xhr.responseText);
 						result = dom;
-					}catch(e){ /* Not available. Squelch and try next one. */ }
+					}catch(e){ return false; }
+					return true;
 				});
 			}
+			//>>excludeEnd("webkitMobile");
 			return result; // DOMDocument
 		}
 	};
@@ -286,7 +293,7 @@ dojo.require("dojo._base.query");
 		//		is of type dojo.__IoCallbackArgs. This function will
 		//		be called when the request fails due to a network or server error, the url
 		//		is invalid, etc. It will also be called if the load or handle callback throws an
-		//		exception, unless djConfig.isDebug is true.  This allows deployed applications
+		//		exception, unless djConfig.debugAtAllCosts is true.  This allows deployed applications
 		//		to continue to run even when a logic error happens in the callback, while making
 		//		it easier to troubleshoot while in debug mode.
 		//	handle: Function?
@@ -462,12 +469,12 @@ dojo.require("dojo._base.query");
 		//summary: okHandler function for dojo._ioSetArgs call.
 
 		var ret = _d._contentHandlers[dfd.ioArgs.handleAs](dfd.ioArgs.xhr);
-		return (typeof ret == "undefined") ? null : ret;
+		return ret === undefined ? null : ret;
 	}
 	var _deferError = function(/*Error*/error, /*Deferred*/dfd){
 		//summary: errHandler function for dojo._ioSetArgs call.
 
-		console.debug(error);
+		console.error(error);
 		return error;
 	}
 
@@ -507,7 +514,7 @@ dojo.require("dojo._base.query");
 						}
 					}
 				};
-				if(dojo.config.isDebug){
+				if(dojo.config.debugAtAllCosts){
 					func.call(this);
 				}else{
 					try{
@@ -541,9 +548,11 @@ dojo.require("dojo._base.query");
 
 	//Automatically call cancel all io calls on unload
 	//in IE for trac issue #2357.
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	if(_d.isIE){
 		_d.addOnWindowUnload(_d._ioCancelAll);
 	}
+	//>>excludeEnd("webkitMobile");
 
 	_d._ioWatch = function(/*Deferred*/dfd,
 		/*Function*/validCheck,
@@ -561,14 +570,22 @@ dojo.require("dojo._base.query");
 		//resHandle:
 		//		Function used to process response. Gets the dfd
 		//		object as its only argument.
-		if(dfd.ioArgs.args.timeout){
+		var args = dfd.ioArgs.args;
+		if(args.timeout){
 			dfd.startTime = (new Date()).getTime();
 		}
 		_inFlight.push({dfd: dfd, validCheck: validCheck, ioCheck: ioCheck, resHandle: resHandle});
 		if(!_inFlightIntvl){
 			_inFlightIntvl = setInterval(_watchInFlight, 50);
 		}
-		_watchInFlight(); // handle sync requests
+		// handle sync requests
+		//A weakness: async calls in flight
+		//could have their handlers called as part of the
+		//_watchInFlight call, before the sync's callbacks
+		// are called.
+		if(args.sync){
+			_watchInFlight();
+		}
 	}
 
 	var _defaultContentType = "application/x-www-form-urlencoded";
@@ -670,7 +687,7 @@ dojo.require("dojo._base.query");
 			xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 		}
 		// FIXME: set other headers here!
-		if(dojo.config.isDebug){
+		if(dojo.config.debugAtAllCosts){
 			xhr.send(ioArgs.query);
 		}else{
 			try{
@@ -726,4 +743,6 @@ dojo.require("dojo._base.query");
 		throw new Error("dojo.wrapForm not yet implemented");
 	}
 	*/
+//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();
+//>>excludeEnd("webkitMobile");
