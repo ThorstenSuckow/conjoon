@@ -48,7 +48,12 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse exten
 
     protected function _init()
     {
-        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(ENT_COMPAT, 'UTF-8');
+        $this->_defaultEscapeFilter = new Zend_Filter_Htmlentities(
+            array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+            )
+        );
     }
 
 

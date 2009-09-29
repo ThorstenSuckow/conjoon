@@ -59,10 +59,22 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
 
     protected $_filters = array(
         'subject' => array(
-            array('Htmlentities', ENT_COMPAT, 'UTF-8'),
+            array(
+                'Htmlentities',
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
+            ),
         ),
         'body' => array(
-            array('Htmlentities', ENT_COMPAT, 'UTF-8'),
+            array(
+                'Htmlentities',
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
+            ),
         ),
         'from' => array(
             array('EmailRecipients', false, false)

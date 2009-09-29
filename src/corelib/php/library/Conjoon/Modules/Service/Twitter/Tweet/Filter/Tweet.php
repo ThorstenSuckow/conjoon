@@ -91,24 +91,30 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
         'name' => array(
             array(
                 'HtmlEntities',
-                ENT_COMPAT,
-                'UTF-8'
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
             ),
             'StringTrim'
         ),
         'screenName' => array(
             array(
                 'HtmlEntities',
-                ENT_COMPAT,
-                'UTF-8'
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
             ),
             'StringTrim'
          ),
         'location' => array(
             array(
                 'HtmlEntities',
-                ENT_COMPAT,
-                'UTF-8'
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
             ),
             'StringTrim'
          ),
@@ -118,8 +124,10 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
         'url' => array(
             array(
                 'HtmlEntities',
-                ENT_COMPAT,
-                'UTF-8'
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
             ),
             'StringTrim'
          ),
@@ -132,8 +140,10 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
         'description' => array(
             array(
                 'HtmlEntities',
-                ENT_COMPAT,
-                'UTF-8'
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
             ),
             'StringTrim'
          ),

@@ -64,7 +64,12 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse extends Conjoon_F
             new Conjoon_Modules_Groupware_Email_Item_Filter_ReferenceTypes()
         );
 
-        $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
+        $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(
+            array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+            )
+        );
     }
 
 

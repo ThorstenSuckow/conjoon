@@ -34,11 +34,6 @@ require_once 'Conjoon/Filter/Raw.php';
 require_once 'Conjoon/Filter/ShortenString.php';
 
 /**
- * @see Zend_Filter_HtmlEntities
- */
-require_once 'Zend/Filter/HtmlEntities.php';
-
-/**
  * @see Conjoon_Filter_HtmlEntityDecode
  */
 require_once 'Conjoon/Filter/HtmlEntityDecode.php';
@@ -253,8 +248,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
         if ($this->_context == self::CONTEXT_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
 
             $this->_filters['title'] = array(
-                array('StripTags')//,
-              //  new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8')
+                array('StripTags')
             );
 
             $this->_filters['description'] = array(
