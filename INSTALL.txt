@@ -54,7 +54,7 @@ Folders
       + build-tools
       + src
       + vendor
-   (Note: Depending on the package you've downloaded, the only the "build" folder
+   (Note: Depending on the package you've downloaded, only the "build" folder
    may be available)
 
    The folder of interest is the "build" folder: You will find the
