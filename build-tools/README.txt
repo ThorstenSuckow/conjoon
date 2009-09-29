@@ -8,5 +8,5 @@ css files) into one file named "conjoon-all.css". All paths used by the script
 depend on the directory layout as defined by the repository. Make sure you run
 this script out of its current folder.
 Note:
-csscompressor should not be longer used since 0.1a2 in favor of using the build_css.xml
+csscompressor should not be used anymore since 0.1a2 in favor of using the build_css.xml
 buildfile.
