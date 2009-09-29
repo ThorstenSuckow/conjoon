@@ -391,6 +391,7 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
             if (com.conjoon.groupware.QuickEditPanel.getComponent().findById(basePanel.getId())) {
                 basePanel.ownerCt.remove(basePanel, false);
                 featurePanel.add(basePanel);
+                basePanel.setVisible(true);
             }
 
             flashControl.refreshListeners();
@@ -452,7 +453,7 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
                 // check whether any of the basePanel's ownerct is hidden
                 var ct = basePanel;
                 while (ct) {
-                    if (ct.hidden === true) {
+                    if ((ct.ownerCt && ct.ownerCt.hidden === true) ||ct.collapsed === true) {
                         this.showInFeaturePanel();
                         return true;
                     }

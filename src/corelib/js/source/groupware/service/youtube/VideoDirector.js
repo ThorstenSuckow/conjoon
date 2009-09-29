@@ -70,7 +70,7 @@ com.conjoon.groupware.service.youtube.VideoDirector = function() {
 
         (function(){
             player.loadVideoById(videoQueue);
-            last = null;
+            //last = null;
         }).defer(1000);
     };
 
@@ -93,6 +93,11 @@ com.conjoon.groupware.service.youtube.VideoDirector = function() {
             var player  = viewBaton.getPlayer();
 
             var id = control._parseVideoId(url);
+
+            if (id == last) {
+                return true;
+            }
+
             if (id) {
                 videoQueue = id;
                 if (!player.playerAvailable()) {
