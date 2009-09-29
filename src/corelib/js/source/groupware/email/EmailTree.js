@@ -157,7 +157,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             containerScroll : true,
             ddAppendOnly    : true,
             loader          : this.treeLoader,
-            animate         : false
+            animate         : false,
+            header          : false
         });
 
         // this.on('nodedragover', function(overEvent){return overEvent.point == 'append';});
