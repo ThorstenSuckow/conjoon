@@ -121,10 +121,6 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
      */
     getDocMarkup : function()
     {
-        var excludeMask = {
-            href : '*/ext-all.css'
-        };
-
         var utilDom = com.conjoon.util.Dom;
 
         var getCssTextFromStyleSheet = utilDom.getCssTextFromStyleSheet;
@@ -132,8 +128,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var cssBase = utilDom.getHrefFromStyleSheet('conjoon-all.css');
 
         var cblockquote = getCssTextFromStyleSheet(
-             '.com-conjoon-groupware-email-EmailView-body blockquote',
-            excludeMask
+             '.com-conjoon-groupware-email-EmailView-body blockquote'
         );
 
         var smileys = [
@@ -156,8 +151,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         ];
 
         var emoticons = getCssTextFromStyleSheet(
-            '.com-conjoon-groupware-email-EmailView-body .emoticon',
-            excludeMask
+            '.com-conjoon-groupware-email-EmailView-body .emoticon'
         );
 
         var emo = "";
@@ -171,8 +165,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
                          */
                         + (Ext.isIE
                             ? '.emoticon.'+smileys[i]
-                            : '.'+smileys[i]+'.emoticon'),
-                        excludeMask
+                            : '.'+smileys[i]+'.emoticon')
             );
 
             if (Ext.isIE || Ext.isGecko) {
@@ -188,8 +181,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         for (var i = 0; i < 10; i++) {
             abs.push('blockquote');
             cblockquote += getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailView-body '+abs.join(' '),
-                excludeMask
+                '.com-conjoon-groupware-email-EmailView-body '+abs.join(' ')
             );
         }
 
@@ -199,26 +191,22 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
                + '<title></title>'
                + '<style type="text/css">'
                + getCssTextFromStyleSheet(
-                    '.com-conjoon-groupware-email-EmailView-body',
-                    excludeMask
+                    '.com-conjoon-groupware-email-EmailView-body'
                 )
                + ' '
                + getCssTextFromStyleSheet(
                     '.com-conjoon-groupware-email-EmailView-body '
-                    +(Ext.isIE ? 'div.viewBodyWrap' : 'pre'),
-                    excludeMask
+                    +(Ext.isIE ? 'div.viewBodyWrap' : 'pre')
                 )
                + ' '
                + getCssTextFromStyleSheet(
-                    '.com-conjoon-groupware-email-EmailView-body a',
-                    excludeMask
+                    '.com-conjoon-groupware-email-EmailView-body a'
                 )
                + ' '
                + cblockquote
                + ' '
                + getCssTextFromStyleSheet(
-                    '.com-conjoon-groupware-email-EmailView-body div.signature',
-                    excludeMask
+                    '.com-conjoon-groupware-email-EmailView-body div.signature'
                 )
                + ' '
                + emoticons

@@ -94,25 +94,18 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
     {
         if (!this.__doc_markup__) {
 
-            var excludeMask = {
-                href : '*/ext-all.css'
-            };
-
-            var getCssTextFromStyleSheet = com.conjoon.util.Dom.getCssTextFromStyleSheet;
+           var getCssTextFromStyleSheet = com.conjoon.util.Dom.getCssTextFromStyleSheet;
 
             var body = getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body',
-                excludeMask
+                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body'
             );
 
             var insertDiv = getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.text',
-                excludeMask
+                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.text'
             );
 
             var signature = getCssTextFromStyleSheet(
-                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.signature',
-                excludeMask
+                '.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.signature'
             );
 
             var blockquote = "";
@@ -121,8 +114,7 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
             for (var i = 0; i <10; i++) {
                 abs.push('blockquote');
                 blockquote += getCssTextFromStyleSheet(
-                     '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '+abs.join(' '),
-                    excludeMask
+                     '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '+abs.join(' ')
                 );
             }
 
@@ -137,13 +129,11 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
                                   + ' '
                                   + getCssTextFromStyleSheet(
                                        '.com-conjoon-groupware-email-EmailForm-htmlEditor-body '
-                                       + (Ext.isIE ? 'div.editorBodyWrap' : 'pre'),
-                                       excludeMask
+                                       + (Ext.isIE ? 'div.editorBodyWrap' : 'pre')
                                    )
                                   + ' '
                                   + getCssTextFromStyleSheet(
-                                       '.com-conjoon-groupware-email-EmailForm-htmlEditor-body a',
-                                       excludeMask
+                                       '.com-conjoon-groupware-email-EmailForm-htmlEditor-body a'
                                    )
                                   + ' '
                                   + insertDiv
