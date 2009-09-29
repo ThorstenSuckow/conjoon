@@ -75,6 +75,7 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_Inbox extends Conjoon_Filter_I
             array('GreaterThan', 0)
          ),
          'hash' => array(
+            'presence'   => 'optional',
             'allowEmpty' => true,
             'default'    => null
          ),

@@ -163,7 +163,9 @@ class Conjoon_Filter_Input extends Zend_Filter_Input {
             if (!in_array($key, $presence)) {
                 $not[] = $key;
             } else {
-                $this->_validatorRules[$key]['presence'] = 'required';
+                if (!isset($this->_validatorRules[$key]['presence'])) {
+                    $this->_validatorRules[$key]['presence'] = 'required';
+                }
             }
         }
         for ($i = 0, $len = count($not); $i < $len; $i++) {
