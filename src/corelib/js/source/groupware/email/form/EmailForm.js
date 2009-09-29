@@ -189,10 +189,9 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
 
     initEvents : function()
     {
-
         this.mon(this.grid, 'resize', function() {
             var cm = this.getColumnModel();
-            var rem = this.getGridEl().getWidth(true)-this.view.scrollOffset
+            var rem = this.getGridEl().getWidth(true)-this.view.getScrollOffset()
                       - cm.getColumnWidth(0)-2;
 
             cm.setColumnWidth(1, rem);
