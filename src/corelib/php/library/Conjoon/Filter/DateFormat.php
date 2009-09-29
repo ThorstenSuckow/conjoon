@@ -47,6 +47,11 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
      */
     private $_inputFormat = null;
 
+    /**
+     * @var Boolean
+     */
+    protected $_converted = false;
+
     public function __construct($format = null, $inputFormat = null)
     {
         if ($format != null) {
@@ -72,8 +77,17 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
     {
         Zend_Date::setOptions(array('format_type' => 'php'));
 
-        $this->_inputFormat = Zend_Locale_Format::convertPhpToIsoFormat($this->_inputFormat);
-        $this->_format      = Zend_Locale_Format::convertPhpToIsoFormat($this->_format);
+        if (!$this->_converted) {
+            if ($this->_inputFormat) {
+                $this->_inputFormat = Zend_Locale_Format::convertPhpToIsoFormat(
+                    $this->_inputFormat
+                );
+            }
+
+            $this->_format = Zend_Locale_Format::convertPhpToIsoFormat($this->_format);
+
+            $this->_converted = true;
+        }
 
         $d = strtotime($value);
 
