@@ -98,7 +98,7 @@ ext.direct.request.parameter = {APPLICATION.EXT.DIRECT.REQUEST.PARAMETER}
 
 ; This property defines whether an exception that occured while processing
 ; the initial request for a merged Ext.Direct-request should be copied for
-; each request that was merged and send ack to the client, or if a single
+; each request that was merged and send back to the client, or if a single
 ; exception should be thrown. For 3.0.0, this should be set to "0"
 ext.direct.request.singleException = {APPLICATION.EXT.DIRECT.REQUEST.SINGLE_EXCEPTION}
 
@@ -128,7 +128,7 @@ params.password = {DATABASE.PASSWORD}
 ; the name of the database used
 params.dbname = {DATABASE.DATABASE}
 
-; max_allowed_packet denotes the maximum site of a packet that can be stored
+; max_allowed_packet denotes the maximum size of a packet that can be stored
 ; in a database using the configured connection. If you have worked with
 ; MySQL before, this value should be familiar to you. However, it's used for
 ; all db adapters: Provide a value that is less than or equal to the
@@ -163,8 +163,7 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ;     automatic random cleaning 1 times in x write operations.
 ;
 ;   lifetime:
-;     denotes the valid lifetime of a cached object. Defaults to 31536000, which is
-;     approximately 1 year
+;     denotes the valid lifetime of a cached object.
 ;
 ;   caching:
 ;     Tells whether caching is active or inactive. Set this to 0, and caching
@@ -187,7 +186,8 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ;   cache_dir
 ;     Directory where to store cache files, if backend_type is set to "file".
 ;     If the name does not start with a slash or a drive letter (i.e. F:/), conjoon
-;     asumes that the path is relative to the application path
+;     asumes that the path is relative to the application path (see
+;     environment.application_path)
 ;
 ;   hashed_directory_level
 ;     Hashed directory structure level : 0 means "no hashed directory structure", 1 means
@@ -195,68 +195,82 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ;     only when you have many thousands of cache files. Only specific benchs can help you to
 ;     choose the perfect value for you. Maybe, 1 or 2 is a good start.
 
+;;;;;;;;;;;;;;;;;;;
+;;   DEFAULTS    ;;
+;;;;;;;;;;;;;;;;;;;
+
+; you can specify the following default options here:
+;
+; frontend_type
+; frontend.lifetime
+; frontend.automatic_cleaning_factor
+; frontend.automatic_serialization
+; frontend.ignore_user_abort
+; backend_type
+; backend.hashed_directory_level
+;
+; Those values can be overriden for each cache block.
+;
+; Example:
+; use a default caching lifetime of 72000 for all cache blocks:
+; default.frontend.lifetime = 72000
+; ... but use a lifetime of 31536000 for email.message:
+; email.message.frontend.lifetime = 31536000
+; The default of 72000 will then be ignored.
+; Note:
+; When setting default.caching = 0, caching will be disabled for
+; the application and no cache blocks will be written into the configuration.
+; If you want to disable caching for individual cache blocks,
+; set default.caching to 1 and disable caching for the cache block indivdually.
+;
+; Cache blocks have namespaces. They denote the module and the functionality they
+; stand for: email.message stands or module "email", function "message". namespaces may
+; have only two levels, followed by their config property
+;
+
+default.caching = 0
+default.frontend_type = core
+; 1 day default lifetime
+default.frontend.lifetime = 86400
+default.frontend.automatic_cleaning_factor = 10
+default.frontend.automatic_serialization = 1
+default.frontend.ignore_user_abort = 1
+default.backend_type = file
+default.backend.hashed_directory_level = 1
+
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;  CACHE EMAILS  ;;
 ;;;;;;;;;;;;;;;;;;;;
-
-email.message.frontend_type = core
-email.message.frontend.automatic_cleaning_factor = 10
+; namespace "email.message" for cached email messages
 email.message.frontend.lifetime = 31536000
-email.message.frontend.caching = 1
-email.message.frontend.automatic_serialization = 1
-email.message.frontend.ignore_user_abort = 1
-email.message.backend_type = file
 email.message.backend.cache_dir = cache/email/messages
-email.message.backend.hashed_directory_level = 1
 
-email.accounts.frontend_type = core
-email.accounts.frontend.automatic_cleaning_factor = 10
+; namespace "email.accounts" for cached account lists
 email.accounts.frontend.lifetime = 31536000
-email.accounts.frontend.caching = 1
-email.accounts.frontend.automatic_serialization = 1
-email.accounts.frontend.ignore_user_abort = 1
-email.accounts.backend_type = file
 email.accounts.backend.cache_dir = cache/email/accounts
-email.accounts.backend.hashed_directory_level = 1
 
 
 ;;;;;;;;;;;;;;;;;;;
 ;;  CACHE FEEDS  ;;
 ;;;;;;;;;;;;;;;;;;;
 
-feed.item.frontend_type = core
-feed.item.frontend.automatic_cleaning_factor = 10
+; namespace "feed.item" for cached feed items (feed entry)
 feed.item.frontend.lifetime = 31536000
-feed.item.frontend.caching = 1
-feed.item.frontend.automatic_serialization = 1
-feed.item.frontend.ignore_user_abort = 1
-feed.item.backend_type = file
 feed.item.backend.cache_dir = cache/feed/items
-feed.item.backend.hashed_directory_level = 1
 
-feed.accounts.frontend_type = core
-feed.accounts.frontend.automatic_cleaning_factor = 10
+; namespace "feed.accounts" for cached feed account lists
 feed.accounts.frontend.lifetime = 31536000
-feed.accounts.frontend.caching = 1
-feed.accounts.frontend.automatic_serialization = 1
-feed.accounts.frontend.ignore_user_abort = 1
-feed.accounts.backend_type = file
 feed.accounts.backend.cache_dir = cache/feed/accounts
-feed.accounts.backend.hashed_directory_level = 1
 
 
 ;;;;;;;;;;;;;;;;
 ;; CACHE DB   ;;
 ;;;;;;;;;;;;;;;;
 
-db.metadata.frontend_type = core
-db.metadata.frontend.automatic_cleaning_factor = 10
+; namespace "db.metadata" for cached db metadata. This cache has
+; to be cleaned by hand if the db structure changes
 db.metadata.frontend.lifetime = 31536000
-db.metadata.frontend.caching = 1
-db.metadata.frontend.automatic_serialization = 1
-db.metadata.frontend.ignore_user_abort = 1
-db.metadata.backend_type = file
 db.metadata.backend.cache_dir = cache/db/metadata
 db.metadata.backend.hashed_directory_level = 0
 
@@ -265,12 +279,5 @@ db.metadata.backend.hashed_directory_level = 0
 ;;  TWITTER CACHE  ;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-twitter.accounts.frontend_type = core
-twitter.accounts.frontend.automatic_cleaning_factor = 10
-twitter.accounts.frontend.lifetime = 86400
-twitter.accounts.frontend.caching = 1
-twitter.accounts.frontend.automatic_serialization = 1
-twitter.accounts.frontend.ignore_user_abort = 1
-twitter.accounts.backend_type = file
+; namespace "twitter.accounts" for cached twitter account lists.
 twitter.accounts.backend.cache_dir = cache/twitter/accounts
-twitter.accounts.backend.hashed_directory_level = 1

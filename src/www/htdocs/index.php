@@ -123,12 +123,14 @@ require_once 'Conjoon/Modules/Default/User.php';
      */
     require_once 'Conjoon/Cache/Factory.php';
 
-    Zend_Db_Table::setDefaultMetadataCache(
-        Conjoon_Cache_Factory::getCache(
-            Conjoon_Keys::CACHE_DB_METADATA,
-            $config->toArray()
-        )
+    $mdCache = Conjoon_Cache_Factory::getCache(
+        Conjoon_Keys::CACHE_DB_METADATA,
+        $config->toArray()
     );
+
+    if ($mdCache) {
+        Zend_Db_Table::setDefaultMetadataCache($mdCache);
+    }
 
    // set up authentication storage
    $auth = Zend_Auth::getInstance();
