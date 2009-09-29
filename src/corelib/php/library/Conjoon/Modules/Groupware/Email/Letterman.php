@@ -469,6 +469,8 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         $dbAdapter->beginTransaction();
 
+        $currFilter = null;
+
         try {
 
             Conjoon_Util_Array::underscoreKeys($itemData);
@@ -484,6 +486,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             $emailItem['groupwareEmailItemsId'] = $id;
 
             // filter and insert into groupware_email_items_inbox
+            $currFilter = $filterInbox;
             $filterInbox->setData($emailItem);
 
             $itemData = $filterInbox->getProcessedData();
@@ -492,6 +495,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             $modelInbox->insert($itemData);
 
             // filter and insert into groupware_email_items_flag
+            $currFilter = $filterFlag;
             $filterFlag->setData($emailItem);
             $itemData = $filterFlag->getProcessedData();
 
@@ -500,6 +504,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
             // loop through attachments and insert into groupware_email_items_attachments
             $attachmentCount = count($emailItem['attachments']);
+            $currFilter = $filterAttachment;
             for ($i = 0; $i < $attachmentCount; $i++) {
                 $emailItem['attachments'][$i]['groupwareEmailItemsId'] = $id;
                 $filterAttachment->setData($emailItem['attachments'][$i]);
@@ -513,7 +518,13 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             return $id;
 
         } catch (Exception $e) {
-            $error = $e->getMessage();
+
+            if ($e instanceof Zend_Filter_Exception) {
+                $error = Conjoon_Error::fromFilter($currFilter, $e);
+                $error = $error->getMessage();
+            } else {
+                $error = $e->getMessage();
+            }
             try {
                 $dbAdapter->rollBack();
             } catch (Exception $m) {
