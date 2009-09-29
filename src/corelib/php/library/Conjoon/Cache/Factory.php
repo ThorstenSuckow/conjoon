@@ -47,26 +47,44 @@ class Conjoon_Cache_Factory {
 
         switch ($key) {
             case Conjoon_Keys::CACHE_EMAIL_MESSAGE:
+                if (!isset($options['cache']['email']['message'])) {
+                    return null;
+                }
                 $cacheOptions = $options['cache']['email']['message'];
             break;
 
             case Conjoon_Keys::CACHE_EMAIL_ACCOUNTS:
+                if (!isset($options['cache']['email']['accounts'])) {
+                    return null;
+                }
                 $cacheOptions = $options['cache']['email']['accounts'];
             break;
 
             case Conjoon_Keys::CACHE_FEED_ITEM:
+                if (!isset($options['cache']['feed']['item'])) {
+                    return null;
+                }
                 $cacheOptions = $options['cache']['feed']['item'];
             break;
 
             case Conjoon_Keys::CACHE_FEED_ACCOUNTS:
+                if (!isset($options['cache']['feed']['accounts'])) {
+                    return null;
+                }
                 $cacheOptions = $options['cache']['feed']['accounts'];
             break;
 
             case Conjoon_Keys::CACHE_DB_METADATA:
+                if (!isset($options['cache']['db']['metadata'])) {
+                    return null;
+                }
                 $cacheOptions = $options['cache']['db']['metadata'];
             break;
 
             case Conjoon_Keys::CACHE_TWITTER_ACCOUNTS:
+                if (!isset($options['cache']['twitter']['accounts'])) {
+                    return null;
+                }
                 $cacheOptions = $options['cache']['twitter']['accounts'];
             break;
 

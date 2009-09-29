@@ -28,6 +28,8 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
 
     protected $_validGetOptions = array('userId');
 
+    protected $_buildClass = 'Conjoon_Modules_Groupware_Email_Account_Dto';
+
     /**
      *
      * @param array $options An associative array with the following
@@ -63,47 +65,29 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
      * @return Array an array with instances of
      * Conjoon_Modules_Groupware_Feeds_Account_Model_Account
      */
-    protected function _get(Array $options)
+    protected function _build(Array $options)
     {
-        // prevent serialized PHP_IMCOMPLETE_CLASS
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Account_Dto
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Account/Dto.php';
-
         $userId = $options['userId'];
 
-        $cacheId = $this->buildId($options);
-        $tagList = $this->getTagList($options);
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        $cache = $this->_cache;
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
+        );
 
-        if (!($cache->test($cacheId))) {
+        $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 
-            /**
-             * @see Conjoon_BeanContext_Decorator
-             */
-            require_once 'Conjoon/BeanContext/Decorator.php';
-
-            $decoratedModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Account_Model_Account'
-            );
-
-            $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
-
-            for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-                $dto =& $accounts[$i];
-                if (!$dto->isOutboxAuth) {
-                    $dto->usernameOutbox = "";
-                    $dto->passwordOutbox = "";
-                }
-                $dto->passwordOutbox = str_pad("", strlen($dto->passwordOutbox), '*');
-                $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
+        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
+            $dto =& $accounts[$i];
+            if (!$dto->isOutboxAuth) {
+                $dto->usernameOutbox = "";
+                $dto->passwordOutbox = "";
             }
-
-            $cache->save($accounts, $cacheId, $tagList);
-        } else {
-            $accounts = $cache->load($cacheId);
+            $dto->passwordOutbox = str_pad("", strlen($dto->passwordOutbox), '*');
+            $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
         }
 
         return $accounts;

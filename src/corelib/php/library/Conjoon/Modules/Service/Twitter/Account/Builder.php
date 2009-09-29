@@ -28,6 +28,8 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
 
     protected $_validGetOptions = array('userId');
 
+    protected $_buildClass = 'Conjoon_Modules_Service_Twitter_Account_Dto';
+
     /**
      *
      * @param array $options An associative array with the following
@@ -52,71 +54,53 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
      * @return Array anr array with instances of
      * Conjoon_Modules_Service_Twitter_Account_Model_Account
      */
-    protected function _get(Array $options)
+    protected function _build(Array $options)
     {
-        // prevent serialized PHP_IMCOMPLETE_CLASS
-        /**
-         * @see Conjoon_Modules_Service_Twitter_Account_Dto
-         */
-        require_once 'Conjoon/Modules/Service/Twitter/Account/Dto.php';
-
         $userId = $options['userId'];
 
-        $cacheId = $this->_buildId($options);
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
+        require_once 'Conjoon/BeanContext/Decorator.php';
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Service_Twitter_Account_Model_Account'
+        );
 
-        $cache = $this->_cache;
+        $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 
-        if (!($cache->test($cacheId))) {
+        /**
+         * @see Conjoon_Service_Twitter
+         */
+        require_once 'Conjoon/Service/Twitter.php';
 
-            /**
-             * @see Conjoon_BeanContext_Decorator
-             */
-            require_once 'Conjoon/BeanContext/Decorator.php';
-            $decoratedModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Service_Twitter_Account_Model_Account'
-            );
+        for ($i = 0, $len = count($accounts); $i < $len; $i++) {
+            $dto =& $accounts[$i];
+            $dto->updateInterval = ((int)$dto->updateInterval) * 1000;
 
-            $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
+            try {
+                /**
+                 * @todo move to separate model
+                 */
+                $twitter = new Conjoon_Service_Twitter($dto->name, $dto->password);
+                $response = $twitter->userShow($dto->name);
 
-            /**
-             * @see Conjoon_Service_Twitter
-             */
-            require_once 'Conjoon/Service/Twitter.php';
+                $dto->twitterId              = (string)$response->id;
+                $dto->twitterName            = (string)$response->name;
+                $dto->twitterScreenName      = (string)$response->screen_name;
+                $dto->twitterLocation        = (string)$response->location;
+                $dto->twitterProfileImageUrl = (string)$response->profile_image_url;
+                $dto->twitterUrl             = (string)$response->url;
+                $dto->twitterProtected       = (bool)(string)$response->protected;
+                $dto->twitterDescription     = (string)$response->description;
+                $dto->twitterFollowersCount  = (int)(string)$response->followers_count;
 
-            for ($i = 0, $len = count($accounts); $i < $len; $i++) {
-                $dto =& $accounts[$i];
-                $dto->updateInterval = ((int)$dto->updateInterval) * 1000;
+                $twitter->accountEndSession();
 
-                try {
-                    /**
-                     * @todo move to separate model
-                     */
-                    $twitter = new Conjoon_Service_Twitter($dto->name, $dto->password);
-                    $response = $twitter->userShow($dto->name);
-
-                    $dto->twitterId              = (string)$response->id;
-                    $dto->twitterName            = (string)$response->name;
-                    $dto->twitterScreenName      = (string)$response->screen_name;
-                    $dto->twitterLocation        = (string)$response->location;
-                    $dto->twitterProfileImageUrl = (string)$response->profile_image_url;
-                    $dto->twitterUrl             = (string)$response->url;
-                    $dto->twitterProtected       = (bool)(string)$response->protected;
-                    $dto->twitterDescription     = (string)$response->description;
-                    $dto->twitterFollowersCount  = (int)(string)$response->followers_count;
-
-                    $twitter->accountEndSession();
-
-                } catch (Exception $e) {
-                    // ignore
-                }
-
-                $dto->password = str_pad("", strlen($dto->password), '*');
+            } catch (Exception $e) {
+                // ignore
             }
 
-            $cache->save($accounts, $cacheId);
-
-        } else {
-            $accounts = $cache->load($cacheId);
+            $dto->password = str_pad("", strlen($dto->password), '*');
         }
 
         return $accounts;

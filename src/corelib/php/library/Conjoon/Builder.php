@@ -74,12 +74,18 @@ abstract class Conjoon_Builder {
     protected $_cache = null;
 
     /**
+     * @var string mandatory, the class the builder has to use for creating
+     * cached objects
+     */
+    protected $_buildClass = null;
+
+    /**
      * Constructor.
      *
      * @param Zend_Cache_Core $cache The cache to use for retrieving or storing an
-     * object
+     * object. If not supplied, this builder won't have any caching functionality.
      */
-    public function __construct(Zend_Cache_Core $cache)
+    public function __construct(Zend_Cache_Core $cache = null)
     {
         $this->_cache = $cache;
     }
@@ -91,6 +97,9 @@ abstract class Conjoon_Builder {
      */
     public function remove(Array $options)
     {
+        if (!$this->_cache) {
+            return;
+        }
         $this->_cache->remove($this->buildId($options));
     }
 
@@ -111,6 +120,10 @@ abstract class Conjoon_Builder {
      */
     public function clean($type, Array $options = array())
     {
+        if (!$this->_cache) {
+            return;
+        }
+
         $this->_cache->clean($type, $options);
     }
 
@@ -123,6 +136,10 @@ abstract class Conjoon_Builder {
      */
     public function cleanCacheForTags(Array $options)
     {
+        if (!$this->_cache) {
+            return;
+        }
+
         $tags = $this->getTagList($options);
 
         $this->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, $tags);
@@ -145,22 +162,41 @@ abstract class Conjoon_Builder {
     public function get(Array $options)
     {
         $this->_checkValidGetOptions($options);
-        return $this->_get($options);
+
+        // prevent serialized PHP_IMCOMPLETE_CLASS
+        require_once str_replace('_', '/', $this->_buildClass) . '.php';
+
+        $cacheId = $this->buildId($options);
+        $tagList = $this->getTagList($options);
+
+        $cache = $this->_cache;
+
+        if (!$cache) {
+            return $this->_build($options);
+        }
+
+        if (!($cache->test($cacheId))) {
+            $data = $this->_build($options);
+            $cache->save($data, $cacheId, $tagList);
+        } else {
+            $data = $cache->load($cacheId);
+        }
+
+        return $data;
     }
 
     /**
      * An abstract function which concrete implementation has to be provided
      * in the classes deriving from Conjoon_Builder.
-     * It's purpose is to return an object specified via a list of arguments.
-     * The cache should be used to look up the object in the cache and return it,
-     * or to model the object, store it in the cache and return it afterwards.
-     * Objects returned by this instance should be serializable.
+     * It's purpose is to build the objects that have to be cached.
      *
-     * @param array $options
+     * @param string $cacheId
+     * @param array  $tagList
+     * @param array  $options
      *
      * @return mixed
      */
-    protected abstract function _get(Array $options);
+    protected abstract function _build(Array $options);
 
     /**
      * An abstract function which returns an id that can be used to identify

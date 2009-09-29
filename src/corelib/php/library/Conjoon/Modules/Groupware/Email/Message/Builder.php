@@ -28,6 +28,8 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
 
     protected $_validGetOptions = array('groupwareEmailItemsId', 'userId');
 
+    protected $_buildClass = 'Conjoon_Modules_Groupware_Email_Message_Dto';
+
     /**
      *
      * @param array $options An associative array with the following
@@ -49,66 +51,50 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
      *
      * @return Conjoon_Modules_Groupware_Email_Message_Dto
      */
-    protected function _get(Array $options)
+    protected function _build(Array $options)
     {
-        // prevent serialized PHP_IMCOMPLETE_CLASS
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Message_Dto
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Message/Dto.php';
-
-        $cacheId = $this->_buildId($options);
-
         $groupwareEmailItemsId = $options['groupwareEmailItemsId'];
         $userId                = $options['userId'];
 
-        $cache = $this->_cache;
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        if (!($cache->test($cacheId))) {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
 
-            /**
-             * @see Conjoon_BeanContext_Decorator
-             */
-            require_once 'Conjoon/BeanContext/Decorator.php';
+        $messageDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Message_Model_Message',
+            new Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse(
+                array(),
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
+            )
+        );
 
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
+        $message = $messageDecorator->getEmailMessageAsDto($groupwareEmailItemsId, $userId);
 
-            $messageDecorator = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Message_Model_Message',
-                new Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse(
-                    array(),
-                    Conjoon_Filter_Input::CONTEXT_RESPONSE
-                )
-            );
-
-            $message = $messageDecorator->getEmailMessageAsDto($groupwareEmailItemsId, $userId);
-
-            if (!$message) {
-                return null;
-            }
-
-            require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
-
-            $attachmentDecorator = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
-                new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
-                    array(),
-                    Conjoon_Filter_Input::CONTEXT_RESPONSE
-                )
-            );
-
-            $attachments = $attachmentDecorator->getAttachmentsForItemAsDto($groupwareEmailItemsId);
-
-            $message->attachments = $attachments;
-
-            $cache->save($message, $cacheId);
-
-        } else {
-            $message = $cache->load($cacheId);
+        if (!$message) {
+            return null;
         }
+
+        require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
+
+        $attachmentDecorator = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
+            new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
+                array(),
+                Conjoon_Filter_Input::CONTEXT_RESPONSE
+            )
+        );
+
+        $attachments = $attachmentDecorator->getAttachmentsForItemAsDto($groupwareEmailItemsId);
+
+        $message->attachments = $attachments;
+
+
 
         return $message;
     }

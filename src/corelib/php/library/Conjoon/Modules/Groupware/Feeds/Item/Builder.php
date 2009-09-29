@@ -30,6 +30,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
 
     protected $_validTagOptions = array('accountId');
 
+    protected $_buildClass = 'Conjoon_Modules_Groupware_Feeds_Item_Dto';
+
     /**
      *
      * @param array $options An associative array with the following
@@ -61,63 +63,44 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
      *
      * @return Conjoon_Modules_Groupware_Feeds_Item_Dto
      */
-    protected function _get(Array $options)
+    protected function _build(Array $options)
     {
-        // prevent serialized PHP_IMCOMPLETE_CLASS
-        /**
-         * @see Conjoon_Modules_Groupware_Feeds_Item_Dto
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Dto.php';
-
         $id        = $options['id'];
         $accountId = $options['accountId'];
 
-        $cacheId = $this->buildId($options);
-        $tagList = $this->getTagList($options);
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
-        $cache = $this->_cache;
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        if (!($cache->test($cacheId))) {
+        // get the account and check whether images are enabled
+        $accountModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
+        );
 
-            /**
-             * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
-             */
-            require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
+        $account = $accountModel->getAccountAsDto($accountId);
 
-            /**
-             * @see Conjoon_BeanContext_Decorator
-             */
-            require_once 'Conjoon/BeanContext/Decorator.php';
+        $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE;
 
-            // get the account and check whether images are enabled
-            $accountModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
-            );
-
-            $account = $accountModel->getAccountAsDto($accountId);
-
-            $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE;
-
-            if ($account->isImageEnabled) {
-                $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE_IMG;
-            }
-
-            $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-                array(),
-                $responseType
-            );
-            $itemModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',
-                $itemResponseFilter
-            );
-
-            $item = $itemModel->getItemAsDto($id);
-
-            $cache->save($item, $cacheId, $tagList);
-
-        } else {
-            $item = $cache->load($cacheId);
+        if ($account->isImageEnabled) {
+            $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE_IMG;
         }
+
+        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+            array(),
+            $responseType
+        );
+        $itemModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',
+            $itemResponseFilter
+        );
+
+        $item = $itemModel->getItemAsDto($id);
 
         return $item;
     }

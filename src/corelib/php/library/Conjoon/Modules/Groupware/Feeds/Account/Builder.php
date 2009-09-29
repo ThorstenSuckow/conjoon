@@ -28,6 +28,8 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
 
     protected $_validGetOptions = array('userId');
 
+    protected $_buildClass = 'Conjoon_Modules_Groupware_Feeds_Account_Dto';
+
     /**
      *
      * @param array $options An associative array with the following
@@ -63,44 +65,26 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
      * @return Array an array with instances of
      * Conjoon_Modules_Groupware_Feeds_Account_Model_Account
      */
-    protected function _get(Array $options)
+    protected function _build(Array $options)
     {
-        // prevent serialized PHP_IMCOMPLETE_CLASS
-        /**
-         * @see Conjoon_Modules_Groupware_Feeds_Account_Dto
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Dto.php';
-
         $userId = $options['userId'];
 
-        $cacheId = $this->buildId($options);
-        $tagList = $this->getTagList($options);
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
 
-        $cache = $this->_cache;
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
+        require_once 'Conjoon/BeanContext/Decorator.php';
 
-        if (!($cache->test($cacheId))) {
+        $decoratedModel = new Conjoon_BeanContext_Decorator(
+            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
+        );
 
-            /**
-             * @see Conjoon_Keys
-             */
-            require_once 'Conjoon/Keys.php';
-            $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
-
-            /**
-             * @see Conjoon_BeanContext_Decorator
-             */
-            require_once 'Conjoon/BeanContext/Decorator.php';
-
-            $decoratedModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
-            );
-
-            $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
-
-            $cache->save($accounts, $cacheId, $tagList);
-        } else {
-            $accounts = $cache->load($cacheId);
-        }
+        $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 
         return $accounts;
     }
