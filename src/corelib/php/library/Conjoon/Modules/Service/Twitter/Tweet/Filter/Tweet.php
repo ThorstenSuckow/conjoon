@@ -76,7 +76,8 @@ class Conjoon_Modules_Service_Twitter_Tweet_Filter_Tweet extends Conjoon_Filter_
             'StringTrim',
             array(
                 'DateFormat',
-                'Y-m-d H:i:s'
+                'Y-m-d H:i:s',
+                'D M d H:i:s O Y'
             )
          ),
         'source' => array(

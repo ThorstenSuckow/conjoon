@@ -24,6 +24,11 @@ require_once 'Zend/Filter/Interface.php';
 require_once 'Zend/Date.php';
 
 /**
+ * @see Zend_Locale_Format
+ */
+require_once 'Zend/Locale/Format.php';
+
+/**
  * @category   Filter
  * @package    Conjoon_Filter
  *
@@ -66,6 +71,10 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
     public function filter($value)
     {
         Zend_Date::setOptions(array('format_type' => 'php'));
+
+        $this->_inputFormat = Zend_Locale_Format::convertPhpToIsoFormat($this->_inputFormat);
+        $this->_format      = Zend_Locale_Format::convertPhpToIsoFormat($this->_format);
+
         $d = strtotime($value);
 
         if ($d === false) {
