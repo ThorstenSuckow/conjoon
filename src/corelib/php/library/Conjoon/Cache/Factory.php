@@ -74,6 +74,13 @@ class Conjoon_Cache_Factory {
                 $cacheOptions = $options['cache']['feed']['accounts'];
             break;
 
+            case Conjoon_Keys::CACHE_FEED_READER:
+                if (!isset($options['cache']['feed']['reader'])) {
+                    return null;
+                }
+                $cacheOptions = $options['cache']['feed']['reader'];
+            break;
+
             case Conjoon_Keys::CACHE_DB_METADATA:
                 if (!isset($options['cache']['db']['metadata'])) {
                     return null;
@@ -87,25 +94,7 @@ class Conjoon_Cache_Factory {
                 }
                 $cacheOptions = $options['cache']['twitter']['accounts'];
             break;
-
         }
-
-        $frontendOptions = $cacheOptions['frontend'];
-        $backendOptions  = $cacheOptions['backend'];
-
-        // check whether the cache-dir for the backend options is relative or
-        // absolute. This is a very simple check and may be error-prone,
-        // but its okay for now
-        $isAbsolute = false;
-        if (strpos($backendOptions['cache_dir'], '/') !== 0 &&
-            strpos($backendOptions['cache_dir'], ':') !== 1) {
-            $backendOptions['cache_dir'] = $options['environment']['application_path'] .
-                                           DIRECTORY_SEPARATOR .
-                                           $backendOptions['cache_dir'];
-        }
-
-        $frontendType = $cacheOptions['frontend_type'];
-        $backendType  = $cacheOptions['backend_type'];
 
         /**
          * @see Zend_Cache
@@ -113,10 +102,10 @@ class Conjoon_Cache_Factory {
         require_once 'Zend/Cache.php';
 
         return Zend_Cache::factory(
-            $frontendType,
-            $backendType,
-            $frontendOptions,
-            $backendOptions
+            $cacheOptions['frontend_type'],
+            $cacheOptions['backend_type'],
+            $cacheOptions['frontend'],
+            $cacheOptions['backend']
         );
 
 

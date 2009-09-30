@@ -259,6 +259,9 @@ email.accounts.backend.cache_dir = cache/email/accounts
 feed.item.frontend.lifetime = 31536000
 feed.item.backend.cache_dir = cache/feed/items
 
+; namespace "feed.reader" for Zend_Feed_Reader
+feed.reader.backend.cache_dir = cache/feed/reader
+
 ; namespace "feed.accounts" for cached feed account lists
 feed.accounts.frontend.lifetime = 31536000
 feed.accounts.backend.cache_dir = cache/feed/accounts

@@ -60,11 +60,26 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function getFeedItemsAction()
     {
+        /**
+         * @see Conjoon_Keys
+         */
         require_once 'Conjoon/Keys.php';
-        require_once 'Zend/Feed.php';
+
+        /**
+         * @see Zend_Feed_Reader
+         */
+        require_once 'Zend/Feed/Reader.php';
+
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
+         */
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
+        /**
+         * @see Conjoon_BeanContext_Decorator
+         */
         require_once 'Conjoon/BeanContext/Decorator.php';
+
         $model = new Conjoon_BeanContext_Decorator(
             'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
         );
@@ -89,7 +104,6 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $userId = $auth->getIdentity()->getId();
 
         $time = time();
-
         $accounts = $model->getAccountsToUpdateAsDto($userId, $time);
 
         $updatedAccounts = array();
@@ -113,6 +127,21 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             }
         }
 
+        // set the reader's cache here
+        /**
+         * @see Conjoon_Cache_Factory
+         */
+        require_once 'Conjoon/Cache/Factory.php';
+
+        $frCache = Conjoon_Cache_Factory::getCache(
+            Conjoon_Keys::CACHE_FEED_READER,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+        );
+
+        if ($frCache) {
+            Zend_Feed_Reader::setCache($frCache);
+        }
+
         for ($i = 0; $i < $len; $i++) {
             // set requestTimeout to default if necessary
             if ($defTimeout != -1) {
@@ -124,11 +153,11 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 // the max_execution_time of the PHP installation, each
                 // request will be configured with the same timeout so the script
                 // has enough time to finish
-                Zend_Feed::setHttpClient(new Zend_Http_Client(
+                Zend_Feed_Reader::setHttpClient(new Zend_Http_Client(
                     null, array('timeout' => $accounts[$i]->requestTimeout - 2)
                 ));
 
-                $import = Zend_Feed::import($accounts[$i]->uri);
+                $import = Zend_Feed_Reader::import($accounts[$i]->uri);
                 $items = $this->_importFeedItems($import, $accounts[$i]->id);
                 for ($a = 0, $lena = count($items); $a < $lena; $a++) {
                     $items[$a]['saved_timestamp'] = time();
@@ -149,6 +178,9 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                 // ignore
             }
         }
+
+        // reset Zend_Feed_Reader
+        Zend_Feed_Reader::reset();
 
         // set the last updated timestamp for the accounts
         if (!empty($updatedAccounts)) {
@@ -565,28 +597,15 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     private function _importFeedItems($import, $accountId)
     {
-        require_once 'Zend/Date.php';
+        /**
+         * @see Conjoon_Util_Array
+         */
         require_once 'Conjoon/Util/Array.php';
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
         /**
-         * @see Conjoon_Filter_DateFormat
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
          */
-        require_once 'Conjoon/Filter/DateFormat.php';
-
-        $dateInputFormat = Zend_Date::TIMESTAMP;
-
-        switch (get_class($import)) {
-            case 'Zend_Feed_Atom':
-                $dateInputFormat = Zend_Date::ATOM;
-            break;
-
-            case'Zend_Feed_Rss':
-                $dateInputFormat = Zend_Date::RSS;
-            break;
-        }
-
-        $dateFilter = new Conjoon_Filter_DateFormat('Y-m-d H:i:s', $dateInputFormat);
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
         $data = array();
 
@@ -595,73 +614,30 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $itemData = array();
             $itemData['groupwareFeedsAccountsId'] = $accountId;
 
-            $itemData['title'] = $item->title();
+            $itemData['title'] = $item->getTitle();
 
             // author
-            $itemData['author']      = "";
-            $itemData['authorUri']   = "";
-            $itemData['authorEmail'] = "";
-
-            try {
-                $itemData['author']      = $item->author->name();
-                $itemData['authorUri']   = $item->author->uri();
-                $itemData['authorEmail'] = $item->author->email();
-            } catch (Exception $e) {
-                if ($item->author()) {
-                    $itemData['author'] = $item->author();
-                } else if ($item->creator()) {
-                    $itemData['author'] = $item->creator();
-                }
-            }
+            $itemData['author']      = $item->getAuthor();
+            $itemData['authorUri']   = "";//$item->getAuthor(0);
+            $itemData['authorEmail'] = "";//$item->getAuthor(0);
 
              // description
-            if ($item->description()) {
-                $itemData['description'] = $item->description();
-            } else if ($item->summary()) {
-                $itemData['description'] = $item->summary();
-            } else {
+            $itemData['description'] = $item->getDescription();
+            if (!$itemData['description']) {
                 $itemData['description'] = $itemData['title'];
             }
 
             // content
-            if ($item->content()) {
-                $itemData['content'] = $item->content();
-            } else if ($itemData['description']) {
-                $itemData['content'] = $itemData['description'];
-            }
+            $itemData['content'] = $item->getContent();
 
             // link
-            if ($item->link() && !is_array($item->link()) && !is_object($item->link())) {
-                $itemData['link'] = $item->link();
-            } else if (isset($item->link['href']) && $item->link['href']) {
-                $itemData['link'] = $item->link['href'];
-            } else if ($item->link('alternate')) {
-                $itemData['link'] = $item->link('alternate');
-            } else if ($item->link(0)) {
-                $itemData['link'] = $item->link(0);
-            }
+            $itemData['link'] = $item->getLink();
 
             // guid
-            if ($item->id()) {
-                $itemData['guid'] = $item->id();
-            } else if ($item->guid()) {
-                $itemData['guid'] = $item->guid();
-            } else {
-                $itemData['guid'] = $itemData['link'];
-            }
+            $itemData['guid'] = $item->getId();
 
             // pubDate
-            if ($item->updated()) {
-                $date = $item->updated();
-            } else if ($item->pubDate()) {
-                $date = $item->pubDate();
-            } else if ($item->date()) {
-                $date = $item->date();
-            } else {
-                $date = new Zend_Date();
-            }
-
-            $itemData['pubDate'] = $dateFilter->filter($date);
+            $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
 
             $itemData['savedTimestamp'] = time();
 
@@ -719,18 +695,6 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         }
 
         return $items;
-    }
-
-    /**
-     * Helper for stripping not needed information from an instance of
-     * Conjoon_Modules_Groupware_Feeds_ItemDto for sending it to the client.
-     *
-     */
-    private function _transformItemDto(Conjoon_Modules_Groupware_Feeds_Item_Dto $item)
-    {
-        $item->content = null;
-        unset($item->guid);
-        $item->description = $item->description ? substr($item->description, 0, 128).'...' : '';
     }
 
 }

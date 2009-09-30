@@ -44,6 +44,9 @@ interface Conjoon_Keys {
 // -------- cache key feed items
     const CACHE_FEED_ITEM = 'com.conjoon.cache.feed.item';
 
+// -------- cache key feed reader
+    const CACHE_FEED_READER = 'com.conjoon.cache.feed.reader';
+
 // -------- cache key feed items
     const CACHE_FEED_ACCOUNTS = 'com.conjoon.cache.feed.accounts';
 

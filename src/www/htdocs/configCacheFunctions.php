@@ -142,6 +142,21 @@
                             $cacheBlocks[$m] = $defaultValue;
                         }
                     }
+
+                    // compute cache_dir backend HERE!
+                    // check whether the cache-dir for the backend options is relative or
+                    // absolute. This is a very simple check and may be error-prone,
+                    // but its okay for now
+                    $ck = $key.'.backend.cache_dir';
+                    if (array_key_exists($ck, $cacheBlocks)) {
+                        $cacheDir = $cacheBlocks[$ck];
+                        if (strpos($cacheDir, '/') !== 0 &&
+                            strpos($cacheDir, ':') !== 1) {
+                            $cacheBlocks[$ck] = $initialConfig['environment']['application_path']
+                                                . DIRECTORY_SEPARATOR
+                                                . $cacheDir;
+                        }
+                    }
                 }
             }
         }
