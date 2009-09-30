@@ -213,6 +213,17 @@ final class Conjoon_BeanContext_Decorator {
                 );
                 if ($TYPE_DTO) {
                     $data[$i] = $data[$i]->getDto();
+
+                    if ($this->_filter) {
+                        $vv =& $values[$i];
+                        $dd =& $data[$i];
+                        $props = get_class_vars(get_class($data[$i]));
+                        foreach ($props as $propname => $propvalue) {
+                            if (!array_key_exists($propname, $vv)) {
+                                unset($dd->{$propname});
+                            }
+                        }
+                    }
                 }
             }
             return $data;
