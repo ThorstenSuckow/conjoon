@@ -74,12 +74,12 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
      * @param array $options An associative array with the following
      * key value/pairs:
      *   - userId: the id of the user to fetch all email accounts for
-     *
+     * @param Conjoon_BeanContext_Decoratable $model
      *
      * @return Array an array with instances of
      * Conjoon_Modules_Groupware_Feeds_Account_Model_Account
      */
-    protected function _build(Array $options)
+    protected function _build(Array $options, Conjoon_BeanContext_Decoratable $model)
     {
         $userId = $options['userId'];
 
@@ -88,9 +88,7 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
          */
         require_once 'Conjoon/BeanContext/Decorator.php';
 
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            $this->getModel()
-        );
+        $decoratedModel = new Conjoon_BeanContext_Decorator($model);
 
         $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 

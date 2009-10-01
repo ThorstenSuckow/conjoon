@@ -59,10 +59,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_ListBuilder extends Conjoon_Builder {
      * @param array $options An associative array with the following
      * key value/pairs:
      *   - id: The id of the feed item to return
+     * @param Conjoon_BeanContext_Decoratable $model
      *
      * @return Conjoon_Modules_Groupware_Feeds_Item_Dto
      */
-    protected function _build(Array $options)
+    protected function _build(Array $options, Conjoon_BeanContext_Decoratable $model)
     {
         $accountId = $options['accountId'];
 
@@ -80,10 +81,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_ListBuilder extends Conjoon_Builder {
             array(),
             Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
-        $itemModel = new Conjoon_BeanContext_Decorator(
-            $this->getModel(),
-            $itemResponseFilter
-        );
+        $itemModel = new Conjoon_BeanContext_Decorator($model, $itemResponseFilter);
 
         return $itemModel->getItemsForAccountAsDto($accountId);
     }

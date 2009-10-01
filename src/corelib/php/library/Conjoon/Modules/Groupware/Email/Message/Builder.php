@@ -61,10 +61,11 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
      * key value/pairs:
      *   - groupwareEmailItemsId: The id of the email message to return
      *   - userId: the id of the user to whom this email message belongs @param Array $options
+     * @param Conjoon_BeanContext_Decoratable $model
      *
      * @return Conjoon_Modules_Groupware_Email_Message_Dto
      */
-    protected function _build(Array $options)
+    protected function _build(Array $options, Conjoon_BeanContext_Decoratable $model)
     {
         $groupwareEmailItemsId = $options['groupwareEmailItemsId'];
         $userId                = $options['userId'];
@@ -80,7 +81,7 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
         require_once 'Conjoon/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
 
         $messageDecorator = new Conjoon_BeanContext_Decorator(
-            $this->getModel(),
+            $model,
             new Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse(
                 array(),
                 Conjoon_Filter_Input::CONTEXT_RESPONSE

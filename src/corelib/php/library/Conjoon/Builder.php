@@ -199,11 +199,11 @@ abstract class Conjoon_Builder {
         $cache = $this->_cache;
 
         if (!$cache) {
-            return $this->_build($options);
+            return $this->_build($options, $this->getModel());
         }
 
         if (!($cache->test($cacheId))) {
-            $data = $this->_build($options);
+            $data = $this->_build($options, $this->getModel());
             $cache->save($data, $cacheId, $tagList);
         } else {
             $data = $cache->load($cacheId);
@@ -217,13 +217,12 @@ abstract class Conjoon_Builder {
      * in the classes deriving from Conjoon_Builder.
      * It's purpose is to build the objects that have to be cached.
      *
-     * @param string $cacheId
-     * @param array  $tagList
-     * @param array  $options
+     * @param array $options
+     * @param , Conjoon_BeanContext_Decoratable $model
      *
      * @return mixed
      */
-    protected abstract function _build(Array $options);
+    protected abstract function _build(Array $options, Conjoon_BeanContext_Decoratable $model);
 
     /**
      * An abstract function which returns an id that can be used to identify

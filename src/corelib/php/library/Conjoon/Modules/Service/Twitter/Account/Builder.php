@@ -62,12 +62,12 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
      * @param array $options An associative array with the following
      * key value/pairs:
      *   - userId: the id of the user to fetch al twitter accounts for
-     *
+     * @param Conjoon_BeanContext_Decoratable $model
      *
      * @return Array anr array with instances of
      * Conjoon_Modules_Service_Twitter_Account_Model_Account
      */
-    protected function _build(Array $options)
+    protected function _build(Array $options, Conjoon_BeanContext_Decoratable $model)
     {
         $userId = $options['userId'];
 
@@ -75,9 +75,7 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
          * @see Conjoon_BeanContext_Decorator
          */
         require_once 'Conjoon/BeanContext/Decorator.php';
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            $this->getModel()
-        );
+        $decoratedModel = new Conjoon_BeanContext_Decorator($model);
 
         $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 

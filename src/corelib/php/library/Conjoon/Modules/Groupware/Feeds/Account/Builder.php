@@ -75,12 +75,12 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
      * @param array $options An associative array with the following
      * key value/pairs:
      *   - userId: the id of the user to fetch all feed accounts for
-     *
+     * @param Conjoon_BeanContext_Decoratable $model
      *
      * @return Array an array with instances of
      * Conjoon_Modules_Groupware_Feeds_Account_Model_Account_Dto
      */
-    protected function _build(Array $options)
+    protected function _build(Array $options, Conjoon_BeanContext_Decoratable $model)
     {
         $accountId = $options['accountId'];
 
@@ -89,9 +89,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
          */
         require_once 'Conjoon/BeanContext/Decorator.php';
 
-        $decoratedModel = new Conjoon_BeanContext_Decorator(
-            $this->getModel()
-        );
+        $decoratedModel = new Conjoon_BeanContext_Decorator($model);
 
         $accounts = $decoratedModel->getAccountAsDto($accountId);
 
