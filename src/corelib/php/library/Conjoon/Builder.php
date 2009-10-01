@@ -59,6 +59,11 @@
 abstract class Conjoon_Builder {
 
     /**
+     * @var Conjoon_BeanContext_Decoratable
+     */
+    protected $_model = null;
+
+    /**
      * @var array $_validGetOptions
      */
     protected $_validGetOptions = array();
@@ -84,11 +89,33 @@ abstract class Conjoon_Builder {
      *
      * @param Zend_Cache_Core $cache The cache to use for retrieving or storing an
      * object. If not supplied, this builder won't have any caching functionality.
+     * @param Conjoon_BeanContext_Decoratable
+     *
      */
-    public function __construct(Zend_Cache_Core $cache = null)
+    public function __construct(Zend_Cache_Core $cache = null,
+        Conjoon_BeanContext_Decoratable $model = null)
     {
         $this->_cache = $cache;
+        $this->_model = $model;
     }
+
+    /**
+     * @return Conjoon_BeanContext_Decoratable
+     */
+    public function getModel()
+    {
+        if (!$this->_model) {
+            $this->_model = $this->_getModel();
+        }
+
+        return $this->_model;
+    }
+
+    /**
+     *
+     * @return Conjoon_BeanContext_Decoratable
+     */
+    protected abstract function _getModel();
 
     /**
      * Removes an object from the cache, if available.

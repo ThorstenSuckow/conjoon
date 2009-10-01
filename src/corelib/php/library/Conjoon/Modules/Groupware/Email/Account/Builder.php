@@ -50,8 +50,22 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
      */
     protected function _getTagList(Array $options)
     {
-        return array($options['userId']);
+        return array((string)$options['userId']);
     }
+
+    /**
+     * @return Conjoon_Modules_Groupware_Email_Account_Model_Account
+     */
+    protected function _getModel()
+    {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Account_Model_Account
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
+
+        return new Conjoon_Modules_Groupware_Email_Account_Model_Account();
+    }
+
 
     /**
      * Returns either a cached list of email accounts for a user, or
@@ -75,7 +89,7 @@ class Conjoon_Modules_Groupware_Email_Account_Builder extends Conjoon_Builder {
         require_once 'Conjoon/BeanContext/Decorator.php';
 
         $decoratedModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Account_Model_Account'
+            $this->getModel()
         );
 
         $accounts = $decoratedModel->getAccountsForUserAsDto($userId);

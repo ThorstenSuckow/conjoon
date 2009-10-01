@@ -41,6 +41,19 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
         return (string)$options['userId'];
     }
 
+   /**
+     * @return Conjoon_Modules_Service_Twitter_Account_Model_Account
+     */
+    protected function _getModel()
+    {
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Model_Account
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Model/Account.php';
+
+        return new Conjoon_Modules_Service_Twitter_Account_Model_Account();
+    }
+
     /**
      * Returns either a cahced list of twitter accounts for a user, or
      * the accounts out of the database which will immediately be validated
@@ -63,7 +76,7 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
          */
         require_once 'Conjoon/BeanContext/Decorator.php';
         $decoratedModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Service_Twitter_Account_Model_Account'
+            $this->getModel()
         );
 
         $accounts = $decoratedModel->getAccountsForUserAsDto($userId);

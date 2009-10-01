@@ -67,11 +67,25 @@ class Conjoon_Cache_Factory {
                 $cacheOptions = $options['cache']['feed']['item'];
             break;
 
-            case Conjoon_Keys::CACHE_FEED_ACCOUNTS:
-                if (!isset($options['cache']['feed']['accounts'])) {
+            case Conjoon_Keys::CACHE_FEED_ITEMLIST:
+                if (!isset($options['cache']['feed']['item_list'])) {
                     return null;
                 }
-                $cacheOptions = $options['cache']['feed']['accounts'];
+                $cacheOptions = $options['cache']['feed']['item_list'];
+            break;
+
+            case Conjoon_Keys::CACHE_FEED_ACCOUNT:
+                if (!isset($options['cache']['feed']['account'])) {
+                    return null;
+                }
+                $cacheOptions = $options['cache']['feed']['account'];
+            break;
+
+            case Conjoon_Keys::CACHE_FEED_ACCOUNTLIST:
+                if (!isset($options['cache']['feed']['account_list'])) {
+                    return null;
+                }
+                $cacheOptions = $options['cache']['feed']['account_list'];
             break;
 
             case Conjoon_Keys::CACHE_FEED_READER:

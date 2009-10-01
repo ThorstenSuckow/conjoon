@@ -43,6 +43,19 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
     }
 
     /**
+     * @return Conjoon_Modules_Groupware_Email_Message_Model_Message
+     */
+    protected function _getModel()
+    {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Message_Model_Message
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Message/Model/Message.php';
+
+        return new Conjoon_Modules_Groupware_Email_Message_Model_Message();
+    }
+
+    /**
      *
      * @param array $options An associative array with the following
      * key value/pairs:
@@ -67,7 +80,7 @@ class Conjoon_Modules_Groupware_Email_Message_Builder extends Conjoon_Builder {
         require_once 'Conjoon/Modules/Groupware/Email/Message/Filter/MessageResponse.php';
 
         $messageDecorator = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Message_Model_Message',
+            $this->getModel(),
             new Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse(
                 array(),
                 Conjoon_Filter_Input::CONTEXT_RESPONSE

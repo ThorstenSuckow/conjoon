@@ -259,13 +259,19 @@ email.accounts.backend.cache_dir = cache/email/accounts
 feed.item.frontend.lifetime = 31536000
 feed.item.backend.cache_dir = cache/feed/items
 
+; namespace "feed.item_list" for cached feed item lists
+feed.item_list.backend.cache_dir = cache/feed/item_list
+
 ; namespace "feed.reader" for Zend_Feed_Reader
 feed.reader.backend.cache_dir = cache/feed/reader
 
-; namespace "feed.accounts" for cached feed account lists
-feed.accounts.frontend.lifetime = 31536000
-feed.accounts.backend.cache_dir = cache/feed/accounts
+; namespace "feed.account" for cached feed account
+feed.account.frontend.lifetime = 31536000
+feed.account.backend.cache_dir = cache/feed/account
 
+; namespace "feed.account_list" for cached feed account lists
+feed.account_list.frontend.lifetime = 31536000
+feed.account_list.backend.cache_dir = cache/feed/account_list
 
 ;;;;;;;;;;;;;;;;
 ;; CACHE DB   ;;

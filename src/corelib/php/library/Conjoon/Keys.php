@@ -44,11 +44,17 @@ interface Conjoon_Keys {
 // -------- cache key feed items
     const CACHE_FEED_ITEM = 'com.conjoon.cache.feed.item';
 
+// -------- cache key feed item lists
+    const CACHE_FEED_ITEMLIST = 'com.conjoon.cache.feed.itemlist';
+
 // -------- cache key feed reader
     const CACHE_FEED_READER = 'com.conjoon.cache.feed.reader';
 
-// -------- cache key feed items
-    const CACHE_FEED_ACCOUNTS = 'com.conjoon.cache.feed.accounts';
+// -------- cache key feed account
+    const CACHE_FEED_ACCOUNT = 'com.conjoon.cache.feed.account';
+
+// -------- cache key feed account list
+    const CACHE_FEED_ACCOUNTLIST = 'com.conjoon.cache.feed.accountlist';
 
 // -------- cache db metadata
     const CACHE_DB_METADATA = 'com.conjoon.cache.db.metadata';

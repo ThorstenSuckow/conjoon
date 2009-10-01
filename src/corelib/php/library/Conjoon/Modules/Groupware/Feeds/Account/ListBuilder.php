@@ -24,9 +24,9 @@ require_once 'Zend/Cache.php';
 require_once 'Conjoon/Builder.php';
 
 
-class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
+class Conjoon_Modules_Groupware_Feeds_Account_ListBuilder extends Conjoon_Builder {
 
-    protected $_validGetOptions = array('accountId');
+    protected $_validGetOptions = array('userId');
 
     protected $_buildClass = 'Conjoon_Modules_Groupware_Feeds_Account_Dto';
 
@@ -40,7 +40,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
      */
     protected function _buildId(Array $options)
     {
-        return (string)$options['accountId'];
+        return (string)$options['userId'];
     }
 
     /**
@@ -82,7 +82,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
      */
     protected function _build(Array $options)
     {
-        $accountId = $options['accountId'];
+        $userId = $options['userId'];
 
         /**
          * @see Conjoon_BeanContext_Decorator
@@ -93,7 +93,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Builder extends Conjoon_Builder {
             $this->getModel()
         );
 
-        $accounts = $decoratedModel->getAccountAsDto($accountId);
+        $accounts = $decoratedModel->getAccountsForUserAsDto($userId);
 
         return $accounts;
     }

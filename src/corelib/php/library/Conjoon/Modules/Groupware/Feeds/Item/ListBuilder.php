@@ -24,11 +24,9 @@ require_once 'Zend/Cache.php';
 require_once 'Conjoon/Builder.php';
 
 
-class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
+class Conjoon_Modules_Groupware_Feeds_Item_ListBuilder extends Conjoon_Builder {
 
-    protected $_validGetOptions = array('id', 'accountId', 'isImageEnabled');
-
-    protected $_validTagOptions = array('accountId');
+    protected $_validGetOptions = array('accountId');
 
     protected $_buildClass = 'Conjoon_Modules_Groupware_Feeds_Item_Dto';
 
@@ -36,27 +34,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
      *
      * @param array $options An associative array with the following
      * key value/pairs:
-     *   - id: The id of the feed item to return
-     *   - isImageEnabled: whether or not images for the account for this
-     *     feed item are enabled
+     *   - accountId: The accountId for which the items should be returned
      */
     protected function _buildId(Array $options)
     {
-        return ((string)$options['id'])
-               . '_'
-               . ($options['isImageEnabled'] ? "1" : "0");
-    }
-
-    /**
-     *
-     * @param array $options An associative array with the following
-     * key value/pairs:
-     *   - accountId: The id of the related account this feed was retrieved
-     * for
-     */
-    protected function _getTagList(Array $options)
-    {
-        return array((string)$options['accountId']);
+        return (string)$options['accountId'];
     }
 
     /**
@@ -82,9 +64,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
      */
     protected function _build(Array $options)
     {
-        $id             = $options['id'];
-        $accountId      = $options['accountId'];
-        $isImageEnabled = $options['isImageEnabled'];
+        $accountId = $options['accountId'];
 
         /**
          * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
@@ -96,25 +76,16 @@ class Conjoon_Modules_Groupware_Feeds_Item_Builder extends Conjoon_Builder {
          */
         require_once 'Conjoon/BeanContext/Decorator.php';
 
-        $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE;
-
-        if ($isImageEnabled) {
-            $responseType = Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_RESPONSE_IMG;
-        }
-
         $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
             array(),
-            $responseType
+            Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
-
         $itemModel = new Conjoon_BeanContext_Decorator(
             $this->getModel(),
             $itemResponseFilter
         );
 
-        $item = $itemModel->getItemAsDto($id);
-
-        return $item;
+        return $itemModel->getItemsForAccountAsDto($accountId);
     }
 
 }

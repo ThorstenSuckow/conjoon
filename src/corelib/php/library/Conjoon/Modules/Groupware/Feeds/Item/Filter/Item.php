@@ -52,11 +52,22 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
 
     const CONTEXT_READ = 'flag_item';
 
+    const CONTEXT_ITEM_CONTENT = 'item_content';
+
+    const CONTEXT_URI_CHECK = 'uri_check';
+
     const CONTEXT_ITEM_RESPONSE = 'item_response';
 
     const CONTEXT_ITEM_RESPONSE_IMG = 'item_response_img';
 
     protected $_presence = array(
+        self::CONTEXT_ITEM_CONTENT => array(
+            'id',
+            'groupwareFeedsAccountsId'
+        ),
+        self::CONTEXT_URI_CHECK => array(
+            'uri'
+        ),
         'delete' =>
             array(
                 'id'
@@ -64,8 +75,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
         ,
         'flag_item' =>
             array(
-                'id',
-                'isRead'
+                'read',
+                'unread'
             ),
         'update' =>
             array(
@@ -130,6 +141,17 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
     );
 
     protected $_filters = array(
+        'uri'  => array(
+            'StringTrim'
+        ),
+        'read' => array(
+            'JsonDecode',
+            'PositiveArrayValues'
+        ),
+        'unread' => array(
+            'JsonDecode',
+            'PositiveArrayValues'
+        ),
         'id' => array(
             'Int'
          ),
@@ -181,6 +203,9 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
     );
 
     protected $_validators = array(
+        'uri' => array(
+            'allowEmpty' => false
+         ),
         'id' => array(
             'allowEmpty' => false,
             array('GreaterThan', 0)
@@ -328,6 +353,5 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
         $this->_filters['removeold'] = new Conjoon_Filter_FormBoolToInt();
         $this->_validators['savedTimestamp']['default'] = time();
     }
-
 
 }
