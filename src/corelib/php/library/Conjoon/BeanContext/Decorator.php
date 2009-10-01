@@ -103,7 +103,7 @@ final class Conjoon_BeanContext_Decorator {
             $this->_decoratedModel = $mixed;
         }
 
-        if (!is_a($this->_decoratedModel, 'Conjoon_BeanContext_Decoratable')) {
+        if (!($this->_decoratedModel instanceof Conjoon_BeanContext_Decoratable)) {
             throw new Exception("Decorated class is no subclass of \"Conjoon_BeanContext_Decoratable\"");
         }
 
