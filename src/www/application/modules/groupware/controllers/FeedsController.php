@@ -45,6 +45,12 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                        ->addActionContext('update.accounts', self::CONTEXT_JSON)
                        ->addActionContext('get.feed.content', self::CONTEXT_JSON)
                        ->initContext();
+
+        $this->_helper->filterRequestData()
+                      ->registerFilter('Groupware_FeedsController::get.feed.items')
+                      ->registerFilter('Groupware_FeedsController::set.item.read')
+                      ->registerFilter('Groupware_FeedsController::get.feed.content')
+                      ->registerFilter('Groupware_FeedsController::is.feed.address.valid');
     }
 
 // -------- items
@@ -61,140 +67,16 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     public function getFeedItemsAction()
     {
         /**
-         * @see Conjoon_Keys
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
          */
-        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
 
-        /**
-         * @see Zend_Feed_Reader
-         */
-        require_once 'Zend/Feed/Reader.php';
-
-        /**
-         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
-
-        /**
-         * @see Conjoon_BeanContext_Decorator
-         */
-        require_once 'Conjoon/BeanContext/Decorator.php';
-
-        $model = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
-        );
-        $itemModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item'
-        );
-
-        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-            array(),
-            Conjoon_Filter_Input::CONTEXT_RESPONSE
-        );
-
-        $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-            $_POST,
-            Conjoon_Filter_Input::CONTEXT_UPDATE
-        );
-        $filteredData = $filter->getProcessedData();
-        $removeOld = $filteredData['removeold'];
-        $timeout   = $filteredData['timeout'];
-
-        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-        $userId = $auth->getIdentity()->getId();
-
-        $time = time();
-        $accounts = $model->getAccountsToUpdateAsDto($userId, $time);
-
-        $updatedAccounts = array();
-        $insertedItems   = array();
-        $len             = count($accounts);
-
-        $secTimeout = $timeout/1000;
-        $defTimeout = -1;
-        // compute the timeout for the connections. Filter should have set the default
-        // timeout to 30000 ms if the timeout param was not submitted
-        // we need to compare this with the max_execution_time of the php installation
-        // and take action in case the requestTimeout exceeds it, so each account will have
-        // a reduced timeout, just in case (the configured timeout won't be considered then)
-        if ($len > 0 && $secTimeout >= ini_get('max_execution_time')) {
-            $defTimeout = (int)round(ini_get('max_execution_time')/$len);
-
-            // if $defTimeout is less than 1, we will not try to load any feeds, or else
-            // no response will ge through to the client
-            if ($defTimeout < 1) {
-                $len = 0;
-            }
-        }
-
-        // set the reader's cache here
-        /**
-         * @see Conjoon_Cache_Factory
-         */
-        require_once 'Conjoon/Cache/Factory.php';
-
-        $frCache = Conjoon_Cache_Factory::getCache(
-            Conjoon_Keys::CACHE_FEED_READER,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        );
-
-        if ($frCache) {
-            Zend_Feed_Reader::setCache($frCache);
-        }
-
-        for ($i = 0; $i < $len; $i++) {
-            // set requestTimeout to default if necessary
-            if ($defTimeout != -1) {
-                $accounts[$i]->requestTimeout = $defTimeout;
-            }
-            try {
-                // set the client for each account so it can be configured
-                // with the timeout. In case the sum of all timeouts exceeds
-                // the max_execution_time of the PHP installation, each
-                // request will be configured with the same timeout so the script
-                // has enough time to finish
-                Zend_Feed_Reader::setHttpClient(new Zend_Http_Client(
-                    null, array('timeout' => $accounts[$i]->requestTimeout - 2)
-                ));
-
-                $import = Zend_Feed_Reader::import($accounts[$i]->uri);
-                $items = $this->_importFeedItems($import, $accounts[$i]->id);
-                for ($a = 0, $lena = count($items); $a < $lena; $a++) {
-                    $items[$a]['saved_timestamp'] = time();
-                    $added = $itemModel->addItemIfNotExists($items[$a], $accounts[$i]->id);
-                    if ($added !== 0 && !$removeOld) {
-                        $items[$a]['name'] = $accounts[$i]->name;
-                        $items[$a]['id']   = $added;
-                        Conjoon_Util_Array::camelizeKeys($items[$a]);
-                        $itemResponseFilter->setData($items[$a]);
-                        $insertedItems[] = $itemResponseFilter->getProcessedData();
-                    }
-                }
-
-                // only mark as updated if no exception occurred
-                $updatedAccounts[$accounts[$i]->id] = true;
-
-            } catch (Exception $e) {
-                // ignore
-            }
-        }
-
-        // reset Zend_Feed_Reader
-        Zend_Feed_Reader::reset();
-
-        // set the last updated timestamp for the accounts
-        if (!empty($updatedAccounts)) {
-            $model->setLastUpdated(array_keys($updatedAccounts), $time);
-        }
-
-        if ($removeOld) {
-            $model->deleteOldFeedItems($userId);
-            $items = $this->_getFeedItems();
-        } else {
-            // send all items that where added during this request
-            // to the client
-            $items = $insertedItems;
-        }
+        $items = Conjoon_Modules_Groupware_Feeds_Item_Facade::getInstance()
+                 ->syncAndGetFeedItemsForUser(
+                    $this->_helper->registryAccess->getUserId(),
+                    $this->_request->getParam('removeold', false),
+                    $this->_request->getParam('timeout', 30000)
+                );
 
         $this->view->success = true;
         $this->view->items   = $items;
@@ -220,10 +102,14 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Item.php';
         require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
 
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_ImportHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
+
         $model  = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
 
-        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-        $userId = $auth->getIdentity()->getId();
+        $userId = $this->_helper->registryAccess()->getUserId();
 
         $classToCreate = 'Conjoon_Modules_Groupware_Feeds_Account';
 
@@ -297,13 +183,22 @@ class Groupware_FeedsController extends Zend_Controller_Action {
 
             $itemModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Item();
 
-            $data = $this->_importFeedItems($import, $filteredData['id']);
+            $data = Conjoon_Modules_Groupware_Feeds_ImportHelper::parseFeedItems(
+                $import, $filteredData['id']
+            );
 
             for ($i = 0, $len = count($data); $i < $len; $i++) {
                 $itemModel->insert($data[$i]);
             }
 
-            $this->view->items = $this->_getFeedItems($filteredData['id']);
+            /**
+             * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
+            $items = Conjoon_Modules_Groupware_Feeds_Item_Facade::getInstance()
+                     ->getFeedItemsForAccount($filteredData['id'], $userId);
+
+            $this->view->items = $this->getFeedItemsForAccount($filteredData['id'], $userId);
 
         } catch (Zend_Filter_Exception $e) {
             require_once 'Conjoon/Error.php';
@@ -365,7 +260,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $deletedFailed = array();
         $updatedFailed = array();
 
-        $model   = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
+        $model = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
 
         $data  = array();
         $error = null;
@@ -444,28 +339,15 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      * Queries and assigns all feed accounts belonging to the currently logged in
      * user to the view
      */
-   public function getFeedAccountsAction()
+    public function getFeedAccountsAction()
     {
         /**
-         * @see Conjoon_Keys
+         * @see Conjoon_Modules_Groupware_Feeds_Account_Facade
          */
-        require_once 'Conjoon/Keys.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Facade.php';
 
-        $user = Zend_Registry::get(
-            Conjoon_Keys::REGISTRY_AUTH_OBJECT
-        )->getIdentity();
-
-        $userId = $user->getId();
-
-        /**
-         * @see Conjoon_Builder_Factory
-         */
-        require_once 'Conjoon/Builder/Factory.php';
-
-        $data = Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_FEED_ACCOUNTS,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->get(array('userId' => $userId));
+        $data = Conjoon_Modules_Groupware_Feeds_Account_Facade::getInstance()
+                ->getAccountsForUser($this->_helper->registryAccess()->getUserId());
 
         $this->view->success  = true;
         $this->view->accounts = $data;
@@ -479,65 +361,41 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function isFeedAddressValidAction()
     {
-        require_once 'Zend/Feed.php';
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_ImportHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
 
-        $uri = $_POST['uri'];
+        $success = Conjoon_Modules_Groupware_Feeds_ImportHelper
+                   ::isFeedAddressValid($this->_request->getParam('uri'));
 
-        $feed = null;
-        $this->view->success = true;
+        $this->view->success = $success;
         $this->view->error   = null;
-        try {
-            $feed = Zend_Feed::import($uri);
-        } catch (Zend_Feed_Exception $e) {
-            $this->view->success = false;
-        }
     }
 
     /**
      * Flags a specific feed item as either read or unread, based on the passed
      * arguments.
-     * Data will be comin via post, whereas in json context a json-encoded
-     * string will be submitted, which can be found in the $_POST var keyed
-     * with "json".
-     * The method will never return an error itself, as the operation on teh udnerlying
-     * datastore will not affect Uinteraction critically.
+     * Expects two request params "read" and "unread", each holding an array with feed
+     * item ids to either flag as "read" or "unread.
+     * The method will never return an error itself, as the operation on the underlying
+     * datastore will not affect interaction critically.
      */
     public function setItemReadAction()
     {
-        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
-            require_once 'Zend/Json.php';
-            $toUpdate = Zend_Json::decode($_POST['json'], Zend_Json::TYPE_ARRAY);
-        }
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
 
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Item.php';
-        require_once 'Conjoon/Util/Array.php';
-
-        $model = new Conjoon_Modules_Groupware_Feeds_Item_Model_Item();
-
-        $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-            array(),
-            Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_READ
+        Conjoon_Modules_Groupware_Feeds_Item_Facade::getInstance()
+        ->setItemsRead(
+            $this->_request->getParam('read'),
+            $this->_request->getParam('unread')
         );
-
-        $read   = array();
-        $unread = array();
-        for ($i = 0, $len = count($toUpdate); $i < $len; $i ++) {
-            $filter->setData($toUpdate[$i]);
-            $data = $filter->getProcessedData();
-            if ($data['isRead']) {
-                $read[] = $data['id'];
-            } else {
-                $unread[] = $data['id'];
-            }
-        }
-
-        $model->setItemRead($read,   true);
-        $model->setItemRead($unread, false);
 
         $this->view->success = true;
         $this->view->error   = null;
-
     }
 
     /**
@@ -547,25 +405,16 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     public function getFeedContentAction()
     {
         /**
-         * @todo filter incoming data
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
          */
-        $id        = $this->_request->getParam('id', 0);
-        $accountId = $this->_request->getParam('groupwareFeedsAccountsId', 0);
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
 
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        /**
-         * @see Conjoon_Builder_Factory
-         */
-        require_once 'Conjoon/Builder/Factory.php';
-
-        $item = Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_FEED_ITEM,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->get(array('id' => $id, 'accountId' => $accountId));
+        $item = Conjoon_Modules_Groupware_Feeds_Item_Facade::getInstance()
+                ->getFeedContent(
+                    $this->_request->getParam('id'),
+                    $this->_request->getParam('groupwareFeedsAccountsId'),
+                    $this->_helper->registryAccess()->getUserId()
+                );
 
         if ($item == null) {
             /**
@@ -585,117 +434,5 @@ class Groupware_FeedsController extends Zend_Controller_Action {
             $this->view->item    = $item;
             $this->view->error   = null;
         }
-
     }
-
-
-
-// -------- helper
-
-    /**
-     * Imports all feed items from a given cross domain source.
-     */
-    private function _importFeedItems($import, $accountId)
-    {
-        /**
-         * @see Conjoon_Util_Array
-         */
-        require_once 'Conjoon/Util/Array.php';
-
-        /**
-         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
-
-        $data = array();
-
-        foreach ($import as $item) {
-
-            $itemData = array();
-            $itemData['groupwareFeedsAccountsId'] = $accountId;
-
-            $itemData['title'] = $item->getTitle();
-
-            // author
-            $itemData['author']      = $item->getAuthor();
-            $itemData['authorUri']   = "";//$item->getAuthor(0);
-            $itemData['authorEmail'] = "";//$item->getAuthor(0);
-
-             // description
-            $itemData['description'] = $item->getDescription();
-            if (!$itemData['description']) {
-                $itemData['description'] = $itemData['title'];
-            }
-
-            // content
-            $itemData['content'] = $item->getContent();
-
-            // link
-            $itemData['link'] = $item->getLink();
-
-            // guid
-            $itemData['guid'] = $item->getId();
-
-            // pubDate
-            $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
-
-            $itemData['savedTimestamp'] = time();
-
-            $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-                $itemData,
-                Conjoon_Filter_Input::CONTEXT_CREATE
-            );
-            $fillIn = $filter->getProcessedData();
-            Conjoon_Util_Array::underscoreKeys($fillIn);
-            $data[] = $fillIn;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Read out all feeds without the field 'content'
-     *
-     * @param integer $accountId the id of the account to fetch the feed items for,
-     * or null to fetch all feed items for the currently logged in user
-     */
-    private function _getFeedItems($accountId = null)
-    {
-        require_once 'Conjoon/Keys.php';
-        require_once 'Conjoon/BeanContext/Decorator.php';
-
-        require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
-        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-            array(),
-            Conjoon_Filter_Input::CONTEXT_RESPONSE
-        );
-
-        $model = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Feeds_Account_Model_Account'
-        );
-        $itemModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Feeds_Item_Model_Item',
-            $itemResponseFilter
-        );
-
-        $user = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
-        if ($accountId === null) {
-            $data = $model->getAccountsForUserAsDto($user->getId());
-        } else {
-            $data = array($model->getAccountAsDto($accountId));
-        }
-
-        $accounts = array();
-        $items    = array();
-        for ($i = 0, $len = count($data); $i < $len; $i++) {
-            $tmpItems = $itemModel->getItemsForAccountAsDto($data[$i]->id);
-            for ($a = 0, $len2 = count($tmpItems); $a < $len2; $a++) {
-                $items[] = $tmpItems[$a];
-            }
-        }
-
-        return $items;
-    }
-
 }
-?>
