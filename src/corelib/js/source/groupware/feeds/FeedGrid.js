@@ -186,19 +186,24 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
             return;
         }
 
-        var requestArray = new Array();
+        var requestArray = {
+            read   : [],
+            unread : []
+        };
 
         for (var i = 0; i < l; i++) {
-            requestArray.push({
-                'id'     : m[i].id,
-                'isRead' : m[i].get('isRead')
-            });
+            if (m[i].get('isRead')) {
+                requestArray['read'].push(m[i].id);
+            } else {
+                requestArray['unread'].push(m[i].id);
+            }
         }
 
         Ext.Ajax.request({
             url: './groupware/feeds/set.item.read/format/json',
             params: {
-                json: Ext.encode(requestArray)
+                read   : Ext.encode(requestArray['read']),
+                unread : Ext.encode(requestArray['unread'])
             }
         });
 
