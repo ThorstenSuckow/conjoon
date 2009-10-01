@@ -19,11 +19,6 @@
 require_once 'Zend/Filter/Interface.php';
 
 /**
- * @see Zend_Json
- */
-require_once 'Zend/Json.php';
-
-/**
  * @category   Filter
  * @package    Conjoon_Filter
  *
@@ -41,6 +36,15 @@ class Conjoon_Filter_JsonDecode implements Zend_Filter_Interface
      */
     public function filter($value)
     {
-        return Zend_Json::decode($value);
+        if (is_string($value)) {
+            /**
+             * @see Zend_Json
+             */
+            require_once 'Zend/Json.php';
+
+            return Zend_Json::decode($value);
+        }
+
+        return $value;
     }
 }
