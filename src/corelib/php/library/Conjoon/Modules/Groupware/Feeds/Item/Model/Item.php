@@ -78,6 +78,48 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
     }
 
     /**
+     * Returns the account ids for the specified feed ids.
+     *
+     * @param array $feedIds The ids of the feed items to return the
+     * corresponding accountids for.
+     *
+     * @return array
+     */
+    public function getAccountIdsForFeedIds(Array $feedIds)
+    {
+        /**
+         * @see Conjoon_Filter_PositiveArrayValues
+         */
+        require_once 'Conjoon/Filter/PositiveArrayValues.php';
+
+        $filter = new Conjoon_Filter_PositiveArrayValues();
+
+        $feedIds = $filter->filter($feedIds);
+
+        if (empty($feedIds)) {
+            return array();
+        }
+
+        $idList = implode(',', $feedIds);
+
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $select = $db->select()
+                ->from('groupware_feeds_items', array('groupware_feeds_accounts_id'))
+                ->where('groupware_feeds_items.id IN ('.$idList.')')
+                ->group('groupware_feeds_accounts_id');
+
+        $stmt = $db->query($select);
+        $data = $stmt->fetchAll();
+
+        $res = array();
+        for ($i = 0, $len = count($data); $i < $len; $i++) {
+            $res[] = $data[$i]['groupware_feeds_accounts_id'];
+        }
+
+        return $res;
+    }
+
+    /**
      * Marks a single or more feed item(s) either read or unread.
      *
      * @param mixed $id The id of a single feed item or a numeric array with the
@@ -140,6 +182,73 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         $data = $stmt->fetchAll();
 
         return $data;
+    }
+
+    /**
+     * Returns a list of feed items that can be deleted based on the accounts
+     * configured deleteInterval.
+     *
+     * @param integer $userId The id of the user for which deletable feed items
+     * should be returned.
+     *
+     * @return Array
+     */
+    public function getFeedItemIdsToDelete($userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            return array();
+        }
+
+        $time = time();
+
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $select = $db->select()
+                ->from('groupware_feeds_items', array('id'))
+                ->join('groupware_feeds_accounts')
+                ->where('groupware_feeds_items.groupware_feeds_accounts_id=groupware_feeds_accounts.id')
+                ->where('groupware_feeds_accounts.user_id=?', $userId)
+                ->where('(? - groupware_feeds_items.saved_timestamp ) > groupware_feeds_accounts.delete_interval', $time);
+
+        $stmt = $db->query($select);
+        $data = $stmt->fetchAll();
+
+        $res = array();
+        for ($i = 0, $len = count($data); $i < $len; $i++) {
+            $res[] = $data[$i]['id'];
+        }
+
+        return $res;
+    }
+
+    /**
+     * Deletes the feed items for the specified ids.
+     *
+     * @param Array $feedIds
+     *
+     * @return integer The actual number of records deleted.
+     */
+    public function deleteFeedItemsForIds(Array $feedIds)
+    {
+        /**
+         * @see Conjoon_Filter_PositiveArrayValues
+         */
+        require_once 'Conjoon/Filter/PositiveArrayValues.php';
+
+        $filter = new Conjoon_Filter_PositiveArrayValues();
+
+        $feedIds = $filter->filter($feedIds);
+
+        if (empty($feedIds)) {
+            return;
+        }
+
+        $idList = implode(',', $feedIds);
+
+        $affected = $this->delete('groupware_feeds_accounts_id IN ('.$idList.')');
+
+        return $affected;
     }
 
     /**
