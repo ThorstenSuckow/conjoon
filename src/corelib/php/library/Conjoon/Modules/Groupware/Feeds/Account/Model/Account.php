@@ -139,37 +139,6 @@ class Conjoon_Modules_Groupware_Feeds_Account_Model_Account
     }
 
     /**
-     * Deletes old feed items based on the configured "deleteInterval"-property.
-     *
-     * @param integer $userId The id of the user the accounts belong to
-     */
-    public function deleteOldFeedItems($userId)
-    {
-        $userId = (int)$userId;
-
-        if ($userId <= 0) {
-            return;
-        }
-
-        $time = time();
-
-        $query = "DELETE
-                    groupware_feeds_items
-                  FROM
-                    groupware_feeds_items,groupware_feeds_accounts
-                  WHERE
-                    (? - groupware_feeds_items.saved_timestamp ) > groupware_feeds_accounts.delete_interval
-                   AND
-                    groupware_feeds_items.groupware_feeds_accounts_id = groupware_feeds_accounts.id
-                   AND
-                    groupware_feeds_accounts.user_id=?";
-
-        $db   = Zend_Db_Table::getDefaultAdapter();
-        $stmt = $db->query($query, array($time, $userId));
-        $stmt->execute();
-    }
-
-    /**
      * Returns all feeds accounts for the specified user-id.
      *
      * @param int $id The id of the user to get the email accounts for
