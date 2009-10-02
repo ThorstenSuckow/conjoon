@@ -234,6 +234,11 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $deleted = $this->_request->getParam('deleted');
         $updated = $this->_request->getParam('updated');
 
+        $toUpdateIds = array();
+        for ($i = 0, $len = count($updated); $i < $len; $i++) {
+            $toUpdateIds[] = $updated[$i]['id'];
+        }
+
         $facade = Conjoon_Modules_Groupware_Feeds_Account_Facade::getInstance();
 
         $userId = $this->_helper->registryAccess()->getUserId();
@@ -241,8 +246,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
         $actRemoved = $facade->removeAccountsForIds($deleted, $userId);
         $actUpdated = $facade->updateAccounts($updated, $userId);
 
-        $removeFailed  = array_diff($actRemoved, $deleted);
-        $updatedFailed = array_diff($actUpdated, $updated);
+        $removeFailed  = array_diff($deleted, $actRemoved);
+        $updatedFailed = array_diff($toUpdateIds, $actUpdated);
 
         $this->view->success        = empty($removeFailed) && empty($updatedFailed)
                                       ? true : false;
