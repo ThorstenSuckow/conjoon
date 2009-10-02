@@ -87,9 +87,13 @@ class Conjoon_Modules_Groupware_Feeds_Account_Model_Account
     /**
      * Removes the account with the specified id entirely.
      *
+     * @param integer $id
+     * @param boolean $removeFeedItems Whether or not to remove corresponding
+     * feed items. Defaults to true.
+     *
      * @return boolean true if the account was deleted, otherwise false
      */
-    public function deleteAccount($id)
+    public function deleteAccount($id, $removeFeedItems = true)
     {
         $id = (int)$id;
 
@@ -100,7 +104,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Model_Account
         $where    = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
         $affected = $this->delete($where);
 
-        if ($affected != 0) {
+        if ($affected != 0 && $removeFeedItems === true) {
             require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Item.php';
             $itemModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Item();
             $itemModel->deleteItemsForAccount($id);
