@@ -34,10 +34,10 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
     const CONTEXT_EXTRACT_UPDATE = 'extract_update';
 
     protected $_presence = array(
-        'extract_update' => {
+        'extract_update' => array(
             'deleted',
             'updated'
-        },
+        ),
         'delete' =>
             array(
                 'id'
@@ -68,11 +68,11 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
 
     protected $_filters = array(
         'deleted' => array(
-            'JsonEncode',
+            'JsonDecode',
             'PositiveArrayValues'
         ),
         'updated' => array(
-            'JsonEncode'
+            'JsonDecode'
         ),
         'id' => array(
             'Int'
