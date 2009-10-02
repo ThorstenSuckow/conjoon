@@ -81,11 +81,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
             );
         }
 
-        $affected = $this->_getItemModel()->deleteFeedItemsForAccount($accountId);
+        $affected = $this->_getItemModel()->deleteItemsForAccount($accountId);
 
-        $this->_removeListCacheForAccountIds($accountIds);
+        $this->_removeListCacheForAccountIds(array($accountId));
         $this->_getBuilder()->cleanCacheForTags(array(
-            'accountId' => $accountIds
+            'accountId' => $accountId
         ));
     }
 
@@ -259,6 +259,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 
         if ($frCache) {
             Zend_Feed_Reader::setCache($frCache);
+            Zend_Feed_Reader::useHttpConditionalGet();
         }
 
         $accDelCacheIds = array();
