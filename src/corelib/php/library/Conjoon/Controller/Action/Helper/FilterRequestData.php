@@ -102,7 +102,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
                 $this->_filters[$key] = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
                     array(),
-                    Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_EXTRACT_UPDATE
+                    Conjoon_Modules_Groupware_Feeds_Account_Filter_Account::CONTEXT_EXTRACT_UPDATE
                 );
             break;
 
