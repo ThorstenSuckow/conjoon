@@ -86,10 +86,11 @@ class Conjoon_Log {
         self::$_initCalled = true;
     }
 
+
     /**
      * Log a message at a priority
      *
-     * @param  string   $message   Message to log
+     * @param  mixed    $message   Message to log
      * @param  integer  $priority  Priority of message
      * @return void
      * @throws Zend_Log_Exception
