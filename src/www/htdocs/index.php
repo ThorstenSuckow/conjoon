@@ -108,6 +108,18 @@ require_once 'Conjoon/Modules/Default/User.php';
    }
    Zend_Registry::set(Conjoon_Keys::REGISTRY_CONFIG_OBJECT, $config);
 
+   // init the logger here!
+   if ($config->log) {
+       /**
+        * @see Conjoon_Log
+        */
+       require_once 'Conjoon/Log.php';
+
+       $cf = $config->toArray();
+
+       Conjoon_Log::init($cf['log']);
+   }
+
    // set as default adapter for all db operations
    Zend_Db_Table::setDefaultAdapter(
        Zend_Db::factory($config->database->adapter, array(

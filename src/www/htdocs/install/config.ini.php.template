@@ -290,3 +290,17 @@ db.metadata.backend.hashed_directory_level = 0
 
 ; namespace "twitter.accounts" for cached twitter account lists.
 twitter.accounts.backend.cache_dir = cache/twitter/accounts
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;      LOGGING     ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+[log]
+
+; set this to 0 to disable logging
+enabled = 1
+
+; chose a writer for logging. right now, firebug is the only
+; valid option - it will send log messages to the firebug console.
+; if using this writer, make sure you are using FF and FB
+writer = firebug
