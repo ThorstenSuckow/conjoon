@@ -114,13 +114,13 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
         $accountIds = $filter->filter($accountIds);
 
         $removed = array();
-        for ($i = 0, $len = count($accountIds); $len < $i; $i++) {
-
+        for ($i = 0, $len = count($accountIds); $i < $len; $i++) {
             if ($this->removeAccountForId($accountIds[$i], $userId) === true) {
                 $removed[] = $accountIds[$i];
-            };
-
+            }
         }
+
+        return $removed;
     }
 
     /**
@@ -149,7 +149,6 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
         $affected = $this->_getAccountModel()->deleteAccount($accountId, false);
 
         if ($affected !== false) {
-
             $this->_getBuilder()->remove(array('accountId' => $accountId));
             $this->_getListBuilder()->cleanCacheForTags(array('userId' => $userId));
             $this->_getItemFacade()->deleteFeedItemsForAccountId($accountId);
@@ -184,7 +183,6 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
 
         for ($i = 0, $len = count($data); $i < $len; $i++) {
             $id = $data[$i]['id'];
-            unset($data[$i]['id']);
             try {
                 if ($this->updateAccount($id, $data[$i], $userId) === true) {
                     $updated[] = $id;
@@ -222,19 +220,31 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
             );
         }
 
-        if (array_key_exists('id', $data)) {
-            unset($data['id']);
-        }
-
         $filter = $this->_getUpdateAccountFilter();
         $filter->setData($data);
 
         try {
             $data = $filter->getProcessedData();
         } catch (Zend_Filter_Exception $e) {
-            Conjoon_Log::log($exception, Zend_Log::ERR);
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            Conjoon_Log::log(Conjoon_Error::fromFilter($e, $filter), Zend_Log::ERR);
             return false;
         }
+
+        if (array_key_exists('id', $data)) {
+            unset($data['id']);
+        }
+
+        /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+
+        Conjoon_Util_Array::underscoreKeys($data);
 
         $affected = $this->_getAccountModel()->updateAccount($accountId, $data);
 
