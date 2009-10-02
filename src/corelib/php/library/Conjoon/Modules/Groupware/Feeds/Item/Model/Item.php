@@ -206,8 +206,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         $db = Zend_Db_Table::getDefaultAdapter();
         $select = $db->select()
                 ->from('groupware_feeds_items', array('id'))
-                ->join('groupware_feeds_accounts')
-                ->where('groupware_feeds_items.groupware_feeds_accounts_id=groupware_feeds_accounts.id')
+                ->join(
+                    'groupware_feeds_accounts',
+                    'groupware_feeds_items.groupware_feeds_accounts_id=groupware_feeds_accounts.id',
+                    array()
+                )
                 ->where('groupware_feeds_accounts.user_id=?', $userId)
                 ->where('(? - groupware_feeds_items.saved_timestamp ) > groupware_feeds_accounts.delete_interval', $time);
 
