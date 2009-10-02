@@ -89,7 +89,11 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
             $this->_converted = true;
         }
 
-        $d = strtotime($value);
+        $d = $value;
+
+        if (!is_numeric($value)) {
+            $d = strtotime($value);
+        }
 
         if ($d === false) {
             try {
