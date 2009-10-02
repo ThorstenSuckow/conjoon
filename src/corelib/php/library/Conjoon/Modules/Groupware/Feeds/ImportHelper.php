@@ -99,6 +99,9 @@ class Conjoon_Modules_Groupware_Feeds_ImportHelper {
 
             // content
             $itemData['content'] = $item->getContent();
+            if (!$itemData['content']) {
+                $itemData['content'] = $itemData['description'];
+            }
 
             // link
             $itemData['link'] = $item->getLink();
