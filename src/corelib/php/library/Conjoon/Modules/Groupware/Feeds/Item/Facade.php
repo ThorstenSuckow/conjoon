@@ -65,6 +65,31 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 // -------- public api
 
     /**
+     * Deletes all feed items for the specified account id.
+     *
+     * @param integer $accountId
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteFeedItemsForAccountId($accountId)
+    {
+        $accountId = (int)$accountId;
+
+        if ($accountId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied, accountId was \"$accountId\""
+            );
+        }
+
+        $affected = $this->_getItemModel()->deleteFeedItemsForAccount($accountId);
+
+        $this->_removeListCacheForAccountIds($accountIds);
+        $this->_getBuilder()->cleanCacheForTags(array(
+            'accountId' => $accountIds
+        ));
+    }
+
+    /**
      * Sets the items for the specified ids either to read
      * or unread.
      *
@@ -84,13 +109,23 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
         $wlistRead   = $filter->filter($read);
         $wlistUnread = $filter->filter($unread);
 
+        $feedIds = array();
+
         if (!empty($wlistRead)) {
-            $this->_getItemModel()->setItemRead($wlistRead, true);
+            $changed = $this->_getItemModel()->setItemRead($wlistRead, true);
+            if ($changed > 0) {
+                $feedIds = $wlistRead;
+            }
         }
 
         if (!empty($wlistUnread)) {
-            $this->_getItemModel()->setItemRead($wlistUnread, false);
+            $changed = $this->_getItemModel()->setItemRead($wlistUnread, false);
+            if ($changed > 0) {
+                $feedIds = array_merge($feedIds, $wlistUnread);
+            }
         }
+
+        $this->_removeListCacheForFeedIds($feedIds);
     }
 
     /**
@@ -131,37 +166,17 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 
         if ($userId <= 0) {
             throw new InvalidArgumentException(
-                "Invalid argument supplied, accountId was \"$accountId\""
+                "Invalid argument supplied, userId was \"$userId\""
             );
         }
 
-        $this->_getItemModel()->deleteOldFeedItems($userId);
-    }
+        $model = $this->_getItemModel();
 
+        $toDelete = $model->getFeedItemIdsToDelete($userId);
 
+        $this->_removeListCacheForFeedIds($toDelete);
 
-    /**
-     * Adds a feed item into the data storage for the specified account, if
-     * it does not already exist.
-     *
-     * @param array   $data
-     * @param integer $accountId
-     *
-     * @return integer The id of the added item as provided by the data storage
-     *
-     * @throws InvalidArgumentException
-     */
-    public function addItemIfNotExists(Array $data, $accountId)
-    {
-        $accountId = (int)$accountId;
-
-        if ($accountId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, accountId was \"$accountId\""
-            );
-        }
-
-        return $this->_getItemModel()->addItemIfNotExists($data, $accountId);
+        $model->deleteFeedItemsForIds($toDelete);
     }
 
     /**
@@ -246,7 +261,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
             Zend_Feed_Reader::setCache($frCache);
         }
 
-       for ($i = 0; $i < $len; $i++) {
+        $accDelCacheIds = array();
+        for ($i = 0; $i < $len; $i++) {
             // set requestTimeout to default if necessary
             if ($defTimeout != -1) {
                 $accounts[$i]->requestTimeout = $defTimeout;
@@ -269,13 +285,19 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 
                 for ($a = 0, $lena = count($items); $a < $lena; $a++) {
                     $items[$a]['saved_timestamp'] = time();
-                    $added = $this->addItemIfNotExists($items[$a], $accounts[$i]->id);
-                    if ($added !== 0 && !$removeOld) {
-                        $items[$a]['name'] = $accounts[$i]->name;
-                        $items[$a]['id']   = $added;
-                        Conjoon_Util_Array::camelizeKeys($items[$a]);
-                        $itemResponseFilter->setData($items[$a]);
-                        $insertedItems[] = $itemResponseFilter->getProcessedData();
+                    $added = $this->_addItemIfNotExists($items[$a], $accounts[$i]->id, false);
+
+                    if ($added !== 0) {
+
+                        $accDelCacheIds[$accounts[$i]->id] = true;
+
+                        if (!$removeOld) {
+                            $items[$a]['name'] = $accounts[$i]->name;
+                            $items[$a]['id']   = $added;
+                            Conjoon_Util_Array::camelizeKeys($items[$a]);
+                            $itemResponseFilter->setData($items[$a]);
+                            $insertedItems[] = $itemResponseFilter->getProcessedData();
+                        }
                     }
                 }
 
@@ -297,8 +319,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
             );
         }
 
+        // remove list cache for collected accounts
+        $this->_removeListCacheForAccountIds(array_keys($accDelCacheIds));
+
         if ($removeOld) {
-            $this->deleteOldFeedItems($userId);;
+            $this->deleteOldFeedItems($userId);
             $items = $this->getFeedItemsForUser($userId);
         } else {
             // return all items that where added during this request
@@ -518,6 +543,109 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
         }
 
         return $this->_itemModel;
+    }
+
+    /**
+     * Removes the cache for the account ids that own the specified
+     * feed ids.
+     *
+     * @param array $feedIds
+     */
+    private function _removeListCacheForFeedIds(Array $feedIds)
+    {
+        /**
+         * @see Conjoon_Filter_PositiveArrayValues
+         */
+        require_once 'Conjoon/Filter/PositiveArrayValues.php';
+
+        $filter = new Conjoon_Filter_PositiveArrayValues();
+
+        $feedIds = $filter->filter($feedIds);
+
+        $accountIds = $this->_getAccountIdsForFeedIds($feedIds);
+
+        $this->_removeListCacheForAccountIds($accountIds);
+    }
+
+    /**
+     * Removes the cache for the specified account ids.
+     *
+     * @param array $accountIds
+     */
+    private function _removeListCacheForAccountIds(Array $accountIds)
+    {
+        /**
+         * @see Conjoon_Filter_PositiveArrayValues
+         */
+        require_once 'Conjoon/Filter/PositiveArrayValues.php';
+
+        $filter = new Conjoon_Filter_PositiveArrayValues();
+
+        $accountIds = $filter->filter($accountIds);
+
+        $builder = $this->_getListBuilder();
+        for ($i = 0, $len = count($accountIds); $i < $len; $i++) {
+            $builder->remove(array('accountId' => $accountIds[$i]));
+        }
+    }
+
+    /**
+     * Returns the account ids for the passed feed ids.
+     *
+     * @param array integer $feedIds
+     *
+     * @return array
+     */
+    private function _getAccountIdsForFeedIds(Array $feedIds)
+    {
+        /**
+         * @see Conjoon_Filter_PositiveArrayValues
+         */
+        require_once 'Conjoon/Filter/PositiveArrayValues.php';
+
+        $filter = new Conjoon_Filter_PositiveArrayValues();
+
+        $feedIds = $filter->filter($feedIds);
+
+        if (empty($feedIds)) {
+            return array();
+        }
+
+        $model = $this->_getItemModel();
+
+        return $model->getAccountIdsForFeedIds($feedIds);
+    }
+
+    /**
+     * Adds a feed item into the data storage for the specified account, if
+     * it does not already exist.
+     *
+     * @param array   $data
+     * @param integer $accountId
+     * @param boolean $clearCache Whether or not to clear the feedlist cache for the
+     * corresponding account. Cache will be cleaed if the item was actually added.
+     *
+     * @return integer The id of the added item as provided by the data storage
+     *
+     * @throws InvalidArgumentException
+     */
+    private function _addItemIfNotExists(Array $data, $accountId, $clearCache = true)
+    {
+        $accountId = (int)$accountId;
+
+        if ($accountId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied, accountId was \"$accountId\""
+            );
+        }
+
+        $id = $this->_getItemModel()->addItemIfNotExists($data, $accountId);
+
+        if ($clearCache === true) {
+            $this->_removeListCacheForAccountIds(array($accountId));
+        }
+
+        return $id;
     }
 
 }

@@ -50,6 +50,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                       ->registerFilter('Groupware_FeedsController::get.feed.items')
                       ->registerFilter('Groupware_FeedsController::set.item.read')
                       ->registerFilter('Groupware_FeedsController::get.feed.content')
+                      ->registerFilter('Groupware_FeedsController::update.accounts')
                       ->registerFilter('Groupware_FeedsController::is.feed.address.valid');
     }
 
@@ -226,113 +227,29 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     public function updateAccountsAction()
     {
         /**
-         * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+         * @see Conjoon_Modules_Groupware_Feeds_Account_Facade
          */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Facade.php';
 
-        /**
-         * @see Conjoon_Util_Array
-         */
-        require_once 'Conjoon/Util/Array.php';
+        $deleted = $this->_request->getParam('deleted');
+        $updated = $this->_request->getParam('updated');
 
-        /**
-         * @see Conjoon_Modules_Groupware_Feeds_Account_Model_Account
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Model/Account.php';
+        $facade = Conjoon_Modules_Groupware_Feeds_Account_Facade::getInstance();
 
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
+        $userId = $this->_helper->registryAccess()->getUserId();
 
-        /**
-         * @see Conjoon_Builder_Factory
-         */
-        require_once 'Conjoon/Builder/Factory.php';
+        $actRemoved = $facade->removeAccountsForIds($deleted, $userId);
+        $actUpdated = $facade->updateAccounts($updated, $userId);
 
-        $builder = Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_FEED_ITEM,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        );
+        $removeFailed  = array_diff($actRemoved, $deleted);
+        $updatedFailed = array_diff($actUpdated, $updated);
 
-        $toDelete      = array();
-        $toUpdate      = array();
-        $deletedFailed = array();
-        $updatedFailed = array();
+        $this->view->success        = empty($removeFailed) && empty($updatedFailed)
+                                      ? true : false;
+        $this->view->updatedFailed = $updatedFailed;
+        $this->view->deletedFailed = $removeFailed;
+        $this->view->error         = null;
 
-        $model = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
-
-        $data  = array();
-        $error = null;
-
-        if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {
-            require_once 'Zend/Json.php';
-            $toDelete = Zend_Json::decode($_POST['deleted'], Zend_Json::TYPE_ARRAY);
-            $toUpdate = Zend_Json::decode($_POST['updated'], Zend_Json::TYPE_ARRAY);
-        }
-
-        $numToUpdate = count($toUpdate);
-        $numToDelete = count($toDelete);
-
-        // clean the feed accounts' cache only if updated or deleted are not 0
-        if ($numToUpdate != 0 || $numToDelete != 0) {
-            Conjoon_Builder_Factory::getBuilder(
-                Conjoon_Keys::CACHE_FEED_ACCOUNTS,
-                Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-            )->cleanCacheForTags(array(
-                'userId' => Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)
-                            ->getIdentity()->getId()
-            ));
-        }
-
-
-        for ($i = 0; $i < $numToDelete; $i++) {
-            $affected = $model->deleteAccount($toDelete[$i]);
-            if (!$affected) {
-                $deletedFailed[] = $toDelete[$i];
-            } else {
-                $builder->cleanCacheForTags(array('accountId' => $toDelete[$i]));
-            }
-        }
-
-        for ($i = 0; $i < $numToUpdate; $i++) {
-            $_ = $toUpdate[$i];
-            $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
-                $_,
-                Conjoon_Filter_Input::CONTEXT_UPDATE
-            );
-            try {
-                $data[$i] = $filter->getProcessedData();
-                Conjoon_Util_Array::underscoreKeys($data[$i]);
-            } catch (Zend_Filter_Exception $e) {
-                 require_once 'Conjoon/Error.php';
-                 $error = Conjoon_Error::fromFilter($filter, $e);
-                 $this->view->success = false;
-                 $this->view->updatedFailed = array($_['id']);
-                 $this->view->deletedFailed = $deletedFailed;
-                 $this->view->error = $error->getDto();
-                 break;
-            }
-        }
-
-        if ($error === null) {
-            for ($i = 0, $len = count($data); $i < $len; $i++) {
-                $id = $data[$i]['id'];
-                unset($data[$i]['id']);
-                $affected = $model->updateAccount($id, $data[$i]);
-                if (!$affected) {
-                    $updatedFailed[] = $id;
-                }  else {
-                    $builder->cleanCacheForTags(array('accountId' => $id));
-                }
-            }
-
-            $this->view->success        = empty($updatedFailed) && empty($deletedFailed)
-                                          ? true : false;
-            $this->view->updatedFailed = $updatedFailed;
-            $this->view->deletedFailed = $deletedFailed;
-            $this->view->error         = null;
-        }
     }
 
     /**

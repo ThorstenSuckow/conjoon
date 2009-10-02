@@ -14,6 +14,11 @@
  */
 
 /**
+ * @see Conjoon_Log
+ */
+require_once 'Conjoon/Log.php';
+
+/**
  *
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
@@ -31,6 +36,16 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
     private $_listBuilder = null;
 
     /**
+     * @var Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+     */
+    private $_updateAccountFilter = null;
+
+    /**
+     * @var Conjoon_Modules_Groupware_Feeds_Item_Facade
+     */
+    private $_itemFacade = null;
+
+    /**
      * @var Conjoon_Modules_Groupware_Feeds_Account_Builder
      */
     private $_builder = null;
@@ -41,7 +56,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
     private $_accountModel = null;
 
     /**
-     * @var Conjoon_BeanContext_Decorator _accountDecorator
+     * @var Conjoon_BeanContext_Decorator $_accountDecorator
      */
     private $_accountDecorator = null;
 
@@ -66,6 +81,171 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
 
 
 // -------- public api
+
+
+    /**
+     * Removes all the accounts for the specified account ids, for the user
+     * with the specified $userId.
+     *
+     * @param array $accountIds
+     * @param integer $userId
+     *
+     * @return array An array with the ids that got successfully removed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function removeAccountsForIds(Array $accountIds, $userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied, accountId was \"$accountId\""
+            );
+        }
+
+        /**
+         * @see Conjoon_Filter_PositiveArrayValues
+         */
+        require_once 'Conjoon/Filter/PositiveArrayValues.php';
+
+        $filter = new Conjoon_Filter_PositiveArrayValues();
+
+        $accountIds = $filter->filter($accountIds);
+
+        $removed = array();
+        for ($i = 0, $len = count($accountIds); $len < $i; $i++) {
+
+            if ($this->removeAccountForId($accountIds[$i], $userId) === true) {
+                $removed[] = $accountIds[$i];
+            };
+
+        }
+    }
+
+    /**
+     * Removes the account as specified in $accountId for the user
+     * with the specified $userId.
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return boolean true if the account was removed, otherwise false
+     *
+     * @throws InvalidArgumentException
+     */
+    public function removeAccountForId($accountId, $userId)
+    {
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($accountId <= 0 || $userId <= 0) {
+            throw new InvalidArgumentException(
+                  "Invalid argument supplied, accountId was \"$accountId\", "
+                . "userId was \"$userId\""
+            );
+        }
+
+        $affected = $this->_getAccountModel()->deleteAccount($accountId, false);
+
+        if ($affected !== false) {
+
+            $this->_getBuilder()->remove(array('accountId' => $accountId));
+            $this->_getListBuilder()->cleanCacheForTags(array('userId' => $userId));
+            $this->_getItemFacade()->deleteFeedItemsForAccountId($accountId);
+        }
+
+        return $affected;
+    }
+
+    /**
+     * Updates the account data in the data storage with the account-data
+     * specified in $data.
+     *
+     * @param array a numeric array where each value holds data to update
+     * for an account
+     * @param integer $userId The id of the user the accounts belong to
+     *
+     * @return array a list with ids of successfully updated accounts
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateAccounts(Array $data, $userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                  "Invalid argument supplied, userId was \"$userId\""
+            );
+        }
+
+        $updated = array();
+
+        for ($i = 0, $len = count($data); $i < $len; $i++) {
+            $id = $data[$i]['id'];
+            unset($data[$i]['id']);
+            try {
+                if ($this->updateAccount($id, $data[$i], $userId) === true) {
+                    $updated[] = $id;
+                }
+            } catch (Exception $e) {
+                Conjoon_Log::log($e, Zend_Log::ERR);
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Updates a single account with the data from $data for the specified
+     * $userId.
+     *
+     * @param integer $accountId the id of the account to update.
+     * @param Array $data
+     * @param integer $userId
+     *
+     * @return boolean true, if updating the account was successfull, otherwise
+     * false
+     *
+     * @throws Exception
+     */
+    public function updateAccount($accountId, Array $data, $userId)
+    {
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($userId <= 0 || $accountId <= 0) {
+            throw new InvalidArgumentException(
+                  "Invalid argument supplied, userId was \"$userId\", "
+                . "accountId was \"$accountId\""
+            );
+        }
+
+        if (array_key_exists('id', $data)) {
+            unset($data['id']);
+        }
+
+        $filter = $this->_getUpdateAccountFilter();
+        $filter->setData($data);
+
+        try {
+            $data = $filter->getProcessedData();
+        } catch (Zend_Filter_Exception $e) {
+            Conjoon_Log::log($exception, Zend_Log::ERR);
+            return false;
+        }
+
+        $affected = $this->_getAccountModel()->updateAccount($accountId, $data);
+
+        if ($affected === true) {
+            $this->_getBuilder()->remove(array('accountId' => $accountId));
+            $this->_getListBuilder()->cleanCacheForTags(array('userId' => $userId));
+        }
+
+        return $affected === true ? true : false;
+
+    }
 
     /**
      * Sets the last updated timestamp for the specified account ids
@@ -246,4 +426,49 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
 
         return $this->_accountModel;
     }
+
+    /**
+     *
+     * @return Conjoon_Modules_Groupware_Feeds_Item_Facade
+     */
+    private function _getItemFacade()
+    {
+        if (!$this->_itemFacade) {
+
+            /**
+             * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
+
+            $this->_itemFacade = Conjoon_Modules_Groupware_Feeds_Item_Facade
+                                 ::getInstance();
+        }
+
+        return $this->_itemFacade;
+    }
+
+    /**
+     *
+     * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+     */
+    private function _getUpdateAccountFilter()
+    {
+        if (!$this->_updateAccountFilter) {
+
+            /**
+             * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+             */
+            require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
+
+            $this->_updateAccountFilter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
+                array(),
+                Conjoon_Filter_Input::CONTEXT_UPDATE
+            );
+        }
+
+        return $this->_updateAccountFilter;
+
+    }
+
+
 }

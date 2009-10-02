@@ -31,7 +31,13 @@ require_once 'Conjoon/Filter/Input.php';
  */
 class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Filter_Input {
 
+    const CONTEXT_EXTRACT_UPDATE = 'extract_update';
+
     protected $_presence = array(
+        'extract_update' => {
+            'deleted',
+            'updated'
+        },
         'delete' =>
             array(
                 'id'
@@ -61,6 +67,13 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
     );
 
     protected $_filters = array(
+        'deleted' => array(
+            'JsonEncode',
+            'PositiveArrayValues'
+        ),
+        'updated' => array(
+            'JsonEncode'
+        ),
         'id' => array(
             'Int'
          ),
@@ -137,6 +150,5 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
         )
 
     );
-
 
 }
