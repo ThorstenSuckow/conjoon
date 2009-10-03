@@ -30,7 +30,57 @@ class Conjoon_Modules_Groupware_Feeds_ImportHelper {
     {
     }
 
+    private static $_lock = false;
+
 // -------- public api
+
+    /**
+     * Returns an array with the feed items as imported from the
+     * given $uri.
+     *
+     * @param string $uri
+     * @param integer $requestTimeout
+     * @param boolean $useCache
+     * @param boolean $useConditionalGet
+     *
+     * @return array An array with Zend_Feed_Reader_Feed_Interface
+     */
+    public static function importFeedItems($uri, $requestTimeout = 30, $useCache = false,
+        $useConditionalGet = false)
+    {
+        return self::_processResources(Array(
+            'uri'               => $uri,
+            'requestTimeout'    => $requestTimeout,
+            'useCache'          => $useCache,
+            'useConditionalGet' => $useConditionalGet,
+            'callback'          => '_importFeedItems'
+        ));
+    }
+
+    /**
+     * Returns the metadata for a feed.
+     *
+     * @param string  $uri
+     * @param integer $requestTimeout
+     * @param boolean $useCache
+     * @param boolean $useConditionalGet
+     *
+     * @return array An assoc array with the following key/value pairs:
+     * - link
+     * - title
+     * - description
+     */
+    public function getFeedMetadata($uri, $requestTimeout = 30, $useCache = false,
+        $useConditionalGet = false)
+    {
+        return self::_processResources(Array(
+            'uri'               => $uri,
+            'requestTimeout'    => $requestTimeout,
+            'useCache'          => $useCache,
+            'useConditionalGet' => $useConditionalGet,
+            'callback'          => '_getFeedMetadata'
+        ));
+    }
 
     /**
      * Checks whether a given uri points to an rss feed resource.
@@ -60,75 +110,143 @@ class Conjoon_Modules_Groupware_Feeds_ImportHelper {
      * Parses all feed items for their values and returns an associative
      * array with their normalized values, along with the accountId specified.
      *
-     * @param array Zend_Feed_Reader_Feed_Interface
+     * @param Zend_Feed_Reader_EntryAbstract $item
      * @param integer $accountId
      *
      * @return array
      */
-    public static function parseFeedItems($import, $accountId)
+    public static function normalizeFeedItem(Zend_Feed_Reader_EntryAbstract $item)
     {
-        /**
-         * @see Conjoon_Util_Array
-         */
-        require_once 'Conjoon/Util/Array.php';
+        $itemData = array();
 
-        /**
-         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
+        $itemData['title'] = $item->getTitle();
 
-        $data = array();
+        // author
+        $itemData['author']      = $item->getAuthor();
+        $itemData['authorUri']   = "";//$item->getAuthor(0);
+        $itemData['authorEmail'] = "";//$item->getAuthor(0);
 
-        foreach ($import as $item) {
-
-            $itemData = array();
-            $itemData['groupwareFeedsAccountsId'] = $accountId;
-
-            $itemData['title'] = $item->getTitle();
-
-            // author
-            $itemData['author']      = $item->getAuthor();
-            $itemData['authorUri']   = "";//$item->getAuthor(0);
-            $itemData['authorEmail'] = "";//$item->getAuthor(0);
-
-             // description
-            $itemData['description'] = $item->getDescription();
-            if (!$itemData['description']) {
-                $itemData['description'] = $itemData['title'];
-            }
-
-            // content
-            $itemData['content'] = $item->getContent();
-            if (!$itemData['content']) {
-                $itemData['content'] = $itemData['description'];
-            }
-
-            // link
-            $itemData['link'] = $item->getLink();
-
-            // guid
-            $itemData['guid'] = $item->getId();
-
-            // pubDate
-            $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
-
-            $itemData['savedTimestamp'] = time();
-
-            $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-                $itemData,
-                Conjoon_Filter_Input::CONTEXT_CREATE
-            );
-            $fillIn = $filter->getProcessedData();
-            Conjoon_Util_Array::underscoreKeys($fillIn);
-            $data[] = $fillIn;
+         // description
+        $itemData['description'] = $item->getDescription();
+        if (!$itemData['description']) {
+            $itemData['description'] = $itemData['title'];
         }
 
-        return $data;
+        // content
+        $itemData['content'] = $item->getContent();
+        if (!$itemData['content']) {
+            $itemData['content'] = $itemData['description'];
+        }
+
+        // link
+        $itemData['link'] = $item->getLink();
+
+        // guid
+        $itemData['guid'] = $item->getId();
+
+        // pubDate
+        $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
+
+        return $itemData;
     }
 
 
 // -------- api
 
+    private static function _importFeedItems($uri)
+    {
+        $import = Zend_Feed_Reader::import($uri);
 
+        $result = array();
+
+        foreach ($import as $item) {
+            $result[] = $item;
+        }
+
+        return $result;
+    }
+
+    private static function _getFeedMetadata($uri)
+    {
+        $import = Zend_Feed_Reader::import($uri);
+
+        $title = $import->getTitle();
+        $link  = $import->getLink();
+        if (!$link) {
+            $link = $import->getFeedLink();
+        }
+        $description = $import->getDescription();
+
+        return array(
+            'title'       => $title,
+            'link'        => $link,
+            'description' => $description
+        );
+    }
+
+    private static function _processResources(Array $config)
+    {
+        if (self::$_lock) {
+            /**
+             * @see Conjoon_Log
+             */
+            require_once 'Conjoon/Log.php';
+
+            Conjoon_Log::log(
+                "Conjoon_Modules_Groupware_Feeds_ImportHelper::_processResources "
+                . "- possible race condition", Zend_Log::INFO
+            );
+        }
+
+        self::$_lock = true;
+
+        $uri               = $config['uri'];
+        $requestTimeout    = $config['requestTimeout'];
+        $useCache          = $config['useCache'];
+        $useConditionalGet = $config['useConditionalGet'];
+        $callback          = $config['callback'];
+
+        /**
+         * @see Zend_Feed_Reader
+         */
+        require_once 'Zend/Feed/Reader.php';
+
+        if ($useCache !== false) {
+            // set the reader's cache here
+
+            /**
+             * @see Conjoon_Cache_Factory
+             */
+            require_once 'Conjoon/Cache/Factory.php';
+
+            /**
+             * @see Conjoon_Keys
+             */
+            require_once 'Conjoon/Keys.php';
+
+            $frCache = Conjoon_Cache_Factory::getCache(
+                Conjoon_Keys::CACHE_FEED_READER,
+                Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+            );
+
+            if ($frCache) {
+                Zend_Feed_Reader::setCache($frCache);
+                if ($useConditionalGet !== false) {
+                    Zend_Feed_Reader::useHttpConditionalGet();
+                }
+            }
+        }
+
+        Zend_Feed_Reader::getHttpClient()->setConfig(array(
+            'timeout' => $requestTimeout
+        ));
+
+        $result = self::$callback($uri);
+
+        Zend_Feed_Reader::reset();
+        self::$_lock = false;
+
+        return $result;
+    }
 
 }

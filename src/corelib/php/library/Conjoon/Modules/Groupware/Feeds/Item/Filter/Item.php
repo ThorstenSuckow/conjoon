@@ -251,6 +251,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'allowEmpty' => false
         ),
         'savedTimestamp' => array(
+            'presence' => 'optional',
             'allowEmpty' => true,
             array('GreaterThan', 0)
         ),
@@ -271,7 +272,9 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
 
     protected function _init()
     {
-        if ($this->_context == self::CONTEXT_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
+        if ($this->_context == self::CONTEXT_RESPONSE
+           || $this->_context == self::CONTEXT_ITEM_RESPONSE
+           || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
 
             $this->_filters['title'] = array(
                 array('StripTags')
@@ -304,7 +307,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                 new Conjoon_Filter_ShortenString(128, '...')
             );
 
-            if ($this->_context == self::CONTEXT_ITEM_RESPONSE || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
+            if ($this->_context == self::CONTEXT_ITEM_RESPONSE
+               || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
 
                 $allowedTags = array(
                     'p','div','span','ul','li','table','tr','td','blockquote',
@@ -345,6 +349,14 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                     'StringTrim'
                 );
             }
+        } else if ($this->_context == self::CONTEXT_CREATE) {
+            $this->_filters['title'][] = array(
+                'Htmlentities',
+                array(
+                    'quotestyle' => ENT_COMPAT,
+                    'charset'    => 'UTF-8'
+                )
+            );
         }
 
         $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();

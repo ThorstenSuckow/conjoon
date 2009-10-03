@@ -65,6 +65,123 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 // -------- public api
 
     /**
+     * Imports and adds the items for the requested feed uri and adds them
+     * to the account specified in $accountId if they do not already exist.
+     * The account's lastUpdated property will also be set, and the item lists
+     * cache will be cleaned, if feed items have been actually added.
+     *
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     * @param boolean $useReaderCache
+     * @param boolean $useConditionalGet
+     *
+     * @return array Returns an array with the recently added
+     * Conjoon_Modules_Groupware_Feeds_Item_Dto
+     *
+     * @throws Exception
+     */
+    public function importAndAddFeedItems($accountId, $userId,
+        $useReaderCache = false, $useConditionalGet = false)
+    {
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($accountId <= 0 || $userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied, accountId was \"$accountId\", "
+                . "userId was \"$userId\""
+            );
+        }
+
+        $accountDto     = $this->_getAccountFacade()->getAccount($accountId, $userId);
+        $uri            = $accountDto->uri;
+        $requestTimeout = $accountDto->requestTimeout;
+
+         /**
+         * @see Conjoon_Modules_Groupware_Feeds_ImportHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
+
+        // get the feeds metadata
+        $import = Conjoon_Modules_Groupware_Feeds_ImportHelper::importFeedItems(
+            $uri, $requestTimeout, $useReaderCache, $useConditionalGet
+        );
+
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
+
+        $filter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+            array(),
+            Conjoon_Filter_Input::CONTEXT_CREATE
+        );
+
+        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+            array(),
+            Conjoon_Filter_Input::CONTEXT_RESPONSE
+        );
+
+        /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+
+        /**
+         * @see Conjoon_BeanContext_Inspector
+         */
+        require_once 'Conjoon/BeanContext/Inspector.php';
+
+        $added  = array();
+        $cCache = false;
+
+        foreach ($import as $item) {
+            $normalized = Conjoon_Modules_Groupware_Feeds_ImportHelper::normalizeFeedItem(
+                    $item
+            );
+            $normalized['groupwareFeedsAccountsId'] = $accountId;
+            $filter->setData($normalized);
+
+            try {
+                $fillIn  = $filter->getProcessedData();
+            } catch (Zend_Filter_Exception $e) {
+                /**
+                 * @see Conjoon_Error
+                 */
+                require_once 'Conjoon/Error.php';
+
+                Conjoon_Log::log(Conjoon_Error::fromFilter($filter, $e), Zend_Log::ERR);
+                continue;
+            }
+            $dtoData = $fillIn;
+
+            Conjoon_Util_Array::underscoreKeys($fillIn);
+
+            $isAdded = $this->_addItemIfNotExists($fillIn, $accountId, false);
+
+            if ($isAdded > 0) {
+                $cCache = true;
+                $dtoData['id']   = $isAdded;
+                $dtoData['name'] = $accountDto->name;
+
+                $itemResponseFilter->setData($dtoData);
+                $dtoData = $itemResponseFilter->getProcessedData();
+
+                $added[] = Conjoon_BeanContext_Inspector::create(
+                    'Conjoon_Modules_Groupware_Feeds_Item', $dtoData
+                )->getDto();
+            }
+        }
+
+        if ($cCache) {
+            $this->_removeListCacheForAccountIds(array($accountId));
+            $this->_getAccountFacade()->setLastUpdated(array($accountId), time());
+        }
+
+        return $added;
+    }
+    /**
      * Deletes all feed items for the specified account id.
      *
      * @param integer $accountId
@@ -198,26 +315,6 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
     public function syncAndGetFeedItemsForUser($userId, $removeOld, $timeout)
     {
         /**
-         * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
-         */
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
-
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        /**
-         * @see Conjoon_Cache_Factory
-         */
-        require_once 'Conjoon/Cache/Factory.php';
-
-        /**
-         * @see Zend_Feed_Reader
-         */
-        require_once 'Zend/Feed/Reader.php';
-
-        /**
          * @see Conjoon_Modules_Groupware_Feeds_ImportHelper
          */
         require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
@@ -225,12 +322,6 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
         $time     = time();
         $accounts = $this->_getAccountFacade()->getAccountsToUpdate($userId, $time);
 
-        $itemResponseFilter = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
-            array(),
-            Conjoon_Filter_Input::CONTEXT_RESPONSE
-        );
-
-        $updatedAccounts = array();
         $insertedItems   = array();
         $len             = count($accounts);
 
@@ -251,77 +342,23 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
             }
         }
 
-        // set the reader's cache here
-        $frCache = Conjoon_Cache_Factory::getCache(
-            Conjoon_Keys::CACHE_FEED_READER,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        );
-
-        if ($frCache) {
-            Zend_Feed_Reader::setCache($frCache);
-            Zend_Feed_Reader::useHttpConditionalGet();
-        }
-
-        $accDelCacheIds = array();
         for ($i = 0; $i < $len; $i++) {
             // set requestTimeout to default if necessary
             if ($defTimeout != -1) {
                 $accounts[$i]->requestTimeout = $defTimeout;
             }
             try {
-                // set the client for each account so it can be configured
-                // with the timeout. In case the sum of all timeouts exceeds
-                // the max_execution_time of the PHP installation, each
-                // request will be configured with the same timeout so the script
-                // has enough time to finish
-                Zend_Feed_Reader::setHttpClient(new Zend_Http_Client(
-                    null, array('timeout' => $accounts[$i]->requestTimeout - 2)
-                ));
-
-                $import = Zend_Feed_Reader::import($accounts[$i]->uri);
-
-                $items = Conjoon_Modules_Groupware_Feeds_ImportHelper::parseFeedItems(
-                    $import, $accounts[$i]->id
+                $insertedItems = $this->importAndAddFeedItems(
+                    $accounts[$i]->id,
+                    $userId,
+                    true,
+                    true
                 );
 
-                for ($a = 0, $lena = count($items); $a < $lena; $a++) {
-                    $items[$a]['saved_timestamp'] = time();
-                    $added = $this->_addItemIfNotExists($items[$a], $accounts[$i]->id, false);
-
-                    if ($added !== 0) {
-
-                        $accDelCacheIds[$accounts[$i]->id] = true;
-
-                        if (!$removeOld) {
-                            $items[$a]['name'] = $accounts[$i]->name;
-                            $items[$a]['id']   = $added;
-                            Conjoon_Util_Array::camelizeKeys($items[$a]);
-                            $itemResponseFilter->setData($items[$a]);
-                            $insertedItems[] = $itemResponseFilter->getProcessedData();
-                        }
-                    }
-                }
-
-                // only mark as updated if no exception occurred
-                $updatedAccounts[$accounts[$i]->id] = true;
-
             } catch (Exception $e) {
-                // ignore
+                throw $e;
             }
         }
-
-        // reset Zend_Feed_Reader
-        Zend_Feed_Reader::reset();
-
-        // set the last updated timestamp for the accounts
-        if (!empty($updatedAccounts)) {
-            $this->_getAccountFacade()->setLastUpdated(
-                array_keys($updatedAccounts), $time
-            );
-        }
-
-        // remove list cache for collected accounts
-        $this->_removeListCacheForAccountIds(array_keys($accDelCacheIds));
 
         if ($removeOld) {
             $this->deleteOldFeedItems($userId);

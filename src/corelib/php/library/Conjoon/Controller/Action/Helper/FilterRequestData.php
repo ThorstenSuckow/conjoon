@@ -37,7 +37,6 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
      */
     protected $_filterKeys = array();
 
-
     protected function _getFilter($key)
     {
         if (isset($this->_filters[$key])) {
@@ -106,6 +105,17 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
+            case 'Groupware_FeedsController::add.account':
+                /**
+                 * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+                 */
+                require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
+
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
+                    array(),
+                    Conjoon_Modules_Groupware_Feeds_Account_Filter_Account::CONTEXT_CREATE
+                );
+            break;
         }
 
         return $this->_filters[$key];

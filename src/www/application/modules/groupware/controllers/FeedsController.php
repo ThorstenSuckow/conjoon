@@ -51,7 +51,8 @@ class Groupware_FeedsController extends Zend_Controller_Action {
                       ->registerFilter('Groupware_FeedsController::set.item.read')
                       ->registerFilter('Groupware_FeedsController::get.feed.content')
                       ->registerFilter('Groupware_FeedsController::update.accounts')
-                      ->registerFilter('Groupware_FeedsController::is.feed.address.valid');
+                      ->registerFilter('Groupware_FeedsController::is.feed.address.valid')
+                      ->registerFilter('Groupware_FeedsController::add.account');
     }
 
 // -------- items
@@ -95,122 +96,25 @@ class Groupware_FeedsController extends Zend_Controller_Action {
      */
     public function addFeedAction()
     {
-        require_once 'Zend/Feed.php';
-        require_once 'Conjoon/Util/Array.php';
-        require_once 'Conjoon/Keys.php';
-        require_once 'Conjoon/BeanContext/Inspector.php';
-        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Model/Account.php';
-        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Item.php';
-        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
-
         /**
-         * @see Conjoon_Modules_Groupware_Feeds_ImportHelper
+         * @see Conjoon_Modules_Groupware_Feeds_Account_Facade
          */
-        require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Facade.php';
 
-        $model  = new Conjoon_Modules_Groupware_Feeds_Account_Model_Account();
+        $result = Conjoon_Modules_Groupware_Feeds_Account_Facade::getInstance()
+        ->addAccountAndImport(array(
+            'deleteInterval' => $this->_request->getParam('deleteInterval'),
+            'name'           => $this->_request->getParam('name'),
+            'requestTimeout' => $this->_request->getParam('requestTimeout'),
+            'updateInterval' => $this->_request->getParam('updateInterval'),
+            'uri'            => $this->_request->getParam('uri')
+        ), $this->_helper->registryAccess()->getUserId());
 
-        $userId = $this->_helper->registryAccess()->getUserId();
-
-        $classToCreate = 'Conjoon_Modules_Groupware_Feeds_Account';
-
-        $this->view->success = true;
-        $this->view->error = null;
-
-        // clean accounts' cache in any case
-        /**
-         * @see Conjoon_Builder_Factory
-         */
-        require_once 'Conjoon/Builder/Factory.php';
-
-        Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_FEED_ACCOUNTS,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->cleanCacheForTags(array('userId' => $userId));
-
-        try {
-            $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
-                $_POST,
-                Conjoon_Filter_Input::CONTEXT_CREATE
-            );
-            $filteredData = $filter->getProcessedData();
-
-            $import = Zend_Feed::import($filteredData['uri']);
-
-            require_once 'Zend/Filter/HtmlEntities.php';
-            $htmlEntities = new Zend_Filter_HtmlEntities(ENT_COMPAT, 'UTF-8');
-            $filteredData['title'] = $htmlEntities->filter($import->title());
-            $filteredData['link']  = $import->link();
-
-            // atom feeds may have more than 1 link tag. Simply take the first one's
-            // node value
-            if (!is_string($filteredData['link'])) {
-                if (isset($filteredData['link'][0])) {
-                    if (is_object($filteredData['link'][0])) {
-                        $cls = get_class($filteredData['link'][0]);
-                        if (strtolower($cls) === 'domelement'){
-                            $link = @$filteredData['link'][0]->firstChild->data;
-                            if (!$link) {
-                                $link = $filteredData['link'][0]->getAttribute('href');
-                            }
-
-                            $filteredData['link'] = $link;
-                        }
-                    }
-                }
-
-                if (!is_string($filteredData['link']) || $filteredData['link'] == "") {
-                    // fallback - use the uri
-                    $filteredData['link'] = $filteredData['uri'];
-                }
-            }
-
-            $filteredData['description'] = $import->description();
-            $data = $filteredData;
-            Conjoon_Util_Array::underscoreKeys($data);
-            $data['user_id'] = $userId;
-            $data['last_updated'] = time();
-
-            $insertId = $model->addAccount($data);
-            if ($insertId <= 0) {
-                $this->view->success = false;
-                return;
-            }
-            $filteredData['id'] = $insertId;
-            $this->view->account = Conjoon_BeanContext_Inspector::create(
-                $classToCreate,
-                $filteredData
-            )->getDto();
-
-            $itemModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Item();
-
-            $data = Conjoon_Modules_Groupware_Feeds_ImportHelper::parseFeedItems(
-                $import, $filteredData['id']
-            );
-
-            for ($i = 0, $len = count($data); $i < $len; $i++) {
-                $itemModel->insert($data[$i]);
-            }
-
-            /**
-             * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
-             */
-            require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
-            $items = Conjoon_Modules_Groupware_Feeds_Item_Facade::getInstance()
-                     ->getFeedItemsForAccount($filteredData['id'], $userId);
-
-            $this->view->items = $this->getFeedItemsForAccount($filteredData['id'], $userId);
-
-        } catch (Zend_Filter_Exception $e) {
-            require_once 'Conjoon/Error.php';
-            $error = Conjoon_Error::fromFilter($filter, $e);
-            $accountData = $_POST;
-            $this->view->account = Conjoon_BeanContext_Inspector::create(
-                $classToCreate,
-                $_POST
-            )->getDto();
-            $this->view->success = false;
-            $this->view->error = $error->getDto();
+       if (!empty($result)) {
+            $this->view->success = true;
+            $this->view->error   = null;
+            $this->view->account = $result['account'];
+            $this->view->items   = $result['items'];
         }
     }
 

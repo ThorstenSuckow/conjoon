@@ -18,6 +18,11 @@
  */
 require_once 'Conjoon/Filter/Input.php';
 
+/**
+ * @see Conjoon_Filter_Raw
+ */
+require_once 'Conjoon/Filter/Raw.php';
+
 
 /**
  * An input-filter class defining all validators and filters needed when
@@ -62,7 +67,8 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
                 'requestTimeout',
                 'description',
                 'deleteInterval',
-                'isImageEnabled'
+                'isImageEnabled',
+                'lastUpdated'
         )
     );
 
@@ -103,6 +109,9 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
          ),
         'isImageEnabled' => array(
             'FormBoolToInt'
+         ),
+         'lastUpdated' => array(
+            'Int'
          )
     );
 
@@ -147,8 +156,35 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
         'isImageEnabled' => array(
             'allowEmpty' => true,
             'default'    => 0
+        ),
+        'lastUpdated' => array(
+            'presence'   => 'optional',
+            'allowEmpty' => true,
+            'default'    => 0
         )
 
     );
+
+
+    protected function _init()
+    {
+        if ($this->_context == self::CONTEXT_CREATE) {
+            $this->_filters['title'][] = array(
+                'Htmlentities',
+                array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+                )
+            );
+            $this->_filters['description'][] = array(
+                'Htmlentities',
+                array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+                )
+            );
+        }
+        $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();
+    }
 
 }

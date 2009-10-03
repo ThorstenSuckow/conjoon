@@ -82,6 +82,138 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
 
 // -------- public api
 
+    /**
+     * Adds an account to the data storage.
+     *
+     * Fields required in $data:
+     *  - deleteInterval
+     *  - name
+     *  - requestTimeout
+     *  - updateInterval
+     *  - uri
+     *
+     *
+     * @param Array $data
+     * @param integer $userId
+     *
+     * @return Conjoon_Modules_Groupware_Feeds_Account_Dto The recently added
+     * account, or null if not created
+     *
+     * @throws Exception
+     */
+    public function addAccount(Array $data, $userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied, userId was \"$userId\""
+            );
+        }
+
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/Account/Filter/Account.php';
+
+        $filter = new Conjoon_Modules_Groupware_Feeds_Account_Filter_Account(
+            $data, Conjoon_Filter_Input::CONTEXT_CREATE
+        );
+
+        $data    = $filter->getProcessedData();
+        $dtoData = $data;
+
+        /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+
+        Conjoon_Util_Array::underscoreKeys($data);
+
+        $result       = $this->_getAccountModel()->addAccount($data, $userId);
+        $addedAccount = null;
+
+        if ($result > 0) {
+            $dtoData['id'] = $result;
+
+            /**
+             * @see Conjoon_BeanContext_Inspector
+             */
+            require_once 'Conjoon/BeanContext/Inspector.php';
+
+            $addedAccount = Conjoon_BeanContext_Inspector::create(
+                'Conjoon_Modules_Groupware_Feeds_Account', $dtoData
+            )->getDto();
+
+            $this->_getListBuilder()->cleanCacheForTags(array(
+                'userId' => $userId
+            ));
+        }
+
+        return $addedAccount;
+    }
+
+    /**
+     * Adds a feed account to the data storage for the specified
+     * user in $userId.
+     *
+     * Fields required in $data:
+     *  - deleteInterval
+     *  - name
+     *  - requestTimeout
+     *  - updateInterval
+     *  - uri
+     *
+     * @param Array $data
+     * @param intteger $userId
+     *
+     * @throws Exception
+     */
+    public function addAccountAndImport(Array $data, $userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied, userId was \"$userId\""
+            );
+        }
+
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_ImportHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
+
+        $data['lastUpdated'] = time();
+
+        // get the feeds metadata
+        $metaData = Conjoon_Modules_Groupware_Feeds_ImportHelper
+                  ::getFeedMetaData($data['uri'], $data['requestTimeout'], true, true);
+
+        /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+
+        Conjoon_Util_Array::applyIf($data, $metaData);
+
+        $addedAcount = $this->addAccount($data, $userId, true);
+
+        // something failed. Return.
+        if ($addedAcount == null) {
+            return array();
+        }
+
+        // get the feed items now and insert them!
+        $items = $this->_getItemFacade()->importAndAddFeedItems(
+            $addedAcount->id, $userId, true, false
+        );
+
+        return array(
+            'account' => $addedAcount,
+            'items'   => $items
+        );
+    }
 
     /**
      * Removes all the accounts for the specified account ids, for the user
@@ -231,7 +363,7 @@ class Conjoon_Modules_Groupware_Feeds_Account_Facade {
              */
             require_once 'Conjoon/Error.php';
 
-            Conjoon_Log::log(Conjoon_Error::fromFilter($e, $filter), Zend_Log::ERR);
+            Conjoon_Log::log(Conjoon_Error::fromFilter($filter, $e), Zend_Log::ERR);
             return false;
         }
 

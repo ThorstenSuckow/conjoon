@@ -76,11 +76,21 @@ class Conjoon_Modules_Groupware_Feeds_Account_Model_Account
      * Adds a new account.
      *
      * @param array $data An associative array with the key/value pairs.
+     * @param integer $userId The id of the user for which the account
+     * gets added
      *
      * @return integer The id of the newly added data
      */
-    public function addAccount(Array $data)
+    public function addAccount(Array $data, $userId)
     {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            return 0;
+        }
+
+        $data['user_id'] = $userId;
+
         return $this->insert($data);
     }
 
