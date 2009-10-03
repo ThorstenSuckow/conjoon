@@ -73,6 +73,27 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Flag extends Zend_Db_Table_Abst
     }
 
     /**
+     * Removes flasg for a specific account id.
+     *
+     * @param integer $accountId
+     *
+     * @return integer number of deleted rows
+     */
+    public function deleteForAccountId($accountId)
+    {
+        $accountId = (int)$accountId;
+
+        if ($accountId <= 0) {
+            return 0;
+        }
+
+        $where    = $this->getAdapter()->quoteInto('groupware_feeds_accounts_id = ?', $accountId, 'INTEGER');
+        $affected = $this->delete($where);
+
+        return $affected;
+    }
+
+    /**
      * Checks wether a feed item with the specified guid was already stored.
      *
      * @param integer $accountId

@@ -302,6 +302,14 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         $where    = $this->getAdapter()->quoteInto('groupware_feeds_accounts_id = ?', $id, 'INTEGER');
         $affected = $this->delete($where);
 
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Model_Flag
+         */
+        require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Flag.php';
+        $flagModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Flag();
+
+        $flagModel->deleteForAccountId($id);
+
         return $affected;
     }
 
@@ -322,6 +330,9 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
             return 0;
         }
 
+        /**
+         * @see Conjoon_Modules_Groupware_Feeds_Item_Model_Flag
+         */
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Model/Flag.php';
         $flagModel = new Conjoon_Modules_Groupware_Feeds_Item_Model_Flag();
 
