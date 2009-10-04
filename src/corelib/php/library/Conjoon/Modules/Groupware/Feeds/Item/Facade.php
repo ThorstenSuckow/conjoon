@@ -14,6 +14,11 @@
  */
 
 /**
+ * @see Conjoon_Log
+ */
+require_once 'Conjoon/Log.php';
+
+/**
  *
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
@@ -176,8 +181,9 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 
         if ($cCache) {
             $this->_removeListCacheForAccountIds(array($accountId));
-            $this->_getAccountFacade()->setLastUpdated(array($accountId), time());
         }
+
+        $this->_getAccountFacade()->setLastUpdated(array($accountId), time());
 
         return $added;
     }
@@ -322,6 +328,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
         $time     = time();
         $accounts = $this->_getAccountFacade()->getAccountsToUpdate($userId, $time);
 
+        Conjoon_Log::log(count($accounts). " need to be updated at ".date("Y-m-d H:i:s"), Zend_Log::INFO);
+
         $insertedItems   = array();
         $len             = count($accounts);
 
@@ -343,17 +351,24 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
         }
 
         for ($i = 0; $i < $len; $i++) {
+
+            Conjoon_Log::log($accounts[$i]->name. " needs to be queried at ".date("Y-m-d H:i:s"), Zend_Log::INFO);
+
             // set requestTimeout to default if necessary
             if ($defTimeout != -1) {
                 $accounts[$i]->requestTimeout = $defTimeout;
             }
             try {
-                $insertedItems = $this->importAndAddFeedItems(
+                $fetched = $this->importAndAddFeedItems(
                     $accounts[$i]->id,
                     $userId,
                     true,
                     true
                 );
+
+                $insertedItems = array_merge($insertedItems, $fetched);
+
+                Conjoon_Log::log($accounts[$i]->name. " hase been updated with ".count($fetched)." items", Zend_Log::INFO);
 
             } catch (Exception $e) {
                 throw $e;
