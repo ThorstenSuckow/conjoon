@@ -439,7 +439,11 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
             }
 
             // get the record information of the current selected cell
-            clkRecord = grid.getSelectionModel().getSelected().copy();
+            var t = grid.getSelectionModel().getSelected();
+            if (!t) {
+                return;
+            }
+            clkRecord = t.copy();
 
             var pId = clkRecord.id;
             if (activeFeedId == pId) {
