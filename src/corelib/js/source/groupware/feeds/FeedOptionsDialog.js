@@ -409,7 +409,11 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
      */
     addRecordsFromStore : function(store, records, index)
     {
-        this.feedPanel.store.add(records);
+        var store = this.feedPanel.store;
+
+        for (var i = 0, len = records.length; i < len; i++) {
+            store.add(records[i].copy());
+        }
     },
 
 
