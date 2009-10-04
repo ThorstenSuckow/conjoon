@@ -44,9 +44,9 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
 
     var runnable = false;
 
-    var updateInterval = Number.MAX_VALUE;
-
     var defaultUpdateInterval = 3600;
+
+    var updateInterval = 3600;
 
     var onStoreLoadException = function(proxy, type, action, options, response, arg)
     {
@@ -85,8 +85,12 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
 
         var recs = store.getRange();
 
+        updateInterval = Number.MAX_VALUE;
         for (var i = 0, len = recs.length; i < len; i++) {
             updateInterval = Math.min(recs[i].get('updateInterval'), updateInterval);
+        }
+        if (len == 0) {
+            updateInterval = -1;
         }
 
         run();
@@ -97,17 +101,20 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
         runnable = false;
         if (task) {
             Ext.TaskMgr.stop(task);
+            task = null;
         }
     };
 
     var run = function()
     {
+        if (task || updateInterval < 0) {
+            return;
+        }
         task = {
             run      : updateFeeds,
-            interval : (updateInterval <= 0 ?
-                        defaultUpdateInterval :
-                        updateInterval)*1000
+            interval : updateInterval * 1000
         }
+
         Ext.TaskMgr.start(task);
     };
 
