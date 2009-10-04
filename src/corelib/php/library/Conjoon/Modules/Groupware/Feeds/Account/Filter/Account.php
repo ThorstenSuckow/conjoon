@@ -168,22 +168,6 @@ class Conjoon_Modules_Groupware_Feeds_Account_Filter_Account extends Conjoon_Fil
 
     protected function _init()
     {
-        if ($this->_context == self::CONTEXT_CREATE) {
-            $this->_filters['title'][] = array(
-                'Htmlentities',
-                array(
-                'quotestyle' => ENT_COMPAT,
-                'charset'    => 'UTF-8'
-                )
-            );
-            $this->_filters['description'][] = array(
-                'Htmlentities',
-                array(
-                'quotestyle' => ENT_COMPAT,
-                'charset'    => 'UTF-8'
-                )
-            );
-        }
         $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();
     }
 
