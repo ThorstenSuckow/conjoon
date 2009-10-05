@@ -51,7 +51,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                  */
                 require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
-                $this->_filters[$key] =new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                     array(),
                     Conjoon_Filter_Input::CONTEXT_UPDATE
                 );
@@ -63,7 +63,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                  */
                 require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
-                $this->_filters[$key] =new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                     array(),
                     Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_READ
                 );
@@ -75,7 +75,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                  */
                 require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
-                $this->_filters[$key] =new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                     array(),
                     Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_ITEM_CONTENT
                 );
@@ -87,7 +87,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                  */
                 require_once 'Conjoon/Modules/Groupware/Feeds/Item/Filter/Item.php';
 
-                $this->_filters[$key] =new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Feeds_Item_Filter_Item(
                     array(),
                     Conjoon_Modules_Groupware_Feeds_Item_Filter_Item::CONTEXT_URI_CHECK
                 );
@@ -137,38 +137,29 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
             );
         }
 
-        $this->_filterKeys[$action] = $key;
+        $this->_filterKeys[$thisClass][$action] = $key;
 
         return $this;
     }
 
     public function preDispatch()
     {
-        $action = $this->getRequest()->getActionName();
-
-        if (!isset($this->_filterKeys[$action])) {
+        if (!$this->getRequest()->isDispatched()) {
             return;
         }
 
-        $filter = $this->_getFilter($this->_filterKeys[$action]);
+        $action = $this->getRequest()->getActionName();
+        $class  = get_class($this->getActionController());
+
+        if (!isset($this->_filterKeys[$class][$action])) {
+            return;
+        }
+
+        $filter = $this->_getFilter($this->_filterKeys[$class][$action]);
 
         $actionController = $this->getActionController();
 
-        //if ($actionController->getHelper('conjoonContext')->getCurrentContext() == 'json') {
-        //    /**
-        //     * @see Zend_Json
-        //     */
-        //    require_once 'Zend/Json.php';
-        //
-        //    $data = Zend_Json::decode(
-        //        $this->getRequest()->getParam('json'),
-        //        Zend_Json::TYPE_ARRAY
-        //    );
-        //
-        //    $filter->setData($data);
-        //} else {
-            $filter->setData($this->getRequest()->getParams());
-        //}
+        $filter->setData($this->getRequest()->getParams());
 
         $filteredData = $filter->getProcessedData();
 
