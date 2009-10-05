@@ -61,10 +61,13 @@ class Groupware_FeedsItemController extends Zend_Controller_Action {
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
 
         if (!$this->_helper->connectionCheck()) {
-            $items = Conjoon_Modules_Groupware_Feeds_Item_Facade
-                     ::getInstance()->getFeedItemsForUser(
-                        $this->_helper->registryAccess->getUserId()
-                     );
+            $items = array();
+            if ($this->_request->getParam('removeold')) {
+                $items = Conjoon_Modules_Groupware_Feeds_Item_Facade
+                         ::getInstance()->getFeedItemsForUser(
+                            $this->_helper->registryAccess->getUserId()
+                         );
+            }
             $this->view->success = true;
             $this->view->items   = $items;
             $this->view->error   = null;
