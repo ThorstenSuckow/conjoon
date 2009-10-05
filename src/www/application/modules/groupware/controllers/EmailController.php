@@ -76,6 +76,26 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function fetchEmailsAction()
     {
+        if (!$this->_helper->connectionCheck()) {
+
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            $this->view->success    = false;
+            $this->view->totalCount = 0;
+            $this->view->items      = array();
+            $this->view->error      = Conjoon_Error_Factory::createError(
+                "Unexpected connection failure while trying to receive new emails. "
+                ."Please try again.",
+                Conjoon_Error::LEVEL_WARNING,
+                Conjoon_Error::DATA
+            )->getDto();
+
+            return;
+        }
+
         if (isset($_POST['accountId'])) {
             $accountId = (int)$_POST['accountId'];
             if ($accountId < 0) {
@@ -1873,6 +1893,28 @@ class Groupware_EmailController extends Zend_Controller_Action {
      */
     public function bulkSendAction()
     {
+        if (!$this->_helper->connectionCheck()) {
+
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            $this->view->success                = false;
+            $this->view->sentItems              = array();
+            $this->view->error                  = null;
+            $this->view->contextReferencedItems = array();
+            $this->view->error                  = Conjoon_Error_Factory::createError(
+                "Unexpected connection failure while trying to bulk-send emails. "
+                ."Please try again.",
+                Conjoon_Error::LEVEL_WARNING,
+                Conjoon_Error::DATA
+            )->getDto();
+
+            return;
+        }
+
+
         $toSend = $_POST['ids'];
 
         if ($this->_helper->conjoonContext()->getCurrentContext() == self::CONTEXT_JSON) {

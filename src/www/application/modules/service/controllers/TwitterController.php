@@ -58,6 +58,10 @@ class Service_TwitterController extends Zend_Controller_Action {
     public function getAccountsAction()
     {
         /**
+         * @todo refactor when facade gets created, return list from server
+         */
+
+        /**
          * @see Conjoon_Keys
          */
         require_once 'Conjoon/Keys.php';
