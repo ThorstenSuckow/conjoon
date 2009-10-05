@@ -221,7 +221,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
         previewPanel.setTitle(com.conjoon.Gettext.gettext("Loading"));
 
         requestId = Ext.Ajax.request({
-            url       : './groupware/feeds/get.feed.content/format/json',
+            url       : './groupware/feedsItem/get.feed.content/format/json',
             params    : {
                 id                       : clkRecord.id,
                 groupwareFeedsAccountsId : clkRecord.get('groupwareFeedsAccountsId')

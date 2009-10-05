@@ -521,7 +521,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
         this._disableControls(true);
 
         this.requestId = Ext.Ajax.request({
-            url    : './groupware/feeds/add.feed/format/json',
+            url    : './groupware/feedsAccount/add.feed/format/json',
             params : {
                 name           : this.feedNameTextField.getValue().trim(),
                 uri            : this.urlTrigger.getValue().trim(),
@@ -671,7 +671,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
         this.loadMask.show();
 
         this.requestId = Ext.Ajax.request({
-            url            : './groupware/feeds/is.feed.address.valid/format/json',
+            url            : './groupware/feedsAccount/is.feed.address.valid/format/json',
             params         : {uri : url},
             success        : this.onSuccess,
             failure        : this.onFailure,

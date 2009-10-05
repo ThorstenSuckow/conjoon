@@ -45,7 +45,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
         switch ($key) {
 
-            case 'Groupware_FeedsController::get.feed.items':
+            case 'Groupware_FeedsItemController::get.feed.items':
                 /**
                  * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
                  */
@@ -57,7 +57,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_FeedsController::set.item.read':
+            case 'Groupware_FeedsItemController::set.item.read':
                 /**
                  * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
                  */
@@ -69,7 +69,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_FeedsController::get.feed.content':
+            case 'Groupware_FeedsItemController::get.feed.content':
                 /**
                  * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
                  */
@@ -81,7 +81,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_FeedsController::is.feed.address.valid':
+            case 'Groupware_FeedsAccountController::is.feed.address.valid':
                 /**
                  * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
                  */
@@ -93,7 +93,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_FeedsController::update.accounts':
+            case 'Groupware_FeedsAccountController::update.accounts':
                 /**
                  * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
                  */
@@ -105,7 +105,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_FeedsController::add.account':
+            case 'Groupware_FeedsAccountController::add.feed':
                 /**
                  * @see Conjoon_Modules_Groupware_Feeds_Account_Filter_Account
                  */
