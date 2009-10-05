@@ -56,6 +56,7 @@ class Groupware_FeedsController extends Zend_Controller_Action {
     }
 
 // -------- items
+
     /**
      * Returns all feed items out of the database belonging to the current user,
      * and does also query all accounts for new feed items.
@@ -72,6 +73,17 @@ class Groupware_FeedsController extends Zend_Controller_Action {
          * @see Conjoon_Modules_Groupware_Feeds_Item_Facade
          */
         require_once 'Conjoon/Modules/Groupware/Feeds/Item/Facade.php';
+
+        if (!$this->_helper->connectionCheck()) {
+            $items = Conjoon_Modules_Groupware_Feeds_Item_Facade
+                     ::getInstance()->getFeedItemsForUser(
+                        $this->_helper->registryAccess->getUserId()
+                     );
+            $this->view->success = true;
+            $this->view->items   = $items;
+            $this->view->error   = null;
+            return;
+        }
 
         $items = Conjoon_Modules_Groupware_Feeds_Item_Facade::getInstance()
                  ->syncAndGetFeedItemsForUser(

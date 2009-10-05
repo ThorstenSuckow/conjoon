@@ -102,6 +102,16 @@ ext.direct.request.parameter = {APPLICATION.EXT.DIRECT.REQUEST.PARAMETER}
 ; exception should be thrown. For 3.0.0, this should be set to "0"
 ext.direct.request.singleException = {APPLICATION.EXT.DIRECT.REQUEST.SINGLE_EXCEPTION}
 
+; This property will tell if an additional controller plugin should be loaded
+; which checks if an outgoing internet connection is available from the server
+; you are running conjoon on. This is mainly for debugging purposes, i.e.
+; local development from locations where an internet connection is most likely
+; not available, so you can safely set this option to "0" for live systems.
+connection_check.enabled = 1
+connection_check.timeout = 1
+connection_check.ip = 81.169.145.192
+connection_check.port = 80
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   DATABASE       ;;;

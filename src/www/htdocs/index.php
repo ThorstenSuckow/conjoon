@@ -207,6 +207,23 @@ require_once 'Conjoon/Modules/Default/User.php';
     // add helper namespace
     Zend_Controller_Action_HelperBroker::addPrefix('Conjoon_Controller_Action_Helper');
 
+    // set the connection check default properties
+    if ($config->application->connection_check->enabled) {
+        $c =& $config->application->connection_check;
+
+        /**
+         * @see Conjoon_Controller_Action_Helper_ConnectionCheck
+         */
+        require_once 'Conjoon/Controller/Action/Helper/ConnectionCheck.php';
+
+        Conjoon_Controller_Action_Helper_ConnectionCheck::setConfig(array(
+            'enabled' => true,
+            'ip'      => $c->ip,
+            'port'    => $c->port,
+            'timeout' => $c->timeout
+        ));
+    }
+
 // +----------------------------------------------------------------------------
 // | Set up Routing
 // +----------------------------------------------------------------------------
