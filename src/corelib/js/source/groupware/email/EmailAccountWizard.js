@@ -80,7 +80,7 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         this.switchDialogState(false);
 
         this.requestId = Ext.Ajax.request({
-            url               : './groupware/email/add.email.account/format/json',
+            url               : './groupware/emailAccount/add.email.account/format/json',
             params            : values,
             success           : this.onAddSuccess,
             failure           : this.onAddFailure,

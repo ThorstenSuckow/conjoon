@@ -446,7 +446,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             }
 
             Ext.Ajax.request({
-                url: './groupware/email/delete.items/format/json',
+                url: './groupware/emailItem/delete.items/format/json',
                 params: {
                     itemsToDelete : Ext.encode(requestArray)
                 }
@@ -494,7 +494,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         var updatePendingCount = allowPendingUpdate ? 0 : i;
 
         Ext.Ajax.request({
-            url: './groupware/email/move.items/format/json',
+            url: './groupware/emailItem/move.items/format/json',
             params: {
                 itemsToMove : Ext.encode(requestArray)
             }
@@ -555,7 +555,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
         if (requestArray.length > 0) {
             Ext.Ajax.request({
-                url: './groupware/email/set.email.flag/format/json',
+                url: './groupware/emailItem/set.email.flag/format/json',
                 params: {
                     type : 'read',
                     json : Ext.encode(requestArray)
@@ -615,7 +615,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         Ext.Ajax.request({
-            url: './groupware/email/set.email.flag/format/json',
+            url: './groupware/emailItem/set.email.flag/format/json',
             params: {
                 type : 'spam',
                 json : Ext.encode(requestArray)

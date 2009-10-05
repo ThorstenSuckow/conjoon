@@ -165,7 +165,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         };
 
         var ajaxOptions = {
-            url            : './groupware/email/get.draft/format/json',
+            url            : './groupware/emailEdit/get.draft/format/json',
             disableCaching : true,
             panelId        : panel.id,
             params         : {

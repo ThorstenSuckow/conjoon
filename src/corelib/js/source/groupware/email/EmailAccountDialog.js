@@ -1086,7 +1086,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.switchDialogState(false);
 
         this.requestId = Ext.Ajax.request({
-            url               : './groupware/email/update.email.accounts/format/json',
+            url               : './groupware/emailAccount/update.email.accounts/format/json',
             closeAfterSuccess : closeAfterSuccess,
             params            : {
                 deleted : Ext.encode(recordset.deleted),

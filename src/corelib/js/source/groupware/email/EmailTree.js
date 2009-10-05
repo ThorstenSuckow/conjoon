@@ -119,7 +119,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
          * Events will be captured by the onNodeLoaded method.
          */
         this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
-            dataUrl   : './groupware/email/get.folder/format/json',
+            dataUrl   : './groupware/emailFolder/get.folder/format/json',
             baseAttrs : {
                 uiProvider : com.conjoon.groupware.email.PendingNodeUI
             }
@@ -239,7 +239,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this.clkNode = null;
 
             Ext.Ajax.request({
-                url    : './groupware/email/delete.folder/format/json',
+                url    : './groupware/emailFolder/delete.folder/format/json',
                 params : {
                     id : nodeId
                 },
@@ -359,7 +359,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         switch (nodeConfig.mode) {
             case 'move':
-                url    = './groupware/email/move.folder/format/json';
+                url    = './groupware/emailFolder/move.folder/format/json';
                 params = {
                     //newParentId : nodeConfig.newParent,
                     parentId : nodeConfig.newParent,
@@ -370,7 +370,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             break;
 
             case 'edit':
-                url    = './groupware/email/rename.folder/format/json';
+                url    = './groupware/emailFolder/rename.folder/format/json';
                 params = {
                     parentId : nodeConfig.parent,
                     id       : nodeConfig.child.id,
@@ -380,7 +380,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             break;
 
             case 'add':
-                url = './groupware/email/add.folder/format/json';
+                url = './groupware/emailFolder/add.folder/format/json';
                 params = {
                     parentId : nodeConfig.parent,
                     // this property is actually needed if we need to

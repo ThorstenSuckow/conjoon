@@ -61,7 +61,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
                     });
                 }
             },
-            url : './groupware/email/get.email.items/format/json'
+            url : './groupware/emailItem/get.email.items/format/json'
         });
 
         this.view = new Ext.ux.grid.livegrid.GridView({
@@ -334,7 +334,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
 
         if (requestArray.length > 0) {
             Ext.Ajax.request({
-                url: './groupware/email/set.email.flag/format/json',
+                url: './groupware/emailItem/set.email.flag/format/json',
                 params: {
                     type : 'read',
                     json : Ext.encode(requestArray)
