@@ -60,9 +60,6 @@ com.conjoon.util.PreLoader = function() {
 
     var storeLoaded = function(store)
     {
-        store.un('load',          storeLoaded, com.conjoon.util.PreLoader);
-        store.un('exception',     storeLoaded, com.conjoon.util.PreLoader);
-
         storeCount--;
         if (storeCount == 0) {
             kernel.fireEvent('load');
@@ -79,9 +76,20 @@ com.conjoon.util.PreLoader = function() {
 
     var storeDestroyed = function(store)
     {
-        store.un('load', storeLoaded, com.conjoon.util.PreLoader);
+        store.un('load', _internLoad, com.conjoon.util.PreLoader);
         storeCount--;
         delete stores[Ext.StoreMgr.getKey(store)];
+    };
+
+    var _internException = function(store) {
+        store.un('load', _internLoad, com.conjoon.util.PreLoader);
+        storeLoaded(store);
+    };
+
+    var _internLoad = function(store) {
+         store.un('exception', _internException, com.conjoon.util.PreLoader);
+         storeLoaded(store);
+         kernel.fireEvent('storeload', store);
     };
 
     return {
@@ -146,12 +154,7 @@ com.conjoon.util.PreLoader = function() {
             store.on('exception', function(proxy, type, action, options, response, arg){
                 kernel.fireEvent('storeloadexception', store, response, options);
             }, preLoader,  {single : true});
-            store.on('load', function(store) {
-                kernel.fireEvent('storeload', store);
-            }, preLoader,  {single : true});
-
-
-            store.on('load', storeLoaded, preLoader);
+            store.on('load', _internLoad, preLoader,  {single : true});
 
             if (config.loadAfterStore) {
                 _loadsAfter.push({
@@ -161,7 +164,11 @@ com.conjoon.util.PreLoader = function() {
             }
 
             if (config.ignoreLoadException === true) {
-                store.on('exception', storeLoaded, preLoader, {single : true});
+                store.on(
+                    'exception',
+                    _internException.createDelegate(preLoader, [store]),
+                    preLoader, {single : true}
+                );
             } else if (typeof config.exceptionCallback == "function") {
                 store.on(
                     'exception',

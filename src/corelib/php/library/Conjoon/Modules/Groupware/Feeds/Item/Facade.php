@@ -368,7 +368,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
 
                 $insertedItems = array_merge($insertedItems, $fetched);
 
-                Conjoon_Log::log($accounts[$i]->name. " hase been updated with ".count($fetched)." items", Zend_Log::INFO);
+                Conjoon_Log::log($accounts[$i]->name. " has been updated with ".count($fetched)." items", Zend_Log::INFO);
 
             } catch (Exception $e) {
                 throw $e;
