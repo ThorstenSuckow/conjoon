@@ -53,6 +53,7 @@ class Groupware_FeedsAccountController extends Zend_Controller_Action {
      */
     public function addFeedAction()
     {
+        /*@REMOVE@*/
         if (!$this->_helper->connectionCheck()) {
 
             /**
@@ -70,6 +71,7 @@ class Groupware_FeedsAccountController extends Zend_Controller_Action {
 
             return;
         }
+        /*@REMOVE@*/
 
         /**
          * @see Conjoon_Modules_Groupware_Feeds_Account_Facade
@@ -162,6 +164,7 @@ class Groupware_FeedsAccountController extends Zend_Controller_Action {
      */
     public function isFeedAddressValidAction()
     {
+        /*@REMOVE@*/
         if (!$this->_helper->connectionCheck()) {
 
             /**
@@ -170,15 +173,11 @@ class Groupware_FeedsAccountController extends Zend_Controller_Action {
             require_once 'Conjoon/Error/Factory.php';
 
             $this->view->success    = false;
-            $this->view->error      = Conjoon_Error_Factory::createError(
-                "Unexpected connection failure while trying to validate feed uri. "
-                ."Please try again.",
-                Conjoon_Error::LEVEL_WARNING,
-                Conjoon_Error::DATA
-            )->getDto();
+            $this->view->error      = null;
 
             return;
         }
+        /*@REMOVE@*/
 
         /**
          * @see Conjoon_Modules_Groupware_Feeds_ImportHelper

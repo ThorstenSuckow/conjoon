@@ -207,6 +207,7 @@ require_once 'Conjoon/Modules/Default/User.php';
     // add helper namespace
     Zend_Controller_Action_HelperBroker::addPrefix('Conjoon_Controller_Action_Helper');
 
+    /*@REMOVE@*/
     // set the connection check default properties
     if ($config->application->connection_check->enabled) {
         $c =& $config->application->connection_check;
@@ -223,6 +224,7 @@ require_once 'Conjoon/Modules/Default/User.php';
             'timeout' => $c->timeout
         ));
     }
+    /*@REMOVE@*/
 
 // +----------------------------------------------------------------------------
 // | Set up Routing

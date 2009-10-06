@@ -96,6 +96,16 @@ class Service_TwitterController extends Zend_Controller_Action {
      */
     public function getRecentTweetsAction()
     {
+        /*@REMOVE@*/
+        if (!$this->_helper->connectionCheck()) {
+            $this->view->success = true;
+            $this->view->tweets  = array();
+            $this->view->error   = null;
+
+            return;
+        }
+        /*@REMOVE@*/
+
         /**
          * @see Conjoon_Error_Factory
          */

@@ -100,12 +100,14 @@
             unset($initialConfig['log']);
         }
 
+        /*@REMOVE@*/
         // check whether we need the application.connection options
         if (isset($initialConfig['application']) && !$initialConfig['application']['connection_check.enabled']) {
             unset($initialConfig['application']['connection_check.ip']);
             unset($initialConfig['application']['connection_check.timeout']);
             unset($initialConfig['application']['connection_check.port']);
         }
+        /*@REMOVE@*/
 
         // take care of default cache
         if (isset($initialConfig['cache'])) {

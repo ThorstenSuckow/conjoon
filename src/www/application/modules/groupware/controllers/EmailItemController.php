@@ -53,25 +53,16 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      */
     public function fetchEmailsAction()
     {
+        /*@REMOVE@*/
         if (!$this->_helper->connectionCheck()) {
-
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            $this->view->success    = false;
+            $this->view->success    = true;
             $this->view->totalCount = 0;
             $this->view->items      = array();
-            $this->view->error      = Conjoon_Error_Factory::createError(
-                "Unexpected connection failure while trying to receive new emails. "
-                ."Please try again.",
-                Conjoon_Error::LEVEL_WARNING,
-                Conjoon_Error::DATA
-            )->getDto();
+            $this->view->error      = null;
 
             return;
         }
+        /*@REMOVE@*/
 
         if (isset($_POST['accountId'])) {
             $accountId = (int)$_POST['accountId'];

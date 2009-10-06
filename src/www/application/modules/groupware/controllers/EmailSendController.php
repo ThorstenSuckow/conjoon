@@ -243,6 +243,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
      */
     public function bulkSendAction()
     {
+        /*@REMOVE@*/
         if (!$this->_helper->connectionCheck()) {
 
             /**
@@ -263,7 +264,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
             return;
         }
-
+        /*@REMOVE@*/
 
         $toSend = $_POST['ids'];
 

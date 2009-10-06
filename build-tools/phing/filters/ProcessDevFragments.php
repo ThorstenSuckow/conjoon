@@ -80,7 +80,7 @@ require_once 'phing/filters/ChainableReader.php';
  *
  * Removes everything that is in between
  *
- *  \/*@REMOVE@*\/
+ *  \/*@REMOVE@*\/ or ;@REMOVE@;
  *
  * Example:
  * <pre>
@@ -143,6 +143,12 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
         file_put_contents($file->getAbsolutePath(), $php);
         $output = preg_replace(
             "/\/\*@REMOVE@\*\/(.*?)\/\*@REMOVE@\*\//ims",
+            "",
+            file_get_contents($file->getAbsolutePath())
+        );
+
+        $output = preg_replace(
+            "/;@REMOVE@;(.*?);@REMOVE@;/ims",
             "",
             file_get_contents($file->getAbsolutePath())
         );
