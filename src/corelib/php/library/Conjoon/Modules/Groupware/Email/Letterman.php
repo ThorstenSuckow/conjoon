@@ -696,7 +696,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 try  {
                     $emailItem['from'] = $message->von;
                 } catch (Zend_Mail_Exception $e) {
-                        $emailItem['from'] = "-";
+                    $emailItem['from'] = "-";
                 }
             }
 
