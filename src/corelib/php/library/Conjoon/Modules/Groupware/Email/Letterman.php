@@ -693,7 +693,11 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 $emailItem['from'] = $message->from;
             } catch (Zend_Mail_Exception $e) {
                 // may be changed to localized header values by anti vir programs
-                $emailItem['from'] = $message->von;
+                try  {
+                    $emailItem['from'] = $message->von;
+                } catch (Zend_Mail_Exception $e) {
+                        $emailItem['from'] = "-";
+                }
             }
 
             if (!isset($emailItem['from'])) {
