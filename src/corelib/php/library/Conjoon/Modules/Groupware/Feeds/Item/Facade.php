@@ -109,9 +109,21 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
         require_once 'Conjoon/Modules/Groupware/Feeds/ImportHelper.php';
 
         // get the feeds metadata
-        $import = Conjoon_Modules_Groupware_Feeds_ImportHelper::importFeedItems(
-            $uri, $requestTimeout, $useReaderCache, $useConditionalGet
-        );
+        try {
+            $import = Conjoon_Modules_Groupware_Feeds_ImportHelper::importFeedItems(
+                $uri, $requestTimeout, $useReaderCache, $useConditionalGet
+            );
+        } catch (Zend_Http_Client_Exception $e) {
+
+            Conjoon_Log::log(
+                get_class($this)."::importAndAddFeedItems could not import "
+                . "feed items: \"".$e->getMessage()."\"", Zend_Log::INFO
+            );
+
+            // return an empty array, do not delete cache for the account and do not
+            // update last_updated timestamp!
+            return array();
+        }
 
         /**
          * @see Conjoon_Modules_Groupware_Feeds_Item_Filter_Item
