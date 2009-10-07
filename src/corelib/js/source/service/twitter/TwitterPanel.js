@@ -988,7 +988,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             'x-mask-loading'
         );
 
-        this.usersRecentTweets.un('click', this._onRecentTweetClick, this);
+        this.mun(this.usersRecentTweets, 'click', this._onRecentTweetClick, this);
+
         this.usersRecentTweets.setDisabled(true);
         this.getToolbar().setDisabled(true);
 
