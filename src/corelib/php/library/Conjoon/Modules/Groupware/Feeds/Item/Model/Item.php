@@ -249,7 +249,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
 
         $idList = implode(',', $feedIds);
 
-        $affected = $this->delete('groupware_feeds_accounts_id IN ('.$idList.')');
+        $affected = $this->delete('id IN ('.$idList.')');
 
         return $affected;
     }
