@@ -159,7 +159,7 @@ com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.D
 
         // replace all usernames referenced with an "@" with appropriate links
         var text = record.get("text").replace(
-            /@(.*?)(\.|\)|:|$|\s)/ig,
+            /@(.*?)(\.|\)|:|!|$|\s)/ig,
             '@<a class="screenName" href="#">$1</a>$2'
         );
 
