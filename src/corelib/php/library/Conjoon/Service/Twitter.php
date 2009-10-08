@@ -65,4 +65,26 @@ class Conjoon_Service_Twitter extends Zend_Service_Twitter {
         return new Zend_Rest_Client_Result($response->getBody());
     }
 
+    /**
+     * Show extended information on a user.
+     *
+     * This override is added due to http://framework.zend.com/issues/browse/ZF-8032
+     *
+     * @param  int|string $id User ID or name
+     * @throws Zend_Http_Client_Exception if HTTP request fails or times out
+     * @return Zend_Rest_Client_Result
+     */
+    public function userShow ($id)
+    {
+        $this->_init();
+
+        if (is_numeric($id)) {
+            $id = $this->_validInteger($id);
+        }
+
+        $path = '/users/show/' . $id . '.xml';
+        $response = $this->_get($path);
+        return new Zend_Rest_Client_Result($response->getBody());
+    }
+
 }

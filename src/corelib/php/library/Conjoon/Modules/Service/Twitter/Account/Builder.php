@@ -23,6 +23,11 @@ require_once 'Zend/Cache.php';
  */
 require_once 'Conjoon/Builder.php';
 
+/**
+ * @see Conjoon_Log
+ */
+require_once 'Conjoon/Log.php';
+
 
 class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
 
@@ -108,6 +113,11 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
                 $twitter->accountEndSession();
 
             } catch (Exception $e) {
+                Conjoon_Log::log(
+                    "Could not retrieve account information for twitter "
+                    . "account: \"".$e->getMessage()."\"",
+                    Zend_Log::INFO
+                );
                 // ignore
             }
 
