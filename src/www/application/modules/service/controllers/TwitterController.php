@@ -300,9 +300,12 @@ class Service_TwitterController extends Zend_Controller_Action {
         if ($statusId > 0) {
             $tweets = $twitter->statusShow($statusId);
         } else {
-            $tweets = $twitter->statusUserTimeline(array(
-                'id' => $userId
-            ));
+
+            $ps = is_numeric($userId)
+                  ? array('id'          => $userId)
+                  : array('screen_name' => $userId);
+
+            $tweets = $twitter->statusUserTimeline($ps);
         }
 
         $twitter->accountEndSession();

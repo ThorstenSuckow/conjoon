@@ -449,7 +449,14 @@ class Conjoon_Service_Twitter_Proxy  {
             array(), Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
-        $isFollowing = $this->friendshipExists($params['id']);
+
+        if (isset($params['id'])) {
+            $isFollowing = $this->friendshipExists($params['id']);
+        } else if (isset($params['screen_name'])) {
+                $isFollowing = $this->friendshipExists($params['screen_name']);
+        } else {
+            throw new Zend_Service_Twitter_Exception("Neither \"id\" nor \"screen_name\" was available.");
+        }
 
         if (!is_bool($isFollowing)) {
             return $isFollowing;
