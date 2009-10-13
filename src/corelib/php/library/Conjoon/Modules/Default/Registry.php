@@ -47,7 +47,7 @@ class Conjoon_Modules_Default_Registry {
             'service' => array(
                 'youtube' => array(
                     'chromeless' => array(
-                        'api-key' => "AI39si7YwEMBcpCOO8JzYSjB3WtaS2ODhBN-A4XAqVADfGWyK8-Nr9XwZzr_sdCnsKirffyPDBsvC0z7MdR2u0xeM4zLIDWLIQ"
+                        'api-key' => "AI39si45RiG5JYvA3RglrDhw4d7S91erkkKH2HWXjdfoaOm4Q4vDC5OYnn8sjoPDILyhZGbiJ_Eawt_dAruGg3RMkVInXCrjxg"
                     )
                 )
             ),
