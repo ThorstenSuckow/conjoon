@@ -1022,6 +1022,48 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.requestId = null;
     },
 
+    /**
+     * If there are accounts to be removed, the dialog will show a confirmation
+     * dialog and informs the user that all data will be removed entirely related
+     * with that account. If the user confirms, he will be redirected to the
+     * _saveConfiguration method which will take care of updating all the
+     * records.
+     *
+     * @param {Boolean} closeAfterSuccess Wether the dialog should be closed
+     * after an successfull update has been made
+     *
+     * @see _saveConfiguration
+     */
+    saveConfiguration : function(closeAfterSuccess)
+    {
+        var b = 0;
+        for (var i in this.deletedRecords) {
+            b++;
+            break;
+        }
+        if (b != 1) {
+            return this._saveConfiguration(closeAfterSuccess);
+        }
+
+        com.conjoon.SystemMessageManager.confirm(
+            new com.conjoon.SystemMessage({
+                title : com.conjoon.Gettext.gettext("Deleting email account(s) - please confirm"),
+                text  : com.conjoon.Gettext.gettext("You are about to delete one or more email account(s). When removing an email account, all related data - such as folders, filters and emails - will be deleted entirely without the chance of getting this data back. If you do not want to proceed, you can still cancel this operation, back up your data and then redo this operation.<br />Are you sure you want to proceed?"),
+                type  : com.conjoon.SystemMessage.TYPE_CONFIRM
+            }), {
+                fn : function(buttonText) {
+                    if (buttonText == 'yes') {
+                        return this._saveConfiguration(closeAfterSuccess);
+                    } else {
+                        this.rejectChanges();
+                    }
+                },
+                scope : this
+            }
+        );
+
+    },
+
 
     /**
      * Collects all modified and deleted records and sends them via AJAX
@@ -1030,7 +1072,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      * @param {Boolean} closeAfterSuccess Wether the dialog should be closed
      * after an successfull update has been made
      */
-    saveConfiguration : function(closeAfterSuccess)
+    _saveConfiguration : function(closeAfterSuccess)
     {
         // make sure the last selected record gets saved
         this.saveRecord();
