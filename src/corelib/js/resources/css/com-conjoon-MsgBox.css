@@ -194,10 +194,10 @@
 
 .com-conjoon-msgbox-question .ext-mb-question {
     background-image:url(../images/32x32/actions/messagebox-question.png);
+    height:60px;
 }
 
 .com-conjoon-msgbox-question .ext-mb-content {
-    height:60px;
     background:#F6F6F6;
     padding:4px;
     overflow:auto;
