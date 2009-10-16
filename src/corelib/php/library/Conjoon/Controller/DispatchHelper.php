@@ -168,11 +168,14 @@ class Conjoon_Controller_DispatchHelper {
             // a single request, but made with Ext.Direct-API. Get the latest request
             // object of the front controller
             $request = Zend_Controller_Front::getInstance()->getRequest();
-            $params  = $request->getParam($config['extParameter']);
-            $exceptions['tid']    = $params['tid'];
-            $exceptions['method'] = $params['method'];
-            $exceptions['action'] = $params['action'];
-            $exceptions['type']   = 'exception';
+            $params  = $request->getParam($extParameter);
+            $org = $exceptions;
+            $exceptions = array();
+            $exceptions['message'] = $org;
+            $exceptions['tid']     = $params['tid'];
+            $exceptions['method']  = $params['method'];
+            $exceptions['action']  = $params['action'];
+            $exceptions['type']    = 'exception';
 
             return $exceptions;
         }
