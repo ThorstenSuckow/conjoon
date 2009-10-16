@@ -258,7 +258,9 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
         }
 
         for ($i = 0; $i < $numToDelete; $i++) {
-            $affected = $model->deleteAccount($toDelete[$i]);
+            $affected = $model->deleteAccount(
+                $toDelete[$i], $this->_helper->registryAccess()->getUserId()
+            );
             if ($affected == 0) {
                 $deletedFailed[] = $toDelete[$i];
             }

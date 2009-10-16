@@ -339,3 +339,18 @@ ALTER TABLE `groupware_feeds_items` ADD `author_uri` TEXT NULL AFTER `author` ;
 ALTER TABLE `groupware_feeds_items` ADD `author_email` TEXT NULL AFTER `author_uri` ;
 
 ALTER TABLE `groupware_feeds_accounts` ADD `is_image_enabled` BOOL NOT NULL DEFAULT '0' AFTER `request_timeout` ;
+
+
+-- --------------------------------------------------------
+
+--
+-- `groupware_email_folders_users`
+--
+
+CREATE TABLE `intrabuild`.`groupware_email_folders_users` (
+`groupware_email_folders_id` INT UNSIGNED NOT NULL ,
+`users_id` INT UNSIGNED NOT NULL ,
+`relationship` ENUM( 'owner' ) NOT NULL
+) ENGINE = MYISAM;
+
+ALTER TABLE `groupware_email_folders_users` ADD PRIMARY KEY ( `groupware_email_folders_id` , `users_id` );

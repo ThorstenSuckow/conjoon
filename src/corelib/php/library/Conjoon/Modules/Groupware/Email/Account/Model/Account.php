@@ -93,26 +93,38 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
     }
 
     /**
-     * Updates the is_deleted field in the table to "1" to indicate that this account
-     * was deleted and should not be used anymore.
+     * Completely removes the account and all associated data - that means
+     * that all information in folders_accounts will be removed, too.
+     *
+     * @param integer $accountId
+     * @param integer $userId
      *
      * @return integer The number of accounts deleted.
      */
-    public function deleteAccount($id)
+    public function deleteAccount($accountId, $userId)
     {
-        $id = (int)$id;
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
 
-        if ($id <= 0) {
+        if ($accountId <= 0 || $userId <= 0) {
             return 0;
         }
 
-        $where    = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
-        $affected = $this->update(array(
-            'is_standard' => 0,
-            'is_deleted'  => 1
-        ), $where);
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
 
-        return $affected;
+        $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
+
+        // delete the account/folder map here
+        $foldersAccounts->deleteForAccountId($accountId);
+
+        $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
+        $deleted = $this->delete($where);
+
+
+        return $deleted;
     }
 
     /**
@@ -184,29 +196,8 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
 
         $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
-        $folderIds   = $folderModel->getFoldersForAccountsRoot($userId);
 
-        if (empty($folderIds)) {
-            // user creates his very first email account.
-            // create base folder hierarchy and map them to the
-            // account later on
-            $folderIds = $folderModel->addAccountsRootBaseHierarchy();
-        }
-
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
-        $foldersAccountsModel = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
-
-        // map all existing folders from the accounts_root hierarchy to the new account
-        for ($i = 0, $len = count($folderIds); $i < $len; $i++) {
-            $foldersAccountsModel->insert(array(
-                'groupware_email_folders_id'  => $folderIds[$i],
-                'groupware_email_accounts_id' => $id
-            ));
-        }
+        $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
 
         return $id;
     }
