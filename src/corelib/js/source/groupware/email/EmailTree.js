@@ -1245,7 +1245,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      */
     _onAccountStoreAdd : function()
     {
-        if (this.root.firstChild == null) {
+        if (this.root.firstChild == null && this.rendered) {
             this.root.reload();
         }
 
