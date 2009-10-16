@@ -347,10 +347,9 @@ ALTER TABLE `groupware_feeds_accounts` ADD `is_image_enabled` BOOL NOT NULL DEFA
 -- `groupware_email_folders_users`
 --
 
-CREATE TABLE `intrabuild`.`groupware_email_folders_users` (
+CREATE TABLE IF NOT EXISTS `groupware_email_folders_users` (
 `groupware_email_folders_id` INT UNSIGNED NOT NULL ,
 `users_id` INT UNSIGNED NOT NULL ,
-`relationship` ENUM( 'owner' ) NOT NULL
+`relationship` ENUM( 'owner' ) NOT NULL,
+ PRIMARY KEY ( `groupware_email_folders_id` , `users_id` )
 ) ENGINE = MYISAM;
-
-ALTER TABLE `groupware_email_folders_users` ADD PRIMARY KEY ( `groupware_email_folders_id` , `users_id` );
