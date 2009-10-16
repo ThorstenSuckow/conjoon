@@ -31,7 +31,7 @@ com.conjoon.service.twitter.data.AccountStore = function() {
         return new Ext.data.Store({
             autoLoad : false,
             storeId  : Ext.id(),
-            url      : './service/twitter/get.accounts/format/json',
+            url      : './service/twitterAccount/get.accounts/format/json',
             reader : new Ext.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'

@@ -37,7 +37,6 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         $conjoonContext->addActionContext('get.recent.tweets',       self::CONTEXT_JSON)
                        ->addActionContext('get.friends',             self::CONTEXT_JSON)
-                       ->addActionContext('get.accounts',            self::CONTEXT_JSON)
                        ->addActionContext('send.update',             self::CONTEXT_JSON)
                        ->addActionContext('delete.tweet',            self::CONTEXT_JSON)
                        ->addActionContext('favorite.tweet',          self::CONTEXT_JSON)
@@ -45,48 +44,6 @@ class Service_TwitterController extends Zend_Controller_Action {
                        ->addActionContext('get.users.recent.tweets', self::CONTEXT_JSON)
                        ->initContext();
     }
-
-
-    /**
-     * Sends account informations to the client.
-     * Passwords will be masked. This action will also try to load
-     * the user information for each account from the Twitter Service.
-     * If this fails, the "twitter*" properties of the data which is to be
-     * send to the client will be empty.
-     *
-     */
-    public function getAccountsAction()
-    {
-        /**
-         * @todo refactor when facade gets created, return list from server
-         */
-
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        $user   = Zend_Registry::get(
-            Conjoon_Keys::REGISTRY_AUTH_OBJECT
-        )->getIdentity();
-
-        $userId = $user->getId();
-
-        /**
-         * @see Conjoon_Builder_Factory
-         */
-        require_once 'Conjoon/Builder/Factory.php';
-
-        $data = Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_TWITTER_ACCOUNTS,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
-        )->get(array('userId' => $userId));
-
-        $this->view->success  = true;
-        $this->view->accounts = $data;
-        $this->view->error    = null;
-    }
-
 
     /**
      * Sends a list of recent tweets for the specified account to the client.
