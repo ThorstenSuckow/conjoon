@@ -125,23 +125,21 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             }
         });
 
-        var actionDecorator = com.conjoon.groupware.email.decorator.AccountActionComp;
-
         /**
          * The top toolbar for the tree panel
          * @param {Ext.Toolbar}
          */
-        this.tbar = [actionDecorator.decorate(new Ext.Toolbar.Button({
+        this.tbar = [new Ext.Toolbar.Button({
             iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-expandButton-icon',
             tooltip : com.conjoon.Gettext.gettext("Show all folders"),
             handler : this._onExpandAllClick,
             scope   : this
-          })),'-', actionDecorator.decorate(new Ext.Toolbar.Button({
+          }),'-', new Ext.Toolbar.Button({
             iconCls : 'com-conjoon-groupware-email-EmailTree-toolbar-collapseButton-icon',
             tooltip : com.conjoon.Gettext.gettext("Hide all folders"),
             handler : function(){ this.root.collapse(true); },
             scope   : this
-        }))];
+        })];
 
         Ext.apply(this, {
             bodyStyle       : 'background-color:#FFFFFF',
