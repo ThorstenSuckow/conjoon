@@ -288,7 +288,12 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     validateRecord : function (record) {
         var key,
             pickerValue,
-            val = record.get(this.dataIndex).clearTime(true).getTime();
+            val = record.get(this.dataIndex);
+            
+        if(!Ext.isDate(val)){
+            return false;
+        }
+        val = val.clearTime(true).getTime();
         
         for (key in this.fields) {
             if (this.fields[key].checked) {

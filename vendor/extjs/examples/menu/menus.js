@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -103,6 +103,7 @@ Ext.onReady(function(){
             iconCls: 'user',
             menu: {
                 xtype: 'menu',
+                plain: true,
                 items: {
                     xtype: 'buttongroup',
                     title: 'User options',

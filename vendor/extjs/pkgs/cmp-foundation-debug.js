@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -6983,12 +6983,17 @@ Ext.layout.TableLayout = Ext.extend(Ext.layout.ContainerLayout, {
         if(c && !c.rendered){
             c.render(this.getNextCell(c));
             this.configureItem(c, position);
+        }else if(c && !this.isValidParent(c, target)){
+            var container = this.getNextCell(c);
+            container.insertBefore(c.getDomPositionEl().dom, null);
+            c.container = Ext.get(container);
+            this.configureItem(c, position);
         }
     },
 
     // private
     isValidParent : function(c, target){
-        return true;
+        return c.getDomPositionEl().up('table', 5).dom.parentNode === (target.dom || target);
     }
 
     /**
@@ -7136,6 +7141,13 @@ Ext.layout.BoxLayout = Ext.extend(Ext.layout.ContainerLayout, {
     extraCls : 'x-box-item',
     ctCls : 'x-box-layout-ct',
     innerCls : 'x-box-inner',
+    
+    constructor : function(config){
+        Ext.layout.BoxLayout.superclass.constructor.call(this, config);
+        if(Ext.isString(this.defaultMargins)){
+            this.defaultMargins = this.parseMargins(this.defaultMargins);
+        }
+    },
 
     // private
     isValidParent : function(c, target){
@@ -7159,7 +7171,7 @@ Ext.layout.BoxLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
     // private
     renderItem : function(c){
-        if(typeof c.margins == 'string'){
+        if(Ext.isString(c.margins)){
             c.margins = this.parseMargins(c.margins);
         }else if(!c.margins){
             c.margins = this.defaultMargins;
@@ -8564,6 +8576,13 @@ new Ext.Panel({
             if(!this.footer){
                 this.bwrap.dom.lastChild.className += ' x-panel-nofooter';
             }
+            /*
+             * Store a reference to this element so:
+             * a) We aren't looking it up all the time
+             * b) The last element is reported incorrectly when using a loadmask
+             */
+            this.ft = Ext.get(this.bwrap.dom.lastChild);
+            this.mc = Ext.get(this.bwrap.dom.firstChild.firstChild.firstChild);
         }else{
             this.createElement('header', d);
             this.createElement('bwrap', d);
@@ -9210,13 +9229,12 @@ new Ext.Panel({
      * @return {Number} The frame width
      */
     getFrameWidth : function(){
-        var w = this.el.getFrameWidth('lr')+this.bwrap.getFrameWidth('lr');
+        var w = this.el.getFrameWidth('lr') + this.bwrap.getFrameWidth('lr');
 
         if(this.frame){
             var l = this.bwrap.dom.firstChild;
             w += (Ext.fly(l).getFrameWidth('l') + Ext.fly(l.firstChild).getFrameWidth('r'));
-            var mc = this.bwrap.dom.firstChild.firstChild.firstChild;
-            w += Ext.fly(mc).getFrameWidth('lr');
+            w += this.mc.getFrameWidth('lr');
         }
         return w;
     },
@@ -9227,16 +9245,12 @@ new Ext.Panel({
      * @return {Number} The frame height
      */
     getFrameHeight : function(){
-        var h  = this.el.getFrameWidth('tb')+this.bwrap.getFrameWidth('tb');
+        var h  = this.el.getFrameWidth('tb') + this.bwrap.getFrameWidth('tb');
         h += (this.tbar ? this.tbar.getHeight() : 0) +
              (this.bbar ? this.bbar.getHeight() : 0);
 
         if(this.frame){
-            var hd = this.el.dom.firstChild;
-            var ft = this.bwrap.dom.lastChild;
-            h += (hd.offsetHeight + ft.offsetHeight);
-            var mc = this.bwrap.dom.firstChild.firstChild.firstChild;
-            h += Ext.fly(mc).getFrameWidth('tb');
+            h += this.el.dom.firstChild.offsetHeight + this.ft.dom.offsetHeight + this.mc.getFrameWidth('tb');
         }else{
             h += (this.header ? this.header.getHeight() : 0) +
                 (this.footer ? this.footer.getHeight() : 0);
@@ -9338,6 +9352,8 @@ panel.load({
             }
         }
         Ext.Element.uncache(
+            this.ft,
+            this.mc,
             this.header,
             this.tbar,
             this.bbar,
@@ -10182,9 +10198,7 @@ Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
      */
     setValue : function(value){
         this.value = value.clearTime(true);
-        if(this.el){
-            this.update(this.value);
-        }
+        this.update(this.value);
     },
 
     /**
@@ -10197,9 +10211,7 @@ Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
 
     // private
     focus : function(){
-        if(this.el){
-            this.update(this.activeDate);
-        }
+        this.update(this.activeDate);
     },
     
     // private
@@ -10568,140 +10580,142 @@ Ext.DatePicker = Ext.extend(Ext.BoxComponent, {
 
     // private
     update : function(date, forceRefresh){
-        var vd = this.activeDate, vis = this.isVisible();
-        this.activeDate = date;
-        if(!forceRefresh && vd && this.el){
-            var t = date.getTime();
-            if(vd.getMonth() == date.getMonth() && vd.getFullYear() == date.getFullYear()){
-                this.cells.removeClass('x-date-selected');
-                this.cells.each(function(c){
-                   if(c.dom.firstChild.dateValue == t){
-                       c.addClass('x-date-selected');
-                       if(vis){
-                           Ext.fly(c.dom.firstChild).focus(50);
-                       }
-                       return false;
-                   }
-                });
-                return;
-            }
-        }
-        var days = date.getDaysInMonth(),
-            firstOfMonth = date.getFirstDateOfMonth(),
-            startingPos = firstOfMonth.getDay()-this.startDay;
-
-        if(startingPos < 0){
-            startingPos += 7;
-        }
-        days += startingPos;
-
-        var pm = date.add('mo', -1),
-            prevStart = pm.getDaysInMonth()-startingPos,
-            cells = this.cells.elements,
-            textEls = this.textNodes,
-            // convert everything to numbers so it's fast
-            day = 86400000,
-            d = (new Date(pm.getFullYear(), pm.getMonth(), prevStart)).clearTime(),
-            today = new Date().clearTime().getTime(),
-            sel = date.clearTime(true).getTime(),
-            min = this.minDate ? this.minDate.clearTime(true) : Number.NEGATIVE_INFINITY,
-            max = this.maxDate ? this.maxDate.clearTime(true) : Number.POSITIVE_INFINITY,
-            ddMatch = this.disabledDatesRE,
-            ddText = this.disabledDatesText,
-            ddays = this.disabledDays ? this.disabledDays.join('') : false,
-            ddaysText = this.disabledDaysText,
-            format = this.format;
-
-        if(this.showToday){
-            var td = new Date().clearTime(),
-                disable = (td < min || td > max ||
-                (ddMatch && format && ddMatch.test(td.dateFormat(format))) ||
-                (ddays && ddays.indexOf(td.getDay()) != -1));
-
-            if(!this.disabled){
-                this.todayBtn.setDisabled(disable);
-                this.todayKeyListener[disable ? 'disable' : 'enable']();
-            }
-        }
-
-        var setCellClass = function(cal, cell){
-            cell.title = '';
-            var t = d.getTime();
-            cell.firstChild.dateValue = t;
-            if(t == today){
-                cell.className += ' x-date-today';
-                cell.title = cal.todayText;
-            }
-            if(t == sel){
-                cell.className += ' x-date-selected';
-                if(vis){
-                    Ext.fly(cell.firstChild).focus(50);
-                }
-            }
-            // disabling
-            if(t < min) {
-                cell.className = ' x-date-disabled';
-                cell.title = cal.minText;
-                return;
-            }
-            if(t > max) {
-                cell.className = ' x-date-disabled';
-                cell.title = cal.maxText;
-                return;
-            }
-            if(ddays){
-                if(ddays.indexOf(d.getDay()) != -1){
-                    cell.title = ddaysText;
-                    cell.className = ' x-date-disabled';
-                }
-            }
-            if(ddMatch && format){
-                var fvalue = d.dateFormat(format);
-                if(ddMatch.test(fvalue)){
-                    cell.title = ddText.replace('%0', fvalue);
-                    cell.className = ' x-date-disabled';
-                }
-            }
-        };
-
-        var i = 0;
-        for(; i < startingPos; i++) {
-            textEls[i].innerHTML = (++prevStart);
-            d.setDate(d.getDate()+1);
-            cells[i].className = 'x-date-prevday';
-            setCellClass(this, cells[i]);
-        }
-        for(; i < days; i++){
-            var intDay = i - startingPos + 1;
-            textEls[i].innerHTML = (intDay);
-            d.setDate(d.getDate()+1);
-            cells[i].className = 'x-date-active';
-            setCellClass(this, cells[i]);
-        }
-        var extraDays = 0;
-        for(; i < 42; i++) {
-             textEls[i].innerHTML = (++extraDays);
-             d.setDate(d.getDate()+1);
-             cells[i].className = 'x-date-nextday';
-             setCellClass(this, cells[i]);
-        }
-
-        this.mbtn.setText(this.monthNames[date.getMonth()] + ' ' + date.getFullYear());
-
-        if(!this.internalRender){
-            var main = this.el.dom.firstChild,
-                w = main.offsetWidth;
-            this.el.setWidth(w + this.el.getBorderWidth('lr'));
-            Ext.fly(main).setWidth(w);
-            this.internalRender = true;
-            // opera does not respect the auto grow header center column
-            // then, after it gets a width opera refuses to recalculate
-            // without a second pass
-            if(Ext.isOpera && !this.secondPass){
-                main.rows[0].cells[1].style.width = (w - (main.rows[0].cells[0].offsetWidth+main.rows[0].cells[2].offsetWidth)) + 'px';
-                this.secondPass = true;
-                this.update.defer(10, this, [date]);
-            }
+        if(this.rendered){
+	        var vd = this.activeDate, vis = this.isVisible();
+	        this.activeDate = date;
+	        if(!forceRefresh && vd && this.el){
+	            var t = date.getTime();
+	            if(vd.getMonth() == date.getMonth() && vd.getFullYear() == date.getFullYear()){
+	                this.cells.removeClass('x-date-selected');
+	                this.cells.each(function(c){
+	                   if(c.dom.firstChild.dateValue == t){
+	                       c.addClass('x-date-selected');
+	                       if(vis){
+	                           Ext.fly(c.dom.firstChild).focus(50);
+	                       }
+	                       return false;
+	                   }
+	                });
+	                return;
+	            }
+	        }
+	        var days = date.getDaysInMonth(),
+	            firstOfMonth = date.getFirstDateOfMonth(),
+	            startingPos = firstOfMonth.getDay()-this.startDay;
+	
+	        if(startingPos < 0){
+	            startingPos += 7;
+	        }
+	        days += startingPos;
+	
+	        var pm = date.add('mo', -1),
+	            prevStart = pm.getDaysInMonth()-startingPos,
+	            cells = this.cells.elements,
+	            textEls = this.textNodes,
+	            // convert everything to numbers so it's fast
+	            day = 86400000,
+	            d = (new Date(pm.getFullYear(), pm.getMonth(), prevStart)).clearTime(),
+	            today = new Date().clearTime().getTime(),
+	            sel = date.clearTime(true).getTime(),
+	            min = this.minDate ? this.minDate.clearTime(true) : Number.NEGATIVE_INFINITY,
+	            max = this.maxDate ? this.maxDate.clearTime(true) : Number.POSITIVE_INFINITY,
+	            ddMatch = this.disabledDatesRE,
+	            ddText = this.disabledDatesText,
+	            ddays = this.disabledDays ? this.disabledDays.join('') : false,
+	            ddaysText = this.disabledDaysText,
+	            format = this.format;
+	
+	        if(this.showToday){
+	            var td = new Date().clearTime(),
+	                disable = (td < min || td > max ||
+	                (ddMatch && format && ddMatch.test(td.dateFormat(format))) ||
+	                (ddays && ddays.indexOf(td.getDay()) != -1));
+	
+	            if(!this.disabled){
+	                this.todayBtn.setDisabled(disable);
+	                this.todayKeyListener[disable ? 'disable' : 'enable']();
+	            }
+	        }
+	
+	        var setCellClass = function(cal, cell){
+	            cell.title = '';
+	            var t = d.getTime();
+	            cell.firstChild.dateValue = t;
+	            if(t == today){
+	                cell.className += ' x-date-today';
+	                cell.title = cal.todayText;
+	            }
+	            if(t == sel){
+	                cell.className += ' x-date-selected';
+	                if(vis){
+	                    Ext.fly(cell.firstChild).focus(50);
+	                }
+	            }
+	            // disabling
+	            if(t < min) {
+	                cell.className = ' x-date-disabled';
+	                cell.title = cal.minText;
+	                return;
+	            }
+	            if(t > max) {
+	                cell.className = ' x-date-disabled';
+	                cell.title = cal.maxText;
+	                return;
+	            }
+	            if(ddays){
+	                if(ddays.indexOf(d.getDay()) != -1){
+	                    cell.title = ddaysText;
+	                    cell.className = ' x-date-disabled';
+	                }
+	            }
+	            if(ddMatch && format){
+	                var fvalue = d.dateFormat(format);
+	                if(ddMatch.test(fvalue)){
+	                    cell.title = ddText.replace('%0', fvalue);
+	                    cell.className = ' x-date-disabled';
+	                }
+	            }
+	        };
+	
+	        var i = 0;
+	        for(; i < startingPos; i++) {
+	            textEls[i].innerHTML = (++prevStart);
+	            d.setDate(d.getDate()+1);
+	            cells[i].className = 'x-date-prevday';
+	            setCellClass(this, cells[i]);
+	        }
+	        for(; i < days; i++){
+	            var intDay = i - startingPos + 1;
+	            textEls[i].innerHTML = (intDay);
+	            d.setDate(d.getDate()+1);
+	            cells[i].className = 'x-date-active';
+	            setCellClass(this, cells[i]);
+	        }
+	        var extraDays = 0;
+	        for(; i < 42; i++) {
+	             textEls[i].innerHTML = (++extraDays);
+	             d.setDate(d.getDate()+1);
+	             cells[i].className = 'x-date-nextday';
+	             setCellClass(this, cells[i]);
+	        }
+	
+	        this.mbtn.setText(this.monthNames[date.getMonth()] + ' ' + date.getFullYear());
+	
+	        if(!this.internalRender){
+	            var main = this.el.dom.firstChild,
+	                w = main.offsetWidth;
+	            this.el.setWidth(w + this.el.getBorderWidth('lr'));
+	            Ext.fly(main).setWidth(w);
+	            this.internalRender = true;
+	            // opera does not respect the auto grow header center column
+	            // then, after it gets a width opera refuses to recalculate
+	            // without a second pass
+	            if(Ext.isOpera && !this.secondPass){
+	                main.rows[0].cells[1].style.width = (w - (main.rows[0].cells[0].offsetWidth+main.rows[0].cells[2].offsetWidth)) + 'px';
+	                this.secondPass = true;
+	                this.update.defer(10, this, [date]);
+	            }
+	        }
         }
     },
 

@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -416,6 +416,10 @@ myGrid.on('render', function(grid) {
         Ext.ToolTip.superclass.showAt.call(this, xy);
         if(this.dismissDelay && this.autoHide !== false){
             this.dismissTimer = this.hide.defer(this.dismissDelay, this);
+        }
+        if(this.anchor && !this.anchorEl.isVisible()){
+            this.syncAnchor();
+            this.anchorEl.show();
         }
     },
 

@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -43,6 +43,8 @@
      * False to continue showing the menu after a color is selected, defaults to true.
      */
     hideOnClick : true,
+    
+    cls : 'x-color-menu',
     
     /** 
      * @cfg {String} paletteId

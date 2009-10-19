@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -43,6 +43,10 @@
 
 .x-color-palette a:hover, .x-color-palette a.x-color-palette-sel {
     border-color:#8bb8f3;
+    background-color: #eaeaea;
+}
+
+.x-color-palette em:hover, .x-color-palette span:hover{   
     background-color: #eaeaea;
 }
 
@@ -251,7 +255,7 @@ ul.x-tab-strip-bottom{
 	border-color:#c30;
 }
 
-.ext-safari .x-form-invalid{
+.ext-webkit .x-form-invalid{
 	background-color:#fee;
 	border-color:#ff7870;
 }
@@ -283,7 +287,7 @@ ul.x-tab-strip-bottom{
     font:normal 11px arial, tahoma, helvetica, sans-serif;
 }
 
-.ext-safari .x-small-editor .x-form-field {
+.ext-webkit .x-small-editor .x-form-field {
     font:normal 12px arial, tahoma, helvetica, sans-serif;
 }
 

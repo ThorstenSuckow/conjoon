@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -490,6 +490,7 @@ Ext.extend(Ext.grid.RowSelectionModel, Ext.grid.AbstractSelectionModel,  {
         var k = e.getKey(), 
             newCell, 
             g = this.grid, 
+            last = g.lastEdit,
             ed = g.activeEditor,
             ae, last, r, c;
         var shift = e.shiftKey;
@@ -503,7 +504,6 @@ Ext.extend(Ext.grid.RowSelectionModel, Ext.grid.AbstractSelectionModel,  {
             }
         }else if(k == e.ENTER){
             if(this.moveEditorOnEnter !== false){
-                last = g.lastEdit;
                 if(shift){
                     newCell = g.walkCells(last.row - 1, last.col, -1, this.acceptsNav, this);
                 }else{
@@ -515,8 +515,9 @@ Ext.extend(Ext.grid.RowSelectionModel, Ext.grid.AbstractSelectionModel,  {
             r = newCell[0];
             c = newCell[1];
 
-            // single selection only supported with row selection and editor
-            this.selectRow(r, true); // *** highlight newly-selected cell and update selection
+            if(last.row != r){
+                this.selectRow(r); // *** highlight newly-selected cell and update selection
+            }
 
             if(g.isEditor && g.editing){ // *** handle tabbing while editorgrid is in edit mode
                 ae = g.activeEditor;

@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -2271,7 +2271,12 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     validateRecord : function (record) {
         var key,
             pickerValue,
-            val = record.get(this.dataIndex).clearTime(true).getTime();
+            val = record.get(this.dataIndex);
+            
+        if(!Ext.isDate(val)){
+            return false;
+        }
+        val = val.clearTime(true).getTime();
         
         for (key in this.fields) {
             if (this.fields[key].checked) {
@@ -3729,7 +3734,7 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
         
         this.on('beforeadd', function(gtp, item, index){
             this.initGroup(item, index);
-        });		     
+        });          
     },
     
     initEvents : function() {
@@ -3738,7 +3743,6 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
         
     onRender: function(ct, position){
         Ext.TabPanel.superclass.onRender.call(this, ct, position);
-
         if(this.plain){
             var pos = this.tabPosition == 'top' ? 'header' : 'footer';
             this[pos].addClass('x-tab-panel-'+pos+'-plain');
@@ -3752,11 +3756,11 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
         var beforeEl = (this.tabPosition=='bottom' ? this.stripWrap : null);
         this.strip = new Ext.Element(this.stripWrap.dom.firstChild);
 
-		this.header.addClass('x-grouptabs-panel-header');
-		this.bwrap.addClass('x-grouptabs-bwrap');
+        this.header.addClass('x-grouptabs-panel-header');
+        this.bwrap.addClass('x-grouptabs-bwrap');
         this.body.addClass('x-tab-panel-body-'+this.tabPosition + ' x-grouptabs-panel-body');
 
-        if (!this.itemTpl) {
+        if (!this.groupTpl) {
             var tt = new Ext.Template(
                 '<li class="{cls}" id="{id}">', 
                 '<a class="x-grouptabs-expand" onclick="return false;"></a>', 
@@ -3766,9 +3770,8 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
             );
             tt.disableFormats = true;
             tt.compile();
-            Ext.ux.GroupTabPanel.prototype.itemTpl = tt;
+            Ext.ux.GroupTabPanel.prototype.groupTpl = tt;
         }
-
         this.items.each(this.initGroup, this);
     },
     
@@ -3794,8 +3797,8 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
         
     // private
     findTargets: function(e){
-        var item = null;
-        var itemEl = e.getTarget('li', this.strip);
+        var item = null,
+            itemEl = e.getTarget('li', this.strip);
         if (itemEl) {
             item = this.findById(itemEl.id.split(this.idDelimiter)[1]);
             if (item.disabled) {
@@ -3846,7 +3849,7 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
             groupEl = this.getGroupEl(groupEl);
         }        
         Ext.fly(groupEl).toggleClass('x-grouptabs-expanded');
-		this.syncTabJoint();
+        this.syncTabJoint();
     },    
     
     syncTabJoint: function(groupEl){
@@ -3857,7 +3860,7 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
         groupEl = groupEl || this.getGroupEl(this.activeGroup);
         if(groupEl) {
             this.tabJoint.setHeight(Ext.fly(groupEl).getHeight() - 2); 
-			
+            
             var y = Ext.isGecko2 ? 0 : 1;
             if (this.tabPosition == 'left'){
                 this.tabJoint.alignTo(groupEl, 'tl-tr', [-2,y]);
@@ -3888,18 +3891,17 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
     },
     
     initGroup: function(group, index){
-        var before = this.strip.dom.childNodes[index];        
-        var p = this.getTemplateArgs(group);
+        var before = this.strip.dom.childNodes[index],   
+            p = this.getTemplateArgs(group);
         if (index === 0) {
             p.cls += ' x-tab-first';
         }
         p.cls += ' x-grouptabs-main';
         p.text = group.getMainItem().title;
         
-        var el = before ? this.itemTpl.insertBefore(before, p) : this.itemTpl.append(this.strip, p);
-        
-        var tl = this.createCorner(el, 'top-' + this.tabPosition);
-        var bl = this.createCorner(el, 'bottom-' + this.tabPosition);
+        var el = before ? this.groupTpl.insertBefore(before, p) : this.groupTpl.append(this.strip, p),
+            tl = this.createCorner(el, 'top-' + this.tabPosition),
+            bl = this.createCorner(el, 'bottom-' + this.tabPosition);
 
         if (group.expanded) {
             this.expandGroup(el);
@@ -3912,8 +3914,11 @@ Ext.ux.GroupTabPanel = Ext.extend(Ext.TabPanel, {
             tl.setTop('-5px');
         }
 
-        this.mon(group, 'changemainitem', this.onGroupChangeMainItem, this);
-        this.mon(group, 'beforetabchange', this.onGroupBeforeTabChange, this);
+        this.mon(group, {
+            scope: this,
+            changemainitem: this.onGroupChangeMainItem,
+            beforetabchange: this.onGroupBeforeTabChange
+        });
     },
     
     setActiveGroup : function(group) {
@@ -4451,9 +4456,9 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
             height: this.height,
             width: this.width,
             style: "padding:0;",
-            tbar: this.tbar,
-            bodyStyle: 'overflow: auto;'
+            tbar: this.tbar
         });
+        fs.body.addClass('ux-mselect');
 
         this.view = new Ext.ListView({
             multiSelect: true,
@@ -5284,41 +5289,30 @@ Ext.ux.ProgressBarPager  = Ext.extend(Object, {
 	},
 	//public
 	init : function (parent) {
-		
-		if(parent.displayInfo){
-			this.parent = parent;
-			var ind  = parent.items.indexOf(parent.displayItem);
-			parent.remove(parent.displayItem, true);
-			this.progressBar = new Ext.ProgressBar({
-				text    : this.defaultText,
-				width   : this.progBarWidth,
-				animate :  this.defaultAnimCfg
-			});					
-		   
-			parent.displayItem = this.progressBar;
-			
-			parent.add(parent.displayItem);	
-			parent.doLayout();
-			Ext.apply(parent, this.parentOverrides);		
-			
-			this.progressBar.on('render', function(pb) {
-				pb.el.applyStyles('cursor:pointer');
-
-				pb.el.on('click', this.handleProgressBarClick, this);
-			}, this);
-			
-		
-			// Remove the click handler from the 
-			this.progressBar.on({
-				scope         : this,
-				beforeDestroy : function() {
-					this.progressBar.el.un('click', this.handleProgressBarClick, this);	
-				}
-			});	
-						
-		}
-		  
-	},
+        
+        if(parent.displayInfo){
+            this.parent = parent;
+            var ind  = parent.items.indexOf(parent.displayItem);
+            parent.remove(parent.displayItem, true);
+            this.progressBar = new Ext.ProgressBar({
+                text    : this.defaultText,
+                width   : this.progBarWidth,
+                animate :  this.defaultAnimCfg
+            });                 
+           
+            parent.displayItem = this.progressBar;
+            
+            parent.add(parent.displayItem); 
+            parent.doLayout();
+            Ext.apply(parent, this.parentOverrides);        
+            
+            this.progressBar.on('render', function(pb) {
+                pb.mon(pb.getEl().applyStyles('cursor:pointer'), 'click', this.handleProgressBarClick, this);
+            }, this, {single: true});
+                        
+        }
+          
+    },
 	// private
 	// This method handles the click for the progress bar
 	handleProgressBarClick : function(e){
@@ -5387,6 +5381,11 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
     monitorValid: true,
     focusDelay: 250,
     errorSummary: true,
+    
+    saveText: 'Save',
+    cancelText: 'Cancel',
+    commitChangesText: 'You need to commit or cancel your changes',
+    errorText: 'Errors',
 
     defaults: {
         normalWidth: true
@@ -5456,7 +5455,8 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             columnresize: this.verifyLayout,
             columnmove: this.refreshFields,
             reconfigure: this.refreshFields,
-	    destroy : this.destroy,
+            beforedestroy : this.beforedestroy,
+            destroy : this.destroy,
             bodyscroll: {
                 buffer: 250,
                 fn: this.positionButtons
@@ -5464,6 +5464,12 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         });
         grid.getColumnModel().on('hiddenchange', this.verifyLayout, this, {delay:1});
         grid.getView().on('refresh', this.stopEditing.createDelegate(this, []));
+    },
+
+    beforedestroy: function() {
+        this.grid.getStore().un('remove', this.onStoreRemove, this);
+        this.stopEditing(false);
+        Ext.destroy(this.btns);
     },
 
     refreshFields: function(){
@@ -5484,7 +5490,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
 
     startEditing: function(rowIndex, doFocus){
         if(this.editing && this.isDirty()){
-            this.showTooltip('You need to commit or cancel your changes');
+            this.showTooltip(this.commitChangesText);
             return;
         }
         if(Ext.isObject(rowIndex)){
@@ -5492,9 +5498,10 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
         if(this.fireEvent('beforeedit', this, rowIndex) !== false){
             this.editing = true;
-            var g = this.grid, view = g.getView();
-            var row = view.getRow(rowIndex);
-            var record = g.store.getAt(rowIndex);
+            var g = this.grid, view = g.getView(),
+                row = view.getRow(rowIndex),
+                record = g.store.getAt(rowIndex);
+                
             this.record = record;
             this.rowIndex = rowIndex;
             this.values = {};
@@ -5538,14 +5545,17 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             this.fireEvent('canceledit', this, saveChanges === false);
             return;
         }
-        var changes = {}, r = this.record, hasChange = false;
-        var cm = this.grid.colModel, fields = this.items.items;
+        var changes = {}, 
+            r = this.record, 
+            hasChange = false,
+            cm = this.grid.colModel, 
+            fields = this.items.items;
         for(var i = 0, len = cm.getColumnCount(); i < len; i++){
             if(!cm.isHidden(i)){
                 var dindex = cm.getDataIndex(i);
                 if(!Ext.isEmpty(dindex)){
-                    var oldValue = r.data[dindex];
-                    var value = this.postEditValue(fields[i].getValue(), oldValue, r, dindex);
+                    var oldValue = r.data[dindex],
+                        value = this.postEditValue(fields[i].getValue(), oldValue, r, dindex);
                     if(String(oldValue) !== String(value)){
                         changes[dindex] = value;
                         hasChange = true;
@@ -5555,11 +5565,9 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
         if(hasChange && this.fireEvent('validateedit', this, changes, r, this.rowIndex) !== false){
             r.beginEdit();
-            for(var k in changes){
-                if(changes.hasOwnProperty(k)){
-                    r.set(k, changes[k]);
-                }
-            }
+            Ext.iterate(changes, function(name, value){
+                r.set(name, value);
+            });
             r.endEdit();
             this.fireEvent('afteredit', this, changes, r, this.rowIndex);
         }
@@ -5569,7 +5577,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
     verifyLayout: function(force){
         if(this.el && (this.isVisible() || force === true)){
             var row = this.grid.getView().getRow(this.rowIndex);
-            this.setSize(Ext.fly(row).getWidth(), Ext.isIE ? Ext.fly(row).getHeight() + 9 : undefined);
+            this.setSize(Ext.fly(row).getWidth(), Ext.fly(row).getHeight() + 9);
             var cm = this.grid.colModel, fields = this.items.items;
             for(var i = 0, len = cm.getColumnCount(); i < len; i++){
                 if(!cm.isHidden(i)){
@@ -5598,8 +5606,8 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         var cm = this.grid.getColumnModel(), pm = Ext.layout.ContainerLayout.prototype.parseMargins;
         this.removeAll(false);
         for(var i = 0, len = cm.getColumnCount(); i < len; i++){
-            var c = cm.getColumnAt(i);
-            var ed = c.getEditor();
+            var c = cm.getColumnAt(i),
+                ed = c.getEditor();
             if(!ed){
                 ed = c.displayEditor || new Ext.form.DisplayField();
             }
@@ -5675,12 +5683,12 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
                 ref: 'saveBtn',
                 itemId: 'saveBtn',
                 xtype: 'button',
-                text: this.saveText || 'Save',
+                text: this.saveText,
                 width: this.minButtonWidth,
                 handler: this.stopEditing.createDelegate(this, [true])
             }, {
                 xtype: 'button',
-                text: this.cancelText || 'Cancel',
+                text: this.cancelText,
                 width: this.minButtonWidth,
                 handler: this.stopEditing.createDelegate(this, [false])
             }]
@@ -5711,11 +5719,13 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
 
     positionButtons: function(){
         if(this.btns){
-            var h = this.el.dom.clientHeight;
-            var view = this.grid.getView();
-            var scroll = view.scroller.dom.scrollLeft;
-            var width =  view.mainBody.getWidth();
-            var bw = this.btns.getWidth();
+            var g = this.grid,
+                h = this.el.dom.clientHeight,
+                view = g.getView(),
+                scroll = view.scroller.dom.scrollLeft,
+                bw = this.btns.getWidth(),
+                width = Math.min(g.getWidth(), g.getColumnModel().getTotalWidth());
+                
             this.btns.el.shift({left: (width/2)-(bw/2)+scroll, top: h - 2, stopFx: true, duration:0.2});
         }
     },
@@ -5733,13 +5743,14 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
 
     doFocus: function(pt){
         if(this.isVisible()){
-            var index = 0;
+            var index = 0,
+                cm = this.grid.getColumnModel(),
+                c;
             if(pt){
                 index = this.getTargetColumnIndex(pt);
             }
-            var cm = this.grid.getColumnModel();
             for(var i = index||0, len = cm.getColumnCount(); i < len; i++){
-                var c = cm.getColumnAt(i);
+                c = cm.getColumnAt(i);
                 if(!c.hidden && c.getEditor()){
                     c.getEditor().focus();
                     break;
@@ -5749,10 +5760,12 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
     },
 
     getTargetColumnIndex: function(pt){
-        var grid = this.grid, v = grid.view;
-        var x = pt.left;
-        var cms = grid.colModel.config;
-        var i = 0, match = false;
+        var grid = this.grid, 
+            v = grid.view,
+            x = pt.left,
+            cms = grid.colModel.config,
+            i = 0, 
+            match = false;
         for(var len = cms.length, c; c = cms[i]; i++){
             if(!c.hidden){
                 if(Ext.fly(v.getHeaderCell(i)).getRegion().right >= x){
@@ -5813,7 +5826,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
                 maxWidth: 600,
                 cls: 'errorTip',
                 width: 300,
-                title: 'Errors',
+                title: this.errorText,
                 autoHide: false,
                 anchor: 'left',
                 anchorToTarget: true,

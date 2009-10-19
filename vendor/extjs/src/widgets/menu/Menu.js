@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -174,6 +174,12 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * configuration. Defaults to <tt>[0, 0]</tt>.
      */
     defaultOffsets : [0, 0],
+    
+    /**
+     * @cfg {Boolean} plain
+     * True to remove the incised line down the left side of the menu. Defaults to <tt>false</tt>.
+     */
+    plain : false,
 
     /**
      * @cfg {Boolean} floating

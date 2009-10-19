@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -19,7 +19,7 @@ Ext = {
      * The version of the framework
      * @type String
      */
-    version : '3.0.1'
+    version : '3.0.3'
 };
 
 /**
@@ -353,11 +353,11 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
         },
 
         /**
-         * Appends content to the query string of a URL, which handles logic for whether to place
+         * Appends content to the query string of a URL, handling logic for whether to place
          * a question mark or ampersand.
-         * @param {String} url The url to append to.
-         * @@param {String} s The content to append to the url.
-         * @return (String) The appended string
+         * @param {String} url The URL to append to.
+         * @param {String} s The content to append to the URL.
+         * @return (String) The resulting URL
          */
         urlAppend : function(url, s){
             if(!Ext.isEmpty(s)){
@@ -2078,12 +2078,13 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         
     // private  
     function _getCacheIndex(el, eventName, fn) {
-        var index = -1;
-        Ext.each(listeners, function (v,i) {
-            if(v && v[FN] == fn && v[EL] == el && v[TYPE] == eventName) {
+        for(var v, index = -1, len = listeners.length, i = len - 1; i >= 0; --i){
+            v = listeners[i];
+            if (v && v[FN] == fn && v[EL] == el && v[TYPE] == eventName) {
                 index = i;
+                break;
             }
-        });
+        }
         return index;
     }
                     
@@ -2331,7 +2332,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             var me = this;
             Ext.each( me.getListeners(el, eventName), function(v){
                 if(v){
-                    me.removeListener(el, v.type, v.fn);
+                    me.removeListener(el, v.type, v.fn, v.index);
                 }
             });
 

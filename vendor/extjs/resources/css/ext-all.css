@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -947,7 +947,7 @@ textarea {
     cursor:pointer;
 }
 
-.ext-safari .x-form-field-wrap .x-form-trigger{
+.ext-webkit .x-form-field-wrap .x-form-trigger{
     right:0;
 }
 
@@ -1013,7 +1013,7 @@ textarea {
 	border: 1px solid;
 }
 
-.ext-safari .x-form-invalid{
+.ext-webkit .x-form-invalid{
 	border: 1px solid;
 }
 
@@ -1596,6 +1596,11 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 	padding:0 5px;
 	cursor:pointer;
 	white-space:nowrap;
+}
+
+/* Fixes an issue with the button height */
+.ext-strict .ext-ie6 .x-btn-mc, .ext-strict .ext-ie7 .x-btn-mc {
+    height: 100%;
 }
 
 .x-btn-bl{
@@ -4855,6 +4860,10 @@ body.ext-ie6.x-body-masked .x-window select {
 
 .ext-ie .x-progress-text-back {
     line-height:15px;
+}
+
+.ext-strict .ext-ie7 .x-progress-text-back{
+    width: 100%;
 }.x-list-header{
 	background: repeat-x 0 bottom;
 	cursor:default;
@@ -5131,6 +5140,10 @@ body.ext-ie6.x-body-masked .x-window select {
     background-color: #deecfd;
 }
 
+.x-color-palette em:hover, .x-color-palette span:hover{   
+    background-color: #deecfd;
+}
+
 .x-color-palette em {
     border-color:#aca899;
 }
@@ -5334,7 +5347,7 @@ ul.x-tab-strip-bottom{
 	border-color:#c30;
 }
 
-.ext-safari .x-form-invalid{
+.ext-webkit .x-form-invalid{
 	background-color:#fee;
 	border-color:#ff7870;
 }
@@ -5366,7 +5379,7 @@ ul.x-tab-strip-bottom{
     font:normal 11px arial, tahoma, helvetica, sans-serif;
 }
 
-.ext-safari .x-small-editor .x-form-field {
+.ext-webkit .x-small-editor .x-form-field {
     font:normal 12px arial, tahoma, helvetica, sans-serif;
 }
 
@@ -6252,7 +6265,12 @@ a.x-menu-item {
 }
 
 .x-menu-plain {
-	background-color:#fff !important;
+	background-color:#f0f0f0 !important;
+    background-image: none;
+}
+
+.x-date-menu, .x-color-menu{
+    background-color: #fff !important;
 }
 
 .x-menu .x-date-picker{

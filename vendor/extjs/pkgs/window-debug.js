@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -716,11 +716,18 @@ Ext.Window = Ext.extend(Ext.Panel, {
      */
     close : function(){
         if(this.fireEvent('beforeclose', this) !== false){
-            this.hide(null, function(){
-                this.fireEvent('close', this);
-                this.destroy();
-            }, this);
+            if(this.hidden){
+                this.doClose();
+            }else{
+                this.hide(null, this.doClose, this);
+            }
         }
+    },
+    
+    // private
+    doClose : function(){
+        this.fireEvent('close', this);
+        this.destroy();
     },
 
     /**

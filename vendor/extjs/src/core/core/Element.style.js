@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -104,7 +104,7 @@ Ext.Element.addMethods(function(){
          */
         removeClass : function(className){
             var me = this;
-            if (me.dom.className) {
+            if (me.dom && me.dom.className) {
                 Ext.each(className, function(v) {               
                     me.dom.className = me.dom.className.replace(
                         classReCache[v] = classReCache[v] || new RegExp('(?:^|\\s+)' + v + '(?:\\s+|$)', "g"), 

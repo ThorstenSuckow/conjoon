@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -287,7 +287,12 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     validateRecord : function (record) {
         var key,
             pickerValue,
-            val = record.get(this.dataIndex).clearTime(true).getTime();
+            val = record.get(this.dataIndex);
+            
+        if(!Ext.isDate(val)){
+            return false;
+        }
+        val = val.clearTime(true).getTime();
         
         for (key in this.fields) {
             if (this.fields[key].checked) {

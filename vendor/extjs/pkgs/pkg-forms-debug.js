@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -3308,16 +3308,16 @@ var menu = new Ext.menu.Menu({
 
     // private
     beforeBlur : function(){
-        var val = this.getRawValue();
-        if(this.forceSelection){
+        var val = this.getRawValue(),
+            rec = this.findRecord(this.displayField, val);
+        if(!rec && this.forceSelection){
             if(val.length > 0 && val != this.emptyText){
-               this.el.dom.value = Ext.isDefined(this.lastSelectionText) ? this.lastSelectionText : '';
+                this.el.dom.value = Ext.isDefined(this.lastSelectionText) ? this.lastSelectionText : '';
                 this.applyEmptyText();
             }else{
                 this.clearValue();
             }
         }else{
-            var rec = this.findRecord(this.displayField, val);
             if(rec){
                 val = rec.get(this.valueField || this.displayField);
             }
@@ -3720,6 +3720,7 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
     onRender : function(ct, position){
         if(!this.el){
             var panelCfg = {
+                id: this.id,
                 cls: this.groupCls,
                 layout: 'column',
                 border: false,
@@ -7811,7 +7812,7 @@ Ext.form.VTypes = function(){
     var alpha = /^[a-zA-Z_]+$/,
         alphanum = /^[a-zA-Z0-9_]+$/,
         email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,4}$/,
-        url = /(((https?)|(ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
+        url = /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i;
 
     // All these messages and functions are configurable
     return {

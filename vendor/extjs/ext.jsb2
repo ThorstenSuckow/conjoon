@@ -1,7 +1,7 @@
 {
     projectName: 'Ext JS',
-    deployDir: 'ext-3.0.2',
-    licenseText: "Ext JS Library 3.0.2\nCopyright(c) 2006-2009 Ext JS, LLC\nlicensing@extjs.com\nhttp://www.extjs.com/license",
+    deployDir: 'ext-3.0.3',
+    licenseText: "Ext JS Library 3.0.3\nCopyright(c) 2006-2009 Ext JS, LLC\nlicensing@extjs.com\nhttp://www.extjs.com/license",
     pkgs: [{
         name: 'Ext Base',
         file: 'adapter/ext/ext-base.js',

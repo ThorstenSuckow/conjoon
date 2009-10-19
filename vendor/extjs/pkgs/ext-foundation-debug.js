@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -1895,7 +1895,7 @@ EXTUTIL.Observable.prototype = {
             q,
             c;
         if (me.eventsSuspended === TRUE) {
-            if (q = me.suspendedEventsQueue) {
+            if (q = me.eventQueue) {
                 q.push(a);
             }
         }
@@ -1905,7 +1905,7 @@ EXTUTIL.Observable.prototype = {
             }
             c = me.getBubbleTarget && me.getBubbleTarget();
             if(c && c.enableBubble) {
-                if(!c.events[ename] || !typeof c.events[ename] == 'object' || !c.events[ename].bubble) {
+                if(!c.events[ename] || !Ext.isObject(c.events[ename]) || !c.events[ename].bubble) {
                     c.enableBubble(ename);
                 }
                 return c.fireEvent.apply(c, a);
@@ -1996,7 +1996,7 @@ myGridPanel.on({
         } else {
             eventName = eventName.toLowerCase();
             ce = me.events[eventName] || TRUE;
-            if (typeof ce == "boolean") {
+            if (Ext.isBoolean(ce)) {
                 me.events[eventName] = ce = new EXTUTIL.Event(me, eventName);
             }
             ce.addListener(fn, scope, ISOBJECT(o) ? o : {});
@@ -2043,7 +2043,7 @@ this.addEvents('storeloaded', 'storecleared');
     addEvents : function(o){
         var me = this;
         me.events = me.events || {};
-        if (typeof o == 'string') {
+        if (Ext.isString(o)) {
             EACH(arguments, function(a) {
                 me.events[a] = me.events[a] || TRUE;
             });
@@ -2069,8 +2069,8 @@ this.addEvents('storeloaded', 'storecleared');
      */
     suspendEvents : function(queueSuspended){
         this.eventsSuspended = TRUE;
-        if (queueSuspended){
-            this.suspendedEventsQueue = [];
+        if(queueSuspended && !this.eventQueue){
+            this.eventQueue = [];
         }
     },
 
@@ -2080,9 +2080,11 @@ this.addEvents('storeloaded', 'storecleared');
      * events fired during event suspension will be sent to any listeners now.
      */
     resumeEvents : function(){
-        var me = this;
-        me.eventsSuspended = !delete me.suspendedEventQueue;
-        EACH(me.suspendedEventsQueue, function(e) {
+        var me = this,
+            queued = me.eventQueue || [];
+        me.eventsSuspended = FALSE;
+        delete me.eventQueue;
+        EACH(queued, function(e) {
             me.fireEvent.apply(me, e);
         });
     }
@@ -3083,8 +3085,8 @@ Ext.apply(Ext.EventManager, function(){
         // note 1: IE fires ONLY the keydown event on specialkey autorepeat
         // note 2: Safari < 3.1, Gecko (Mac/Linux) & Opera fire only the keypress event on specialkey autorepeat
         // (research done by @Jan Wolter at http://unixpapa.com/js/key.html)
-        useKeydown = Ext.isSafari ? 
-                    Ext.num(navigator.userAgent.toLowerCase().match(/version\/(\d+\.\d)/)[1] || 2) >= 3.1 :
+        useKeydown = Ext.isWebKit ? 
+                    Ext.num(navigator.userAgent.match(/AppleWebKit\/(\d+)/)[1]) >= 525 :
                     !((Ext.isGecko && !Ext.isWindows) || Ext.isOpera);
       	
 	return { 
@@ -4216,7 +4218,7 @@ El.data = function(el, key, value){
     if(arguments.length == 2){
         return c[key];    
     }else{
-        c[key] = value;
+        return (c[key] = value);
     }
 };
 
@@ -5345,7 +5347,7 @@ Ext.Element.addMethods(function(){
          */
         removeClass : function(className){
             var me = this;
-            if (me.dom.className) {
+            if (me.dom && me.dom.className) {
                 Ext.each(className, function(v) {               
                     me.dom.className = me.dom.className.replace(
                         classReCache[v] = classReCache[v] || new RegExp('(?:^|\\s+)' + v + '(?:\\s+|$)', "g"), 
@@ -5685,7 +5687,8 @@ Ext.fly('elId').setHeight(150, {
         margins : margins
     }
 }()         
-);/**
+);
+/**
  * @class Ext.Element
  */
 
@@ -7195,7 +7198,7 @@ br     The bottom right corner
  * The callback is intended for any additional code that should run once a particular effect has completed. The Element
  * being operated upon is passed as the first parameter.
  * 
- * @cfg {Object} scope The scope of the <tt>{@link #callback}</tt> function
+ * @cfg {Object} scope The scope (<code>this</code> reference) in which the <tt>{@link #callback}</tt> function is executed. Defaults to the browser window.
  * 
  * @cfg {String} easing A valid Ext.lib.Easing value for the effect:</p><div class="mdetail-params"><ul>
  * <li><b><tt>backBoth</tt></b></li>
@@ -9039,7 +9042,7 @@ Ext.Ajax.request({
             Ext.fly(frame).set({
                 id: id,
                 name: id,
-                className: 'x-hidden',
+                cls: 'x-hidden',
                 src: Ext.SSL_SECURE_URL // for IE
             });
             doc.body.appendChild(frame);
@@ -11787,20 +11790,23 @@ Ext.util.JSON = new (function(){
             }else {
                 var a = ["{"], b, i, v;
                 for (i in o) {
-                    if(!useHasOwn || o.hasOwnProperty(i)) {
-                        v = o[i];
-                        switch (typeof v) {
-                        case "undefined":
-                        case "function":
-                        case "unknown":
-                            break;
-                        default:
-                            if(b){
-                                a.push(',');
+                    // don't encode DOM objects
+                    if(!o.getElementsByTagName){
+                        if(!useHasOwn || o.hasOwnProperty(i)) {
+                            v = o[i];
+                            switch (typeof v) {
+                            case "undefined":
+                            case "function":
+                            case "unknown":
+                                break;
+                            default:
+                                if(b){
+                                    a.push(',');
+                                }
+                                a.push(doEncode(i), ":",
+                                        v === null ? "null" : doEncode(v));
+                                b = true;
                             }
-                            a.push(doEncode(i), ":",
-                                    v === null ? "null" : doEncode(v));
-                            b = true;
                         }
                     }
                 }

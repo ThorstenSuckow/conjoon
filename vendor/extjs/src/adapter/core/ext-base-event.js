@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -99,12 +99,13 @@ Ext.lib.Event = function() {
         
     // private  
     function _getCacheIndex(el, eventName, fn) {
-        var index = -1;
-        Ext.each(listeners, function (v,i) {
-            if(v && v[FN] == fn && v[EL] == el && v[TYPE] == eventName) {
+        for(var v, index = -1, len = listeners.length, i = len - 1; i >= 0; --i){
+            v = listeners[i];
+            if (v && v[FN] == fn && v[EL] == el && v[TYPE] == eventName) {
                 index = i;
+                break;
             }
-        });
+        }
         return index;
     }
                     
@@ -352,7 +353,7 @@ Ext.lib.Event = function() {
             var me = this;
             Ext.each( me.getListeners(el, eventName), function(v){
                 if(v){
-                    me.removeListener(el, v.type, v.fn);
+                    me.removeListener(el, v.type, v.fn, v.index);
                 }
             });
 

@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -119,7 +119,7 @@ textarea {
     cursor:pointer;
 }
 
-.ext-safari .x-form-field-wrap .x-form-trigger{
+.ext-webkit .x-form-field-wrap .x-form-trigger{
     right:0;
 }
 
@@ -185,7 +185,7 @@ textarea {
 	border: 1px solid;
 }
 
-.ext-safari .x-form-invalid{
+.ext-webkit .x-form-invalid{
 	border: 1px solid;
 }
 

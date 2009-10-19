@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -777,22 +777,24 @@ T.TextItem = Ext.extend(T.Item, {
      */ 
 
     constructor: function(config){
-        if (Ext.isString(config)) {
-            config = { autoEl: {cls: 'xtb-text', html: config }};
-        } else {
-            config.autoEl = {cls: 'xtb-text', html: config.text || ''};
-        }
-        T.TextItem.superclass.constructor.call(this, config);
+        T.TextItem.superclass.constructor.call(this, Ext.isString(config) ? {text: config} : config);
     },
+    
+    // private
+    onRender : function(ct, position) {
+        this.autoEl = {cls: 'xtb-text', html: this.text || ''};
+        T.TextItem.superclass.onRender.call(this, ct, position);
+    },
+    
     /**
      * Updates this item's text, setting the text to be used as innerHTML.
      * @param {String} t The text to display (html accepted).
      */
     setText : function(t) {
-        if (this.rendered) {
-            this.el.dom.innerHTML = t;
-        } else {
-            this.autoEl.html = t;
+        if(this.rendered){
+            this.el.update(t);
+        }else{
+            this.text = t;
         }
     }
 });

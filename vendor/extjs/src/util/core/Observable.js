@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -137,7 +137,7 @@ EXTUTIL.Observable.prototype = {
             q,
             c;
         if (me.eventsSuspended === TRUE) {
-            if (q = me.suspendedEventsQueue) {
+            if (q = me.eventQueue) {
                 q.push(a);
             }
         }
@@ -147,7 +147,7 @@ EXTUTIL.Observable.prototype = {
             }
             c = me.getBubbleTarget && me.getBubbleTarget();
             if(c && c.enableBubble) {
-                if(!c.events[ename] || !typeof c.events[ename] == 'object' || !c.events[ename].bubble) {
+                if(!c.events[ename] || !Ext.isObject(c.events[ename]) || !c.events[ename].bubble) {
                     c.enableBubble(ename);
                 }
                 return c.fireEvent.apply(c, a);
@@ -238,7 +238,7 @@ myGridPanel.on({
         } else {
             eventName = eventName.toLowerCase();
             ce = me.events[eventName] || TRUE;
-            if (typeof ce == "boolean") {
+            if (Ext.isBoolean(ce)) {
                 me.events[eventName] = ce = new EXTUTIL.Event(me, eventName);
             }
             ce.addListener(fn, scope, ISOBJECT(o) ? o : {});
@@ -285,7 +285,7 @@ this.addEvents('storeloaded', 'storecleared');
     addEvents : function(o){
         var me = this;
         me.events = me.events || {};
-        if (typeof o == 'string') {
+        if (Ext.isString(o)) {
             EACH(arguments, function(a) {
                 me.events[a] = me.events[a] || TRUE;
             });
@@ -311,8 +311,8 @@ this.addEvents('storeloaded', 'storecleared');
      */
     suspendEvents : function(queueSuspended){
         this.eventsSuspended = TRUE;
-        if (queueSuspended){
-            this.suspendedEventsQueue = [];
+        if(queueSuspended && !this.eventQueue){
+            this.eventQueue = [];
         }
     },
 
@@ -322,9 +322,11 @@ this.addEvents('storeloaded', 'storecleared');
      * events fired during event suspension will be sent to any listeners now.
      */
     resumeEvents : function(){
-        var me = this;
-        me.eventsSuspended = !delete me.suspendedEventQueue;
-        EACH(me.suspendedEventsQueue, function(e) {
+        var me = this,
+            queued = me.eventQueue || [];
+        me.eventsSuspended = FALSE;
+        delete me.eventQueue;
+        EACH(queued, function(e) {
             me.fireEvent.apply(me, e);
         });
     }

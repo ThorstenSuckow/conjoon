@@ -91,23 +91,23 @@ reduce memory consumption and prevent exposure to memory-leaks. By registering a
 for a container element as opposed to each element within a container. By setting this
 configuration option to a simple selector, the target element will be filtered to look for
 a descendant of the target.
-For example:<pre><code><i>// using this markup:</i>
+For example:<pre><code><i>// using this markup:</i>
 &lt;div id=<em>'elId'</em>>
     &lt;p id=<em>'p1'</em>>paragraph one&lt;/p>
     &lt;p id=<em>'p2'</em> class=<em>'clickable'</em>>paragraph two&lt;/p>
     &lt;p id=<em>'p3'</em>>paragraph three&lt;/p>
 &lt;/div>
-<i>// utilize event delegation to registering just one handler on the container element: </i>
+<i>// utilize event delegation to registering just one handler on the container element: </i>
 el = Ext.get(<em>'elId'</em>);
 el.on(
     <em>'click'</em>,
     <b>function</b>(e,t) {
-        <i>// handle click</i>
-        console.info(t.id); <i>// <em>'p2'</em></i>
+        <i>// handle click</i>
+        console.info(t.id); <i>// <em>'p2'</em></i>
     },
     this,
     {
-        <i>// filter the target element to be a descendant <b>with</b> the class <em>'clickable'</em></i>
+        <i>// filter the target element to be a descendant <b>with</b> the class <em>'clickable'</em></i>
         delegate: <em>'.clickable'</em> 
     }
 );</code></pre></p></div></li></ul><strong>Returns:</strong><ul><li><code>Ext.Element</code><div class="sub-desc">this</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.Element.html#addListener" ext:member="#addListener" ext:cls="Ext.Element">Element</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Element-alignTo"></a><b><a href="source/Element.alignment.html#method-Ext.Element-alignTo">alignTo</a></b>(&nbsp;<code>Mixed&nbsp;element</code>,&nbsp;<code>String&nbsp;position</code>,&nbsp;<span title="Optional" class="optional">[<code>Array&nbsp;offsets</code>]</span>,&nbsp;<span title="Optional" class="optional">[<code>Boolean/Object&nbsp;animate</code>]</span>&nbsp;)
@@ -365,8 +365,8 @@ size/location to match this element.<div class="mdetail-params"><strong>Paramete
     :
                                         Array<div class="mdesc"><div class="short">Calculates the x, y to center this element on the screen</div><div class="long">Calculates the x, y to center this element on the screen<div class="mdetail-params"><strong>Parameters:</strong><ul><li>None.</li></ul><strong>Returns:</strong><ul><li><code>Array</code><div class="sub-desc">The x, y values [x, y]</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.Element.html#getCenterXY" ext:member="#getCenterXY" ext:cls="Ext.Element">Element</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Element-getColor"></a><b><a href="source/Element.style.html#method-Ext.Element-getColor">getColor</a></b>(&nbsp;<code>String&nbsp;attr</code>,&nbsp;<code>String&nbsp;defaultValue</code>,&nbsp;<span title="Optional" class="optional">[<code>String&nbsp;prefix</code>]</span>&nbsp;)
     :
-                                        void<div class="mdesc"><div class="short">Return the CSS color for the specified CSS attribute. rgb, 3 digit (like #fff) and valid values&#13;
-are convert to stand...</div><div class="long">Return the CSS color for the specified CSS attribute. rgb, 3 digit (like #fff) and valid values
+                                        void<div class="mdesc"><div class="short">Return the CSS color for the specified CSS attribute. rgb, 3 digit (like #fff) and valid values
+are convert to standa...</div><div class="long">Return the CSS color for the specified CSS attribute. rgb, 3 digit (like #fff) and valid values
 are convert to standard 6 digit hex color.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>attr</code> : String<div class="sub-desc">The css attribute</div></li><li><code>defaultValue</code> : String<div class="sub-desc">The default value to use when a valid color isn't found</div></li><li><code>prefix</code> : String<div class="sub-desc">(optional) defaults to #. Use an empty string when working with
 color anims.</div></li></ul><strong>Returns:</strong><ul><li>void</li></ul></div></div></div></td><td class="msource"><a href="output/Ext.Element.html#getColor" ext:member="#getColor" ext:cls="Ext.Element">Element</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Element-getComputedHeight"></a><b><a href="source/Element.style-more.html#method-Ext.Element-getComputedHeight">getComputedHeight</a></b>()
     :
@@ -528,13 +528,13 @@ for firing the relayed event</div></li></ul><strong>Returns:</strong><ul><li>voi
     :
                                         Ext.Element<div class="mdesc"><div class="short">Removes one or more CSS classes from the element.</div><div class="long">Removes one or more CSS classes from the element.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>className</code> : String/Array<div class="sub-desc">The CSS class to remove, or an array of classes</div></li></ul><strong>Returns:</strong><ul><li><code>Ext.Element</code><div class="sub-desc">this</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.Element.html#removeClass" ext:member="#removeClass" ext:cls="Ext.Element">Element</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Element-removeListener"></a><b><a href="source/Element.html#method-Ext.Element-removeListener">removeListener</a></b>(&nbsp;<code>String&nbsp;eventName</code>,&nbsp;<code>Function&nbsp;fn</code>,&nbsp;<code>Object&nbsp;scope</code>&nbsp;)
     :
-                                        Ext.Element<div class="mdesc"><div class="short">Removes an event handler from this element.  The shorthand version un is equivalent.
-Note: if a scope was explicitly ...</div><div class="long">Removes an event handler from this element.  The shorthand version <a href="output/Ext.Element.html#Ext.Element-un" ext:member="un" ext:cls="Ext.Element">un</a> is equivalent.
+                                        Ext.Element<div class="mdesc"><div class="short">Removes an event handler from this element.  The shorthand version un is equivalent.&#13;
+Note: if a scope was explicitly...</div><div class="long">Removes an event handler from this element.  The shorthand version <a href="output/Ext.Element.html#Ext.Element-un" ext:member="un" ext:cls="Ext.Element">un</a> is equivalent.
 <b>Note</b>: if a <i>scope</i> was explicitly specified when <a href="output/Ext.Element.html#Ext.Element-addListener" ext:member="addListener" ext:cls="Ext.Element">adding</a> the
 listener, the same scope must be specified here.
 Example:
 <pre><code>el.removeListener(<em>'click'</em>, this.handlerFn);
-<i>// or</i>
+<i>// or</i>
 el.un(<em>'click'</em>, this.handlerFn);</code></pre><div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>eventName</code> : String<div class="sub-desc">The name of the event from which to remove the handler.</div></li><li><code>fn</code> : Function<div class="sub-desc">The handler function to remove. <b>This must be a reference to the function passed into the <a href="output/Ext.Element.html#Ext.Element-addListener" ext:member="addListener" ext:cls="Ext.Element">addListener</a> call.</b></div></li><li><code>scope</code> : Object<div class="sub-desc">If a scope (<b><code>this</code></b> reference) was specified when the listener was added,
 then this must refer to the same object.</div></li></ul><strong>Returns:</strong><ul><li><code>Ext.Element</code><div class="sub-desc">this</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.Element.html#removeListener" ext:member="#removeListener" ext:cls="Ext.Element">Element</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Element-repaint"></a><b><a href="source/Element.style-more.html#method-Ext.Element-repaint">repaint</a></b>()
     :
@@ -574,16 +574,16 @@ string (id), dom node, or Ext.Element.</div></li><li><code>hscroll</code> : Bool
     :
                                         Ext.Element<div class="mdesc"><div class="short">Sets the CSS display property. Uses originalDisplay if the specified value is a boolean true.</div><div class="long">Sets the CSS display property. Uses originalDisplay if the specified value is a boolean true.<div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>value</code> : Mixed<div class="sub-desc">Boolean value to display the element using its default display, or a string to set the display directly.</div></li></ul><strong>Returns:</strong><ul><li><code>Ext.Element</code><div class="sub-desc">this</div></li></ul></div></div></div></td><td class="msource"><a href="output/Ext.Element.html#setDisplayed" ext:member="#setDisplayed" ext:cls="Ext.Element">Element</a></td></tr><tr class="method-row expandable inherited"><td class="micon"><a href="#expand" class="exi">&nbsp;</a></td><td class="sig"><a id="Ext.Element-setHeight"></a><b><a href="source/Element.style.html#method-Ext.Element-setHeight">setHeight</a></b>(&nbsp;<code>Mixed&nbsp;height</code>,&nbsp;<span title="Optional" class="optional">[<code>Boolean/Object&nbsp;animate</code>]</span>&nbsp;)
     :
-                                        Ext.Element<div class="mdesc"><div class="short">Set the height of this Element.&#13;
-// change the height to 200px and animate with default configuration&#13;
-Ext.fly('eleme...</div><div class="long">Set the height of this Element.
-<pre><code><i>// change the height to 200px and animate <b>with</b> <b>default</b> configuration</i>
+                                        Ext.Element<div class="mdesc"><div class="short">Set the height of this Element.
+// change the height to 200px and animate with default configuration
+Ext.fly('element...</div><div class="long">Set the height of this Element.
+<pre><code><i>// change the height to 200px and animate <b>with</b> <b>default</b> configuration</i>
 Ext.fly(<em>'elementId'</em>).setHeight(200, true);
 
-<i>// change the height to 150px and animate <b>with</b> a custom configuration</i>
+<i>// change the height to 150px and animate <b>with</b> a custom configuration</i>
 Ext.fly(<em>'elId'</em>).setHeight(150, {
-    duration : .5, <i>// animation will have a duration of .5 seconds</i>
-    <i>// will change the content to <em>"finished"</em></i>
+    duration : .5, <i>// animation will have a duration of .5 seconds</i>
+    <i>// will change the content to <em>"finished"</em></i>
     callback: <b>function</b>(){ this.<a href="output/Ext.Element.html#Ext.Element-update" ext:member="update" ext:cls="Ext.Element">update</a>(<em>"finished"</em>); } 
 });</code></pre><div class="mdetail-params"><strong>Parameters:</strong><ul><li><code>height</code> : Mixed<div class="sub-desc">The new height. This may be one of:<div class="mdetail-params"><ul>
 <li>A Number specifying the new height in this Element's <a href="output/Ext.Element.html#Ext.Element-defaultUnit" ext:member="defaultUnit" ext:cls="Ext.Element">defaultUnit</a>s (by default, pixels.)</li>

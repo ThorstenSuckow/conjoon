@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.0.2
+ * Ext JS Library 3.0.3
  * Copyright(c) 2006-2009 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -55,12 +55,15 @@ paramOrder: 'param1|param2|param'
                 args.push(params.jsonData[reader.meta.root]);		// <-- create(Hash)
                 break;
             case Ext.data.Api.actions.read:
-                if(this.paramOrder){
-                    for(var i = 0, len = this.paramOrder.length; i < len; i++){
-                        args.push(params[this.paramOrder[i]]);
+                // If the method has no parameters, ignore the paramOrder/paramsAsHash.
+                if(directFn.directCfg.method.len > 0){
+                    if(this.paramOrder){
+                        for(var i = 0, len = this.paramOrder.length; i < len; i++){
+                            args.push(params[this.paramOrder[i]]);
+                        }
+                    }else if(this.paramsAsHash){
+                        args.push(params);
                     }
-                }else if(this.paramsAsHash){
-                    args.push(params);
                 }
                 break;
             case Ext.data.Api.actions.update:
