@@ -258,6 +258,12 @@ com.conjoon.groupware.ResponseInspector = function() {
          */
         generateMessage : function(response, options)
         {
+            response = response.xhr
+                       ? response.xhr
+                        : response.message
+                        ? response.message
+                       : response;
+
             var resp = response;
 
             options = options || {};
