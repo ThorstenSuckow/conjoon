@@ -558,10 +558,12 @@ class Conjoon_Controller_Plugin_ExtRequest {
      */
     protected function _applyParams(Zend_Controller_Request_Abstract $request, Array $data)
     {
-        if (!Conjoon_Util_Array::isAssociative($data['data'])) {
-            $request->setParam('data', $data['data']);
+        $rData = empty($data['data']) ? array() : $data['data'];
+
+        if (!Conjoon_Util_Array::isAssociative($rData)) {
+            $request->setParam('data', $rData);
         } else {
-            $request->setParams($data['data']);
+            $request->setParams($rData);
         }
 
         unset($data['data']);
