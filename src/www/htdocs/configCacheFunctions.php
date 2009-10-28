@@ -61,7 +61,7 @@
             $serialized = serialize($config);
 
             file_put_contents('./_configCache/config.ini.php',
-                "<?php die(\"Forbidden!\"); ?>___DRTL___" .
+                "<?php die(\"Forbidden!\"); ?>\n" .
                 $serialized
             );
 
@@ -71,7 +71,7 @@
 
             $serialized = file_get_contents('./_configCache/config.ini.php');
 
-            $lines = explode("___DRTL___", $serialized);
+            $lines = explode("\n", $serialized, 2);
 
             $config = unserialize($lines[1]);
 
