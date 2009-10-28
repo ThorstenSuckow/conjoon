@@ -44,7 +44,7 @@ class ExtController extends Zend_Controller_Action {
      */
     public function multiRequestAction()
     {
-        throw new Exception("YO");
+
     }
 
 
