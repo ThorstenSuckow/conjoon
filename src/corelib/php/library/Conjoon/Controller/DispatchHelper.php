@@ -60,7 +60,6 @@ class Conjoon_Controller_DispatchHelper {
         $front = Zend_Controller_Front::getInstance();
 
         try {
-            $front->throwExceptions(true);
             $front->dispatch();
         } catch (Exception $e) {
 
