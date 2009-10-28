@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ClientTest.php 17759 2009-08-22 21:26:21Z lars $
+ * @version $Id: ClientTest.php 18443 2009-09-30 13:35:47Z lars $
  */
 
 // Call Zend_XmlRpc_ClientTest::main() if this source file is executed directly.
@@ -288,7 +288,14 @@ class Zend_XmlRpc_ClientTest extends PHPUnit_Framework_TestCase
 
     public function testSkipsSystemCallWhenDirected()
     {
-        $this->markTestIncomplete('Cannot complete this test until we add logging of requests sent to HTTP test client');
+        $this->mockHttpClient();
+        $this->mockedHttpClient->expects($this->once())
+                               ->method('request')
+                               ->with('POST')
+                               ->will($this->returnValue($this->makeHttpResponseFor('foo')));
+        $this->xmlrpcClient->setHttpClient($this->mockedHttpClient);
+        $this->xmlrpcClient->setSkipSystemLookup(true);
+        $this->assertSame('foo', $this->xmlrpcClient->call('test.method'));
     }
 
     /**#@-*/
@@ -682,6 +689,12 @@ class Zend_XmlRpc_ClientTest extends PHPUnit_Framework_TestCase
         return implode("\r\n", $headers) . "\r\n\r\n$data\r\n\r\n";
     }
 
+    public function makeHttpResponseFor($nativeVars)
+    {
+        $response = $this->getServerResponseFor($nativeVars);
+        return Zend_Http_Response::fromString($response);
+    }
+
     public function mockIntrospector()
     {
         $this->mockedIntrospector = $this->getMock(
@@ -693,6 +706,12 @@ class Zend_XmlRpc_ClientTest extends PHPUnit_Framework_TestCase
             false
         );
         $this->xmlrpcClient->setIntrospector($this->mockedIntrospector);
+    }
+
+    public function mockHttpClient()
+    {
+        $this->mockedHttpClient = $this->getMock('Zend_Http_Client');
+        $this->xmlrpcClient->setHttpClient($this->mockedHttpClient);
     }
 }
 

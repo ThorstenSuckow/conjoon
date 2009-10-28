@@ -17,18 +17,15 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormatTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FormatTest.php 18512 2009-10-12 15:39:05Z matthew $
  */
+
+require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Locale_Format
  */
 require_once 'Zend/Locale/Format.php';
-
-/**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
  * @category   Zend

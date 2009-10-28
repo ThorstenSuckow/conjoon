@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTesterTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SimpleTesterTest.php 18470 2009-10-03 10:10:54Z beberlei $
  */
 
 require_once dirname(__FILE__)."/../../../../TestHelper.php";
@@ -63,7 +63,12 @@ class Zend_Test_PHPUnit_Db_SimpleTesterTest extends PHPUnit_Framework_TestCase
         $databaseTester = new Zend_Test_PHPUnit_Db_SimpleTester($connection);
 
         $dataSet = $this->getMock('PHPUnit_Extensions_Database_DataSet_IDataSet');
-        $dataSet->expects($this->any())->method('getIterator')->will($this->returnValue($this->getMock('Iterator')));
+        $dataSet->expects($this->any())
+                ->method('getIterator')
+                ->will($this->returnValue($this->getMock('Iterator')));
+        $dataSet->expects($this->any())
+                ->method('getReverseIterator')
+                ->will($this->returnValue($this->getMock('Iterator')));
         $databaseTester->setUpDatabase($dataSet);
     }
 

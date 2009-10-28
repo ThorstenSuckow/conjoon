@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BootstrapAbstractTest.php 17825 2009-08-26 12:50:42Z matthew $
+ * @version    $Id: BootstrapAbstractTest.php 18455 2009-10-01 17:49:38Z doctorrock83 $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -390,6 +390,20 @@ class Zend_Application_Bootstrap_BootstrapAbstractTest extends PHPUnit_Framework
     {
         require_once dirname(__FILE__) . '/../_files/ZfAppBootstrap.php';
         $bootstrap = new ZfAppBootstrap($this->application);
+        $bootstrap->bootstrap('foo');
+        $bootstrap->bootstrap('foo');
+        $this->assertEquals(1, $bootstrap->fooExecuted);
+    }
+
+    /**
+     * @group ZF-7955
+     */
+    public function testBootstrappingIsCaseInsensitive()
+    {
+        require_once dirname(__FILE__) . '/../_files/ZfAppBootstrap.php';
+        $bootstrap = new ZfAppBootstrap($this->application);
+        $bootstrap->bootstrap('Foo');
+        $bootstrap->bootstrap('Foo');
         $bootstrap->bootstrap('foo');
         $bootstrap->bootstrap('foo');
         $this->assertEquals(1, $bootstrap->fooExecuted);

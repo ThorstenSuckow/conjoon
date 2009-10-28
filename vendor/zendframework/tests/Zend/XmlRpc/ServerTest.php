@@ -17,7 +17,7 @@
  * @subpackage UnitTests
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ServerTest.php 17786 2009-08-23 22:26:33Z lars $
+ * @version $Id: ServerTest.php 18443 2009-09-30 13:35:47Z lars $
  */
 
 // Call Zend_XmlRpc_ServerTest::main() if this source file is executed directly.
@@ -406,7 +406,7 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($returns), var_export($returns, 1));
         $this->assertTrue(is_array($returns[0]), var_export($returns[0], 1));
         $this->assertSame(array(
-            'faultCode' => 404, 'faultString' => 'Unknown error'),
+            'faultCode' => 620, 'faultString' => 'Method "undefined" does not exist'),
             $returns[1], var_export($returns[1], 1));
     }
 
