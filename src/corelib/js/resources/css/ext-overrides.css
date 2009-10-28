@@ -26,3 +26,7 @@ html {
     text-overflow:ellipsis;
     white-space:nowrap;
 }
+
+.x-menu-sep {
+    margin-left:24px;
+}
