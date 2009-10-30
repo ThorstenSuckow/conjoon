@@ -36,12 +36,30 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
      */
     dialog : null,
 
+    /**
+     * @type {Boolean} closeAfterRequest Whether to close the dialog after a
+     * request to the server has been made. Set in onOkClick and reset in the
+     * various listeners.
+     */
+    closeAfterSave : false,
+
+    /**
+     * @type {com.conjoon.cudgets.direct.BatchedResponseHelper} batchedResponseHelper
+     */
+    batchedResponseHelper : com.conjoon.cudgets.direct.BatchedResponseHelper,
+
+    /**
+     * @type {String} clsId
+     */
+    clsId : '3e4a7fe4-fb06-4aa2-b0e5-40d824ba794a',
+
+
 // -------- api
 
     /**
      * Installs the listeners for the elements found in the dialog.
      *
-     * @param {com.conjoon.cudgets.settings.Dialog} dialog The settings dialog 
+     * @param {com.conjoon.cudgets.settings.Dialog} dialog The settings dialog
      * this listener is bound to.
      *
      * @packageprotected
@@ -52,26 +70,28 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
             return;
         }
 
+        this.batchedResponses = [];
+
         this.dialog           = dialog;
-        var applyButton       = dialog.getApplyButton();                          
+        var applyButton       = dialog.getApplyButton();
         var settingsContainer = dialog.getSettingsContainer();
-        
+
         this.dialog.on('beforeclose', this.onBeforeClose, this);
-        
+
         dialog.mon(dialog.getOkButton(),     'click',  this.onOkClick,     this);
         dialog.mon(dialog.getCancelButton(), 'click',  this.onCancelClick, this);
-        dialog.mon(applyButton,              'click',  this.onApplyClick,  this);       
-        
-        var cards       = settingsContainer.getFormCards();   
-        var onStartEdit = this.onStartEdit; 
+        dialog.mon(applyButton,              'click',  this.onApplyClick,  this);
+
+        var cards       = settingsContainer.getFormCards();
+        var onStartEdit = this.onStartEdit;
         for (var i = 0, len = cards.length; i < len; i++) {
             settingsContainer.mon(cards[i], 'startedit', onStartEdit, this);
         }
-        
+
         settingsContainer.mon(
             settingsContainer.storeSync, 'remove' , this.onEntryRemove, this
         );
-        
+
         settingsContainer.mon(
             settingsContainer.storeSync, 'beforewrite', this.onBeforeWrite, this
         );
@@ -82,12 +102,11 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
 
         settingsContainer.mon(
             settingsContainer.storeSync, 'exception', this.onException, this
-        );        
-        
+        );
+
     },
 
 // -------- helper
-
 
 // ------- listeners
 
@@ -102,9 +121,9 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
     onBeforeClose : function(dialog)
     {
         if (this.dialog.getSettingsContainer().isServerRequestPending()) {
-            return false;    
-        }        
-    }, 
+            return false;
+        }
+    },
 
     // ------- listener for the settingsContainer's cards.
     /**
@@ -113,7 +132,7 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
      * @param {com.conjoon.cudgets.settings.Card} card
      * @param {Ext.form.Field} field
      */
-    onStartEdit : function(card, field) 
+    onStartEdit : function(card, field)
     {
         this.dialog.getApplyButton().setDisabled(false);
     },
@@ -121,7 +140,7 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
     // ------- listener for the settingsContainer's store events
     /**
      * Called when an entry was removed from the settingsContainer's temp store.
-     * 
+     *
      * @param {Ext.data.Store} store
      * @param {Ext.data.Record} record
      * @param {Number} index
@@ -130,7 +149,7 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
     {
         this.dialog.getApplyButton().setDisabled(false);
     },
-    
+
     /**
      * This listener gets called before a request to the server is made
      * for updating data. When the write process is batched, i.e. an update
@@ -162,6 +181,20 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
      */
     onWrite : function(store, action, result, res, rs)
     {
+        if (this.closeAfterSave === true) {
+           this.batchedResponseHelper.processIfResultValid({
+                success : function() {
+                    this.dialog.close();
+                },
+                failure : function() {
+                    this.closeAfterSave = false;
+                },
+                scope   : this,
+                result  : result.success,
+                id      : this.clsId
+            });
+        }
+
         this.dialog.setControlsDisabled(false, true);
     },
 
@@ -226,6 +259,9 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
      */
     onException : function(dataProxy, type, action, options, response, arg)
     {
+        this.closeAfterSave = false;
+        this.batchedResponseHelper.clearConfigForId(this.clsId);
+
         this.dialog.setControlsDisabled(false, false);
     },
 
@@ -238,7 +274,8 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
      */
     onOkClick : function(button, e)
     {
-        this.dialog.getSettingsContainer().saveConfiguration(true);
+        this.closeAfterSave = true;
+        this.dialog.getSettingsContainer().saveConfiguration();
     },
 
     /**
@@ -251,7 +288,7 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
     {
         this.dialog.close();
     },
-    
+
     /**
      * Listener for the applyButton click event.
      *
@@ -260,6 +297,6 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
      */
     onApplyClick : function(button, e)
     {
-        this.dialog.getSettingsContainer().saveConfiguration();        
-    }    
+        this.dialog.getSettingsContainer().saveConfiguration();
+    }
 };
