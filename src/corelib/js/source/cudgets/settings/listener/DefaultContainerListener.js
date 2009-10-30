@@ -36,6 +36,16 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
      */
     settingsContainer : null,
 
+    /**
+     * @type {com.conjoon.cudgets.direct.BatchedResponseHelper} batchedResponseHelper
+     */
+    batchedResponseHelper : com.conjoon.cudgets.direct.BatchedResponseHelper,
+
+    /**
+     * @type {String} clsId
+     */
+    clsId : '2569d127-568a-4e96-8024-bb65fc9f621b',
+
 // -------- api
 
     /**
@@ -68,6 +78,13 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
         );
 
         settingsContainer.mon(
+            settingsContainer.getAddEntryButton(),
+            'click',
+            this.onAddEntryButtonClick,
+            this
+        );
+
+        settingsContainer.mon(
             settingsContainer.storeSync.store, 'update', this.onStoreUpdate, this
         );
 
@@ -88,9 +105,42 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
 // -------- helper
 
     /**
-     * Generates
+     * Callback for the BatchedResponsehelper collectMessage function.
+     *
+     * @param {Array} messages An array of objects that contain the following
+     * properties: text, title
      *
      */
+    showMessages : function(messages)
+    {
+        var len = messages.length;
+
+        if (len == 1) {
+            this.settingsContainer.showErrorMessage(messages[0].text, messages[0].title);
+            return;
+        }
+
+        var message = String.format(
+            com.conjoon.Gettext.gettext("The action triggered {0} errors:"),
+            len
+        );
+
+        var tmpM = [];
+        for (var i = 0; i < len; i++) {
+            tmpM.push(
+                (messages[i].title
+                ? "<b>"+messages[i].title+"</b>"
+                : "")
+                +"<br />"+ messages[i].text);
+        }
+
+        message += "<br /><br />"+tmpM.join("<br /><br />");
+
+        this.settingsContainer.showErrorMessage(
+            message,
+            com.conjoon.Gettext.gettext("Error")
+        );
+    },
 
     /**
      * Returns false if the passed record contains invalid fields.
@@ -210,6 +260,20 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
     },
 
     // ------- listener for the button events
+
+    /**
+     * Listener for the addEntryButton click-event.
+     *
+     * @param {Ext.Button} button The button that triggered this event
+     */
+    onAddEntryButtonClick : function(button)
+    {
+        throw (
+            "com.conjoon.cudgets.settings.listener.DefaultContainerListener."
+            +"onAddEntryButtonClick() needs to be overriden"
+        );
+    },
+
     /**
      * Listener for the removeEntryButton click-event.
      *
@@ -280,14 +344,27 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
      */
     onWrite : function(store, action, result, res, rs)
     {
-
         if (result.success === false) {
 
             var settingsContainer = this.settingsContainer;
 
             // give errors presedence
             if (result.error) {
-                com.conjoon.groupware.ResponseInspector.handleFailure(result.error);
+
+                var msg = com.conjoon.groupware.ResponseInspector.generateMessage(
+                    result.error
+                );
+
+                this.batchedResponseHelper.collectMessage({
+                    fn      : this.showMessages,
+                    scope   : this,
+                    message : {
+                        title : msg.title,
+                        text  : msg.text
+                    },
+                    id      : this.clsId
+                });
+
             } else {
 
                 var prop = action == Ext.data.Api.actions.destroy ? 'removed' : 'updated';
@@ -320,9 +397,15 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
                     title = com.conjoon.Gettext.gettext("Error while updating Twitter accounts.");
                 }
 
-                settingsContainer.showErrorMessage(
-                    message, title
-                );
+                this.batchedResponseHelper.collectMessage({
+                    fn      : this.showMessages,
+                    scope   : this,
+                    message : {
+                        title : title,
+                        text  : message
+                    },
+                    id      : this.clsId
+                });
             }
         }
 
@@ -396,7 +479,28 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
      */
     onException : function(dataProxy, type, action, options, response, arg)
     {
-        com.conjoon.groupware.ResponseInspector.handleFailure(response);
+        if (type === 'response' ||
+            (response && response.code === Ext.Direct.exceptions.PARSE)) {
+            // this will break all batched responses
+             this.batchedResponseHelper.clearConfigForId(this.clsId);
+             com.conjoon.groupware.ResponseInspector.handleFailure(response);
+             return;
+        }
+
+        var msg = com.conjoon.groupware.ResponseInspector.generateMessage(
+            response
+        );
+
+        this.batchedResponseHelper.collectMessage({
+            fn      : this.showMessages,
+            scope   : this,
+            message : {
+                title : msg.title,
+                text  : msg.text
+            },
+            id      : this.clsId
+        });
+
         this.settingsContainer.setServerRequestPending(false);
     }
 
