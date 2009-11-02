@@ -37,6 +37,11 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
      */
     protected $_filterKeys = array();
 
+    /**
+     * @var array $_extractFromExtDirect
+     */
+    protected $_extractFromExtDirect = array();
+
     protected function _getFilter($key)
     {
         if (isset($this->_filters[$key])) {
@@ -116,13 +121,25 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                     Conjoon_Modules_Groupware_Feeds_Account_Filter_Account::CONTEXT_CREATE
                 );
             break;
+
+            case 'Service_TwitterAccountController::add.account':
+                /**
+                 * @see Conjoon_Modules_Service_Twitter_Account_Filter_Account
+                 */
+                require_once 'Conjoon/Modules/Service/Twitter/Account/Filter/Account.php';
+
+                $this->_filters[$key] = new Conjoon_Modules_Service_Twitter_Account_Filter_Account(
+                    array(),
+                    Conjoon_Modules_Service_Twitter_Account_Filter_Account::CONTEXT_CREATE
+                );
+            break;
         }
 
         return $this->_filters[$key];
     }
 
 
-    public function registerFilter($key)
+    public function registerFilter($key, $extractFromExtDirect = false)
     {
         $exp = explode('::', $key);
 
@@ -138,6 +155,9 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
         }
 
         $this->_filterKeys[$thisClass][$action] = $key;
+        if ($extractFromExtDirect) {
+            $this->_extractFromExtDirect[$thisClass][$action] = true;
+        }
 
         return $this;
     }
@@ -159,7 +179,28 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
         $actionController = $this->getActionController();
 
-        $filter->setData($this->getRequest()->getParams());
+        $data = $this->getRequest()->getParams();
+
+        if (isset($this->_extractFromExtDirect[$class][$action])) {
+
+            /**
+             * @see Conjoon_Keys
+             */
+            require_once 'Conjoon/Keys.php';
+
+             try {
+                $extRequest = Zend_Registry::get(Conjoon_Keys::EXT_REQUEST_OBJECT);
+            } catch (Zend_Exception $e) {
+                $extRequest = null;
+            }
+
+            if ($extRequest && $extRequest->isExtRequest()) {
+                $data = $this->getRequest()->getParam('data');
+                $data = $data[0];
+            }
+        }
+
+        $filter->setData($data);
 
         $filteredData = $filter->getProcessedData();
 
