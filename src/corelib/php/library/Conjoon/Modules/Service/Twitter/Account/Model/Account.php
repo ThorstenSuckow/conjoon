@@ -95,6 +95,64 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
         return $row;
     }
 
+    /**
+     * Adss a Twitter account to the db.
+     *
+     * @param Array $data An assoc array with the following key/value pairs:
+     * name, password, updateInterval
+     * @param integer $userId id of the ser for whom the data will be added
+     *
+     * @return the id of the added data, or 0 if an error occurred
+     */
+    public function addAccountForUserId($data, $userId)
+    {
+        if (!isset($data['update_interval'])) {
+            return 0;
+        }
+
+        if (!isset($data['name'])) {
+            return 0;
+        }
+
+        if (!isset($data['password'])) {
+            return 0;
+        }
+
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            return 0;
+        }
+
+        $whiteList = array(
+            'name',
+            'password',
+            'update_interval'
+        );
+
+        $addData = array();
+
+        foreach ($data as $key => $value) {
+            if (in_array($key, $whiteList)) {
+                $addData[$key] = $value;
+            }
+        }
+
+        if (empty($addData)) {
+            return 0;
+        }
+
+        $addData['user_id'] = $userId;
+
+        $id = $this->insert($addData);
+
+        if ((int)$id == 0) {
+            return 0;
+        }
+
+        return $id;
+    }
+
 // -------- interface Conjoon_BeanContext_Decoratable
 
     public function getRepresentedEntity()

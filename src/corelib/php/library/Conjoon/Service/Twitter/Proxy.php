@@ -49,6 +49,61 @@ class Conjoon_Service_Twitter_Proxy  {
     }
 
     /**
+     * Verifies account credentials.
+     *
+     * @return true or Conjoon_Modules_Service_Twitter_Account_Dto
+     */
+    public function accountVerifyCredentials()
+    {
+        try {
+            $response = $this->_twitter->accountVerifyCredentials();
+        } catch (Zend_Service_Twitter_Exception $e) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                $e->getMessage(), Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        if (isset($response->error)) {
+            /**
+             * @see Conjoon_Error_Factory
+             */
+            require_once 'Conjoon/Error/Factory.php';
+
+            return Conjoon_Error_Factory::createError(
+                (string)$response->error .
+                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
+                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
+                "]",
+                Conjoon_Error::LEVEL_ERROR
+            );
+        }
+
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Dto
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Dto.php';
+
+        $dto = new Conjoon_Modules_Service_Twitter_Account_Dto;
+
+        $dto->twitterId              = (string)$response->id;
+        $dto->twitterName            = (string)$response->name;
+        $dto->twitterScreenName      = (string)$response->screen_name;
+        $dto->twitterLocation        = (string)$response->location;
+        $dto->twitterProfileImageUrl = (string)$response->profile_image_url;
+        $dto->twitterUrl             = (string)$response->url;
+        $dto->twitterProtected       = (bool)(string)$response->protected;
+        $dto->twitterDescription     = (string)$response->description;
+        $dto->twitterFollowersCount  = (int)(string)$response->followers_count;
+
+        return $dto;
+    }
+
+    /**
      * Create friendship
      *
      * @param  int|string $id User ID or name of new friend
