@@ -47,10 +47,10 @@
 
 .com-conjoon-msgbox-error .ext-mb-error {
     background-image:url(../images/32x32/actions/messagebox-error.png);
+    height:60px;
 }
 
 .com-conjoon-msgbox-error .ext-mb-content {
-    height:60px;
     /*background:white;*/
     padding:4px;
     overflow:auto;
