@@ -17,6 +17,13 @@
     font-family:Tahoma,Verdana,Helvetica,Arial;
 }
 
+.com-conjoon-service-twitter-optionsDialog-introCard {
+    background-image:url(../images/conjoon_twitter_logo.png)!important;
+    background-position:bottom right;
+    background-repeat:no-repeat;
+    padding:10px 0 0 10px;
+}
+
 .com-conjoon-service-twitter-twitterIcon {
     background-image:url(../images/16x16/apps/service-twitter-icon.png)!important;
 }
@@ -352,4 +359,26 @@
 .com-conjoon-service-twitter-TweetList .tweet_unbookmark_icon.pending {
     display:block!important;
     background-image:url(../images/loading.gif)!important;
+}
+
+/**
+ * account management dialog
+ */
+.com-conjoon-cudgets-SettingsDialog .twitterSettingsIcon {
+    background-image:url(../images/16x16/apps/service-twitter-settingsicon.png);
+}
+
+/**
+ * Account Wizard
+ */
+.com-conjoon-service-twitter-wizard-AccountWizard div.x-panel.x-border-panel.x-panel-noborder {
+    padding:5px 15px 5px 140px;
+    background-color:#F6F6F6;
+    background-image:url(../images/128x128/apps/service-twitter-accountwizardintro.png);
+    background-position:15px bottom;
+    background-repeat:no-repeat;
+}
+
+.com-conjoon-service-twitter-wizard-AccountWizard .x-panel-body {
+    background-color:#F6F6F6;
 }
