@@ -90,6 +90,7 @@ if (count($files) == 0) {
     exit(-1);
 }
 
+$content = "";
 for ($i = 0, $len = count($files); $i < $len; $i++) {
     $content .= file_get_contents($cssPath . $files[$i]);
 }
