@@ -186,6 +186,39 @@ com.conjoon.groupware.ResponseInspector = function() {
         },
 
         /**
+         * Inspects the properties of config and does either call success
+         * or failure based on the inspected elements.
+         *
+         * @param {Object} config
+         *  - result
+         *  - remotingObject
+         *  - success
+         *  - failure
+         *  - scope
+         *
+         */
+        doCallbackForDirectApiResponse : function(config)
+        {
+            var result         = config.result,
+               remotingObject = config.remotingObject,
+               success        = config.success,
+               failure        = config.failure,
+               scope          = config.scope;
+
+            if (!result) {
+                console.log(failure)
+                failure.call(scope, remotingObject);
+            } else {
+                if (remotingObject.code === Ext.Direct.exceptions.PARSE) {
+                    failure.call(scope, remotingObject);
+                } else {
+                    // syntax error or result available
+                    success.call(scope, result);
+                }
+            }
+        },
+
+        /**
          * Returns the failure type associated with the response values, if any.
          *
          * @param {String|XmlHttpResponse} response The response to inspect for errors
