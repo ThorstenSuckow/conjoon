@@ -347,7 +347,7 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
             items     : [
                 new com.conjoon.groupware.util.FormIntro({
                     style      : 'padding:10px 10px 0px 10px;',
-                    label      : com.conjoon.Gettext.gettext("Feed address"),
+                    labelText  : com.conjoon.Gettext.gettext("Feed address"),
                     imageClass : 'com-conjoon-groupware-feeds-AddFeedDialog-introImage',
                     text       : com.conjoon.Gettext.gettext("Enter the url of the feed you want to import, starting with \"http://\". Press the button next to the input field when you are finished.")
                 }),

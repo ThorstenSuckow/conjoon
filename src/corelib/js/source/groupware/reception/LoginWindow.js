@@ -599,9 +599,9 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
     _createFormIntro : function()
     {
         return new com.conjoon.groupware.util.FormIntro({
-            cls     : 'formIntro',
-            label   : com.conjoon.Gettext.gettext("Login"),
-            text    : com.conjoon.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
+            cls       : 'formIntro',
+            labelText : com.conjoon.Gettext.gettext("Login"),
+            text      : com.conjoon.Gettext.gettext("Please input your username and your password. Press &quot;Login&quot; when ready.")
         });
     },
 

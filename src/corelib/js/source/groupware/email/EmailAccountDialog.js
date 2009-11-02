@@ -308,15 +308,15 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 anchor: '100%'
              },
             items       : [new com.conjoon.groupware.util.FormIntro({
-                style   : 'margin:10px 0 5px 0;',
-                label   : com.conjoon.Gettext.gettext("Account name"),
-                text    : com.conjoon.Gettext.gettext("This name is used to identify the account later on.")
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Account name"),
+                text      : com.conjoon.Gettext.gettext("This name is used to identify the account later on.")
             }),
             fields['name'],
             new com.conjoon.groupware.util.FormIntro({
-                style   : 'margin:15px 0 5px 0;',
-                label   : com.conjoon.Gettext.gettext("Personal Informations"),
-                text    : com.conjoon.Gettext.gettext("The following informations will be visible to the recipients of your email messages.")
+                style     : 'margin:15px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Personal Informations"),
+                text      : com.conjoon.Gettext.gettext("The following informations will be visible to the recipients of your email messages.")
             }),
             fields['address'],
             fields['userName'],
@@ -333,9 +333,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             items       : [
                 fields['protocol'],
                 new com.conjoon.groupware.util.FormIntro({
-                    style   : 'margin:10px 0 5px 0;',
-                    label   : com.conjoon.Gettext.gettext("Inbox"),
-                    text    : com.conjoon.Gettext.gettext("These settings will be used to connect to the inbox server and retrieve new email messages.")
+                    style     : 'margin:10px 0 5px 0;',
+                    labelText : com.conjoon.Gettext.gettext("Inbox"),
+                    text      : com.conjoon.Gettext.gettext("These settings will be used to connect to the inbox server and retrieve new email messages.")
             }),
                 fields['serverInbox'],
                 fields['portInbox'],
@@ -343,9 +343,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 fields['usernameInbox'],
                 fields['passwordInbox'],
                 new com.conjoon.groupware.util.Clear(), new com.conjoon.groupware.util.FormIntro({
-                    style   : 'margin:10px 0 5px 0;',
-                    label   : com.conjoon.Gettext.gettext("Outbox"),
-                    text    : com.conjoon.Gettext.gettext("These settings will be used to connect to the outbox server to send email messages.")
+                    style     : 'margin:10px 0 5px 0;',
+                    labelText : com.conjoon.Gettext.gettext("Outbox"),
+                    text      : com.conjoon.Gettext.gettext("These settings will be used to connect to the outbox server to send email messages.")
             }),
                 fields['serverOutbox'],
                 fields['portOutbox'],
@@ -362,9 +362,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             baseCls     : 'x-small-editor',
             labelAlign : 'left',
             items       : [new com.conjoon.groupware.util.FormIntro({
-                style : 'margin:10px 0 5px 0;',
-                label : com.conjoon.Gettext.gettext("Fetch messages"),
-                text  : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.")
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Fetch messages"),
+                text      : com.conjoon.Gettext.gettext("You can delete each message from the inbox server after downloading them. If you use additional software to organize your emails, it is suggested to leave this option off.")
             }),
             fields['isCopyLeftOnServer']
             ]
@@ -377,9 +377,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             baseCls     : 'x-small-editor',
             labelAlign : 'left',
             items       : [new com.conjoon.groupware.util.FormIntro({
-                style : 'margin:10px 0 5px 0;',
-                label : com.conjoon.Gettext.gettext("Create signature"),
-                text  : com.conjoon.Gettext.gettext("You can create a signature which will then be appended to each message you send using this account.")
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Create signature"),
+                text      : com.conjoon.Gettext.gettext("You can create a signature which will then be appended to each message you send using this account.")
             }),
                 fields['isSignatureUsed'],
                 fields['signature']
@@ -392,9 +392,9 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             cls      : 'com-conjoon-groupware-email-EmailAccountDialog-introPanel',
             items    : [
                 new com.conjoon.groupware.util.FormIntro({
-                    style : 'margin:10px 0 5px 0;',
-                    label : com.conjoon.Gettext.gettext("Email accounts"),
-                    text  : com.conjoon.Gettext.gettext("Chose an existing account for editing or create a new one.")
+                    style     : 'margin:10px 0 5px 0;',
+                    labelText : com.conjoon.Gettext.gettext("Email accounts"),
+                    text      : com.conjoon.Gettext.gettext("Chose an existing account for editing or create a new one.")
                 })
             ]
         });

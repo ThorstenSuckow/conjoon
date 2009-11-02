@@ -19,7 +19,6 @@ Ext.namespace('com.conjoon.groupware.util');
  * @extends Ext.BoxComponent
  * Utility Formintro class.
  * @constructor
- * @param {Number} height (optional) Spacer height in pixels (defaults to 22).
  */
 com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 
@@ -32,7 +31,7 @@ com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
     _labelEl : null,
 
     autoEl : {
-        tag : 'div',
+        tag   : 'div',
         children : [{
             tag      : 'div',
             cls      : 'com-conjoon-groupware-util-FormIntro-container',
@@ -58,7 +57,7 @@ com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
 
     setLabel : function(label)
     {
-        this.label = label;
+        this.labelText = label;
 
         if (this.rendered) {
             this._labelEl.update(label);
@@ -86,8 +85,8 @@ com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
         this._labelEl = new Ext.Element(this.el.dom.firstChild.firstChild);
         this._textEl  = new Ext.Element(this.el.dom.lastChild);
 
-        if (this.label) {
-            this._labelEl.update(this.label);
+        if (this.labelText) {
+            this._labelEl.update(this.labelText);
         }
 
         if (this.text != undefined) {

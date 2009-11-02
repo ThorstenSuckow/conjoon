@@ -183,9 +183,9 @@ com.conjoon.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz.C
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style   : 'margin:10px 0 5px 0;',
-                label   : com.conjoon.Gettext.gettext("Personal data"),
-                text    : "Specify your real name and your email address here. This information will be visible to the recipients of your messages."
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Personal data"),
+                text      : "Specify your real name and your email address here. This information will be visible to the recipients of your messages."
             }),
             this.nameField,
             this.addressField
@@ -241,9 +241,9 @@ com.conjoon.groupware.email.EmailAccountWizardserverInboxCard = Ext.extend(Ext.u
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style   : 'margin:10px 0 5px 0;',
-                label   : com.conjoon.Gettext.gettext("Inbox server"),
-                text    : com.conjoon.Gettext.gettext("Specify the host address of the inbox server here (e.g. pop3.provider.de) and your user credentials for authentication.")
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Inbox server"),
+                text      : com.conjoon.Gettext.gettext("Specify the host address of the inbox server here (e.g. pop3.provider.de) and your user credentials for authentication.")
             }),
             this.hostField,
             this.usernameField,
@@ -333,9 +333,9 @@ com.conjoon.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ext.
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style   : 'margin:10px 0 5px 0;',
-                label   : com.conjoon.Gettext.gettext("Outbox server"),
-                text    : com.conjoon.Gettext.gettext("Specify the host address of the outbox server here (e.g. smtp.provider.de) and your user credentials, if the server requires authentication.")
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Outbox server"),
+                text      : com.conjoon.Gettext.gettext("Specify the host address of the outbox server here (e.g. smtp.provider.de) and your user credentials, if the server requires authentication.")
             }),
             this.hostField,
             this.useAuthField,
@@ -395,9 +395,9 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style   : 'margin:10px 0 5px 0;',
-                label   : com.conjoon.Gettext.gettext("Account name"),
-                text    : com.conjoon.Gettext.gettext("Specify a unique name for this account. This name will be used later on to identify this account. The name must not be already existing.")
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Account name"),
+                text      : com.conjoon.Gettext.gettext("Specify a unique name for this account. This name will be used later on to identify this account. The name must not be already existing.")
             }),
             this.nameField
         ];
@@ -407,7 +407,7 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
 
     validateAccountName : function(value)
     {
-        value = value.trim();
+        value = value.trim().toLowerCase();
 
         if (value === "") {
             return false;

@@ -320,8 +320,8 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
                     title  : com.conjoon.Gettext.gettext("Security"),
                     items  : [
                         new com.conjoon.groupware.util.FormIntro({
-                            label : com.conjoon.Gettext.gettext("Allow cross domain resources"),
-                            text  : com.conjoon.Gettext.gettext("Some feeds may be delivered with images, which pose a potential security risc: By loading this images into your browser from another domain, you may expose personal details such as your IP address and there is also a potential risc related to XSS attack (cross site scripting).<br /> You should only enable loading images from those sites that you can trust.")
+                            labelText : com.conjoon.Gettext.gettext("Allow cross domain resources"),
+                            text      : com.conjoon.Gettext.gettext("Some feeds may be delivered with images, which pose a potential security risc: By loading this images into your browser from another domain, you may expose personal details such as your IP address and there is also a potential risc related to XSS attack (cross site scripting).<br /> You should only enable loading images from those sites that you can trust.")
                         }),
                         this.enableImagesCheckbox
 
