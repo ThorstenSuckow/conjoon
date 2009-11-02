@@ -131,7 +131,7 @@ com.conjoon.cudgets.settings.Container = Ext.extend(Ext.Container, {
             this.ui = new com.conjoon.cudgets.settings.ui.DefaultContainerUi();
         }
 
-        this.storeSync.init();
+        this.storeSync.init(this);
 
         this.ui.init(this);
 

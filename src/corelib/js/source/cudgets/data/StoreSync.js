@@ -68,14 +68,18 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
      */
     deletedRecords : null,
 
+
 // -------- api
 
     /**
      * Inits the store with the data from orgStore.
      *
+     * @param {Ext.Component} component The component the StoreSync is bound to,
+     * if any.
+     *
      * @packageprotected
      */
-    init : function()
+    init : function(component)
     {
         this.deletedRecords = [];
 
@@ -99,6 +103,7 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
         var recordType = this.orgStore.reader.recordType;
 
         this.store = new com.conjoon.cudgets.data.Store({
+            autoDestroy          : true,
             pruneModifiedRecords : true,
             storeId              : Ext.id(),
             autoSave             : false,
@@ -124,6 +129,13 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
         for (var i = 0, len = records.length; i < len; i++) {
             this.store.add(records[i].copy());
         }
+
+        this.orgStore.on('add', this.onOrgStoreAdd, this);
+
+        if (component) {
+            component.on('destroy', this.destroy, this);
+        }
+
     },
 
     /**
@@ -154,6 +166,29 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
     save : function()
     {
         this.store.save();
+    },
+
+    /**
+     *
+     */
+    destroy : function()
+    {
+        this.orgStore.un('add', this.onOrgStoreAdd, this);
+    },
+
+    /**
+     * Callback for the orgStore's add event. Will add a copy of the newly added
+     * record to the store.
+     *
+     * @param {Ext.dataStore} store
+     * @param {Array|Ext.data.Record} records
+     * @param {Number} index
+     */
+    onOrgStoreAdd : function(store, records, index)
+    {
+        for (var i = 0, len = records.length; i < len; i++) {
+            this.store.add(records[i].copy());
+        }
     }
 
 });
