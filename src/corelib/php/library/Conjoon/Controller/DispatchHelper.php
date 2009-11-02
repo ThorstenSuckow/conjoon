@@ -212,8 +212,8 @@ class Conjoon_Controller_DispatchHelper {
         }
 
         return array(
-            'sucess' => false,
-            'error'  => $exList
+            'success' => false,
+            'error'   => $exList
         );
 
     }
