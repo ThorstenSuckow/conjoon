@@ -32,6 +32,17 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi = function(config) {
 com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
 
     /**
+     * @cfg {Boolean} modal Whether to render the dialog modal. Defaults to true.
+     */
+    modal : true,
+
+    /**
+     * @cfg {Boolean} resizable Whether to render the dialog resizable. Defaults
+     * to true.
+     */
+    resizable : false,
+
+    /**
      * @cfg {Number} height The height for the dialog. Any setting for the dialog
      * will preceed this setting. If neither specified, defaults to 375.
      */
@@ -41,37 +52,37 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
      * @cfg {Number} width The width for the dialog. Any setting for the dialog
      * will preceed this setting. If neither specified, defaults to 550.
      */
-    width : 550, 
+    width : 550,
 
     /**
      * @cfg {String} title The title for the dialog. Defaults to the localized
      * translation of "Settings"
      */
     title : com.conjoon.Gettext.gettext("Settings"),
-    
+
     /**
      * @cfg {String} iconCls The iconCls to use for showing an icon in the
      * header. Defaults to 'settingsIcon'.
      */
     iconCls : 'settingsIcon',
-    
+
     /**
-     * @cfg {String} okButtonTitle The title for the ok button. Defaults to the 
+     * @cfg {String} okButtonTitle The title for the ok button. Defaults to the
      * localized translation of "OK".
      */
     okButtonTitle : com.conjoon.Gettext.gettext("OK"),
-    
+
     /**
-     * @cfg {String} cancelButtonTitle The title for the cancel button. Defaults 
+     * @cfg {String} cancelButtonTitle The title for the cancel button. Defaults
      * to the localized translation of "Cancel".
      */
-    cancelButtonTitle : com.conjoon.Gettext.gettext("Cancel"),    
-    
+    cancelButtonTitle : com.conjoon.Gettext.gettext("Cancel"),
+
     /**
-     * @cfg {String} applyButtonTitle The title for the apply button. Defaults 
+     * @cfg {String} applyButtonTitle The title for the apply button. Defaults
      * to the localized translation of "Apply".
      */
-    applyButtonTitle : com.conjoon.Gettext.gettext("Apply"),        
+    applyButtonTitle : com.conjoon.Gettext.gettext("Apply"),
 
     /**
      * @cfg {com.conjoon.cudgets.settings.listener.DefaultDialogListener} actionListener
@@ -124,15 +135,21 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
     buildDialog : function()
     {
         Ext.apply(this.dialog, {
-            layout  : 'fit',
-            cls     : 'com-conjoon-cudgets-SettingsDialog',
-            iconCls : this.iconCls,
-            title   : this.title,
-            height  : this.dialog.height ? this.dialog.height : this.height,
-            width   : this.dialog.width  ? this.dialog.width  : this.width,
+            layout    : 'fit',
+            cls       : 'com-conjoon-cudgets-SettingsDialog',
+            iconCls   : this.iconCls,
+            title     : this.title,
+            height    : this.dialog.height
+                        ? this.dialog.height
+                        : this.height,
+            width     : this.dialog.width
+                        ? this.dialog.width
+                        : this.width,
+            modal     : this.modal,
+            resizable : this.resizable,
             items  : [
                 this.dialog.getSettingsContainer()
-            ], 
+            ],
             buttons : [
                 this.dialog.getOkButton(),
                 this.dialog.getCancelButton(),
@@ -148,7 +165,7 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
     buildOkButton : function()
     {
         return new Ext.Button({
-            text : this.okButtonTitle    
+            text : this.okButtonTitle
         });
     },
 
@@ -159,10 +176,10 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
     buildCancelButton : function()
     {
         return new Ext.Button({
-            text : this.cancelButtonTitle    
+            text : this.cancelButtonTitle
         });
     },
-    
+
     /**
      *
      * @return {Ext.Button}
@@ -173,7 +190,7 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
             text     : this.applyButtonTitle,
             disabled : true
         });
-    },    
+    },
 
     /**
      * Renderes the controls of the dialog eitehr enabled or disabled
@@ -181,16 +198,16 @@ com.conjoon.cudgets.settings.ui.DefaultDialogUi.prototype = {
      * with those controls.
      *
      * @param {Boolean} disabled True to disable the controls, otherwise false.
-     * @param {Boolean} applyButtonDisabled Whether to render the applyButton 
+     * @param {Boolean} applyButtonDisabled Whether to render the applyButton
      * disabled or enabled
      */
     setControlsDisabled : function(disabled, applyButtonDisabled)
     {
         var dialog = this.dialog;
-        
-        dialog.getApplyButton().setDisabled(applyButtonDisabled);           
-        dialog.getOkButton().setDisabled(disabled);           
-        dialog.getCancelButton().setDisabled(disabled);           
-    } 
+
+        dialog.getApplyButton().setDisabled(applyButtonDisabled);
+        dialog.getOkButton().setDisabled(disabled);
+        dialog.getCancelButton().setDisabled(disabled);
+    }
 
 };
