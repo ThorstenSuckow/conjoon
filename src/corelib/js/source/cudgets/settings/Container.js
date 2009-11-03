@@ -233,6 +233,8 @@ com.conjoon.cudgets.settings.Container = Ext.extend(Ext.Container, {
      * This method will do nothing if the currently selected record (if any) could
      * not be saved due to errors.
      *
+     * @return {Boolean} This method will return true if any outstanding changes
+     * have to be send to the server, otherwise false.
      */
     saveConfiguration : function()
     {
@@ -257,7 +259,7 @@ com.conjoon.cudgets.settings.Container = Ext.extend(Ext.Container, {
             this.saveFormDataToEntry(rec);
         }
 
-        this.storeSync.save();
+        return this.storeSync.save();
     },
 
     /**
