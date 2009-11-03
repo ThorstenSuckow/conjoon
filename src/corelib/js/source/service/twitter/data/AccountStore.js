@@ -29,13 +29,18 @@ com.conjoon.service.twitter.data.AccountStore = function() {
 
     var _getStore = function() {
         return new Ext.data.Store({
+            storeId : Ext.id(),
+            proxy   : new com.conjoon.cudgets.data.DirectProxy({
+                api : {
+                    read : com.conjoon.service.provider.twitterAccount.getAccounts
+                },
+            }),
             autoLoad : false,
-            storeId  : Ext.id(),
-            url      : './service/twitterAccount/get.accounts/format/json',
-            reader : new Ext.data.JsonReader({
-                root : 'accounts',
-                id   : 'id'
-            }, com.conjoon.service.twitter.data.AccountRecord)
+            reader   : new com.conjoon.cudgets.data.JsonReader({
+                    root            : 'accounts',
+                    id              : 'id',
+                    successProperty : 'success',
+                }, com.conjoon.service.twitter.data.AccountRecord)
         });
     };
 
