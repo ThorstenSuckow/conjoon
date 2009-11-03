@@ -344,6 +344,9 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
      */
     onWrite : function(store, action, result, res, rs)
     {
+
+        var prop = action == Ext.data.Api.actions.destroy ? 'removed' : 'updated';
+
         if (result.success === false) {
 
             var settingsContainer = this.settingsContainer;
@@ -367,15 +370,15 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
 
             } else {
 
-                var prop = action == Ext.data.Api.actions.destroy ? 'removed' : 'updated';
-
                 var failed = result.failed;
 
                 var accountNames = [];
                 var storeSync    = settingsContainer.storeSync;
                 var store        = storeSync.store;
                 for (var i = 0, len = failed.length; i < len; i++) {
-                    accountNames.push(store.getById(failed[i]).get(storeSync.dataIndex));
+                    accountNames.push(store.getById(failed[i]).get(
+                        storeSync.dataIndex
+                    ));
                 }
 
                 var message = "";
@@ -407,6 +410,13 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
                     id      : this.clsId
                 });
             }
+        }
+
+        var rem = result.removed;
+        for (var i = 0, len = rem.length; i < len; i++) {
+            this.settingsContainer.storeSync.removeFromOrgStoreForId(
+                rem[i]
+            );
         }
 
         var cards = this.settingsContainer.getFormCards();
