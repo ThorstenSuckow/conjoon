@@ -203,6 +203,7 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.mon(this.friendsList,       'click', this._onFriendsListClick, this);
 
         this.mon(this.accountStore, 'remove', this._onAccountStoreRemove, this);
+        this.mon(this.accountStore, 'update', this._onAccountStoreUpdate, this);
 
         this.mon(this.userInfoBox.tweetStore, 'beforeload', this._onBeforeUsersRecentTweetStoreLoad, this);
 
@@ -366,6 +367,29 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     {
         if (this._currentAccountId == record.id) {
             this._clearCurrentAccount();
+        }
+    },
+
+    /**
+     * Listens to the accountStore's update event.
+     * This implementation will change the title of the panel  text if a "commit"
+     * was specified in "operation" and if the edited account equals to the
+     * currently selected account.
+     *
+     * @param {Ext.data.Store} store
+     * @param {com.conjoon.service.twitter.data.AccountRecord} record
+     * @param {String} operation
+     *
+     * @protected
+     */
+    _onAccountStoreUpdate : function(store, record, operation)
+    {
+        if (operation == 'commit' && this._currentAccountId == record.id) {
+            this.setTitle(
+                String.format(
+                    this.titleTpl, record.get('name')
+                )
+            );
         }
     },
 

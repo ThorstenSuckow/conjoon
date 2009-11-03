@@ -219,6 +219,43 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
         }
 
         this.orgStore.remove(rec);
+    },
+
+    /**
+     * Fetches the records as specified by the ids from the temp
+     * store and writes their data to the records with the same ids in
+     * orgStore, and commits afterwards.
+     *
+     * @param {Number} recordId
+     *
+     * @throws an exception if the record could either be not found in
+     * tempStore or orgStore
+     */
+    syncToOrgStoreForId : function(recordId)
+    {
+        var newRec = this.store.getById(recordId);
+        var oldRec = this.orgStore.getById(recordId);
+
+        if (!newRec) {
+            throw(
+                "Expected record with id\""+recordId+"\" in temp store, "
+                +"but was not found"
+            );
+        }
+
+        if (!oldRec) {
+            throw(
+                "Expected record with id\""+recordId+"\" in org store, "
+                +"but was not found"
+            );
+        }
+
+        var fields = newRec.fields.items;
+        for (var i = 0, len = fields.length; i < len; i++) {
+            oldRec.set(fields[i]['name'], newRec.get(fields[i]['name']));
+        }
+
+        this.orgStore.commitChanges();
     }
 
 });

@@ -412,11 +412,20 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
             }
         }
 
-        var rem = result.removed;
-        for (var i = 0, len = rem.length; i < len; i++) {
-            this.settingsContainer.storeSync.removeFromOrgStoreForId(
-                rem[i]
-            );
+        if (prop == 'removed') {
+            var rem = result.removed;
+            for (var i = 0, len = rem.length; i < len; i++) {
+                this.settingsContainer.storeSync.removeFromOrgStoreForId(
+                    rem[i]
+                );
+            }
+        } else if (prop == 'updated') {
+            var upd = result.updated;
+            for (var i = 0, len = upd.length; i < len; i++) {
+                this.settingsContainer.storeSync.syncToOrgStoreForId(
+                    upd[i]
+                );
+            }
         }
 
         var cards = this.settingsContainer.getFormCards();
