@@ -343,7 +343,11 @@ com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
     _getManageAccountMenuItem : function()
     {
         return new Ext.menu.Item({
-            text : com.conjoon.Gettext.gettext("Manage Accounts...")
+            text    : com.conjoon.Gettext.gettext("Manage Accounts..."),
+            handler : function() {
+                var m = new com.conjoon.service.twitter.OptionsDialog();
+                m.show();
+            }
         });
     }
 
