@@ -202,6 +202,8 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
         this.mon(this.usersRecentTweets, 'click', this._onRecentTweetClick, this);
         this.mon(this.friendsList,       'click', this._onFriendsListClick, this);
 
+        this.mon(this.accountStore, 'remove', this._onAccountStoreRemove, this);
+
         this.mon(this.userInfoBox.tweetStore, 'beforeload', this._onBeforeUsersRecentTweetStoreLoad, this);
 
         this.mon(this.userInfoBox, 'userload',       this._onUserLoad, this);
@@ -349,6 +351,22 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
             options.params.id,
             rec.get('updateInterval')
         );
+    },
+
+    /**
+     * Callback for teh remove event of the account store. If the removed
+     * account equals to teh currently selected, the view will be reset by
+     * calling this._clearCurrentAccount().
+     *
+     * @param {Ext.data.Store} store
+     * @param {Ext.data.Record} record
+     * @param {Number} index
+     */
+    _onAccountStoreRemove : function(store, record, index)
+    {
+        if (this._currentAccountId == record.id) {
+            this._clearCurrentAccount();
+        }
     },
 
     /**
