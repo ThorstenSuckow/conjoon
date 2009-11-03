@@ -79,7 +79,7 @@ com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
             scope          : this
         };
 
-        com.conjoon.service.remote.twitterAccount.addAccount({
+        com.conjoon.service.provider.twitterAccount.addAccount({
             name     : values['name'],
             password : values['password']
         }, function (result, remotingObject) {
