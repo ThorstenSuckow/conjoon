@@ -162,10 +162,17 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
      * Changes will only be committed to the org store if no error occured and all
      * data manipulation was successfull.
      *
+     * @return {Boolean} This method will return true if any outstanding changes
+     * have to be send to the server, otherwise false.
      */
     save : function()
     {
-        this.store.save();
+        if (this.store.removed.length || this.store.getModifiedRecords().length) {
+            this.store.save();
+            return true;
+        }
+
+        return false;
     },
 
     /**
@@ -189,6 +196,29 @@ Ext.extend(com.conjoon.cudgets.data.StoreSync, Ext.util.Observable, {
         for (var i = 0, len = records.length; i < len; i++) {
             this.store.add(records[i].copy());
         }
+    },
+
+    /**
+     * Removes the record with the specified id from the orgStore.
+     * This method is be API only and not called directly.
+     *
+     * @param {Number} recordId The id of the record to remove
+     *
+     * @throws Throws an exception if no record was found in the
+     * orgStore with this id
+     */
+    removeFromOrgStoreForId : function(recordId)
+    {
+        var rec = this.orgStore.getById(recordId);
+
+        if (!rec) {
+            throw(
+                "Expected record with id \""+recordId+"\" to exist in orgStore, "
+                + "but was not found."
+            );
+        }
+
+        this.orgStore.remove(rec);
     }
 
 });
