@@ -23,7 +23,7 @@ Ext.Direct.addProvider({
             len    : 0
         }, {
             name   : 'addAccount',
-            len    : 0
+            len    : 1
         }, {
             name   : 'updateAccount',
             len    : 1
