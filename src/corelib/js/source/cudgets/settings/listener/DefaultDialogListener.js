@@ -275,7 +275,9 @@ com.conjoon.cudgets.settings.listener.DefaultDialogListener.prototype = {
     onOkClick : function(button, e)
     {
         this.closeAfterSave = true;
-        this.dialog.getSettingsContainer().saveConfiguration();
+        if (!this.dialog.getSettingsContainer().saveConfiguration()) {
+            this.dialog.close();
+        }
     },
 
     /**
