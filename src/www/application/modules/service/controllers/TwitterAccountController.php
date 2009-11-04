@@ -34,7 +34,8 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
     public function init()
     {
         $this->_helper->filterRequestData()
-                      ->registerFilter('Service_TwitterAccountController::add.account', true);
+                      ->registerFilter('Service_TwitterAccountController::add.account', true)
+                      ->registerFilter('Service_TwitterAccountController::remove.account');
 
         $conjoonContext = $this->_helper->conjoonContext();
 
@@ -172,9 +173,44 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $this->view->account = $dto;
     }
 
+    /**
+     * Removes accounts based on the ids passed to this method.
+     * The ids will be available in the POST-Param "data", whereas each index
+     * holds the id of the account to remove.
+     *
+     * Removed accounts will be send back as their ids in the property "removed"
+     * (numeric array), accounts, which could not be removed, will be stored in
+     * the numeric array "failed". As soon, as there is one entry in this array,
+     * the response property "success" has to be set to "false".
+     *
+     *
+     */
     public function removeAccountAction()
     {
-        throw new Exception("NOT YET IMPLEMENTED");
+        $data = $this->_request->getParam('data');
+
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Model_Account
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Model/Account.php';
+
+        $model = new Conjoon_Modules_Service_Twitter_Account_Model_Account();
+
+        $removed = array();
+        $failed  = array();
+
+        for ($i = 0, $len = count($data); $i < $len; $i++) {
+            $rem = $model->deleteAccountForId($data[$i]);
+            if ($rem) {
+                $removed[] = $data[$i];
+            } else {
+                $failed[] = $data[$i];
+            }
+        }
+
+        $this->view->success = (count($failed) == 0);
+        $this->view->removed = $removed;
+        $this->view->failed  = $failed;
     }
 
     public function updateAccountAction()
