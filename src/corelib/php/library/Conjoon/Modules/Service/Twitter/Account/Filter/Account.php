@@ -19,14 +19,9 @@
 require_once 'Conjoon/Filter/Input.php';
 
 /**
- * @see Conjoon_Filter_FormBoolToInt
+ * @see Conjoon_Filter_Raw
  */
-require_once 'Conjoon/Filter/FormBoolToInt.php';
-
-/**
- * @see Zend_Validate_Hostname
- */
-require_once 'Zend/Validate/Hostname.php';
+require_once 'Conjoon/Filter/Raw.php';
 
 /**
  * An input-filter class defining all validators and filters needed when
@@ -40,13 +35,14 @@ require_once 'Zend/Validate/Hostname.php';
  */
 class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Filter_Input {
 
-    protected $_defaultEscapeFilter = 'StringTrim';
-
     protected $_presence = array(
         'create' => array(
             'name',
             'password',
             'updateInterval'
+        ),
+        'delete' => array(
+            'data'
         )
     );
 
@@ -59,6 +55,10 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
          ),
          'updateInterval' => array(
             'Int'
+         ),
+         'data' => array(
+            'ExtDirectWriterFilter',
+            'PositiveArrayValues'
          )
     );
 
@@ -72,10 +72,19 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
         'updateInterval' => array(
             'allowEmpty' => true,
             'default'    => 60
+         ),
+         'data' => array(
+            'allowEmpty' => false
          )
     );
 
+    protected $_dontRecurseFilter = array(
+        'data'
+    );
 
-
+    protected function _init()
+    {
+        $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();
+    }
 
 }
