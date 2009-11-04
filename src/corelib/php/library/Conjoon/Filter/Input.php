@@ -65,6 +65,11 @@ class Conjoon_Filter_Input extends Zend_Filter_Input {
     protected $_filters = array();
 
     /**
+     * @var array
+     */
+    protected $_dontRecurseFilter = array();
+
+    /**
      * An associative array containing all fields which need to be available
      * for each operation. Override this to adjust your filter bahavior.
      * Example:
@@ -183,6 +188,30 @@ class Conjoon_Filter_Input extends Zend_Filter_Input {
     {
         parent::_filter();
         $this->_adjustValidators();
+    }
+
+    /**
+     * Override to consider _dontRecurseFilter - where field names are stored
+     * where filters should not be operated on array values.
+     *
+     * @param array $filterRule
+     * @return void
+     */
+    protected function _filterRule(array $filterRule)
+    {
+        $field = $filterRule[self::FIELDS];
+        if (!array_key_exists($field, $this->_data)) {
+            return;
+        }
+        if (!in_array($field, $this->_dontRecurseFilter) && is_array($this->_data[$field])) {
+            foreach ($this->_data[$field] as $key => $value) {
+                $this->_data[$field][$key] = $filterRule[self::FILTER_CHAIN]->filter($value);
+            }
+        } else {
+            $this->_data[$field] =
+                $filterRule[self::FILTER_CHAIN]->filter($this->_data[$field]);
+        }
+
     }
 
     public function getProcessedData()
