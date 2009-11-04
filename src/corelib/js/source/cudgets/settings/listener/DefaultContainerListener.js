@@ -502,6 +502,7 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
             (response && response.code === Ext.Direct.exceptions.PARSE)) {
             // this will break all batched responses
              this.batchedResponseHelper.clearConfigForId(this.clsId);
+             this.settingsContainer.setServerRequestPending(false);
              com.conjoon.groupware.ResponseInspector.handleFailure(response);
              return;
         }
