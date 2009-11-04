@@ -133,6 +133,18 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                     Conjoon_Modules_Service_Twitter_Account_Filter_Account::CONTEXT_CREATE
                 );
             break;
+
+            case 'Service_TwitterAccountController::remove.account':
+                /**
+                 * @see Conjoon_Modules_Service_Twitter_Account_Filter_Account
+                 */
+                require_once 'Conjoon/Modules/Service/Twitter/Account/Filter/Account.php';
+
+                $this->_filters[$key] = new Conjoon_Modules_Service_Twitter_Account_Filter_Account(
+                    array(),
+                    Conjoon_Modules_Service_Twitter_Account_Filter_Account::CONTEXT_DELETE
+                );
+            break;
         }
 
         return $this->_filters[$key];
