@@ -153,6 +153,30 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
         return $id;
     }
 
+    /**
+     * Removes the account with the specified id.
+     *
+     * @param integer $accountId The id of the account to remove
+     *
+     * @return boolean false if the accoutn was not removed, otherwise true
+     */
+    public function deleteAccountForId($accountId)
+    {
+        $accountId = (int)$accountId;
+
+        if ($accountId <= 0) {
+            return false;
+        }
+
+        $where    = $this->getAdapter()->quoteInto(
+            'id = ?', $accountId, 'INTEGER'
+        );
+        $affected = $this->delete($where);
+
+        return $affected !== 0;
+    }
+
+
 // -------- interface Conjoon_BeanContext_Decoratable
 
     public function getRepresentedEntity()
