@@ -373,8 +373,9 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
     /**
      * Listens to the accountStore's update event.
      * This implementation will change the title of the panel  text if a "commit"
-     * was specified in "operation" and if the edited account equals to the
-     * currently selected account.
+     * was specified in "operation" if the edited account equals to the currently
+     * selected account. Additionally, polling will be stoppped and restarted with
+     * the value from the account store's updateInterval property.
      *
      * @param {Ext.data.Store} store
      * @param {com.conjoon.service.twitter.data.AccountRecord} record
@@ -389,6 +390,12 @@ com.conjoon.service.twitter.TwitterPanel = Ext.extend(Ext.Panel, {
                 String.format(
                     this.titleTpl, record.get('name')
                 )
+            );
+            this.tweetPoller.stopPolling();
+
+            this.tweetPoller.startPolling(
+                record.id,
+                record.get('updateInterval')
             );
         }
     },
