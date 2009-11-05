@@ -145,6 +145,19 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                     Conjoon_Modules_Service_Twitter_Account_Filter_Account::CONTEXT_DELETE
                 );
             break;
+
+            case 'Service_TwitterAccountController::update.account':
+                /**
+                 * @see Conjoon_Modules_Service_Twitter_Account_Filter_Account
+                 */
+                require_once 'Conjoon/Modules/Service/Twitter/Account/Filter/Account.php';
+
+                $this->_filters[$key] = new Conjoon_Modules_Service_Twitter_Account_Filter_Account(
+                    array(),
+                    Conjoon_Modules_Service_Twitter_Account_Filter_Account::CONTEXT_UPDATE_REQUEST
+                );
+            break;
+
         }
 
         return $this->_filters[$key];
