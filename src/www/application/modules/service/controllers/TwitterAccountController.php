@@ -35,7 +35,8 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
     {
         $this->_helper->filterRequestData()
                       ->registerFilter('Service_TwitterAccountController::add.account', true)
-                      ->registerFilter('Service_TwitterAccountController::remove.account');
+                      ->registerFilter('Service_TwitterAccountController::remove.account')
+                      ->registerFilter('Service_TwitterAccountController::update.account');
 
         $conjoonContext = $this->_helper->conjoonContext();
 
@@ -164,7 +165,7 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
         )->remove(array('userId' => $this->_helper->registryAccess()->getUserId()));
 
-        $dto->updateInterval = ((int)$updateInterval) * 1000;
+        $dto->updateInterval = $updateInterval;
         $dto->password       = "******";
         $dto->name           = $name;
         $dto->id             = $id;
@@ -225,9 +226,84 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $this->view->failed  = $failed;
     }
 
+    /**
+     * Updates an account based on the given data.
+     * Data to be updated will be available in a numeric indexed array "data",
+     * whereas each value is an assoc array with the following fields:
+     *  - id
+     *  - name
+     *  - password
+     *  - updateInterval
+     *
+     * The field "id" is mandatory. Successfully updated indexes of accounts must
+     * be send back in a property "updated", whereas data which cannot be updated must
+     * be send back in a property called "failed" (each value in this array is the id
+     * of the account which could not be updated).
+     * The "success" property has to be set to "false" as soon as one account could
+     * not be updated.
+     *
+     */
     public function updateAccountAction()
     {
-        throw new Exception("NOT YET IMPLEMENTED");
+        $data = $this->_request->getParam('data');
+
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Filter_Account
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Filter/Account.php';
+
+        /**
+         * @see Conjoon_Modules_Service_Twitter_Account_Model_Account
+         */
+        require_once 'Conjoon/Modules/Service/Twitter/Account/Model/Account.php';
+
+        $model = new Conjoon_Modules_Service_Twitter_Account_Model_Account();
+
+        $filter = new Conjoon_Modules_Service_Twitter_Account_Filter_Account(
+            array(),
+            Conjoon_Modules_Service_Twitter_Account_Filter_Account::CONTEXT_UPDATE
+        );
+
+        $updated = array();
+        $failed  = array();
+
+        for ($i = 0, $len = count($data); $i < $len; $i++) {
+            $filter->setData($data[$i]);
+            $upData = $filter->getProcessedData();
+
+            $id = $upData['id'];
+            unset($upData['id']);
+
+            // no data left? skip, mark account as succesfully updated
+            if (empty($upData)) {
+                $updated[] = $id;
+                continue;
+            }
+
+            $res = $model->updateAccountForId($upData, $id);
+
+            if (!$res) {
+                $failed[] = $id;
+            } else {
+                $updated[] = $id;
+            }
+        }
+
+        if (count($updated)) {
+            /**
+             * @see Conjoon_Builder_Factory
+             */
+            require_once 'Conjoon/Builder/Factory.php';
+
+            Conjoon_Builder_Factory::getBuilder(
+                Conjoon_Keys::CACHE_TWITTER_ACCOUNTS,
+                Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray()
+            )->remove(array('userId' => $this->_helper->registryAccess()->getUserId()));
+        }
+
+        $this->view->success = (count($failed) == 0);
+        $this->view->failed  = $failed;
+        $this->view->updated = $updated;
     }
 
 }
