@@ -41,8 +41,9 @@ com.conjoon.service.twitter.OptionsDialog = Ext.extend(
                 })
             }),
             ui : new com.conjoon.cudgets.settings.ui.DefaultDialogUi({
-                iconCls : 'twitterSettingsIcon',
-                title   : com.conjoon.Gettext.gettext("Twitter Account Management")
+                iconCls        : 'twitterSettingsIcon',
+                title          : com.conjoon.Gettext.gettext("Twitter Account Management"),
+                actionListener : new com.conjoon.service.twitter.optionsDialog.DialogListener()
             }),
             width  : 550,
             height : 375
