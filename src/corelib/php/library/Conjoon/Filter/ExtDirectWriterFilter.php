@@ -45,7 +45,13 @@ class Conjoon_Filter_ExtDirectWriterFilter implements Zend_Filter_Interface
             return $value;
         }
 
-        if (isset($value[0]) && is_array($value[0]) && count($value) == 1) {
+        /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+
+        if (isset($value[0]) && is_array($value[0]) && count($value) == 1
+            && !Conjoon_Util_Array::isAssociative($value[0])) {
             return $value[0];
         }
 
