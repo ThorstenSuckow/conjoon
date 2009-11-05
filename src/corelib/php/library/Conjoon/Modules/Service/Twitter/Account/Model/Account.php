@@ -168,10 +168,52 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
             return false;
         }
 
-        $where    = $this->getAdapter()->quoteInto(
+        $where = $this->getAdapter()->quoteInto(
             'id = ?', $accountId, 'INTEGER'
         );
         $affected = $this->delete($where);
+
+        return $affected !== 0;
+    }
+
+    /**
+     * Updates the account with the specified id with the data found in $data.
+     *
+     * @param array $data An associative array with key/value pairs which
+     * represents the data to update.
+     * @param integer $accountId The id of the account to update with the given
+     * data
+     *
+     * @return boolean false if the account was not updated, otherwise true
+     */
+    public function updateAccountForId(Array $data, $accountId)
+    {
+        $accountId = (int)$accountId;
+
+        if ($accountId <= 0) {
+            return false;
+        }
+
+        $updateData = array();
+
+        $whiteList = array(
+            'name',
+            'password',
+            'update_interval'
+        );
+
+        foreach ($data as $key => $value) {
+            if (in_array($key, $whiteList)) {
+                $updateData[$key] = $value;
+            }
+        }
+
+        if (empty($updateData)) {
+            return false;
+        }
+
+        $where = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
+        $affected = $this->update($updateData, $where);
 
         return $affected !== 0;
     }
