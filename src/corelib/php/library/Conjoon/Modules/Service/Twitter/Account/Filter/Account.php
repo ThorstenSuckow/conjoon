@@ -35,6 +35,11 @@ require_once 'Conjoon/Filter/Raw.php';
  */
 class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Filter_Input {
 
+    /**
+     * @const string CONTEXT_UPDATE_REQUEST
+     */
+    const CONTEXT_UPDATE_REQUEST = 'update_request';
+
     protected $_presence = array(
         'create' => array(
             'name',
@@ -43,6 +48,15 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
         ),
         'delete' => array(
             'data'
+        ),
+        'update_request' => array(
+            'data'
+        ),
+        'update' => array(
+            'name',
+            'password',
+            'updateInterval',
+            'id'
         )
     );
 
@@ -57,8 +71,11 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
             'Int'
          ),
          'data' => array(
-            'ExtDirectWriterFilter',
-            'PositiveArrayValues'
+            'ExtDirectWriterFilter'
+            // additional filters actually set in _init depending on the context
+         ),
+         'id' => array(
+            'Int'
          )
     );
 
@@ -71,7 +88,11 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
          ),
         'updateInterval' => array(
             'allowEmpty' => true,
-            'default'    => 60
+            'default'    => 60000
+         ),
+         'id' => array(
+            'allowEmpty' => false,
+            array('GreaterThan', 0)
          ),
          'data' => array(
             'allowEmpty' => false
@@ -85,6 +106,44 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
     protected function _init()
     {
         $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();
+
+        if ($this->_context == self::CONTEXT_DELETE) {
+            $this->_filters['data'][] = 'PositiveArrayValues';
+        } else if ($this->_context == self::CONTEXT_UPDATE) {
+            $this->_validators['name']['presence']           = 'optional';
+            $this->_validators['password']['presence']       = 'optional';
+
+            $this->_validators['updateInterval'] = array(
+                'allowEmpty' => true,
+                'presence'   => 'optional'
+            );
+        }
+    }
+
+    public function getProcessedData()
+    {
+        $data = parent::getProcessedData();
+
+        if ($this->_context == self::CONTEXT_UPDATE) {
+            if ($data['updateInterval'] === NULL) {
+                unset($data['updateInterval']);
+            }
+
+            if (isset($data['updateInterval'])) {
+                $v = $data['updateInterval'];
+                $data['update_interval'] = $v;
+            }
+
+            if ($data['name'] === NULL) {
+                unset($data['name']);
+            }
+            if ($data['password'] === NULL
+                || str_replace('*', '', $data['password']) == "") {
+                unset($data['password']);
+            }
+        }
+
+        return $data;
     }
 
 }
