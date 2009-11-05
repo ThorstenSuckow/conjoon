@@ -91,7 +91,6 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
 
         for ($i = 0, $len = count($accounts); $i < $len; $i++) {
             $dto =& $accounts[$i];
-            $dto->updateInterval = ((int)$dto->updateInterval) * 1000;
 
             try {
                 /**

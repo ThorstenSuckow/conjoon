@@ -354,4 +354,4 @@ CREATE TABLE IF NOT EXISTS `groupware_email_folders_users` (
  PRIMARY KEY ( `groupware_email_folders_id` , `users_id` )
 ) ENGINE = MYISAM;
 
-ALTER TABLE `service_twitter_accounts` CHANGE `update_interval` `update_interval` INT( 10 ) UNSIGNED NOT NULL DEFAULT '60';
+ALTER TABLE `service_twitter_accounts` CHANGE `update_interval` `update_interval` INT( 10 ) UNSIGNED NOT NULL DEFAULT '60000';
