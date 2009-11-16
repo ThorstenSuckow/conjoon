@@ -103,6 +103,7 @@
           <replacetokens begintoken="@" endtoken="@">
             <token key="REV" value="${svn.lastrevision}" />
           </replacetokens>
+          <filterreader classname="filters.RemoveRequire" />
       </filterchain>
       </copy>
     </target>
@@ -279,6 +280,7 @@
        </fileset>
        <filterchain>
         <filterreader classname="filters.ProcessDevFragments" />
+        <filterreader classname="filters.RemoveRequire" />
        </filterchain>
      </copy>
    </target>
@@ -311,6 +313,7 @@
        </fileset>
        <filterchain>
         <filterreader classname="filters.ProcessDevFragments" />
+        <filterreader classname="filters.removeRequire" />
        </filterchain>
      </copy>
     <phingcall target="build_conjoon_js" />
