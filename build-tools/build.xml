@@ -321,11 +321,11 @@
 
    <!-- refreshes build contents except for ../build/libs/Zend -->
    <target name="refresh" depends="prepare">
-    <!--phingcall target="build_htdocs" /-->
+    <phingcall target="build_htdocs" />
     <phingcall target="build_application" />
-    <!--phingcall target="build_libs" />
+    <phingcall target="build_libs" />
     <phingcall target="build_datastore" />
-    <phingcall target="build_license" /-->
+    <phingcall target="build_license" />
    </target>
 
    <!-- completely removes the build dir -->
