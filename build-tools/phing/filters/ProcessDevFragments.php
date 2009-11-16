@@ -141,16 +141,19 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
         // write buffer to a temporary file, since php_strip_whitespace() needs a filename
         $file = new PhingFile(tempnam(PhingFile::getTempDir(), 'stripwhitespace'));
         file_put_contents($file->getAbsolutePath(), $php);
+
+        $output = $php;
+
         $output = preg_replace(
             "/\/\*@REMOVE@\*\/(.*?)\/\*@REMOVE@\*\//ims",
             "",
-            file_get_contents($file->getAbsolutePath())
+            $output
         );
 
         $output = preg_replace(
             "/;@REMOVE@;(.*?);@REMOVE@;/ims",
             "",
-            file_get_contents($file->getAbsolutePath())
+            $output
         );
 
         $output = preg_replace(
@@ -184,7 +187,7 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
     }
 
     /**
-     * Creates a new AddLinebreak using the passed in
+     * Creates a new ProcessDevFragments using the passed in
      * Reader for instantiation.
      *
      * @param reader A Reader object providing the underlying stream.
@@ -194,7 +197,7 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
      *         the specified reader
      */
     public function chain(Reader $reader) {
-        $newFilter = new RemoveDevTags($reader);
+        $newFilter = new ProcessDevFragments($reader);
         $newFilter->setProject($this->getProject());
         return $newFilter;
     }
