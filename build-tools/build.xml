@@ -183,9 +183,9 @@
        <exclude name="**/*.css" />
        <exclude name="**/Thumbs.db" />
        <exclude name="**/.svn" />
-       <exclude name="**/README.txt" />
+       <!--exclude name="**/README.txt" />
        <exclude name="**/LICENSE.txt" />
-       <exclude name="**/CREDITS.txt" />
+       <exclude name="**/CREDITS.txt" /-->
        <exclude name="**/CHANGELOG.txt" />
      </fileset>
     </copy>
@@ -270,10 +270,10 @@
      <delete dir="./build/htdocs/install/files/conjoon_application" />
      <copy todir="./build/htdocs/install/files/conjoon_application" includeemptydirs="true">
        <fileset dir="./src/www/application">
-         <exclude name="**/.svn" />
+         <!--exclude name="**/.svn" />
          <exclude name="**/README.txt" />
          <exclude name="**/LICENSE.txt" />
-         <exclude name="**/CREDITS.txt" />
+         <exclude name="**/CREDITS.txt" /-->
          <exclude name="**/CHANGELOG.txt" />
        </fileset>
        <filterchain>
@@ -299,9 +299,9 @@
      <copy todir="./build/htdocs" includeemptydirs="true">
        <fileset dir="./src/www/htdocs">
          <exclude name="**/.svn" />
-         <exclude name="**/README.txt" />
+         <!--exclude name="**/README.txt" />
          <exclude name="**/LICENSE.txt" />
-         <exclude name="**/CREDITS.txt" />
+         <exclude name="**/CREDITS.txt" /-->
          <exclude name="**/CHANGELOG.txt" />
          <exclude name="**/config.ini.php" />
          <exclude name="**/ext-config.js" />
