@@ -270,8 +270,9 @@
      <delete dir="./build/htdocs/install/files/conjoon_application" />
      <copy todir="./build/htdocs/install/files/conjoon_application" includeemptydirs="true">
        <fileset dir="./src/www/application">
-         <!--exclude name="**/.svn" />
-         <exclude name="**/README.txt" />
+         <exclude name="cache/**" />
+         <exclude name="**/.svn" />
+         <!--exclude name="**/README.txt" />
          <exclude name="**/LICENSE.txt" />
          <exclude name="**/CREDITS.txt" /-->
          <exclude name="**/CHANGELOG.txt" />
@@ -320,11 +321,11 @@
 
    <!-- refreshes build contents except for ../build/libs/Zend -->
    <target name="refresh" depends="prepare">
-    <phingcall target="build_htdocs" />
+    <!--phingcall target="build_htdocs" /-->
     <phingcall target="build_application" />
-    <phingcall target="build_libs" />
+    <!--phingcall target="build_libs" />
     <phingcall target="build_datastore" />
-    <phingcall target="build_license" />
+    <phingcall target="build_license" /-->
    </target>
 
    <!-- completely removes the build dir -->
