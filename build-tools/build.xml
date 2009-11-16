@@ -306,6 +306,7 @@
          <exclude name="**/config.ini.php" />
          <exclude name="**/ext-config.js" />
          <exclude name="**/startup.js" />
+         <exclude name="**/startup.iphone.js" />
        </fileset>
        <filterchain>
         <filterreader classname="filters.ProcessDevFragments" />
