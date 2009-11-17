@@ -75,6 +75,9 @@
        <fileset dir="./vendor/zendframework/library">
          <exclude name="**/.svn" />
        </fileset>
+       <filterchain>
+          <filterreader classname="filters.RemoveRequire" />
+      </filterchain>
       </copy>
       </then>
      </if>
@@ -295,6 +298,7 @@
        <delete>
          <fileset dir="./build/htdocs">
            <exclude name="js/**" />
+           <exclude name="install/files/conjoon_libs/Zend/**" />
          </fileset>
        </delete>
       </then>
