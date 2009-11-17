@@ -313,7 +313,7 @@
        </fileset>
        <filterchain>
         <filterreader classname="filters.ProcessDevFragments" />
-        <filterreader classname="filters.removeRequire" />
+        <filterreader classname="filters.RemoveRequire" />
        </filterchain>
      </copy>
     <phingcall target="build_conjoon_js" />
