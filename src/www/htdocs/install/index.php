@@ -19,6 +19,13 @@
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
+if (version_compare(PHP_VERSION, '5.2.5' , '<')) {
+    die(
+        "Sorry, your version of PHP is " . PHP_VERSION .". "
+        ."You need at least PHP 5.2.5 to run conjoon."
+    );
+}
+
 include_once './functions.php';
 
 session_start();
