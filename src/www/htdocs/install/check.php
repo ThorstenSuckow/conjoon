@@ -125,6 +125,13 @@
  @fsockopen($server, $port, $errno, $errstr, $timeout);
  $CHECK['fsockopen_available'] = $errno != 13;
 
+ $CHECK['simplexml'] = true;
+ // check if simplexml is available
+ if (!function_exists('simplexml_load_file')) {
+    $CHECK['simplexml'] = false;
+ }
+
+
  // if any warning or error was generated, save this into the session so the user
  // is informed
 
@@ -138,7 +145,8 @@
      !$CHECK['parent_dir_writable'] ||
      $CHECK['magic_quotes_gpc'] ||
      $CHECK['register_globals'] ||
-     ($CHECK['safe_mode_enabled'] && $CHECK['safe_mode_failure'])
+     ($CHECK['safe_mode_enabled'] && $CHECK['safe_mode_failure']) ||
+     !$CHECK['simplexml']
      ) {
      $_SESSION['check_failed'] = true;
  }

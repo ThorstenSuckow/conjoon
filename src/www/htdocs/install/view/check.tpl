@@ -190,3 +190,20 @@ project in this cases is, however, not guaranteed.
 <?php } ?>
 </div>
 </p>
+
+
+<!-- CHECK simplexml -->
+<h3>7 Checking simplexml</h3>
+<p>
+<div class="<?php echo ($CHECK['simplexml'] === true) ? 'success_box' : 'warning_box'; ?>">
+<?php if ($CHECK['simplexml']) { ?>
+ <b>SUCCESS</b>   <br />
+ simplexml found.
+<?php } else { ?>
+ <b>WARNING</b> <br />
+  simplexml does not seem to be available on your server. simplexml is needed by parts
+  of the Zend Framework. You can proceed with the installation, but conjoon might not
+  work properly (for example: parsing emails).
+<?php } ?>
+</div>
+</p>
