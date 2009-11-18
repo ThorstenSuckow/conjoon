@@ -41,7 +41,7 @@ if (isset($_POST['doc_path_post'])) {
 
     $docPath = trim((string)$_POST['doc_path']);
 
-    $docPath = $docPath == "" ? "/" : $docPath;
+    $docPath = '/' . ltrim($docPath, '/');
 
     $_SESSION['doc_path'] = $docPath;
 
