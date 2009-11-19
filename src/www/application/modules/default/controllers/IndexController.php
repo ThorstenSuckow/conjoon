@@ -22,6 +22,8 @@ class IndexController extends Zend_Controller_Action {
 
     const CONTEXT_IPHONE = 'iphone';
 
+    const CONTEXT_JSON = 'json';
+
     /**
      * Inits this controller and sets the context-switch-directives
      * on the various actions.
@@ -29,9 +31,9 @@ class IndexController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $contextSwitch = $this->_helper->conjoonContext();
-        $contextSwitch->addActionContext('index', self::CONTEXT_IPHONE)
-                      ->initContext();
+        $conjoonContext = $this->_helper->conjoonContext();
+        $conjoonContext->addActionContext('index', self::CONTEXT_IPHONE)
+                       ->initContext();
     }
 
     public function indexAction()
