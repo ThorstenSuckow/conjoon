@@ -276,6 +276,7 @@
        <fileset dir="./src/www/application">
          <exclude name="cache/**" />
          <exclude name="**/.svn" />
+         <exclude name="**/sandbox.phtml" />
          <!--exclude name="**/README.txt" />
          <exclude name="**/LICENSE.txt" />
          <exclude name="**/CREDITS.txt" /-->
