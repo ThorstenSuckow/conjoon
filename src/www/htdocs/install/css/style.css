@@ -439,6 +439,14 @@ div.aligncenter {
     color:#770000;
 }
 
+.info_box {
+    background:#b3cfff   ;
+    border:1px solid #5a81c3;
+    padding:5px;
+    margin:5px;
+    color:#404040;
+}
+
 td {
     font-size:12px !important;
     padding:4px;
