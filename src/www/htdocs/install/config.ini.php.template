@@ -89,18 +89,19 @@ edition = {EDITION}
 ; by the Ext.direct API, set it to "1" so that conjoon tries to decide
 ; first if it should use the needed plugins for a request. Setting to "1"
 ; might give you a slight performance increase.
-ext.direct.request.autoLookup = {APPLICATION.EXT.DIRECT.REQUEST.AUTOLOOKUP}
+ext.direct.request.autoLookup = 1
 
 ; This is the name of the parameter that gets send by the Ext framework to the
 ; application which holds data send by the Ext.direct API. If you change this,
 ; make sure you apply the changes accordingly in the client code.
-ext.direct.request.parameter = {APPLICATION.EXT.DIRECT.REQUEST.PARAMETER}
+ext.direct.request.parameter = extDirectData
 
 ; This property defines whether an exception that occured while processing
 ; the initial request for a merged Ext.Direct-request should be copied for
 ; each request that was merged and send back to the client, or if a single
-; exception should be thrown. For 3.0.0, this should be set to "0"
-ext.direct.request.singleException = {APPLICATION.EXT.DIRECT.REQUEST.SINGLE_EXCEPTION}
+; exception should be thrown. For conjoon V0.1RC1 and late rversions,
+; this should be set to "0"
+ext.direct.request.singleException = 0
 
 ;@REMOVE@;
 ; This property will tell if an additional controller plugin should be loaded
@@ -239,7 +240,7 @@ variables.max_allowed_packet = {DATABASE_MAX_ALLOWED_PACKET}
 ; have only two levels, followed by their config property
 ;
 
-default.caching = 0
+default.caching = {CACHE.DEFAULT.CACHING}
 default.frontend_type = core
 ; 1 day default lifetime
 default.frontend.lifetime = 86400
@@ -254,12 +255,14 @@ default.backend.hashed_directory_level = 1
 ;;  CACHE EMAILS  ;;
 ;;;;;;;;;;;;;;;;;;;;
 ; namespace "email.message" for cached email messages
+email.message.caching = {CACHE.EMAIL.MESSAGE.CACHING}
 email.message.frontend.lifetime = 31536000
-email.message.backend.cache_dir = cache/email/messages
+email.message.backend.cache_dir = {CACHE.EMAIL.MESSAGE.BACKEND.CACHE_DIR}
 
 ; namespace "email.accounts" for cached account lists
+email.accounts.caching = {CACHE.EMAIL.ACCOUNTS.CACHING}
 email.accounts.frontend.lifetime = 31536000
-email.accounts.backend.cache_dir = cache/email/accounts
+email.accounts.backend.cache_dir = {CACHE.EMAIL.ACCOUNTS.BACKEND.CACHE_DIR}
 
 
 ;;;;;;;;;;;;;;;;;;;
@@ -267,22 +270,27 @@ email.accounts.backend.cache_dir = cache/email/accounts
 ;;;;;;;;;;;;;;;;;;;
 
 ; namespace "feed.item" for cached feed items (feed entry)
+feed.item.caching = {CACHE.FEED.ITEM.CACHING}
 feed.item.frontend.lifetime = 31536000
-feed.item.backend.cache_dir = cache/feed/items
+feed.item.backend.cache_dir = {CACHE.FEED.ITEM.BACKEND.CACHE_DIR}
 
 ; namespace "feed.item_list" for cached feed item lists
-feed.item_list.backend.cache_dir = cache/feed/item_list
+feed.item_list.caching = {CACHE.FEED.ITEM_LIST.CACHING}
+feed.item_list.backend.cache_dir = {CACHE.FEED.ITEM_LIST.BACKEND.CACHE_DIR}
 
 ; namespace "feed.reader" for Zend_Feed_Reader
-feed.reader.backend.cache_dir = cache/feed/reader
+feed.reader.caching = {CACHE.FEED.READER.CACHING}
+feed.reader.backend.cache_dir = {CACHE.FEED.READER.BACKEND.CACHE_DIR}
 
 ; namespace "feed.account" for cached feed account
+feed.account.caching = {CACHE.FEED.ACCOUNT.CACHING}
 feed.account.frontend.lifetime = 31536000
-feed.account.backend.cache_dir = cache/feed/account
+feed.account.backend.cache_dir = {CACHE.FEED.ACCOUNT.BACKEND.CACHE_DIR}
 
 ; namespace "feed.account_list" for cached feed account lists
+feed.account_list.caching = {CACHE.FEED.ACCOUNT_LIST.CACHING}
 feed.account_list.frontend.lifetime = 31536000
-feed.account_list.backend.cache_dir = cache/feed/account_list
+feed.account_list.backend.cache_dir = {CACHE.FEED.ACCOUNT_LIST.BACKEND.CACHE_DIR}
 
 ;;;;;;;;;;;;;;;;
 ;; CACHE DB   ;;
@@ -290,8 +298,9 @@ feed.account_list.backend.cache_dir = cache/feed/account_list
 
 ; namespace "db.metadata" for cached db metadata. This cache has
 ; to be cleaned by hand if the db structure changes
+db.metadata.caching = {CACHE.DB.METADATA.CACHING}
 db.metadata.frontend.lifetime = 31536000
-db.metadata.backend.cache_dir = cache/db/metadata
+db.metadata.backend.cache_dir = {CACHE.DB.METADATA.BACKEND.CACHE_DIR}
 db.metadata.backend.hashed_directory_level = 0
 
 
@@ -300,7 +309,8 @@ db.metadata.backend.hashed_directory_level = 0
 ;;;;;;;;;;;;;;;;;;;;;
 
 ; namespace "twitter.accounts" for cached twitter account lists.
-twitter.accounts.backend.cache_dir = cache/twitter/accounts
+twitter.accounts.caching = {CACHE.TWITTER.ACCOUNTS.CACHING}
+twitter.accounts.backend.cache_dir = {CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -309,7 +319,7 @@ twitter.accounts.backend.cache_dir = cache/twitter/accounts
 [log]
 
 ; set this to 0 to disable logging
-enabled = 1
+enabled = 0
 
 ; chose a writer for logging. right now, firebug is the only
 ; valid option - it will send log messages to the firebug console.
