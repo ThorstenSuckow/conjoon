@@ -95,7 +95,7 @@ class RemoveRequire extends BaseFilterReader implements ChainableReader {
             }
         }
 
-        $output = preg_replace("/require_once.*?;\s*/s", "", $output);
+        $output = preg_replace("/(^\s*require_once.*?;\s*$\s)/sm", "", $output);
 
         unlink($file->getAbsolutePath());
 
