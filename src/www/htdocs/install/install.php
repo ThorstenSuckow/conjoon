@@ -81,8 +81,79 @@ if (isset($_POST['install_post'])) {
     $configini = str_replace("{DATABASE.PASSWORD}", $_SESSION['db_password'], $configini);
     $configini = str_replace("{DATABASE.DATABASE}", $_SESSION['db'], $configini);
     $configini = str_replace("{DATABASE_MAX_ALLOWED_PACKET}", $_SESSION['max_allowed_packet'], $configini);
+
+
+    // caching
+    $configini = str_replace("{CACHE.DEFAULT.CACHING}", $_SESSION['cache']['default.caching'], $configini);
+
+    $configini = str_replace("{CACHE.DB.METADATA.CACHING}", $_SESSION['cache']['db.metadata.caching'], $configini);
+    $configini = str_replace("{CACHE.DB.METADATA.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['db.metadata.caching']
+                    ? $_SESSION['cache']['db.metadata.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.EMAIL.MESSAGE.CACHING}", $_SESSION['cache']['email.message.caching'], $configini);
+    $configini = str_replace("{CACHE.EMAIL.MESSAGE.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['email.message.caching']
+                    ? $_SESSION['cache']['email.message.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.CACHING}", $_SESSION['cache']['email.accounts.caching'], $configini);
+    $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['email.accounts.caching']
+                    ? $_SESSION['cache']['email.accounts.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.FEED.ITEM.CACHING}", $_SESSION['cache']['feed.item.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ITEM.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['feed.item.caching']
+                    ? $_SESSION['cache']['feed.item.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.FEED.ITEM_LIST.CACHING}", $_SESSION['cache']['feed.item_list.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ITEM_LIST.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['feed.item_list.caching']
+                    ? $_SESSION['cache']['feed.item_list.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.FEED.READER.CACHING}", $_SESSION['cache']['feed.reader.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.READER.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['feed.reader.caching']
+                    ? $_SESSION['cache']['feed.reader.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.FEED.ACCOUNT.CACHING}", $_SESSION['cache']['feed.account.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ACCOUNT.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['feed.account.caching']
+                    ? $_SESSION['cache']['feed.account.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.CACHING}", $_SESSION['cache']['feed.account_list.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['feed.account_list.caching']
+                    ? $_SESSION['cache']['feed.account_list.backend.cache_dir']
+                    : "",
+                 $configini);
+
+    $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.CACHING}", $_SESSION['cache']['twitter.accounts.caching'], $configini);
+    $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}",
+                    $_SESSION['cache']['twitter.accounts.caching']
+                    ? $_SESSION['cache']['twitter.accounts.backend.cache_dir']
+                    : "",
+                 $configini);
+
+
+
     file_put_contents('../config.ini.php', $configini);
     $configini = "";
+
 
     // generate and update install.info.php
     if (!file_exists('../installation.info.php')) {
@@ -108,6 +179,41 @@ if (isset($_POST['install_post'])) {
             'lib_path'           => '".$_SESSION['lib_path']."',
             'add_include_path'   => '".$_SESSION['add_include_path']."',
             'doc_path'           => '".$_SESSION['doc_path']."',
+            ".($_SESSION['cache']['default.caching']
+              ? "
+
+              'cache.db.metadata.caching' => ".($_SESSION['cache']['db.metadata.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['db.metadata.caching'] ? "'cache.db.metadata.backend.cache_dir' => '".$_SESSION['cache']['db.metadata.backend.cache_dir']."'," : "")."
+
+              'cache.email.message.caching' => ".($_SESSION['cache']['email.message.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['email.message.caching'] ? "'cache.email.message.backend.cache_dir' => '".$_SESSION['cache']['email.message.backend.cache_dir']."'," : "")."
+
+              'cache.email.accounts.caching' => ".($_SESSION['cache']['email.accounts.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['email.accounts.caching'] ? "'cache.email.accounts.backend.cache_dir' => '".$_SESSION['cache']['email.accounts.backend.cache_dir']."'," : "")."
+
+              'cache.feed.item.caching' => ".($_SESSION['cache']['feed.item.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['feed.item.caching'] ? "'cache.feed.item.backend.cache_dir' => '".$_SESSION['cache']['feed.item.backend.cache_dir']."'," : "")."
+
+              'cache.feed.item_list.caching' => ".($_SESSION['cache']['feed.item_list.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['feed.item_list.caching'] ? "'cache.feed.item_list.backend.cache_dir' => '".$_SESSION['cache']['feed.item_list.backend.cache_dir']."'," : "")."
+
+              'cache.feed.reader.caching' => ".($_SESSION['cache']['feed.reader.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['feed.reader.caching'] ? "'cache.feed.reader.backend.cache_dir' => '".$_SESSION['cache']['feed.reader.backend.cache_dir']."'," : "")."
+
+              'cache.feed.account.caching' => ".($_SESSION['cache']['feed.account.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['feed.account.caching'] ? "'cache.feed.account.backend.cache_dir' => '".$_SESSION['cache']['feed.account.backend.cache_dir']."'," : "")."
+
+              'cache.feed.account_list.caching' => ".($_SESSION['cache']['feed.account_list.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['feed.account_list.caching'] ? "'cache.feed.account_list.backend.cache_dir' => '".$_SESSION['cache']['feed.account_list.backend.cache_dir']."'," : "")."
+
+              'cache.twitter.accounts.caching' => ".($_SESSION['cache']['twitter.accounts.caching'] ? "1" : "0").",
+              ".($_SESSION['cache']['twitter.accounts.caching'] ? "'cache.twitter.accounts.backend.cache_dir' => '".$_SESSION['cache']['twitter.accounts.backend.cache_dir']."'," : "")."
+
+
+              "
+              : "'cache.default.caching' => 0,"
+            )."
+
             'app_credentials'    => array('user' => '".$_SESSION['app_credentials']['user']."')
         );
     ";
@@ -141,6 +247,46 @@ if (isset($_POST['install_post'])) {
             'user'     => $_SESSION['db_user'],
             'password' => $_SESSION['db_password']
         ));
+    }
+
+    // create caching folders
+    if ($_SESSION['cache']['default.caching']) {
+
+        if ($_SESSION['cache']['db.metadata.caching']) {
+            conjoon_mkdir($_SESSION['cache']['db.metadata.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['email.message.caching']) {
+            conjoon_mkdir($_SESSION['cache']['email.message.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['email.accounts.caching']) {
+            conjoon_mkdir($_SESSION['cache']['email.accounts.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.item.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.item.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.item_list.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.item_list.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.reader.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.reader.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.account.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.account.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.account_list.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.account_list.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['twitter.accounts.caching']) {
+            conjoon_mkdir($_SESSION['cache']['twitter.accounts.backend.cache_dir']);
+        }
     }
 
     // move libs folders

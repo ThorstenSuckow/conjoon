@@ -30,6 +30,17 @@ include_once './functions.php';
 
 session_start();
 
+// +----------------------------------------------------------------------------
+// | Check if user is currently  running an instance of conjoon
+// +----------------------------------------------------------------------------
+
+   if (array_key_exists('com.conjoon.session.authNamespace', $_SESSION)) {
+        die(
+           "The installation wizard has detected that you are currently running an instance "
+           ."of conjoon. Please sign out of conjoon first, then reload this page. If you have "
+           ."already closed your running instance of conjoon, deleting your cookies might help."
+       );
+   }
 
 // +----------------------------------------------------------------------------
 // | Check if app was installed
@@ -44,6 +55,7 @@ session_start();
    if (!isset($_SESSION['installation_info'])) {
        $_SESSION['installation_info'] = array();
    }
+
 
 // +----------------------------------------------------------------------------
 // | init install context
@@ -87,8 +99,9 @@ session_start();
        'check'           => array("Step 1", "./?action=check"),
        'database'        => array("Step 2", "./?action=database", "./?action=database_check"),
        'app_path'        => array("Step 3", "./?action=app_path", "./?action=app_path_check"),
-       'lib_path'        => array("Step 4", "./?action=lib_path", "./?action=lib_path_check"),
-       'doc_path'        => array("Step 5", "./?action=doc_path", "./?action=doc_path_check")
+       'cache'           => array("Step 4", "./?action=cache",    "./?action=cache_check"),
+       'lib_path'        => array("Step 5", "./?action=lib_path", "./?action=lib_path_check"),
+       'doc_path'        => array("Step 6", "./?action=doc_path", "./?action=doc_path_check")
    );
 
    $changeAppCredentials = !isset($_SESSION['installation_info']['app_credentials']['user']);
@@ -139,6 +152,19 @@ session_start();
            include_once './app_path.php';
        break;
        case 'app_path_success':
+           header("Location: ./?action=cache");
+           die();
+       break;
+
+       // actions for setting up the cache
+       case 'cache':
+           include_once './cache.php';
+       break;
+       case 'cache_check':
+           $VIEW['action'] = 'cache';
+           include_once './cache.php';
+       break;
+       case 'cache_success':
            header("Location: ./?action=lib_path");
            die();
        break;

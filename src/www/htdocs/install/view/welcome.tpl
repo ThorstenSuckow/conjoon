@@ -84,13 +84,16 @@ further updating of conjoon. Please do not remove this file.
     Step 3: Installing application folder
               |
               |
-    Step 4: Installing libraries, managing include_path
+    Step 4: Cache settings
               |
               |
-    Step 5: Specifying document path
+    Step 5: Installing libraries, managing include_path
               |
               |
-    Step 6: Specifying user credentials - this step is only available
+    Step 6: Specifying document path
+              |
+              |
+    Step 7: Specifying user credentials - this step is only available
     if there is NO root user already in the database
               |
               |

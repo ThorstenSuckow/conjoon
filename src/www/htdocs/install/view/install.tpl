@@ -117,6 +117,148 @@
 </tbody>
 </table>
 
+
+<h4>Caching options</h4>
+<table>
+    <tbody>
+<tr>
+    <td><i>Caching enabled</i>:</td>
+    <td><?php echo $_SESSION['cache']['default.caching'] ? "Yes" : "No"; ?></td>
+</tr>
+<?php if ($_SESSION['cache']['default.caching']) { ?>
+
+  <!-- DB CACHE -->
+  <tr>
+      <td colspan="2"><strong>Database cache options</strong></td>
+  </tr>
+  <tr>
+      <td><i>Metadata caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['db.metadata.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['db.metadata.caching']) { ?>
+  <tr>
+      <td><i>Metadata cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['db.metadata.backend.cache_dir']; ?></td>
+  </tr>
+<?php } ?>
+  <!-- ^^ EO DB CACHE -->
+
+<tr><td colspan="2">&nbsp;</td></tr>
+
+  <!-- EMAIL CACHE -->
+  <tr>
+      <td colspan="2"><strong>Email cache options</strong></td>
+  </tr>
+
+  <tr>
+      <td><i>Email message caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['email.message.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['email.message.caching']) { ?>
+  <tr>
+      <td><i>Email message cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['email.message.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+  <tr>
+      <td><i>Email accounts caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['email.accounts.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['email.accounts.caching']) { ?>
+  <tr>
+      <td><i>Email accounts cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['email.accounts.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+  <!-- ^^ EO EMAIL CACHE -->
+
+<tr><td colspan="2">&nbsp;</td></tr>
+
+  <!-- Feed CACHE -->
+  <tr>
+      <td colspan="2"><strong>Feed cache options</strong></td>
+  </tr>
+
+  <tr>
+      <td><i>Feed entry caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.item.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['feed.item.caching']) { ?>
+  <tr>
+      <td><i>Feed entry cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.item.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+  <tr>
+      <td><i>Feed item list caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.item_list.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['feed.item_list.caching']) { ?>
+  <tr>
+      <td><i>Feed item list cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.item_list.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+
+  <tr>
+      <td><i>Feed account caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.account.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['feed.account.caching']) { ?>
+  <tr>
+      <td><i>Feed account cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.account.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+
+  <tr>
+      <td><i>Feed account list caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.account_list.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['feed.account_list.caching']) { ?>
+  <tr>
+      <td><i>Feed account list cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.account_list.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+
+  <tr>
+      <td><i>Feed Reader caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.reader.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['feed.reader.caching']) { ?>
+  <tr>
+      <td><i>Feed Reader cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['feed.reader.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+
+  <!-- ^^ EO FEED CACHE -->
+
+<tr><td colspan="2">&nbsp;</td></tr>
+
+  <!-- TWITTER CACHE -->
+  <tr>
+      <td colspan="2"><strong>Twitter cache options</strong></td>
+  </tr>
+
+  <tr>
+      <td><i>Twitter account caching enabled</i>:</td>
+      <td><?php echo $_SESSION['cache']['twitter.accounts.caching'] ? "Yes" : "No" ; ?></td>
+  </tr>
+  <?php if ($_SESSION['cache']['twitter.accounts.caching']) { ?>
+  <tr>
+      <td><i>Twitter account cache path</i>:</td>
+      <td><?php echo $_SESSION['cache']['twitter.accounts.backend.cache_dir']; ?></td>
+  </tr>
+  <?php } ?>
+  <!-- ^^ EO TWITTER CACHE -->
+
+
+<?php } ?>
+</tbody>
+</table>
+
 <h4>Libraries</h4>
 <table>
     <tbody>
