@@ -306,6 +306,15 @@ if (isset($_POST['install_post'])) {
         }
     }
 
+    // replace $LIBRARY_PATH_BOOTSTRAP in index.php to enable autoloader
+    $indexFile = file_get_contents('../index.php');
+    $indexFile = str_replace(
+        '$LIBRARY_PATH_BOOTSTRAP',
+        "'".$_SESSION['lib_path'] . '/' . $libFolder ."'",
+        $indexFile
+    );
+    file_put_contents('../index.php', $indexFile);
+
     // move application folders
     $appFolders = explode(",", $_SESSION['setup_ini']['app_path']['delete']);
     for ($i = 0, $len = count($appFolders); $i < $len; $i++) {
