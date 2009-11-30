@@ -197,6 +197,86 @@ function conjoon_rmdir($path)
 }
 
 /**
+ * Tries to create a directory. Will try to create each directory level.
+ * if the second parameter is set to true, the created directory will be removed
+ * afterwards.
+ * The directory has to be specified absolutely.
+ *
+ */
+function conjoon_mkdir($dir, $remove = false)
+{
+    if (strpos($dir, '/') !== 0 && strpos($dir, ':') !== 1) {
+        return false;
+    }
+
+    $dir = str_replace("\\", "/", $dir);
+
+    $parts  = explode('/', $dir);
+    $tmpDir = realpath($parts[0]);
+
+    if ($tmpDir === false) {
+        return false;
+    }
+
+    $existing   = array();
+    $removeDirs = array();
+    for ($i = 1, $len = count($parts); $i < $len+1; $i++) {
+
+        if (!file_exists($tmpDir)) {
+
+            $removeDirs[] = $tmpDir;
+
+            $res = @mkdir($tmpDir);
+            if ($res === false) {
+                conjoon_rmdir($tmpDir);
+                return false;
+            }
+        } else {
+            $existing[$tmpDir] = true;
+        }
+
+        if (!isset($parts[$i])) {
+            break;
+        }
+        $tmpDir .= '/' . $parts[$i];
+    }
+
+    $isCool = conjoon_validateDir($dir);
+
+    if ($remove === true) {
+        for ($i = count($removeDirs) -1; $i >= 0; $i--) {
+            rmdir($removeDirs[$i]);
+        }
+    }
+
+    return $isCool;
+}
+
+/**
+ * Returns true if the specified directory is existing and both read/writable,
+ * otherwise false.
+ *
+ */
+function conjoon_validateDir($dir)
+{
+    $dir = @realpath($dir);
+
+    if ($dir === false) {
+        return false;
+    }
+
+    $dir = str_replace("\\", "/", $dir);
+    $is_readable = @is_readable($dir);
+    $is_writable = @is_writable($dir);
+    if (!$is_readable || !$is_writable) {
+        return false;
+    }
+
+    return true;
+}
+
+
+/**
  * Copies a directory recursively.
  *
  *
@@ -228,4 +308,20 @@ function conjoon_copy($source, $target)
     }else {
         copy($source, $target);
     }
+}
+
+
+/**
+ * Takes a camelized string as the argument and returns it underscored, all
+ * lowercased.
+ * For example, passing the string "underScore" to this function will return
+ * the string "under_score".
+ *
+ * @param {String} $value
+ *
+ * @return
+ */
+function conjoon_underscoreString($value)
+{
+    return strtolower(preg_replace('/([a-z])([A-Z])/', "$1_$2", $value));
 }
