@@ -52,7 +52,7 @@
        if (!$res) {
            throw new Exception(
                "Could not load $className - I looked in $LIBRARY_PATH_BOOTSTRAP "
-               ."but it does not see to exits"
+               ."but it does not seem to exits"
            );
        }
    }
