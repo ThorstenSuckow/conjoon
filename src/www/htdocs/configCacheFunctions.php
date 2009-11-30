@@ -95,7 +95,7 @@
         // config failed to init, so we assume we have to load the config and parse it
         $initialConfig = parse_ini_file('./config.ini.php', true);
 
-        // check whether we need the caching options
+        // check whether we need the logging options
         if (isset($initialConfig['log']) && !$initialConfig['log']['enabled']) {
             unset($initialConfig['log']);
         }
