@@ -14,21 +14,21 @@
  */
 
 /**
- * @see Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * Table data gateway. Models the table <tt>groupware_email_folders_accounts</tt>.
  *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon_Groupware_Email
  * @subpackage Model
  * @category Model
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts extends Zend_Db_Table_Abstract {
+class Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts extends Conjoon_Db_Table {
 
     /**
      * The name of the table in the underlying datastore this

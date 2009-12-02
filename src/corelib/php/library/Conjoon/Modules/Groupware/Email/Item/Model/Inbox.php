@@ -14,9 +14,9 @@
  */
 
 /**
- * Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * Conjoon_BeanContext_Decoratable
@@ -26,7 +26,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
 /**
  * Table data gateway. Models the table <tt>groupware_email_items_inbox</tt>.
  *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon_Groupware_Email
  * @subpackage Model
  * @category Model
@@ -34,7 +34,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
-    extends Zend_Db_Table_Abstract implements Conjoon_BeanContext_Decoratable {
+    extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable {
 
     const HASH       = 'hash';
     const UID        = 'uid';
@@ -126,21 +126,21 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
         $uidString = implode(',', $uidParts);
 
         $select = $adapter->select()->from(
-                    array('items' => 'groupware_email_items'),
+                    array('items' => self::getTablePrefix() . 'groupware_email_items'),
                     array()
                   )
                   ->join(
-                    array('foldersaccounts' => 'groupware_email_folders_accounts'),
+                    array('foldersaccounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
                     $adapter->quoteInto('foldersaccounts.groupware_email_accounts_id = ?', $accountId, 'INTEGER'),
                     array()
                   )
                   ->join(
-                    array('folders' => 'groupware_email_folders'),
+                    array('folders' => self::getTablePrefix() . 'groupware_email_folders'),
                     'folders.id = foldersaccounts.groupware_email_folders_id',
                     array()
                   )
                   ->join(
-                    array('inbox' => 'groupware_email_items_inbox'),
+                    array('inbox' => self::getTablePrefix() . 'groupware_email_items_inbox'),
                     'inbox.uid IN ('.$uidString.') ' .
                     ' AND ' .
                     'inbox.groupware_email_items_id = items.id',
@@ -194,21 +194,21 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
         $adapter = $this->getAdapter();
 
         $select = $adapter->select()->from(
-                    array('items' => 'groupware_email_items'),
+                    array('items' => self::getTablePrefix() . 'groupware_email_items'),
                     array('id')
                   )
                   ->join(
-                    array('foldersaccounts' => 'groupware_email_folders_accounts'),
+                    array('foldersaccounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
                     $adapter->quoteInto('foldersaccounts.groupware_email_accounts_id = ?', $accountId, 'INTEGER'),
                     array()
                   )
                   ->join(
-                    array('folders' => 'groupware_email_folders'),
+                    array('folders' => self::getTablePrefix() . 'groupware_email_folders'),
                     'folders.id = foldersaccounts.groupware_email_folders_id',
                     array()
                   )
                   ->join(
-                    array('inbox' => 'groupware_email_items_inbox'),
+                    array('inbox' => self::getTablePrefix() . 'groupware_email_items_inbox'),
                     $adapter->quoteInto($queryPortion, $uid, 'STRING') .
                     ' AND ' .
                     'inbox.groupware_email_items_id = items.id',
@@ -245,23 +245,23 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
         $adapter = self::getDefaultAdapter();
         $select = $adapter->select()
                   ->from(
-                      array('items' => 'groupware_email_items'),
+                      array('items' => self::getTablePrefix() . 'groupware_email_items'),
                       array('COUNT(items.id) as count_id')
                   )
                   ->join(
-                    array('accounts' => 'groupware_email_accounts'),
+                    array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
                     $adapter->quoteInto('`accounts`.`user_id` = ?', $userId, 'INTEGER') .
                     ' AND '.
                     '`accounts`.`is_deleted` = 0',
                     array()
                   )
                   ->join(
-                    array('foldersaccounts' => 'groupware_email_folders_accounts'),
+                    array('foldersaccounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
                     'foldersaccounts.groupware_email_accounts_id=accounts.id',
                     array()
                   )
                   ->join(
-                    array('inbox' => 'groupware_email_items_inbox'),
+                    array('inbox' => self::getTablePrefix() . 'groupware_email_items_inbox'),
                     '`inbox`.`groupware_email_items_id`=`items`.`id`'.
                     ' AND '.
                     $adapter->quoteInto('`inbox`.`fetched_timestamp` >= ?', $minDate, 'INTEGER') .
@@ -305,20 +305,20 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
             $userId,
             $sortInfo,
             array(
-                'name' => array('inbox' => 'groupware_email_items_inbox'),
+                'name' => array('inbox' => self::getTablePrefix() . 'groupware_email_items_inbox'),
                 'cols' => array()
             )
         );
         $select = $select
                   ->join(
-                    array('accounts' => 'groupware_email_accounts'),
+                    array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
                     $adapter->quoteInto('`accounts`.`user_id` = ?', $userId, 'INTEGER') .
                     ' AND '.
                     '`accounts`.`is_deleted` = 0',
                     array()
                   )
                   ->join(
-                    array('foldersaccounts' => 'groupware_email_folders_accounts'),
+                    array('foldersaccounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
                     'foldersaccounts.groupware_email_accounts_id=accounts.id',
                     array()
                   )

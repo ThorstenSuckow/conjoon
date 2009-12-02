@@ -14,9 +14,9 @@
  */
 
 /**
- * Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * Conjoon_BeanContext_Decoratable
@@ -27,7 +27,6 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  *
  *
  *
- * @uses Zend_Db_Table
  * @package Conjoon_Groupware_Email
  * @subpackage Model
  * @category Model
@@ -48,10 +47,10 @@ class Conjoon_Modules_Groupware_Email_Message_Model_Message
             return 0;
         }
 
-        $adapter = Zend_Db_Table::getDefaultAdapter();
+        $adapter = Conjoon_Db_Table::getDefaultAdapter();
 
          $select= $adapter->select()
-                ->from(array('items' => 'groupware_email_items'),
+                ->from(array('items' => Conjoon_Db_Table::getTablePrefix() . 'groupware_email_items'),
                   array(
                       'id',
                       'cc',
@@ -66,7 +65,7 @@ class Conjoon_Modules_Groupware_Email_Message_Model_Message
                       'groupware_email_folders_id'
                 ))
                 ->joinLeft(
-                    array('flag' => 'groupware_email_items_flags'),
+                    array('flag' => Conjoon_Db_Table::getTablePrefix() . 'groupware_email_items_flags'),
                     '`flag`.`groupware_email_items_id` = `items`.`id`' .
                     ' AND '.
                     $adapter->quoteInto('`flag`.`user_id`=?', $userId, 'INTEGER'),

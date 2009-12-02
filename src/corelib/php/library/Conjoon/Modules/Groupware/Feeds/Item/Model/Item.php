@@ -14,9 +14,9 @@
  */
 
 /**
- * Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * @see Conjoon_BeanContext_Decoratable
@@ -26,7 +26,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
 /**
  * Table data gateway. Models the table <tt>groupware_feeds_items</tt>.
  *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon_Groupware_Feeds
  * @subpackage Model
  * @category Model
@@ -34,7 +34,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
-   extends Zend_Db_Table_Abstract implements Conjoon_BeanContext_Decoratable{
+   extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable{
 
     /**
      * The name of the table in the underlying datastore this
@@ -65,11 +65,12 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         }
         $db = Zend_Db_Table::getDefaultAdapter();
         $select = $db->select()
-                ->from('groupware_feeds_items', '*')
-                ->join('groupware_feeds_accounts',
-                    'groupware_feeds_items.groupware_feeds_accounts_id=groupware_feeds_accounts.id',
+                ->from(self::getTablePrefix() . 'groupware_feeds_items', '*')
+                ->join(self::getTablePrefix() . 'groupware_feeds_accounts',
+                    self::getTablePrefix() . 'groupware_feeds_items.groupware_feeds_accounts_id='
+                    .self::getTablePrefix() . 'groupware_feeds_accounts.id',
                      array('name'))
-                ->where('groupware_feeds_items.id=?', $id);
+                ->where(self::getTablePrefix() . 'groupware_feeds_items.id=?', $id);
 
         $stmt = $db->query($select);
         $data = $stmt->fetch(Zend_Db::FETCH_ASSOC);
@@ -104,8 +105,8 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
 
         $db = Zend_Db_Table::getDefaultAdapter();
         $select = $db->select()
-                ->from('groupware_feeds_items', array('groupware_feeds_accounts_id'))
-                ->where('groupware_feeds_items.id IN ('.$idList.')')
+                ->from(self::getTablePrefix() . 'groupware_feeds_items', array('groupware_feeds_accounts_id'))
+                ->where(self::getTablePrefix() . 'groupware_feeds_items.id IN ('.$idList.')')
                 ->group('groupware_feeds_accounts_id');
 
         $stmt = $db->query($select);
@@ -171,12 +172,13 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         }
         $db = Zend_Db_Table::getDefaultAdapter();
         $select = $db->select()
-                ->from('groupware_feeds_items', '*')
-                ->join('groupware_feeds_accounts',
-                    'groupware_feeds_items.groupware_feeds_accounts_id=groupware_feeds_accounts.id',
+                ->from(self::getTablePrefix() . 'groupware_feeds_items', '*')
+                ->join(self::getTablePrefix() . 'groupware_feeds_accounts',
+                    self::getTablePrefix() . 'groupware_feeds_items.groupware_feeds_accounts_id='
+                    .self::getTablePrefix() . 'groupware_feeds_accounts.id',
                      array('name'))
-                ->where('groupware_feeds_items.groupware_feeds_accounts_id=?', $id)
-                ->order('groupware_feeds_items.saved_timestamp DESC');
+                ->where(self::getTablePrefix() . 'groupware_feeds_items.groupware_feeds_accounts_id=?', $id)
+                ->order(self::getTablePrefix() . 'groupware_feeds_items.saved_timestamp DESC');
 
         $stmt = $db->query($select);
         $data = $stmt->fetchAll();
@@ -205,14 +207,16 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
 
         $db = Zend_Db_Table::getDefaultAdapter();
         $select = $db->select()
-                ->from('groupware_feeds_items', array('id'))
+                ->from(self::getTablePrefix() . 'groupware_feeds_items', array('id'))
                 ->join(
-                    'groupware_feeds_accounts',
-                    'groupware_feeds_items.groupware_feeds_accounts_id=groupware_feeds_accounts.id',
+                    self::getTablePrefix() . 'groupware_feeds_accounts',
+                    self::getTablePrefix() . 'groupware_feeds_items.groupware_feeds_accounts_id='
+                    .self::getTablePrefix() . 'groupware_feeds_accounts.id',
                     array()
                 )
-                ->where('groupware_feeds_accounts.user_id=?', $userId)
-                ->where('(? - groupware_feeds_items.saved_timestamp ) > groupware_feeds_accounts.delete_interval', $time);
+                ->where(self::getTablePrefix() . 'groupware_feeds_accounts.user_id=?', $userId)
+                ->where('(? - '.self::getTablePrefix() . 'groupware_feeds_items.saved_timestamp ) > '
+                . self::getTablePrefix() . 'groupware_feeds_accounts.delete_interval', $time);
 
         $stmt = $db->query($select);
         $data = $stmt->fetchAll();
@@ -273,13 +277,15 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         $query = "DELETE
                     groupware_feeds_items
                   FROM
-                    groupware_feeds_items,groupware_feeds_accounts
+                    ".self::getTablePrefix() . "groupware_feeds_items," . self::getTablePrefix() . "groupware_feeds_accounts
                   WHERE
-                    (? - groupware_feeds_items.saved_timestamp ) > groupware_feeds_accounts.delete_interval
+                    (? - " . self::getTablePrefix() . "groupware_feeds_items.saved_timestamp ) > "
+                    . self::getTablePrefix() . "groupware_feeds_accounts.delete_interval
                    AND
-                    groupware_feeds_items.groupware_feeds_accounts_id = groupware_feeds_accounts.id
+                    " . self::getTablePrefix() . "groupware_feeds_items.groupware_feeds_accounts_id = "
+                    . self::getTablePrefix() . "groupware_feeds_accounts.id
                    AND
-                    groupware_feeds_accounts.user_id=?";
+                    " . self::getTablePrefix() . "groupware_feeds_accounts.user_id=?";
 
         $db   = Zend_Db_Table::getDefaultAdapter();
         $stmt = $db->query($query, array($time, $userId));

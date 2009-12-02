@@ -14,9 +14,9 @@
  */
 
 /**
- * Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * @see Conjoon_BeanContext_Decoratable
@@ -26,7 +26,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
 /**
  * Table data gateway. Models the table <tt>users</tt>.
  *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon
  * @subpackage Model
  * @category Model
@@ -34,11 +34,11 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Default_User_Model_User
-    extends Zend_Db_Table_Abstract implements Conjoon_BeanContext_Decoratable {
+    extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable {
 
     /**
      * The name of the table in the underlying datastore this
-     * class represents.
+     * class represents, without any prefix defined by Conjoon_Db_Table::setTablePrefix
      * @var string
      */
     protected $_name = 'users';

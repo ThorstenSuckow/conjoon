@@ -74,9 +74,9 @@ require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Outbox.php';
 require_once 'Conjoon/Modules/Groupware/Email/Attachment/Model/Attachment.php';
 
 /**
- * Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * Conjoon_BeanContext_Decoratable
@@ -86,9 +86,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
 /**
  * Table data gateway. Models the table <tt>groupware_email_items</tt>.
  *
- *
- *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon_Groupware_Email
  * @subpackage Model
  * @category Model
@@ -96,7 +94,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Item_Model_Item
-    extends Zend_Db_Table_Abstract implements Conjoon_BeanContext_Decoratable {
+    extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable {
 
 
     /**
@@ -295,7 +293,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         $adapter = self::getDefaultAdapter();
 
         $select= $adapter->select()
-                ->from(array('items' => 'groupware_email_items'),
+                ->from(array('items' => self::getTablePrefix() . 'groupware_email_items'),
                   array(
                       'id',
                       'recipients',
@@ -311,7 +309,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
         $select =
                 $select->join(
-                    array('folders' => 'groupware_email_folders'),
+                    array('folders' => self::getTablePrefix() . 'groupware_email_folders'),
                     '`folders`.`id` = `items`.`groupware_email_folders_id`',
                     array(
                         'is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'),
@@ -319,7 +317,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                     )
                 )
                 ->join(
-                    array('flag' => 'groupware_email_items_flags'),
+                    array('flag' => self::getTablePrefix() . 'groupware_email_items_flags'),
                     '`flag`.`groupware_email_items_id` = `items`.`id`' .
                     ' AND '.
                     $adapter->quoteInto('`flag`.`user_id`=?', $userId, 'INTEGER').
@@ -328,7 +326,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                     array('is_spam', 'is_read')
                 )
                 ->joinLeft(
-                        array('reference' => 'groupware_email_items_references'),
+                        array('reference' => self::getTablePrefix() . 'groupware_email_items_references'),
                         'reference.reference_items_id=items.id '.
                         ' AND ' .
                         $adapter->quoteInto('reference.is_pending=?', 0, 'INTEGER') .
@@ -337,7 +335,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                         array('referenced_as_types' => 'GROUP_CONCAT(DISTINCT reference.reference_type SEPARATOR \',\')' )
                  )
                 ->joinLeft(
-                    array('attachments' => 'groupware_email_items_attachments'),
+                    array('attachments' => self::getTablePrefix() . 'groupware_email_items_attachments'),
                     '`attachments`.`groupware_email_items_id` = `items`.`id`',
                     array('is_attachment' => 'IF(`attachments`.`id` IS NULL, 0, 1)')
                 )

@@ -14,9 +14,9 @@
  */
 
 /**
- * @see Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * @see Conjoon_BeanContext_Decoratable
@@ -26,7 +26,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
 /**
  * Table data gateway. Models the table <tt>groupware_email_folders</tt>.
  *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon_Groupware_Email
  * @subpackage Model
  * @category Model
@@ -34,7 +34,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
-    extends Zend_Db_Table_Abstract implements Conjoon_BeanContext_Decoratable{
+    extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable{
 
     const META_INFO_OUTBOX = 'outbox';
     const META_INFO_DRAFT  = 'draft';
@@ -326,12 +326,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $adapter = $this->getAdapter();
 
         $select = $adapter->select()
-                  ->from('groupware_email_items', array(
+                  ->from(self::getTablePrefix() . 'groupware_email_items', array(
                     'COUNT(id) as count_id'
                   ))
                   ->join(
-                        array('flags' => 'groupware_email_items_flags'),
-                        'flags.groupware_email_items_id=groupware_email_items.id '.
+                        array('flags' => self::getTablePrefix() . 'groupware_email_items_flags'),
+                        'flags.groupware_email_items_id=' . self::getTablePrefix(). 'groupware_email_items.id '.
                         ' AND ' .
                         'flags.is_deleted=0 '.
                         'AND '.
@@ -369,15 +369,15 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $adapter = $this->getAdapter();
 
         $select = $adapter->select()
-                  ->from(array('folders' => 'groupware_email_folders'), array(
+                  ->from(array('folders' => self::getTablePrefix() . 'groupware_email_folders'), array(
                     'meta_info'
                   ))
                   ->joinLeft(
-                    array('items' => 'groupware_email_items'),
+                    array('items' => self::getTablePrefix() . 'groupware_email_items'),
                     'items.groupware_email_folders_id=folders.id'
                   )
                   ->joinLeft(
-                        array('flag' => 'groupware_email_items_flags'),
+                        array('flag' => self::getTablePrefix() . 'groupware_email_items_flags'),
                         'flag.groupware_email_items_id=items.id '.
                         ' AND ' .
                         'flag.is_read=0 '.
@@ -758,7 +758,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     private function _getFoldersForAccountsRoot($adapter, $folderId, &$collectedIds)
     {
         $select = $adapter->select()
-                  ->from(array('folders' => 'groupware_email_folders'), array(
+                  ->from(array('folders' => self::getTablePrefix() . 'groupware_email_folders'), array(
                       'id'
                   ))
                   ->where('folders.parent_id=?', $folderId);
@@ -781,21 +781,21 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     {
         $adapter = self::getDefaultAdapter();
         return $adapter->select()
-               ->from(array('folders' => 'groupware_email_folders'), array(
+               ->from(array('folders' => self::getTablePrefix() . 'groupware_email_folders'), array(
                  'name',
                  'id',
                  'is_child_allowed',
                  'is_locked',
                  'type'
                ))
-               ->joinLeft(array('childtable' => 'groupware_email_folders'),
+               ->joinLeft(array('childtable' => self::getTablePrefix() . 'groupware_email_folders'),
                 'childtable.parent_id=folders.id',
                  array(
                   'child_count' => 'COUNT(DISTINCT childtable.id)'
                ))
                //**//
                ->join(
-                   array('folders_users' => 'groupware_email_folders_users'),
+                   array('folders_users' => self::getTablePrefix() . 'groupware_email_folders_users'),
                    'folders_users.groupware_email_folders_id=folders.id' .
                    ' AND ' .
                    'folders_users.users_id=' . $userId .
@@ -827,7 +827,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $adapter = self::getDefaultAdapter();
         $select  = self::getFolderBaseQuery($userId)
                 ->join(
-                      array('pendingfolder' => 'groupware_email_folders'),
+                      array('pendingfolder' => self::getTablePrefix() . 'groupware_email_folders'),
                       'pendingfolder.id=folders.id',
                       array('pending_count' => '(0)')
                    )
@@ -862,13 +862,13 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $adapter = $this->getAdapter();
         $select  = self::getFolderBaseQuery($userId)
                    ->joinLeft(array(
-                    'items' => 'groupware_email_items'),
+                    'items' => self::getTablePrefix() . 'groupware_email_items'),
                     'folders.id=items.groupware_email_folders_id',
                      array()
                    )
                    ->joinLeft(
                        array(
-                           'flag' => 'groupware_email_items_flags'
+                           'flag' => self::getTablePrefix() . 'groupware_email_items_flags'
                        ),
                     'items.id = flag.groupware_email_items_id'.
                     ' AND '.
@@ -930,9 +930,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $adapter = self::getDefaultAdapter();
 
         $select = $adapter->select()
-                  ->from('groupware_email_folders', array('folder_id' => 'id'))
+                  ->from(self::getTablePrefix() . 'groupware_email_folders', array('folder_id' => 'id'))
                   ->join(
-                        array('accounts' => 'groupware_email_accounts'),
+                        array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
                         $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
                         ' AND ' .
                         $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER') .
@@ -940,8 +940,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                         'accounts.is_deleted=0',
                         array())
                   ->join(
-                        array('folders_accounts' => 'groupware_email_folders_accounts'),
-                        'folders_accounts.groupware_email_folders_id=groupware_email_folders.id '.
+                        array('folders_accounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
+                        'folders_accounts.groupware_email_folders_id=' . self::getTablePrefix() . 'groupware_email_folders.id '.
                         ' AND ' .
                         $adapter->quoteInto('folders_accounts.groupware_email_accounts_id=?', $accountId, 'INTEGER'),
                         array())

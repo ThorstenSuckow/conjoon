@@ -14,9 +14,9 @@
  */
 
 /**
- * Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * Conjoon_BeanContext_Decoratable
@@ -28,7 +28,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  *
  *
  *
- * @uses Zend_Db_Table
+ * @uses Conjoon_Db_Table
  * @package Conjoon_Groupware_Email
  * @subpackage Model
  * @category Model
@@ -36,7 +36,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Contact_Item_Model_Item
-    extends Zend_Db_Table_Abstract implements Conjoon_BeanContext_Decoratable {
+    extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable {
 
 
     /**
@@ -72,14 +72,14 @@ class Conjoon_Modules_Groupware_Contact_Item_Model_Item
         $adapter = $this->getDefaultAdapter();
 
         $select= $adapter->select()
-                ->from(array('items' => 'groupware_contact_items'),
+                ->from(array('items' => self::getTablePrefix() . 'groupware_contact_items'),
                   array(
                       'id',
                       'first_name',
                       'last_name'
                 ))
                 ->join(
-                    array('flag' => 'groupware_contact_items_flags'),
+                    array('flag' => self::getTablePrefix() . 'groupware_contact_items_flags'),
                     '`flag`.`groupware_contact_items_id` = `items`.`id`' .
                     ' AND '.
                     $adapter->quoteInto('`flag`.`user_id`=?', $userId, 'INTEGER').
@@ -88,7 +88,7 @@ class Conjoon_Modules_Groupware_Contact_Item_Model_Item
                     array()
                 )
                 ->joinLeft(
-                    array('email_addresses' => 'groupware_contact_items_email'),
+                    array('email_addresses' => self::getTablePrefix() . 'groupware_contact_items_email'),
                     '`email_addresses`.`groupware_contact_items_id` = `items`.`id`',
                     array('email_address', 'is_standard')
                 )

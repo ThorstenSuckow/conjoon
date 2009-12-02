@@ -14,9 +14,9 @@
  */
 
 /**
- * @see Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table/Abstract.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * Table data gateway. Models the table <tt>groupware_email_folders_users</tt>.
@@ -28,7 +28,7 @@ require_once 'Zend/Db/Table/Abstract.php';
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers extends Zend_Db_Table_Abstract {
+class Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers extends Conjoon_Db_Table {
 
     /**
      * @const OWNER
