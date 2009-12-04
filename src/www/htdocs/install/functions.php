@@ -114,6 +114,14 @@ function conjoon_createTables($path, $dbAdapter, Array $config)
  */
 function conjoon_createDatastructure($db, $path, $prefix = "")
 {
+    // check here if we need to migrate data
+    $migrate = false;
+    $sql = "SELECT * FROM ".$prefix."groupware_email_folders_users";
+    $result = $db->query($sql);
+    if (!$result) {
+        $migrate = true;
+    }
+
     $sqlFile = file_get_contents($path);
 
     // remove sql comments
@@ -131,6 +139,49 @@ function conjoon_createDatastructure($db, $path, $prefix = "")
 
         $db->query($statement);
     }
+
+    if ($migrate) {
+        sleep(1);
+        // migrate to groupware_email_folders_users
+        // get the user ids associated with the user accounts
+        $folderAccountsQuery = "SELECT ".$prefix."groupware_email_folders_accounts.*, "
+                             ."".$prefix."groupware_email_accounts.user_id FROM "
+                             ." ".$prefix."groupware_email_folders_accounts, "
+                             ."".$prefix."groupware_email_accounts"
+                             ." ".$prefix."groupware_email_accounts "
+                             ." WHERE ".$prefix."groupware_email_accounts.id = "
+                             ."".$prefix."groupware_email_folders_accounts.groupware_email_accounts_id";
+
+        $folderAccountsResult = $db->query($folderAccountsQuery);
+
+        if (!$folderAccountsResult) {
+            // error or something - return
+            return;
+        }
+        $folderAccountsResultCount = 0;
+        $folderMapping = array();
+        foreach ($folderAccountsResult as $row) {
+            $folderAccountsResultCount++;
+            $folderMapping[] = $row;
+        }
+
+        if ($folderAccountsResultCount == 0) {
+            return;
+        }
+
+        for ( $i = 0, $len = count($folderMapping); $i < $len; $i++) {
+            $query = "INSERT INTO ".$prefix."groupware_email_folders_users "
+                   ."(groupware_email_folders_id, users_id, relationship) "
+                   ."VALUES ("
+                   ."".$folderMapping[$i]['groupware_email_folders_id'].","
+                   ."".$folderMapping[$i]['user_id'].","
+                   ."'owner'"
+                   .")";
+
+            $db->query($query);
+        }
+    }
+
 }
 
 /**
