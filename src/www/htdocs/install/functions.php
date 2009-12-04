@@ -83,6 +83,8 @@ function conjoon_createTables($path, $dbAdapter, Array $config)
 
     $bytes = 0;
 
+    $prefix = $config['prefix'];
+
     switch ($dbType) {
         case 'mysql':
             $db = new PDO(
@@ -93,14 +95,41 @@ function conjoon_createTables($path, $dbAdapter, Array $config)
                 $config['user'], $config['password']
             );
 
-            $sql = "SOURCE '" . $path ."'";
-            $db->query(file_get_contents($path));
-            $db = null;
+            conjoon_createDatastructure($db, $path, $prefix);
+
         break;
 
         default:
             die("No support for adapter \"$dbType\"");
         break;
+    }
+}
+
+/**
+ * Parses the sql file and executes the given statements.
+ *
+ * @param Object $db The db adapter to use
+ * @param String $path The path to the sql file to execute
+ * @param String $prefix The prefix to use for the tables
+ */
+function conjoon_createDatastructure($db, $path, $prefix = "")
+{
+    $sqlFile = file_get_contents($path);
+
+    // remove sql comments
+    $sqlFile = preg_replace("/^--.*?$/ims", "", $sqlFile);
+    //replace prefix
+    $sqlFile = str_replace('{DATABASE.TABLE.PREFIX}', $prefix, $sqlFile);
+
+    $statements = explode(';', $sqlFile);
+
+    for ($i = 0, $len = count($statements); $i < $len; $i++) {
+        $statement = trim($statements[$i]);
+        if ($statement == "") {
+            continue;
+        }
+
+        $db->query($statement);
     }
 }
 
@@ -118,6 +147,8 @@ function conjoon_createAdmin($dbAdapter, $userData, Array $config)
 
     $bytes = 0;
 
+    $prefix = $config['prefix'];
+
     switch ($dbType) {
         case 'mysql':
             $db = new PDO(
@@ -128,14 +159,14 @@ function conjoon_createAdmin($dbAdapter, $userData, Array $config)
                 $config['user'], $config['password']
             );
 
-            $sql = "SELECT COUNT(id) as count_id FROM users WHERE is_root = 1";
+            $sql = "SELECT COUNT(id) as count_id FROM ".$prefix."users WHERE is_root = 1";
             $count = 0;
             foreach ($db->query($sql) as $row) {
                 $count = $row['count_id'];
             }
 
             if ($count == 0) {
-                $sql = "INSERT INTO users (
+                $sql = "INSERT INTO ".$prefix."users (
                     firstname,
                     lastname,
                     email_address,

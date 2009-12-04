@@ -140,6 +140,10 @@ params.password = {DATABASE.PASSWORD}
 ; the name of the database used
 params.dbname = {DATABASE.DATABASE}
 
+; the table prefix used for your installation. The value specified here should be
+; prepended to your tables
+table.prefix = {DATABASE.TABLE.PREFIX}
+
 ; max_allowed_packet denotes the maximum size of a packet that can be stored
 ; in a database using the configured connection. If you have worked with
 ; MySQL before, this value should be familiar to you. However, it's used for

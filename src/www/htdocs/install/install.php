@@ -78,6 +78,7 @@ if (isset($_POST['install_post'])) {
     $configini = str_replace("{DATABASE.HOST}", $_SESSION['db_host'], $configini);
     $configini = str_replace("{DATABASE.PORT}", $_SESSION['db_port'], $configini);
     $configini = str_replace("{DATABASE.USER}", $_SESSION['db_user'], $configini);
+    $configini = str_replace("{DATABASE.TABLE.PREFIX}", $_SESSION['db_table_prefix'], $configini);
     $configini = str_replace("{DATABASE.PASSWORD}", $_SESSION['db_password'], $configini);
     $configini = str_replace("{DATABASE.DATABASE}", $_SESSION['db'], $configini);
     $configini = str_replace("{DATABASE_MAX_ALLOWED_PACKET}", $_SESSION['max_allowed_packet'], $configini);
@@ -173,6 +174,7 @@ if (isset($_POST['install_post'])) {
             'db'                 => '".$_SESSION['db']."',
             'db_port'            => '".$_SESSION['db_port']."',
             'db_user'            => '".$_SESSION['db_user']."',
+            'db_table_prefix'    => '".$_SESSION['db_table_prefix']."',
             'edition'            => '".$_SESSION['edition']."',
             'max_allowed_packet' => '".$_SESSION['max_allowed_packet']."',
             'app_path'           => '".$_SESSION['app_path']."',
@@ -228,7 +230,8 @@ if (isset($_POST['install_post'])) {
         'port'     => $_SESSION['db_port'],
         'database' => $_SESSION['db'],
         'user'     => $_SESSION['db_user'],
-        'password' => $_SESSION['db_password']
+        'password' => $_SESSION['db_password'],
+        'prefix'   => $_SESSION['db_table_prefix']
     ));
     $table = "";
     sleep(1);
@@ -245,7 +248,8 @@ if (isset($_POST['install_post'])) {
             'port'     => $_SESSION['db_port'],
             'database' => $_SESSION['db'],
             'user'     => $_SESSION['db_user'],
-            'password' => $_SESSION['db_password']
+            'password' => $_SESSION['db_password'],
+            'prefix'   => $_SESSION['db_table_prefix']
         ));
     }
 

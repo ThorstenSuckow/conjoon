@@ -78,6 +78,10 @@
     <td><?php echo $_SESSION['db']; ?></td>
 </tr>
 <tr>
+    <td><i>Table prefix</i>:</td>
+    <td><?php echo $_SESSION['db_table_prefix'] ? $_SESSION['db_table_prefix'] : '<i>- none specified -</i>'; ?></td>
+</tr>
+<tr>
     <td><i>Database user</i>:</td>
     <td><?php echo $_SESSION['db_user']; ?></td>
 </tr>

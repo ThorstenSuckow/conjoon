@@ -16,6 +16,12 @@
 <p>
 conjoon relies on a database backend for storing application data. Please provide your database setup in the following step.
 </p>
+<div class="info_box">
+ <strong>Note:</strong> If you specify a table prefix other than the one you might have specified
+ in a previous installation, all tables will be installed again and no data will be migrated to
+ the upgraded version. Do not change an already existing table prefix if you want to continue to work with
+ your old data in a new version of conjoon.
+</div>
 <br />
 <table>
 <tbody>
@@ -133,6 +139,36 @@ Please provide the name of the database.
 <?php } ?>
 <td>Database:</td>
 <td><input type="text" name="db" value="<?php echo (($_SESSION['db'] !== null) ? $_SESSION['db'] : '') ?>" /></td>
+</tr>
+
+
+<tr>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2">You can enter a prefix here that gets prepended to the tables created by conjoon.
+    This is helpful in cases where there is only one database available that gets used by multiple
+    applications, to prevent namespace clashes.
+    <br />
+    <div class="info_box">
+        <strong>Note:</strong>
+        The prefix entered here gets exactly prepended as specified. For example, specifying the prefix "cj_" will
+        rename the table "users" to "cj_users". <br />Leave the field empty if you do not want to use
+        a table prefix. This is only recommended for databases that were created explicitly for conjoon.
+    </div>
+</tr>
+<?php if ($DATABASE['db_table_prefix_failed']) {?>
+<tr>
+<td colspan="2"><div class="error_box">
+<b>ERROR</b><br />
+A table prefix may only contain letters, numbers and underscores. For example, a valid prefix would be
+"cj_".
+</div></td>
+</tr>
+<?php } ?>
+<td>Table prefix:</td>
+<td><input type="text" name="db_table_prefix" value="<?php echo (($_SESSION['db_table_prefix'] !== null) ? $_SESSION['db_table_prefix'] : '') ?>" /></td>
 </tr>
 
 

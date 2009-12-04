@@ -19,6 +19,7 @@
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
+$_SESSION = array();
 session_destroy();
 
 include_once './view/finish.tpl';

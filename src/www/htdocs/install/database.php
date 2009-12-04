@@ -22,7 +22,8 @@
 $DATABASE = array(
     'missing'                   => array(),
     'max_allowed_packet_failed' => false,
-    'max_allowed_packet'        => 0
+    'max_allowed_packet'        => 0,
+    'db_table_prefix_failed'    => false
 );
 
 $DATABASE['pdo_extension_loaded'] = true;
@@ -62,6 +63,11 @@ $_SESSION['db_user'] = isset($_SESSION['db_user'])
                        : (isset($tmpDb['db_user'])
                        ? $tmpDb['db_user']
                        : null);
+$_SESSION['db_table_prefix'] = strtolower(isset($_SESSION['db_table_prefix'])
+                       ? $_SESSION['db_table_prefix']
+                       : (isset($tmpDb['db_table_prefix'])
+                       ? $tmpDb['db_table_prefix']
+                       : null));
 $_SESSION['max_allowed_packet'] = isset($_SESSION['max_allowed_packet'])
                        ? $_SESSION['max_allowed_packet']
                        : (isset($tmpDb['max_allowed_packet'])
@@ -94,6 +100,7 @@ if (isset($_POST['database_check'])) {
     $db               = trim(stripslashes((string)$_POST['db']));
     $port             = trim(stripslashes((string)$_POST['db_port']));
     $user             = trim(stripslashes((string)$_POST['db_user']));
+    $prefix           = strtolower(trim(stripslashes((string)$_POST['db_table_prefix'])));
     $password         = trim(stripslashes((string)$_POST['db_password']));
     $maxAllowedPacket = trim(stripslashes((string)(float)$_POST['max_allowed_packet']));
 
@@ -119,12 +126,20 @@ if (isset($_POST['database_check'])) {
         $_SESSION['db_failed'] = true;
     }
 
-    $_SESSION['db_adapter']  = addslashes($adapter);
-    $_SESSION['db_host']     = addslashes($host);
-    $_SESSION['db']          = addslashes($db);
-    $_SESSION['db_port']     = addslashes($port);
-    $_SESSION['db_user']     = addslashes($user);
-    $_SESSION['db_password'] = addslashes($password);
+    if ($prefix != "") {
+        if (!preg_match("/^[a-zA-Z_0-9]+$/", $prefix)) {
+            $_SESSION['db_failed']              = true;
+            $DATABASE['db_table_prefix_failed'] = true;
+        }
+    }
+
+    $_SESSION['db_adapter']      = addslashes($adapter);
+    $_SESSION['db_host']         = addslashes($host);
+    $_SESSION['db']              = addslashes($db);
+    $_SESSION['db_port']         = addslashes($port);
+    $_SESSION['db_user']         = addslashes($user);
+    $_SESSION['db_table_prefix'] = addslashes($prefix);
+    $_SESSION['db_password']     = addslashes($password);
 
     $_SESSION['max_allowed_packet'] = $maxAllowedPacket;
 

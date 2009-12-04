@@ -77,9 +77,9 @@ require_once 'Zend/Controller/Front.php';
 require_once 'Conjoon/Config/Array.php';
 
 /**
- * @see Zend_Db_Table
+ * @see Conjoon_Db_Table
  */
-require_once 'Zend/Db/Table.php';
+require_once 'Conjoon/Db/Table.php';
 
 /**
  * @see Zend_Session
@@ -143,7 +143,7 @@ require_once 'Conjoon/Modules/Default/User.php';
    }
 
    // set as default adapter for all db operations
-   Zend_Db_Table::setDefaultAdapter(
+   Conjoon_Db_Table::setDefaultAdapter(
        Zend_Db::factory($config->database->adapter, array(
            'host'     => $config->database->params->host,
            'username' => $config->database->params->username,
@@ -151,6 +151,9 @@ require_once 'Conjoon/Modules/Default/User.php';
            'dbname'   => $config->database->params->dbname,
            'port'     => $config->database->params->port
    )));
+
+   // set tbl prefix
+   Conjoon_Db_Table::setTablePrefix($config->database->table->prefix);
 
     /**
      * @see Conjoon_Cache_Factory
@@ -163,7 +166,7 @@ require_once 'Conjoon/Modules/Default/User.php';
     );
 
     if ($mdCache) {
-        Zend_Db_Table::setDefaultMetadataCache($mdCache);
+        Conjoon_Db_Table::setDefaultMetadataCache($mdCache);
     }
 
    // set up authentication storage
