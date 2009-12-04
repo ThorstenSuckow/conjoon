@@ -299,8 +299,8 @@ class Conjoon_Controller_Plugin_ExtRequest {
             throw new Zend_Controller_Exception("Plugins already registered.");
         }
 
-        $this->_preDispatcher  = new Conjoon_Controller_Plugin_ExtDirect_PreDispatcher($this);
-        $this->_postDispatcher = new Conjoon_Controller_Plugin_ExtDirect_PostDispatcher($this);
+        $this->_preDispatcher  = new Conjoon_Controller_Plugin_ExtRequest_PreDispatcher($this);
+        $this->_postDispatcher = new Conjoon_Controller_Plugin_ExtRequest_PostDispatcher($this);
 
         $front = Zend_Controller_Front::getInstance();
 

@@ -27,7 +27,7 @@ require_once 'Zend/Controller/Plugin/Abstract.php';
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Conjoon_Controller_Plugin_ExtDirect_PostDispatcher extends Zend_Controller_Plugin_Abstract {
+class Conjoon_Controller_Plugin_ExtRequest_PostDispatcher extends Zend_Controller_Plugin_Abstract {
 
     /**
      * @var Conjoon_Controller_Plugin_ExtRequest $_extDirect
