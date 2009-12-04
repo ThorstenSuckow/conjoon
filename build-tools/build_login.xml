@@ -19,13 +19,13 @@
   conjoon-login.js
     and
   conjoon-login-debug.js
- and move them to the folder ../build/htdocs/js/conjoon/
+ and move them to the folder ../build/htdocs/install/files/js/conjoon/
  It will also create the file
   ../build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml
  and place the logic for loading the js files
-  ../build/htdocs/js/ext/ext-all.js
+  ../build/htdocs/install/files/js/ext/ext-all.js
  and
-  ../build/htdocs/js/conjoon/conjoon-login.js
+  ../build/htdocs/install/files/js/conjoon/conjoon-login.js
  into it.
 
  WARNING!
@@ -44,8 +44,8 @@
 
 
     <target name="clean">
-      <delete file="./build/htdocs/js/conjoon/conjoon-login-debug.js" />
-      <delete file="./build/htdocs/js/conjoon/conjoon-login.js" />
+      <delete file="./build/htdocs/install/files/js/conjoon/conjoon-login-debug.js" />
+      <delete file="./build/htdocs/install/files/js/conjoon/conjoon-login.js" />
       <delete file="./build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml" />
     </target>
 
@@ -65,11 +65,11 @@
     <target name="deploy" depends="clean,make_script">
 
         <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/js/conjoon/conjoon-login-debug.js"
+            tofile="./build/htdocs/install/files/js/conjoon/conjoon-login-debug.js"
             overwrite="true"
         />
         <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/js/conjoon/conjoon-login.js"
+            tofile="./build/htdocs/install/files/js/conjoon/conjoon-login.js"
             overwrite="true"
         />
 
@@ -92,7 +92,7 @@
           <filelist dir="./" listfile="./build-tools/merge_list_js_login.txt" />
         </append>
 
-        <append file="${conjoon.login.jsmerge.tempfile}" destFile="./build/htdocs/js/conjoon/conjoon-login-debug.js" />
+        <append file="${conjoon.login.jsmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/conjoon-login-debug.js" />
 
         <exec
             command='java -jar ${yuicompressor_path} -v --type js -o "${conjoon.login.jsmerge.tempfile}" "${conjoon.login.jsmerge.tempfile}"'
@@ -101,7 +101,7 @@
             checkreturn="true"
         />
 
-        <append file="${conjoon.login.jsmerge.tempfile}" destFile="./build/htdocs/js/conjoon/conjoon-login.js" />
+        <append file="${conjoon.login.jsmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/conjoon-login.js" />
 
         <delete file="${conjoon.login.jsmerge.tempfile}" verbose="true" failonerror="true" />
     </target>

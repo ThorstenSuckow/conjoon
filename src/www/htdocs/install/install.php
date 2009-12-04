@@ -43,6 +43,11 @@ if (file_exists($INSTALL['include_path']['ini'])) {
     $INSTALL['include_path']['delete_warning'] = true;
 }
 
+$INSTALL['IMREMOVING'] = array(
+    '_configCache' => file_exists('../_configCache'),
+    'js'           => file_exists('../js')
+);
+
 if (isset($_POST['install_post'])) {
 
     // proceed installation. First of, generate .htaccess
@@ -335,6 +340,22 @@ if (isset($_POST['install_post'])) {
             );
         }
     }
+
+    // delete folders from a previous installation
+    if ($INSTALL['IMREMOVING']['js']) {
+        conjoon_rmdir('../js');
+        rmdir('../js');
+    }
+    if ($INSTALL['IMREMOVING']['_configCache']) {
+        conjoon_rmdir('../_configCache');
+        rmdir('../_configCache');
+    }
+
+    // move js folder to htdocs
+    rename('./files/js', '../js');
+
+    // move _configCache to htdocs
+    rename('./files/_configCache', '../_configCache');
 
     header("Location: ./?action=install_success");
     die();

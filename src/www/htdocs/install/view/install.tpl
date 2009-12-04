@@ -288,6 +288,7 @@
     </td>
 </tr>
 <?php } ?>
+
 <tr>
     <td><i>conjoon sets include_path</i>:</td>
     <td><?php echo ($_SESSION['add_include_path'] ? "Yes" : "No"); ?></td>
@@ -342,4 +343,36 @@
 </tbody>
 </table>
 <?php } ?>
+
+<?php if ($INSTALL['IMREMOVING']['js'] || $INSTALL['IMREMOVING']['_configCache']) { ?>
+<h4>Deleting old folders</h4>
+<table>
+ <tbody>
+  <tr>
+      <td colspan="2">
+       <div class="warning_box">
+         The following directories have been detected from a previously installation
+         and will be removed. :
+         <ul>
+           <?php if ($INSTALL['IMREMOVING']['js']) { ?>
+             <li>../js</li>
+           <?php } ?>
+           <?php if ($INSTALL['IMREMOVING']['_configCache']) { ?>
+             <li>../_configCache</li>
+           <?php } ?>
+         </ul>
+        Please back up any data other than that created by conjoon
+         to prevent data loss.<br />
+      <strong>Note:</strong> Deleting deeply nested folders usually takes some time. Make sure
+      your php.ini settings regarding script execution timeout are set to a high enough value, or
+      delete the specified folders by hand before you proceed.
+       </div>
+      </td>
+  </tr>
+  </tbody>
+</table>
+<?php } ?>
+
+<h4></h4>
+
 <input type="hidden" name="install_post" value="1" />

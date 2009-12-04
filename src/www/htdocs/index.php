@@ -32,7 +32,7 @@
            "<a href=\"".$_SERVER['REQUEST_URI'] . "install/index.php\">".
            $_SERVER['REQUEST_URI'] . "install/index.php</a>)");
    } else if (file_exists('./install')) {
-       die("<b>Error: Please delete the install directory first!");
+       die("<b>Error:</b><br /> Please delete the install directory first, or remove config.ini.php and refresh this page to run the installation wizard.");
    }
 @BUILD_ACTIVE@*/
 

@@ -14,6 +14,7 @@ Installing conjoon
     2.2 Automatic Installation
          Notes regarding updating conjoon 0.1a2
          Notes regarding PHP's safe_mode
+         Placing the install files to where they belong
          Running the wizard
    3. Problems?
      __________________________________________________________________
@@ -70,6 +71,8 @@ Folders
               - datastore
               - conjoon_application
               - conjoon_libs
+              - js
+              - _configCache
 
    The following steps describe the setup of conjoon.
       1. htdocs:
@@ -94,6 +97,17 @@ Folders
      4. datastore
      ------------
          This folder contains the files to setup your databse.
+     5. js
+     -----
+         This folder holds all js-, css- and other files that are needed to create the
+         user interface. This folder must be put into the document-root of your conjoon
+         installation. This will be done automatically when running the install wizard.
+     6. _configCache
+     ---------------
+         This folder will store chached instances of the configuration file for the
+         conjoon application. This folder must be put into the document-root of your
+         conjoon installation. This will be done automatically when running the install
+         wizard.
 
 Installing the database
    The current version of conjoon only supports the MySQL database.
@@ -186,11 +200,20 @@ Notes regarding PHP's safe_mode
    to move the specified folders by hand, and set the file permissions according to your
    server setup.
 
+Placing the install files to where they belong
+   If there is an existing conjoon installation, now would be the best time to do a full backup
+   of conjoon's data. Once this is done, copy the contents of build/htdocs into the document
+   root of your existing - or future - conjoon installation. Overwrite any existing files.
+   Note: You do not necessarily need to remove any folders from the document root that belong
+   to the conjoon application. The install wizard is able to detect obsolete folders and
+   will tell if it's going to remove them.
+
 Running the wizard
    Since V0.1a3, conjoon ships with an installation wizard that will make installing
    and further upgrading of conjoon easier.
    Simply set up your webserver so that you can access the contents of the build/htdocs directory
-   using a webbrowser and call the index.php in the folder htdocs/install.
+   using a webbrowser (as described in "Placing the install files to where they belong") and
+   call the index.php in the folder htdocs/install.
    The wizard will guide you through the setup steps, which should be quite easy to
    follow. Once the wizard finishes, you need to delete the install folder entirely.
    Otherwise conjoon will quit with an error message if it detects that this folder is

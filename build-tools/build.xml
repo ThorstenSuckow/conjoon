@@ -95,6 +95,17 @@
       </copy>
     </target>
 
+    <target name="build_config_cache">
+      <delete dir="./build/htdocs/install/files/_configCache" />
+      <copy todir="./build/htdocs/install/files/_configCache" includeemptydirs="true">
+       <fileset dir="./src/www/htdocs/_configCache">
+         <exclude name="**/.svn" />
+         <exclude name="**/CHANGELOG.txt" />
+         <exclude name="**/config.ini.php" />
+       </fileset>
+      </copy>
+    </target>
+
     <target name="build_conjoon_php">
       <delete dir="./build/htdocs/install/files/conjoon_libs/Conjoon" />
       <copy todir="./build/htdocs/install/files/conjoon_libs/Conjoon" includeemptydirs="true">
@@ -115,7 +126,7 @@
         the dir does not already exists or if ${force.build_ext} is set to
         true -->
    <target name="build_ext">
-    <available file="./build/htdocs/js/extjs" property="ext.exists" value="exists" />
+    <available file="./build/htdocs/install/files/js/extjs" property="ext.exists" value="exists" />
     <if>
       <or>
        <equals arg1="${force.build_ext}" arg2="1" />
@@ -124,10 +135,10 @@
        </not>
       </or>
     <then>
-     <delete dir="./build/htdocs/js/extjs" />
-     <copy file="./vendor/extjs/ext-all.js" tofile="./build/htdocs/js/extjs/ext-all.js" overwrite="true"/>
-     <copy file="./vendor/extjs/adapter/ext/ext-base.js" tofile="./build/htdocs/js/extjs/ext-base.js" overwrite="true"/>
-     <copy todir="./build/htdocs/js/extjs/resources" includeemptydirs="true">
+     <delete dir="./build/htdocs/install/files/js/extjs" />
+     <copy file="./vendor/extjs/ext-all.js" tofile="./build/htdocs/install/files/js/extjs/ext-all.js" overwrite="true"/>
+     <copy file="./vendor/extjs/adapter/ext/ext-base.js" tofile="./build/htdocs/install/files/js/extjs/ext-base.js" overwrite="true"/>
+     <copy todir="./build/htdocs/install/files/js/extjs/resources" includeemptydirs="true">
       <fileset dir="./vendor/extjs/resources">
         <include name="**/ext-all.css" />
         <include name="**/*.ico" />
@@ -142,14 +153,14 @@
 
    <!-- builds conjoon js into htdocs -->
    <target name="build_conjoon_js">
-        <delete dir="./build/htdocs/js/conjoon" />
+        <delete dir="./build/htdocs/install/files/js/conjoon" />
 
         <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/js/conjoon/conjoon-all.js"
+            tofile="./build/htdocs/install/files/js/conjoon/conjoon-all.js"
             overwrite="true"
         />
         <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/js/conjoon/conjoon-all-debug.js"
+            tofile="./build/htdocs/install/files/js/conjoon/conjoon-all-debug.js"
             overwrite="true"
         />
 
@@ -165,7 +176,7 @@
           <filelist dir="./" listfile="./build-tools/merge_list_js.txt" />
         </append>
 
-        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/js/conjoon/conjoon-all-debug.js" />
+        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/conjoon-all-debug.js" />
 
         <exec
             command='java -jar ${yuicompressor_path} -v --type js -o "${conjoon.jsmerge.tempfile}" "${conjoon.jsmerge.tempfile}"'
@@ -173,16 +184,16 @@
             passthru="true"
             checkreturn="true"
         />
-        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/js/conjoon/conjoon-all.js" />
+        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/conjoon-all.js" />
 
         <delete file="${conjoon.jsmerge.tempfile}" verbose="true" failonerror="true" />
    </target>
 
    <!-- builds conjoon related css and resources -->
    <target name="build_css">
-    <delete dir="./build/htdocs/js/conjoon/resources" />
+    <delete dir="./build/htdocs/install/files/js/conjoon/resources" />
     <phing phingfile="./build-tools/build_css.xml" haltonfailure="true" inheritRefs="false" inheritAll="false" />
-    <copy todir="./build/htdocs/js/conjoon/resources" includeemptydirs="true">
+    <copy todir="./build/htdocs/install/files/js/conjoon/resources" includeemptydirs="true">
      <fileset dir="./src/corelib/js/resources">
        <exclude name="**/*.css" />
        <exclude name="**/Thumbs.db" />
@@ -194,14 +205,14 @@
      </fileset>
     </copy>
     <!-- as follows the subproject extensions for conjoon -->
-     <delete dir="./build/htdocs/js/ext-ux-grid-gridviewmenuplugin" />
-     <delete dir="./build/htdocs/js/ext-ux-youtubeplayer" />
-     <delete dir="./build/htdocs/js/ext-ux-toastwindow" />
-     <delete dir="./build/htdocs/js/ext-ux-livegrid" />
-     <delete dir="./build/htdocs/js/ext-ux-wiz" />
-     <delete dir="./build/htdocs/js/ext-ux-flexaccord" />
-     <delete dir="./build/htdocs/js/ext-ux-flashcontrol" />
-     <copy todir="./build/htdocs/js/ext-ux-grid-gridviewmenuplugin" includeemptydirs="true">
+     <delete dir="./build/htdocs/install/files/js/ext-ux-grid-gridviewmenuplugin" />
+     <delete dir="./build/htdocs/install/files/js/ext-ux-youtubeplayer" />
+     <delete dir="./build/htdocs/install/files/js/ext-ux-toastwindow" />
+     <delete dir="./build/htdocs/install/files/js/ext-ux-livegrid" />
+     <delete dir="./build/htdocs/install/files/js/ext-ux-wiz" />
+     <delete dir="./build/htdocs/install/files/js/ext-ux-flexaccord" />
+     <delete dir="./build/htdocs/install/files/js/ext-ux-flashcontrol" />
+     <copy todir="./build/htdocs/install/files/js/ext-ux-grid-gridviewmenuplugin" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-grid-gridviewmenuplugin/src">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -209,7 +220,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-     <copy todir="./build/htdocs/js/ext-ux-youtubeplayer" includeemptydirs="true">
+     <copy todir="./build/htdocs/install/files/js/ext-ux-youtubeplayer" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-youtubeplayer/src">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -217,7 +228,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-     <copy todir="./build/htdocs/js/ext-ux-toastwindow" includeemptydirs="true">
+     <copy todir="./build/htdocs/install/files/js/ext-ux-toastwindow" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-toastwindow">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -225,7 +236,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-     <copy todir="./build/htdocs/js/ext-ux-livegrid" includeemptydirs="true">
+     <copy todir="./build/htdocs/install/files/js/ext-ux-livegrid" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-livegrid/build">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -233,7 +244,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-     <copy todir="./build/htdocs/js/ext-ux-wiz" includeemptydirs="true">
+     <copy todir="./build/htdocs/install/files/js/ext-ux-wiz" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-wiz/src">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -241,7 +252,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-     <copy todir="./build/htdocs/js/ext-ux-flexaccord" includeemptydirs="true">
+     <copy todir="./build/htdocs/install/files/js/ext-ux-flexaccord" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-flexaccord/build">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -249,7 +260,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-     <copy todir="./build/htdocs/js/ext-ux-flashcontrol" includeemptydirs="true">
+     <copy todir="./build/htdocs/install/files/js/ext-ux-flashcontrol" includeemptydirs="true">
       <fileset dir="./vendor/ext-ux-flashcontrol/build">
         <include name="**/*.css" />
         <include name="**/*.jpg" />
@@ -311,6 +322,7 @@
          <exclude name="**/LICENSE.txt" />
          <exclude name="**/CREDITS.txt" /-->
          <exclude name="**/CHANGELOG.txt" />
+         <exclude name="_configCache/**" />
          <exclude name="**/config.ini.php" />
          <exclude name="**/ext-config.js" />
          <exclude name="**/startup.js" />
@@ -330,6 +342,7 @@
    <!-- refreshes build contents except for ../build/libs/Zend -->
    <target name="refresh" depends="prepare">
     <phingcall target="build_htdocs" />
+    <phingcall target="build_config_cache" />
     <phingcall target="build_application" />
     <phingcall target="build_libs" />
     <phingcall target="build_datastore" />
