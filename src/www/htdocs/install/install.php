@@ -258,46 +258,6 @@ if (isset($_POST['install_post'])) {
         ));
     }
 
-    // create caching folders
-    if ($_SESSION['cache']['default.caching']) {
-
-        if ($_SESSION['cache']['db.metadata.caching']) {
-            conjoon_mkdir($_SESSION['cache']['db.metadata.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['email.message.caching']) {
-            conjoon_mkdir($_SESSION['cache']['email.message.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['email.accounts.caching']) {
-            conjoon_mkdir($_SESSION['cache']['email.accounts.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['feed.item.caching']) {
-            conjoon_mkdir($_SESSION['cache']['feed.item.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['feed.item_list.caching']) {
-            conjoon_mkdir($_SESSION['cache']['feed.item_list.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['feed.reader.caching']) {
-            conjoon_mkdir($_SESSION['cache']['feed.reader.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['feed.account.caching']) {
-            conjoon_mkdir($_SESSION['cache']['feed.account.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['feed.account_list.caching']) {
-            conjoon_mkdir($_SESSION['cache']['feed.account_list.backend.cache_dir']);
-        }
-
-        if ($_SESSION['cache']['twitter.accounts.caching']) {
-            conjoon_mkdir($_SESSION['cache']['twitter.accounts.backend.cache_dir']);
-        }
-    }
-
     // move libs folders
     $libFolders = explode(",", $_SESSION['setup_ini']['lib_path']['delete']);
     for ($i = 0, $len = count($libFolders); $i < $len; $i++) {
@@ -340,6 +300,47 @@ if (isset($_POST['install_post'])) {
             );
         }
     }
+
+    // create caching folders
+    if ($_SESSION['cache']['default.caching']) {
+
+        if ($_SESSION['cache']['db.metadata.caching']) {
+            conjoon_mkdir($_SESSION['cache']['db.metadata.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['email.message.caching']) {
+            conjoon_mkdir($_SESSION['cache']['email.message.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['email.accounts.caching']) {
+            conjoon_mkdir($_SESSION['cache']['email.accounts.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.item.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.item.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.item_list.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.item_list.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.reader.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.reader.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.account.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.account.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['feed.account_list.caching']) {
+            conjoon_mkdir($_SESSION['cache']['feed.account_list.backend.cache_dir']);
+        }
+
+        if ($_SESSION['cache']['twitter.accounts.caching']) {
+            conjoon_mkdir($_SESSION['cache']['twitter.accounts.backend.cache_dir']);
+        }
+    }
+
 
     // delete folders from a previous installation
     if ($INSTALL['IMREMOVING']['js']) {
