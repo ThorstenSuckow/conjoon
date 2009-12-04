@@ -1,4 +1,4 @@
-Installing conjoon V0.1a3
+Installing conjoon
      __________________________________________________________________
 
    Table of contents
@@ -27,10 +27,10 @@ Chapter 1. Requirements
          MySQL >= 5.0.51a
 
      conjoon was tested successfully using the following browsers:
-         Internet Explorer 7.0
+         Internet Explorer 7.0, 8.0
          Mozilla Firefox 3.*
-         Safari 3.1 (Windows)
-         Google Chrome 1.0
+         Safari >= 3.1 (Windows)
+         Google Chrome >= 1.0
 
      Notice:
      conjoon may work with a different setup, though it's not guaranteed.
@@ -103,22 +103,27 @@ Installing the database
    support table prefixes, so you should install the tables into a fresh
    database to make sure you not accidently overwrite any existing table.
    Tables installed for the current version are as follows:
-      groupware_contact_items
-      groupware_contact_items_email
-      groupware_contact_items_flags
-      groupware_email_accounts
-      groupware_email_folders
-      groupware_email_folders_accounts
-      groupware_email_items
-      groupware_email_items_attachments
-      groupware_email_items_flags
-      groupware_email_items_inbox
-      groupware_email_items_outbox
-      groupware_email_items_references
-      groupware_feeds_accounts
-      groupware_feeds_items
-      groupware_feeds_items_flags
-      users
+        groupware_contact_items
+        groupware_contact_items_email
+        groupware_contact_items_flags
+        groupware_email_accounts
+        groupware_email_folders
+        groupware_email_folders_accounts
+        groupware_email_folders_users
+        groupware_email_items
+        groupware_email_items_attachments
+        groupware_email_items_flags
+        groupware_email_items_inbox
+        groupware_email_items_outbox
+        groupware_email_items_references
+        groupware_feeds_accounts
+        groupware_feeds_items
+        groupware_feeds_items_flags
+        service_twitter_accounts
+        users
+    (Note: Since V0.1RC1, you can chose a prefix that gets prepended to the tables, in case
+    your hoster allows for only one database to use. So table names might differ in your final
+    installation.)
 
    Since V0.1a3, conjoon does not set up a default user. If you are not
    using the installation wizard, you need to add a user by hand.
@@ -149,9 +154,11 @@ php.ini settings
 
    The include path does not have necessarily to be adjusted to hold the
    path to the "libs" folder, you can configure this using the config.ini.php.
-   However, using the php.ini setting will give you a small performance increase,
+   However, using the php.ini setting will give you a performance increase,
    since conjoon does not have to set this value upon each and every request when
-   configured in the config.ini.php.
+   configured in the config.ini.php. Additionally, setting the include_path other than
+   using the configuration file will allow conjoon to cache the configuration, which
+   prevents it from parsing on each and every request.
 
 Apache configuration
    Apache should be configured with
