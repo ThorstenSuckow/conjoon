@@ -351,8 +351,8 @@
   <tr>
       <td colspan="2">
        <div class="warning_box">
-         The following directories have been detected from a previously installation
-         and will be removed. :
+         The following directories were most likely created during a previous installation of
+         conjoon and will be removed:
          <ul>
            <?php if ($INSTALL['IMREMOVING']['js']) { ?>
              <li>../js</li>
@@ -361,7 +361,7 @@
              <li>../_configCache</li>
            <?php } ?>
          </ul>
-        Please back up any data other than that created by conjoon
+        Please back up any data other than created by conjoon
          to prevent data loss.<br />
       <strong>Note:</strong> Deleting deeply nested folders usually takes some time. Make sure
       your php.ini settings regarding script execution timeout are set to a high enough value, or
