@@ -32,6 +32,24 @@ not work as expected.
   </div>
  </div>
  <div style="text-align:right">
+    <script type="text/javascript">
+
+        function disableButtons()
+        {
+            var prev = document.getElementById('prevButton');
+            var next = document.getElementById('nextButton');
+
+            if (prev) {
+                prev.disabled = true;
+            }
+
+            if (next) {
+                next.disabled = true;
+            }
+        }
+
+    </script>
+
   <?php
       $keys    = array_keys($VIEW['navigation']);
       $currInd = 0;
@@ -43,15 +61,15 @@ not work as expected.
           }
       }
       if ($keys[0] != $VIEW['action'] && $currInd != $navCount-1) {
-          echo "<input onclick=\"location.href='./?action=".$keys[$currInd-1]."'\" class=\"proceed_button\" type=\"button\" value=\"&lt; Previous\" />";
+          echo "<input id='prevButton' onclick=\"disableButtons();location.href='./?action=".$keys[$currInd-1]."'\" class=\"proceed_button\" type=\"button\" value=\"&lt; Previous\" />";
       }
 
       if ($keys[count($keys)-1] != $VIEW['action']) {
 
           if (isset($VIEW['navigation'][$VIEW['action']][2])) {
-              echo "<input onclick=\"document.forms[0].action='./".$VIEW['navigation'][$VIEW['action']][2]."';document.forms[0].submit();\" class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
+              echo "<input id='nextButton' onclick=\"disableButtons();document.forms[0].action='./".$VIEW['navigation'][$VIEW['action']][2]."';document.forms[0].submit();\" class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
           } else {
-              echo "<input onclick=\"document.forms[0].action='./?action=".$keys[$currInd+1]."';document.forms[0].submit();\" class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
+              echo "<input id='nextButton' onclick=\"disableButtons();document.forms[0].action='./?action=".$keys[$currInd+1]."';document.forms[0].submit();\" class=\"proceed_button\" type=\"button\" value=\"Next &gt;\" />";
           }
       }
   ?>

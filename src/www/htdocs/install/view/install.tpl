@@ -281,6 +281,9 @@
            <li><?php echo $INSTALL['include_path']['delete'][$i] ?></li>
        <?php } ?>
     </ul>
+    <strong>Note:</strong> Deleting deeply nested folders usually takes some time. Make sure
+    your php.ini settings regarding script execution timeout are set to a high enough value, or
+    delete the specified folders by hand before you proceed.
      </div>
     </td>
 </tr>
