@@ -268,7 +268,7 @@
         <include name="**/*.png" />
       </fileset>
      </copy>
-      <copy todir="./build/htdocs/install/files/js/soundmanager2/swf" includeemptydirs="true">
+      <copy todir="./build/htdocs/install/files/js/soundmanager/swf" includeemptydirs="true">
       <fileset dir="./vendor/soundmanager/swf">
         <include name="**/*.swf" />
       </fileset>
