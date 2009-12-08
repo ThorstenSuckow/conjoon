@@ -119,7 +119,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
          * Events will be captured by the onNodeLoaded method.
          */
         this.treeLoader = new com.conjoon.groupware.email.EmailTreeLoader({
-            dataUrl   : './groupware/emailFolder/get.folder/format/json',
+            dataUrl   : './groupware/email.folder/get.folder/format/json',
             baseAttrs : {
                 uiProvider : com.conjoon.groupware.email.PendingNodeUI
             }
