@@ -14,7 +14,7 @@
 
 Ext.Direct.addProvider({
     enableUrlEncode : 'extDirectData',
-    url             : '/service',
+    url             : './service',
     format          : 'json',
     type            : 'zend',
     actions         : {
