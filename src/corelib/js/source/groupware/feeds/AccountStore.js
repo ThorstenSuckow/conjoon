@@ -43,7 +43,7 @@ com.conjoon.groupware.feeds.AccountStore = function() {
                               root: 'accounts',
                               id : 'id'
                           }, com.conjoon.groupware.feeds.AccountRecord),
-            url         : './groupware/feedsAccount/get.feed.accounts/format/json',
+            url         : './groupware/feeds.account/get.feed.accounts/format/json',
             listeners   : com.conjoon.groupware.feeds.FeedRunner.getListener()
         });
     };

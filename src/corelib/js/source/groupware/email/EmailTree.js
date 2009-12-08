@@ -237,7 +237,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this.clkNode = null;
 
             Ext.Ajax.request({
-                url    : './groupware/emailFolder/delete.folder/format/json',
+                url    : './groupware/email.folder/delete.folder/format/json',
                 params : {
                     id : nodeId
                 },
@@ -357,7 +357,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         switch (nodeConfig.mode) {
             case 'move':
-                url    = './groupware/emailFolder/move.folder/format/json';
+                url    = './groupware/email.folder/move.folder/format/json';
                 params = {
                     //newParentId : nodeConfig.newParent,
                     parentId : nodeConfig.newParent,
@@ -368,7 +368,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             break;
 
             case 'edit':
-                url    = './groupware/emailFolder/rename.folder/format/json';
+                url    = './groupware/email.folder/rename.folder/format/json';
                 params = {
                     parentId : nodeConfig.parent,
                     id       : nodeConfig.child.id,
@@ -378,7 +378,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             break;
 
             case 'add':
-                url = './groupware/emailFolder/add.folder/format/json';
+                url = './groupware/email.folder/add.folder/format/json';
                 params = {
                     parentId : nodeConfig.parent,
                     // this property is actually needed if we need to

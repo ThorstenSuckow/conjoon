@@ -38,7 +38,7 @@ com.conjoon.groupware.feeds.FeedStore = function() {
                 timeout   : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
             },
             proxy : new Ext.data.HttpProxy({
-                url      : './groupware/feedsItem/get.feed.items/format/json',
+                url      : './groupware/feeds.item/get.feed.items/format/json',
                 timeout  : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
             })
         });

@@ -228,17 +228,17 @@ com.conjoon.groupware.email.Dispatcher = function() {
         switch (type) {
             case 'send':
                 subject     = 'com.conjoon.groupware.email.Smtp.beforeEmailSent';
-                url         = './groupware/emailSend/send/format/json';
+                url         = './groupware/email.send/send/format/json';
             break;
 
             case 'outbox':
                 subject     = 'com.conjoon.groupware.email.outbox.beforeEmailMove';
-                url         = './groupware/emailEdit/move.to.outbox/format/json';
+                url         = './groupware/email.edit/move.to.outbox/format/json';
             break;
 
             case 'edit':
                 subject     = 'com.conjoon.groupware.email.editor.beforeDraftSave';
-                url         = './groupware/emailEdit/save.draft/format/json';
+                url         = './groupware/email.edit/save.draft/format/json';
             break;
         }
 
@@ -303,7 +303,7 @@ com.conjoon.groupware.email.Dispatcher = function() {
 
             var opts = {
                 emailItems     : emailItems,
-                url            : './groupware/emailSend/bulk.send/format/json',
+                url            : './groupware/email.send/bulk.send/format/json',
                 params         : params,
                 success        : _onBulkSendSuccess,
                 failure        : _onBulkSendFailure,

@@ -153,6 +153,7 @@ Ext.Ajax.on('beforerequest', function(conn, options) {
 
     if (options.ts && options.ts.provider && options.ts.provider.type == 'zend') {
         var controller = options.ts.action;
+        controller = controller.replace(/([a-z])([A-Z])/g, "$1.$2").toLowerCase();
         var action    = options.ts.method;
         action = action.replace(/([a-z])([A-Z])/g, "$1.$2").toLowerCase();
 

@@ -529,7 +529,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
         this.buttons[2].disable();
 
         this.requestId = Ext.Ajax.request({
-            url            : './groupware/feedsAccount/update.accounts/format/json',
+            url            : './groupware/feeds.account/update.accounts/format/json',
             params         : {
                 deleted : Ext.encode(deleted),
                 updated : Ext.encode(updated)
