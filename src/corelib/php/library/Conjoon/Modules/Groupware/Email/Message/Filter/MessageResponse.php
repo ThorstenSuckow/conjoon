@@ -60,7 +60,7 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
     protected $_filters = array(
         'subject' => array(
             array(
-                'Htmlentities',
+                'HtmlEntities',
                 array(
                     'quotestyle' => ENT_COMPAT,
                     'charset'    => 'UTF-8'
@@ -69,7 +69,7 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
         ),
         'body' => array(
             array(
-                'Htmlentities',
+                'HtmlEntities',
                 array(
                     'quotestyle' => ENT_COMPAT,
                     'charset'    => 'UTF-8'

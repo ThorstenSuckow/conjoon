@@ -255,7 +255,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
     {
         $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();
 
-        $this->_filters['contentTextPlain'][] = new Zend_Filter_Htmlentities(
+        $this->_filters['contentTextPlain'][] = new Zend_Filter_HtmlEntities(
             array(
                 'quotestyle' => ENT_COMPAT,
                 'charset'    => 'UTF-8'
