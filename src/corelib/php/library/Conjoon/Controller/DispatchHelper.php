@@ -67,14 +67,35 @@ class Conjoon_Controller_DispatchHelper {
             $exceptions[] = $e;
             $result = self::mergeExceptions($exceptions);
 
-            /**
-             * @see Zend_Json
-             */
-            require_once 'Zend/Json.php';
+            $isJson = true;
 
-            $result = Zend_Json::encode($result);
-            header("Content-Type: application/json");
-            echo $result;
+            try {
+                $isJson = strpos(strtolower(
+                            $front->getRequest()->getHeader('Content-Type')
+                          ), 'json') !== false
+                          ? true : false;
+
+            } catch (Exception $e) {
+                // ignore
+            }
+
+            if ($isJson) {
+                /**
+                 * @see Zend_Json
+                 */
+                require_once 'Zend/Json.php';
+
+                $result = Zend_Json::encode($result);
+                header("Content-Type: application/json");
+
+                echo $result;
+            } else {
+                // we can assume that this happens during a none-json request
+                echo "<pre>";
+                print_r($result);
+                echo "</pre>";
+            }
+
             die();
         }
     }
