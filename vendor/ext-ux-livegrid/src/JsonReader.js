@@ -47,7 +47,20 @@ Ext.extend(Ext.ux.grid.livegrid.JsonReader, Ext.data.JsonReader, {
      *                               the reponse from
      */
 
+    buildExtractors : function()
+    {
+        if(this.ef){
+            return;
+        }
 
+        var s = this.meta;
+
+        if(s.versionProperty) {
+            this.getVersion = this.createAccessor(s.versionProperty);
+        }
+
+        Ext.ux.grid.livegrid.JsonReader.superclass.buildExtractors.call(this);
+    },
 
     /**
      * Create a data block containing Ext.data.Records from a JSON object.
@@ -59,25 +72,16 @@ Ext.extend(Ext.ux.grid.livegrid.JsonReader, Ext.data.JsonReader, {
      */
     readRecords : function(o)
     {
-        var s = this.meta;
-
-        if(!this.ef && s.versionProperty) {
-            this.getVersion = this.getJsonAccessor(s.versionProperty);
-        }
-
         // shorten for future calls
         if (!this.__readRecords) {
             this.__readRecords = Ext.ux.grid.livegrid.JsonReader.superclass.readRecords;
         }
-
         var intercept = this.__readRecords.call(this, o);
 
-
-        if (s.versionProperty) {
+        if (this.meta.versionProperty) {
             var v = this.getVersion(o);
             intercept.version = (v === undefined || v === "") ? null : v;
         }
-
 
         return intercept;
     }

@@ -1,4 +1,49 @@
-﻿Version 0.3RC2 (GPL)
+﻿04-January-2010
+ - fixed: (GridView.js) fixed an issue where the grid would not be properly rendered
+in IE due to deprecated "scrollOffset" property
+ - enhancement: (JsonReader.js) added compatibility for Ext 3.0.3
+ - enhancement: (GridView.js) replaced call to "Ext.each" in "processRows()"
+with for-loop
+ - fixed: (GridView.js) added property "loadMaskDisplayed" to indicate whether
+loadMask is currently being displayed; fixed an issue that would not stripe rows
+when grid is being refreshed;
+
+10-July 2009
+ - fixed: fixed an error that would be triggered if the store uses a custom proxy,
+such as Ext.data.DirectProxy; introduced event "abortrequest" to be aware of cases
+when custom proxies should abort any ongoing "read" server request
+
+09-July 2009
+ - fixed: (EditorGridPanel.js, GridPanel.js) call in "initComponent()" would not allow
+an user to set the property "cls"as it would get override; checked for existence of
+this property and concatenated it with default
+ - enhancement: added Ext 3.0.0 compatibility
+ - fixed: (GridView.js) listener "onBeforeLoad()" now aborts any ongoing server
+request and properly resets properties "isBuffering" and "isPreBuffering"
+
+26-June 2009
+ - fixed: fixed an erroneous call to superclass' implementation of "initComponent()"
+in Ext.ux.grid.livegrid.EditorGridPanel
+
+20-June 2009
+ - fixed: fixed a bug where "suspendLoadEvent" would not be reset, thus suspending all
+load-events for further calls once it was set
+(see http://www.extjs.com/forum/showthread.php?p=345273#post345273)
+ - enhancement: added "examples"
+ - enhancement: enhanced css rules
+ - fixed: fixed a flaw which would remove focus from the scrollbar in IE7 by caching
+the loadMask, which also speeds up rendering
+ - enhancement: performance improvements in "GridView.liveBufferUpdate()" by only
+re-rendering the view if there is no index left in the request-queue
+
+08-June 2009
+ - enhancement: (Store.js) updated api to work with Ext3.0RC2 (breaks backwards
+compatibility with versions prior to Ext3.0Rc2)
+ - enhancement: (Toolbar.js) minor code changes to make toolbar work with Ext3.0RC2
+ - enhancement: (GridView.js) removed "loadMaskConfig" property and instead delegated loadmask
+configuration to loadMask cfg property; simplified "showLoadMask" method
+
+Version 0.3RC2 (GPL)
 07-December-2008
 
  - fixed: (GridView.js) "renderUI()" would not set "this.dragZone" properly if

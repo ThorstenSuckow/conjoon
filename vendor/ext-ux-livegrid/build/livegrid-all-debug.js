@@ -160,7 +160,16 @@ Ext.ux.grid.livegrid.GridView = function(config) {
          * @param {Number} visibleRows The number of rows visible in the grid.
          * @param {Number} totalCount
          */
-        'cursormove' : true
+        'cursormove' : true,
+        /**
+         * @event abortrequest
+         * Fires when the store is about to reload (this does NOT mean buffering).
+         * If you are using a custom proxy in your store, you should listen to this event
+         * and abort any ongoing server request established in your custom proxy.
+         * @param {Ext.data.Store} store
+         * @param {Object} options
+         */
+        'abortrequest' : true
 
     });
 
@@ -333,6 +342,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     loadMask : false,
 
     /**
+     * A shortcut to indicate whether the loadMask is currently being displayed.
+     * @type {Boolean}
+     * @private
+     */
+    loadMaskDisplayed : false,
+
+    /**
      * Set to <tt>true</tt> if a request for new data has been made while there
      * are still rows in the buffer that can be rendered before the request
      * finishes.
@@ -375,8 +391,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             this.adjustVisibleRows();
             this.adjustScrollerPos(-this.liveScroller.dom.scrollTop, true);
             this.showLoadMask(false);
+
+            var _ofn = this.processRows;
+            this.processRows = Ext.emptyFn;
             this.refresh(true);
-            //this.replaceLiveRows(0, true);
+            this.processRows = _ofn;
+            this.processRows(0);
+
             this.fireEvent('cursormove', this, 0,
                            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
@@ -946,6 +967,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      * remeote-sorts or reloads.
      * All other load events will be suspended when the view requests buffer data.
      * See {updateLiveRows}.
+     * Note:
+     * If you are using a custom proxy, such as {Ext.data.DirectProxy}, you should listen
+     * to the 'abortrequest'-event, which will tell that an ongoing "read" request should be
+     * aborted, since the grid's store gets refreshed.
+     * If the store is using an instance of {Ext.data.HttpProxy}, the method will still be
+     * fired, but the request made through this proxy will be aborted automatically.
+     *
      *
      * @param {Ext.data.Store} store The store the Grid Panel uses
      * @param {Object} options The configuration object for the proxy that loads
@@ -954,9 +982,10 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     onBeforeLoad : function(store, options)
     {
         var proxy = store.proxy;
-        if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+        if (proxy.activeRequest && proxy.activeRequest[Ext.data.Api.actions.read]) {
             proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
         }
+        this.fireEvent('abortrequest', store, options);
 
         this.isBuffering    = false;
         this.isPreBuffering = false;
@@ -1141,6 +1170,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         this.fireEvent("rowupdated", this, viewIndex, record);
     },
 
+
     /**
      * Overwritten so the rowIndex can be changed to the absolute index.
      *
@@ -1154,12 +1184,16 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
-        var cursor = this.rowIndex;
-        skipStripe   = skipStripe || !this.grid.stripeRows;
-        var rows     = this.getRows();
-        var index    = 0;
+        skipStripe = skipStripe || !this.grid.stripeRows;
 
-        Ext.each(rows, function(row, idx) {
+        var cursor     = this.rowIndex;
+        var rows       = this.getRows();
+        var index      = 0;
+
+        var row = null;
+        for (var idx = 0, len = rows.length; idx < len; idx++) {
+            row = rows[idx];
+
             row.rowIndex = index = cursor+idx;
             row.className = row.className.replace(this.rowClsRe, ' ');
             if (!skipStripe && (index + 1) % 2 === 0) {
@@ -1174,7 +1208,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
                 }
                 this.fly(row).removeClass("x-grid3-row-over");
             }
-        }, this);
+        }
 
         // add first/last-row classes
         if(cursor === 0){
@@ -1570,7 +1604,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      */
     showLoadMask : function(show)
     {
-        if (!this.loadMask) {
+        if (!this.loadMask || show == this.loadMaskDisplayed) {
             return;
         }
 
@@ -1592,6 +1626,8 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             mask.setDisplayed(false);
             maskMsg.setDisplayed(false);
         }
+
+        this.loadMaskDisplayed = show;
     },
 
     /**
@@ -1694,11 +1730,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             liveScrollerDom.style.display = 'none';
             return;
         } else {
-            this.scroller.setWidth(elWidth-this.scrollOffset);
+            this.scroller.setWidth(elWidth-this.getScrollOffset());
             liveScrollerDom.style.display = '';
         }
 
-        var scrollbar = this.cm.getTotalWidth()+this.scrollOffset > elWidth;
+        var scrollbar = this.cm.getTotalWidth()+this.getScrollOffset() > elWidth;
 
         // adjust the height of the scrollbar
         var contHeight = liveScrollerDom.parentNode.offsetHeight +
@@ -1748,7 +1784,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var width = size.width;
         var vh    = size.height;
 
-        var vw = width-this.scrollOffset;
+        var vw = width-this.getScrollOffset();
         // horizontal scrollbar shown?
         if (cm.getTotalWidth() > vw) {
             // yes!
@@ -1864,7 +1900,20 @@ Ext.extend(Ext.ux.grid.livegrid.JsonReader, Ext.data.JsonReader, {
      *                               the reponse from
      */
 
+    buildExtractors : function()
+    {
+        if(this.ef){
+            return;
+        }
 
+        var s = this.meta;
+
+        if(s.versionProperty) {
+            this.getVersion = this.createAccessor(s.versionProperty);
+        }
+
+        Ext.ux.grid.livegrid.JsonReader.superclass.buildExtractors.call(this);
+    },
 
     /**
      * Create a data block containing Ext.data.Records from a JSON object.
@@ -1876,25 +1925,16 @@ Ext.extend(Ext.ux.grid.livegrid.JsonReader, Ext.data.JsonReader, {
      */
     readRecords : function(o)
     {
-        var s = this.meta;
-
-        if(!this.ef && s.versionProperty) {
-            this.getVersion = this.getJsonAccessor(s.versionProperty);
-        }
-
         // shorten for future calls
         if (!this.__readRecords) {
             this.__readRecords = Ext.ux.grid.livegrid.JsonReader.superclass.readRecords;
         }
-
         var intercept = this.__readRecords.call(this, o);
 
-
-        if (s.versionProperty) {
+        if (this.meta.versionProperty) {
             var v = this.getVersion(o);
             intercept.version = (v === undefined || v === "") ? null : v;
         }
-
 
         return intercept;
     }
