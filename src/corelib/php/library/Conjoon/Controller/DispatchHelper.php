@@ -91,8 +91,13 @@ class Conjoon_Controller_DispatchHelper {
                 echo $result;
             } else {
                 // we can assume that this happens during a none-json request
+                echo "<h1>Error</h1>";
                 echo "<pre>";
                 print_r($result);
+                echo "<hr>";
+                debug_print_backtrace();
+                echo "<hr>";
+                print_r(debug_backtrace());
                 echo "</pre>";
             }
 
