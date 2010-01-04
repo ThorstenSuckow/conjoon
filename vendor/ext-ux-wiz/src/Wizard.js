@@ -279,7 +279,7 @@ this.showLoadMask(true, 'validating');
 
         this.previousButton.setDisabled(!enabled);
         this.nextButton.setDisabled(!enabled);
-        this.cancelButton.setDisabled(true);
+        this.cancelButton.setDisabled(!enabled);
 
         var ct = this.tools['close'];
 
@@ -335,14 +335,6 @@ this.showLoadMask(true, 'validating');
         Ext.ux.Wiz.superclass.initEvents.call(this);
 
         this.on('beforeclose', this.onBeforeClose, this);
-
-        var cards = this.cards;
-
-        for (var i = 0, len = cards.length; i < len; i++) {
-            cards[i].on('show', this.onCardShow, this);
-            cards[i].on('hide', this.onCardHide, this);
-            cards[i].on('clientvalidation', this.onClientValidation, this);
-        }
     },
 
     /**
@@ -372,6 +364,14 @@ this.showLoadMask(true, 'validating');
             border     : false,
             activeItem : 0
         });
+
+        var cards = this.cards;
+
+        for (var i = 0, len = cards.length; i < len; i++) {
+            cards[i].on('show', this.onCardShow, this);
+            cards[i].on('hide', this.onCardHide, this);
+            cards[i].on('clientvalidation', this.onClientValidation, this);
+        }
 
         this.cardPanel = new Ext.Panel(cardPanelConfig);
     },

@@ -1,4 +1,8 @@
-﻿31.05.2009
+﻿04.01.2010
+==========
+ - enhancement: added Ext 3.0.3 compatibility
+
+31.05.2009
 ==========
  - fixed: dialog would be closable even if teh dialog state would be set to "disabled";
 added "beforeclose"-listener to prevent closing the dialog in case the dialog is busy
