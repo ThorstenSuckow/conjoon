@@ -720,6 +720,13 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
         Ext.Msg.prompt('Load video', 'Please enter the video id or url:', function(btn, text){
             if (btn == 'ok'){
                 var id = control._parseVideoId(text);
+                if (!id) {
+                    Ext.Msg.alert(
+                        'Load video',
+                        "id \""+id+"\" does not seem to be a valid video id"
+                    );
+                    return;
+                }
                 control.player.stopVideo();
                 control.player.clearVideo();
                 control.player.cueVideoById(id);
@@ -729,16 +736,27 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
 
     /**
      * Helper function for parsing a given string for a youtube video id
+     * Allowed strings are f.e.
+     * http://www.youtube.com/watch?v=-dsdsdsd&sdfsf
+     * http://www.youtube.com/watch/v/-dsdsdsd
+     * -sdsdjh78sdds
+     * fsfddsffdsd-sdf324243
+     *
+     * @return {String} the parsed video id or "null" if no video id
+     * could be found.
      */
     _parseVideoId : function(text)
     {
-        var mpos = text.indexOf('v=');
-        if (mpos !== -1) {
-            var text = text.substring(mpos+2);
-            var spos = text.indexOf('&');
-            if (spos !== -1) {
-                text = text.substring(text, spos);
-            }
+        var mpos  = text.indexOf('v=');
+        var mpos1 = text.indexOf('/v/');
+
+        if (mpos != -1 || mpos1 != -1) {
+            text =text.replace(
+                /(.*)(v=|\/v\/)([^&]+)(.*)/gi,
+                "$3"
+            );
+        } else {
+            text = /^[a-zA-Z0-9_\-]+$/.test(text) === false ? null : text;
         }
 
         return text;
