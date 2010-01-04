@@ -32,8 +32,7 @@ Ext.ux.layout.CardLayout = Ext.extend(Ext.layout.CardLayout, {
      *
      * @param {String/Number} item The string component id or numeric index of the item to activate
      */
-    setActiveItem : function(item)
-    {
+    setActiveItem : function(item){
         item = this.container.getComponent(item);
         if(this.activeItem != item){
             if(this.activeItem){
@@ -42,12 +41,15 @@ Ext.ux.layout.CardLayout = Ext.extend(Ext.layout.CardLayout, {
             // check if the beforehide method allowed to
             // hide the current item
             if (this.activeItem && !this.activeItem.hidden) {
-            	return;
+                return;
             }
-
+            var layout = item.doLayout && (this.layoutOnCardChange || !item.rendered);
             this.activeItem = item;
             item.show();
             this.layout();
+            if(layout){
+                item.doLayout();
+            }
         }
     }
 
