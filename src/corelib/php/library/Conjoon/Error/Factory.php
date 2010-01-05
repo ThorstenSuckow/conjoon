@@ -1,16 +1,16 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2009 siteartwork.de/conjoon.org
+ * (c) 2002-2010 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: Error.php 324 2008-12-08 21:26:43Z T. Suckow $
- * $Date: 2008-12-08 22:26:43 +0100 (Mo, 08 Dez 2008) $
- * $Revision: 324 $
- * $LastChangedDate: 2008-12-08 22:26:43 +0100 (Mo, 08 Dez 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/live/vs170240.vserver.de/svn_repository/conjoon/trunk/src/corelib/php/library/Conjoon/Error.php $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 /**

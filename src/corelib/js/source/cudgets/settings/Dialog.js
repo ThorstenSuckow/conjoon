@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2009 siteartwork.de/conjoon.org
+ * (c) 2002-2010 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -70,7 +70,7 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
         if (!this.ui) {
             this.ui = new com.conjoon.cudgets.settings.ui.DefaultDialogUi();
         }
-        
+
         this.ui.init(this);
 
         com.conjoon.cudgets.settings.Dialog.superclass.initComponent.call(this);
@@ -79,17 +79,17 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
 // -------- api
 
     /**
-     * Sets the controls either disabled or enabled to prevent further actions 
+     * Sets the controls either disabled or enabled to prevent further actions
      * that would be triggered when clicking a button or a tool button.
      *
      * @param {Boolean} disabled True to disable the controls, otherwise false
-     * @param {Boolean} applyButtonDisabled Whether to render the applyButton 
+     * @param {Boolean} applyButtonDisabled Whether to render the applyButton
      * disabled or enabled
      */
     setControlsDisabled : function(disabled, applyButtonDisabled)
     {
         this.ui.setControlsDisabled(disabled, applyButtonDisabled);
-    }, 
+    },
 
 // --------- component getters
 
@@ -108,7 +108,7 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
         }
 
         return this.settingsContainer;
-    }, 
+    },
 
     /**
      * Returns the ok button for this dialog.
@@ -122,7 +122,7 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
         }
 
         return this.okButton;
-    }, 
+    },
 
     /**
      * Returns the cancel button for this dialog.
@@ -136,7 +136,7 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
         }
 
         return this.cancelButton;
-    }, 
+    },
 
     /**
      * Returns the apply button for this dialog.
@@ -150,6 +150,6 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
         }
 
         return this.applyButton;
-    }, 
+    },
 
 });

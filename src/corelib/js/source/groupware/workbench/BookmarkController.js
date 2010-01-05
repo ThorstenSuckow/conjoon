@@ -1,15 +1,15 @@
 /**
  * conjoon
- * (c) 2002-2009 siteartwork.de/conjoon.org
+ * (c) 2002-2010 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
- * $Author: T. Suckow $
- * $Id: javascript.phtml 322 2008-12-08 10:00:57Z T. Suckow $
- * $Date: 2008-12-08 11:00:57 +0100 (Mo, 08 Dez 2008) $
- * $Revision: 322 $
- * $LastChangedDate: 2008-12-08 11:00:57 +0100 (Mo, 08 Dez 2008) $
- * $LastChangedBy: T. Suckow $
- * $URL: file:///F:/live/vs170240.vserver.de/svn_repository/conjoon/trunk/src/www/application/modules/default/views/scripts/index/javascript.phtml $
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
  */
 
 Ext.namespace('com.conjoon.groupware.workbench');
