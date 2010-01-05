@@ -1,4 +1,8 @@
-﻿
+﻿05-January-2009
+ - fixed: fixed an issue where initial showing the menu would not align it
+properly
+
+Version 0.2RC3
 03-May-2009
  - enhancement: removed workaround for an Ext JS 3.0RC1 issue that was resolved in
 the main dev branch by them

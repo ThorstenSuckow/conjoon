@@ -133,6 +133,7 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
             id           : grid.id + "-hcols-menu",
             subMenuAlign : "tr-tl?"
         });
+        this.colMenu.on("afterrender",  this._beforeColMenuShow, this);
         this.colMenu.on("beforeshow",   this._beforeColMenuShow, this);
         this.colMenu.on("beforeremove", this._beforeColMenuRemove, this);
         this.colMenu.on("itemclick",    this._handleHdMenuClick, this);
@@ -170,7 +171,7 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
     },
 
     /**
-     * Listener for the beforeshow-event of the menu.
+     * Listener for the beforeshow/afterrender-event of the menu.
      * Default implementation calls the view's beforeColMenuShow-method
      * in the scope of this plugin. If the bound view is an instance of
      * {Ext.grid.GroupingView}, additionally items will be rendered to
@@ -198,8 +199,9 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
                 this._groupMenu = new Ext.menu.Menu({
                     id : this._grid.id + "-hgroupcols-menu"
                 });
-                this._groupMenu.on("beforeshow", this._onBeforeGroupMenuShow, this);
-                this._groupMenu.on("itemclick", this._onGroupMenuItemClick, this);
+                this._groupMenu.on("afterrender", this._onBeforeGroupMenuShow, this);
+                this._groupMenu.on("beforeshow",  this._onBeforeGroupMenuShow, this);
+                this._groupMenu.on("itemclick",   this._onGroupMenuItemClick,  this);
 
                 var conf = {
                     itemId       : 'showGroups',
@@ -255,12 +257,12 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
     {
         if(Ext.fly(t).hasClass('x-grid3-hd-btn')){
             e.stopEvent();
-            this.colMenu.show(t, "tr-br?");
+            this.colMenu.show(t, 'tr-br?');
         }
     },
 
     /**
-     * Listener for the beforeshow event of this plugin's group menu.
+     * Listener for the afterrender/beforeshow event of this plugin's group menu.
      *
      */
     _onBeforeGroupMenuShow : function()
