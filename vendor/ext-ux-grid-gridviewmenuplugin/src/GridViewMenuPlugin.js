@@ -216,8 +216,10 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
                         checked      : !!field,
                         checkHandler : function(menuItem, checked) {
                             if(checked){
+                                this._view.enableGrouping = true;
                                 this._grid.store.groupBy(this._lastGroupField);
                             }else{
+                                this._view.enableGrouping = false;
                                 this._grid.store.clearGrouping();
                             }
                         },
@@ -295,13 +297,14 @@ Ext.ux.grid.GridViewMenuPlugin = Ext.extend(Object, {
 
         if(index != -1){
             if(item.checked){
+                this._view.enableGrouping = false;
                 this._grid.store.clearGrouping();
             } else {
+                this._view.enableGrouping = true;
                 this._grid.store.groupBy(dIndex);
                 this._lastGroupField = this._view.getGroupField();
             }
         }
-
     },
 
 // -------- helpers
