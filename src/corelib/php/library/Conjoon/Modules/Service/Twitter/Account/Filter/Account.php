@@ -71,7 +71,7 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
             'Int'
          ),
          'data' => array(
-            'ExtDirectWriterFilter'
+            array('ExtDirectWriterFilter', 'accounts')
             // additional filters actually set in _init depending on the context
          ),
          'id' => array(

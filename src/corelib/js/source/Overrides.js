@@ -23,6 +23,10 @@
  * Overrides ext-adapter behavior for allowing queuing of AJAX requests.
  *
  */
+
+/**
+ * The following override is valid for Ext 3.0.3 and Ext 3.1
+ */
 /*
  * Portions of this code are based on pieces of Yahoo User Interface Library
  * Copyright (c) 2007, Yahoo! Inc. All rights reserved.

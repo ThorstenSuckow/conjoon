@@ -14,8 +14,8 @@
 
 Ext.namespace('com.conjoon.cudgets.data');
 
-if (Ext.version != '3.0.3') {
-    throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.data.DirectProxy");
+if (Ext.version != '3.1.0') {
+    throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.data.Store");
 }
 
 com.conjoon.cudgets.data.Store = Ext.extend(Ext.data.Store, {

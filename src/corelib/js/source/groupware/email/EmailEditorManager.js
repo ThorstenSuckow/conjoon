@@ -126,7 +126,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
             htmlEditor     = form.htmlEditor;
             htmlEditor.on('initialize' , function(){
-                var fly = Ext.fly(this.doc);
+                var fly = Ext.fly(this.getDoc());
                 fly.addKeyListener([10, 13], onHtmlEditorEdit,
                     com.conjoon.groupware.email.EmailEditorManager, {stopEvent:true});
             }, htmlEditor, {single : true});
@@ -384,7 +384,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     var _layoutEditor = function()
     {
         if (Ext.isIE) {
-            var els = htmlEditor.doc.body.getElementsByTagName('blockquote');
+            var els = htmlEditor.getDoc().body.getElementsByTagName('blockquote');
 
             for (var i = 0; i < els.length; i++) {
 
@@ -820,7 +820,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
      */
     var onHtmlEditorEdit = function(string, eventObject)
     {
-        var doc = htmlEditor.doc;
+        var doc = htmlEditor.getDoc();
 
         var splitRange = Ext.isIE
                          ? doc.selection.createRange()
@@ -1026,7 +1026,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 + _getSignatureHtml(signature, formValues[panelId]['signatureAttached'])
             );
         } else {
-            var doc    = htmlEditor.doc;
+            var doc    = htmlEditor.getDoc();
             var sigDiv = doc.getElementById(sigId);
 
             // the selected account does not have a signature configured,

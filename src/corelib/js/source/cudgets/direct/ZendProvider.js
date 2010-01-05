@@ -14,7 +14,7 @@
 
 Ext.namespace('com.conjoon.cudgets.direct');
 
-if (Ext.version != '3.0.3') {
+if (Ext.version != '3.1.0') {
     throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.direct.ZendProvider");
 }
 

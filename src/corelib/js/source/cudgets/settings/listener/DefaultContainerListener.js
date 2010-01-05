@@ -344,8 +344,11 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
      */
     onWrite : function(store, action, result, res, rs)
     {
-
-        var prop = action == Ext.data.Api.actions.destroy ? 'removed' : 'updated';
+        var prop = action == Ext.data.Api.actions.destroy
+                             ? 'removed'
+                               : action == Ext.data.Api.actions.destroy
+                               ? 'updated'
+                               : null;
 
         if (result.success === false) {
 

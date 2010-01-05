@@ -27,7 +27,7 @@ com.conjoon.groupware.feeds.ItemRecord = Ext.data.Record.create([
     {name: 'content', type : 'string'},
     {name: 'description', type : 'string'},
     {name: 'pubDate', type: 'date', dateFormat: 'Y-m-d H:i:s'},
-    {name: 'isRead', type : 'boolean'},
+    {name: 'isRead', type : 'bool'},
     {name: 'link', type : 'string'}
 
 

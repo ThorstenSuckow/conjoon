@@ -109,7 +109,9 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         this.centerPanel = new Ext.Container({
             region     : 'center',
-            layout     : 'card',
+            layout     : new Ext.layout.CardLayout({
+                forceLayout : true
+            }),
             border     : false,
             activeItem : 0,
             hideMode   : 'offsets',
