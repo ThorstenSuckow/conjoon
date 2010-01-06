@@ -29,8 +29,8 @@
    if (!file_exists('./config.ini.php')) {
        die("<b>Error:</b><br />config.ini.php not found. Either create it manually or ".
            "run the installation script (" .
-           "<a href=\"".$_SERVER['REQUEST_URI'] . "install/index.php\">".
-           $_SERVER['REQUEST_URI'] . "install/index.php</a>)");
+           "<a href=\"./install/index.php\">".
+           "./install/index.php</a>)");
    } else if (file_exists('./install')) {
        die("<b>Error:</b><br /> Please delete the install directory first, or remove config.ini.php and refresh this page to run the installation wizard.");
    }
