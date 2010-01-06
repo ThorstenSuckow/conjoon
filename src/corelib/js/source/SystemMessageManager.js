@@ -55,11 +55,10 @@ com.conjoon.SystemMessageManager = function() {
                 dlg.el.addClass('com-conjoon-msgbox-error');
             }
 
-            var el = Ext.DomQuery.selectNode('div[class=x-progress-wrap]');
+            var el = Ext.DomQuery.selectNode('div[class*=x-progress-wrap]', dlg.el.dom);
             if (el) {
                 Ext.fly(el).addClass('com-conjoon-groupware-ProgressBar');
             }
-
         });
 
         // this will recompute the position on the screen based on the heigth/width
