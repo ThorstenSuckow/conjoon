@@ -35,8 +35,21 @@ $INSTALL['app_path']['delete'] = explode(",", $_SESSION['setup_ini']['app_path']
 $INSTALL['include_path']['delete_warning'] = false;
 $INSTALL['app_path']['delete_warning']     = false;
 
+$fAppPaths = $INSTALL['app_path']['delete'];
+
+$INSTALL['app_path']['delete'] = array();
+for ($i = 0, $len = count($fAppPaths); $i < $len; $i++) {
+    if (file_exists($INSTALL['app_path']['full'] .'/' . $fAppPaths[$i])) {
+        $INSTALL['app_path']['delete'][] = $fAppPaths[$i];
+    }
+}
+
 if (file_exists($INSTALL['app_path']['full'])) {
     $INSTALL['app_path']['delete_warning'] = true;
+}
+
+if (count($INSTALL['app_path']['delete']) == 0) {
+    $INSTALL['app_path']['delete_warning'] = false;
 }
 
 if (file_exists($INSTALL['include_path']['ini'])) {
