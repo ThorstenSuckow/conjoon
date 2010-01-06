@@ -17,6 +17,9 @@
  * Provides functionality for caching the configuration file and reading out
  * cached versions of the configuration file.
  *
+ * Functionality in this file depends on the autoloader as defined by the conjoon
+ * project.
+ *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
@@ -29,11 +32,19 @@
      */
     function conjoon_initConfigCache()
     {
-        // check here if the include_path has already been set. If this is the case,
-        // we can assume that we can cache the configuration file.
-        $conjoonSet = @include_once('Conjoon/Config/Array.php');
+        $conjoonSet = false;
+
+        if (class_exists('Conjoon_Config_Array', true)) {
+            $conjoonSet = true;
+        } else {
+            $conjoonSet = @include_once 'Conjoon/Config/Array.php';
+        }
 
         if (!$conjoonSet) {
+            // autoloader does not seem to work or we are currently
+            // working in a dev environment where include_path has not
+            // been set in teh webserver config.
+            // Return parsed config.
             return conjoon_parseConfig();
         }
 
@@ -76,6 +87,7 @@
             $config = unserialize($lines[1]);
 
             // check if the library_path is set, and adjust the include_path if necessary
+            // this should be obsolete since the autoloader should work
             if (($incPath = $config->environment->include_path) != null) {
                 set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
             }
