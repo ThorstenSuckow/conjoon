@@ -43,9 +43,9 @@
 /*@BUILD_ACTIVE@
    function __autoload($className)
    {
-       // note! $LIBRARY_PATH_BOOTSTRAP will be replaced during installation
+       // note! LIBRARY_PATH_BOOTSTRAP will be replaced during installation
        // with the path where the Zend/Conjoon libs used for this installation
-       // of conjoon can be found. If any error occurres and $LIBRARY_PATH_BOOTSTRAP
+       // of conjoon can be found. If any error occurres and LIBRARY_PATH_BOOTSTRAP
        // was not replaced, you can do so by hand.
        $res = @include_once $LIBRARY_PATH_BOOTSTRAP . '/'
                             . str_replace('_', '/', $className) . '.php';
