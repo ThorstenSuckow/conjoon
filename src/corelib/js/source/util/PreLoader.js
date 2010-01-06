@@ -88,8 +88,8 @@ com.conjoon.util.PreLoader = function() {
 
     var _internLoad = function(store) {
          store.un('exception', _internException, com.conjoon.util.PreLoader);
-         storeLoaded(store);
          kernel.fireEvent('storeload', store);
+         storeLoaded(store);
     };
 
     return {
