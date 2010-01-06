@@ -95,27 +95,41 @@ session_start();
    // are processed
    // the first index is the current request's action
    $VIEW['navigation'] = array(
-       ''                => array("Welcome", "./", "./?action=welcome_check"),
-       'check'           => array("Step 1", "./?action=check"),
-       'database'        => array("Step 2", "./?action=database", "./?action=database_check"),
-       'app_path'        => array("Step 3", "./?action=app_path", "./?action=app_path_check"),
-       'cache'           => array("Step 4", "./?action=cache",    "./?action=cache_check"),
-       'lib_path'        => array("Step 5", "./?action=lib_path", "./?action=lib_path_check"),
-       'doc_path'        => array("Step 6", "./?action=doc_path", "./?action=doc_path_check")
+        '' => array(
+            "Welcome", "./index.php", "./index.php?action=welcome_check"
+        ),
+        'check' => array(
+            "Step 1", "./index.php?action=check"
+        ),
+        'database' => array(
+            "Step 2", "./index.php?action=database", "./?action=database_check"
+        ),
+        'app_path' => array(
+            "Step 3", "./index.php?action=app_path", "./index.php?action=app_path_check"
+        ),
+        'cache' => array(
+            "Step 4", "./index.php?action=cache", "./index.php?action=cache_check"
+        ),
+        'lib_path' => array(
+            "Step 5", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
+        ),
+        'doc_path' => array(
+            "Step 6", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
+        )
    );
 
    $changeAppCredentials = !isset($_SESSION['installation_info']['app_credentials']['user']);
    if ($changeAppCredentials) {
        $VIEW['navigation']['app_credentials'] = array(
-           "Step 6", "./?action=app_credentials", "./?action=app_credentials_check"
+           "Step 6", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
        );
    }
 
    $VIEW['navigation']['install'] = array(
-       "Install!", "./?action=install", "./?action=install_process"
+       "Install!", "./index.php?action=install", "./index.php?action=install_process"
    );
 
-   $VIEW['navigation']['finish'] =array("Finish", "./?action=finish");
+   $VIEW['navigation']['finish'] =array("Finish", "./index.php?action=finish");
 
 
 // +----------------------------------------------------------------------------
@@ -135,7 +149,7 @@ session_start();
            include_once './database.php';
        break;
        case 'dbcheck_success':
-           header("Location: ./?action=app_path");
+           header("Location: ./index.php?action=app_path");
            die();
        break;
        case 'database_check':
@@ -152,7 +166,7 @@ session_start();
            include_once './app_path.php';
        break;
        case 'app_path_success':
-           header("Location: ./?action=cache");
+           header("Location: ./index.php?action=cache");
            die();
        break;
 
@@ -165,7 +179,7 @@ session_start();
            include_once './cache.php';
        break;
        case 'cache_success':
-           header("Location: ./?action=lib_path");
+           header("Location: ./index.php?action=lib_path");
            die();
        break;
 
@@ -178,7 +192,7 @@ session_start();
            include_once './lib_path.php';
        break;
        case 'lib_path_success':
-           header("Location: ./?action=doc_path");
+           header("Location: ./index.php?action=doc_path");
            die();
        break;
 
@@ -192,10 +206,10 @@ session_start();
        break;
        case 'doc_path_success':
            if ($changeAppCredentials) {
-               header("Location: ./?action=app_credentials");
+               header("Location: ./index.php?action=app_credentials");
                die();
            } else {
-               header("Location: ./?action=install");
+               header("Location: ./index.php?action=install");
                die();
            }
        break;
@@ -209,7 +223,7 @@ session_start();
            include_once './app_credentials.php';
        break;
        case 'app_credentials_success':
-           header("Location: ./?action=install");
+           header("Location: ./index.php?action=install");
            die();
        break;
 
@@ -222,7 +236,7 @@ session_start();
            include_once './install.php';
        break;
        case 'install_success':
-           header("Location: ./?action=finish");
+           header("Location: ./index.php?action=finish");
            die();
        break;
 
@@ -239,7 +253,7 @@ session_start();
            include_once './welcome.php';
        break;
        case 'welcome_success':
-           header("Location: ./?action=check");
+           header("Location: ./index.php?action=check");
            die();
        break;
    }
