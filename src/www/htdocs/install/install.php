@@ -61,6 +61,64 @@ $INSTALL['IMREMOVING'] = array(
     'js'           => file_exists('../js')
 );
 
+$INSTALL['CACHE_REMOVE'] = array(
+    'WARNING' => false,
+    'FILES'   => array()
+);
+
+if (isset($_SESSION['installation_info'])) {
+    if (isset($_SESSION['installation_info']['cache.default.caching'])
+        && $_SESSION['installation_info']['cache.default.caching']) {
+        $INSTALL['CACHE_REMOVE']['WARNING'] = true;
+
+        if (isset($_SESSION['installation_info']['cache.db.metadata.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.db.metadata.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.db.metadata.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.email.message.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.email.message.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.email.message.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.email.accounts.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.feed.item.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.reader.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.reader.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.feed.reader.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.account.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.account.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.feed.account.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir'];
+        }
+
+        if (isset($_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir'])) {
+            $INSTALL['CACHE_REMOVE']['FILES'][] = $_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir'];
+        }
+    }
+}
+
+
 if (isset($_POST['install_post'])) {
 
     // proceed installation. First of, generate .htaccess
@@ -311,6 +369,65 @@ if (isset($_POST['install_post'])) {
                 './files/' . $appFolder . "/" . $appFolders[$i],
                 $_SESSION['app_path'] . "/" . $appFolder . "/" . $appFolders[$i]
             );
+        }
+    }
+
+    // remove old cache folders
+    if (isset($_SESSION['installation_info']['cache.default.caching'])
+        && $_SESSION['installation_info']['cache.default.caching']) {
+
+        if (isset($_SESSION['installation_info']['cache.db.metadata.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.db.metadata.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.db.metadata.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.db.metadata.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.email.message.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.email.message.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.email.message.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.email.message.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.email.accounts.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.item.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.feed.item.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.feed.item.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.feed.item_list.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.reader.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.reader.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.feed.reader.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.feed.reader.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.account.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.account.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.feed.account.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.feed.account.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.feed.account_list.backend.cache_dir']);
+        }
+
+        if (isset($_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir'])
+            && file_exists($_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir'])) {
+            @conjoon_rmdir($_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir']);
+            @rmdir($_SESSION['installation_info']['cache.twitter.accounts.backend.cache_dir']);
         }
     }
 

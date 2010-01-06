@@ -123,6 +123,35 @@
 
 
 <h4>Caching options</h4>
+
+<?php if ($INSTALL['CACHE_REMOVE']['WARNING']) { ?>
+ <div class="warning_box">
+   conjoon has detected that caching was enabled in the previous installation.
+   The install wizard will remove the entire existing cache.
+
+   <?php if (count($INSTALL['CACHE_REMOVE']['FILES']) > 0) { ?>
+
+   <br />
+   The following cache directories have been detected and will be removed:
+   <ul>
+
+    <?php for ($i = 0, $len = count($INSTALL['CACHE_REMOVE']['FILES']); $i < $len; $i++) { ?>
+
+     <li><?php echo $INSTALL['CACHE_REMOVE']['FILES'][$i];?></li>
+
+    <?php } ?>
+
+   </ul>
+
+    <strong>Note:</strong> Deleting deeply nested folders usually takes some time. Make sure
+    your php.ini settings regarding script execution timeout are set to a high enough value, or
+    delete the specified folders by hand before you proceed.
+
+   <?php } ?>
+
+ </div>
+<?php } ?>
+
 <table>
     <tbody>
 <tr>
