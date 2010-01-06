@@ -27,6 +27,36 @@
  $CHECK['parent_dir']          = str_replace("\\", "/", $pathinfo);
  $CHECK['parent_dir_writable'] = @is_writable($CHECK['parent_dir']);
 
+ if ($CHECK['parent_dir_writable']) {
+    $dirName  = 'conjoon_install_test';
+    $i = 0;
+    while (@file_exists('../' . $dirName)) {
+        $i++;
+        $dirName = $dirName . $i;
+    }
+    $fileName = $dirName . ".txt";
+
+    $makeDir = @mkdir('../' . $dirName);
+
+    if ($makeDir) {
+        if (@file_put_contents(
+            '../' . $dirName .'/' . $fileName,
+            "File created during installation of conjoon on "
+            . date('Y-m-d H:i:s', time()). " for testing purposes.\n"
+            . "If this file still exists after installation, you can "
+            . "safely remove it along with its parent directory."
+            ) === false) {
+            $CHECK['parent_dir_writable'] = false;
+        } else {
+            @unlink('../' . $dirName .'/' . $fileName);
+            @rmdir('../' . $dirName);
+        }
+    } else {
+        $CHECK['parent_dir_writable'] = false;
+    }
+
+ }
+
  $fileownerCurrent = fileowner(__FILE__);
 
  // check here for safemode

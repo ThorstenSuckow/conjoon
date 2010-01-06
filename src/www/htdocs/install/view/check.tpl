@@ -47,7 +47,9 @@ project in this cases is, however, not guaranteed.
  Parent dir <i><?php echo $CHECK['parent_dir']; ?></i> is writable by the server.
 <?php } else { ?>
  <b>ERROR</b> <br />
-  The parent dir <i><?php echo $CHECK['parent_dir']; ?></i> is not writable by the webserver. Please change the permissions for this directory.
+  The parent dir <i><?php echo $CHECK['parent_dir']; ?></i> is not writable by the webserver.
+  Please change the permissions for this directory and check whether safe_mode is disabled on
+  your webserver.
 <?php } ?>
 </div>
 </p>
