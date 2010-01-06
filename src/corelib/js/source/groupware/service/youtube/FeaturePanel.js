@@ -33,6 +33,7 @@ com.conjoon.groupware.service.youtube.FeaturePanel = Ext.extend(Ext.Panel, {
             iconCls  : 'com-conjoon-service-youtube-youtubeIcon'
         });
 
+        com.conjoon.groupware.service.youtube.FeaturePanel.superclass.initComponent.call(this);
     }
 
 });
