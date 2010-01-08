@@ -956,6 +956,69 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         return $row['folder_id'];
     }
 
+    /**
+     * Adds an individual folder hierarchy for an imap account.
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer The total number of data inserted
+     */
+    public function createFolderHierarchyForImapAccount($accountId, $userId)
+    {
+        $accountId = (int)$accountId;
+        $userId    = (int)$userId;
+
+        if ($accountId == 0 || $userId == 0) {
+            return 0;
+        }
+
+        $adapter = $this->getAdapter();
+
+        $adapter->beginTransaction();
+
+        $ids = array();
+
+        try {
+
+            // root folder
+            $parentId = $this->insert(array(
+                'name'             => 'IMAP',
+                'is_child_allowed' => 0,
+                'is_locked'        => 1,
+                'type'             => 'root',
+                'meta_info'        => 'inbox',
+                'parent_id'        => 0
+            ));
+            $ids[] = $parentId;
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersUsers.php';
+
+            $foldersUsers = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers();
+            $foldersUsers->addRelationship(
+                $ids, $userId, Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers::OWNER
+            );
+
+            $adapter->commit();
+
+        } catch (Exception $e) {
+            $adapter->rollBack();
+            return array();
+        }
+
+        // map all existing folders from the root hierarchy to the new account
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
+
+        $foldersAccountsModel = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
+
+        return $foldersAccountsModel->mapFolderIdsToAccountId($ids, $accountId);
+    }
 
     /**
      * Maps the account id for the user to the users list of folders.

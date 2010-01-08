@@ -159,7 +159,11 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             'user_name',
             'is_outbox_auth',
             'password_inbox',
-            'password_outbox'
+            'password_outbox',
+            'port_inbox',
+            'port_outbox',
+            'inbox_connection_type',
+            'outbox_connection_type'
         );
 
         $addData = array();
@@ -198,7 +202,12 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
 
         $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
-        $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
+        if ($addData['protocol'] == 'IMAP') {
+            $folderModel->createFolderHierarchyForImapAccount($id, $userId);
+        } else {
+            $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
+        }
+
 
         return $id;
     }
