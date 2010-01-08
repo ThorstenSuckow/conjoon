@@ -185,7 +185,7 @@ com.conjoon.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz.C
             new com.conjoon.groupware.util.FormIntro({
                 style     : 'margin:10px 0 5px 0;',
                 labelText : com.conjoon.Gettext.gettext("Personal data"),
-                text      : "Specify your real name and your email address here. This information will be visible to the recipients of your messages."
+                text      : com.conjoon.Gettext.gettext("Specify your real name and your email address here. This information will be visible to the recipients of your messages.")
             }),
             this.nameField,
             this.addressField
