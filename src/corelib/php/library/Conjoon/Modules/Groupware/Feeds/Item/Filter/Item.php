@@ -277,10 +277,12 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
            || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
 
             $this->_filters['title'] = array(
+                array('MyHtmlEntities'),
                 array('StripTags')
             );
 
             $this->_filters['description'] = array(
+                array('MyHtmlEntities'),
                 array('StripTags',
                     // allow all except img, a, object, script, embed etc.
                     array(
@@ -328,6 +330,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
                 }
 
                 $this->_filters['content'] = array(
+                    array('MyHtmlEntities'),
                     array('StripTags',
                         // allow all except img, object, script, embed etc.
                         $allowedTags,
