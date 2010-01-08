@@ -78,6 +78,7 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
             width           : 50,
             value           : 110,
             anchor          : '40%',
+            name            : 'portInbox',
             labelStyle      : 'width:55px;font-size:11px',
             allowBlank      : false,
             validator       : this.isPortValid.createDelegate(this)
