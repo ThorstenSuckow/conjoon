@@ -147,7 +147,8 @@ class Conjoon_Modules_Groupware_Email_Sender {
                  */
                 'auth'     => 'login',
                 'username' => $account->getUsernameOutbox(),
-                'password' => $account->getPasswordOutbox()
+                'password' => $account->getPasswordOutbox(),
+                'port'     => $account->getPortOutbox()
             );
         }
 
