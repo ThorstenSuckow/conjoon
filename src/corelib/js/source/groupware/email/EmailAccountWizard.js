@@ -79,11 +79,11 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
             values['passwordOutbox'] = '';
         }
 
-        if (values['inboxConnectionType'] != 'SSL' && values['inboxConnectionType'] != 'TSL') {
+        if (values['inboxConnectionType'] != 'SSL' && values['inboxConnectionType'] != 'TLS') {
             values['inboxConnectionType'] = null;
         }
 
-        if (values['outboxConnectionType'] != 'SSL' && values['outboxConnectionType'] != 'TSL') {
+        if (values['outboxConnectionType'] != 'SSL' && values['outboxConnectionType'] != 'TLS') {
             values['outboxConnectionType'] = null;
         }
 
@@ -358,7 +358,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
                 usernameOutbox       : values.usernameOutbox,
                 passwordOutbox       : "****",
                 outboxConnectionType : values.outboxConnectionType == 'SSL'
-                                        || values.outboxConnectionType == 'TSL'
+                                        || values.outboxConnectionType == 'TLS'
                                       ? String.format(
                                             com.conjoon.Gettext.gettext("Uses {0}"),
                                             values.outboxConnectionType
@@ -382,7 +382,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
                             ? com.conjoon.Gettext.gettext("Yes")
                             : com.conjoon.Gettext.gettext("No"),
             inboxConnectionType :  values.inboxConnectionType == 'SSL'
-                                   || values.inboxConnectionType == 'TSL'
+                                   || values.inboxConnectionType == 'TLS'
                                    ? String.format(
                                          com.conjoon.Gettext.gettext("Uses {0}"),
                                          values.inboxConnectionType

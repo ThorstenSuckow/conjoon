@@ -256,12 +256,12 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 inputValue : 'SSL'
             }),
 
-            'inboxConnectionTypeTsl' : new Radio({
+            'inboxConnectionTypeTls' : new Radio({
                 hideLabel  : true,
-                boxLabel   : 'TSL',
+                boxLabel   : 'TLS',
                 itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
                 name       : 'inboxConnectionType',
-                inputValue : 'TSL'
+                inputValue : 'TLS'
             }),
 
             'outboxConnectionTypeUnsecure' : new Radio({
@@ -282,13 +282,13 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 inputValue : 'SSL'
             }),
 
-            'outboxConnectionTypeTsl' : new Radio({
+            'outboxConnectionTypeTls' : new Radio({
                 hideLabel  : true,
-                boxLabel   : 'TSL',
+                boxLabel   : 'TLS',
                 itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
                 name       : 'outboxConnectionType',
                 disabled   : true,
-                inputValue : 'TSL'
+                inputValue : 'TLS'
             }),
 
             'serverOutbox' : new TextField({
@@ -411,7 +411,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 }}),
                 fields['inboxConnectionTypeUnsecure'],
                 fields['inboxConnectionTypeSsl'],
-                fields['inboxConnectionTypeTsl']
+                fields['inboxConnectionTypeTls']
             ]
         });
         var outgoingMailPanel = new Ext.FormPanel({
@@ -443,7 +443,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 }}),
                 fields['outboxConnectionTypeUnsecure'],
                 fields['outboxConnectionTypeSsl'],
-                fields['outboxConnectionTypeTsl']
+                fields['outboxConnectionTypeTls']
             ]
         });
         var commonSettingsPanel = new Ext.FormPanel({
@@ -977,7 +977,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             fields['passwordOutbox'].setDisabled(!checked);
             fields['outboxConnectionTypeUnsecure'].setDisabled(!checked);
             fields['outboxConnectionTypeSsl'].setDisabled(!checked);
-            fields['outboxConnectionTypeTsl'].setDisabled(!checked);
+            fields['outboxConnectionTypeTls'].setDisabled(!checked);
 
             if (!checked) {
                 fields['outboxConnectionTypeUnsecure'].setValue(true);
@@ -992,7 +992,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.mon(fields['outboxConnectionTypeSsl'], 'check', function(radio, checked) {
             this.onConfigChange();
         }, this);
-        this.mon(fields['outboxConnectionTypeTsl'], 'check', function(radio, checked) {
+        this.mon(fields['outboxConnectionTypeTls'], 'check', function(radio, checked) {
             this.onConfigChange();
         }, this);
 
@@ -1002,7 +1002,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.mon(fields['inboxConnectionTypeSsl'], 'check', function(radio, checked) {
             this.onConfigChange();
         }, this);
-        this.mon(fields['inboxConnectionTypeTsl'], 'check', function(radio, checked) {
+        this.mon(fields['inboxConnectionTypeTls'], 'check', function(radio, checked) {
             this.onConfigChange();
         }, this);
 
@@ -1533,11 +1533,11 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         fields['outboxConnectionTypeUnsecure'].suspendEvents();
         fields['outboxConnectionTypeSsl'].suspendEvents();
-        fields['outboxConnectionTypeTsl'].suspendEvents();
+        fields['outboxConnectionTypeTls'].suspendEvents();
 
         fields['inboxConnectionTypeUnsecure'].suspendEvents();
         fields['inboxConnectionTypeSsl'].suspendEvents();
-        fields['inboxConnectionTypeTsl'].suspendEvents();
+        fields['inboxConnectionTypeTls'].suspendEvents();
 
         fields['usernameOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
         fields['passwordOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
@@ -1560,16 +1560,16 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         if (data.outboxConnectionType == 'SSL') {
             fields['outboxConnectionTypeSsl'].setValue(true);
-        } else if (data.outboxConnectionType == 'TSL') {
-            fields['outboxConnectionTypeTsl'].setValue(true);
+        } else if (data.outboxConnectionType == 'TLS') {
+            fields['outboxConnectionTypeTls'].setValue(true);
         } else {
             fields['outboxConnectionTypeUnsecure'].setValue(true);
         }
 
         if (data.inboxConnectionType == 'SSL') {
             fields['inboxConnectionTypeSsl'].setValue(true);
-        } else if (data.inboxConnectionType == 'TSL') {
-            fields['inboxConnectionTypeTsl'].setValue(true);
+        } else if (data.inboxConnectionType == 'TLS') {
+            fields['inboxConnectionTypeTls'].setValue(true);
         } else {
             fields['inboxConnectionTypeUnsecure'].setValue(true);
         }
@@ -1589,15 +1589,15 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         fields['outboxConnectionTypeUnsecure'].setDisabled(!data.isOutboxAuth);
         fields['outboxConnectionTypeSsl'].setDisabled(!data.isOutboxAuth);
-        fields['outboxConnectionTypeTsl'].setDisabled(!data.isOutboxAuth);
+        fields['outboxConnectionTypeTls'].setDisabled(!data.isOutboxAuth);
 
         fields['outboxConnectionTypeUnsecure'].resumeEvents();
         fields['outboxConnectionTypeSsl'].resumeEvents();
-        fields['outboxConnectionTypeTsl'].resumeEvents();
+        fields['outboxConnectionTypeTls'].resumeEvents();
 
         fields['inboxConnectionTypeUnsecure'].resumeEvents();
         fields['inboxConnectionTypeSsl'].resumeEvents();
-        fields['inboxConnectionTypeTsl'].resumeEvents();
+        fields['inboxConnectionTypeTls'].resumeEvents();
 
         fields['isCopyLeftOnServer'].resumeEvents();
         fields['isOutboxAuth'].resumeEvents();
@@ -1651,8 +1651,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
             if (fields['outboxConnectionTypeSsl'].getValue() === true) {
                 record.set('outboxConnectionType', 'SSL');
-            } else if (fields['outboxConnectionTypeTsl'].getValue() === true) {
-                record.set('outboxConnectionType', 'TSL');
+            } else if (fields['outboxConnectionTypeTls'].getValue() === true) {
+                record.set('outboxConnectionType', 'TLS');
             } else {
                 record.set('outboxConnectionType', "");
             }
@@ -1660,8 +1660,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
         if (fields['inboxConnectionTypeSsl'].getValue() === true) {
             record.set('inboxConnectionType', 'SSL');
-        } else if (fields['inboxConnectionTypeTsl'].getValue() === true) {
-            record.set('inboxConnectionType', 'TSL');
+        } else if (fields['inboxConnectionTypeTls'].getValue() === true) {
+            record.set('inboxConnectionType', 'TLS');
         } else {
             record.set('inboxConnectionType', "");
         }

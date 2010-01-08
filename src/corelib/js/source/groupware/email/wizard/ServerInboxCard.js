@@ -31,7 +31,7 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
     portField     : null,
 
     connectionSslRadio      : null,
-    connectionTslRadio      : null,
+    connectionTlsRadio      : null,
     connectionUnsecureRadio : null,
 
     initComponent : function()
@@ -101,9 +101,9 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
             name       : 'inboxConnectionType'
         });
 
-        this.connectionTslRadio = new Ext.form.Radio({
-            boxLabel   : 'TSL',
-            inputValue : 'TSL',
+        this.connectionTlsRadio = new Ext.form.Radio({
+            boxLabel   : 'TLS',
+            inputValue : 'TLS',
             hideLabel  : true,
             itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
             name       : 'inboxConnectionType'
@@ -127,7 +127,7 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
             }}),
             this.connectionUnsecureRadio,
             this.connectionSslRadio,
-            this.connectionTslRadio
+            this.connectionTlsRadio
 
         ];
 

@@ -358,5 +358,5 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` CHANGE `update_int
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
 
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ADD `inbox_connection_type` ENUM( 'SSL', 'TSL' ) NULL AFTER `port_outbox`,
-ADD `outbox_connection_type` ENUM( 'SSL', 'TSL' ) NULL AFTER `inbox_connection_type` ;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ADD `inbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `port_outbox`,
+ADD `outbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `inbox_connection_type` ;
