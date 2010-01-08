@@ -96,6 +96,25 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $rows = $decoratedFolderModel->getFoldersAsDto($parentId, $userId);
 
+        if ($parentId === 0) {
+            $rows[0]['childCount'] = 1;
+        } else {
+
+            require_once 'Zend/Mail/Storage/Imap.php';
+
+            $mail = new Zend_Mail_Storage_Imap(
+                array(
+                    'host'     => 'imap.googlemail.com',
+                    'user'     => 'tsuckowhomberg@googlemail.com',
+                    'password' => 'contact64',
+                    'port'     => 993,
+                    'ssl'      => 'SSL'
+                )
+            );
+
+            var_dump($mail->getFolders());
+        }
+
         $this->view->success = true;
         $this->view->error   = null;
         $this->view->items   = $rows;

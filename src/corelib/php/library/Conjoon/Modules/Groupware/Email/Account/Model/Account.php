@@ -252,7 +252,9 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             'is_signature_used',
             'port_inbox',
             'port_outbox',
-            'is_copy_left_on_server'
+            'is_copy_left_on_server',
+            'inbox_connection_type',
+            'outbox_connection_type'
         );
 
         foreach ($data as $key => $value) {
