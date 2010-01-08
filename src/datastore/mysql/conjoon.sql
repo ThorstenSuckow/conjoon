@@ -355,3 +355,5 @@ CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_folders_users
 ) ENGINE = MYISAM;
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` CHANGE `update_interval` `update_interval` INT( 10 ) UNSIGNED NOT NULL DEFAULT '60000';
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
