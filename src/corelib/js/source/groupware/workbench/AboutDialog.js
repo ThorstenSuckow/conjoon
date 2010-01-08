@@ -49,7 +49,7 @@ com.conjoon.groupware.workbench.AboutDialog = function() {
                         tag  : 'div',
                         html : '<div class="info"><span class="bold">'+name+"</span><br />"+edition+" <br />"+version +
                                '<div class="about">'+
-                                 '(c) 2007-2009 <a href="http://www.conjoon.org" target="_blank">conjoon.org'+'</a><br />'+
+                                 '(c) 2007-2010 <a href="http://www.conjoon.org" target="_blank">conjoon.org'+'</a><br />'+
                                  String.format(
                                     com.conjoon.Gettext.gettext("conjoon uses libraries which are intellectual property of their respective owners.<br />Fore more information, visit <a target='_blank' href='{0}'>{0}</a>."),
                                     'http://www.conjoon.org/projects'
