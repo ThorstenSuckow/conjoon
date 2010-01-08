@@ -92,6 +92,7 @@ src/corelib/js/source/groupware/email/EmailEditorManager.js
 src/corelib/js/source/groupware/email/EmailViewBaton.js
 src/corelib/js/source/groupware/email/wizard/ServerTypeCard.js
 src/corelib/js/source/groupware/email/wizard/ServerInboxCard.js
+src/corelib/js/source/groupware/email/wizard/ServerOutboxCard.js
 src/corelib/js/source/groupware/email/EmailAccountDialog.js
 src/corelib/js/source/groupware/email/EmailAccountWizard.js
 src/corelib/js/source/groupware/email/view/DefaultViewRenderer.js
