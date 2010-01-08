@@ -40,6 +40,7 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
                                 +'</div>'
                 }]
             }),
+            new com.conjoon.groupware.email.wizard.ServerTypeCard(),
             new com.conjoon.groupware.email.EmailAccountWizardNameCard(),
             new com.conjoon.groupware.email.EmailAccountWizardserverInboxCard(),
             new com.conjoon.groupware.email.EmailAccountWizardServerOutboxCard(),
@@ -445,6 +446,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
             master : new Ext.Template(
                 '<table style="margin-top:15px;" border="0", cellspacing="2" cellpadding="2">'+
                     '<tbody>'+
+                    '<tr><td>'+com.conjoon.Gettext.gettext("Server type")+':</td><td>{protocol}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Account name")+':</td><td>{name:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Your name")+':</td><td>{userName:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Email address")+':</td><td>{address:htmlEncode}</td></tr>'+
@@ -517,6 +519,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
         }
 
         var html = ts.master.apply({
+            protocol      : values.protocol,
             name          : values.name,
             userName      : values.userName,
             address       : values.address,

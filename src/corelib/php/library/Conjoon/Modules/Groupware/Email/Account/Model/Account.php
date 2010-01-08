@@ -151,6 +151,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         $whiteList = array(
             'name',
             'address',
+            'protocol',
             'server_inbox',
             'server_outbox',
             'username_inbox',
