@@ -567,12 +567,20 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         $isCopyLeftOnServer = $account->isCopyLeftOnServer();
 
-        $mail = new $transport(array(
+        $cconf = array(
             'host'     => $account->getServerInbox(),
             'port'     => $account->getPortInbox(),
             'user'     => $account->getUsernameInbox(),
             'password' => $account->getPasswordInbox()
-        ));
+        );
+
+        $ssl = $account->getInboxConnectionType();
+
+        if ($ssl == 'SSL' || $ssl == 'TLS') {
+            $cconf['ssl'] = $ssl;
+        }
+
+        $mail = new $transport($cconf);
 
         $hasUniqueId = $mail->hasUniqueId;
 

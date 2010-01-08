@@ -147,8 +147,15 @@ class Conjoon_Modules_Groupware_Email_Sender {
                  */
                 'auth'     => 'login',
                 'username' => $account->getUsernameOutbox(),
-                'password' => $account->getPasswordOutbox()
+                'password' => $account->getPasswordOutbox(),
+                'port'     => $account->getPortOutbox()
             );
+
+            $ssl = $account->getOutboxConnectionType();
+
+            if ($ssl == 'SSL' || $ssl == 'TLS') {
+                $config['ssl'] = $ssl;
+            }
         }
 
         $transport = new Zend_Mail_Transport_Smtp($account->getServerOutbox(), $config);
