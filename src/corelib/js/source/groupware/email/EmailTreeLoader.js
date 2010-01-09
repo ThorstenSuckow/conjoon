@@ -91,6 +91,9 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
                 attr.draggable     = false;
                 attr.isTarget      = false;
                 attr.allowChildren = false;
+                // root folders always have at leas 1 sub folder
+                attr.childCount    = 1;
+                attr.pendingCount  = 0;
             break;
             case 'folder':
                 attr.iconCls = 'com-conjoon-groupware-email-EmailTree-folderIcon';
