@@ -1026,7 +1026,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $userId    = (int)$userId;
         $name      = trim((string)$name);
 
-        if ($accountId == 0 || $userId == 0 || $name = "") {
+        if ($accountId == 0 || $userId == 0 || $name == "") {
             return 0;
         }
 
