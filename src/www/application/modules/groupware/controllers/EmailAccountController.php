@@ -112,7 +112,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
         $classToCreate = 'Conjoon_Modules_Groupware_Email_Account';
 
         $this->view->success = true;
-        $this->view->error = null;
+        $this->view->error   = null;
 
         try {
             $filter->setData($_POST);
@@ -140,6 +140,18 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
 
             $this->view->account = $dto;
+
+            // read out root folder for account
+            require_once 'Conjoon/BeanContext/Decorator.php';
+            $decoratedFolderModel = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Folder_Model_Folder',
+                null, false
+            );
+            $rootId = $decoratedFolderModel->getAccountsRootOrRootFolderId($addedId, $userId);
+
+            if ($rootId != 0) {
+                $this->view->rootFolder = $decoratedFolderModel->getFolderBaseDataAsDto($rootId);
+            }
 
         } catch (Zend_Filter_Exception $e) {
             require_once 'Conjoon/Error.php';
