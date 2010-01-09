@@ -73,6 +73,61 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Returns the base root/ folder id for the specified account
+     * and the specified user, i.e. the folder with type "root".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     *
+     */
+    public function getRootFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType($accountId, $userId, 'root');
+    }
+
+    /**
+     * Returns the base accounts_root folder id for the specified account
+     * and the specified user, i.e. the folder with type "accounts_root".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     *
+     */
+    public function getAccountsRootFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType($accountId, $userId, 'accounts_root');
+    }
+
+    /**
+     * Returns the root/accounts_root folder id for the specified account
+     * and the specified user, i.e. the folder with type "root" or "accounts_root".
+     * Returns 0 if the folder could not be found
+     * If no accounts_root could be found, the method will look up a "root" marked folder.
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     *
+     */
+    public function getAccountsRootOrRootFolderId($accountId, $userId)
+    {
+        $root = $this->_getDefaultFolderIdForType($accountId, $userId, 'accounts_root');
+
+        if ($root == 0) {
+            return $this->_getDefaultFolderIdForType($accountId, $userId, 'root');
+        }
+
+        return $root;
+    }
+
+    /**
      * Returns the base sent folder id for the specified account and the specified
      * user, i.e. the folder with type "sent".
      * Returns 0 if the folder could not be found
@@ -810,7 +865,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
-     * Retruns all root folders for the user. A root folder is either a
+     * Returns all root folders for the user. A root folder is either a
      * folder that was created when an account was created, or a folder
      * that was put into public that contains only folders of the type
      * 'folder'.
@@ -1071,7 +1126,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     public function getDecoratableMethods()
     {
         return array(
-            'getFolders'
+            'getFolders',
+            'getFolderBaseData'
         );
     }
 }
