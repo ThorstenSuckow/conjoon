@@ -203,7 +203,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
         if ($addData['protocol'] == 'IMAP') {
-            $folderModel->createFolderHierarchyForImapAccount($id, $userId);
+            $folderModel->createFolderHierarchyForImapAccount($id, $userId, $addData['name']);
         } else {
             $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
         }

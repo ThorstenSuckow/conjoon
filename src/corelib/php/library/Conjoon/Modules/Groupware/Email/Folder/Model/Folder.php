@@ -1016,15 +1016,17 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      *
      * @param integer $accountId
      * @param integer $userId
+     * @param string  $name The name of the account to use as the folders name
      *
      * @return integer The total number of data inserted
      */
-    public function createFolderHierarchyForImapAccount($accountId, $userId)
+    public function createFolderHierarchyForImapAccount($accountId, $userId, $name)
     {
         $accountId = (int)$accountId;
         $userId    = (int)$userId;
+        $name      = trim((string)$name);
 
-        if ($accountId == 0 || $userId == 0) {
+        if ($accountId == 0 || $userId == 0 || $name = "") {
             return 0;
         }
 
@@ -1038,7 +1040,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
             // root folder
             $parentId = $this->insert(array(
-                'name'             => 'IMAP',
+                'name'             => $name,
                 'is_child_allowed' => 0,
                 'is_locked'        => 1,
                 'type'             => 'root',
