@@ -124,6 +124,7 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         // fetch the response values
         var responseValues = json.getResponseValues(response.responseText);
         var account        = responseValues.account;
+        var rootFolder     = responseValues.rootFolder;
         var accountStore   = com.conjoon.groupware.email.AccountStore.getInstance();
 
         var rec = com.conjoon.util.Record.convertTo(
@@ -132,6 +133,13 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         );
 
         accountStore.addSorted(rec);
+
+        if (rootFolder && rootFolder.id) {
+            Ext.ux.util.MessageBus.publish(
+                'com.conjoon.groupware.email.account.added',
+                {account : rec, rootFolder : rootFolder}
+            );
+        }
 
         this.switchDialogState(true);
         this.requestId = null;
