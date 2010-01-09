@@ -112,7 +112,12 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         });
 
         var store = com.conjoon.groupware.email.AccountStore.getInstance();
-        this.mon(store, 'add', this._onAccountStoreAdd, this);
+
+        Ext.ux.util.MessageBus.subscribe(
+            'com.conjoon.groupware.email.account.added',
+            this._onAccountAdded,
+            this
+        );
 
         /**
          * The loader responsible for loading nodes into the tree.
@@ -1237,21 +1242,63 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
     },
 
     /**
+     * Listener for the com.conjoon.groupware.email.account.added message.
      * Tries to reload this tree if no email accounts where configured
-     * on initial load. Ass soon as accounts are available, the panel will
+     * on initial load. As soon as accounts are available, the panel will
      * try to build the tree.
+     *
+     * @param {String} subject
+     * @param {Object} message
      */
-    _onAccountStoreAdd : function()
+    _onAccountAdded : function(subject, message)
     {
-        if (this.root.firstChild == null && this.rendered) {
-            this.root.reload();
+        if (!this.rendered) {
+            return;
         }
 
-        com.conjoon.groupware.email.AccountStore.getInstance().un(
-            'add',
-            this._onAccountStoreAdd,
-            this
-        );
+        if (this.root.firstChild == null) {
+            this.root.reload();
+        } else {
+
+            var childs  = this.root.childNodes;
+            var folder  = message.rootFolder;
+            var account = message.account;
+
+            // for now, only IMAP will be considered.
+            // do a check first and throw an exception, this can be removed
+            // later on when full support for multiple folder hierarchies is given
+            for (var i = 0, len = childs.length; i < len; i++) {
+                if (childs[i].id == folder.id) {
+                    throw(
+                        "com.conjoon.groupware.email.EmailTree._onAccountAdd() - "
+                        + "folder with id "+folder.id+" already in hierarchy"
+                    );
+                    return;
+                }
+            }
+
+            // check first if there are already IMAP folders, but no
+            // accounts_root
+            if (folder.type == 'accounts_root') {
+                var node = this.treeLoader.createNode(folder);
+                this.root.appendChild(node);
+                return;
+            }
+
+            // for now, only IMAP will be considered.
+            if (account.get('protocol') === 'IMAP') {
+                // append a new node!
+                var node = this.treeLoader.createNode(folder);
+                this.root.appendChild(node);
+                return;
+            }
+
+            // this should not happen
+            throw(
+                "com.conjoon.groupware.email.EmailTree._onAccountAdd() - "
+                + "could not add folder for new account"
+            );
+        }
     }
 
 
