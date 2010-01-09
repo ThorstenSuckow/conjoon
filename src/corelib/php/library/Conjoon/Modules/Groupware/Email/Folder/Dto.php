@@ -21,6 +21,7 @@ require_once 'Conjoon/Dto.php';
 class Conjoon_Modules_Groupware_Email_Folder_Dto extends Conjoon_Dto {
 
     public $id;
+    public $idForPath;
     public $name;
     public $isChildAllowed;
     public $isLocked;

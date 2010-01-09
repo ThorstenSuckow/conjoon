@@ -97,6 +97,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         this.root = new Ext.tree.AsyncTreeNode({
             id            : 'root',
+            idForPath     : 'root',
             iconCls       : 'com-conjoon-groupware-email-EmailTree-rootIcon',
             draggable     : false,
             isTarget      : false,
@@ -1269,10 +1270,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             // later on when full support for multiple folder hierarchies is given
             for (var i = 0, len = childs.length; i < len; i++) {
                 if (childs[i].id == folder.id) {
-                    throw(
-                        "com.conjoon.groupware.email.EmailTree._onAccountAdd() - "
-                        + "folder with id "+folder.id+" already in hierarchy"
-                    );
+                    // assume multiple accounts in one folder
                     return;
                 }
             }

@@ -28,6 +28,8 @@ require_once 'Conjoon/Modules/Groupware/Email/Folder/Dto.php';
  * an object with the following properties:
  *
  *  id  : The id of the folder
+ *  idForPath  : As special id from which a path can be build, needed for
+ *  imap protocol.
  *  name : the name of the folder
  *  isChildAllowed : wether or not this folder may have child folders
  *  isLocked : wether or not this folder is locked for editing
@@ -49,6 +51,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Folder/Dto.php';
 class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Serializable {
 
     private $id;
+    private $idForPath;
     private $name;
     private $isChildAllowed;
     private $isLocked;
@@ -66,6 +69,7 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
 // -------- accessors
 
     public function getId(){return $this->id;}
+    public function getIdForPath(){return $this->idForPath;}
     public function getName(){return $this->name;}
     public function isChildAllowed(){return $this->isChildAllowed;}
     public function isLocked(){return $this->isLocked;}
@@ -75,6 +79,7 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
 
 
     public function setId($id){$this->id = $id;}
+    public function setIdForPath($idForPath){$this->idForPath = $idForPath;}
     public function setName($name){$this->name = $name;}
     public function setChildAllowed($isChildAllowed){$this->isChildAllowed = $isChildAllowed;}
     public function setLocked($isLocked){$this->isLocked = $isLocked;}
@@ -145,6 +150,7 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
     {
         return array(
             'id'             => $this->id,
+            'idForPath'      => $this->idForPath,
             'name'           => $this->name,
             'isChildAllowed' => $this->isChildAllowed,
             'isLocked'       => $this->isLocked,

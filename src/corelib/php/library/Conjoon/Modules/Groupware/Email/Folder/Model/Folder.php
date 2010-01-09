@@ -839,6 +839,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                ->from(array('folders' => self::getTablePrefix() . 'groupware_email_folders'), array(
                  'name',
                  'id',
+                 'id AS id_for_path',
                  'is_child_allowed',
                  'is_locked',
                  'type'
@@ -962,7 +963,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
         // check first if the folder may get deleted
         $select = $this->select()
-                  ->from($this)
+                  ->from($this, array('*', 'id_for_path' => 'id'))
                   ->where($where);
 
         $row = $this->fetchRow($select);

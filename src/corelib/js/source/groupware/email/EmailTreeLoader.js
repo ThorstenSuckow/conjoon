@@ -200,7 +200,7 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             );
         }else{
             o = com.conjoon.groupware.email.EmailTreeLoader.superclass.getParams.call(this, node);
-            o.path = node.getPath('id');
+            o.path = node.getPath('idForPath');
             return o;
         }
     },
