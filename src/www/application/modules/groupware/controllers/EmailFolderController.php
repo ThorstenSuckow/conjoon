@@ -77,11 +77,27 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
      */
     public function getFolderAction()
     {
-        $parentId = trim(strtolower($_POST['node']));
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
-        if ($parentId !== 'root') {
-            $parentId = (int)$parentId;
-        } else {
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        $path   = $_POST['path'];
+        $userId = $this->_helper->registryAccess->getUserId();
+
+        $folders = $facade->getFoldersForPathAndUserId($path, $userId);
+
+        $this->view->success = true;
+        $this->view->error   = null;
+        $this->view->items   = $folders;
+        return;
+
+        var_dump($folders);
+        die();
+
+        if ($parentId == -1) {
             $parentId = 0;
         }
 
@@ -96,7 +112,7 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $rows = $decoratedFolderModel->getFoldersAsDto($parentId, $userId);
 
-        if ($parentId === 0) {
+        /*if ($parentId === 0) {
             $rows[0]['childCount'] = 1;
         } else {
 
@@ -113,7 +129,7 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
             );
 
             var_dump($mail->getFolders());
-        }
+        }*/
 
         $this->view->success = true;
         $this->view->error   = null;
