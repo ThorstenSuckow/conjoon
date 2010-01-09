@@ -55,7 +55,6 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'address',
                 'replyAddress',
                 'isStandard',
-                'protocol',
                 'serverInbox',
                 'serverOutbox',
                 'usernameInbox',
