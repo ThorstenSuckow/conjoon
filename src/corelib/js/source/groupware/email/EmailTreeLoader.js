@@ -186,24 +186,26 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
         }
     },
 
-
-    /*requestData : function(node, callback)
+    /**
+     * Overrides parent implementation by adding the path to the
+     * params list.
+     *
+     */
+    getParams: function(node)
     {
-        com.conjoon.groupware.email.EmailTreeLoader.superclass.requestData.call(this, node, callback);
-
-        if (this.transId) {
-            var transId = this.transId;
-            var f = function(){
-                if (this.transId && transId.tId == this.transId.tId) {
-                   // this.node.expand(false, false, callback)
-                    console.log("ABORT FROM TREELOADER");
-                    this.abort();
-                }
-            }.createDelegate(this);
-            window.setTimeout(f, 15000);
+        if(this.directFn){
+            throw(
+                "com.conjoon.groupware.email.EmailTreeLoader.getParams() - "
+                +"directFn not supported yet"
+            );
+        }else{
+            o = com.conjoon.groupware.email.EmailTreeLoader.superclass.getParams.call(this, node);
+            o.path = node.getPath('id');
+            return o;
         }
+    },
 
-    },*/
+
 
     onBeforeLoad : function(treeLoader, node, callback)
     {
