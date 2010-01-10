@@ -28,5 +28,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Dto extends Conjoon_Dto {
     public $type;
     public $childCount;
     public $pendingCount;
+    public $isSelectable;
 
 }

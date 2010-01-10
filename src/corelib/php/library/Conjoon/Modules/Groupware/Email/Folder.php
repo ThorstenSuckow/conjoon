@@ -58,6 +58,7 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
     private $type;
     private $childCount;
     private $pendingCount;
+    private $isSelectable;
 
     /**
      * Constructor.
@@ -76,6 +77,7 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
     public function getType(){return $this->type;}
     public function getChildCount(){return $this->childCount;}
     public function getPendingCount(){return $this->pendingCount;}
+    public function isSelectable(){return $this->isSelectable;}
 
 
     public function setId($id){$this->id = $id;}
@@ -86,6 +88,7 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
     public function setType($type){$this->type = $type;}
     public function setChildCount($childCount){$this->childCount = $childCount;}
     public function setPendingCount($pendingCount){$this->pendingCount = $pendingCount;}
+    public function setSelectable($isSelectable){$this->isSelectable = $isSelectable;}
 
 
 
@@ -156,7 +159,8 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
             'isLocked'       => $this->isLocked,
             'type'           => $this->type,
             'childCount'     => $this->childCount,
-            'pendingCount'   => $this->pendingCount
+            'pendingCount'   => $this->pendingCount,
+            'isSelectable'   => $this->isSelectable
         );
     }
 

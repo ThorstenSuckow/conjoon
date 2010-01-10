@@ -840,6 +840,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                  'name',
                  'id',
                  'id AS id_for_path',
+                 '(1) AS is_selectable',
                  'is_child_allowed',
                  'is_locked',
                  'type'
@@ -963,7 +964,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
         // check first if the folder may get deleted
         $select = $this->select()
-                  ->from($this, array('*', 'id_for_path' => 'id'))
+                  ->from($this, array('*', 'id AS id_for_path', '(1) as is_selectable'))
                   ->where($where);
 
         $row = $this->fetchRow($select);

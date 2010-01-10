@@ -212,6 +212,7 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
         $tmpFolder->isLocked       = 0;
         //hasChildren doesnt seem to work
         $tmpFolder->childCount     = $folder->isLeaf() ? 0 : 1;
+        $tmpFolder->isSelectable   = $folder->isSelectable() ? 1 : 0;
         $tmpFolder->pendingCount   = 0;
 
         // check whether we adjust properties based on standard names

@@ -79,7 +79,8 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             pendingCount  : parseInt(attr.pendingCount),
             childCount    : parseInt(attr.childCount),
             isLocked      : parseInt(attr.isLocked) ? true : false,
-            text          : attr.name
+            text          : attr.name,
+            isSelectable  : parseInt(attr.isSelectable) ? true : false
         });
 
         delete attr.name;
