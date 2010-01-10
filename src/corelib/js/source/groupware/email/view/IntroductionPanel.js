@@ -335,7 +335,9 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
             return;
         }
 
-        if (node.attributes.type != 'accounts_root') {
+        var attrType = node.attributes.type;
+
+        if (attrType != 'accounts_root' && attrType != 'root') {
             this.lastClkNode = null;
             return;
         }
