@@ -14,11 +14,6 @@
  */
 
 /**
- * @see Conjoon_Log
- */
-require_once 'Conjoon/Log.php';
-
-/**
  *
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
@@ -49,6 +44,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * @var Conjoon_BeanContext_Decorator $_accountDecorator
      */
     private $_accountDecorator = null;
+
 
 
     /**
@@ -203,27 +199,37 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     public function getImapFoldersForPath(Conjoon_Modules_Groupware_Email_Account_Dto $account, $path = "")
     {
         /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        $delim = Conjoon_Modules_Groupware_Email_ImapHelper::getFolderDelimiterForImapAccount(
+            $account
+        );
+
+        if ($path == "/" || $path == $delim) {
+            $path = null;
+        } else {
+            $path = ltrim(str_replace('/', $delim, $path), $delim);
+        }
+
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+            $account
+        );
+
+        /**
          * @see Zend_Mail_Storage_Imap
          */
         require_once 'Zend/Mail/Storage/Imap.php';
 
-        $config = array(
-            'user'     => $account->usernameInbox,
-            'host'     => $account->serverInbox,
-            'password' => $account->passwordInbox,
-            'port'     => $account->portInbox
-        );
+        $imap = new Zend_Mail_Storage_Imap($protocol);
 
-        $cType = $account->inboxConnectionType;
+        $isRootLevel = false;
 
-        if ($cType == 'SSL' || $cType == 'TLS') {
-            $config['ssl'] = $cType;
-        }
-
-        $imap = new Zend_Mail_Storage_Imap($config);
-
-        if ($path == "" || $path == "/") {
-            $iFolders = $imap->getFolders($path);
+        if (!$path) {
+            $iFolders    = $imap->getFolders();
+            $isRootLevel = true;
         } else {
             $iFolders = $imap->getFolders($path)->getChildren();
         }
@@ -231,31 +237,24 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         $folders = array();
 
         /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Dto
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
          */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Dto.php';
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
         foreach  ($iFolders as $localName => $iFold) {
-
-            $path = explode('/', $iFold->getGlobalName());
+            $path = explode($delim, $iFold->getGlobalName());
             $path = $path[count($path)-1];
 
-            $tmpFolder = new Conjoon_Modules_Groupware_Email_Folder_Dto();
-            $tmpFolder->id             = $account->id.'_'.$iFold->getGlobalName();
-            $tmpFolder->idForPath      = $path;
-            $tmpFolder->name           = $iFold->getLocalName();
-            $tmpFolder->isChildAllowed = $iFold->isSelectable();
-            $tmpFolder->isLocked       = !$iFold->isSelectable();
-            $tmpFolder->type           = 'folder';
-            //hasChildren doesnt seem to work
-            $tmpFolder->childCount     = $iFold->isLeaf() ? 0 : 1;
-            $tmpFolder->pendingCount   = 0;
-
-            $folders[] = $tmpFolder;
+            $folders[] = Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
+                $iFold, $isRootLevel, array(
+                'id'        => $account->id.'_'.$iFold->getGlobalName(),
+                'idForPath' => $path
+            ));
         }
 
         return $folders;
     }
+
 
 // -------- api
 
