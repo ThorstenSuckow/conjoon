@@ -321,6 +321,11 @@
       </then>
      </if>
      <copy todir="./build/htdocs" includeemptydirs="true">
+       <fileset dir="./">
+        <include name="INSTALL.txt" />
+        <include name="CHANGELOG.txt" />
+        <include name="LICENSE.txt" />
+       </fileset>
        <fileset dir="./src/www/htdocs">
          <exclude name="**/.svn" />
          <!--exclude name="**/README.txt" />
