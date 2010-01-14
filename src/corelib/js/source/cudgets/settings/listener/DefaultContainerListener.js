@@ -346,7 +346,7 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
     {
         var prop = action == Ext.data.Api.actions.destroy
                              ? 'removed'
-                               : action == Ext.data.Api.actions.destroy
+                               : action == Ext.data.Api.actions.update
                                ? 'updated'
                                : null;
 
@@ -425,9 +425,7 @@ com.conjoon.cudgets.settings.listener.DefaultContainerListener.prototype = {
         } else if (prop == 'updated') {
             var upd = result.updated;
             for (var i = 0, len = upd.length; i < len; i++) {
-                this.settingsContainer.storeSync.syncToOrgStoreForId(
-                    upd[i]
-                );
+                this.settingsContainer.storeSync.syncToOrgStoreForId(upd[i]);
             }
         }
 
