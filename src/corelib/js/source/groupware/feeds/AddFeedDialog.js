@@ -591,6 +591,8 @@ com.conjoon.groupware.feeds.AddFeedDialog = Ext.extend(Ext.Window, {
      */
     onFeedFailure : function(response, parameters)
     {
+        this.requestId = null;
+
         this.loadMask.hide();
 
         com.conjoon.groupware.ResponseInspector.handleFailure(response);
