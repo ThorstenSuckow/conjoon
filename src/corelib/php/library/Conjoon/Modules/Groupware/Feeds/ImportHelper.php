@@ -145,7 +145,12 @@ class Conjoon_Modules_Groupware_Feeds_ImportHelper {
         $itemData['guid'] = $item->getId();
 
         // pubDate
-        $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
+        if (!$item->getDateModified()) {
+            // workaround for rss without date
+            $itemData['pubDate'] = time();
+        } else {
+            $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
+        }
 
         return $itemData;
     }
