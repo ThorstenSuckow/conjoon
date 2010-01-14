@@ -107,6 +107,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 autoScroll : false
             });
 
+            masterPanel.on('deactivate', onDeactivatePanel, emailEditor);
+
             subjectField = form.subjectField;
 
             var lConfig = {
@@ -194,7 +196,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         var emailEditor = com.conjoon.groupware.email.EmailEditorManager;
 
-        panel.on('deactivate', onDeactivatePanel, emailEditor);
         panel.on('render',     onActivatePanel,   emailEditor);
         panel.on('activate',   onActivatePanel,   emailEditor);
         panel.on('destroy',    onDestroyPanel,    emailEditor);
@@ -1084,6 +1085,11 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 // ----------------------------Panel listeners----------------------------------
     var onDeactivatePanel = function(panel)
     {
+        if (!activePanel) {
+            return;
+        }
+        panel = activePanel;
+
         //htmlEditor.un('push', onMessageEdit, com.conjoon.groupware.email.EmailEditorManager);
         htmlEditor.un('sync', onMessageEdit, com.conjoon.groupware.email.EmailEditorManager);
 
@@ -1129,6 +1135,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var onDestroyPanel = function(panel)
     {
+        if (activePanel && activePanel.id === panel.id) {
+            activePanel = null;
+        }
+
         formValues[panel.id] = null;
         delete formValues[panel.id];
 
