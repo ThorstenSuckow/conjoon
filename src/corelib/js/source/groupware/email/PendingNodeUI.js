@@ -100,8 +100,18 @@ Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
 
         this.textNode.innerHTML = Ext.util.Format.htmlEncode(a.text);
         var type = a.type;
+
+        var cls = ""
+
         if (a.pendingCount > 0 && (type != 'draft' && type != 'outbox')) {
-            Ext.fly(this.anchor).addClass('com-conjoon-attr-fontWeight-bold');
+            cls = 'com-conjoon-attr-fontWeight-bold';
+        }
+        if (!a.isSelectable) {
+            cls = 'notSelectable';
+        }
+
+        if (cls != "") {
+            Ext.fly(this.anchor).addClass(cls);
         }
     },
 
