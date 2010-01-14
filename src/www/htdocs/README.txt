@@ -1,3 +1,35 @@
++------------------------------------------------------------------------------+
+|                               conjoon                                        |
++------------------------------------------------------------------------------+
+|                                                                              |
+| Project home:                                                                |
+| =============                                                                |
+| http://www.conjoon.org                                                       |
+|                                                                              |
+| Wiki:                                                                        |
+| =====                                                                        |
+| http://wiki.conjoon.org                                                      |
+|                                                                              |
+| Blog:                                                                        |
+| =====                                                                        |
+| http://www.conjoon.org/blog                                                  |
+|                                                                              |
+| License:                                                                     |
+| ========                                                                     |
+| http://www.conjoon.org/about/license                                         |
+|                                                                              |
+|                                                                              |
+| Author:                                                                      |
+| -------                                                                      |
+| Thorsten Suckow-Homberg <ts@siteartwork.de> (<tsuckow@conjoon.org)           |
+|                                                                              |
+| Blog:                                                                        |
+| -------------------------                                                    |
+| http://www.siteartwork.de                                                    |
+|                                                                              |
++==============================================================================+
+
+
 NOTE:
 =====
 Call /install/index.php when installing or updating conjoon!
