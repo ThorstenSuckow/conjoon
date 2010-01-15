@@ -23,7 +23,7 @@ com.conjoon.groupware.feeds.FeedOptionsDialog = Ext.extend(Ext.Window, {
     SAVING          : 1,
 
     msgLoading  : com.conjoon.Gettext.gettext("Loading feed configurations..."),
-    msgSaving   : com.conjoon.Gettext.gettext("Saving configurationen..."),
+    msgSaving   : com.conjoon.Gettext.gettext("Saving configuration..."),
 
     /**
      * This array holds all records that where marked as deleted. Instead of
