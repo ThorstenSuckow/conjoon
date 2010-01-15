@@ -361,4 +361,44 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
         $this->_validators['savedTimestamp']['default'] = time();
     }
 
+    public function getProcessedData()
+    {
+        $data = parent::getProcessedData();
+
+        if ($this->_context == self::CONTEXT_RESPONSE
+            || $this->_context == self::CONTEXT_ITEM_RESPONSE
+            || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
+
+            /**
+             * @see Conjoon_Filter_ExtractHost
+             */
+            require_once 'Conjoon/Filter/ExtractHost.php';
+
+            $hostFilter = new Conjoon_Filter_ExtractHost();
+
+            $host = $hostFilter->filter($data['link']);
+
+            /**
+             * @see Conjoon_Filter_SanitizeRelativeUrls
+             */
+            require_once 'Conjoon/Filter/SanitizeRelativeUrls.php';
+
+            $sanitizeUrls = new Conjoon_Filter_SanitizeRelativeUrls(
+                $host,
+                array('/index/javascript')
+            );
+
+            $data['description'] = $sanitizeUrls->filter($data['description']);
+
+            if ($this->_context != self::CONTEXT_RESPONSE) {
+                $data['content'] = $sanitizeUrls->filter($data['content']);
+            }
+
+        }
+
+
+        return $data;
+
+    }
+
 }
