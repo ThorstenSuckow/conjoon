@@ -1,1 +1,31 @@
-﻿
+﻿2010-01-15 0.1RC2
+=================
+Notable changes:
+
+[Email module - backend]
+ - fixed an issue where protocol would get overwritten on account update
+actions
+ - fixed: sending emails would not consider the configured port for the outgoing
+mail server
+
+[Email module - client]
+ - fixed a critical issue where the state of a panel would not be saved when
+deactivating this panel (closes #369)
+
+[Security]
+ - fixed a possible security hole that could occur if relative links are used
+in feed items (closes #371)
+
+[Feeds module - backend]
+ - fixed an issue that would break importing/adding feeds when a call to
+"getLastDateModified()" from Zend_Feed_Reader on the specific resource would
+return NULL (closes #370)
+
+[Feeds module - client]
+ - fixed an issue where the dialog would not be closable after an error occured
+on the server during adding a feed (see #370)
+
+[Twitter module - client]
+ - fixed an issue where the local Twitter account store would not be updated
+with the most recent values after data has been successfully submitted to the
+server (closes #361)
