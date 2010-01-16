@@ -120,6 +120,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         }
 
         if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+
             // pop account mapped to folder
             $result = $this->_getFolderModel()->renameFolder(
                 $pathInfo['nodeId'], $name
@@ -129,7 +130,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
                 return false;
             }
 
-            $folderDto = $this->getFolderBaseDataForIdAndUserId($pathInfo['nodeId'], $userId);
+            $folderDto = $this->getLocalFolderForIdAndUserId($pathInfo['nodeId'], $userId);
 
             if ($folderDto == null) {
                 return false;
@@ -221,8 +222,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     /**
      * Returns a Conjoon_Modules_Groupware_Email_Folder_Dto for the
      * given folder and userId. This queries the database and does not
-     * consider IMAP accaounts! This function does not query pending items,
-     * and returns a Dto with only the base data.
+     * consider IMAP accaounts!
      *
      * @param integer $folderId
      * @param integer $userId
@@ -231,7 +231,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      *
      * @throws InvalidArgumentException
      */
-    public function getFolderBaseDataForIdAndUserId($folderId, $userId)
+    public function getLocalFolderForIdAndUserId($folderId, $userId)
     {
         $folderId = (int)$folderId;
         $userId   = (int)$userId;
@@ -248,7 +248,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             );
         }
 
-        $folder = $this->_getFolderDecorator()->getFolderBaseDataAsDto(
+        $folder = $this->_getFolderDecorator()->getFolderForIdAsDto(
             $folderId, $userId
         );
 
