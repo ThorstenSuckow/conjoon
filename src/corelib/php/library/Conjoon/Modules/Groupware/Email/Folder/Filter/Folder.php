@@ -41,7 +41,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
     protected $_presence = array(
         self::CONTEXT_RENAME => array(
             'id',
-            'name'
+            'name',
+            'parentId',
+            'path'
         ),
         self::CONTEXT_CREATE => array(
             'parentId',
@@ -63,24 +65,30 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
          ),
         'parentId' => array(
             'Int'
-         ),
+        ),
         'name' => array(
             'StringTrim'
-         )
+        ),
+        'path' => array(
+            'StringTrim'
+        )
     );
 
     protected $_validators = array(
         'id' => array(
             'allowEmpty' => false,
             array('GreaterThan', 0)
-         ),
+        ),
         'parentId' => array(
             'allowEmpty' => false,
             array('GreaterThan', 0)
-         ),
+        ),
         'name' => array(
             'allowEmpty' => false
-         )
+        ),
+        'path' => array(
+            'allowEmpty' => false
+        )
     );
 
     protected function _init()

@@ -158,6 +158,17 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
+            case 'Groupware_EmailFolderController::rename.folder':
+                /**
+                 * @see Conjoon_Modules_Groupware/Email/Folder/Filter/Folder.php'
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
+                    array(),
+                    Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_RENAME
+                );
+            break;
+
         }
 
         return $this->_filters[$key];

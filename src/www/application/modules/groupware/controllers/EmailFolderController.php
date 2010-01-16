@@ -41,6 +41,9 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
                        ->addActionContext('move.folder',   self::CONTEXT_JSON)
                        ->addActionContext('delete.folder', self::CONTEXT_JSON)
                        ->initContext();
+
+        $this->_helper->filterRequestData()
+                      ->registerFilter('Groupware_EmailFolderController::rename.folder');
     }
 
     /**
@@ -92,48 +95,6 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
         $this->view->success = true;
         $this->view->error   = null;
         $this->view->items   = $folders;
-        return;
-
-        var_dump($folders);
-        die();
-
-        if ($parentId == -1) {
-            $parentId = 0;
-        }
-
-        require_once 'Conjoon/BeanContext/Decorator.php';
-        $decoratedFolderModel = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Folder_Model_Folder'
-        );
-
-        require_once 'Conjoon/Keys.php';
-        $user   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
-        $userId = $user->getId();
-
-        $rows = $decoratedFolderModel->getFoldersAsDto($parentId, $userId);
-
-        /*if ($parentId === 0) {
-            $rows[0]['childCount'] = 1;
-        } else {
-
-            require_once 'Zend/Mail/Storage/Imap.php';
-
-            $mail = new Zend_Mail_Storage_Imap(
-                array(
-                    'host'     => 'imap.googlemail.com',
-                    'user'     => 'tsuckowhomberg@googlemail.com',
-                    'password' => 'contact64',
-                    'port'     => 993,
-                    'ssl'      => 'SSL'
-                )
-            );
-
-            var_dump($mail->getFolders());
-        }*/
-
-        $this->view->success = true;
-        $this->view->error   = null;
-        $this->view->items   = $rows;
     }
 
     /**
@@ -296,45 +257,58 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
      * Post vars:
      * id       : the id of the folder that gets renamed
      * name     : the new name of the node
+     * parentId : the id of the current parent folder
+     * path     : the path of this node in the tree. This is relevant for
+     * IMAP mailboxes which get renamed
      */
     public function renameFolderAction()
     {
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-            $_POST,
-            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_RENAME
-        );
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
-        $filteredData = array();
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        $path   = $this->_request->getParam('path');
+        $name   = $this->_request->getParam('name');
+        $userId = $this->_helper->registryAccess->getUserId();
+
         try {
-            $filteredData = $filter->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
+            $folder = $facade->renameFolderForPathAndUserId($name, $path, $userId);
+
+            if ($folder === false) {
+                /**
+                 * @see Conjoon_Error_Factory
+                 */
+                require_once 'Conjoon/Error/Factory.php';
+
+                $error = Conjoon_Error_Factory::createError(
+                    "Could not rename the specified folder.",
+                    Conjoon_Error::LEVEL_WARNING
+                )->getDto();
+
+                $this->view->success = false;
+                $this->view->error   = $error;
+                return;
+            }
+
+        } catch (Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
             require_once 'Conjoon/Error.php';
-            $error = Conjoon_Error::fromFilter($filter, $e);
-            $this->view->success = false;
-            $this->view->error   = $error->getDto();
+
+            $this->view->success = true;
+            $this->view->error   = Conjoon_Error::fromException($e)->getDto();
+
             return;
         }
 
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
-
-        $ret = $folderModel->renameFolder($filteredData['id'], $filteredData['name']);
-
-        if ($ret === 0) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();
-            $error->title   = 'Error';
-            $error->level   = Conjoon_Error::LEVEL_WARNING;
-            $error->message = 'Could not rename the specified folder.';
-            $this->view->success = false;
-            $this->view->error   = $error;
-            return;
-        }
 
         $this->view->success = true;
         $this->view->error   = null;
+        $this->view->folder  = $folder;
     }
 
 }

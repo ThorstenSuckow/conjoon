@@ -378,7 +378,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 params = {
                     parentId : nodeConfig.parent,
                     id       : nodeConfig.child.id,
-                    name     : nodeConfig.child.value
+                    name     : nodeConfig.child.value,
+                    path     : node.getPath('idForPath')
                 };
                 successFn = this.onNodeEditSuccess;
             break;
@@ -742,7 +743,11 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return;
         }
 
-        this.resetState(parameters.params.id, false);
+        var values = json.getResponseValues(response.responseText);
+
+        this.resetState(
+            parameters.params.id, false, values.folder
+        );
     },
 
     /**
@@ -772,7 +777,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * Resets the state of a node after successfull/ failed edit/add.
      *
      */
-    resetState : function(nodeId, failure, newId)
+    resetState : function(nodeId, failure, newId, newIdForPath)
     {
         var mode     = this.editingNodesStorage[nodeId].mode;
         var parentId = this.editingNodesStorage[nodeId].parent;
@@ -803,6 +808,32 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     node.suspendEvents();
                     node.setText(this.editingNodesStorage[nodeId].startValue);
                     node.resumeEvents();
+                } else {
+                    if (Ext.isObject(newId)) {
+                        var folder = newId;
+
+                        if (nodeId != folder.id) {
+                            Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : folder.id});
+                            Ext.fly(node.getUI().elNode).set({'id'               : folder.id});
+                            node.id = folder.id;
+                            node.attributes.idForPath = folder.idForPath;
+                            var tmp = this.nodeHash[nodeId];
+                            this.nodeHash[folder.id] = tmp;
+                            delete this.nodeHash[nodeId];
+
+                            var oldRec = this.pendingItemStore.getById(nodeId);
+
+                            if (oldRec) {
+                                this.pendingItemStore.remove(oldRec);
+                            }
+
+                            this.pendingItemStore.add(
+                                new com.conjoon.groupware.email.PendingNodeItemRecord({
+                                    pending : folder.pendingCount
+                                }, folder.id)
+                            );
+                        }
+                    }
                 }
             break;
 
