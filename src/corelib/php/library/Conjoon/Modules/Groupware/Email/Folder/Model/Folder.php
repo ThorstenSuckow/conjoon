@@ -989,7 +989,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
             return $row;
         } else {
             $select = $select->where(
-                'folders.parent_id = ?', $parentId
+                'folders.parent_id = ?', $id
             );
             return $adapter->fetchAll($select);
         }
