@@ -916,6 +916,49 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
             return $this->getRootFolders($userId);
         }
 
+        return $this->_getFolders($parentId, $userId, true);
+    }
+
+    /**
+     * Returns a single folder with all nedded information, including
+     * pending count.
+     *
+     * @param integer $id The id of the folder to fetch.
+     * @param integer $userId The id of the user to fetch this folder for.
+     *
+     * @return Zend_Db_Table_Row
+     */
+    public function getFolderForId($id, $userId)
+    {
+        $userId = (int)$userId;
+        $id     = (int)$id;
+
+        if ($userId <= 0 || $id < 0) {
+            return array();
+        }
+
+        if ($id == 0) {
+            return $this->getRootFolders($userId);
+        }
+
+        return $this->_getFolders($id, $userId, false);
+    }
+
+    /**
+     * Helper for fetching a single folder or child folders froma given
+     * parentId.
+     *
+     * @param integer $id eitehr the id of the folder to fetch, or the parent
+     * id of the folder to fetch the children for. if $isParentId is set to true,
+     * child folders for this id will be returned.
+     * @param integer $userId
+     * @param boolean $isParentId Whether the specified id is the id of a folder
+     * to fetch child folders for
+     *
+     * @return mixed
+     */
+    private function _getFolders($id, $userId, $isParentId = false)
+    {
         $adapter = $this->getAdapter();
         $select  = self::getFolderBaseQuery($userId)
                    ->joinLeft(array(
@@ -935,12 +978,21 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                     ' AND ' .
                     $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
                     array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")
-                   )
-                   ->where('folders.parent_id = ?', $parentId);
+                   );
 
-        $rows = $adapter->fetchAll($select);
+        if ($isParentId === false) {
+            $select = $select->where(
+                'folders.id = ?', $id
+            );
+            return $adapter->fetchRow($select);
 
-        return $rows;
+            return $row;
+        } else {
+            $select = $select->where(
+                'folders.parent_id = ?', $parentId
+            );
+            return $adapter->fetchAll($select);
+        }
     }
 
     /**
@@ -1130,6 +1182,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     public function getDecoratableMethods()
     {
         return array(
+            'getFolderForId',
             'getFolders',
             'getFolderBaseData'
         );
