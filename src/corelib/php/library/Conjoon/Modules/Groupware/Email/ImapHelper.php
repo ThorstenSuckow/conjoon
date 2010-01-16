@@ -177,8 +177,8 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
      * @param boolean $lookupStandardNames Whether standard names like "INBOX"
      * and trash should be looked up and addiotnal properties adjusted for them.
      * @param array $config A preset set of config properties which are used
-     * for the properties of the created FolderDto. By now, only the id and the
-     * idForPath property is being considered.
+     * for the properties of the created FolderDto. By now, only the id, the
+     * idForPath and the pendingCount property  are considered.
      *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
      */
@@ -206,6 +206,10 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
             $tmpFolder->idForPath = $folder->getGlobalName();
         }
 
+        if (isset($config['pendingCount'])) {
+            $tmpFolder->pendingCount = $config['pendingCount'];
+        }
+
         $tmpFolder->type           = 'folder';
         $tmpFolder->name           = $folder->getLocalName();
         $tmpFolder->isChildAllowed = 1;
@@ -213,7 +217,6 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
         //hasChildren doesnt seem to work
         $tmpFolder->childCount     = $folder->isLeaf() ? 0 : 1;
         $tmpFolder->isSelectable   = $folder->isSelectable() ? 1 : 0;
-        $tmpFolder->pendingCount   = 0;
 
         // check whether we adjust properties based on standard names
         if ($lookupStandardNames) {

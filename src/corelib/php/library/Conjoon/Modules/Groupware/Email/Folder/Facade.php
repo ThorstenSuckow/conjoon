@@ -164,27 +164,15 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
              */
             require_once 'Zend/Mail/Storage/Imap.php';
 
-            $delim = Conjoon_Modules_Groupware_Email_ImapHelper::getFolderDelimiterForImapAccount(
-                $account
-            );
-
             $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
                 $account
             );
 
             $imap = new Zend_Mail_Storage_Imap($protocol);
-
             $iFolders = $imap->getFolders($result);
 
             foreach  ($iFolders as $localName => $iFold) {
-                $path = explode($delim, $iFold->getGlobalName());
-                $path = $path[count($path)-1];
-
-                return Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
-                    $iFold, false, array(
-                    'id'        => $account->id.'_'.$iFold->getGlobalName(),
-                    'idForPath' => $path
-                ));
+                return $this->_transformImapFolder($iFold, $account, $protocol, false);
             }
         }
 
@@ -538,14 +526,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
         foreach  ($iFolders as $localName => $iFold) {
-            $path = explode($delim, $iFold->getGlobalName());
-            $path = $path[count($path)-1];
-
-            $folders[] = Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
-                $iFold, $isRootLevel, array(
-                'id'        => $account->id.'_'.$iFold->getGlobalName(),
-                'idForPath' => $path
-            ));
+            $folders[] = $this->_transformImapFolder(
+                $iFold, $account, $protocol, $isRootLevel
+            );
         }
 
         return $folders;
@@ -553,6 +536,58 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
 
 // -------- api
+
+    /**
+     * Gathers all needed information to tranform an imap folder to a
+     * Conjoon_Modules_Groupware_Email_Folder_Dto obejct.
+     *
+     * @param Zend_Mail_Storage_Folder $folder
+     * @param Conjoon_Modules_Groupware_Email_Account_Dto $account
+     * @param Zend_Mail_Protocol_Imap $protocol
+     * @param boolean $isRootLevel Whether the folder is on the first level of
+     * the mailbox hierarchy
+     *
+     * @return Conjoon_Modules_Groupware_Email_Folder_Dto
+     */
+    private function _transformImapFolder(
+        Zend_Mail_Storage_Folder $folder,
+        Conjoon_Modules_Groupware_Email_Account_Dto $account,
+        Zend_Mail_Protocol_Imap $protocol,
+        $isRootLevel = false
+    )
+    {
+            $delim = Conjoon_Modules_Groupware_Email_ImapHelper::
+                     getFolderDelimiterForImapAccount($account);
+
+            $globalName = $folder->getGlobalName();
+            $path = explode($delim, $globalName);
+            $path = $path[count($path)-1];
+
+            $pendingCount = 0;
+
+            if ($folder->isSelectable()) {
+                try{
+                    $protocol->select($globalName);
+                    $res = $protocol->requestAndResponse('SEARCH', array('UNSEEN'));
+                    if (is_array($res)) {
+                        $res = $res[0];
+                        if ($res[0] === 'SEARCH') {
+                            array_shift($res);
+                        }
+                        $pendingCount = count($res);
+                    }
+                } catch (Exception $e) {
+                    // ignore
+                }
+            }
+
+            return Conjoon_Modules_Groupware_Email_ImapHelper::transformToFolderDto(
+                $folder, $isRootLevel, array(
+                'id'           => $account->id.'_'.$globalName,
+                'idForPath'    => $path,
+                'pendingCount' => $pendingCount
+            ));
+    }
 
     /**
      * Function extracts information from a given path.
