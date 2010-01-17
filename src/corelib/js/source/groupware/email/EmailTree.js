@@ -392,7 +392,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     // this property is actually needed if we need to
                     // restore a previously state, so do not remove it!
                     id       : nodeConfig.child.id,
-                    name     : nodeConfig.child.value
+                    name     : nodeConfig.child.value,
+                    path     : node.getPath('idForPath')
                 };
                 successFn = this.onNodeAddSuccess;
             break;
@@ -785,14 +786,14 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         var values = json.getResponseValues(responseText);
 
-        this.resetState(parameters.params.id, false, values.id);
+        this.resetState(parameters.params.id, false, values.folder);
     },
 
     /**
      * Resets the state of a node after successfull/ failed edit/add.
      *
      */
-    resetState : function(nodeId, failure, newId, newIdForPath)
+    resetState : function(nodeId, failure, newId)
     {
         var mode     = this.editingNodesStorage[nodeId].mode;
         var parentId = this.editingNodesStorage[nodeId].parent;
@@ -817,7 +818,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                         this.changeNodeAttributes(
                             node, nodeId, newId.id,
                             newId.idForPath,
-                            newId.pendingCount
+                            newId.pendingCount,
+                            newId.isSelectable
                         );
                     }
                 }
@@ -834,7 +836,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                         this.changeNodeAttributes(
                             node, nodeId, newId.id,
                             newId.idForPath,
-                            newId.pendingCount
+                            newId.pendingCount,
+                            newId.isSelectable
                         );
                     }
                 }
@@ -854,7 +857,8 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                         this.changeNodeAttributes(
                             node, nodeId, newId.id,
                             newId.idForPath,
-                            newId.pendingCount
+                            newId.pendingCount,
+                            newId.isSelectable
                         );
                     }
                 }
@@ -875,15 +879,22 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * @param {String} oldId
      * @param {String} newId
      * @param {String} idForPath
-     * @param {Number} pendingCount     *
+     * @param {Number} pendingCount
+     * @param {Number} isSelectable
      */
-    changeNodeAttributes : function(node, oldId, newId, idForPath, pendingCount)
+    changeNodeAttributes : function(
+        node, oldId, newId, idForPath, pendingCount, isSelectable
+    )
     {
         if (oldId != newId) {
             Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
             Ext.fly(node.getUI().elNode).set({'id'               : newId});
             node.id = newId;
-            node.attributes.idForPath = idForPath;
+            node.attributes.idForPath    = idForPath;
+            node.attributes.isSelectable = isSelectable;
+
+            node.getUI().setSelectable(true);
+
             var tmp = this.nodeHash[oldId];
             this.nodeHash[newId] = tmp;
             delete this.nodeHash[oldId];
@@ -951,7 +962,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             pendingCount  : 0,
             childCount    : 0,
             allowChildren : true,
-            isLocked        : false,
+            isLocked      : false,
             type          : 'folder',
             iconCls       : 'com-conjoon-groupware-email-EmailTree-folderIcon',
             uiProvider    : com.conjoon.groupware.email.PendingNodeUI

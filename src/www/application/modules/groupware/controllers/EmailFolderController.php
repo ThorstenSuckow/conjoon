@@ -45,7 +45,8 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
         $this->_helper->filterRequestData()
                       ->registerFilter('Groupware_EmailFolderController::rename.folder')
                       ->registerFilter('Groupware_EmailFolderController::move.folder')
-                      ->registerFilter('Groupware_EmailFolderController::get.folder');
+                      ->registerFilter('Groupware_EmailFolderController::get.folder')
+                      ->registerFilter('Groupware_EmailFolderController::add.folder');
     }
 
     /**
@@ -213,56 +214,58 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
      * parentId : the id of the parent folder to which the new folder should get
      * appended
      * name : the name of the folder
+     * path : The path to the parent node of the node that should get created
      *
      * The method will assign a view-id property called "id", which holds the
      * id of the newly added folder.
      */
     public function addFolderAction()
     {
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-            $_POST,
-            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_CREATE
-        );
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
-        $filteredData = array();
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        $path   = $this->_request->getParam('path');
+        $name   = $this->_request->getParam('name');
+        $userId = $this->_helper->registryAccess->getUserId();
+
         try {
-            $filteredData = $filter->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
+            $folder = $facade->addFolderToPathForUserId($name, $path, $userId);
+
+            if ($folder === false) {
+                /**
+                 * @see Conjoon_Error_Factory
+                 */
+                require_once 'Conjoon/Error/Factory.php';
+
+                $error = Conjoon_Error_Factory::createError(
+                    "Could not add the folder.",
+                    Conjoon_Error::LEVEL_WARNING
+                )->getDto();
+
+                $this->view->success = false;
+                $this->view->error   = $error;
+                return;
+            }
+
+        } catch (Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
             require_once 'Conjoon/Error.php';
-            $error = Conjoon_Error::fromFilter($filter, $e);
-            $this->view->success = false;
-            $this->view->error   = $error->getDto();
-            return;
-        }
 
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+            $this->view->success = true;
+            $this->view->error   = Conjoon_Error::fromException($e)->getDto();
 
-        require_once 'Conjoon/Keys.php';
-        $user   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
-        $userId = $user->getId();
-
-        $id = $folderModel->addFolder($filteredData['parentId'], $filteredData['name'], $userId);
-
-        if ((int)$id <= 0) {
-            $this->view->success = false;
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();
-            $error->file  = __FILE__;
-            $error->line  = __LINE__;
-            $error->type  = Conjoon_Error::UNKNOWN;
-            $error->level = Conjoon_Error::LEVEL_WARNING;
-            $error->message = "Could not create folder.";
-            $this->view->error = $error;
             return;
         }
 
         $this->view->success = true;
         $this->view->error   = null;
-        $this->view->id      = $id;
-
+        $this->view->folder  = $folder;
     }
 
     /**

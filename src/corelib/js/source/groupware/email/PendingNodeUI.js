@@ -79,6 +79,20 @@ Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
     },
 
     /**
+     * Renders the node either selectable or not selectable.
+     *
+     * @param {Boolean} selectable
+     */
+    setSelectable : function(selectable)
+    {
+        if (selectable) {
+            Ext.fly(this.anchor).removeClass('notSelectable');
+        } else {
+            Ext.fly(this.anchor).addClass('notSelectable');
+        }
+    },
+
+    /**
      * Overwrites the derived implementation by calling the parent function and
      * then appending another <tt>span</tt>-Tag to this node for displaying
      * pending items in the folder represented by this node.

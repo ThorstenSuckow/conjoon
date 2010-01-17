@@ -42,6 +42,6 @@ class Conjoon_Filter_SanitizeExtFolderPath implements Zend_Filter_Interface
     {
         $value = trim((string)$value);
 
-        return ltrim($value, '/root');
+        return rtrim(ltrim($value, '/root'), '/');
     }
 }

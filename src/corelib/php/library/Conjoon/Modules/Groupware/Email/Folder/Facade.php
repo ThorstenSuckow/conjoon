@@ -86,6 +86,157 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 // -------- public api
 
     /**
+     * Adds a folder with the specified name to the specified path for
+     * the specified user.
+     *
+     * @param string $name
+     * @param string $path The path to the parent folder of the new folder
+     * @param integer $userId
+     *
+     * @return mixed Conjoon_Modules_Groupware_Email_Folder_Dto or false
+     *
+     */
+    public function addFolderToPathForUserId($name, $path, $userId)
+    {
+        $userId = $this->_checkParam($userId, 'userId');
+        $path   = $this->_checkParam($path,   'path');
+        $name   = $this->_checkParam($name, 'name');
+
+        $pathInfo = $this->_extractPathInfo($path);
+
+        $this->_checkParam($pathInfo, 'pathInfo');
+
+        if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+
+            $result = $this->_getFolderModel()->addFolder(
+                $pathInfo['nodeId'], $name, $userId
+            );
+
+            if (!$result) {
+                return false;
+            }
+
+            $folderDto = $this->getLocalFolderForIdAndUserId(
+                $pathInfo['nodeId'], $userId
+            );
+
+            if ($folderDto == null) {
+                return false;
+            }
+
+            return $folderDto;
+
+        } else {
+
+            $account = $this->getImapAccountForFolderIdAndUserId(
+                $pathInfo['rootId'], $userId
+            );
+
+            if ($account === false) {
+                return false;
+            }
+
+            $result = $this->addImapFolderToPath(
+                $name, $pathInfo['path'], $account, $userId
+            );
+
+            if ($result === false) {
+                return false;
+            }
+
+            // we have a string
+            // return the dto for the folder
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_ImapHelper
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+            /**
+             * @see Zend_Mail_Storage_Imap
+             */
+            require_once 'Zend/Mail/Storage/Imap.php';
+
+            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+                $account
+            );
+
+            $imap = new Zend_Mail_Storage_Imap($protocol);
+            $iFolders = $imap->getFolders($result);
+
+            foreach  ($iFolders as $localName => $iFold) {
+                return $this->_transformImapFolder(
+                    $iFold, $account, $protocol, false
+                );
+            }
+
+        }
+
+        return false;
+    }
+
+    /**
+     * Creates a new folder/mailbox for the specified account at the specified
+     * path.
+     *
+     * @param string $name
+     * @param string $path
+     * @param Conjoon_Modules_Groupware_Email_Account_Dto $account
+     * @param integer $userId
+     *
+     * @return mixed The path to the newly created folder, or false
+     */
+    public function addImapFolderToPath(
+        $name, $path,
+        Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
+    )
+    {
+        $name   = $this->_checkParam($name,   'name');
+        $path   = $this->_checkParam($path,   'path');
+        $userId = $this->_checkParam($userId, 'userId');
+
+        $this->_checkParam($account, 'checkForImap');
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        $delim = Conjoon_Modules_Groupware_Email_ImapHelper
+                 ::getFolderDelimiterForImapAccount(
+            $account
+        );
+
+        if (strpos($name, $delim) !== false) {
+            throw new InvalidArgumentException(
+                "Sorry, it seems that \"$delim\" is reserved and may not "
+                ."be used within the name"
+            );
+        }
+
+        $path = $this->_sanitizeImapPath($path, $delim);
+
+        if ($path === false) {
+            return false;
+        }
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount(
+            $account
+        );
+
+        $newFolder = $path . $delim .$name;
+
+        $result = $protocol->create($newFolder);
+
+        if (empty($result)) {
+            return false;
+        }
+
+        return $newFolder;
+    }
+
+    /**
      * Moves the folder found under the specified path as a new child to
      * the new path for the specified user.
      * This method does autmatically determine whether the path belongs to
@@ -522,7 +673,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         if (strpos($name, $delim) !== false) {
             throw new InvalidArgumentException(
-                "Sorry, it seems that \"$delim\" is reserved and may not be used within the name"
+                "Sorry, it seems that \"$delim\" is reserved and may not be "
+                ."used within the name"
             );
         }
 
@@ -701,7 +853,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         if ($path == "/" || $path == $delim) {
             return false;
         } else {
-            $path = ltrim(str_replace('/', $delim, $path), $delim);
+            $path = rtrim(ltrim(str_replace('/', $delim, $path), $delim), $delim);
         }
 
         $parts = explode($delim, $path);

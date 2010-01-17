@@ -51,7 +51,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
         ),
         self::CONTEXT_CREATE => array(
             'parentId',
-            'name'
+            'name',
+            'path'
         ),
         self::CONTEXT_MOVE => array(
             'parentId',
