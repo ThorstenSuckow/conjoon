@@ -570,6 +570,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return source.isDropValid === true;
         }
 
+        var sourcePath = dragOverEvent.data.node.getPath('idForPath');
+        var targetPath = dragOverEvent.target.getPath('idForPath');
+
+        if (sourcePath.split('/')[2] != targetPath.split('/')[2]) {
+            return false;
+        }
+
         return true;
     },
 
