@@ -39,6 +39,10 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
     const CONTEXT_MOVE   = 'move';
 
     protected $_presence = array(
+        self::CONTEXT_RESPONSE => array(
+            'id',
+            'path'
+        ),
         self::CONTEXT_RENAME => array(
             'id',
             'name',
@@ -51,7 +55,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
         ),
         self::CONTEXT_MOVE => array(
             'parentId',
-            'id'
+            'id',
+            'path',
+            'parentPath'
         ),
         self::CONTEXT_DELETE => array(
             'id'
@@ -61,38 +67,50 @@ class Conjoon_Modules_Groupware_Email_Folder_Filter_Folder extends Conjoon_Filte
 
     protected $_filters = array(
         'id' => array(
-            'Int'
+            'StringTrim'
          ),
         'parentId' => array(
-            'Int'
+            'StringTrim'
         ),
         'name' => array(
             'StringTrim'
         ),
         'path' => array(
-            'StringTrim'
+            'SanitizeExtFolderPath'
+        ),
+        'parentPath' => array(
+            'SanitizeExtFolderPath'
         )
     );
 
     protected $_validators = array(
         'id' => array(
-            'allowEmpty' => false,
-            array('GreaterThan', 0)
+            'allowEmpty' => false
         ),
         'parentId' => array(
-            'allowEmpty' => false,
-            array('GreaterThan', 0)
+            'allowEmpty' => false
         ),
         'name' => array(
             'allowEmpty' => false
         ),
         'path' => array(
+            'allowEmpty' => false
+        ),
+        'parentPath' => array(
             'allowEmpty' => false
         )
     );
 
     protected function _init()
     {
+        if ($this->_context == self::CONTEXT_RESPONSE) {
+            // allow path to be empty to indicate all root folders
+            // shall be returned
+            $this->_validators['path'] = array(
+                'allowEmpty' => true
+            );
+        }
+
         $this->_defaultEscapeFilter = new Conjoon_Filter_Raw();
     }
 

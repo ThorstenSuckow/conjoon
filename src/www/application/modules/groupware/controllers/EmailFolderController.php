@@ -43,7 +43,9 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
                        ->initContext();
 
         $this->_helper->filterRequestData()
-                      ->registerFilter('Groupware_EmailFolderController::rename.folder');
+                      ->registerFilter('Groupware_EmailFolderController::rename.folder')
+                      ->registerFilter('Groupware_EmailFolderController::move.folder')
+                      ->registerFilter('Groupware_EmailFolderController::get.folder');
     }
 
     /**
@@ -74,8 +76,8 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
      * accordingly.
      *
      * NOTE:
-     * Folder names' will be delivered unescaped to the client, so the client has to take care
-     * of appropriate html-encoding the given names.
+     * Folder names' will be delivered unescaped to the client, so the client has to
+     * take care of appropriate html-encoding the given names.
      *
      */
     public function getFolderAction()
@@ -87,7 +89,7 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
 
         $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        $path   = $_POST['path'];
+        $path   = $this->_request->getParam('path');
         $userId = $this->_helper->registryAccess->getUserId();
 
         $folders = $facade->getFoldersForPathAndUserId($path, $userId);
@@ -150,48 +152,59 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
     /**
      * Moves a folder into a new folder.
      * POST:
-     *  parentId : the id of the new folder this folder gets moved into
-     *  id : the id of this folder thats about being moved
+     *  parentId   : the id of the new folder this folder gets moved into
+     *  id         : the id of this folder thats about being moved
+     *  path       : the complete path of the folder to move
+     *  parentPath : the complete path of the new parent node
      *
      */
     public function moveFolderAction()
     {
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-        $filter = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-            $_POST,
-            Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_MOVE
-        );
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
-        $filteredData = array();
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
+
+        $path       = $this->_request->getParam('path');
+        $parentPath = $this->_request->getParam('parentPath');
+        $userId     = $this->_helper->registryAccess->getUserId();
+
         try {
-            $filteredData = $filter->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
+            $folder = $facade->moveFolderFromPathToPathForUserId($path, $parentPath, $userId);
+
+            if ($folder === false) {
+                /**
+                 * @see Conjoon_Error_Factory
+                 */
+                require_once 'Conjoon/Error/Factory.php';
+
+                $error = Conjoon_Error_Factory::createError(
+                    "Could not move the specified folder.",
+                    Conjoon_Error::LEVEL_WARNING
+                )->getDto();
+
+                $this->view->success = false;
+                $this->view->error   = $error;
+                return;
+            }
+
+        } catch (Exception $e) {
+            /**
+             * @see Conjoon_Error
+             */
             require_once 'Conjoon/Error.php';
-            $error = Conjoon_Error::fromFilter($filter, $e);
-            $this->view->success = false;
-            $this->view->error   = $error->getDto();
-            return;
-        }
 
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+            $this->view->success = true;
+            $this->view->error   = Conjoon_Error::fromException($e)->getDto();
 
-        $ret = $folderModel->moveFolder($filteredData['id'], $filteredData['parentId']);
-
-        if ($ret === 0) {
-            require_once 'Conjoon/Error.php';
-            $error = new Conjoon_Error();
-            $error = $error->getDto();
-            $error->title   = 'Error';
-            $error->level   = Conjoon_Error::LEVEL_WARNING;
-            $error->message = 'Could not move the specified folder into the new folder.';
-            $this->view->success = false;
-            $this->view->error   = $error;
             return;
         }
 
         $this->view->success = true;
         $this->view->error   = null;
+        $this->view->folder  = $folder;
     }
 
     /**

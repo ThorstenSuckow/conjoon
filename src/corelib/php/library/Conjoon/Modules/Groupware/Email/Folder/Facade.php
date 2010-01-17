@@ -14,7 +14,10 @@
  */
 
 /**
- *
+ * This facade eases the access to often neededoperations on local folders/
+ * mailboxes. It provides an interface to automatically establish connections
+ * to either the local database or other servers for manipulation folder/
+ * mailbox information.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
@@ -45,23 +48,31 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     private $_accountDecorator = null;
 
-
-
     /**
      * @var Conjoon_BeanContext_Decorator $_folderDecorator
      */
     private $_folderDecorator = null;
 
+    /**
+     * Enforce singleton.
+     *
+     */
     private function __construct()
     {
-
     }
 
+    /**
+     * Enforce singleton.
+     *
+     */
     private function __clone()
     {
-
     }
 
+    /**
+     *
+     * @return Conjoon_Modules_Groupware_Email_Folder_Facade
+     */
     public static function getInstance()
     {
         if (!self::$_instance) {
@@ -73,6 +84,153 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
 
 // -------- public api
+
+    /**
+     * Moves the folder found under the specified path as a new child to
+     * the new path for the specified user.
+     * This method does autmatically determine whether the path belongs to
+     * an IMAP or POP account.
+     *
+     * @param string $path
+     * @param string $parentPath
+     * @param integer $userId
+     *
+     * @return Conjoon_Modules_Groupware_Email_Folder_Dto
+     *
+     * @throws InvalidArgumentException
+     */
+    public function moveFolderFromPathToPathForUserId($path, $parentPath, $userId)
+    {
+        $path       = $this->_checkParam($path,       'path');
+        $parentPath = $this->_checkParam($parentPath, 'parentPath');
+        $userId     = $this->_checkParam($userId,     'userId');
+
+        $parentPathInfo = $this->_extractPathInfo($parentPath);
+        $pathInfo       = $this->_extractPathInfo($path);
+
+        $this->_checkParam($parentPathInfo, 'parentPathInfo');
+        $this->_checkParam($pathInfo,       'pathInfo');
+
+        if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+            // pop account mapped to folder
+            $result = $this->_getFolderModel()->moveFolder(
+                $pathInfo['nodeId'], $parentPathInfo['nodeId']
+            );
+
+            if ($result == 0) {
+                return false;
+            }
+
+            $folderDto = $this->getLocalFolderForIdAndUserId($pathInfo['nodeId'], $userId);
+
+            if ($folderDto == null) {
+                return false;
+            }
+
+            return $folderDto;
+
+        } else {
+
+            $account = $this->getImapAccountForFolderIdAndUserId(
+                $pathInfo['rootId'], $userId
+            );
+
+            if ($account === false) {
+                return false;
+            }
+
+            $result = $this->moveImapFolderFromPathToPath(
+                $pathInfo['path'], $parentPathInfo['path'], $account, $userId
+            );
+
+            if ($result === false) {
+                return false;
+            }
+
+            // we have a string
+            // return the dto for the folder
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_ImapHelper
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+            /**
+             * @see Zend_Mail_Storage_Imap
+             */
+            require_once 'Zend/Mail/Storage/Imap.php';
+
+            $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+                $account
+            );
+
+            $imap = new Zend_Mail_Storage_Imap($protocol);
+            $iFolders = $imap->getFolders($result);
+
+            foreach  ($iFolders as $localName => $iFold) {
+                return $this->_transformImapFolder(
+                    $iFold, $account, $protocol, false
+                );
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Moves the IMAP folder specified in $path as a new child to the
+     * path found in $parentPath.
+     *
+     * @param string $path
+     * @param string $parentPath
+     * @praram Conjoon_Modules_Groupware_Email_Account_Dto $account
+     * @param integer $userId
+     *
+     * @return mixed the new path for the moved folder, or false on failure
+     */
+    public function moveImapFolderFromPathToPath($path, $parentPath,
+        Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
+    )
+    {
+
+        $userId     = $this->_checkParam($userId,     'userId');
+        $parentPath = $this->_checkParam($parentPath, 'parentPath');
+        $path       = $this->_checkParam($path,       'path');
+
+        $this->_checkParam($account, 'checkForImap');
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_ImapHelper
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
+
+        $delim = Conjoon_Modules_Groupware_Email_ImapHelper
+                 ::getFolderDelimiterForImapAccount(
+            $account
+        );
+
+        $path       = $this->_sanitizeImapPath($path, $delim);
+        $parentPath = $this->_sanitizeImapPath($parentPath, $delim);
+
+        if ($path === false || $parentPath === false) {
+            return false;
+        }
+
+        $parts = explode($delim, $path);
+        $name  = array_pop($parts);
+
+        $newPath = $parentPath ? $parentPath . $delim . $name : $name;
+
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+            $account
+        );
+
+        if ($protocol->rename($path, $newPath) !== true) {
+            return false;
+        }
+
+        return $newPath;
+    }
 
     /**
      * Renames the folder found under the specified path.
@@ -91,33 +249,13 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function renameFolderForPathAndUserId($name, $path, $userId)
     {
-        $name   = trim((string)$name);
-        $path   = trim((string)$path);
-        $userId = (int)$userId;
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
-        if ($path == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, path was \"$path\""
-            );
-        }
-        if ($name == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, name was \"$name\""
-            );
-        }
+        $name   = $this->_checkParam($name,   'name');
+        $path   = $this->_checkParam($path,   'path');
+        $userId = $this->_checkParam($userId, 'userId');
 
         $pathInfo = $this->_extractPathInfo($path);
 
-        if (empty($pathInfo)) {
-            throw new InvalidArgumentException(
-                "Could not operate on path - path was \"$path\""
-            );
-        }
+        $this->_checkParam($pathInfo, 'pathInfo');
 
         if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
 
@@ -193,14 +331,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function isPopAccountMappedToFolderIdForUserId($folderId, $userId)
     {
-        $folderId = (int)$folderId;
-        $userId   = (int)$userId;
-
-        if ($folderId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for - folderId was \"$folderId\""
-            );
-        }
+        $folderId = $this->_checkParam($folderId, 'folderId');
+        $userId   = $this->_checkParam($userId,   'userId');
 
         $accounts = $this->getAccountsForFolderIdAndUserId($folderId, $userId);
 
@@ -208,7 +340,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             return false;
         }
 
-        $account = & $accounts[0];
+        $account =& $accounts[0];
 
         if ($account->protocol === 'IMAP') {
             return false;
@@ -216,8 +348,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         return true;
     }
-
-
 
     /**
      * Returns a Conjoon_Modules_Groupware_Email_Folder_Dto for the
@@ -233,20 +363,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function getLocalFolderForIdAndUserId($folderId, $userId)
     {
-        $folderId = (int)$folderId;
-        $userId   = (int)$userId;
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
-
-        if ($folderId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
+        $folderId = $this->_checkParam($folderId, 'folderId');
+        $userId   = $this->_checkParam($userId,   'userId');
 
         $folder = $this->_getFolderDecorator()->getFolderForIdAsDto(
             $folderId, $userId
@@ -273,20 +391,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function getImapAccountForFolderIdAndUserId($folderId, $userId)
     {
-        $userId   = (int)$userId;
-        $folderId = (int)$folderId;
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
-
-        if ($folderId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, folderId was \"$folderId\""
-            );
-        }
+        $userId   = $this->_checkParam($userId,   'userId');
+        $folderId = $this->_checkParam($folderId, 'folderId');
 
         $accounts = $this->getAccountsForFolderIdAndUserId($folderId, $userId);
 
@@ -314,18 +420,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      * If the first token equals to "root", all root folders for the user will be loaded.
      * @param integer $userId The id of the user
      *
-     *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
      */
     public function getFoldersForPathAndUserId($path, $userId)
     {
-        $userId = (int)$userId;
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
+        $userId = $this->_checkParam($userId, 'userId');
+        $path   = trim((string)$path);
 
         $pathInfo = $this->_extractPathInfo($path);
 
@@ -362,19 +462,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     public function getAccountsForFolderIdAndUserId($folderId, $userId)
     {
-        $folderId = (int)$folderId;
-        $userId   = (int)$userId;
-
-        if ($folderId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, folderId was \"$folderId\""
-            );
-        }
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
+        $folderId = $this->_checkParam($folderId, 'folderId');
+        $userId   = $this->_checkParam($userId,   'userId');
 
         $accountIds = $this->_getFoldersAccountsModel()
                            ->getAccountIdsMappedToFolderIds(array($folderId));
@@ -415,32 +504,19 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         $name, $path, Conjoon_Modules_Groupware_Email_Account_Dto $account, $userId
     )
     {
-        $userId   = (int)$userId;
-        $name     = trim((string)$name);
-        $path     = trim((string)$path);
+        $userId   = $this->_checkParam($userId, 'userId');
+        $name     = $this->_checkParam($name,   'name');
+        $path     = $this->_checkParam($path,   'path');
 
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, userId was \"$userId\""
-            );
-        }
-        if ($name == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, name was \"$name\""
-            );
-        }
-        if ($path == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied, path was \"$path\""
-            );
-        }
+        $this->_checkParam($account, 'checkForImap');
 
         /**
          * @see Conjoon_Modules_Groupware_Email_ImapHelper
          */
         require_once 'Conjoon/Modules/Groupware/Email/ImapHelper.php';
 
-        $delim = Conjoon_Modules_Groupware_Email_ImapHelper::getFolderDelimiterForImapAccount(
+        $delim = Conjoon_Modules_Groupware_Email_ImapHelper
+                 ::getFolderDelimiterForImapAccount(
             $account
         );
 
@@ -450,18 +526,17 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             );
         }
 
-        if ($path == "/" || $path == $delim) {
+        $path    = $this->_sanitizeImapPath($path, $delim);
+        $newPath = $this->_sanitizeImapPath($path, $delim, true);
+
+        if ($path === false || $newPath === false) {
             return false;
-        } else {
-            $path = ltrim(str_replace('/', $delim, $path), $delim);
         }
 
-        $parts = explode($delim, $path);
-        array_pop($parts);
+        $newPath = $newPath ? $newPath . $delim . $name : $name;
 
-        $newPath = (implode($delim, $parts) ? implode($delim, $parts) . $delim : "" ) . $name;
-
-        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount(
             $account
         );
 
@@ -481,8 +556,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      *
      * @return Conjoon_Modules_Groupware_Email_Folder_Dto
      */
-    public function getImapFoldersForPath(Conjoon_Modules_Groupware_Email_Account_Dto $account, $path = "")
+    public function getImapFoldersForPath(
+        Conjoon_Modules_Groupware_Email_Account_Dto $account, $path = ""
+    )
     {
+        $this->_checkParam($account, 'checkForImap');
+
         /**
          * @see Conjoon_Modules_Groupware_Email_ImapHelper
          */
@@ -498,7 +577,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             $path = ltrim(str_replace('/', $delim, $path), $delim);
         }
 
-        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper::reuseImapProtocolForAccount(
+        $protocol = Conjoon_Modules_Groupware_Email_ImapHelper
+                    ::reuseImapProtocolForAccount(
             $account
         );
 
@@ -536,6 +616,102 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
 
 // -------- api
+
+    /**
+     * Function for often needed param checks.
+     *
+     * @throws InvalidArgumentException
+     *
+     * @param mixed $value
+     * @param string $type
+     *
+     * @return mixed
+     */
+    private function _checkParam($value, $type)
+    {
+        switch ($type) {
+            case 'userId':
+            case 'accountId':
+            case 'folderId':
+                $value = (int)$value;
+                if ($value <= 0) {
+                   throw new InvalidArgumentException(
+                        "Invalid argument supplied, $type was \"$value\""
+                    );
+                }
+            break;
+
+
+            case 'path':
+            case 'parentPath':
+            case 'name':
+                $value = trim((string)$value);
+                if ($value == "") {
+                   throw new InvalidArgumentException(
+                        "Invalid argument supplied, $type was \"$value\""
+                    );
+                }
+            break;
+
+            case 'pathInfo':
+            case 'parentPathInfo':
+                if (empty($value)) {
+                   throw new InvalidArgumentException(
+                       "Could not operate on parentPath - $type was \"$value\""
+                    );
+                }
+            break;
+
+            case 'checkForImap':
+                if ($value->protocol !== 'IMAP') {
+                    throw new InvalidArgumentException(
+                        "Invalid argument supplied, account does use the "
+                        ."\"".$value->protocol."\"protocol, but not the "
+                        ."IMAP protocol"
+                    );
+                }
+            break;
+
+            default:
+                throw new InvalidArgumentException(
+                    "No rule defined for $type"
+                );
+            break;
+
+        }
+
+        return $value;
+    }
+
+
+    /**
+     * Sanitizes a path from an IMAP mailboxes and removes/replaces
+     * hierarchy delimiter.
+     *
+     * @param string $path
+     * @param string $delim
+     * @param boolean $popHead whether or not to remove the head of the
+     * path
+     *
+     * @return mixed The sanitized path or false if the string could not
+     * be sanitized
+     */
+    private function _sanitizeImapPath($path, $delim, $popHead = false)
+    {
+        if ($path == "/" || $path == $delim) {
+            return false;
+        } else {
+            $path = ltrim(str_replace('/', $delim, $path), $delim);
+        }
+
+        $parts = explode($delim, $path);
+
+        if ($popHead === true) {
+            array_pop($parts);
+        }
+
+        return implode($delim, $parts);
+    }
 
     /**
      * Gathers all needed information to tranform an imap folder to a
@@ -607,8 +783,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      */
     private function _extractPathInfo($path)
     {
-        $path = ltrim(trim((string)$path), '/root');
-
         if ($path == "") {
             return array();
         }

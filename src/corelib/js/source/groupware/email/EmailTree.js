@@ -343,7 +343,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         node.disable();
 
         if (!this.editingNodesStorage) {
-            this.editingNodesStorage = new Array();
+            this.editingNodesStorage = {};
         } else if (this.editingNodesStorage[nodeConfig.child.id]) {
             throw("com.conjoon.groupware.email.EmailTree::saveNode - cannot "+
                   "execute request since the editing node was already in the queue.")
@@ -365,11 +365,12 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             case 'move':
                 url    = './groupware/email.folder/move.folder/format/json';
                 params = {
-                    //newParentId : nodeConfig.newParent,
-                    parentId : nodeConfig.newParent,
-                    id       : nodeConfig.child.id
-                    //name        : nodeConfig.child.value
+                    parentId   : nodeConfig.newParent,
+                    parentPath : nodeConfig.newParentPath,
+                    id         : nodeConfig.child.id,
+                    path       : node.attributes.tmpPath
                 };
+                delete node.attributes.tmpPath;
                 successFn = this.onNodeMoveSuccess;
             break;
 
@@ -546,6 +547,12 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             this.fireEvent("nodedrop", dropEvent);
             return false;
         }
+
+        // temp store the path
+        var node = dropEvent.data.node;
+        node.attributes.tmpPath = node.getPath('idForPath');
+
+        return true;
     },
 
     /**
@@ -645,9 +652,10 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         }
 
         var nodeConfig = {
-            mode      : 'move',
-            parent    : oldParent.id,
-            newParent : newParent.id,
+            mode          : 'move',
+            parent        : oldParent.id,
+            newParent     : newParent.id,
+            newParentPath : newParent.getPath('idForPath'),
             child     : {
                 id         : node.id,
                 value      : node.text,
@@ -666,7 +674,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
      * reverted. As soon as the editor hides, the state for the failed component
      * will be undone.
      */
-    taskQueue : new Array(),
+    taskQueue : {},
     onRequestFailure : function(response, parameters)
     {
         if (this.nodeEditor.isVisible() && !this.taskQueue[parameters.params.id]) {
@@ -730,7 +738,9 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             return;
         }
 
-        this.resetState(parameters.params.id, false);
+        var values = json.getResponseValues(response.responseText);
+
+        this.resetState(parameters.params.id, false, values.folder);
     },
 
     /**
@@ -752,9 +762,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         var values = json.getResponseValues(response.responseText);
 
-        this.resetState(
-            parameters.params.id, false, values.folder
-        );
+        this.resetState(parameters.params.id, false, values.folder);
     },
 
     /**
@@ -805,7 +813,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentNode.resumeEvents();
                     this.resumeEvents();
                 } else {
-
+                    if (Ext.isObject(newId)) {
+                        this.changeNodeAttributes(
+                            node, nodeId, newId.id,
+                            newId.idForPath,
+                            newId.pendingCount
+                        );
+                    }
                 }
             break;
 
@@ -817,29 +831,11 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     node.resumeEvents();
                 } else {
                     if (Ext.isObject(newId)) {
-                        var folder = newId;
-
-                        if (nodeId != folder.id) {
-                            Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : folder.id});
-                            Ext.fly(node.getUI().elNode).set({'id'               : folder.id});
-                            node.id = folder.id;
-                            node.attributes.idForPath = folder.idForPath;
-                            var tmp = this.nodeHash[nodeId];
-                            this.nodeHash[folder.id] = tmp;
-                            delete this.nodeHash[nodeId];
-
-                            var oldRec = this.pendingItemStore.getById(nodeId);
-
-                            if (oldRec) {
-                                this.pendingItemStore.remove(oldRec);
-                            }
-
-                            this.pendingItemStore.add(
-                                new com.conjoon.groupware.email.PendingNodeItemRecord({
-                                    pending : folder.pendingCount
-                                }, folder.id)
-                            );
-                        }
+                        this.changeNodeAttributes(
+                            node, nodeId, newId.id,
+                            newId.idForPath,
+                            newId.pendingCount
+                        );
                     }
                 }
             break;
@@ -854,15 +850,13 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                     parentNode.resumeEvents();
                     this.resumeEvents();
                 } else {
-                    Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
-                    Ext.fly(node.getUI().elNode).set({'id'               : newId});
-                    node.id = newId;
-                    var tmp = this.nodeHash[nodeId];
-                    this.nodeHash[newId] = tmp;
-                    delete this.nodeHash[nodeId];
-                    this.pendingItemStore.add(new com.conjoon.groupware.email.PendingNodeItemRecord({
-                        pending : 0
-                    }, newId));
+                    if (Ext.isObject(newId)) {
+                        this.changeNodeAttributes(
+                            node, nodeId, newId.id,
+                            newId.idForPath,
+                            newId.pendingCount
+                        );
+                    }
                 }
             break;
 
@@ -871,6 +865,41 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
 
         delete this.editingNodesStorage[nodeId];
 
+    },
+
+    /**
+     * Changes all node attributes based on the specified arguments.
+     * Does also re-create an entry in pendingItemStore.
+     *
+     * @param {Ext.tree.Node} node
+     * @param {String} oldId
+     * @param {String} newId
+     * @param {String} idForPath
+     * @param {Number} pendingCount     *
+     */
+    changeNodeAttributes : function(node, oldId, newId, idForPath, pendingCount)
+    {
+        if (oldId != newId) {
+            Ext.fly(node.getUI().elNode).set({'ext:tree-node-id' : newId});
+            Ext.fly(node.getUI().elNode).set({'id'               : newId});
+            node.id = newId;
+            node.attributes.idForPath = idForPath;
+            var tmp = this.nodeHash[oldId];
+            this.nodeHash[newId] = tmp;
+            delete this.nodeHash[oldId];
+
+            var oldRec = this.pendingItemStore.getById(oldId);
+
+            if (oldRec) {
+                this.pendingItemStore.remove(oldRec);
+            }
+
+            this.pendingItemStore.add(
+                new com.conjoon.groupware.email.PendingNodeItemRecord({
+                    pending : pendingCount
+                }, newId)
+            );
+        }
     },
 
     /**
@@ -929,7 +958,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         }));
 
         if (!this.appendingNodesStorage) {
-            this.appendingNodesStorage = new Array();
+            this.appendingNodesStorage = {};
         }
 
         node.select();
