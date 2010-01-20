@@ -206,7 +206,6 @@ com.conjoon.groupware.ResponseInspector = function() {
                scope          = config.scope;
 
             if (!result) {
-                console.log(failure)
                 failure.call(scope, remotingObject);
             } else {
                 if (remotingObject.code === Ext.Direct.exceptions.PARSE) {
