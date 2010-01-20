@@ -916,7 +916,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         this.mon(this.accountStore, 'update', this.onUpdate, this);
 
         this.on('beforeclose', this.onBeforeClose, this);
-        this.on('show',        this.onShow,        this);
+        this.on('show',        this._onShow,       this);
 
     },
 
@@ -1128,7 +1128,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
      * will be created and shown.
      *
      */
-    onShow : function()
+    _onShow : function()
     {
         var rec = this.accountStore.getRange();
 
