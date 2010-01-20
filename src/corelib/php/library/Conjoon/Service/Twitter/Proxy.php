@@ -607,6 +607,12 @@ class Conjoon_Service_Twitter_Proxy  {
             array(), Conjoon_Filter_Input::CONTEXT_RESPONSE
         );
 
+        // in case this is a fresh account and/or no tweets are available,
+        // exit here
+        if (!$tweets->status) {
+            return $entries;
+        }
+
         foreach ($tweets->status as $tweet) {
             $data = array(
                 'id'                  => (string)$tweet->id,
