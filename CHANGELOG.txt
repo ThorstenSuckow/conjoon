@@ -1,4 +1,20 @@
-﻿2010-01-15 0.1RC2
+﻿2010-01-21 0.1RC3
+=================
+Notable changes:
+
+[Email module - client]
+ - fixed an issue where the EmailAccountWizard would be opened twice if no email
+accounts are available due to reserved method name "onShow()"
+
+[Twitter module - backend]
+ - fixed an issue where reading out Tweets from a newly imported account with no
+Tweets yet would trigger an error
+
+[General UI]
+ - removed debug code that would trigger an error in other browsers than FF
+
+
+2010-01-15 0.1RC2
 =================
 Notable changes:
 
