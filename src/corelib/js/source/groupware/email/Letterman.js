@@ -351,33 +351,10 @@ com.conjoon.groupware.email.Letterman = function(config) {
             this.wakeup();
 
             if (response.raw && response.raw.missingInboxForAccountId) {
-
-                if (!com.conjoon.groupware.email.options.FolderMappingBaton.isDialogActive()) {
-                    var accountId = parseInt(response.raw.missingInboxForAccountId);
-
-                    var name = com.conjoon.groupware.email.AccountStore.getInstance()
-                               .getById(accountId).get('name');
-
-                    com.conjoon.SystemMessageManager.confirm(
-                        new com.conjoon.SystemMessage({
-                            title : com.conjoon.Gettext.gettext("No Inbox folder found"),
-                            text  : String.format(
-                                com.conjoon.Gettext.gettext("There was no valid Inbox folder found for the account \"{0}\". Before you can fetch messages for this account, you need to specify a folder that will be used as the default Inbox folder. <br />Do you want to do so now?"),
-                                name
-                            ),
-                            type  : com.conjoon.SystemMessage.TYPE_CONFIRM
-                        }), {
-                            fn : function(buttonString) {
-                                if (buttonString === 'yes') {
-                                    com.conjoon.groupware.email
-                                    .options.FolderMappingBaton.showDialog(
-                                        accountId, 'INBOX'
-                                    );
-                                }
-                            }
-                        }
-                    );
-                }
+                var accountId = parseInt(response.raw.missingInboxForAccountId);
+                com.conjoon.groupware.email.options.FolderMappingBaton.showNotice(
+                    accountId, 'INBOX'
+                );
                 return;
             } else {
                 com.conjoon.groupware.ResponseInspector.handleFailure(response);
