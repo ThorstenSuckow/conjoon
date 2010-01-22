@@ -221,11 +221,11 @@ class Conjoon_Modules_Groupware_Email_ImapHelper {
         // check whether we adjust properties based on standard names
         if ($lookupStandardNames) {
             if (strtolower($tmpFolder->name) === "inbox") {
-                $tmpFolder->type     = 'inbox';
-                $tmpFolder->isLocked = 1;
+                //$tmpFolder->type     = 'inbox';
+                //$tmpFolder->isLocked = 1;
             } else if (strtolower($tmpFolder->name) === "trash") {
-                $tmpFolder->type     = 'trash';
-                $tmpFolder->isLocked = 1;
+                //$tmpFolder->type     = 'trash';
+               // $tmpFolder->isLocked = 1;
             }
 
         }

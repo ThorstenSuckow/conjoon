@@ -134,7 +134,6 @@ com.conjoon.groupware.email.Letterman = function(config) {
     {
         return function(o, success, response) {
             var json = com.conjoon.util.Json;
-
             if (json.isError(response.responseText)) {
                 com.conjoon.groupware.email.Letterman.onRequestFailure(this, 'response', action, o, response);
             }
@@ -314,6 +313,10 @@ com.conjoon.groupware.email.Letterman = function(config) {
         },
 
         /**
+         * This method is called if the server did not return a valid response,
+         * or if the missingInboxForAccountId property in the response is set,
+         * which points to the first account for which no inbox account was configured.
+         *
          *
          * @param {Ext.data.Proxy} proxy The proxy that sent the request
          * @param {String} type The value of this parameter will be either 'response'
@@ -346,7 +349,39 @@ com.conjoon.groupware.email.Letterman = function(config) {
         {
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.loadexception', {});
             this.wakeup();
-            com.conjoon.groupware.ResponseInspector.handleFailure(response);
+
+            if (response.raw && response.raw.missingInboxForAccountId) {
+
+                if (!com.conjoon.groupware.email.options.FolderMappingBaton.isDialogActive()) {
+                    var accountId = parseInt(response.raw.missingInboxForAccountId);
+
+                    var name = com.conjoon.groupware.email.AccountStore.getInstance()
+                               .getById(accountId).get('name');
+
+                    com.conjoon.SystemMessageManager.confirm(
+                        new com.conjoon.SystemMessage({
+                            title : com.conjoon.Gettext.gettext("No Inbox folder found"),
+                            text  : String.format(
+                                com.conjoon.Gettext.gettext("There was no valid Inbox folder found for the account \"{0}\". Before you can fetch messages for this account, you need to specify a folder that will be used as the default Inbox folder. <br />Do you want to do so now?"),
+                                name
+                            ),
+                            type  : com.conjoon.SystemMessage.TYPE_CONFIRM
+                        }), {
+                            fn : function(buttonString) {
+                                if (buttonString === 'yes') {
+                                    com.conjoon.groupware.email
+                                    .options.FolderMappingBaton.showDialog(
+                                        accountId, 'INBOX'
+                                    );
+                                }
+                            }
+                        }
+                    );
+                }
+                return;
+            } else {
+                com.conjoon.groupware.ResponseInspector.handleFailure(response);
+            }
         }
 
 
