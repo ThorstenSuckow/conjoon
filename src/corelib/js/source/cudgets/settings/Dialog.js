@@ -150,6 +150,6 @@ com.conjoon.cudgets.settings.Dialog = Ext.extend(Ext.Window, {
         }
 
         return this.applyButton;
-    },
+    }
 
 });
