@@ -33,6 +33,12 @@ com.conjoon.groupware.email.options.FolderMappingBaton = function() {
     var dialog = null;
 
     /**
+     * @type {Boolean} isNoticeShown Set to true if the confirm dialog is shown via
+     * "showNotice()"
+     */
+    var isNoticeShown = false;
+
+    /**
      * Listener for the dialogs "close" event. Will set the dialog property of
      * this singleton to "null".
      *
@@ -92,7 +98,8 @@ com.conjoon.groupware.email.options.FolderMappingBaton = function() {
          */
         showNotice : function(accountId, type)
         {
-            if (!this.isDialogActive()) {
+            if (!this.isDialogActive() && !isNoticeShown) {
+                isNoticeShown = true;
                 var name = com.conjoon.groupware.email.AccountStore.getInstance()
                            .getById(accountId).get('name');
 
@@ -158,6 +165,7 @@ com.conjoon.groupware.email.options.FolderMappingBaton = function() {
                             if (buttonString === 'yes') {
                                 this.showDialog(accountId, 'INBOX');
                             }
+                            isNoticeShown = false;
                         },
                         scope : this
                     }
