@@ -237,6 +237,12 @@ com.conjoon.groupware.ResponseInspector = function() {
                 }
             }
 
+            // check whether the response was generated for an Ext.Direct
+            // request
+            if (resp.result) {
+                resp = resp.result;
+            }
+
             if (resp.tokenFailure === true) {
                 return this.FAILURE_TOKEN;
             }
