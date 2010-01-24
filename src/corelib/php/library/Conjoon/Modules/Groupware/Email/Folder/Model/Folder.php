@@ -1045,9 +1045,13 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                         array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
                         $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
                         ' AND ' .
-                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER') .
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER')/* .
+                        // REMOVED since information about a mapping might still be needed
+                        // in case the account was flagged as deleted, but an item mapped to this
+                        // account still exists in the database and is shown in the frontend
+                        // in a specific folder
                         ' AND '.
-                        'accounts.is_deleted=0',
+                        'accounts.is_deleted=0',*/
                         array())
                   ->join(
                         array('folders_accounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
