@@ -589,11 +589,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      *
      * @param integer $id The id of the folder to delete
      * @param integer $userId The id of the user to delete the data for
+     * @param boolean $checkForDeletable Check whether the folder may get deleted
      *
      * @return integer 0 if the folder was not deleted, otherwise 1 (equals to
      * the number of deleted folders)
      */
-    public function deleteFolder($id, $userId)
+    public function deleteFolder($id, $userId, $checkForDeletable = true)
     {
         $id     = (int)$id;
         $userId = (int)$userId;
@@ -602,7 +603,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         }
 
         // check first if the folder may get deleted
-        if (!$this->isFolderDeletable($id)) {
+        if ($checkForDeletable && !$this->isFolderDeletable($id)) {
             return 0;
         }
 
