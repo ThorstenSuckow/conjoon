@@ -350,7 +350,34 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
 
         return $select;
+    }
 
+    /**
+     * Returns the total number of email items in this folder.
+     *
+     * @param integer $folderId
+     *
+     * @return integer
+     */
+    public function getEmailItemCountForFolder($folderId)
+    {
+        $folderId = (int)$folderId;
+
+        if ($folderId <= 0) {
+            return 0;
+        }
+
+        $select = $this->select()
+                  ->from($this, array('count' => 'count(id)'))
+                  ->where('`groupware_email_folders_id` = ?', $folderId);
+
+        $result = $this->fetchRow($select);
+
+        if (!$result || empty($result)) {
+            return 0;
+        }
+
+        return (int)$result->count;
     }
 
     /**
