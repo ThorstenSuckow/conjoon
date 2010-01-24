@@ -486,6 +486,10 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * The items will only be deleted if all rows in groupware_email_items_flags
      * for the corresponding item have been set to is_deleted=1. Otherwise,
      * only the is_deleted field for the specified user will be set to 1.
+     * If that is the case and the item gets entirely deleted, the method will
+     * use the accounts-model to check whether there are any accounts flagged
+     * as "is_deleted = 1" and also remove this accounts if no more items
+     * are exiting in the data storage.
      *
      * @param array $itemIds A numeric array with all id's of the items that are
      * about to be deleted
@@ -536,11 +540,19 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             $outboxModel     = new Conjoon_Modules_Groupware_Email_Item_Model_Outbox();
             $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Account_Model_Account
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
+
+            $accountModel    = new Conjoon_Modules_Groupware_Email_Account_Model_Account();
+
             $referencesModel->delete('is_pending=1 AND user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $flagModel->delete('user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $attachmentModel->delete('groupware_email_items_id IN ('.$idString.')');
             $inboxModel->delete('groupware_email_items_id IN ('.$idString.')');
             $outboxModel->delete('groupware_email_items_id IN ('.$idString.')');
+            $accountModel->removeAsDeletedFlaggedAccounts($userId);
         }
 
         return $deleted;
