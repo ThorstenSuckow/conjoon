@@ -27,11 +27,15 @@ com.conjoon.groupware.Registry = function() {
         return new Ext.data.Store({
             storeId     : Ext.id(),
             autoLoad    : false,
-            reader      : new Ext.data.JsonReader({
+            reader      : new com.conjoon.cudgets.data.JsonReader({
                               root: 'entries',
                               id  : 'key'
                           }, ['key', 'value']),
-            url         : './default/registry/get.entries/format/json'
+            proxy   : new com.conjoon.cudgets.data.DirectProxy({
+                api : {
+                    read : com.conjoon.default.provider.registry.getEntries
+                }
+            })
         });
     };
 
