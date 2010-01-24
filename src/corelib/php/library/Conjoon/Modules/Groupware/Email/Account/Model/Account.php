@@ -93,6 +93,83 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
     }
 
     /**
+     * Removes any account which is flagged as "is_deleted=1" along with its
+     * informations, if there are no items for this account in the related folders
+     * anymore.
+     *
+     * @param integer $userId
+     *
+     * @return array An array with the deleted account ids
+     */
+    public function removeAsDeletedFlaggedAccounts($userId)
+    {
+        $id = (int)$id;
+
+        if ($id <= 0) {
+            return array();
+        }
+
+        $rows = $this->fetchAll(
+            $this->select()
+                ->where('user_id=?', $id)
+                ->where('is_deleted=1')
+        );
+
+        $deletedIds = array();
+
+        foreach ($rows as $row) {
+            $res = $this->_removeInformationForAccountIf($row->id, $userId);
+            if ($res) {
+                $deletedIds[] = $res;
+            }
+        }
+
+        return $deletedIds;
+    }
+
+    private function _removeInformationForAccountIf($accountId, $userId)
+    {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
+
+        $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Item_Model_Item
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
+
+        $itemModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
+
+        $folders = $foldersAccounts->getFolderIdsForAccountId($accountId);
+        $del = true;
+        for ($i = 0, $len = count($folders); $i < $len; $i++) {
+            $count = $itemModel->getEmailItemCountForFolder($folders[$i]);
+            if ($count > 0) {
+                $del = false;
+                break;
+            }
+        }
+
+        if ($del) {
+            // remove account-data entirely - as for accounts_root data specified
+            $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
+            $deleted = $this->delete($where);
+
+            if ($deleted) {
+                // delete account-mappings
+                $foldersAccounts->deleteForAccountId($accountId);
+
+                return $accountId;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
      * Sets the is_deleted flag of the account to "0", which basically means that
      * this account is not active anymore. However, in order for older email items
      * to still work properly, folder mappings have to remain, until no
@@ -136,9 +213,10 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             // no folders or root - we can remove the account entirely
             $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
             $deleted = $this->delete($where);
-
-            for ($i = 0, $len = count($folders); $i < $len) {
-                $folderModel->deleteFolder($folders[$i], $userId);
+            if ($deleted) {
+                for ($i = 0, $len = count($folders); $i < $len) {
+                    $folderModel->deleteFolder($folders[$i], $userId, false);
+                }
             }
 
             return $deleted;
@@ -146,32 +224,10 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             // no root id. Check if there are any items still in folders
             // belonging to the account. If that is the case, DO NOT remove the
             // account from the data storage
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Item_Model_Item
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
+            $res = $this->_removeInformationForAccountIf($accountId, $userId);
 
-            $itemModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
-            $del = true;
-            // check if for any found folder id still exists an email item
-            for ($i = 0, $len = count($folders); $i < $len; $i++) {
-                $folderId = $folders[$i];
-                $count = $itemModel->getEmailItemCountForFolder($folders[$i]);
-                if ($count > 0) {
-                    $del = false;
-                    break;
-                }
-            }
-
-            if ($del) {
-                // remove account-data entirely - as for accounts_root data specified
-                $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
-                $deleted = $this->delete($where);
-
-                // delete account-mappings
-                $foldersAccounts->deleteForAccountId($accountId);
-
-                return $deleted;
+            if ($res) {
+                return 1;
             } else {
                 // update account to is_deleted = 1
                 $where = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
