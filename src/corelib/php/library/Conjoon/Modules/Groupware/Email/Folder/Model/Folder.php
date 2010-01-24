@@ -1086,7 +1086,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      */
     public function getLocalMappingsForUser($userId)
     {
-        $userId    = (int)$userId;
+        $userId = (int)$userId;
 
         if ($userId <= 0) {
             return array();
