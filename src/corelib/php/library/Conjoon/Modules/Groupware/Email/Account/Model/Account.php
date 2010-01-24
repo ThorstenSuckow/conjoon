@@ -214,7 +214,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
             $deleted = $this->delete($where);
             if ($deleted) {
-                for ($i = 0, $len = count($folders); $i < $len) {
+                for ($i = 0, $len = count($folders); $i < $len; $i++) {
                     $folderModel->deleteFolder($folders[$i], $userId, false);
                 }
             }

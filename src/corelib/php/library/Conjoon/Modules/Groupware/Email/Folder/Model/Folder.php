@@ -1051,7 +1051,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                         // account still exists in the database and is shown in the frontend
                         // in a specific folder
                         ' AND '.
-                        'accounts.is_deleted=0',*/
+                        'accounts.is_deleted=0'*/,
                         array())
                   ->join(
                         array('folders_accounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
