@@ -20,7 +20,7 @@ require_once 'Conjoon/BeanContext.php';
 
 
 /**
- * A class representing a folder mapping for IMAP folders/mailboxes.
+ * A class representing a folder mapping for local/IMAP folders/mailboxes.
  *
  * @uses       Conjoon_BeanContext
  * @category   Conjoon_Groupware
@@ -30,7 +30,7 @@ require_once 'Conjoon/BeanContext.php';
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 
-class Conjoon_Modules_Groupware_Email_ImapMapping implements Conjoon_BeanContext, Serializable {
+class Conjoon_Modules_Groupware_Email_FolderMapping implements Conjoon_BeanContext, Serializable {
 
     const INBOX  = 'INBOX';
     const OUTBOX = 'OUTBOX';
@@ -105,15 +105,15 @@ class Conjoon_Modules_Groupware_Email_ImapMapping implements Conjoon_BeanContext
     /**
      * Returns a Dto for an instance of this class.
      *
-     * @return Conjoon_Groupware_Email_ImapMapping
+     * @return Conjoon_Groupware_Email_FolderMapping
      */
     public function getDto()
     {
-        require_once 'ImapMapping/Dto.php';
+        require_once 'FolderMapping/Dto.php';
 
         $data = $this->toArray();
 
-        $dto = new Conjoon_Modules_Groupware_Email_ImapMapping_Dto();
+        $dto = new Conjoon_Modules_Groupware_Email_FolderMapping_Dto();
         foreach ($data as $key => $value) {
             if (property_exists($dto, $key)) {
                 $dto->$key = $value;

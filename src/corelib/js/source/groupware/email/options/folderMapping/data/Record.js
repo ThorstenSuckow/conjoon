@@ -15,7 +15,7 @@
 Ext.namespace('com.conjoon.groupware.email.options.folderMapping.data');
 
 /**
- * A record for storing IMAP folder mappings.
+ * A record for storing local/IMAP folder mappings.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
@@ -34,7 +34,8 @@ com.conjoon.groupware.email.options.folderMapping.data.Record = Ext.data.Record.
      */
     {name : 'accountId',            type : 'int'},
     /**
-     * @type {String} globalName The global name of the folder mapped to "type".
+     * @type {String} globalName The global name of the folder mapped to "type",
+     * or the id of this folder in case the related account is a POP3 account.
      */
     {name : 'globalName',          type : 'string'},
     /**

@@ -15,7 +15,7 @@
 Ext.namespace('com.conjoon.groupware.email.options.folderMapping.data');
 
 /**
- * A store for managing IMAP folder mappings.
+ * A store for managing local/IMAP folder mappings.
  *
  * @class com.conjoon.groupware.email.options.folderMapping.data.Store
  * @singleton
@@ -31,7 +31,7 @@ com.conjoon.groupware.email.options.folderMapping.data.Store = function() {
             storeId : Ext.id(),
             proxy   : new com.conjoon.cudgets.data.DirectProxy({
                 api : {
-                    read : com.conjoon.groupware.provider.emailImapMapping.getMappings
+                    read : com.conjoon.groupware.provider.emailFolderMapping.getMappings
                 }
             }),
             autoLoad : false,

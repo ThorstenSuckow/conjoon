@@ -33,7 +33,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Conjoon_Modules_Groupware_Email_ImapMapping_Model_ImapMapping
+class Conjoon_Modules_Groupware_Email_FolderMapping_Model_ImapMapping
     extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable{
 
     /**
@@ -93,11 +93,12 @@ class Conjoon_Modules_Groupware_Email_ImapMapping_Model_ImapMapping
         return $rows;
     }
 
+
 // -------- interface Conjoon_BeanContext_Decoratable
 
     public function getRepresentedEntity()
     {
-        return 'Conjoon_Modules_Groupware_Email_ImapMapping';
+        return 'Conjoon_Modules_Groupware_Email_FolderMapping';
     }
 
     public function getDecoratableMethods()

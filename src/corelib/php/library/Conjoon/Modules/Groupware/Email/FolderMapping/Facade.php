@@ -18,22 +18,22 @@
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Conjoon_Modules_Groupware_Email_ImapMapping_Facade {
+class Conjoon_Modules_Groupware_Email_FolderMapping_Facade {
 
     /**
-     * @var Conjoon_Modules_Groupware_Email_ImapMapping_Facade
+     * @var Conjoon_Modules_Groupware_Email_FolderMapping_Facade
      */
     private static $_instance = null;
 
     /**
-     * @var Conjoon_Modules_Groupware_Email_ImapMapping_Model_ImapMapping
+     * @var Conjoon_Modules_Groupware_Email_FolderMapping_Model_ImapMapping
      */
     private $_imapMappingModel = null;
 
     /**
-     * @var Conjoon_BeanContext_Decorator $_imapMappingDecorator
+     * @var Conjoon_BeanContext_Decorator
      */
-    private $_imapMappingDecorator = null;
+    private $_folderMappingDecorator = null;
 
     /**
      * Enforce singleton.
@@ -68,14 +68,14 @@ class Conjoon_Modules_Groupware_Email_ImapMapping_Facade {
 // -------- public api
 
     /**
-     * Returns a list of Conjoon_Groupware_Email_ImapMapping_Dto's representing
+     * Returns a list of Conjoon_Groupware_Email_FolderMapping_Dto's representing
      * all available folder mappings.
      *
-     * @return array|Conjoon_Groupware_Email_ImapMapping_Dto
+     * @return array|Conjoon_Groupware_Email_FolderMapping_Dto
      *
      * @throws InvalidArgumentException
      */
-    public function getImapMappingsForUserId($userId)
+    public function getFolderMappingsForUserId($userId)
     {
         $userId = (int)$userId;
 
@@ -85,7 +85,7 @@ class Conjoon_Modules_Groupware_Email_ImapMapping_Facade {
             );
         }
 
-        $mappings = $this->_getImapMappingDecorator()->getImapMappingsForUserAsDto($userId);
+        $mappings = $this->_getFolderMappingDecorator()->getImapMappingsForUserAsDto($userId);
 
         return $mappings;
     }
@@ -96,21 +96,21 @@ class Conjoon_Modules_Groupware_Email_ImapMapping_Facade {
      *
      * @return Conjoon_BeanContext_Decorator
      */
-    private function _getImapMappingDecorator()
+    private function _getFolderMappingDecorator()
     {
-        if (!$this->_imapMappingDecorator) {
+        if (!$this->_folderMappingDecorator) {
 
             /**
              * @see Conjoon_BeanContext_Decorator
              */
             require_once 'Conjoon/BeanContext/Decorator.php';
 
-            $this->_imapMappingDecorator = new Conjoon_BeanContext_Decorator(
+            $this->_folderMappingDecorator = new Conjoon_BeanContext_Decorator(
                 $this->_getImapMappingModel()
             );
         }
 
-        return $this->_imapMappingDecorator;
+        return $this->_folderMappingDecorator;
     }
 
     /**
@@ -121,11 +121,11 @@ class Conjoon_Modules_Groupware_Email_ImapMapping_Facade {
     {
         if (!$this->_imapMappingModel) {
              /**
-             * @see Conjoon_Modules_Groupware_Email_ImapMapping_Model_ImapMapping
+             * @see Conjoon_Modules_Groupware_Email_FolderMapping_Model_ImapMapping
              */
-            require_once 'Conjoon/Modules/Groupware/Email/ImapMapping/Model/ImapMapping.php';
+            require_once 'Conjoon/Modules/Groupware/Email/FolderMapping/Model/ImapMapping.php';
 
-            $this->_imapMappingModel = new Conjoon_Modules_Groupware_Email_ImapMapping_Model_ImapMapping();
+            $this->_imapMappingModel = new Conjoon_Modules_Groupware_Email_FolderMapping_Model_ImapMapping();
         }
 
         return $this->_imapMappingModel;

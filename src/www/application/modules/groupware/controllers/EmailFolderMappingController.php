@@ -22,7 +22,7 @@ require_once 'Zend/Controller/Action.php';
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Groupware_EmailImapMappingController extends Zend_Controller_Action {
+class Groupware_EmailFolderMappingController extends Zend_Controller_Action {
 
     const CONTEXT_JSON = 'json';
 
@@ -35,7 +35,7 @@ class Groupware_EmailImapMappingController extends Zend_Controller_Action {
     {
         $conjoonContext = $this->_helper->conjoonContext();
 
-        $conjoonContext->addActionContext('get.mappings',    self::CONTEXT_JSON)
+        $conjoonContext->addActionContext('get.mappings', self::CONTEXT_JSON)
                        ->initContext();
     }
 
@@ -47,15 +47,15 @@ class Groupware_EmailImapMappingController extends Zend_Controller_Action {
     public function getMappingsAction()
     {
         /**
-         * @see Conjoon_Modules_Groupware_Email_ImapMapping_Facade
+         * @see Conjoon_Modules_Groupware_Email_FolderMapping_Facade
          */
-        require_once 'Conjoon/Modules/Groupware/Email/ImapMapping/Facade.php';
+        require_once 'Conjoon/Modules/Groupware/Email/FolderMapping/Facade.php';
 
-        $facade = Conjoon_Modules_Groupware_Email_ImapMapping_Facade::getInstance();
+        $facade = Conjoon_Modules_Groupware_Email_FolderMapping_Facade::getInstance();
 
         $userId = $this->_helper->registryAccess()->getUserId();
 
-        $mappings = $facade->getImapMappingsForUserId($userId);
+        $mappings = $facade->getFolderMappingsForUserId($userId);
 
         $this->view->success  = true;
         $this->view->error    = null;
