@@ -31,6 +31,11 @@ class Conjoon_Modules_Groupware_Email_FolderMapping_Facade {
     private $_imapMappingModel = null;
 
     /**
+     * @var Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+     */
+    private $_folderModel = null;
+
+    /**
      * @var Conjoon_BeanContext_Decorator
      */
     private $_folderMappingDecorator = null;
@@ -85,12 +90,56 @@ class Conjoon_Modules_Groupware_Email_FolderMapping_Facade {
             );
         }
 
-        $mappings = $this->_getFolderMappingDecorator()->getImapMappingsForUserAsDto($userId);
+        $imapMappings = $this->_getFolderMappingDecorator()
+                        ->getImapMappingsForUserAsDto($userId);
+
+        $localMappings = $this->_getFolderModel()->getLocalMappingsForUser(
+            $userId
+        );
+
+        $localMappings = $this->_convertLocalMappingsToFolderMappingDtos(
+            $localMappings
+        );
+
+        $mappings = array_merge($imapMappings, $localMappings);
 
         return $mappings;
     }
 
 // -------- api
+
+    /**
+     * Converts local mappings as retrieved from
+     * Conjoon_Modules_Groupware_Email_Folder_Model_Folder::getLocalMappingsForUser()
+     * to an array with Conjoon_Modules_Groupware_Email_FolderMapping_Dto.
+     *
+     * @param array $localmappings
+     *
+     * @return array|Conjoon_Modules_Groupware_Email_FolderMapping_Dto
+     */
+    private function _convertLocalMappingsToFolderMappingDtos(Array $localMappings)
+    {
+        /**
+         * @see Conjoon_Modules_Groupware_Email_FolderMapping_Dto
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/FolderMapping/Dto.php';
+
+        $dtos = array();
+
+        for ($i = 0, $len = count($localMappings); $i < $len; $i++) {
+            $lm =& $localMappings[$i];
+            $dto = new Conjoon_Modules_Groupware_Email_FolderMapping_Dto();
+            $dto->id                       = time()+$i;
+            $dto->rootFolderId             = $lm['parent_id'];
+            $dto->type                     = strtoupper($lm['type']);
+            $dto->globalName               = $lm['id'];
+            $dto->groupwareEmailAccountsId = $lm['groupware_email_accounts_id'];
+
+            $dtos[] = $dto;
+        }
+
+        return $dtos;
+    }
 
     /**
      *
@@ -129,6 +178,24 @@ class Conjoon_Modules_Groupware_Email_FolderMapping_Facade {
         }
 
         return $this->_imapMappingModel;
+    }
+
+    /**
+     *
+     * @return Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+     */
+    private function _getFolderModel()
+    {
+        if (!$this->_folderModel) {
+             /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+            $this->_folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+        }
+
+        return $this->_folderModel;
     }
 
 }
