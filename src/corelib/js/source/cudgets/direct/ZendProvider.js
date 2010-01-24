@@ -75,6 +75,66 @@ if (Ext.version != '3.1.0') {
  */
 com.conjoon.cudgets.direct.ZendProvider = Ext.extend(Ext.direct.RemotingProvider, {
 
+    timeoutCache : null,
+
+    constructor : function(config){
+
+        this.timeoutCache = {};
+
+        com.conjoon.cudgets.direct.ZendProvider.superclass.constructor.call(this, config);
+
+    },
+
+    clearTimeoutCache : function()
+    {
+        this.timeoutCache = [];
+    },
+
+    doSend : function(data)
+    {
+        var timeout = this.timeout;
+
+        var actions   = [];
+        var providers = [];
+
+        if(Ext.isArray(data)){
+            for(var i = 0, len = data.length; i < len; i++){
+                actions.push(data[i].action+"."+data[i].method);
+                providers.push(data[i].provider);
+            }
+        } else {
+            actions.push(data.action+"."+data.method);
+            providers.push(data.provider);
+        }
+
+        for (var i = 0, len = providers.length; i < len; i++) {
+            var provider = providers[i];
+
+            if (!this.timeoutCache[provider.url]) {
+                this.timeoutCache[provider.url] = {};
+
+                for (var actionName in provider.actions) {
+                    for (var i = 0, len = provider.actions[actionName].length; i < len; i++) {
+                        var pa = provider.actions[actionName][i];
+                        this.timeoutCache[provider.url][actionName+"."+pa['name']] =
+                            pa['timeout'] ? pa['timeout'] : 30000;
+                    }
+                }
+            }
+        }
+
+        var myTimeout = 0;
+        for (var i = 0, len = actions.length; i < len; i++) {
+            myTimeout += this.timeoutCache[provider.url][actions[i]];
+        }
+
+        this.timeout = myTimeout;
+
+        com.conjoon.cudgets.direct.ZendProvider.superclass.doSend.call(this, data);
+
+        this.timeout = timeout;
+    },
+
     /**
      * @cfg {String} format The additional parameter to append to the url for supporting
      * the context switch functionality of Zend Framework.
@@ -139,9 +199,17 @@ com.conjoon.cudgets.direct.ZendProvider = Ext.extend(Ext.direct.RemotingProvider
             return;
         }
 
-        return com.conjoon.cudgets.direct.ZendProvider.superclass.onData.call(
+        var maxRetries = this.maxRetries;
+        // dont retry if user is not authenticated
+        if (xhr.status === 401) {
+            this.maxRetries = 0;
+        }
+
+        com.conjoon.cudgets.direct.ZendProvider.superclass.onData.call(
             this, opt, success, xhr
         );
+
+        this.maxRetries = maxRetries;
     }
 
 });
