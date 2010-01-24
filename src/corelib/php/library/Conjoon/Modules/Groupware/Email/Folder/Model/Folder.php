@@ -1066,6 +1066,65 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Returns the standard mapping for folders. A standard mapping consists of
+     * a group of folders where each one is mapped to a specific type, i.e.
+     * of the type inbox, sent, draft, trash or outbox. This method does also
+     * consider "is_deleted" flagged accounts, since this information may still be
+     * needed for items which show up in "accounts_root" folder hierarchies.
+     *
+     * @param integer $userId The id of the user to fetch informations about
+     * his standard mappings for
+     *
+     * @return array an associative array with the following key/value pairs:
+     *     - parent_id: The id of the parent - folder (i.e. the folder with the
+     *       type "root" or "accounts_root" for the queried folder
+     *     - id: The id of the folder
+     *     - groupware_email_accounts_id: The id of teh account for which the folder
+     *       was created
+     *     - type: the type of the folder, i.e. inbox, outbox, sent, trash, draft
+     *
+     */
+    public function getLocalMappingsForUser($userId)
+    {
+        $userId    = (int)$userId;
+
+        if ($userId <= 0) {
+            return array();
+        }
+
+        $adapter = self::getDefaultAdapter();
+
+        $select = $adapter->select()
+                  ->from(self::getTablePrefix() . 'groupware_email_folders', array(
+                      'id', 'parent_id', 'type'
+                  ))
+                  ->join(
+                        array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
+                        array('groupware_email_accounts_id' => 'id'))
+                  ->join(
+                        array('folders_accounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
+                        'folders_accounts.groupware_email_folders_id=' . self::getTablePrefix() . 'groupware_email_folders.id '.
+                        ' AND ' .
+                        'folders_accounts.groupware_email_accounts_id=accounts.id',
+                        array())
+                  ->where('type = "inbox"')
+                  ->orWhere('type = "outbox"')
+                  ->orWhere('type = "draft"')
+                  ->orWhere('type = "sent"')
+                  ->orWhere('type = "trash"');
+
+        $rows = $adapter->fetchAll($select);
+
+        if (!$rows || empty($rows)) {
+            return array();
+        }
+
+        return $rows;
+    }
+
+
+    /**
      * Adds an individual folder hierarchy for an imap account.
      *
      * @param integer $accountId
