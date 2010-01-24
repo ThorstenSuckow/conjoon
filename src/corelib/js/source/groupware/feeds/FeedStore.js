@@ -27,7 +27,7 @@ com.conjoon.groupware.feeds.FeedStore = function() {
         return new Ext.data.GroupingStore({
             storeId     : Ext.id(),
             autoLoad    : false,
-            reader      : new Ext.data.JsonReader({
+            reader      : new com.conjoon.cudgets.data.JsonReader({
                               root: 'items',
                               id : 'id'
                           }, com.conjoon.groupware.feeds.ItemRecord),
@@ -37,8 +37,10 @@ com.conjoon.groupware.feeds.FeedStore = function() {
                 removeold : true,
                 timeout   : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
             },
-            proxy : new Ext.data.HttpProxy({
-                url      : './groupware/feeds.item/get.feed.items/format/json',
+            proxy   : new com.conjoon.cudgets.data.DirectProxy({
+                api : {
+                    read : com.conjoon.groupware.provider.feedsItem.getFeedItems
+                },
                 timeout  : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
             })
         });
@@ -80,6 +82,25 @@ com.conjoon.groupware.feeds.FeedStore = function() {
         },
 
         /**
+         * Updates the provider used for fetching feed items to re-assign the
+         * new timeout.
+         *
+         * @pram {Number} timeout
+         */
+        setProviderTimeout : function(timeout)
+        {
+            var prov = Ext.Direct.getProvider('com.conjoon.groupware.provider');
+            prov.clearTimeoutCache();
+            var actions = prov.actions.feedsItem;
+            for (var i = 0, len = actions.length; i < len; i++) {
+                if (actions[i].name === 'getFeedItems') {
+                    actions[i].timeout = timeout;
+                    break;
+                }
+            }
+        },
+
+        /**
          * Returns the singleton instance of the store.
          *
          * @return {Ext.data.GroupingStore}
@@ -88,10 +109,18 @@ com.conjoon.groupware.feeds.FeedStore = function() {
         {
             if (_store === null) {
                 _store = _getStore();
-                _store.on('beforeload', function() {
+                _store.on('beforeload', function(store, options) {
                     var timeout = com.conjoon.groupware.feeds.AccountStore.getTimeoutSum();
+
+                    options.params.timeout = timeout;
+
+                    if (this.baseParams.timeout == timeout) {
+                        return;
+                    }
+
                     this.baseParams.timeout = timeout;
-                    this.proxy.conn.timeout = timeout;
+                    com.conjoon.groupware.feeds.FeedStore.setProviderTimeout(timeout);
+
                 }, _store);
             }
 

@@ -38,7 +38,7 @@ class Groupware_FeedsItemController extends Zend_Controller_Action {
                        ->initContext();
 
         $this->_helper->filterRequestData()
-                      ->registerFilter('Groupware_FeedsItemController::get.feed.items')
+                      ->registerFilter('Groupware_FeedsItemController::get.feed.items', true)
                       ->registerFilter('Groupware_FeedsItemController::set.item.read')
                       ->registerFilter('Groupware_FeedsItemController::get.feed.content');
     }
