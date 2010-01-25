@@ -38,6 +38,8 @@ src/corelib/js/source/cudgets/settings/listener/DefaultContainerListener.js
 src/corelib/js/source/cudgets/settings/ui/DefaultDialogUi.js
 src/corelib/js/source/cudgets/settings/listener/DefaultDialogListener.js
 src/corelib/js/source/cudgets/data/StoreSync.js
+src/corelib/js/source/groupware/DefaultProvider.js
+src/corelib/js/source/groupware/Provider.js
 src/corelib/js/source/groupware/workbench/AboutDialog.js
 src/corelib/js/source/groupware/workbench/PanelDragSource.js
 src/corelib/js/source/groupware/workbench/Menubar.js
@@ -73,6 +75,17 @@ src/corelib/js/source/groupware/feeds/FeedPreview.js
 src/corelib/js/source/groupware/feeds/FeedGrid.js
 src/corelib/js/source/groupware/feeds/AddFeedDialog.js
 src/corelib/js/source/groupware/feeds/FeedOptionsDialog.js
+src/corelib/js/source/groupware/email/options/folderMapping/data/Store.js
+src/corelib/js/source/groupware/email/options/folderMapping/data/Record.js
+src/corelib/js/source/groupware/email/options/folderMapping/ui/DefaultOptionsContainerUi.js
+src/corelib/js/source/groupware/email/options/folderMapping/listener/DefaultOptionsContainerListener.js
+src/corelib/js/source/groupware/email/options/folderMapping/OptionsContainer.js
+src/corelib/js/source/groupware/email/options/folderMapping/ui/DefaultSettingsContainerUi.js
+src/corelib/js/source/groupware/email/options/folderMapping/listener/DefaultSettingsContainerListener.js
+src/corelib/js/source/groupware/email/options/folderMapping/SettingsContainer.js
+src/corelib/js/source/groupware/email/options/folderMapping/ui/DefaultDialogUi.js
+src/corelib/js/source/groupware/email/options/folderMapping/listener/DefaultDialogListener.js
+src/corelib/js/source/groupware/email/options/folderMapping/TreePanel.js
 src/corelib/js/source/groupware/email/options/folderMapping/Dialog.js
 src/corelib/js/source/groupware/email/options/FolderMappingBaton.js
 src/corelib/js/source/groupware/email/view/GridViewMenuPlugin.js
