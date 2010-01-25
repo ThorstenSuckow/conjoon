@@ -30,9 +30,9 @@ com.conjoon.groupware.email.options.folderMapping.data.Record = Ext.data.Record.
      */
     {name : 'rootFolderId',         type : 'int'},
     /**
-     * @type {Number} accountId The id of the related account
+     * @type {Number} groupwareEmailAccountsId The id of the related account
      */
-    {name : 'accountId',            type : 'int'},
+    {name : 'groupwareEmailAccountsId',  type : 'int'},
     /**
      * @type {String} globalName The global name of the folder mapped to "type",
      * or the id of this folder in case the related account is a POP3 account.
