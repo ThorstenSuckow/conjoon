@@ -43,7 +43,6 @@ class Conjoon_Modules_Groupware_Email_FolderMapping implements Conjoon_BeanConte
     private $groupwareEmailAccountsId;
     private $globalName;
     private $type;
-    private $name;
 
     /**
      * Constructor.
@@ -60,14 +59,12 @@ class Conjoon_Modules_Groupware_Email_FolderMapping implements Conjoon_BeanConte
     public function getGroupwareEmailAccountsId(){return $this->groupwareEmailAccountsId;}
     public function getGlobalName(){return $this->globalName;}
     public function getType(){return $this->type;}
-    public function getName(){return $this->name;}
 
     public function setId($id){$this->id = $id;}
     public function setRootFolderId($rootFolderId){$this->rootFolderId = $rootFolderId;}
     public function setGroupwareEmailAccountsId($groupwareEmailAccountsId){$this->groupwareEmailAccountsId = $groupwareEmailAccountsId;}
     public function setGlobalName($globalName){$this->globalName = $globalName;}
     public function setType($type){$this->type = $type;}
-    public function setName($name){$this->name = $name;}
 
 
 // -------- interface Serializable
@@ -136,8 +133,7 @@ class Conjoon_Modules_Groupware_Email_FolderMapping implements Conjoon_BeanConte
             'rootFolderId'             => $this->rootFolderId,
             'groupwareEmailAccountsId' => $this->groupwareEmailAccountsId,
             'globalName'               => $this->globalName,
-            'type'                     => $this->type,
-            'name'                     => $this->name
+            'type'                     => $this->type
         );
     }
 
@@ -154,7 +150,6 @@ class Conjoon_Modules_Groupware_Email_FolderMapping implements Conjoon_BeanConte
             'rootFolderId: '.$data['rootFolderId'].', '.
             'groupwareEmailAccountsId: '.$data['groupwareEmailAccountsId'].', '.
             'globalName: '.$data['globalName'].', '.
-            'type: '.$data['type'].', ';
-            'name: '.$data['name'].';';
+            'type: '.$data['type'].';';
     }
 }

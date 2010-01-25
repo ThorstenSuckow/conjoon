@@ -72,7 +72,7 @@ class Conjoon_Modules_Groupware_Email_FolderMapping_Model_ImapMapping
                  ->join(
                      array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
                      '`accounts`.`id` = `mappings`.`groupware_email_accounts_id`',
-                     array('name')
+                     array()
                  )
                  ->join(
                      array('folders' => self::getTablePrefix() . 'groupware_email_folders_accounts'),

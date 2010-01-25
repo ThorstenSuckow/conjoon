@@ -25,6 +25,5 @@ class Conjoon_Modules_Groupware_Email_FolderMapping_Dto extends Conjoon_Dto {
     public $groupwareEmailAccountsId;
     public $globalName;
     public $type;
-    public $name;
 
 }
