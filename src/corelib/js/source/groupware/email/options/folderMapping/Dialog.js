@@ -37,51 +37,52 @@ com.conjoon.groupware.email.options.folderMapping.Dialog = Ext.extend(Ext.Window
      */
 
     /**
-     * @type {Ext.Button} _okButton Will be available after the initComponent
+     * @type {Ext.Button} okButton Will be available after the initComponent
      * method was called.
      */
-    _okButton : null,
+    okButton : null,
 
     /**
-     * @type {Ext.Button} _cancelButton Will be available after the initComponent
+     * @type {Ext.Button} cancelButton Will be available after the initComponent
      * method was called.
      */
-    _cancelButton : null,
+    cancelButton : null,
 
     /**
-     * @type {Ext.Button} _applyButton Will be available after the initComponent
+     * @type {Ext.Button} applyButton Will be available after the initComponent
      * method was called.
      */
-    _applyButton : null,
+    applyButton : null,
 
     /**
-     * @type {com.conjoon.cudgets.ListView} _listView The listView for the
+     * @type {com.conjoon.cudgets.ListView} listView The listView for the
      * available accounts. Will be available after the initComponent method
      * was called.
      */
-    _listView : null,
+    listView : null,
+
+    /**
+     * @type {com.conjoon.groupware.email.options.folderMapping.ui.DefaultDialogUi} ui
+     */
+    ui : null,
+
+    /**
+     * @type {com.conjoon.groupware.email.options.folderMapping.SetingsContainer}
+     * settingsContainer
+     */
+    settingsContainer : null,
 
     /**
      * Inits this component.
      */
     initComponent : function()
     {
-        Ext.apply(this, {
-            title     : com.conjoon.Gettext.gettext("Folder Mappings"),
-            width     : 500,
-            height    : 400,
-            modal     : true,
-            layout    : 'border',
-            cls       : 'com-conjoon-groupware-email-options-folderMapping-dialog',
-            iconCls   : 'dialogIcon',
-            resizable : false,
-            items     : this._getItems(),
-            buttons   : [
-                this._getOkButton(),
-                this._getCancelButton(),
-                this._getApplyButton()
-            ]
-        });
+        if (!this.ui) {
+            this.ui = new com.conjoon.groupware.email.options.folderMapping
+                          .ui.DefaultDialogUi();
+        }
+
+        this.ui.init(this);
 
         com.conjoon.groupware.email.options.folderMapping.Dialog.superclass
         .initComponent.call(this);
@@ -89,108 +90,78 @@ com.conjoon.groupware.email.options.folderMapping.Dialog = Ext.extend(Ext.Window
 
 // -------- api
 
-
-// -------- builders
-
     /**
-     * Returns an array with the components for this dialog as required in
-     * "initComponent()". Override for custom implementation.
+     * Returns the settings containerfor this dialog.
      *
-     * @return {Array}
-     *
-     * @protected
+     * @return {com.conjoon.groupware.email.options.folderMapping.SetingsContainer}
      */
-    _getItems : function()
+    getSettingsContainer : function()
     {
-        return [
-            this._getListView(),
-            new Ext.Container({
-                region : 'center'
-            })
-        ];
+        if (!this.settingsContainer) {
+            this.settingsContainer = this.ui.buildSettingsContainer();
+        }
+
+        return this.settingsContainer;
     },
 
     /**
      * Returns the listView to show the available accounts.
-     * Override for custom implementation.
      *
      * @return {com.conjoon.cudgets.ListView}
-     *
-     * @protected
      */
-    _getListView : function()
+    getListView : function()
     {
-        var store = new Ext.data.Store();
-
-        var recs = com.conjoon.groupware.email.AccountStore.getInstance().getRange();
-
-        var rec = null;
-        for (var i = 0, len = recs.length; i < len; i++) {
-            rec = recs[i];
-            if (rec.get('protocol').toLowerCase() == 'imap') {
-                store.add(rec.copy());
-            }
+        if (!this.listView) {
+            this.listView = this.ui.buildListView();
         }
 
-        return new com.conjoon.cudgets.ListView({
-            region       : 'west',
-            width        : 200,
-            cls          : 'listView',
-            margins      : '5 5 5 5',
-            store        : store,
-            multiSelect  : false,
-            singleSelect : true,
-            emptyText    : com.conjoon.Gettext.gettext("No IMAP accounts available"),
-            hideHeaders  : true,
-            columns      : [{
-                dataIndex : 'name'
-            }]
-        });
+        return this.listView;
     },
 
     /**
-     * Returns an instance of {Ext.Button} This method is to be called once and may
-     * be overriden in subclasses to return custom implementations.
+     * Returns the "ok" button for this dialog.
      *
      * @return {Ext.Button}
-     *
-     * @protected
      */
-    _getOkButton : function()
+    getOkButton : function()
     {
-        return new Ext.Button({
-            text : com.conjoon.Gettext.gettext("OK")
-        });
+        if (!this.okButton) {
+            this.okButton = this.ui.buildOkButton();
+        }
+
+        return this.okButton;
     },
 
     /**
-     * Returns an instance of {Ext.Button} This method is to be called once and may
-     * be overriden in subclasses to return custom implementations.
+     * Returns the "cancel" button for this dialog.
      *
      * @return {Ext.Button}
      *
-     * @protected
+     * @see _getCancelButton
      */
-    _getCancelButton : function()
+    getCancelButton : function()
     {
-        return new Ext.Button({
-            text : com.conjoon.Gettext.gettext("Cancel")
-        });
+        if (!this.cancelButton) {
+            this.cancelButton = this.ui.buildCancelButton();
+        }
+
+        return this.cancelButton;
     },
 
     /**
-     * Returns an instance of {Ext.Button} This method is to be called once and may
-     * be overriden in subclasses to return custom implementations.
+     * Returns the "apply" button for this dialog.
      *
      * @return {Ext.Button}
      *
-     * @protected
+     * @see getApplyButton
      */
-    _getApplyButton : function()
+    getApplyButton : function()
     {
-        return new Ext.Button({
-            text : com.conjoon.Gettext.gettext("Apply")
-        });
+        if (!this._applyButton) {
+            this._applyButton = this.ui.buildApplyButton();
+        }
+
+        return this._applyButton;
     }
 
 });
