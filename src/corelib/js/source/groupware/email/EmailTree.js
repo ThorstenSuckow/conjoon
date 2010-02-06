@@ -893,7 +893,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
             node.attributes.idForPath    = idForPath;
             node.attributes.isSelectable = isSelectable;
 
-            node.getUI().setSelectable(true);
+            node.getUI().setSelectable(isSelectable);
 
             var tmp = this.nodeHash[oldId];
             this.nodeHash[newId] = tmp;
