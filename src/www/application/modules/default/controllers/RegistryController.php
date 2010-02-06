@@ -39,60 +39,21 @@ class RegistryController extends Zend_Controller_Action {
      * Responds with a list of registry entries that are valid
      * for an installation of this software.
      *
-     * @todo move to model, db, access user using registry
+     *
      */
     public function getEntriesAction()
     {
+        $userId = $this->_helper->registryAccess()->getUserId();
+
         /**
-         * @see Conjoon_Modules_Default_Registry
+         * @see Conjoon_Modules_Default_Registry_Facade
          */
-        require_once 'Conjoon/Modules/Default/Registry.php';
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
 
-        $this->view->entries = array(
-            array(
-                'key'   => '/service/youtube/chromeless/api-key',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/service/youtube/chromeless/api-key'
-                )
-            ),
-            array(
-                'key'   => '/client/system/sfx/enabled',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/client/system/sfx/enabled'
-                )
-            ),
-            array(
-                'key'   => '/client/environment/device',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/client/environment/device'
-                )
-            ),
-            array(
-                'key'   => '/server/php/max_execution_time',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/server/php/max_execution_time'
-                )
-            ),
-            array(
-                'key'   => '/base/conjoon/name',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/base/conjoon/name'
-                )
-            ),
-            array(
-                'key'   => '/base/conjoon/version',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/base/conjoon/version'
-                )
-            ),
-            array(
-                'key'   => '/base/conjoon/edition',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/base/conjoon/edition'
-                )
-            )
-        );
+        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                    ->getRegistryForUserId($userId);
 
+        $this->view->entries = $registry;
         $this->view->success = true;
         $this->view->error   = null;
     }
