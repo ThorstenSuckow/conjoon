@@ -36,5 +36,5 @@ Ext.Direct.addProvider({
             len  : 0
         }]
     },
-    namespace : 'com.conjoon.default.provider'
+    namespace : 'com.conjoon.defaultProvider'
 });

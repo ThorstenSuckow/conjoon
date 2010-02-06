@@ -63,6 +63,61 @@ class Conjoon_Modules_Default_Registry_Facade {
 // -------- public api
 
     /**
+     * Returns the value for the specified key and the user.
+     *
+     * @param string $key
+     * @param integer $userId
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getValueForKeyAndUserId($key, $userId)
+    {
+        $key = trim($key, '/');
+
+        $userId = (int)$userId;
+
+        if ($userId < 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for userId - was \"$userId\""
+            );
+        }
+
+        $keys     = explode('/', $key);
+        $valueKey = array_pop($keys);
+        $key      = implode('/', $keys);
+
+        $entries = $entries = $this->_getRegistryModel()->getRegistryForUser($userId);
+        $this->_mapApplicationConfiguration($entries);
+
+        $path = $this->_pathToIndex($key, $entries);
+
+        if (empty($path)) {
+            return null;
+        }
+
+        $values = $entries[$path[count($path)-1]]['values'];
+
+        for ($i = 0, $len = count($values); $i < $len; $i++) {
+            if ($values[$i]['name'] == $valueKey) {
+                switch ($values[$i]['type']) {
+                    case 'STRING':
+                        return (string)$values[$i]['value'];
+                    case 'BOOLEAN':
+                        return (bool)$values[$i]['value'];
+                    case 'INTEGER':
+                        return (int)$values[$i]['value'];
+
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
      * Returns the registry as an array of Conjoon_Modules_Default_Registry_Dto.
      *
      * @param integer $userId
@@ -76,14 +131,13 @@ class Conjoon_Modules_Default_Registry_Facade {
     {
         $userId = (int)$userId;
 
-        if ($userId <= 0) {
+        if ($userId < 0) {
             throw new InvalidArgumentException(
                 "Invalid argument for userId, got \"$userId\""
             );
         }
 
         $entries = $this->_getRegistryModel()->getRegistryForUser($userId);
-
         $this->_mapApplicationConfiguration($entries);
 
         return $this->_toDtos($entries);

@@ -18,7 +18,6 @@ Ext.onReady(function(){
     var groupware           = com.conjoon.groupware;
     var emailAccountStore   = groupware.email.AccountStore.getInstance();
     var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
-    var registryStore       = groupware.Registry.getStore();
     var mappingStore        = groupware.email.options.folderMapping.data.Store.getInstance();
     var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
     var reception           = groupware.Reception
@@ -134,7 +133,7 @@ Ext.onReady(function(){
     var _beforeLoad = function(store) {
 
         var msg = "";
-        var id  = store.storeId;
+        var id  = (store.storeId ? store.storeId : store);
 
         switch (store) {
             case twitterAccountStore:
@@ -151,8 +150,9 @@ Ext.onReady(function(){
                 msg = com.conjoon.Gettext.gettext("Loading Feed accounts...");
             break;
 
-            case registryStore:
+            case 'registry':
                 msg = com.conjoon.Gettext.gettext("Loading Registry...");
+                id  = 'registry';
             break;
 
             case feedsFeedStore:
@@ -195,7 +195,6 @@ Ext.onReady(function(){
     preLoader.addStore(emailAccountStore);
     preLoader.addStore(mappingStore);
     preLoader.addStore(feedsAccountStore);
-    preLoader.addStore(registryStore);
     preLoader.addStore(twitterAccountStore, {
         ignoreLoadException : true
     });
@@ -243,6 +242,16 @@ Ext.onReady(function(){
 
     reception.init(true);
     reception.onUserLoad(function(){
+        com.conjoon.groupware.Registry.beforeLoad({
+            fn : function() {
+                _beforeLoad('registry');
+            }
+        });
+        com.conjoon.groupware.Registry.load({
+            fn : function() {
+                _updateIndicator('registry');
+            }
+        });
         preLoader.load();
     });
 

@@ -46,9 +46,15 @@ class Conjoon_Controller_Action_Helper_RegistryAccess extends Zend_Controller_Ac
              */
             require_once 'Conjoon/Keys.php';
 
-            $this->_user = Zend_Registry::get(
+            $user = Zend_Registry::get(
                 Conjoon_Keys::REGISTRY_AUTH_OBJECT
-            )->getIdentity();
+            );
+
+            if (!$user) {
+                return null;
+            }
+
+            $this->_user = $user->getIdentity();
         }
 
         return $this->_user;
@@ -61,7 +67,13 @@ class Conjoon_Controller_Action_Helper_RegistryAccess extends Zend_Controller_Ac
      */
     public function getUserId()
     {
-        return $this->getUser()->getId();
+        $user = $this->getUser();
+
+        if (!$user) {
+            return 0;
+        }
+
+        return $user->getId();
     }
 
     /**

@@ -20,38 +20,119 @@ Ext.namespace('com.conjoon.groupware');
  */
 com.conjoon.groupware.Registry = function() {
 
-    var _store = null;
+    var isInitialized = false;
 
-    var _getStore = function()
+    var initCallbacks = [];
+
+    var beforeloadCallbacks = [];
+
+    var rootNode = new Ext.tree.TreeNode({
+        text : 'Registry'
+    });
+
+    var initRegistry = function(entries, parentId, parentNode)
     {
-        return new Ext.data.Store({
-            storeId     : Ext.id(),
-            autoLoad    : false,
-            reader      : new com.conjoon.cudgets.data.JsonReader({
-                              root: 'entries',
-                              id  : 'key'
-                          }, ['key', 'value']),
-            proxy   : new com.conjoon.cudgets.data.DirectProxy({
-                api : {
-                    read : com.conjoon.default.provider.registry.getEntries
+        if (!parentId) {
+            parentId   = 0;
+            parentNode = rootNode;
+        }
+
+        var entry = null;
+        var node  = null;
+        for (var i = 0, len = entries.length; i < len; i++) {
+            entry = entries[i];
+
+            if (entry['parentId'] == parentId) {
+
+                var values = entry['values'];
+                for (var a = 0, lena = values.length; a < lena; a++) {
+                    switch(values[a]['type']) {
+                        case 'STRING':
+                            values[a]['value'] = "" + values[a]['value'];
+                        break;
+
+                        case 'BOOLEAN':
+                            var val = values[a]['value'];
+                            switch (val) {
+                                case 'false':
+                                case 'FALSE':
+                                case '0':
+                                    val = false;
+                                break;
+                                case 'true':
+                                case 'TRUE':
+                                case '1':
+                                    val = true;
+                                break;
+                                default:
+                                    val = val ? true : false;
+                                break;
+                            }
+                            values[a]['value'] = val;
+                        break;
+
+                        case 'INTEGER':
+                            values[a]['value'] = parseInt(values[a]['value'], 10);
+                        break;
+                    }
                 }
-            })
-        });
+
+                node = new Ext.tree.TreeNode({
+                    text     : entry['key'],
+                    id       : entry['id'],
+                    parentId : entry['parentId'],
+                    values   : values
+                });
+                parentNode.appendChild(node);
+                initRegistry(entries, entry['id'], node);
+            }
+        }
+
     };
 
     return {
 
-        /**
-         *
-         * @return {Ext.data.Store}
-         */
-        getStore : function()
+        beforeLoad : function(callbackConfig)
         {
-            if (_store === null) {
-                _store = _getStore();
+            if (isInitialized) {
+                throw("Could not add \"beforeload\"-callback to Registry - Registry already initialized");
             }
 
-            return _store;
+            beforeloadCallbacks.push(callbackConfig);
+        },
+
+        load : function(callbackConfig)
+        {
+            if (isInitialized) {
+                throw("Could not load Registry since it was aready initialized");
+            }
+
+            isInitialized = true;
+
+            initCallbacks.push(callbackConfig);
+
+            var cb = null;
+            for (var i = 0, len = beforeloadCallbacks.length; i < len; i++) {
+                cb = beforeloadCallbacks[i];
+                cb['fn'].call(cb['scope'] ? cb['scope'] : window);
+            }
+
+            com.conjoon.defaultProvider.registry.getEntries(function(provider, response){
+                if (!response.status) {
+                    throw("Unexpected error. Could not load Registry.");
+                }
+
+                var entries = response.result.entries;
+
+                initRegistry(entries);
+
+                cb = null;
+                for (var i = 0, len = initCallbacks.length; i < len; i++) {
+                    cb = initCallbacks[i];
+                    cb['fn'].call(cb['scope'] ? cb['scope'] : window);
+                }
+
+            });
         },
 
         /**
@@ -62,9 +143,31 @@ com.conjoon.groupware.Registry = function() {
          */
         get : function(key)
         {
-            var rec = _store.getById(key);
+            key = key.indexOf('/') === 0 ? key.substr(1) : key;
+            var keys = key.split('/');
 
-            return (rec ? rec.get('value') : null);
+            var node = rootNode;
+            var key  = keys.shift();
+            while (true) {
+                node = node.findChild('text', key);
+                if (!node) {
+                    return null;
+                }
+                key = keys.shift();
+
+                if (keys.length == 0) {
+                    var values = node.attributes.values;
+                    if (values) {
+                        for (var i = 0, len = values.length; i < len; i++) {
+                            if (values[i]['name'] == key) {
+                                return values[i]['value'];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
     };
 

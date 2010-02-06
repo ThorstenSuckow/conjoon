@@ -277,16 +277,18 @@ class ReceptionController extends Zend_Controller_Action {
         }
 
         /**
-         * @see Conjoon_Modules_Default_Registry
+         * @see Conjoon_Modules_Default_Registry_Facade
          */
-        require_once 'Conjoon/Modules/Default/Registry.php';
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry::get(
-            '/base/conjoon/name'
-        );
+        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                             ->getValueForKeyAndUserId(
+                                 '/base/conjoon/name',
+                                 $this->_helper->registryAccess()->getUserId()
+                             );
 
-        $this->view->success    = false;
-        $this->view->error      = $error->getDto();
+        $this->view->success = false;
+        $this->view->error   = $error->getDto();
 
     }
 
