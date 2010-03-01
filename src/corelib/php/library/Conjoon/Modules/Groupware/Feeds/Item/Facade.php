@@ -113,12 +113,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_Facade {
             $import = Conjoon_Modules_Groupware_Feeds_ImportHelper::importFeedItems(
                 $uri, $requestTimeout, $useReaderCache, $useConditionalGet
             );
-        } catch (Exception $e) {
+        } catch (Zend_Http_Client_Exception $e) {
 
             Conjoon_Log::log(
                 get_class($this)."::importAndAddFeedItems could not import "
-                . "feed items from $uri: \"".get_class($e)."\" - \""
-                .$e->getMessage()."\"", Zend_Log::INFO
+                . "feed items: \"".$e->getMessage()."\"", Zend_Log::INFO
             );
 
             // return an empty array, do not delete cache for the account and do not
