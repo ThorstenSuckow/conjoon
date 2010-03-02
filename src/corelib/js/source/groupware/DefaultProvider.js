@@ -21,6 +21,9 @@ Ext.Direct.addProvider({
         registry : [{
             name : 'getEntries',
             len  : 0
+        }, {
+            name : 'setEntries',
+            len  : 1
         }],
         reception : [{
             name : 'getUser',
