@@ -24,6 +24,7 @@ vendor/ext-ux-wiz/src/Header.js
 vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
+src/corelib/js/source/cudgets/localCache/Api.js
 src/corelib/js/source/cudgets/data/JsonReader.js
 src/corelib/js/source/cudgets/data/DirectProxy.js
 src/corelib/js/source/cudgets/data/Store.js
@@ -40,6 +41,19 @@ src/corelib/js/source/cudgets/settings/listener/DefaultDialogListener.js
 src/corelib/js/source/cudgets/data/StoreSync.js
 src/corelib/js/source/groupware/DefaultProvider.js
 src/corelib/js/source/groupware/Provider.js
+src/corelib/js/source/groupware/localCache/Baton.js
+src/corelib/js/source/groupware/localCache/options/Dialog.js
+src/corelib/js/source/groupware/localCache/options/CachingContainer.js
+src/corelib/js/source/groupware/localCache/options/SettingsContainer.js
+src/corelib/js/source/groupware/localCache/options/IntroductionContainer.js
+src/corelib/js/source/groupware/localCache/options/ui/DefaultOptionsDialogUi.js
+src/corelib/js/source/groupware/localCache/options/ui/DefaultCachingContainerUi.js
+src/corelib/js/source/groupware/localCache/options/ui/DefaultSettingsContainerUi.js
+src/corelib/js/source/groupware/localCache/options/ui/DefaultIntroductionContainerUi.js
+src/corelib/js/source/groupware/localCache/options/listener/DefaultOptionsDialogListener.js
+src/corelib/js/source/groupware/localCache/options/listener/DefaultCachingContainerListener.js
+src/corelib/js/source/groupware/localCache/options/listener/DefaultSettingsContainerListener.js
+src/corelib/js/source/groupware/localCache/options/listener/DefaultIntroductionContainerListener.js
 src/corelib/js/source/groupware/workbench/AboutDialog.js
 src/corelib/js/source/groupware/workbench/PanelDragSource.js
 src/corelib/js/source/groupware/workbench/Menubar.js
