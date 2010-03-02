@@ -231,7 +231,7 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            com.conjoon.default.provider.reception.logout(function(provider, response) {
+            com.conjoon.defaultProvider.reception.logout(function(provider, response) {
                 if (!response.status) {
                     _onLogoutFailure(response);
                 } else {
@@ -258,7 +258,7 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            com.conjoon.default.provider.reception.logout(function(provider, response) {
+            com.conjoon.defaultProvider.reception.logout(function(provider, response) {
                 if (!response.status) {
                     _onLogoutFailure(response);
                 } else {
@@ -450,7 +450,7 @@ com.conjoon.groupware.Reception = function() {
      */
     var _pingServer = function()
     {
-        com.conjoon.default.provider.reception.ping(function(provider, response) {
+        com.conjoon.defaultProvider.reception.ping(function(provider, response) {
             if (!response.status) {
                 com.conjoon.groupware.ResponseInspector.handleFailure(response);
             }
@@ -700,7 +700,7 @@ com.conjoon.groupware.Reception = function() {
 
             _onBeforeUserLoad();
 
-            com.conjoon.default.provider.reception.getUser(function(provider, response) {
+            com.conjoon.defaultProvider.reception.getUser(function(provider, response) {
                 if (!response.status) {
                     _onUserLoadFailure(response);
                 } else {
@@ -754,7 +754,7 @@ com.conjoon.groupware.Reception = function() {
             );
 
             var me = this;
-            com.conjoon.default.provider.reception.lock(function(provider, response) {
+            com.conjoon.defaultProvider.reception.lock(function(provider, response) {
                 if (!response.status) {
                     com.conjoon.SystemMessageManager.hide();
                     com.conjoon.groupware.ResponseInspector.handleFailure(response);
