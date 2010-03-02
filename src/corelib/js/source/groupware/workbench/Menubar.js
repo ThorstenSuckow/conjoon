@@ -274,11 +274,16 @@ com.conjoon.groupware.workbench.Menubar = function(){
                     , _getEmailMenu(), {
                         text : com.conjoon.Gettext.gettext("Extras"),
                         menu : [{
-                              text    : com.conjoon.Gettext.gettext("Feeds..."),
-                              handler : function() {
-                                  var dialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
-                                  dialog.show();
-                              }
+                            text    : com.conjoon.Gettext.gettext("Feeds..."),
+                            handler : function() {
+                                var dialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
+                                dialog.show();
+                            }
+                        }, '-', {
+                            text : com.conjoon.Gettext.gettext("Local cache"),
+                            handler : function() {
+                                com.conjoon.groupware.localCache.Baton.showDialog();
+                            }
                         }]
                     }, {
                         text : com.conjoon.Gettext.gettext("?"),
