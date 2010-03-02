@@ -262,7 +262,7 @@ com.conjoon.groupware.ResponseInspector = function() {
          * Returns the json decoded response if there was a property called
          * "success" which was set to "true", otherwise null.
          *
-         * @param {String|XmlHttpResponse}
+         * @param {String|XmlHttpResponse|Object}
          *
          * @return {Object}
          *
@@ -270,6 +270,16 @@ com.conjoon.groupware.ResponseInspector = function() {
         isSuccess : function(response)
         {
             var resp = null;
+
+            // take Ex.Direct respons into account
+            if (response.result && response.result.success) {
+                var stat = response.result.success;
+                return stat === true
+                       ? response.result
+                       : stat === false
+                         ? false
+                         : null;
+            }
 
             try {
                 if (response.responseText) {
@@ -301,6 +311,8 @@ com.conjoon.groupware.ResponseInspector = function() {
                        ? response.xhr
                         : response.message
                         ? response.message
+                         : response.result
+                         ? response.result
                        : response;
 
             var resp = response;
