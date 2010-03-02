@@ -64,43 +64,141 @@ class Conjoon_Modules_Default_Registry_Model_RegistryValues extends Conjoon_Db_T
 
         $adapter = self::getDefaultAdapter();
 
-        $select = $adapter->select()
+        /**
+         * @todo put logic in one query
+         */
+
+        $select1 = $adapter->select()
                     ->from(
                         array('registry_values' => self::getTablePrefix() . 'registry_values'),
                         array('registry_id', 'name', 'value', 'type', 'is_editable')
                     )
-                    ->where('registry_values.user_id='.$userId)
-                    ->group('name')
+                    ->where('registry_values.user_id=0')
                     ->order('name');
 
         if ($userId != 0) {
-            $select = $select
-                      ->join(
-                          array('rv' => self::getTablePrefix() . 'registry_values'),
-                          'rv.name!=registry_values.name',
-                          array()
-                      )
-                      ->orWhere('rv.user_id = 0');
+            $select2 = $adapter->select()
+                        ->from(
+                            array('registry_values' => self::getTablePrefix() . 'registry_values'),
+                            array('registry_id', 'name', 'value', 'type', 'is_editable')
+                        )
+                        ->where('registry_values.user_id='.$userId)
+                        ->group('name')
+                        ->order('name');
         }
 
+        $rows2 = array();
+        $rows1 = $adapter->fetchAll($select1);
 
-        $rows = $adapter->fetchAll($select);
+        if ($userId != 0) {
+            $rows2 = $adapter->fetchAll($select2);
+        }
 
         $values = array();
-        for ($i = 0, $len = count($rows); $i < $len; $i++) {
-            if (!isset($values[$rows[$i]['registry_id']])) {
-                $values[$rows[$i]['registry_id']] = array();
+        $chk    = array();
+        for ($i = 0, $len = count($rows1); $i < $len; $i++) {
+            if (!isset($values[$rows1[$i]['registry_id']])) {
+                $values[$rows1[$i]['registry_id']] = array();
             }
 
-            $values[$rows[$i]['registry_id']][] = array(
-                'name'        => $rows[$i]['name'],
-                'value'       => $rows[$i]['value'],
-                'type'        => $rows[$i]['type'],
-                'is_editable' => $rows[$i]['is_editable']
+            $u = count($values[$rows1[$i]['registry_id']]);
+
+            if (!isset($chk[$rows1[$i]['registry_id']])) {
+                $chk[$rows1[$i]['registry_id']] = array();
+            }
+
+            $chk[$rows1[$i]['registry_id']][$rows1[$i]['name']] = $u;
+
+            $values[$rows1[$i]['registry_id']][$u] = array(
+                'name'        => $rows1[$i]['name'],
+                'value'       => $rows1[$i]['value'],
+                'type'        => $rows1[$i]['type'],
+                'is_editable' => $rows1[$i]['is_editable']
             );
         }
 
+        if ($userId != 0) {
+            for ($i = 0, $len = count($rows2); $i < $len; $i++) {
+
+                if (isset($chk[$rows2[$i]['registry_id']][$rows2[$i]['name']])) {
+                    $u = $chk[$rows2[$i]['registry_id']][$rows2[$i]['name']];
+                    $values[$rows2[$i]['registry_id']][$u]['value'] = $rows2[$i]['value'];
+                } else {
+                    $values[$rows2[$i]['registry_id']][] = array(
+                        'name'        => $rows2[$i]['name'],
+                        'value'       => $rows2[$i]['value'],
+                        'type'        => $rows2[$i]['type'],
+                        'is_editable' => $rows2[$i]['is_editable']
+                    );
+                }
+            }
+        }
+
         return $values;
+    }
+
+    /**
+     * Updates the given value name for the specified registry id for tje
+     * specified user with the specified value.
+     * Note: no casting for values will happen for the specified $type param, so
+     * make sure casting happened before.
+     *
+     * @param integer $registryId
+     * @param string  $valueName
+     * @param mixed   $value
+     * @param string  $type
+     * @param integer $userId
+     *
+     * @return boolean true if the value was updated, otherwise false
+     *
+     * @throws InvalidArgumentException If any of the passed arguments are invalid
+     */
+    public function updateValueForUser($registryId, $valueName, $value, $type, $userId)
+    {
+        $userId = (int)$userId;
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for userId: $userId"
+            );
+        }
+        $registryId = (int)$registryId;
+        if ($registryId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for registryId: $registryId"
+            );
+        }
+        $valueName = trim((string)$valueName);
+        if ($valueName == "") {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for valueName - valueName was empty"
+            );
+        }
+        $type = strtoupper(trim((string)$type));
+        if ($type != "BOOLEAN" && $type != "STRING" && $type != "INTEGER") {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for type: $type"
+            );
+        }
+
+
+
+        $where = "registry_id = $registryId AND user_id = $userId AND name ='$valueName'";
+        $this->delete($where);
+
+        $succ = $this->insert(array(
+            'registry_id' => $registryId,
+            'user_id'     => $userId,
+            'name'        => $valueName,
+            'type'        => $type,
+            'value'       => $value
+
+        ));
+
+        if (!$succ) {
+            return false;
+        }
+
+        return true;
     }
 
 }

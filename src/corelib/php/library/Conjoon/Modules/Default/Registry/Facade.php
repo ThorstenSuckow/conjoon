@@ -31,6 +31,16 @@ class Conjoon_Modules_Default_Registry_Facade {
     private $_registryModel = null;
 
     /**
+     * @var Conjoon_Modules_Default_Registry_Model_RegistryValues
+     */
+    private $_registryValuesModel = null;
+
+    /**
+     * @var Conjoon_Modules_Default_Registry_Filter_Registry
+     */
+    private $_updateEntriesFilter = null;
+
+    /**
      * Enforce singleton.
      *
      */
@@ -63,6 +73,107 @@ class Conjoon_Modules_Default_Registry_Facade {
 // -------- public api
 
     /**
+     * Sets the specified keys in $data to theri mapped values.
+     *
+     * @param array $data A numeric array with associative entries, i.e.
+     *    [[ 'key' => '/somekey/anotherkey', 'value' => 1]]
+     * @param integer $userId The id of the user for which the entries should
+     * be set. If those entries do not already exist for the specified
+     * userId, this entries will be created.
+     *
+     * @return array Returns a list with all updated keys
+     *
+     * @throws InvalidArgumentException throws an InvalidArgumentException if
+     * the specified $userId was noit valid
+     * or Conjoon_Filter_Exception if the submitted data could not be sanitized
+     */
+    public function setEntriesFromDataForUserId(Array $data, $userId)
+    {
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for userId - was \"$userId\""
+            );
+        }
+
+        $filter = $this->_getUpdateEntriesFilter();
+
+        $sanitized = array();
+
+        try {
+            for ($i = 0, $len = count($data); $i < $len; $i++) {
+                $filter->setData($data[$i]);
+                $sanitized[] = $filter->getProcessedData();
+            }
+        } catch (Zend_Filter_Exception $e) {
+            /**
+            * @see Conjoon_Error
+            */
+            require_once 'Conjoon/Error.php';
+
+            $error = Conjoon_Error::fromFilter($filter, $e);
+
+            /**
+            * @see Conjoon_Filter_Exception
+            */
+            require_once 'Conjoon/Filter/Exception.php';
+
+            throw new Conjoon_Filter_Exception($error->getMessage());
+        }
+
+        $registry = $this->getRegistryForUserId($userId, false);
+
+        $updated = array();
+        for ($i = 0, $len = count($sanitized); $i < $len; $i++) {
+            $key   = $sanitized[$i]['key'];
+            $value = $sanitized[$i]['value'];
+
+            $keys      = explode('/', $key);
+            $valueName = array_pop($keys);
+            $keys      = implode('/', $keys);
+            $path      = $this->_pathToIndex($keys, $registry);
+
+            if (!empty($path)) {
+                $parent      = $registry[$path[count($path)-1]];
+                $valueConfig = $parent['values'];
+                $registryId  = $parent['id'];
+
+                for ($a = 0, $lena = count($valueConfig); $a < $lena; $a++) {
+                    if ($valueConfig[$a]['is_editable']
+                        && $valueConfig[$a]['name'] == $valueName) {
+
+                        $type = $valueConfig[$a]['type'];
+
+                        switch ($type) {
+                            case 'STRING':
+                                $value = (string)$value;
+                            break;
+
+                            case 'BOOLEAN':
+                                $value = (int)(bool)$value;
+                            break;
+
+                            case 'INTEGER':
+                                $value = (int)$value;
+                            break;
+                        }
+
+                        $succ = $this->_getRegistryValuesModel()->updateValueForUser(
+                            $registryId, $valueName, $value, $type, $userId
+                        );
+
+                        if ($succ) {
+                            $updated[] = $key;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $updated;
+    }
+
+
+    /**
      * Returns the value for the specified key and the user.
      *
      * @param string $key
@@ -88,7 +199,7 @@ class Conjoon_Modules_Default_Registry_Facade {
         $valueKey = array_pop($keys);
         $key      = implode('/', $keys);
 
-        $entries = $entries = $this->_getRegistryModel()->getRegistryForUser($userId);
+        $entries = $this->_getRegistryModel()->getRegistryForUser($userId);
         $this->_mapApplicationConfiguration($entries);
 
         $path = $this->_pathToIndex($key, $entries);
@@ -116,7 +227,6 @@ class Conjoon_Modules_Default_Registry_Facade {
         return null;
     }
 
-
     /**
      * Returns the registry as an array of Conjoon_Modules_Default_Registry_Dto.
      *
@@ -127,7 +237,7 @@ class Conjoon_Modules_Default_Registry_Facade {
      *
      * @throws InvalidArgumentException
      */
-    public function getRegistryForUserId($userId)
+    public function getRegistryForUserId($userId, $toDto = true)
     {
         $userId = (int)$userId;
 
@@ -138,9 +248,10 @@ class Conjoon_Modules_Default_Registry_Facade {
         }
 
         $entries = $this->_getRegistryModel()->getRegistryForUser($userId);
+
         $this->_mapApplicationConfiguration($entries);
 
-        return $this->_toDtos($entries);
+        return $toDto ? $this->_toDtos($entries) : $entries;
     }
 
 // -------- api
@@ -276,7 +387,7 @@ class Conjoon_Modules_Default_Registry_Facade {
                 if ($key === null) {
                     break;
                 }
-                $i = 0;
+                $i = -1;
             }
         }
 
@@ -349,5 +460,48 @@ class Conjoon_Modules_Default_Registry_Facade {
 
         return $this->_registryModel;
     }
+
+    /**
+     *
+     * @return Conjoon_Modules_Default_Registry_Model_RegistryValues
+     */
+    private function _getRegistryValuesModel()
+    {
+        if (!$this->_registryValuesModel) {
+             /**
+             * @see Conjoon_Modules_Default_Registry_Model_RegistryValues
+             */
+            require_once 'Conjoon/Modules/Default/Registry/Model/RegistryValues.php';
+
+            $this->_registryValuesModel = new Conjoon_Modules_Default_Registry_Model_RegistryValues();
+        }
+
+        return $this->_registryValuesModel;
+    }
+
+    /**
+     *
+     * @see Conjoon_Modules_Default_Registry_Filter_Registry
+     */
+    private function _getUpdateEntriesFilter()
+    {
+        if (!$this->_updateEntriesFilter) {
+
+            /**
+             * @see Conjoon_Modules_Default_Registry_Filter_Registry
+             */
+            require_once 'Conjoon/Modules/Default/Registry/Filter/Registry.php';
+
+            $this->_updateEntriesFilter = new Conjoon_Modules_Default_Registry_Filter_Registry(
+                array(),
+                Conjoon_Filter_Input::CONTEXT_UPDATE
+            );
+        }
+
+        $this->_updateEntriesFilter->setData(array());
+        return $this->_updateEntriesFilter;
+
+    }
+
 
 }
