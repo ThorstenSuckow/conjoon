@@ -164,6 +164,8 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
     /**
      * Saves the configuration.
      *
+     * @return {Boolean} true if there were values which have to be saved
+     * server-side, otherwise false
      */
     saveSettings : function()
     {
@@ -189,7 +191,7 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
             cachingContainer.getCacheAllCheckbox().setValue(true);
         }
 
-        com.conjoon.groupware.Registry.setValues({
+        return com.conjoon.groupware.Registry.setValues({
             values: values,
             beforewrite : function(values) {
                 this.fireEvent('beforeset', this, values);

@@ -36,6 +36,13 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     dialog : null,
 
+    /**
+     * @type {Boolean} closeAfterSave Set to true if the dialog should be closed
+     * after settings have been saved successfully on the server, otherwise
+     * false
+     */
+    closeAfterSave : false,
+
 // -------- api
 
     /**
@@ -60,6 +67,10 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
 
         this.dialog.mon(
             this.dialog.getApplyButton(), 'click', this.onApplyButtonClick, this
+        );
+
+        this.dialog.mon(
+            this.dialog.getOkButton(), 'click', this.onOkButtonClick, this
         );
 
         this.dialog.mon(
@@ -106,6 +117,11 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     onSettingsContainerSetSuccess : function()
     {
+        if (this.closeAfterSave) {
+            this.dialog.close();
+            return;
+        }
+
         this.dialog.setControlsDisabled(false, true);
     },
 
@@ -119,6 +135,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     onSettingsContainerSetFailure : function()
     {
+        this.closeAfterSave = false;
         this.dialog.setControlsDisabled(false, true);
     },
 
@@ -170,6 +187,19 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
         this.dialog.getSettingsContainer().getCachingContainer()
             .getFileSettingsForm().installStartEditListener();
         this.dialog.saveSettings();
+    },
+
+    /**
+     * Listener for the dialog's "apply"-button "click" event.
+     *
+     * @param {Ext.Button} button
+     */
+    onOkButtonClick : function(button)
+    {
+        this.closeAfterSave = true;
+        if (!this.dialog.saveSettings()) {
+            this.dialog.close();
+        }
     },
 
     /**

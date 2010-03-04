@@ -157,10 +157,12 @@ com.conjoon.groupware.localCache.options.Dialog = Ext.extend(Ext.Window, {
     /**
      * Tells the settinsgContainer to save the settings.
      *
+     * @return {Boolean} true if there are values which have to be saved
+     * server-seide, otherwise false
      */
     saveSettings : function()
     {
-        this.getSettingsContainer().saveSettings();
+        return this.getSettingsContainer().saveSettings();
     }
 
 });
