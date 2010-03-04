@@ -67,7 +67,7 @@ class Conjoon_Modules_Default_Registry_Filter_Registry extends Conjoon_Filter_In
             'allowEmpty' => false
          ),
          'value' => array(
-            'allowEmpty' => false
+            'allowEmpty' => true
          )
     );
 
