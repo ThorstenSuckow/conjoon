@@ -528,6 +528,9 @@ com.conjoon.groupware.Registry = function() {
          * original value before they were changed automatically.
          * - scope: the scope in which the functions should be called
          *
+         * @return {Boolean} true if there are values changed which nvokes a server
+         * request, otherwise false
+         *
          * @throws {Exception} throws an exception if the key is not editable,
          * or if the key was not found.
          */
@@ -631,8 +634,11 @@ com.conjoon.groupware.Registry = function() {
                         }
                     }
                 );
+
+                return true;
             }
 
+            return false;
         },
 
         /**
