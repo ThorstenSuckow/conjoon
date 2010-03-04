@@ -184,7 +184,7 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
 
             allChecked = !checked ? false : allChecked;
         }
-console.log(allChecked);
+
         if (allChecked) {
             cachingContainer.getCacheAllCheckbox().setValue(true);
         }

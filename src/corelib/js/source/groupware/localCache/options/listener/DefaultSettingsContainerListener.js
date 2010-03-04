@@ -74,8 +74,6 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
      */
     onSetSuccess : function(container, response, updated, failed)
     {
-        console.log("SUCCESS:");
-        console.log(updated);
         this.container.setRequestPending(false);
         this.container.getCachingContainer().getFileSettingsForm().installStartEditListener();
     },
