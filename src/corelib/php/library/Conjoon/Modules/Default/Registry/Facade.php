@@ -81,7 +81,9 @@ class Conjoon_Modules_Default_Registry_Facade {
      * be set. If those entries do not already exist for the specified
      * userId, this entries will be created.
      *
-     * @return array Returns a list with all updated keys
+     * @return array Returns an associative array with the following keys:
+     * - updated: A list of keys that were actually updated
+     * - failed: list with keys that could not be updated
      *
      * @throws InvalidArgumentException throws an InvalidArgumentException if
      * the specified $userId was noit valid
@@ -123,6 +125,12 @@ class Conjoon_Modules_Default_Registry_Facade {
         $registry = $this->getRegistryForUserId($userId, false);
 
         $updated = array();
+        $failed  = array();
+
+        for ($i = 0, $len = count($sanitized); $i < $len; $i++) {
+            $failed[$sanitized[$i]['key']] = true;
+        }
+
         for ($i = 0, $len = count($sanitized); $i < $len; $i++) {
             $key   = $sanitized[$i]['key'];
             $value = $sanitized[$i]['value'];
@@ -163,13 +171,17 @@ class Conjoon_Modules_Default_Registry_Facade {
 
                         if ($succ) {
                             $updated[] = $key;
+                            unset($failed[$key]);
                         }
                     }
                 }
             }
         }
 
-        return $updated;
+        return array(
+            'updated' => $updated,
+            'failed'  => array_keys($failed)
+        );
     }
 
 

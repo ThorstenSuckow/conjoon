@@ -84,17 +84,10 @@ class RegistryController extends Zend_Controller_Action {
 
         $result = $facade->setEntriesFromDataForUserId($data, $userId);
 
-        var_dump($result);
-
-
-        require_once 'Conjoon/Error/Factory.php';
-
         $this->view->success = true;
-        $this->view->error   = null;/*Conjoon_Error_Factory::createError(
-            "Error"
-        )->getDto();*/
-        $this->view->updated = array();
-        $this->view->failed  = array();
+        $this->view->error   = null;
+        $this->view->updated = $result['updated'];
+        $this->view->failed  = $result['failed'];
     }
 
 }
