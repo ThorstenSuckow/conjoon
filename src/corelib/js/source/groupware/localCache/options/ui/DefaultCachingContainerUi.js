@@ -113,7 +113,7 @@ com.conjoon.groupware.localCache.options.ui.DefaultCachingContainerUi.prototype 
             cls                  : 'com-conjoon-margin-b-20',
             items                : [
                 new com.conjoon.groupware.util.FormIntro({
-                    cls    : 'com-conjoon-margin-b-10',
+                    cls       : 'com-conjoon-margin-b-10',
                     labelText : com.conjoon.Gettext.gettext("File Settings"),
                     text      : com.conjoon.Gettext.gettext("Choose the filetypes that should get cached locally.")
                 }),
@@ -152,11 +152,7 @@ com.conjoon.groupware.localCache.options.ui.DefaultCachingContainerUi.prototype 
                         html : com.conjoon.Gettext.gettext("Clear entire cache")
                     }
                 }),
-                new Ext.Button({
-                    text     : com.conjoon.Gettext.gettext("Clear cache"),
-                    cls      : 'clearCacheButton',
-                    minWidth : 115
-                }),
+                this.container.getClearCacheButton(),
                 new com.conjoon.groupware.util.Clear(),
                 this.container.getRebuildCacheCheckbox(),
                 this.container.getDisableCacheCheckbox(),
@@ -287,6 +283,20 @@ com.conjoon.groupware.localCache.options.ui.DefaultCachingContainerUi.prototype 
             boxLabel  : com.conjoon.Gettext.gettext("Flash"),
             itemCls   : 'com-conjoon-float-left com-conjoon-width-125',
             hideLabel : true
+        });
+    },
+
+    /**
+     * Builds the button for clearing the cache.
+     *
+     * @return {Ext.Button}
+     */
+    buildClearCacheButton : function()
+    {
+        return new Ext.Button({
+            text     : com.conjoon.Gettext.gettext("Clear cache"),
+            cls      : 'clearCacheButton',
+            minWidth : 115
         });
     }
 

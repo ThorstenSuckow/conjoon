@@ -51,6 +51,18 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
      */
     requestPending : false,
 
+    /**
+     * @type {mixed} type "constant" for the setRequestPendingMethod. Used when
+     * caching container's request is send to clear the cache
+     */
+    REQUEST_CLEAR : 1,
+
+    /**
+     * @type {mixed} type "constant" for the setRequestPendingMethod. Used when
+     * this container's request is send to set teh caching options
+     */
+    REQUEST_SET : 2,
+
 // -------- Ext.Window
 
     /**
@@ -150,12 +162,19 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
     /**
      * Masks this component an sets the requestPending
      *
+     * @param {Boolean} isPending
+     * @param {mixed} type
      */
-    setRequestPending : function(isPending)
+    setRequestPending : function(isPending, type)
     {
         this.requestPending = isPending;
         if (isPending) {
-            this.ui.maskContainer(com.conjoon.Gettext.gettext("Saving..."));
+
+            if (type === this.REQUEST_SET) {
+                this.ui.maskContainer(com.conjoon.Gettext.gettext("Saving..."));
+            } else if (type === this.REQUEST_CLEAR) {
+                this.ui.maskContainer(com.conjoon.Gettext.gettext("Clearing..."));
+            }
         } else {
             this.ui.unmaskContainer();
         }
@@ -175,14 +194,19 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
         var enableAll        = cachingContainer.getCacheAllCheckbox().getValue();
         var allChecked       = true;
         var checked          = null;
+        var Registry         = com.conjoon.groupware.Registry;
+
         for (var i in mapping) {
             checked = (enableAll ? true : mapping[i].getValue());
             if (enableAll && !mapping[i].getValue()) {
                 mapping[i].setValue(true);
             }
-            values.push(
-                {key : i, value : checked}
-            );
+
+            if (Registry.get(i) != checked) {
+                values.push(
+                    {key : i, value : checked}
+                );
+            }
 
             allChecked = !checked ? false : allChecked;
         }
@@ -191,7 +215,14 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
             cachingContainer.getCacheAllCheckbox().setValue(true);
         }
 
-        return com.conjoon.groupware.Registry.setValues({
+        if (values.length > 0) {
+            values.push({
+                key   : 'client/applicationCache/last-changed',
+                value : Math.round((new Date()).getTime()/1000)
+            });
+        }
+
+        return Registry.setValues({
             values: values,
             beforewrite : function(values) {
                 this.fireEvent('beforeset', this, values);

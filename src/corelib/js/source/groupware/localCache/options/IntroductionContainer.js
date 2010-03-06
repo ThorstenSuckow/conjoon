@@ -94,9 +94,7 @@ com.conjoon.groupware.localCache.options.IntroductionContainer = Ext.extend(Ext.
     {
         if (!this.availableComponent) {
 
-            var type = com.conjoon.cudgets.localCache.Api.isApplicationCacheAvailable()
-                       ? com.conjoon.cudgets.localCache.Api.type.APPLICATION_CACHE
-                       : com.conjoon.cudgets.localCache.Api.type.NONE;
+            var type = com.conjoon.cudgets.localCache.Api.getCacheType();
 
             this.availableComponent = this.ui.buildAvailableComponent(type);
         }

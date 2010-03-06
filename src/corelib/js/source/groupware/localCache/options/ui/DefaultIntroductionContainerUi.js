@@ -122,8 +122,8 @@ com.conjoon.groupware.localCache.options.ui.DefaultIntroductionContainerUi.proto
      * available.
      *
      * @param {Mixed} type The type of application cache that is available,
-     * can be either of com.conjoon.cudgets.localCache.Api.type.APPLICATION_CACHE
-     * or com.conjoon.cudgets.localCache.Api.type.NONE
+     * can be com.conjoon.cudgets.localCache.Api.type.NONE or any other type as
+     * returned by the localCache API
      *
      * @return {Ext.BoxComponent}
      */
@@ -133,13 +133,17 @@ com.conjoon.groupware.localCache.options.ui.DefaultIntroductionContainerUi.proto
         var html = "";
 
         switch (type) {
-            case com.conjoon.cudgets.localCache.Api.type.APPLICATION_CACHE:
-                html = com.conjoon.Gettext.gettext("The browser's native Application Cache based on the HTML 5 specifications is available.");
+
+            case com.conjoon.cudgets.localCache.Api.type.NONE:
+                cls  = 'notAvailableComponent';
+                html = com.conjoon.Gettext.gettext("An Application Cache based on the HTML 5 specifications is not available.");
             break;
 
             default:
-                cls = 'notAvailableComponent';
-                html = com.conjoon.Gettext.gettext("An Application Cache based on the HTML 5 specifications is not available.");
+                html = String.format(
+                    com.conjoon.Gettext.gettext("An Application Cache is available. The adapter used for caching operations is \"{0}\""),
+                    type
+                );
             break;
 
         }

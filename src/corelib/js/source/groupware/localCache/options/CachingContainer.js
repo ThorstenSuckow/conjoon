@@ -92,6 +92,11 @@ com.conjoon.groupware.localCache.options.CachingContainer = Ext.extend(Ext.Conta
      */
     disableCacheCheckbox : null,
 
+    /**
+     * @type {Ext.Button} clearCacheButton
+     */
+    clearCacheButton : null,
+
 // -------- Ext.Window
 
     /**
@@ -311,6 +316,20 @@ com.conjoon.groupware.localCache.options.CachingContainer = Ext.extend(Ext.Conta
     },
 
     /**
+     * Returns the button for clearing the cache.
+     *
+     * @return {Ext.Button}
+     */
+    getClearCacheButton : function()
+    {
+        if (!this.clearCacheButton) {
+            this.clearCacheButton = this.ui.buildClearCacheButton();
+        }
+
+        return this.clearCacheButton;
+    },
+
+    /**
      * Automatically checks/unchecks checkbox values based on
      * registry settings.
      *
@@ -332,6 +351,15 @@ com.conjoon.groupware.localCache.options.CachingContainer = Ext.extend(Ext.Conta
         }
 
         this.getCacheAllCheckbox().setValue(all);
+    },
+
+    /**
+     * Clears the application cache.
+     *
+     */
+    clearCache : function()
+    {
+        com.conjoon.cudgets.localCache.Api.clearCache();
     }
 
 });

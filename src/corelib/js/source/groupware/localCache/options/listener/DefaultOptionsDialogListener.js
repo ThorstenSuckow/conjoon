@@ -97,6 +97,9 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
             this.onSettingsContainerSetFailure, this
         );
 
+        var Api = com.conjoon.cudgets.localCache.Api;
+        Api.onBeforeClear(this.onCachingContainerBeforeClear, this);
+
         this.dialog.on(
             'beforeclose',
             this.onBeforeClose, this
@@ -151,6 +154,17 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
         if (this.dialog.getSettingsContainer().isRequestPending()) {
             return false;
         }
+    },
+
+    /**
+     * Listener for the cacing container's "beforeclear" event.
+     *
+     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
+     * cachingContainer
+     */
+    onCachingContainerBeforeClear : function(cachingContainer)
+    {
+        this.dialog.setControlsDisabled(true, true);
     },
 
     /**

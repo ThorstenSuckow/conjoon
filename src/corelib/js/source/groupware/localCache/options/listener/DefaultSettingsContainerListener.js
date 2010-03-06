@@ -54,9 +54,15 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
 
         this.container = container;
 
-        this.container.on('beforeset',  this.onBeforeSet,  this);
-        this.container.on('setsuccess', this.onSetSuccess, this);
-        this.container.on('setfailure', this.onSetFailure, this);
+        container.on('beforeset',  this.onBeforeSet,  this);
+        container.on('setsuccess', this.onSetSuccess, this);
+        container.on('setfailure', this.onSetFailure, this);
+
+        var Api = com.conjoon.cudgets.localCache.Api;
+        Api.onBeforeClear(this.onCachingContainerBeforeClear,   this);
+        Api.onClearSuccess(this.onCachingContainerClearSuccess, this);
+        Api.onClearFailure(this.onCachingContainerClearFailure, this);
+
     },
 
 // -------- helper
@@ -106,7 +112,45 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
      */
     onBeforeSet : function(settingsContainer)
     {
-        this.container.setRequestPending(true);
+        this.container.setRequestPending(true, this.container.REQUEST_SET);
+    },
+
+    /**
+     * Listener for the cachingContainer's "beforeclear" event. Will call the
+     * setRequestPending() method of the container.
+     *
+     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
+     * cachingContainer
+     */
+    onCachingContainerBeforeClear : function(cachingContainer)
+    {
+        this.container.setRequestPending(true, this.container.REQUEST_CLEAR);
+    },
+
+    /**
+     * Listener for the cachingContainer's "beforeclear" event. Will call the
+     * setRequestPending() method of the container.
+     *
+     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
+     * cachingContainer
+     */
+    onCachingContainerClearSuccess : function(cachingContainer)
+    {
+        this.container.setRequestPending(false);
+    },
+
+    /**
+     * Listener for the cachingContainer's "clearfailure" event
+     *
+     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
+     * cachingContainer
+     * @param {Object} response
+     */
+    onCachingContainerClearFailure : function(cachingContainer, response)
+    {
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
+
+        this.container.setRequestPending(false);
     }
 
 };

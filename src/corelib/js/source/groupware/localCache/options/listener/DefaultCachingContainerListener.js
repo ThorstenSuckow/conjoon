@@ -69,6 +69,11 @@ com.conjoon.groupware.localCache.options.listener.DefaultCachingContainerListene
             this.onDisableCacheCheck, this
         );
 
+        container.mon(
+            container.getClearCacheButton(), 'click',
+            this.onClearCacheButtonClick, this
+        );
+
         this.container.on('render', this.onContainerRender, this);
     },
 
@@ -130,6 +135,15 @@ com.conjoon.groupware.localCache.options.listener.DefaultCachingContainerListene
     {
         this.container.setCheckboxValuesFromRegistry();
         this.container.getFileSettingsForm().installStartEditListener();
+    },
+
+    /**
+     * Listener for the "click" event of the clearCache button.
+     *
+     */
+    onClearCacheButtonClick : function(button)
+    {
+       this.container.clearCache();
     }
 
 };

@@ -88,7 +88,7 @@ com.conjoon.groupware.localCache.options.ui.DefaultSettingsContainerUi.prototype
      */
     buildContainer : function()
     {
-        var cacheAvailable = com.conjoon.cudgets.localCache.Api.isApplicationCacheAvailable();
+        var cacheAvailable = com.conjoon.cudgets.localCache.Api.isCacheAvailable();
 
         Ext.apply(this.container, {
             cls    : 'settingsContainer',
