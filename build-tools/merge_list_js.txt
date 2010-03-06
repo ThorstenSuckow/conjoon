@@ -25,6 +25,7 @@ vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
 src/corelib/js/source/cudgets/localCache/Api.js
+src/corelib/js/source/cudgets/localCache/Adapter.js
 src/corelib/js/source/cudgets/data/JsonReader.js
 src/corelib/js/source/cudgets/data/DirectProxy.js
 src/corelib/js/source/cudgets/data/Store.js
@@ -41,7 +42,7 @@ src/corelib/js/source/cudgets/settings/listener/DefaultDialogListener.js
 src/corelib/js/source/cudgets/data/StoreSync.js
 src/corelib/js/source/groupware/DefaultProvider.js
 src/corelib/js/source/groupware/Provider.js
-src/corelib/js/source/groupware/localCache/Baton.js
+src/corelib/js/source/groupware/localCache/Html5Adapter.js
 src/corelib/js/source/groupware/localCache/options/Dialog.js
 src/corelib/js/source/groupware/localCache/options/CachingContainer.js
 src/corelib/js/source/groupware/localCache/options/SettingsContainer.js
