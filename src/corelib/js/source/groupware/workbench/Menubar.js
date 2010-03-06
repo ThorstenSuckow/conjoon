@@ -282,7 +282,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
                         }, '-', {
                             text : com.conjoon.Gettext.gettext("Local cache"),
                             handler : function() {
-                                com.conjoon.groupware.localCache.Baton.showDialog();
+                                com.conjoon.groupware.localCache.options.Dialog.showDialog();
                             }
                         }]
                     }, {
