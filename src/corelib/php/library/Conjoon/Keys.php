@@ -35,6 +35,9 @@ interface Conjoon_Keys {
 // -------- session reception controller
     const SESSION_CONTROLLER_RECEPTION = 'com.conjoon.session.receptionController';
 
+// -------- session application cache helper
+    const SESSION_APPLICATION_CACHE = 'com.conjoon.session.applicationCache';
+
 // -------- cache key emails
     const CACHE_EMAIL_MESSAGE = 'com.conjoon.cache.email.message';
 
