@@ -167,3 +167,20 @@ com.conjoon.groupware.localCache.options.Dialog = Ext.extend(Ext.Window, {
 
 });
 
+var __dlg = com.conjoon.groupware.localCache.options.Dialog;
+
+__dlg.__dialog;
+
+__dlg.showDialog = function() {
+    if (__dlg.__dialog) {
+        __dlg.__dialog.show();
+        return;
+    }
+
+    __dlg.__dialog = new com.conjoon.groupware.localCache.options.Dialog();
+    __dlg.__dialog.on('close', function() {
+        __dlg.__dialog = null;
+    });
+    __dlg.__dialog.show();
+};
+
