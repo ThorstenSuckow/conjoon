@@ -18,6 +18,10 @@ Ext.Direct.addProvider({
     format          : 'json',
     type            : 'zend',
     actions         : {
+        applicationCache : [{
+            name : 'setClearFlag',
+            len  : 1
+        }],
         registry : [{
             name : 'getEntries',
             len  : 0
