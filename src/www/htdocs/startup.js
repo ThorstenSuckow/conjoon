@@ -220,7 +220,11 @@ Ext.onReady(function(){
 
         if (groupware.Registry.get('/client/system/sfx/enabled')) {
             com.conjoon.groupware.SystemSoundManager.initDriver();
-         }
+        }
+
+        com.conjoon.cudgets.localCache.Api.setAdapter(
+            new com.conjoon.groupware.localCache.Html5Adapter()
+        );
 
         (function(){
             Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({
