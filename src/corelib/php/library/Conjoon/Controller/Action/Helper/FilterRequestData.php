@@ -160,7 +160,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
             case 'Groupware_EmailFolderController::rename.folder':
                 /**
-                 * @see Conjoon_Modules_Groupware/Email/Folder/Filter/Folder.php'
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
                  */
                 require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
                 $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
@@ -171,7 +171,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
             case 'Groupware_EmailFolderController::move.folder':
                 /**
-                 * @see Conjoon_Modules_Groupware/Email/Folder/Filter/Folder.php'
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
                  */
                 require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
                 $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
@@ -182,7 +182,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
             case 'Groupware_EmailFolderController::get.folder':
                 /**
-                 * @see Conjoon_Modules_Groupware/Email/Folder/Filter/Folder.php'
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
                  */
                 require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
                 $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
@@ -193,7 +193,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
             case 'Groupware_EmailFolderController::add.folder':
                 /**
-                 * @see Conjoon_Modules_Groupware/Email/Folder/Filter/Folder.php'
+                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
                  */
                 require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
                 $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
@@ -204,12 +204,23 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
             case 'RegistryController::set.entries':
                 /**
-                 * @see Conjoon_Modules_Groupware/Email/Folder/Filter/Folder.php'
+                 * @see Conjoon_Modules_Default_Registry_Filter_Registry
                  */
                 require_once 'Conjoon/Modules/Default/Registry/Filter/Registry.php';
                 $this->_filters[$key] = new Conjoon_Modules_Default_Registry_Filter_Registry (
                     array(),
                     Conjoon_Modules_Default_Registry_Filter_Registry::CONTEXT_UPDATE_REQUEST
+                );
+            break;
+
+            case 'ApplicationCacheController::set.clear.flag':
+                /**
+                 * @see Conjoon_Modules_Default_ApplicationCache_Filter
+                 */
+                require_once 'Conjoon/Modules/Default/ApplicationCache/Filter.php';
+                $this->_filters[$key] = new Conjoon_Modules_Default_ApplicationCache_Filter (
+                    array(),
+                    Conjoon_Modules_Default_ApplicationCache_Filter::CONTEXT_CLEARFLAG_REQUEST
                 );
             break;
 
