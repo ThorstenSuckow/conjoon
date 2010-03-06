@@ -32,6 +32,66 @@ class Conjoon_Controller_Action_Helper_RegistryAccess extends Zend_Controller_Ac
      */
     protected $_user = null;
 
+    /**
+     * @var string
+     */
+    protected $_baseUrl = null;
+
+    /**
+     * @var string
+     */
+    protected $_applicationPath = null;
+
+    /**
+     * Returns the application path setting.
+     *
+     * @return string
+     */
+    public function getApplicationPath()
+    {
+        if ($this->_applicationPath !== null) {
+            return $this->_applicationPath;
+        }
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $config = Zend_Registry::get(
+            Conjoon_Keys::REGISTRY_CONFIG_OBJECT
+        );
+
+        $this->_applicationPath = $config->environment->application_path;
+
+        return $this->_applicationPath;
+    }
+
+    /**
+     * Returns the base url for this application
+     *
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        if ($this->_baseUrl !== null) {
+            return $this->_baseUrl;
+        }
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $config = Zend_Registry::get(
+            Conjoon_Keys::REGISTRY_CONFIG_OBJECT
+        );
+
+        $this->_baseUrl = $config->environment->base_url;
+
+        return $this->_baseUrl;
+    }
+
 
     /**
      * Returns the user object as stored in the registry.
