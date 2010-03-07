@@ -87,8 +87,6 @@ class ApplicationCacheController extends Zend_Controller_Action {
         $userId   = $this->_helper->registryAccess()->getUserId();
         $baseKey  = '/client/applicationCache/';
 
-file_put_contents('F:/meh.txt', file_get_contents('F:/meh.txt'). "\n" . time()." ".$appNs->clear);
-
         if ($appNs->clear !== true) {
             $caches = array(
                 'images' => $facade->getValueForKeyAndUserId(
@@ -159,8 +157,6 @@ file_put_contents('F:/meh.txt', file_get_contents('F:/meh.txt'). "\n" . time()."
         $appNs = new Zend_Session_Namespace(
             Conjoon_Keys::SESSION_APPLICATION_CACHE
         );
-
-file_put_contents('F:/meh.txt', file_get_contents('F:/meh.txt'). "\n" . time() . " "."SET: ". $clear);
 
         $appNs->clear = $clear;
 
