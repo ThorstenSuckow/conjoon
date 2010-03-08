@@ -114,31 +114,47 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
         com.conjoon.defaultProvider.applicationCache.setClearFlag(
             {clear : true},
             function(provider, response) {
+                var succ = com.conjoon.groupware.ResponseInspector.isSuccess(
+                    response
+                );
+                if (succ === null || succ === false) {
+                    this.fireEvent('clearfailure', this);
+                } else {
+
+                    this.on(
+                        'updateready', this._removeClearFlag, this,
+                        {single : true}
+                    );
+
+                    try {
+                        window.applicationCache.swapCache();
+                        window.applicationCache.update();
+                    } catch (e) {
+                        // updateready possibly noot fired, make sure clear
+                        // flag gets removed
+                        this._removeClearFlag();
+                    }
+                }
+
+        }, this);
+    },
+
+// -------- helpers
+
+    _removeClearFlag : function()
+    {
+        com.conjoon.defaultProvider.applicationCache.setClearFlag(
+            {clear : false},
+            function(provider, response) {
                 var succ = com.conjoon.groupware.ResponseInspector.isSuccess(response);
                 if (succ === null || succ === false) {
                     this.fireEvent('clearfailure', this);
                 } else {
-                    this.on('updateready', function() {
-
-                        com.conjoon.defaultProvider.applicationCache.setClearFlag(
-                            {clear : false},
-                            function(provider, response) {
-                                var succ = com.conjoon.groupware.ResponseInspector.isSuccess(response);
-                                if (succ === null || succ === false) {
-                                    this.fireEvent('clearfailure', this);
-                                } else {
-                                    this.fireEvent('clearsuccess', this);
-                                }
-                            },
-                            this
-                        )
-                    }, this, {single : true});
-
-                    window.applicationCache.swapCache();
-                    window.applicationCache.update();
+                    this.fireEvent('clearsuccess', this);
                 }
-
-        }, this);
+            },
+            this
+        );
     }
 
 });
