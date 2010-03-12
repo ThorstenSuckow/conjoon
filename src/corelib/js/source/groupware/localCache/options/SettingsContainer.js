@@ -63,6 +63,12 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
      */
     REQUEST_SET : 2,
 
+    /**
+     * @type {mixed} type "constant" for the setRequestPendingMethod. Used when
+     * this container's request is send to build the cache
+     */
+    REQUEST_BUILD : 3,
+
 // -------- Ext.Window
 
     /**
@@ -172,8 +178,10 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
 
             if (type === this.REQUEST_SET) {
                 this.ui.maskContainer(com.conjoon.Gettext.gettext("Saving..."));
+            } else if (type === this.REQUEST_BUILD) {
+                this.ui.maskContainer(com.conjoon.Gettext.gettext("Building cache..."));
             } else if (type === this.REQUEST_CLEAR) {
-                this.ui.maskContainer(com.conjoon.Gettext.gettext("Clearing..."));
+                this.ui.maskContainer(com.conjoon.Gettext.gettext("Clearing cache..."));
             }
         } else {
             this.ui.unmaskContainer();
@@ -222,7 +230,7 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
             });
         }
 
-        return Registry.setValues({
+        var serv = Registry.setValues({
             values: values,
             beforewrite : function(values) {
                 this.fireEvent('beforeset', this, values);
@@ -236,6 +244,11 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
             scope : this
         });
 
+        if (!serv) {
+            cachingContainer.getDisableCacheCheckbox().setValue(false);
+        }
+
+        return serv;
     }
 
 });

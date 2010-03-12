@@ -43,6 +43,12 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
      */
     closeAfterSave : false,
 
+    /**
+     * @type {Boolean} applyButtonState Saves the state of the applyButton before
+     * an attempt to clear/build the cache is made.
+     */
+    applyButtonDisabled : true,
+
 // -------- api
 
     /**
@@ -98,7 +104,13 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
         );
 
         var Api = com.conjoon.cudgets.localCache.Api;
-        Api.onBeforeClear(this.onCachingContainerBeforeClear, this);
+        Api.onBeforeClear(this.onLocalCacheApiBeforeClear, this);
+        Api.onClearSuccess(this.onLocalCacheApiClearSuccess, this);
+        Api.onClearFailure(this.onLocalCacheApiClearFailure, this);
+        Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild, this);
+        Api.onBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
+        Api.onBuildFailure(this.onLocalCacheApiBuildFailure, this);
+
 
         this.dialog.on(
             'beforeclose',
@@ -157,14 +169,64 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
     },
 
     /**
-     * Listener for the cacing container's "beforeclear" event.
+     * Listener for the local cache Api's "beforeclear" event.
      *
-     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
-     * cachingContainer
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
      */
-    onCachingContainerBeforeClear : function(cachingContainer)
+    onLocalCacheApiBeforeClear : function(adapter)
+    {
+        this.applyButtonDisabled = this.dialog.getApplyButton().disabled;
+        this.dialog.setControlsDisabled(true, true);
+    },
+
+    /**
+     * Listener for the local cache Api's "clearsuccess" event.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiClearSuccess : function(adapter)
+    {
+        this.dialog.setControlsDisabled(false, true);
+    },
+
+    /**
+     * Listener for the local cache Api's "clearfailure" event.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiClearFailure : function(adapter)
+    {
+        this.dialog.setControlsDisabled(false, true);
+    },
+
+    /**
+     * Listener for the local cache Api's "beforebuild" event.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiBeforeBuild : function(adapter)
     {
         this.dialog.setControlsDisabled(true, true);
+    },
+
+    /**
+     * Listener for the local cache Api's "buildsuccess" event.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiBuildSuccess : function(adapter)
+    {
+        this.dialog.setControlsDisabled(false, this.applyButtonDisabled);
+    },
+
+    /**
+     * Listener for the local cache Api's "buildfailure" event.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiBuildFailure : function(adapter)
+    {
+        this.dialog.setControlsDisabled(false, this.applyButtonDisabled);
     },
 
     /**

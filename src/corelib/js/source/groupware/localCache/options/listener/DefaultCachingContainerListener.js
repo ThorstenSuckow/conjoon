@@ -143,7 +143,11 @@ com.conjoon.groupware.localCache.options.listener.DefaultCachingContainerListene
      */
     onClearCacheButtonClick : function(button)
     {
-       this.container.clearCache();
+        if (this.container.getRebuildCacheCheckbox().getValue()) {
+            this.container.rebuildCache();
+        } else {
+            this.container.clearCache();
+        }
     }
 
 };

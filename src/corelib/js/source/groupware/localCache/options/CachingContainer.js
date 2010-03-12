@@ -354,12 +354,38 @@ com.conjoon.groupware.localCache.options.CachingContainer = Ext.extend(Ext.Conta
     },
 
     /**
+     * Sets all checkbox values of those checkboxes that represent a caching
+     * option to "false".
+     * It will also uncheck the "cacheAll" checkbox.
+     */
+    unsetCheckboxes : function()
+    {
+        this.getCacheAllCheckbox().setValue(false);
+
+        var mappings = this.getRegistryCheckboxMapping();
+
+        var vl  = null;
+        for (var i in mappings) {
+            mappings[i].setValue(false);
+        }
+    },
+
+    /**
      * Clears the application cache.
      *
      */
     clearCache : function()
     {
         com.conjoon.cudgets.localCache.Api.clearCache();
+    },
+
+    /**
+     * Rebuilds the application cache.
+     *
+     */
+    rebuildCache : function()
+    {
+        com.conjoon.cudgets.localCache.Api.buildCache();
     }
 
 });

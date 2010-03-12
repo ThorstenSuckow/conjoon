@@ -59,9 +59,12 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
         container.on('setfailure', this.onSetFailure, this);
 
         var Api = com.conjoon.cudgets.localCache.Api;
-        Api.onBeforeClear(this.onCachingContainerBeforeClear,   this);
-        Api.onClearSuccess(this.onCachingContainerClearSuccess, this);
-        Api.onClearFailure(this.onCachingContainerClearFailure, this);
+        Api.onBeforeClear(this.onLocalCacheApiBeforeClear,   this);
+        Api.onClearSuccess(this.onLocalCacheApiClearSuccess, this);
+        Api.onClearFailure(this.onLocalCacheApiClearFailure, this);
+        Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.onBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
+        Api.onBuildFailure(this.onLocalCacheApiBuildFailure, this);
 
     },
 
@@ -82,6 +85,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
     {
         this.container.setRequestPending(false);
         this.container.getCachingContainer().getFileSettingsForm().installStartEditListener();
+        this.container.getCachingContainer().getDisableCacheCheckbox().setValue(false);
     },
 
     /**
@@ -116,40 +120,77 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
     },
 
     /**
-     * Listener for the cachingContainer's "beforeclear" event. Will call the
+     * Listener for the local cache Api's "beforeclear" event. Will call the
      * setRequestPending() method of the container.
      *
-     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
-     * cachingContainer
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
      */
-    onCachingContainerBeforeClear : function(cachingContainer)
+    onLocalCacheApiBeforeClear : function(adapter)
     {
         this.container.setRequestPending(true, this.container.REQUEST_CLEAR);
     },
 
     /**
-     * Listener for the cachingContainer's "beforeclear" event. Will call the
+     * Listener for the local cache Api's "clearsuccess" event. Will call the
      * setRequestPending() method of the container.
      *
-     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
-     * cachingContainer
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
      */
-    onCachingContainerClearSuccess : function(cachingContainer)
+    onLocalCacheApiClearSuccess : function(adapter)
+    {
+        this.container.setRequestPending(false);
+        if (this.container.getCachingContainer().getDisableCacheCheckbox().
+            getValue()) {
+                this.container.getCachingContainer().unsetCheckboxes();
+                this.container.saveSettings();
+        } else if (this.container.getCachingContainer().getRebuildCacheCheckbox().
+            getValue()) {
+                this.container.getCachingContainer().rebuildCache();
+        }
+    },
+
+    /**
+     * Listener for the local cache Api's "clearfailure" event
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiClearFailure : function(adapter)
     {
         this.container.setRequestPending(false);
     },
 
     /**
-     * Listener for the cachingContainer's "clearfailure" event
+     * Listener for the local cache Api's "beforebuild" event. Will call the
+     * setRequestPending() method of the container.
      *
-     * @param {com.conjoon.groupware.localCache.options.CachingContainer}
-     * cachingContainer
-     * @param {Object} response
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
      */
-    onCachingContainerClearFailure : function(cachingContainer, response)
+    onLocalCacheApiBeforeBuild : function(adapter)
     {
-        com.conjoon.groupware.ResponseInspector.handleFailure(response);
+        this.container.setRequestPending(true, this.container.REQUEST_BUILD);
+    },
 
+    /**
+     * Listener for the local cache Api's "buildsuccess" event. Will call the
+     * setRequestPending() method of the container.
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiBuildSuccess : function(adapter)
+    {
+        this.container.setRequestPending(false);
+        this.container.getCachingContainer().getRebuildCacheCheckbox().setValue(
+            false
+        );
+    },
+
+    /**
+     * Listener for the local cache Api's "buildfailure" event
+     *
+     * @param {com.conjoon.cudgets.localCache.Adapter} adapter
+     */
+    onLocalCacheApiBuildFailure : function(adapter)
+    {
         this.container.setRequestPending(false);
     }
 
