@@ -137,7 +137,9 @@ class ApplicationCacheController extends Zend_Controller_Action {
      * namespace based on the passed argument "clear", which can be either
      * "true" or  "false", so that delivering the manifest file while this flag
      * is set to true contains no caching content.
-     *
+     * If the flag is set to "false", this method will also assign the total
+     * number of cache entries to the view-variable "cacheEntryCount".
+     * If the flag is set to true, "cacheEntryCount" will be set to "0".
      */
     public function setClearFlagAction()
     {
@@ -160,8 +162,9 @@ class ApplicationCacheController extends Zend_Controller_Action {
 
         $appNs->clear = $clear;
 
-        $this->view->success = true;
-        $this->view->error   = null;
+        $this->view->success         = true;
+        $this->view->cacheEntryCount = $clear ? 0 : 500;
+        $this->view->error           = null;
     }
 
 }
