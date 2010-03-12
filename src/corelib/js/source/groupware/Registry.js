@@ -509,7 +509,9 @@ com.conjoon.groupware.Registry = function() {
          * @param {Object} config An object with the following key/value pairs:
          * - values: Array an array with key/value pairs
          * - beforewrite: function to be called before data gets send to the
-         * server
+         * server. You can return "false" with this callback - no data will be send
+         * to the server then. However, registry values will be changed locally
+         * and any changes will be committed.
          * - success: function to be called when the response successfully passed
          * through, and the response's "success" value was set to true, which
          * indicates that _all_ entries have been saved successfully.
@@ -593,7 +595,12 @@ com.conjoon.groupware.Registry = function() {
                 var scope = config.scope ? config.scope : window;
 
                 if (config.beforewrite) {
-                    config.beforewrite.call(scope, cfValues);
+                    var send = config.beforewrite.call(scope, cfValues);
+
+                    if (send === false) {
+                        commit();
+                        return false;
+                    }
                 }
 
                 com.conjoon.defaultProvider.registry.setEntries(
