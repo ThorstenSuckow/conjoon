@@ -44,7 +44,25 @@ com.conjoon.cudgets.localCache.Adapter = function() {
          * Gets fired when clearing the cache was not successfull.
          * @param {com.conjoon.cudgets.localCache.Adapter}
          */
-        'clearfailure'
+        'clearfailure',
+        /**
+         * @event beforebuild
+         * Gets fired before an attempt is made to build the local cache.
+         * @param {com.conjoon.cudgets.localCache.Adapter}
+         */
+        'beforebuild',
+        /**
+         * @event buildsuccess
+         * gets fired when building the cache was successfull.
+         * @param {com.conjoon.cudgets.localCache.Adapter}
+         */
+        'buildsuccess',
+        /**
+         * @event buildfailure
+         * Gets fired when building the cache was not successfull.
+         * @param {com.conjoon.cudgets.localCache.Adapter}
+         */
+        'buildfailure'
     );
 
     com.conjoon.cudgets.localCache.Adapter.superclass.constructor.call(this);
@@ -79,7 +97,14 @@ Ext.extend(com.conjoon.cudgets.localCache.Adapter, Ext.util.Observable, {
      *
      * @abstract
      */
-    clearCache : Ext.emptyFn
+    clearCache : Ext.emptyFn,
 
-
+    /**
+     * Builds the local cache. Concrete implementations of this class are
+     * advised to properly fire the "beforebuild" and "buildsuccess" or
+     * "buildfailure" event.
+     *
+     * @abstract
+     */
+    buildCache : Ext.emptyFn
 });

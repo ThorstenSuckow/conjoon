@@ -29,7 +29,10 @@ com.conjoon.cudgets.localCache.Api = function() {
     var listeners= {
         beforeclear  : [],
         clearsuccess : [],
-        clearfailure : []
+        clearfailure : [],
+        beforebuild  : [],
+        buildsuccess : [],
+        buildfailure : []
     };
 
     var checkForAdapter = function() {
@@ -38,31 +41,48 @@ com.conjoon.cudgets.localCache.Api = function() {
         }
     };
 
-    var onBeforeClearListener = function() {
-        var beforeclear = listeners.beforeclear;
-        var bc = null;
-        for (var i = 0, len = beforeclear.length; i < len; i++) {
-            bc = beforeclear[i];
-            bc[0].call(bc[1]);
-        }
-    };
+    var callListener = function(type, adapter) {
 
-    var onClearSuccessListener = function() {
-        var clearsuccess = listeners.clearsuccess;
-        var cs = null;
-        for (var i = 0, len = clearsuccess.length; i < len; i++) {
-            cs = clearsuccess[i];
-            cs[0].call(cs[1]);
-        }
-    };
+        var cb             = null;
+        var callbackConfig = null;
+        switch (type) {
+            case 'beforebuild':
+                cb = listeners.beforebuild;
+            break;
 
-    var onClearFailureListener = function() {
-        var clearfailure = listeners.clearfailure;
-        var cf = null;
-        for (var i = 0, len = clearfailure.length; i < len; i++) {
-            cf = clearfailure[i];
-            cf[0].call(cf[1]);
+            case 'beforeclear':
+                cb = listeners.beforeclear;
+            break;
+
+            case 'buildsuccess':
+                cb = listeners.buildsuccess;
+            break;
+
+            case 'clearsuccess':
+                cb = listeners.clearsuccess;
+            break;
+
+            case 'buildfailure':
+                cb = listeners.buildfailure;
+            break;
+
+            case 'clearfailure':
+                cb = listeners.clearfailure;
+            break;
+
+            default:
+                throw(
+                    "com.conjoon.cudgets.localCache.Api: unknown event "
+                    + "\""+type+"\" for private method \"callListener()\""
+                );
+            break;
         }
+
+        for (var i = 0, len = cb.length; i < len; i++) {
+            callbackConfig = cb[i];
+            callbackConfig[0].call(callbackConfig[1], adapter);
+        }
+
     };
 
     return {
@@ -84,6 +104,21 @@ com.conjoon.cudgets.localCache.Api = function() {
         onClearFailure : function(fn, scope)
         {
             listeners.clearfailure.push([fn, scope ? scope : window]);
+        },
+
+        onBeforeBuild : function(fn, scope)
+        {
+            listeners.beforebuild.push([fn, scope ? scope : window]);
+        },
+
+        onBuildSuccess : function(fn, scope)
+        {
+            listeners.buildsuccess.push([fn, scope ? scope : window]);
+        },
+
+        onBuildFailure : function(fn, scope)
+        {
+            listeners.buildfailure.push([fn, scope ? scope : window]);
         },
 
         /**
@@ -128,9 +163,36 @@ com.conjoon.cudgets.localCache.Api = function() {
             }
 
             var Api = com.conjoon.cudgets.localCache.Api;
-            appAdapter.on('beforeclear',  onBeforeClearListener,  Api);
-            appAdapter.on('clearsuccess', onClearSuccessListener, Api);
-            appAdapter.on('clearfailure', onClearFailureListener, Api);
+            appAdapter.on(
+                'beforeclear',
+                function(adapter){callListener('beforeclear', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'clearsuccess',
+                function(adapter){callListener('clearsuccess', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'clearfailure',
+                function(adapter){callListener('clearfailure', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'beforebuild',
+                function(adapter){callListener('beforebuild', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'buildsuccess',
+                function(adapter){callListener('buildsuccess', adapter);},
+                Api
+            );
+            appAdapter.on(
+                'buildfailure',
+                function(adapter){callListener('buildfailure', adapter);},
+                Api
+            );
 
             adapter = appAdapter;
         },
@@ -147,6 +209,20 @@ com.conjoon.cudgets.localCache.Api = function() {
             }
 
             adapter.clearCache();
+        },
+
+        /**
+         * Rebuilds the local cache.
+         */
+        buildCache : function()
+        {
+            checkForAdapter();
+
+            if (!this.isCacheAvailable()) {
+                return false;
+            }
+
+            adapter.buildCache();
         }
 
     };
