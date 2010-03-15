@@ -20,7 +20,8 @@ require_once 'Zend/Controller/Action.php';
 
 
 /**
- * Action controller for sending Application Cache manifest contents to the client.
+ * Action controller for sending Application Cache manifest contents to the
+ * client.
  *
  * @uses Zend_Controller_Action
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
@@ -47,7 +48,7 @@ class ApplicationCacheController extends Zend_Controller_Action {
     }
 
     /**
-     * Returns the view-script with teh contents of the various
+     * Returns the view-script with the contents of the various
      * manifest/*.list files based on the localCache settings as found in the
      * registry.
      * The Content-type header for the generated response is explicitely set to
@@ -61,13 +62,6 @@ class ApplicationCacheController extends Zend_Controller_Action {
     public function getManifestAction()
     {
         $this->_response->setHeader('Content-Type', 'text/cache-manifest', true);
-
-        /**
-         * @see Conjoon_Modules_Default_Registry_Facade
-         */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
-
-        $facade = Conjoon_Modules_Default_Registry_Facade::getInstance();
 
         /**
          * @see Zend_Session_Namespace
@@ -85,38 +79,22 @@ class ApplicationCacheController extends Zend_Controller_Action {
 
         $fileList = array();
         $userId   = $this->_helper->registryAccess()->getUserId();
-        $baseKey  = '/client/applicationCache/';
 
-        if ($appNs->clear !== true) {
-            $caches = array(
-                'images' => $facade->getValueForKeyAndUserId(
-                    $baseKey . 'cache-images', $userId
-                ),
-                'sounds' => $facade->getValueForKeyAndUserId(
-                    $baseKey . 'cache-sounds', $userId
-                ),
-                'flash' => $facade->getValueForKeyAndUserId(
-                    $baseKey . 'cache-flash', $userId
-                ),
-                'javascript' => $facade->getValueForKeyAndUserId(
-                    $baseKey . 'cache-javascript', $userId
-                ),
-                'html' => $facade->getValueForKeyAndUserId(
-                    $baseKey . 'cache-html', $userId
-                ),
-                'stylesheets' => $facade->getValueForKeyAndUserId(
-                    $baseKey . 'cache-stylesheets', $userId
-                )
+        /**
+         * @see Conjoon_Modules_Default_ApplicationCache_Facade
+         */
+        require_once 'Conjoon/Modules/Default/ApplicationCache/Facade.php';
+
+        $appCacheFacade = Conjoon_Modules_Default_ApplicationCache_Facade
+                          ::getInstance();
+
+        if (!$appNs->clear) {
+
+            $applicationPath = $this->_helper->registryAccess()->getApplicationPath();
+
+            $fileList = $appCacheFacade->getManifestFileListForUserId(
+                $userId, $applicationPath . '/manifest'
             );
-
-            $applcationPath = $this->_helper->registryAccess()->getApplicationPath();
-            $folder         = 'manifest';
-
-            foreach ($caches as $key => $value) {
-                if ($value) {
-                    $fileList[] = $applcationPath . '/' . $folder . '/' . $key . '.list';
-                }
-            }
         }
 
         /**
@@ -125,11 +103,11 @@ class ApplicationCacheController extends Zend_Controller_Action {
         require_once 'Conjoon/Version.php';
 
         $this->view->conjoonVersion = Conjoon_Version::VERSION;
-
-        $this->view->lastChanged = $facade->getValueForKeyAndUserId(
-            $baseKey . 'last-changed', $userId
-        );
-        $this->view->fileList = $fileList;
+        $this->view->lastChanged    = $appCacheFacade
+                                      ->getCacheLastChangedTimestampForUserId(
+                                          $userId
+                                      );
+        $this->view->fileList       = $fileList;
     }
 
     /**
@@ -162,8 +140,28 @@ class ApplicationCacheController extends Zend_Controller_Action {
 
         $appNs->clear = $clear;
 
+        $cacheEntryCount = 0;
+
+        if (!$clear) {
+            /**
+             * @see Conjoon_Modules_Default_ApplicationCache_Facade
+             */
+            require_once 'Conjoon/Modules/Default/ApplicationCache/Facade.php';
+
+            $appCacheFacade = Conjoon_Modules_Default_ApplicationCache_Facade
+                              ::getInstance();
+
+            $userId          = $this->_helper->registryAccess()->getUserId();
+            $applicationPath = $this->_helper->registryAccess()
+                               ->getApplicationPath();
+
+            $cacheEntryCount = $appCacheFacade->getCacheEntryCountForUserId(
+                $userId, $applicationPath . '/manifest'
+            );
+        }
+
         $this->view->success         = true;
-        $this->view->cacheEntryCount = $clear ? 0 : 500;
+        $this->view->cacheEntryCount = $cacheEntryCount;
         $this->view->error           = null;
     }
 
