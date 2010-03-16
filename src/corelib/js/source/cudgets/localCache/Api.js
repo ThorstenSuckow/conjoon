@@ -91,6 +91,14 @@ com.conjoon.cudgets.localCache.Api = function() {
             NONE : 'none'
         },
 
+        UNAVAILABLE : -1,
+        UNCACHED    : 0,
+        IDLE        : 1,
+        CHECKING    : 2,
+        DOWNLOADING : 3,
+        UPDATEREADY : 4,
+        OBSOLETE    : 5,
+
         onBeforeClear : function(fn, scope)
         {
             listeners.beforeclear.push([fn, scope ? scope : window]);
@@ -223,6 +231,56 @@ com.conjoon.cudgets.localCache.Api = function() {
             }
 
             adapter.buildCache();
+        },
+
+        /**
+         * Returns the current status of the cache. Possible
+         * values are:
+         *
+         *  UNAVAILABLE
+         *  UNCACHED
+         *  IDLE
+         *  CHECKING
+         *  DOWNLOADING
+         *  UPDATEREADY
+         *  OBSOLETE
+         *
+         * @return {Number}
+         */
+        getStatus : function()
+        {
+            checkForAdapter();
+
+            if (!this.isCacheAvailable()) {
+                return this.UNAVAILABLE;
+            }
+
+            var states = com.conjoon.cudgets.localCache.Adapter.status;
+
+            var state = adapter.getStatus();
+
+            switch (state) {
+                case states.UNCACHED:
+                    return this.UNCACHED;
+
+                case states.IDLE:
+                    return this.IDLE;
+
+                case states.CHECKING:
+                    return this.CHECKING;
+
+                case states.DOWNLOADING:
+                    return this.DOWNLOADING;
+
+                case states.UPDATEREADY:
+                    return this.UPDATEREADY;
+
+                case states.OBSOLETE:
+                    return this.OBSOLETE;
+
+                default:
+                    return this.UNAVAILABLE;
+            }
         }
 
     };

@@ -106,5 +106,31 @@ Ext.extend(com.conjoon.cudgets.localCache.Adapter, Ext.util.Observable, {
      *
      * @abstract
      */
-    buildCache : Ext.emptyFn
+    buildCache : Ext.emptyFn,
+
+    /**
+     * Returns the current state of the cache. Possible values are
+     *
+     *  UNCACHED
+     *  IDLE
+     *  CHECKING
+     *  DOWNLOADING
+     *  UPDATEREADY
+     *  OBSOLETE
+     *
+     */
+    getStatus : Ext.EmptyFn
 });
+
+/**
+ * A set of constants representing possibel states of this Adapter.
+ *
+ */
+com.conjoon.cudgets.localCache.Adapter.status = {
+    UNCACHED    : 0,
+    IDLE        : 1,
+    CHECKING    : 2,
+    DOWNLOADING : 3,
+    UPDATEREADY : 4,
+    OBSOLETE    : 5
+};
