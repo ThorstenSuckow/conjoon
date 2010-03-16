@@ -239,6 +239,33 @@ com.conjoon.SystemMessageManager = function() {
             Ext.MessageBox.hide();
         },
 
+        /**
+         * Shows a dialog representing an information.
+         *
+         * @param {com.conjoon.SystemMessage} message
+         * @param {Object} options
+         */
+        info : function(message, options)
+        {
+            var msg = Ext.MessageBox;
+
+            var c = {};
+
+            Ext.apply(c, message);
+
+            c.msg = c.text;
+            delete c.text;
+
+            Ext.apply(c, {
+                buttons : msg.OK,
+                icon    : msg.INFO,
+                cls     : 'com-conjoon-msgbox-info',
+                width   : 375
+            });
+
+            Ext.apply(c, options);
+            this.show(c);
+        },
 
         /**
          * Shows a dialog indicating an error happened.
