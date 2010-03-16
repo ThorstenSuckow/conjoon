@@ -143,6 +143,14 @@ com.conjoon.groupware.localCache.options.listener.DefaultCachingContainerListene
      */
     onClearCacheButtonClick : function(button)
     {
+        var Api    = com.conjoon.cudgets.localCache.Api;
+        var status = Api.getStatus();
+
+        if (status != Api.UPDATEREADY && status != Api.IDLE) {
+            this.container.showLocalCacheInfo(status);
+            return;
+        }
+
         if (this.container.getRebuildCacheCheckbox().getValue()) {
             this.container.rebuildCache();
         } else {

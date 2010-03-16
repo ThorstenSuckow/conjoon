@@ -298,6 +298,60 @@ com.conjoon.groupware.localCache.options.ui.DefaultCachingContainerUi.prototype 
             cls      : 'clearCacheButton',
             minWidth : 115
         });
+    },
+
+    /**
+     * Shows information about the current state of the local cache.
+     * This implementation will show a dialog with a text representing the
+     * current state.
+     *
+     * @param {Number} status Any valid status from
+     * com.conjoon.cudgets.localCache.Api
+     */
+    buildLocalCacheInfo : function(status)
+    {
+        var Api    = com.conjoon.cudgets.localCache.Api;
+        var status = Api.getStatus();
+
+        var msg = "";
+
+        switch (status) {
+            case Api.UNAVAILABLE:
+                msg = com.conjoon.Gettext.gettext("The state of the cache is unknown, or the cache itself is not available.");
+            break;
+
+            case Api.UNCACHED:
+                msg = com.conjoon.Gettext.gettext("There are currently not items in the cache. Make sure you activate the cache first.");
+            break;
+
+            case Api.IDLE:
+                msg = com.conjoon.Gettext.gettext("The state of the cache is currenty \"Idle\".");
+            break;
+
+            case Api.CHECKING:
+                msg = com.conjoon.Gettext.gettext("The cache is currently checking for new files to cache.");
+            break;
+
+            case Api.DOWNLOADING:
+                msg = com.conjoon.Gettext.gettext("The cache is currently downloading files to cache.");
+            break;
+
+            case Api.UPDATEREADY:
+                msg = com.conjoon.Gettext.gettext("The cache is ready for updating.");
+            break;
+
+            case Api.OBSOLETE:
+                msg = com.conjoon.Gettext.gettext("The cache is obsolete.");
+            break;
+        }
+
+        var msg = new com.conjoon.SystemMessage({
+            title : com.conjoon.Gettext.gettext("Local Cache status"),
+            text  : msg,
+            type  : com.conjoon.SystemMessage.TYPE_INFO
+        });
+
+        com.conjoon.SystemMessageManager.info(msg);
     }
 
 };

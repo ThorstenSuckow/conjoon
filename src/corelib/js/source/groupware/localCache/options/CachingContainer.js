@@ -386,6 +386,17 @@ com.conjoon.groupware.localCache.options.CachingContainer = Ext.extend(Ext.Conta
     rebuildCache : function()
     {
         com.conjoon.cudgets.localCache.Api.buildCache();
+    },
+
+    /**
+     * Shows information about the current state of the local cache.
+     *
+     * @param {Number} status Any valid status from
+     * com.conjoon.cudgets.localCache.Api
+     */
+    showLocalCacheInfo : function(status)
+    {
+        this.ui.buildLocalCacheInfo(status);
     }
 
 });
