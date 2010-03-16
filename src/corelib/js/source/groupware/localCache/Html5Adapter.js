@@ -142,14 +142,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                         {single : true}
                     );
 
-                    try {
-                        window.applicationCache.swapCache();
-                        window.applicationCache.update();
-                    } catch (e) {
-                        // updateready possibly not fired, make sure clear
-                        // flag gets removed
-                        this._removeClearFlag();
-                    }
+                    window.applicationCache.update();
                 }
 
         }, this);
@@ -177,17 +170,31 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                         {single : true}
                     );
 
-                    try {
-                        window.applicationCache.swapCache();
-                        window.applicationCache.update();
-                    } catch (e) {
-                        // updateready possibly noot fired, make sure clear
-                        // flag gets removed
-                        this._removeClearFlag('build');
-                    }
+                    window.applicationCache.update();
                 }
 
         }, this);
+    },
+
+    getStatus : function()
+    {
+        var states = com.conjoon.cudgets.localCache.Adapter.status;
+        var status = window.applicationCache.status;
+
+        switch (status) {
+            case 0:
+                return states.UNCACHED;
+            case 1:
+                return states.IDLE;
+            case 2:
+                return states.CHECKING;
+            case 3:
+                return states.DOWNLOADING;
+            case 4:
+                return states.UPDATEREADY;
+            case 5:
+                return states.OBSOLETE;
+        }
     },
 
 // -------- helpers
@@ -210,14 +217,13 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
         this.on('progress',    this._onBuildProgress, this);
         this.on('updateready', this._onBuildUpdateReady, this, {single : true});
 
-        try {
-            window.applicationCache.swapCache();
+        //try {
             window.applicationCache.update();
-        } catch (e) {
-            this.un('progress', this._onBuildProgress, this);
-            this.progressIndex = 0;
-            this.fireEvent('buildfailure', this);
-        }
+        //} catch (e) {
+        //    this.un('progress', this._onBuildProgress, this);
+        //    this.progressIndex = 0;
+        //    this.fireEvent('buildfailure', this);
+        //}
     },
 
     /**
@@ -226,6 +232,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
      */
     _onBuildUpdateReady : function()
     {
+        window.applicationCache.swapCache();
         this.un('progress', this._onBuildProgress, this);
         this.progressIndex = 0;
 
@@ -323,6 +330,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                     }
                 } else {
                     this.cacheEntryCount = succ.cacheEntryCount;
+                    window.applicationCache.swapCache();
                     if (type === 'build') {
                         this._buildPrepare();
                     } else {
