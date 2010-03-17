@@ -321,7 +321,7 @@ com.conjoon.groupware.localCache.options.ui.DefaultCachingContainerUi.prototype 
             break;
 
             case Api.UNCACHED:
-                msg = com.conjoon.Gettext.gettext("There are currently not items in the cache. Make sure you activate the cache first.");
+                msg = com.conjoon.Gettext.gettext("There are currently no items in the cache. Make sure you activate the cache first.");
             break;
 
             case Api.IDLE:
