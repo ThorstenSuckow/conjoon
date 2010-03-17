@@ -138,9 +138,21 @@ class ApplicationCacheController extends Zend_Controller_Action {
             Conjoon_Keys::SESSION_APPLICATION_CACHE
         );
 
-        $appNs->clear = $clear;
-
+        $appNs->clear    = $clear;
         $cacheEntryCount = 0;
+        $userId          = $this->_helper->registryAccess()->getUserId();
+
+        /**
+         * @see Conjoon_Modules_Default_ApplicationCache_Facade
+         */
+        require_once 'Conjoon/Modules/Default/ApplicationCache/Facade.php';
+
+        $appCacheFacade = Conjoon_Modules_Default_ApplicationCache_Facade
+                          ::getInstance();
+
+        $appCacheFacade->setCacheLastChangedTimestampForUserId(
+            microtime(true), $userId
+        );
 
         if (!$clear) {
             /**
@@ -148,10 +160,6 @@ class ApplicationCacheController extends Zend_Controller_Action {
              */
             require_once 'Conjoon/Modules/Default/ApplicationCache/Facade.php';
 
-            $appCacheFacade = Conjoon_Modules_Default_ApplicationCache_Facade
-                              ::getInstance();
-
-            $userId          = $this->_helper->registryAccess()->getUserId();
             $applicationPath = $this->_helper->registryAccess()
                                ->getApplicationPath();
 

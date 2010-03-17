@@ -299,7 +299,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
         com.conjoon.groupware.Registry.setValues({
             values      : [{
                 key   : 'client/applicationCache/last-changed',
-                value : Math.round((new Date()).getTime()/1000)
+                value : (new Date()).getTime()
             }],
             success : function(provider, response, updated, failed) {
                 this._build();

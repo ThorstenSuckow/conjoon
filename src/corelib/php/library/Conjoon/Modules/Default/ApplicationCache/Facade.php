@@ -115,7 +115,7 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
 
         foreach ($caches as $key => $value) {
             if ($value) {
-                $fileList[] = $folder . '/' . $key . '.list';
+                $fileList[] = $folder . '/' . $key . '.dev.list';
             }
         }
 
@@ -123,13 +123,14 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
     }
 
     /**
-     * Returns the Unix timestamp of the cache last changes, i.e. the last time
-     * the user altered the options regarding file-types to cache.
+     * Returns the Unix timestamp in milliseconds of the cache last changes,
+     * i.e. the last time the user altered the options regarding file-types
+     * to cache.
      *
      * @param integer $userId The id of the user for whom the lastChanged-
      * timestamp should get returned.
      *
-     * @return integer
+     * @return float
      *
      * @throws InvalidArgumentException
      */
@@ -147,6 +148,37 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
 
         return $facade->getValueForKeyAndUserId(
             '/client/applicationCache/last-changed', $userId
+        );
+    }
+
+    /**
+     * Sets the last cached microtimestamp for the specified userId.
+     *
+     * @param float $microtime The time in milliseconds
+     * @param integer $userId The id of the user for whom the lastChanged-
+     * timestamp should be set.
+     *
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setCacheLastChangedTimestampForUserId($microtime, $userId)
+    {
+        $userId = (int)$userId;
+
+        if ($userId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for userId: $userId"
+            );
+        }
+
+        $facade = $this->_getRegistryFacade();
+
+        return $facade->setEntriesFromDataForUserId(
+            array(array(
+                'key'   => '/client/applicationCache/last-changed',
+                'value' => $microtime
+            )),
+            $userId
         );
     }
 

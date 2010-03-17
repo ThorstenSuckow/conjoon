@@ -226,7 +226,7 @@ com.conjoon.groupware.localCache.options.SettingsContainer = Ext.extend(Ext.Cont
         if (values.length > 0) {
             values.push({
                 key   : 'client/applicationCache/last-changed',
-                value : Math.round((new Date()).getTime()/1000)
+                value : (new Date()).getTime()
             });
         }
 
