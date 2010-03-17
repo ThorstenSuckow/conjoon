@@ -163,6 +163,10 @@ class Conjoon_Modules_Default_Registry_Facade {
                             case 'INTEGER':
                                 $value = (int)$value;
                             break;
+
+                            case 'FLOAT':
+                                $value = (float)$value;
+                            break;
                         }
 
                         $succ = $this->_getRegistryValuesModel()->updateValueForUser(
@@ -231,6 +235,8 @@ class Conjoon_Modules_Default_Registry_Facade {
                         return (bool)$values[$i]['value'];
                     case 'INTEGER':
                         return (int)$values[$i]['value'];
+                    case 'FLOAT':
+                        return (float)$values[$i]['value'];
 
                 }
             }

@@ -174,7 +174,8 @@ class Conjoon_Modules_Default_Registry_Model_RegistryValues extends Conjoon_Db_T
             );
         }
         $type = strtoupper(trim((string)$type));
-        if ($type != "BOOLEAN" && $type != "STRING" && $type != "INTEGER") {
+        if ($type != "BOOLEAN" && $type != "STRING" && $type != "INTEGER"
+            && $type != "FLOAT") {
             throw new InvalidArgumentException(
                 "Invalid argument supplied for type: $type"
             );

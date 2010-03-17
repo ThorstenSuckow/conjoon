@@ -132,11 +132,11 @@ com.conjoon.groupware.Registry = function() {
 
     /**
      * Casts a value to the given type. Only primitive datatypes such as INTEGER,
-     * BOOLEAN and STRING are supported.
+     * FLOAT, BOOLEAN and STRING are supported.
      *
      * @param {Mixed} value The value to cast
      * @param {String} type The primitive datatype to cast to. Supported values
-     * are: STRING, INTEGER, BOOLEAN
+     * are: STRING, INTEGER, FLOAT, BOOLEAN
      *
      * @return {Mixed}
      *
@@ -164,6 +164,8 @@ com.conjoon.groupware.Registry = function() {
 
             case 'INTEGER':
                 return parseInt(value, 10);
+            case 'FLOAT':
+                return parseFloat(value);
             default:
                 throw(
                     String.format(
