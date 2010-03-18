@@ -115,7 +115,7 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
 
         foreach ($caches as $key => $value) {
             if ($value) {
-                $fileList[] = $folder . '/' . $key . '.dev.list';
+                $fileList[] = $folder . '/' . $key . '.list';
             }
         }
 
