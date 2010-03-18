@@ -66,11 +66,29 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
         Api.onBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
         Api.onBuildFailure(this.onLocalCacheApiBuildFailure, this);
 
+        container.on('destroy', this.onContainerDestroy, this);
+
     },
 
 // -------- helper
 
 // ------- listeners
+
+    /**
+     * Listener for the destroy event of the container.
+     *
+     * @param {Ext.Container} container
+     */
+    onContainerDestroy : function(container)
+    {
+        var Api = com.conjoon.cudgets.localCache.Api;
+        Api.unBeforeClear(this.onLocalCacheApiBeforeClear,   this);
+        Api.unClearSuccess(this.onLocalCacheApiClearSuccess, this);
+        Api.unClearFailure(this.onLocalCacheApiClearFailure, this);
+        Api.unBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.unBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
+        Api.unBuildFailure(this.onLocalCacheApiBuildFailure, this);
+    },
 
     /**
      * Listener for this container's setsuccess event.

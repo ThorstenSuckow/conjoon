@@ -104,12 +104,14 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
         );
 
         var Api = com.conjoon.cudgets.localCache.Api;
-        Api.onBeforeClear(this.onLocalCacheApiBeforeClear, this);
+        Api.onBeforeClear(this.onLocalCacheApiBeforeClear,   this);
         Api.onClearSuccess(this.onLocalCacheApiClearSuccess, this);
         Api.onClearFailure(this.onLocalCacheApiClearFailure, this);
-        Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild, this);
+        Api.onBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
         Api.onBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
         Api.onBuildFailure(this.onLocalCacheApiBuildFailure, this);
+
+        this.dialog.on('destroy', this.onDialogDestroy, this);
 
 
         this.dialog.on(
@@ -121,6 +123,22 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
 // -------- helper
 
 // ------- listeners
+
+    /**
+     * Listener for the destroy event of the dialog.
+     *
+     * @param {Ext.Window} dialog
+     */
+    onDialogDestroy : function(dialog)
+    {
+        var Api = com.conjoon.cudgets.localCache.Api;
+        Api.unBeforeClear(this.onLocalCacheApiBeforeClear,   this);
+        Api.unClearSuccess(this.onLocalCacheApiClearSuccess, this);
+        Api.unClearFailure(this.onLocalCacheApiClearFailure, this);
+        Api.unBeforeBuild(this.onLocalCacheApiBeforeBuild,   this);
+        Api.unBuildSuccess(this.onLocalCacheApiBuildSuccess, this);
+        Api.unBuildFailure(this.onLocalCacheApiBuildFailure, this);
+    },
 
     /**
      * Listener for the settingsContainer's setsuccess event.

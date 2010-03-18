@@ -26,6 +26,8 @@ com.conjoon.cudgets.localCache.Api = function() {
 
     var adapter = null;
 
+    var Api = com.conjoon.cudgets.localCache.Api;
+
     var listeners= {
         beforeclear  : [],
         clearsuccess : [],
@@ -41,42 +43,63 @@ com.conjoon.cudgets.localCache.Api = function() {
         }
     };
 
-    var callListener = function(type, adapter) {
+    var getListenersForType = function(type) {
 
-        var cb             = null;
-        var callbackConfig = null;
         switch (type) {
             case 'beforebuild':
-                cb = listeners.beforebuild;
-            break;
+                return listeners.beforebuild;
 
             case 'beforeclear':
-                cb = listeners.beforeclear;
-            break;
+                return listeners.beforeclear;
 
             case 'buildsuccess':
-                cb = listeners.buildsuccess;
-            break;
+                return listeners.buildsuccess;
 
             case 'clearsuccess':
-                cb = listeners.clearsuccess;
-            break;
+                return listeners.clearsuccess;
 
             case 'buildfailure':
-                cb = listeners.buildfailure;
-            break;
+                return listeners.buildfailure;
 
             case 'clearfailure':
-                cb = listeners.clearfailure;
-            break;
+                return listeners.clearfailure;
 
             default:
                 throw(
                     "com.conjoon.cudgets.localCache.Api: unknown event "
-                    + "\""+type+"\" for private method \"callListener()\""
+                    + "\""+type+"\" for private method \"getListenersForType()\""
                 );
-            break;
         }
+
+    };
+
+    var removeListener = function(type, fn, scope) {
+
+        var listeners = getListenersForType(type);
+        var index     = -1;
+        var listener  = null;
+        for (var i = 0, len = listeners.length; i < len; i++) {
+            listener = listeners[i];
+            if (listener[0] == fn && listener[1] == scope) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index > -1) {
+            listeners.splice(index, 1);
+        }
+    };
+
+    var addListener = function(type, fn, scope) {
+        var cb = getListenersForType(type);
+        cb.push([fn, scope ? scope : window]);
+    };
+
+    var callListener = function(type, adapter) {
+
+        var cb             = getListenersForType(type);
+        var callbackConfig = null;
 
         for (var i = 0, len = cb.length; i < len; i++) {
             callbackConfig = cb[i];
@@ -101,32 +124,62 @@ com.conjoon.cudgets.localCache.Api = function() {
 
         onBeforeClear : function(fn, scope)
         {
-            listeners.beforeclear.push([fn, scope ? scope : window]);
+            addListener('beforeclear', fn, scope);
         },
 
         onClearSuccess : function(fn, scope)
         {
-            listeners.clearsuccess.push([fn, scope ? scope : window]);
+            addListener('clearsuccess', fn, scope);
         },
 
         onClearFailure : function(fn, scope)
         {
-            listeners.clearfailure.push([fn, scope ? scope : window]);
+            addListener('clearfailure', fn, scope);
         },
 
         onBeforeBuild : function(fn, scope)
         {
-            listeners.beforebuild.push([fn, scope ? scope : window]);
+            addListener('beforebuild', fn, scope);
         },
 
         onBuildSuccess : function(fn, scope)
         {
-            listeners.buildsuccess.push([fn, scope ? scope : window]);
+            addListener('buildsuccess', fn, scope);
         },
 
         onBuildFailure : function(fn, scope)
         {
-            listeners.buildfailure.push([fn, scope ? scope : window]);
+            addListener('buildfailure', fn, scope);
+        },
+
+        unBeforeClear : function(fn, scope)
+        {
+            removeListener('beforeclear', fn, scope);
+        },
+
+        unClearSuccess : function(fn, scope)
+        {
+            removeListener('clearsuccess', fn, scope);
+        },
+
+        unClearFailure : function(fn, scope)
+        {
+            removeListener('clearfailure', fn, scope);
+        },
+
+        unBeforeBuild : function(fn, scope)
+        {
+            removeListener('beforebuild', fn, scope);
+        },
+
+        unBuildSuccess : function(fn, scope)
+        {
+            removeListener('buildsuccess', fn, scope);
+        },
+
+        unBuildFailure : function(fn, scope)
+        {
+            removeListener('buildfailure', fn, scope);
         },
 
         /**
