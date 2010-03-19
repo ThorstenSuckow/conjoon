@@ -23,6 +23,10 @@
     background-image:url(../images/control_end_blue.png) !important;
 }
 
+.ext-ux-youtubeplayer-control .quality {
+    background-image:url(../images/control_quality.png) !important;
+}
+
 .ext-ux-youtubeplayer-control-muteIcon {
     background-image:url(../images/sound_mute.png) !important;
 }

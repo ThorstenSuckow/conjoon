@@ -68,12 +68,6 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
      */
 
     /**
-     * @cfg {String} developerKey
-     * The developer key to pass to the chromeless player url as the key parameter.
-     * To obtain a developer key, visit {@link http://code.google.com/apis/youtube/dashboard/}
-     */
-
-    /**
      * @cfg {String} playerId
      * The id of the flash object. The id attribute of the embedded flash object
      * will be set to this property.
@@ -146,8 +140,8 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
         });
 
         Ext.applyIf(this, {
-            url       : "http://gdata.youtube.com/apiplayer?key=" +
-                        this.developerKey + "&enablejsapi=1&playerapiid="+
+            url       : "http://www.youtube.com/apiplayer?"
+                        +"&enablejsapi=1&version=3&playerapiid="+
                         this.playerId,
             start     : false,
             controls  : false,
@@ -618,5 +612,5 @@ var _onYouTubePlayerReady = function(playerId) {
 if (!window.onYouTubePlayerReady) {
     window.onYouTubePlayerReady = _onYouTubePlayerReady;
 } else {
-    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.XoutubePlayer.")
+    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.YoutubePlayer.")
 }
