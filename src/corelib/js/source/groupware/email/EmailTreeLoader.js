@@ -79,7 +79,8 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
             pendingCount  : parseInt(attr.pendingCount),
             childCount    : parseInt(attr.childCount),
             isLocked      : parseInt(attr.isLocked) ? true : false,
-            text          : attr.name
+            text          : attr.name,
+            isSelectable  : parseInt(attr.isSelectable) ? true : false
         });
 
         delete attr.name;
@@ -91,6 +92,9 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
                 attr.draggable     = false;
                 attr.isTarget      = false;
                 attr.allowChildren = false;
+                // root folders always have at leas 1 sub folder
+                attr.childCount    = 1;
+                attr.pendingCount  = 0;
             break;
             case 'folder':
                 attr.iconCls = 'com-conjoon-groupware-email-EmailTree-folderIcon';
@@ -183,24 +187,28 @@ Ext.extend(com.conjoon.groupware.email.EmailTreeLoader, Ext.tree.TreeLoader, {
         }
     },
 
-
-    /*requestData : function(node, callback)
+    /**
+     * Overrides parent implementation by adding the path to the
+     * params list.
+     *
+     */
+    getParams: function(node)
     {
-        com.conjoon.groupware.email.EmailTreeLoader.superclass.requestData.call(this, node, callback);
-
-        if (this.transId) {
-            var transId = this.transId;
-            var f = function(){
-                if (this.transId && transId.tId == this.transId.tId) {
-                   // this.node.expand(false, false, callback)
-                    console.log("ABORT FROM TREELOADER");
-                    this.abort();
-                }
-            }.createDelegate(this);
-            window.setTimeout(f, 15000);
+        if(this.directFn){
+            throw(
+                "com.conjoon.groupware.email.EmailTreeLoader.getParams() - "
+                +"directFn not supported yet"
+            );
+        }else{
+            o = com.conjoon.groupware.email.EmailTreeLoader.superclass.getParams.call(this, node);
+            o.id   = o.node;
+            delete o.node;
+            o.path = node.getPath('idForPath');
+            return o;
         }
+    },
 
-    },*/
+
 
     onBeforeLoad : function(treeLoader, node, callback)
     {

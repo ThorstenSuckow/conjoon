@@ -26,10 +26,14 @@ com.conjoon.groupware.email.AccountStore = function() {
     {
         return new Ext.data.Store({
             storeId  : Ext.id(),
-            url      : './groupware/email.account/get.email.accounts/format/json',
-            autoLoad : false,
+            proxy    : new com.conjoon.cudgets.data.DirectProxy({
+                api : {
+                    read : com.conjoon.groupware.provider.emailAccount.getEmailAccounts
+                }
+            }),
+            autoLoad             : false,
             pruneModifiedRecords : true,
-            reader   : new Ext.data.JsonReader({
+            reader               : new com.conjoon.cudgets.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'
             }, com.conjoon.groupware.email.AccountRecord)

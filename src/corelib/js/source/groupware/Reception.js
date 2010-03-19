@@ -107,12 +107,11 @@ com.conjoon.groupware.Reception = function() {
     /**
      * Callback for the receptions user load response.
      *
-     * @param {XmlHttpResponse}
-     * @param {Object} options
-     *
+     * @param {ResponseObject}
      */
-    var _onUserLoad = function(response, options)
+    var _onUserLoad = function(response)
     {
+        response = response.result;
         var inspector = com.conjoon.groupware.ResponseInspector;
 
         var data = inspector.isSuccess(response);
@@ -132,14 +131,13 @@ com.conjoon.groupware.Reception = function() {
     /**
      * Callback for the receptions user load failure.
      *
-     * @param {XmlHttpResponse}
-     * @param {Object} options
+     * @param {ResponseObject}
      *
      */
-    var _onUserLoadFailure = function(response, options)
+    var _onUserLoadFailure = function(response)
     {
         for (var i = 0, len = _userLoadFailureListeners.length; i < len; i++) {
-            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope'], response, options);
+            _userLoadFailureListeners[i]['fn'].call(_userLoadFailureListeners[i]['scope'], response);
         }
     };
 
@@ -219,7 +217,6 @@ com.conjoon.groupware.Reception = function() {
     var _logout = function(buttonType)
     {
         if (buttonType == 'yes') {
-
             for (var i = 0, len = _beforeLogoutListeners.length; i < len; i++) {
                 var ret = _beforeLogoutListeners[i]['fn'].call(_beforeLogoutListeners[i]['scope']);
                 if (ret === false) {
@@ -234,11 +231,12 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            Ext.Ajax.request({
-                url            : './default/reception/logout/format/json',
-                success        : _onLogoutSuccess,
-                failure        : _onLogoutFailure,
-                disableCaching : true
+            com.conjoon.defaultProvider.reception.logout(function(provider, response) {
+                if (!response.status) {
+                    _onLogoutFailure(response);
+                } else {
+                    _onLogoutSuccess(response);
+                }
             });
         }
     };
@@ -260,12 +258,14 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            Ext.Ajax.request({
-                url            : './default/reception/logout/format/json',
-                success        : _onLogoutSuccess,
-                failure        : _onLogoutFailure,
-                disableCaching : true
+            com.conjoon.defaultProvider.reception.logout(function(provider, response) {
+                if (!response.status) {
+                    _onLogoutFailure(response);
+                } else {
+                    _onLogoutSuccess(response);
+                }
             });
+
         } else {
             _logout('yes');
         }
@@ -300,17 +300,16 @@ com.conjoon.groupware.Reception = function() {
      * Listener for a successfull logout-request invoked by _logout.
      *
      * @param {Object} response The response object returned by the server.
-     * @param {Object} options The options used to initiate the request.
      *
      */
-    var _onLogoutSuccess = function(response, options)
+    var _onLogoutSuccess = function(response)
     {
+        var myResponse = response.result;
+
         window.onbeforeunload = Ext.emptyFn;
 
-        var json = com.conjoon.util.Json;
-
-        if (json.isError(response.responseText)) {
-            _onLogoutFailure(response, options);
+        if (!myResponse.success) {
+            _onLogoutFailure(response);
             return;
         }
 
@@ -321,26 +320,11 @@ com.conjoon.groupware.Reception = function() {
      * Listener for a erroneous logout-request invoked by _logout.
      *
      * @param {Object} response The response object returned by the server.
-     * @param {Object} options The options used to initiate the request.
-     *
      */
-    var _onLogoutFailure = function(response, options)
+    var _onLogoutFailure = function(response)
     {
         com.conjoon.SystemMessageManager.hide();
-
-        var json = com.conjoon.util.Json;
-        var msg  = Ext.MessageBox;
-
-        var error = json.forceErrorDecode(response);
-
-        msg.show({
-            title   : error.title || com.conjoon.Gettext.gettext("Error"),
-            msg     : error.message,
-            buttons : msg.OK,
-            icon    : msg[error.level.toUpperCase()],
-            cls     :'com-conjoon-msgbox-'+error.level,
-            width   : 400
-        });
+        com.conjoon.groupware.ResponseInspector.handleFailure(response);
     };
 
     /**
@@ -466,10 +450,10 @@ com.conjoon.groupware.Reception = function() {
      */
     var _pingServer = function()
     {
-        Ext.Ajax.request({
-            url            : './default/reception/ping/format/json',
-            disableCaching : true,
-            failure        : com.conjoon.groupware.ResponseInspector.handleFailure
+        com.conjoon.defaultProvider.reception.ping(function(provider, response) {
+            if (!response.status) {
+                com.conjoon.groupware.ResponseInspector.handleFailure(response);
+            }
         });
     };
 
@@ -552,7 +536,7 @@ com.conjoon.groupware.Reception = function() {
         var rawResponse = message.rawResponse;
 
         var inspector = com.conjoon.groupware.ResponseInspector;
-        var ft = inspector.getFailureType(rawResponse);
+        var ft        = inspector.getFailureType(rawResponse);
 
         switch (ft) {
             case inspector.FAILURE_AUTH:
@@ -716,11 +700,12 @@ com.conjoon.groupware.Reception = function() {
 
             _onBeforeUserLoad();
 
-            Ext.Ajax.request({
-                url            : './default/reception/get.user/format/json',
-                disableCaching : true,
-                success        : _onUserLoad,
-                failure        : _onUserLoadFailure
+            com.conjoon.defaultProvider.reception.getUser(function(provider, response) {
+                if (!response.status) {
+                    _onUserLoadFailure(response);
+                } else {
+                    _onUserLoad(response);
+                }
             });
 
             // subscribe to the message bus and listen to failed responses
@@ -768,15 +753,14 @@ com.conjoon.groupware.Reception = function() {
                 })
             );
 
-            Ext.Ajax.request({
-                url            : './default/reception/lock/format/json',
-                disableCaching : true,
-                success        : _lockWorkbench,
-                failure        : function(response, options) {
+            var me = this;
+            com.conjoon.defaultProvider.reception.lock(function(provider, response) {
+                if (!response.status) {
                     com.conjoon.SystemMessageManager.hide();
                     com.conjoon.groupware.ResponseInspector.handleFailure(response);
-                },
-                scope          : this
+                } else {
+                    _lockWorkbench.call(me);
+                }
             });
         },
 

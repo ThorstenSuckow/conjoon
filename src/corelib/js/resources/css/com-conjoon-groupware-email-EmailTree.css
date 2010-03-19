@@ -30,6 +30,12 @@
     margin-left:5px !important;
 }
 
+.com-conjoon-groupware-email-EmailTree .notSelectable span {
+    font-style:italic;
+    color:#b0b0b0!important;
+}
+
+
 .com-conjoon-groupware-email-EmailTree .infoText {
     background-position:0px 0px;
     background-repeat:no-repeat;

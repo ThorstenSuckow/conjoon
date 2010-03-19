@@ -1,0 +1,40 @@
+/**
+ * conjoon
+ * (c) 2002-2010 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-email-options-folderMapping-dialog .dialogIcon {
+    background-image:url(../images/16x16/apps/groupware-email-foldermapping.png) !important;
+}
+
+.com-conjoon-groupware-email-options-folderMapping-dialog .x-window-body,
+.com-conjoon-groupware-email-options-folderMapping-dialog .x-border-layout-ct,
+.com-conjoon-groupware-email-options-folderMapping-dialog .x-border-panel {
+    background-color:#F6F6F6;
+}
+
+.com-conjoon-groupware-email-options-folderMapping-dialog .listView {
+    background:#ffffff;
+    border:1px solid #99bbe8;
+}
+
+.com-conjoon-groupware-email-options-folderMapping-dialog .introCard {
+    padding:5px 0 0 5px;
+    background-image:url(../images/128x128/apps/groupware-email-options-foldermappingintro.png);
+    background-repeat:no-repeat;
+    background-position:right 200px;
+}
+
+.com-conjoon-groupware-email-options-folderMapping-dialog .introCard .headerLabel {
+    color:#15428b;
+    font-weight:bold;
+}

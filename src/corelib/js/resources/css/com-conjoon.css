@@ -49,6 +49,10 @@
     margin-top:15px;
 }
 
+.com-conjoon-margin-t-25 {
+    margin-top:25px;
+}
+
 .com-conjoon-margin-b-5 {
     margin-bottom:5px;
 }
@@ -79,4 +83,16 @@
 
 .com-conjoon-clear {
    clear:both;
+}
+
+.com-conjoon-width-100 {
+   width:100px;
+}
+
+.com-conjoon-width-125 {
+   width:125px;
+}
+
+.com-conjoon-width-150 {
+   width:150px;
 }

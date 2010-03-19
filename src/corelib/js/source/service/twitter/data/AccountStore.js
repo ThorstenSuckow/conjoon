@@ -33,7 +33,7 @@ com.conjoon.service.twitter.data.AccountStore = function() {
             proxy   : new com.conjoon.cudgets.data.DirectProxy({
                 api : {
                     read : com.conjoon.service.provider.twitterAccount.getAccounts
-                },
+                }
             }),
             autoLoad : false,
             reader   : new com.conjoon.cudgets.data.JsonReader({

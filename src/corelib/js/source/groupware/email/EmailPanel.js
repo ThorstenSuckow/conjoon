@@ -1516,10 +1516,11 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         if (this.clkNodeId == null) {
             return false;
+        } else if (!this.treePanel.getNodeById(this.clkNodeId).attributes.isSelectable) {
+            return false;
         }
 
         (options.params = options.params || {}).groupwareEmailFoldersId = this.clkNodeId;
-
     },
 
 
@@ -1527,30 +1528,38 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     {
         this.switchButtonState(0, null);
 
-        if (node && node.attributes.type && (node.attributes.type != 'root' && node.attributes.type != 'accounts_root')) {
+        var attr = node && node.attributes
+                   ? node && node.attributes
+                   : false;
+
+        if (attr !== false && (attr.type != 'root' && attr.type != 'accounts_root')) {
             this.clkNodeId = node.id;
-            if (this.clkNodeId != this.lastClkNodeId) {
-                var proxy = this.gridPanel.store.proxy;
-                if (proxy.activeRequest[Ext.data.Api.actions.read]) {
-                    proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
-                }
-                this.gridPanel.store.removeAll();
-                this.gridPanel.view.reset(true);
-                this.lastClkNodeId = this.clkNodeId;
-            }
+
             this.previewButton.show();
             this.centerPanel.getLayout().setActiveItem(1);
+
+            if (this.clkNodeId != this.lastClkNodeId) {
+                var proxy = this.gridPanel.store.proxy;
+                var ar    = proxy.activeRequest[Ext.data.Api.actions.read];
+                if (ar) {
+                    proxy.getConnection().abort(ar);
+                }
+                this.gridPanel.store.removeAll();
+
+                if (!attr.isSelectable && ar) {
+                    this.gridPanel.loadMask.hide();
+                }
+                this.gridPanel.view.reset((attr.isSelectable ? true : false));
+
+                this.lastClkNodeId = this.clkNodeId;
+            }
+
             return;
         }
 
         this.lastClkNodeId = this.clkNodeId;
         this.clkNodeId = null;
 
-        /*var proxy = this.gridPanel.store.proxy;
-        if (proxy.activeRequest[Ext.data.Api.READ]) {
-            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
-        }*/
-        //this.gridPanel.store.removeAll();
         this.previewButton.hide();
         this.centerPanel.getLayout().setActiveItem(0);
     },

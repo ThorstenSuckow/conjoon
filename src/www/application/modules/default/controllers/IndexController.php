@@ -38,14 +38,15 @@ class IndexController extends Zend_Controller_Action {
 
     public function indexAction()
     {
-        /**
-         * @see Conjoon_Modules_Default_Registry
-         */
-        require_once 'Conjoon/Modules/Default/Registry.php';
+         $userId = $this->_helper->registryAccess()->getUserId();
 
-        $this->view->title = Conjoon_Modules_Default_Registry::get(
-            '/base/conjoon/name'
-        );
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                             ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
     }
 
     /**
@@ -71,4 +72,5 @@ class IndexController extends Zend_Controller_Action {
 
         die();
     }
+
 }

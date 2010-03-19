@@ -30,3 +30,7 @@ html {
 .x-menu-sep {
     margin-left:24px;
 }
+
+.x-form-cb-label {
+    font-size:11px;
+}
