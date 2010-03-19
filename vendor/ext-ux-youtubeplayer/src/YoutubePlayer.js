@@ -537,6 +537,50 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
     },
 
     /**
+     * Returns the available quality levels of the loaded video, or an empty array
+     * if no current video is available.
+     *
+     * @return {Array}
+     */
+    getAvailableQualityLevels : function()
+    {
+        if (!this.playerAvailable()) {
+            return [];
+        }
+
+        return this.player.getAvailableQualityLevels();
+    },
+
+    /**
+     * Sets the playback quality for the currently available video.
+     *
+     * @param {String} level "small", "medium", "large" or "hd720"
+     */
+    setPlaybackQuality: function(level)
+    {
+        if (!this.playerAvailable()) {
+            return;
+        }
+
+        return this.player.setPlaybackQuality(level);
+    },
+
+    /**
+     * Returns the playback quality for the currently available video,
+     * or undefined.
+     *
+     * @return {mixed} "small", "medium", "large", "hd720" or undefined
+     */
+    getPlaybackQuality: function()
+    {
+        if (!this.playerAvailable()) {
+            return undefined;
+        }
+
+        return this.player.getPlaybackQuality();
+    },
+
+    /**
      * Returns the current time in seconds of the current video.
      *
      * @return {Number}
