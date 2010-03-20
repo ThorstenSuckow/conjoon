@@ -885,6 +885,18 @@ com.conjoon.groupware.Reception = function() {
         },
 
         /**
+         * Returns true if the Reception is lcoked, i.e. the token is invalid,
+         * indicating that the same user credentials have been used somewhere
+         * else.
+         *
+         * @return {Boolean}
+         */
+        isClosed : function()
+        {
+            return _context === this.TYPE_TOKEN_FAILURE;
+        },
+
+        /**
          * Returns true if the workbench is currently locked.
          * The workbench can be locked if the user needs to authenticate
          * or if the user has locked the workbench.
