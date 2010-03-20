@@ -20,7 +20,7 @@ Ext.onReady(function(){
     var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
     var registryStore       = groupware.Registry.getStore();
     var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
-    var reception           = groupware.Reception
+    var reception           = groupware.Reception;
     var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
 
     var loadingCont = document.getElementById(

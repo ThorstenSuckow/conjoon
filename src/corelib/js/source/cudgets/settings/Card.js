@@ -279,6 +279,6 @@ com.conjoon.cudgets.settings.Card = Ext.extend(Ext.FormPanel, {
             }
             record.set(name, value);
         });
-    },
+    }
 
 });
