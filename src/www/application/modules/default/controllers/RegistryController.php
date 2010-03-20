@@ -50,12 +50,6 @@ class RegistryController extends Zend_Controller_Action {
 
         $this->view->entries = array(
             array(
-                'key'   => '/service/youtube/chromeless/api-key',
-                'value' => Conjoon_Modules_Default_Registry::get(
-                    '/service/youtube/chromeless/api-key'
-                )
-            ),
-            array(
                 'key'   => '/client/system/sfx/enabled',
                 'value' => Conjoon_Modules_Default_Registry::get(
                     '/client/system/sfx/enabled'

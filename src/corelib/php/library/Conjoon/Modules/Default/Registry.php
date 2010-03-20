@@ -44,13 +44,6 @@ class Conjoon_Modules_Default_Registry {
         require_once 'Conjoon/Keys.php';
 
         self::$_data = array(
-            'service' => array(
-                'youtube' => array(
-                    'chromeless' => array(
-                        'api-key' => "AI39si45RiG5JYvA3RglrDhw4d7S91erkkKH2HWXjdfoaOm4Q4vDC5OYnn8sjoPDILyhZGbiJ_Eawt_dAruGg3RMkVInXCrjxg"
-                    )
-                )
-            ),
             'client' => array(
                 'environment' => array(
                     'device' => (strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'ipod')
