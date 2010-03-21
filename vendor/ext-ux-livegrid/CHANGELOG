@@ -1,4 +1,11 @@
-﻿04-January-2010
+﻿20-March-2010
+ - fixed: (Store.js) fixed an issue where the "selectionsProxy" would call a
+method that was marked deprecated since Ext 3.0
+ - enhancement: (GridView.js) splitted "liveScrolleInset" into 3 divs which
+fixes issues when a large number of data should be shown in the grid; this
+prevents incapabilities of browsers which define max heights for HTML Elements
+
+04-January-2010
  - fixed: (GridView.js) fixed an issue where the grid would not be properly rendered
 in IE due to deprecated "scrollOffset" property
  - enhancement: (JsonReader.js) added compatibility for Ext 3.0.3
