@@ -68,12 +68,6 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
      */
 
     /**
-     * @cfg {String} developerKey
-     * The developer key to pass to the chromeless player url as the key parameter.
-     * To obtain a developer key, visit {@link http://code.google.com/apis/youtube/dashboard/}
-     */
-
-    /**
      * @cfg {String} playerId
      * The id of the flash object. The id attribute of the embedded flash object
      * will be set to this property.
@@ -146,8 +140,8 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
         });
 
         Ext.applyIf(this, {
-            url       : "http://gdata.youtube.com/apiplayer?key=" +
-                        this.developerKey + "&enablejsapi=1&playerapiid="+
+            url       : "http://www.youtube.com/apiplayer?"
+                        +"&enablejsapi=1&version=3&playerapiid="+
                         this.playerId,
             start     : false,
             controls  : false,
@@ -543,6 +537,50 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
     },
 
     /**
+     * Returns the available quality levels of the loaded video, or an empty array
+     * if no current video is available.
+     *
+     * @return {Array}
+     */
+    getAvailableQualityLevels : function()
+    {
+        if (!this.playerAvailable()) {
+            return [];
+        }
+
+        return this.player.getAvailableQualityLevels();
+    },
+
+    /**
+     * Sets the playback quality for the currently available video.
+     *
+     * @param {String} level "small", "medium", "large" or "hd720"
+     */
+    setPlaybackQuality: function(level)
+    {
+        if (!this.playerAvailable()) {
+            return;
+        }
+
+        return this.player.setPlaybackQuality(level);
+    },
+
+    /**
+     * Returns the playback quality for the currently available video,
+     * or undefined.
+     *
+     * @return {mixed} "small", "medium", "large", "hd720" or undefined
+     */
+    getPlaybackQuality: function()
+    {
+        if (!this.playerAvailable()) {
+            return undefined;
+        }
+
+        return this.player.getPlaybackQuality();
+    },
+
+    /**
      * Returns the current time in seconds of the current video.
      *
      * @return {Number}
@@ -618,7 +656,7 @@ var _onYouTubePlayerReady = function(playerId) {
 if (!window.onYouTubePlayerReady) {
     window.onYouTubePlayerReady = _onYouTubePlayerReady;
 } else {
-    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.XoutubePlayer.")
+    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.YoutubePlayer.")
 }/**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
@@ -707,6 +745,36 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
      * tells if the user is currently adjusting the play position in the stream
      */
     isAdjusting : false,
+
+    /**
+     * @type {Ext.Button} Menubutton for selecting playback quality
+     */
+    qualityButton : null,
+
+    /**
+     * @type {Ext.menu.Item} menu item for quality "small" entry
+     */
+    qualitySmallItem : null,
+
+    /**
+     * @type {Ext.menu.Item} menu item for quality "medium" entry
+     */
+    qualityMediumItem : null,
+
+    /**
+     * @type {Ext.menu.Item} menu item for quality "large" entry
+     */
+    qualityLargeItem : null,
+
+    /**
+     * @type {Ext.menu.Item} menu item for quality "HD720" entry
+     */
+    qualityHd720Item : null,
+
+    /**
+     * @type {Ext.menu.Item} menu item for letting the player auto chose quality
+     */
+    qualityAutoItem : null,
 
 
     /**
@@ -887,6 +955,47 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
             disabled : true
         });
 
+        this.qualityHd720Item = new Ext.menu.CheckItem({
+            text     : '720p',
+            group    : 'quality',
+            disabled : true
+        });
+
+        this.qualityLargeItem = new Ext.menu.CheckItem({
+            text     : '480p',
+            group    : 'quality',
+            disabled : true
+        });
+
+        this.qualityMediumItem = new Ext.menu.CheckItem({
+            text     : '360p',
+            group    : 'quality',
+            disabled : true
+        });
+
+        this.qualitySmallItem = new Ext.menu.CheckItem({
+            text     : '< 360p',
+            group    : 'quality',
+            disabled : true
+        });
+
+        this.qualityAutoItem = new Ext.menu.CheckItem({
+            text    : 'Auto',
+            checked : true
+        });
+
+        this.qualityButton = new Ext.Button({
+            iconCls : 'quality',
+            menu    : [
+                this.qualityHd720Item,
+                this.qualityLargeItem,
+                this.qualityMediumItem,
+                this.qualitySmallItem,
+                '-',
+                this.qualityAutoItem
+            ]
+        });
+
         this.volumeSlider = new Ext.Slider({
             minValue : 0,
             maxValue : 100,
@@ -908,7 +1017,7 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
         this.muteButton = new Ext.Toolbar.SplitButton({
                 iconCls      : 'ext-ux-youtubeplayer-control-volumeIcon',
                 enableToggle : true,
-                //disabled     : true,
+                disabled     : true,
                 width        : 36,
                 menu         : new Ext.menu.Menu({
                     enableScrolling : false,
@@ -935,6 +1044,7 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
                 ' ',
                 this.elRuntime,
                 new Ext.Toolbar.Spacer(),
+                this.qualityButton,
                 this.muteButton
             ]
         });
@@ -987,6 +1097,12 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
         this.volumeSlider.on('drag', this._onSetVolume, this);
         this.player.on('error', this._onError, this);
         this.ejectButton.on('click', this._onEject, this);
+
+        this.qualitySmallItem.on('checkchange', this._onQualityItemCheckChange, this);
+        this.qualityMediumItem.on('checkchange', this._onQualityItemCheckChange, this);
+        this.qualityLargeItem.on('checkchange', this._onQualityItemCheckChange, this);
+        this.qualityHd720Item.on('checkchange', this._onQualityItemCheckChange, this);
+        this.qualityAutoItem.on('checkchange', this._onQualityItemCheckChange, this);
     },
 
     /**
@@ -997,6 +1113,123 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
     {
         if (this.task) {
             Ext.TaskMgr.stop(this.task);
+        }
+    },
+
+    /**
+     * Updates the menu items representing the quality levels of the crrently
+     * playing video.
+     *
+     * @param {Array} levels An array with any of the following values:
+     * small, medium, large, hd720
+     */
+    _updateAvailableQualityLevels : function(levels)
+    {
+        this.qualitySmallItem.setDisabled(levels.indexOf('small') == -1);
+        this.qualityMediumItem.setDisabled(levels.indexOf('medium') == -1);
+        this.qualityLargeItem.setDisabled(levels.indexOf('large') == -1);
+        this.qualityHd720Item.setDisabled(levels.indexOf('hd720') == -1);
+
+    },
+
+    /**
+     * Sets the quality of the video based on the chosen quality settings.
+     *
+     * @param {Array} levels An array with any of the following values:
+     * small, medium, large, hd720
+     */
+    _autoAdjustQualityLevel : function(levels)
+    {
+        // first, check if autoQuality is activated.
+        if (this.qualityAutoItem.checked) {
+            this.player.setPlaybackQuality('default');
+        } else {
+
+            if (this.qualitySmallItem.checked) {
+                this.player.setPlaybackQuality('small');
+                return;
+            }
+
+            if (this.qualityMediumItem.checked) {
+                this.player.setPlaybackQuality('medium');
+                return;
+            }
+
+            if (this.qualityLargeItem.checked) {
+                this.player.setPlaybackQuality('large');
+                return;
+            }
+
+            if (this.qualityHd720Item.checked) {
+                this.player.setPlaybackQuality('hd720');
+                return;
+            }
+        }
+    },
+
+    /**
+     * Checks the menu item for the quality level based on the passed argument.
+     * Will not fire any events from the menu items.
+     *
+     * @apram {String} level any of "small", "medium", "large", "hd720".
+     */
+    _updateCurrentQualityItem : function(level)
+    {
+        this.qualitySmallItem.setChecked(false, true);
+        this.qualityMediumItem.setChecked(false, true);
+        this.qualityLargeItem.setChecked(false, true);
+        this.qualityHd720Item.setChecked(false, true);
+
+        switch (level) {
+            case 'small':
+                this.qualitySmallItem.setChecked(true, true);
+            break;
+
+            case 'medium':
+                this.qualityMediumItem.setChecked(true, true);
+            break;
+
+            case 'large':
+                this.qualityLargeItem.setChecked(true, true);
+            break;
+
+            case 'hd720':
+                this.qualityHd720Item.setChecked(true, true);
+            break;
+        }
+    },
+
+    /**
+     * Called when a quality menu items has been checked/unchecked.
+     *
+     * @param {Ext.menu.Item} item
+     * @param {Boolean} checked
+     */
+    _onQualityItemCheckChange : function(item, checked)
+    {
+        switch (item) {
+            case this.qualitySmallItem:
+                this.player.setPlaybackQuality('small');
+            break;
+
+            case this.qualityMediumItem:
+                this.player.setPlaybackQuality('medium');
+            break;
+
+            case this.qualityLargeItem:
+                this.player.setPlaybackQuality('large');
+            break;
+
+            case this.qualityHd720Item:
+                this.player.setPlaybackQuality('hd720');
+            break;
+
+            case this.qualityAutoItem:
+                if (checked) {
+                    this.player.setPlaybackQuality('default');
+                }
+            break;
+
         }
     },
 
@@ -1060,6 +1293,11 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
         switch (state) {
             case 'unstarted':
                 this._un = true;
+
+                if (this.task) {
+                    Ext.TaskMgr.stop(this.task);
+                    this.task = null;
+                }
             break;
 
             case 'ended':
@@ -1087,7 +1325,14 @@ Ext.ux.YoutubePlayer.Control = Ext.extend(Ext.Toolbar, {
 
             case 'playing':
 
+                this._updateCurrentQualityItem(player.getPlaybackQuality());
+
                 if (!this.task) {
+
+                    var levels = panel.getAvailableQualityLevels();
+                    this._updateAvailableQualityLevels(levels);
+                    this._autoAdjustQualityLevel(levels);
+
                     var c = this;
                     this.task = {
                         run: function(){

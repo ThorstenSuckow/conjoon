@@ -318,7 +318,9 @@ com.conjoon.groupware.reception.LoginWindow = Ext.extend(Ext.Window, {
             }
         }
 
-        this._passwordField.setValue('');
+        if (!com.conjoon.groupware.Reception.isClosed()) {
+            this._passwordField.setValue('');
+        }
 
         try {
             this._passwordField.focus('', 10);

@@ -65,6 +65,6 @@ com.conjoon.service.twitter.optionsDialog.ContainerUi = Ext.extend(
                 }]
             }
         });
-    },
+    }
 
 });

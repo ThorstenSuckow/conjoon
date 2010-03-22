@@ -38,8 +38,6 @@ class Conjoon_Modules_Groupware_Email_Account_Dto extends Conjoon_Dto {
     public $isSignatureUsed;
     public $portInbox;
     public $portOutbox;
-    public $inboxConnectionType;
-    public $outboxConnectionType;
     public $isCopyLeftOnServer;
 
 }

@@ -18,9 +18,9 @@ Ext.onReady(function(){
     var groupware           = com.conjoon.groupware;
     var emailAccountStore   = groupware.email.AccountStore.getInstance();
     var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
-    var mappingStore        = groupware.email.options.folderMapping.data.Store.getInstance();
+    var registryStore       = groupware.Registry.getStore();
     var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
-    var reception           = groupware.Reception
+    var reception           = groupware.Reception;
     var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
 
     var loadingCont = document.getElementById(
@@ -29,21 +29,8 @@ Ext.onReady(function(){
 
     var loadingInd = null;
 
-    var groupedStores = {
-        emailStores : 2
-    };
     var _load = function(store) {
-        var id = store.storeId;
-
-        if (id === emailAccountStore.storeId || id === mappingStore.storeId) {
-            id = 'emailStores';
-        }
-
-        if (groupedStores[id] && (--groupedStores[id]) > 0) {
-            return;
-        }
-
-        _updateIndicator(id);
+        _updateIndicator(store.storeId);
     };
 
     var loadingFailed = false;
@@ -76,18 +63,12 @@ Ext.onReady(function(){
 
     var _loadException = function(store, response, options) {
 
-        var id = store.storeId;
-
-        if (id === emailAccountStore.storeId || id === mappingStore.storeId) {
-            id = 'emailStores';
-        }
-
         var config = preLoader.getStoreConfig(store);
         if (config && config.ignoreLoadException !== true) {
             var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
             _showErrorMessage(sm);
         }
-        _updateFailIndicator(id);
+        _updateFailIndicator(store.storeId);
     };
 
     var _updateFailIndicator = function(id) {
@@ -104,21 +85,11 @@ Ext.onReady(function(){
         if (!div) {
             return;
         }
-
-        if (id == 'emailStores') {
-            if (groupedStores[id] > 0) {
-                return;
-            }
-        }
-
         Ext.fly(div).addClass('done');
         div.innerHTML = div.innerHTML + '&nbsp;' + com.conjoon.Gettext.gettext("Done!");
     };
 
     var _appendIndicator = function(msg, id) {
-        if (document.getElementById(id)) {
-            return;
-        }
         if (!loadingInd) {
             loadingInd = document.createElement('div');
             loadingInd.className = 'loading';
@@ -133,26 +104,22 @@ Ext.onReady(function(){
     var _beforeLoad = function(store) {
 
         var msg = "";
-        var id  = (store.storeId ? store.storeId : store);
 
         switch (store) {
             case twitterAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Twitter accounts...");
             break;
 
-            case mappingStore:
             case emailAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Email accounts...");
-                id  = 'emailStores';
             break;
 
             case feedsAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Feed accounts...");
             break;
 
-            case 'registry':
+            case registryStore:
                 msg = com.conjoon.Gettext.gettext("Loading Registry...");
-                id  = 'registry';
             break;
 
             case feedsFeedStore:
@@ -160,7 +127,7 @@ Ext.onReady(function(){
             break;
         }
 
-        _appendIndicator(msg, id);
+        _appendIndicator(msg, store.storeId);
     };
 
     // add listeners
@@ -177,8 +144,8 @@ Ext.onReady(function(){
     reception.onUserLoad(function(){
         _updateIndicator('reception-id');
     });
-    reception.onUserLoadFailure(function(response){
-        var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response);
+    reception.onUserLoadFailure(function(response, options){
+        var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
         _showErrorMessage(sm);
         _updateFailIndicator('reception-id');
     });
@@ -193,8 +160,8 @@ Ext.onReady(function(){
     });
 
     preLoader.addStore(emailAccountStore);
-    preLoader.addStore(mappingStore);
     preLoader.addStore(feedsAccountStore);
+    preLoader.addStore(registryStore);
     preLoader.addStore(twitterAccountStore, {
         ignoreLoadException : true
     });
@@ -220,11 +187,7 @@ Ext.onReady(function(){
 
         if (groupware.Registry.get('/client/system/sfx/enabled')) {
             com.conjoon.groupware.SystemSoundManager.initDriver();
-        }
-
-        com.conjoon.cudgets.localCache.Api.setAdapter(
-            new com.conjoon.groupware.localCache.Html5Adapter()
-        );
+         }
 
         (function(){
             Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({
@@ -246,16 +209,6 @@ Ext.onReady(function(){
 
     reception.init(true);
     reception.onUserLoad(function(){
-        com.conjoon.groupware.Registry.beforeLoad({
-            fn : function() {
-                _beforeLoad('registry');
-            }
-        });
-        com.conjoon.groupware.Registry.load({
-            fn : function() {
-                _updateIndicator('registry');
-            }
-        });
         preLoader.load();
     });
 

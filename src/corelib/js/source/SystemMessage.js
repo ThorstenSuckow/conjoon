@@ -80,8 +80,3 @@ com.conjoon.SystemMessage.TYPE_PROMPT = 'prompt';
  * @const {String} TYPE_WAIT
  */
 com.conjoon.SystemMessage.TYPE_WAIT = 'wait';
-
-/**
- * @const {String} TYPE_PROGRESS
- */
-com.conjoon.SystemMessage.Type_PROGRESS = 'progress';

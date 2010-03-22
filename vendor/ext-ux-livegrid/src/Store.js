@@ -414,9 +414,10 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
 
             options.ranges = params.ranges;
 
-            this.selectionsProxy.load(params, this.reader,
-                            this.selectionsLoaded, this,
-                            options);
+            this.selectionsProxy.doRequest(
+                Ext.data.Api.actions.read, null, options, this.reader,
+                this.selectionsLoaded, this, options
+            );
         }
     },
 

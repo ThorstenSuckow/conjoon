@@ -89,7 +89,7 @@ Ext.ux.ToastWindow = Ext.extend(Ext.Window, {
             duration: 1,
             remove: true,
             scope: this,
-            callback: this.afterHide,
+            callback: this.afterHide
         });
     }
 });
