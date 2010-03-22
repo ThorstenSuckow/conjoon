@@ -1,4 +1,26 @@
-﻿Notable changes:
+﻿2010-03-22 0.1.1
+================
+Notable changes:
+
+[Ext.ux.Livegrid]
+ - brought Ext.ux.Livegrid 0.4.1 into the main dev branch which fixes an issue
+reported by hflipman (http://www.conjoon.org/forum/showthread.php?346) regarding
+the loading of selections
+
+[Reception module - client]
+ - fixed a consequence of a possible race condition that could occur if a user
+sets the workbench into "standby", then a login with the same user credentials
+is done on another machine, and the previously locked workbench is unlocked
+again
+
+[General]
+ - fixed several trailing comma issues that would prevent IE7 from starting
+the application
+
+[YoutubePlayer]
+ - updated conjoon to use Ext.ux.YoutubePlayer 0.4 which fixes a few issues
+and introduces functionality to chose from different video resolutions based
+on the resolutions the currently playing video provides
 
 [Feeds module - backend]
  - fixed an issue where item facade's "importAndAddFeedItems()" would not handle
