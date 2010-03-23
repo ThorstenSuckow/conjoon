@@ -17,7 +17,6 @@ vendor/ext-ux-youtubeplayer/src/YoutubePlayer.js
 vendor/ext-ux-youtubeplayer/src/YoutubePlayerControl.js
 vendor/ext-ux-util-messagebus/src/MessageBus.js
 vendor/ext-ux-toastwindow/ToastWindow.js
-vendor/ext-ux-layout-cardlayout/src/CardLayout.js
 vendor/ext-ux-layout-slidelayout/src/SlideLayout.js
 vendor/ext-ux-wiz/src/Wizard.js
 vendor/ext-ux-wiz/src/Header.js
