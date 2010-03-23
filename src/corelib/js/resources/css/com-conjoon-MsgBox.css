@@ -169,6 +169,8 @@
 
 .com-conjoon-msgbox-prompt .ext-mb-input {
     font-size:11px !important;
+    padding:2px;
+    width:98%!important;
 }
 
 .com-conjoon-msgbox-prompt .ext-mb-fix-cursor {

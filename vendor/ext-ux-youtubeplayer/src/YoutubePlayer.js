@@ -68,12 +68,6 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
      */
 
     /**
-     * @cfg {String} developerKey
-     * The developer key to pass to the chromeless player url as the key parameter.
-     * To obtain a developer key, visit {@link http://code.google.com/apis/youtube/dashboard/}
-     */
-
-    /**
      * @cfg {String} playerId
      * The id of the flash object. The id attribute of the embedded flash object
      * will be set to this property.
@@ -146,8 +140,8 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
         });
 
         Ext.applyIf(this, {
-            url       : "http://gdata.youtube.com/apiplayer?key=" +
-                        this.developerKey + "&enablejsapi=1&playerapiid="+
+            url       : "http://www.youtube.com/apiplayer?"
+                        +"&enablejsapi=1&version=3&playerapiid="+
                         this.playerId,
             start     : false,
             controls  : false,
@@ -543,6 +537,50 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
     },
 
     /**
+     * Returns the available quality levels of the loaded video, or an empty array
+     * if no current video is available.
+     *
+     * @return {Array}
+     */
+    getAvailableQualityLevels : function()
+    {
+        if (!this.playerAvailable()) {
+            return [];
+        }
+
+        return this.player.getAvailableQualityLevels();
+    },
+
+    /**
+     * Sets the playback quality for the currently available video.
+     *
+     * @param {String} level "small", "medium", "large" or "hd720"
+     */
+    setPlaybackQuality: function(level)
+    {
+        if (!this.playerAvailable()) {
+            return;
+        }
+
+        return this.player.setPlaybackQuality(level);
+    },
+
+    /**
+     * Returns the playback quality for the currently available video,
+     * or undefined.
+     *
+     * @return {mixed} "small", "medium", "large", "hd720" or undefined
+     */
+    getPlaybackQuality: function()
+    {
+        if (!this.playerAvailable()) {
+            return undefined;
+        }
+
+        return this.player.getPlaybackQuality();
+    },
+
+    /**
      * Returns the current time in seconds of the current video.
      *
      * @return {Number}
@@ -618,5 +656,5 @@ var _onYouTubePlayerReady = function(playerId) {
 if (!window.onYouTubePlayerReady) {
     window.onYouTubePlayerReady = _onYouTubePlayerReady;
 } else {
-    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.XoutubePlayer.")
+    throw("\"onYouTubePlayerReady\" is already defined. Cannot use Ext.ux.YoutubePlayer.")
 }

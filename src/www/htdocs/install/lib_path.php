@@ -38,7 +38,7 @@ $_SESSION['add_include_path'] = isset($_SESSION['add_include_path'])
                         ? $_SESSION['add_include_path']
                         : (isset($_SESSION['installation_info']['add_include_path'])
                            ? $_SESSION['installation_info']['add_include_path']
-                           : ''
+                           : true
                         );
 
 if (isset($_POST['lib_path_post'])) {

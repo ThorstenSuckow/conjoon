@@ -1,3 +1,9 @@
+Version 0.4
+19-March-2010
+ - enhancement: Updated player features with V3 of Youtube Chromeless API
+(choose resolution)
+ - fixed: changed url to vendor player Api since old one was broken
+
 04-January-2010
  - enhancement: minor fixes, compatibility for Ext 3.0.3
 

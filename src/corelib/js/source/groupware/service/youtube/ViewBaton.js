@@ -50,23 +50,13 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
     var flashControl;
 
     /**
-     * Builds a new {Ext.ux.YoutubePlayer} if there was an api-key found in the registry,
-     * otherwise it returns null.
+     * Builds a new {Ext.ux.YoutubePlayer}
      *
      * @return {Ext.ux.YoutubePlayer}
      */
     var buildPlayer = function()
     {
-        var apiKey = com.conjoon.groupware.Registry.get(
-            '/service/youtube/chromeless/api-key'
-        );
-
-        if (!apiKey) {
-            return null;
-        }
-
         return new Ext.ux.YoutubePlayer({
-            developerKey : apiKey,
             playerId     : 'myplayer',
             ratioMode    : 'stretch',
             hideMode     : 'offsets',

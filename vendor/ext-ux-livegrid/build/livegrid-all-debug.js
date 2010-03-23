@@ -222,7 +222,7 @@ Ext.ux.grid.livegrid.GridView = function(config) {
      * data possible.
      */
     this.templates.master = new Ext.Template(
-        '<div class="x-grid3" hidefocus="true"><div class="liveScroller"><div></div></div>',
+        '<div class="x-grid3" hidefocus="true"><div class="liveScroller"><div></div><div></div><div></div></div>',
             '<div class="x-grid3-viewport"">',
                 '<div class="x-grid3-header"><div class="x-grid3-header-inner"><div class="x-grid3-header-offset" style="{ostyle}">{header}</div></div><div class="x-clear"></div></div>',
                 '<div class="x-grid3-scroller" style="overflow-y:hidden !important;"><div class="x-grid3-body" style="{bstyle}">{body}</div><a href="#" class="x-grid3-focus" tabIndex="-1"></a></div>',
@@ -267,12 +267,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
     liveScroller : null,
 
     /**
-     * This is the panel that represents the amount of data in a given repository.
-     * The height gets computed via the total amount of records multiplied with
-     * the fixed(!) row height
+     * This array holds the divs that represent the amount of data in a given repository.
+     * The sum of heights of this divs gets computed via the total amount of records
+     * multiplied with the fixed(!) row height.
+     * There is a total of 3 divs responsible for the scroll amount to prevent issues
+     * with the max number of pxiels a div alone can grow in height.
      * @param {native HTMLObject}
      */
-    liveScrollerInset : null,
+    liveScrollerInsets : null,
 
     /**
      * The <b>fixed</b> row height for <b>every</b> row in the grid. The value is
@@ -524,7 +526,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
     /**
      * Inits the DOM native elements for this component.
-     * The properties <tt>liveScroller</tt> and <tt>liveScrollerInset</tt> will
+     * The properties <tt>liveScroller</tt> and <tt>liveScrollerInsets</tt> will
      * be respected as provided by the master template.
      * The <tt>scroll</tt> listener for the <tt>liverScroller</tt> will also be
      * added here as the <tt>mousewheel</tt> listener.
@@ -542,9 +544,14 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         this.mainWrap = new E(cs[1]);
 
-        // liveScroller and liveScrollerInset
+        // liveScroller and liveScrollerInsets
         this.liveScroller       = new E(cs[0]);
-        this.liveScrollerInset  = this.liveScroller.dom.firstChild;
+        var f = this.liveScroller.dom.firstChild;
+        this.liveScrollerInsets  = [
+            f,
+            f.nextSibling,
+            f.nextSibling.nextSibling
+        ];
         this.liveScroller.on('scroll', this.onLiveScroll,  this, {buffer : this.scrollDelay});
 
         var thd = this.mainWrap.dom.firstChild;
@@ -1749,7 +1756,22 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             return;
         }
 
-        this.liveScrollerInset.style.height = (hiddenRows == 0 ? 0 : contHeight+(hiddenRows*this.rowHeight))+"px";
+        var h  = (hiddenRows == 0 ? 0 : contHeight+(hiddenRows*this.rowHeight));
+        var oh = h;
+        var len = this.liveScrollerInsets.length;
+
+        if (h == 0) {
+            h = 0;
+        } else {
+            h = Math.round(h/len);
+        }
+
+        for (var i = 0; i < len; i++) {
+            if (i == len-1 && h != 0) {
+                h -= (h*3)-oh;
+            }
+            this.liveScrollerInsets[i].style.height = h+"px";
+        }
     },
 
     /**
@@ -2950,9 +2972,10 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
 
             options.ranges = params.ranges;
 
-            this.selectionsProxy.load(params, this.reader,
-                            this.selectionsLoaded, this,
-                            options);
+            this.selectionsProxy.doRequest(
+                Ext.data.Api.actions.read, null, options, this.reader,
+                this.selectionsLoaded, this, options
+            );
         }
     },
 

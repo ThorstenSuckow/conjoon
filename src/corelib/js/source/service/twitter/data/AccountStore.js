@@ -39,7 +39,7 @@ com.conjoon.service.twitter.data.AccountStore = function() {
             reader   : new com.conjoon.cudgets.data.JsonReader({
                     root            : 'accounts',
                     id              : 'id',
-                    successProperty : 'success',
+                    successProperty : 'success'
                 }, com.conjoon.service.twitter.data.AccountRecord)
         });
     };
