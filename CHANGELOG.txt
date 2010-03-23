@@ -1,4 +1,10 @@
-﻿2010-03-22 0.1.1
+﻿Notable changes:
+
+[Vendor]
+ - updated conjoon to use Ext 3.1.2, which fixes several minor ui issues.
+
+
+2010-03-22 0.1.1
 ================
 Notable changes:
 

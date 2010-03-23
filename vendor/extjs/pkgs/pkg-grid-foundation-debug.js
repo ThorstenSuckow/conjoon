@@ -1,6 +1,6 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
@@ -14,9 +14,9 @@
  * <div class="sub-desc"></div></li>
  * <li><b>{@link Ext.grid.ColumnModel Column model}</b> : Column makeup
  * <div class="sub-desc"></div></li>
- * <li><b>{@link Ext.grid.GridView View}</b> : Encapsulates the user interface 
+ * <li><b>{@link Ext.grid.GridView View}</b> : Encapsulates the user interface
  * <div class="sub-desc"></div></li>
- * <li><b>{@link Ext.grid.AbstractSelectionModel selection model}</b> : Selection behavior 
+ * <li><b>{@link Ext.grid.AbstractSelectionModel selection model}</b> : Selection behavior
  * <div class="sub-desc"></div></li>
  * </ul></div>
  * <p>Example usage:</p>
@@ -217,28 +217,28 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
      * @cfg {Array} stateEvents
      * An array of events that, when fired, should trigger this component to save its state.
      * Defaults to:<pre><code>
-     * stateEvents: ['columnmove', 'columnresize', 'sortchange']
+     * stateEvents: ['columnmove', 'columnresize', 'sortchange', 'groupchange']
      * </code></pre>
      * <p>These can be any types of events supported by this component, including browser or
      * custom events (e.g., <tt>['click', 'customerchange']</tt>).</p>
      * <p>See {@link Ext.Component#stateful} for an explanation of saving and restoring
      * Component state.</p>
      */
-    stateEvents : ['columnmove', 'columnresize', 'sortchange'],
+    stateEvents : ['columnmove', 'columnresize', 'sortchange', 'groupchange'],
     /**
      * @cfg {Object} view The {@link Ext.grid.GridView} used by the grid. This can be set
      * before a call to {@link Ext.Component#render render()}.
      */
     view : null,
-    
+
     /**
      * @cfg {Array} bubbleEvents
      * <p>An array of events that, when fired, should be bubbled to any parent container.
-     * See {@link Ext.util.Observable#enableBubble}. 
+     * See {@link Ext.util.Observable#enableBubble}.
      * Defaults to <tt>[]</tt>.
      */
     bubbleEvents: [],
-    
+
     /**
      * @cfg {Object} viewConfig A config object that will be applied to the grid's UI view.  Any of
      * the config options available for {@link Ext.grid.GridView} can be specified here. This option
@@ -365,7 +365,7 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
              * @param {Ext.EventObject} e
              */
             'headermousedown',
-            
+
             /**
              * @event groupmousedown
              * Fires before a group header is clicked. <b>Only applies for grids with a {@link Ext.grid.GroupingView GroupingView}</b>.
@@ -375,7 +375,7 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
              * @param {Ext.EventObject} e
              */
             'groupmousedown',
-            
+
             /**
              * @event rowbodymousedown
              * Fires before the row body is clicked. <b>Only applies for grids with {@link Ext.grid.GridView#enableRowBody enableRowBody} configured.</b>
@@ -384,7 +384,7 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
              * @param {Ext.EventObject} e
              */
             'rowbodymousedown',
-            
+
             /**
              * @event containermousedown
              * Fires before the container is clicked. The container consists of any part of the grid body that is not covered by a row.
@@ -485,7 +485,7 @@ function(grid, rowIndex, columnIndex, e) {
              * @param {Ext.EventObject} e
              */
             'containerdblclick',
-            
+
             /**
              * @event rowbodyclick
              * Fires when the row body is clicked. <b>Only applies for grids with {@link Ext.grid.GridView#enableRowBody enableRowBody} configured.</b>
@@ -502,7 +502,7 @@ function(grid, rowIndex, columnIndex, e) {
              * @param {Ext.EventObject} e
              */
             'rowbodydblclick',
-            
+
             /**
              * @event rowcontextmenu
              * Fires when a row is right clicked
@@ -581,6 +581,13 @@ function(grid, rowIndex, columnIndex, e) {
              */
             'sortchange',
             /**
+             * @event groupchange
+             * Fires when the grid's grouping changes (only applies for grids with a {@link Ext.grid.GroupingView GroupingView})
+             * @param {Grid} this
+             * @param {String} groupField A string with the grouping field, null if the store is not grouped.
+             */
+            'groupchange',
+            /**
              * @event reconfigure
              * Fires when the grid is reconfigured with a new store and/or column model.
              * @param {Grid} this
@@ -590,7 +597,7 @@ function(grid, rowIndex, columnIndex, e) {
             'reconfigure',
             /**
              * @event viewready
-             * Fires when the grid view is available (use this for selecting a default row). 
+             * Fires when the grid view is available (use this for selecting a default row).
              * @param {Grid} this
              */
             'viewready'
@@ -638,23 +645,40 @@ function(grid, rowIndex, columnIndex, e) {
 
     applyState : function(state){
         var cm = this.colModel,
-            cs = state.columns;
+            cs = state.columns,
+            store = this.store,
+            s,
+            c,
+            oldIndex;
+
         if(cs){
             for(var i = 0, len = cs.length; i < len; i++){
-                var s = cs[i],
-                    c = cm.getColumnById(s.id);
+                s = cs[i];
+                c = cm.getColumnById(s.id);
                 if(c){
                     c.hidden = s.hidden;
                     c.width = s.width;
-                    var oldIndex = cm.getIndexById(s.id);
+                    oldIndex = cm.getIndexById(s.id);
                     if(oldIndex != i){
                         cm.moveColumn(oldIndex, i);
                     }
                 }
             }
         }
-        if(state.sort && this.store){
-            this.store[this.store.remoteSort ? 'setDefaultSort' : 'sort'](state.sort.field, state.sort.direction);
+        if(store){
+            s = state.sort;
+            if(s){
+                store[store.remoteSort ? 'setDefaultSort' : 'sort'](s.field, s.direction);
+            }
+            s = state.group;
+            if(store.groupBy){
+                if(s){
+                    store.groupBy(s);
+                }else{
+                    store.clearGrouping();
+                }
+            }
+
         }
         var o = Ext.apply({}, state);
         delete o.columns;
@@ -663,7 +687,11 @@ function(grid, rowIndex, columnIndex, e) {
     },
 
     getState : function(){
-        var o = {columns: []};
+        var o = {columns: []},
+            store = this.store,
+            ss,
+            gs;
+
         for(var i = 0, c; (c = this.colModel.config[i]); i++){
             o.columns[i] = {
                 id: c.id,
@@ -673,10 +701,16 @@ function(grid, rowIndex, columnIndex, e) {
                 o.columns[i].hidden = true;
             }
         }
-        if(this.store){
-            var ss = this.store.getSortState();
+        if(store){
+            ss = store.getSortState();
             if(ss){
                 o.sort = ss;
+            }
+            if(store.getGroupState){
+                gs = store.getGroupState();
+                if(gs){
+                    o.group = gs;
+                }
             }
         }
         return o;
@@ -746,7 +780,7 @@ function(grid, rowIndex, columnIndex, e) {
         var t = e.getTarget(),
             v = this.view,
             header = v.findHeaderIndex(t);
-            
+
         if(header !== false){
             this.fireEvent('header' + name, this, header, e);
         }else{
@@ -792,10 +826,10 @@ function(grid, rowIndex, columnIndex, e) {
 
     // private
     walkCells : function(row, col, step, fn, scope){
-        var cm = this.colModel, 
+        var cm = this.colModel,
             clen = cm.getColumnCount(),
-            ds = this.store, 
-            rlen = ds.getCount(), 
+            ds = this.store,
+            rlen = ds.getCount(),
             first = true;
         if(step < 0){
             if(col < 0){
@@ -835,14 +869,6 @@ function(grid, rowIndex, columnIndex, e) {
             }
         }
         return null;
-    },
-
-    // private
-    onResize : function(){
-        Ext.grid.GridPanel.superclass.onResize.apply(this, arguments);
-        if(this.viewReady){
-            this.view.layout();
-        }
     },
 
     /**
@@ -905,129 +931,129 @@ function(grid, rowIndex, columnIndex, e) {
         return String.format(this.ddText, count, count == 1 ? '' : 's');
     }
 
-    /** 
-     * @cfg {String/Number} activeItem 
-     * @hide 
+    /**
+     * @cfg {String/Number} activeItem
+     * @hide
      */
-    /** 
-     * @cfg {Boolean} autoDestroy 
-     * @hide 
+    /**
+     * @cfg {Boolean} autoDestroy
+     * @hide
      */
-    /** 
-     * @cfg {Object/String/Function} autoLoad 
-     * @hide 
+    /**
+     * @cfg {Object/String/Function} autoLoad
+     * @hide
      */
-    /** 
-     * @cfg {Boolean} autoWidth 
-     * @hide 
+    /**
+     * @cfg {Boolean} autoWidth
+     * @hide
      */
-    /** 
-     * @cfg {Boolean/Number} bufferResize 
-     * @hide 
+    /**
+     * @cfg {Boolean/Number} bufferResize
+     * @hide
      */
-    /** 
-     * @cfg {String} defaultType 
-     * @hide 
+    /**
+     * @cfg {String} defaultType
+     * @hide
      */
-    /** 
-     * @cfg {Object} defaults 
-     * @hide 
+    /**
+     * @cfg {Object} defaults
+     * @hide
      */
-    /** 
-     * @cfg {Boolean} hideBorders 
-     * @hide 
+    /**
+     * @cfg {Boolean} hideBorders
+     * @hide
      */
-    /** 
-     * @cfg {Mixed} items 
-     * @hide 
+    /**
+     * @cfg {Mixed} items
+     * @hide
      */
-    /** 
-     * @cfg {String} layout 
-     * @hide 
+    /**
+     * @cfg {String} layout
+     * @hide
      */
-    /** 
-     * @cfg {Object} layoutConfig 
-     * @hide 
+    /**
+     * @cfg {Object} layoutConfig
+     * @hide
      */
-    /** 
-     * @cfg {Boolean} monitorResize 
-     * @hide 
+    /**
+     * @cfg {Boolean} monitorResize
+     * @hide
      */
-    /** 
-     * @property items 
-     * @hide 
+    /**
+     * @property items
+     * @hide
      */
-    /** 
-     * @method add 
-     * @hide 
+    /**
+     * @method add
+     * @hide
      */
-    /** 
-     * @method cascade 
-     * @hide 
+    /**
+     * @method cascade
+     * @hide
      */
-    /** 
-     * @method doLayout 
-     * @hide 
+    /**
+     * @method doLayout
+     * @hide
      */
-    /** 
-     * @method find 
-     * @hide 
+    /**
+     * @method find
+     * @hide
      */
-    /** 
-     * @method findBy 
-     * @hide 
+    /**
+     * @method findBy
+     * @hide
      */
-    /** 
-     * @method findById 
-     * @hide 
+    /**
+     * @method findById
+     * @hide
      */
-    /** 
-     * @method findByType 
-     * @hide 
+    /**
+     * @method findByType
+     * @hide
      */
-    /** 
-     * @method getComponent 
-     * @hide 
+    /**
+     * @method getComponent
+     * @hide
      */
-    /** 
-     * @method getLayout 
-     * @hide 
+    /**
+     * @method getLayout
+     * @hide
      */
-    /** 
-     * @method getUpdater 
-     * @hide 
+    /**
+     * @method getUpdater
+     * @hide
      */
-    /** 
-     * @method insert 
-     * @hide 
+    /**
+     * @method insert
+     * @hide
      */
-    /** 
-     * @method load 
-     * @hide 
+    /**
+     * @method load
+     * @hide
      */
-    /** 
-     * @method remove 
-     * @hide 
+    /**
+     * @method remove
+     * @hide
      */
-    /** 
-     * @event add 
-     * @hide 
+    /**
+     * @event add
+     * @hide
      */
-    /** 
-     * @event afterlayout 
-     * @hide 
+    /**
+     * @event afterlayout
+     * @hide
      */
-    /** 
-     * @event beforeadd 
-     * @hide 
+    /**
+     * @event beforeadd
+     * @hide
      */
-    /** 
-     * @event beforeremove 
-     * @hide 
+    /**
+     * @event beforeremove
+     * @hide
      */
-    /** 
-     * @event remove 
-     * @hide 
+    /**
+     * @event remove
+     * @hide
      */
 
 
@@ -3398,7 +3424,7 @@ Ext.grid.ColumnModel = Ext.extend(Ext.util.Observable, {
      * configuration options to all <tt><b>{@link #columns}</b></tt>.  Configuration options specified with
      * individual {@link Ext.grid.Column column} configs will supersede these <tt><b>{@link #defaults}</b></tt>.
      */
-    
+
     constructor : function(config){
         /**
 	     * An Array of {@link Ext.grid.Column Column definition} objects representing the configuration
@@ -3488,8 +3514,9 @@ Ext.grid.ColumnModel = Ext.extend(Ext.util.Observable, {
             delete this.totalWidth;
             for(i = 0, len = this.config.length; i < len; i++){
                 c = this.config[i];
-                if(c.editor){
-                    c.editor.destroy();
+                if(c.setEditor){
+                    //check here, in case we have a special column like a CheckboxSelectionModel
+                    c.setEditor(null);
                 }
             }
         }
@@ -3506,7 +3533,7 @@ Ext.grid.ColumnModel = Ext.extend(Ext.util.Observable, {
         for(i = 0, len = config.length; i < len; i++){
             c = Ext.applyIf(config[i], this.defaults);
             // if no id, create one using column's ordinal position
-            if(typeof c.id == 'undefined'){
+            if(Ext.isEmpty(c.id)){
                 c.id = i;
             }
             if(!c.isColumn){
@@ -3630,7 +3657,7 @@ var columns = grid.getColumnModel().getColumnsBy(function(c){
         }
         return this.config[col].renderer;
     },
-    
+
     getRendererScope : function(col){
         return this.config[col].scope;
     },
@@ -3795,7 +3822,11 @@ var grid = new Ext.grid.GridPanel({
      * @return {Boolean}
      */
     isCellEditable : function(colIndex, rowIndex){
-        return (this.config[colIndex].editable || (typeof this.config[colIndex].editable == "undefined" && this.config[colIndex].editor)) ? true : false;
+        var c = this.config[colIndex],
+            ed = c.editable;
+
+        //force boolean
+        return !!(ed || (!Ext.isDefined(ed) && c.editor));
     },
 
     /**
@@ -3868,16 +3899,19 @@ myGrid.getColumnModel().setHidden(0, true); // hide column 0 (0 = the first colu
      * @param {Object} editor The editor object
      */
     setEditor : function(col, editor){
-        Ext.destroy(this.config[col].editor);
-        this.config[col].editor = editor;
+        this.config[col].setEditor(editor);
     },
 
     /**
      * Destroys this column model by purging any event listeners, and removing any editors.
      */
     destroy : function(){
-        for(var i = 0, c = this.config, len = c.length; i < len; i++){
-            Ext.destroy(c[i].editor);
+        var c;
+        for(var i = 0, len = this.config.length; i < len; i++){
+            c = this.config[i];
+            if(c.setEditor){
+                c.setEditor(null);
+            }
         }
         this.purgeListeners();
     }
@@ -4578,7 +4612,7 @@ Ext.grid.Column = Ext.extend(Object, {
      * @cfg {Boolean} hidden
      * Optional. <tt>true</tt> to initially hide this column. Defaults to <tt>false</tt>.
      * A hidden column {@link Ext.grid.GridPanel#enableColumnHide may be shown via the header row menu}.
-     * If a column is never to be shown, simply do not include this column in the Column Model at all. 
+     * If a column is never to be shown, simply do not include this column in the Column Model at all.
      */
     /**
      * @cfg {String} tooltip Optional. A text string to use as the column header's tooltip.  If Quicktips
@@ -4683,7 +4717,7 @@ var grid = new Ext.grid.GridPanel({
      * Defaults to true.
      */
     isColumn : true,
-    
+
     constructor : function(config){
         Ext.apply(this, config);
 
@@ -4697,9 +4731,9 @@ var grid = new Ext.grid.GridPanel({
             this.scope = this;
         }
 
-        if(this.editor){
-            this.editor = Ext.create(this.editor, 'textfield');
-        }
+        var ed = this.editor;
+        delete this.editor;
+        this.setEditor(ed);
     },
 
     /**
@@ -4733,24 +4767,46 @@ var grid = new Ext.grid.GridPanel({
     },
 
     /**
+     * Sets a new editor for this column.
+     * @param {Ext.Editor/Ext.form.Field} editor The editor to set
+     */
+    setEditor : function(editor){
+        var ed = this.editor;
+        if(ed){
+            if(ed.gridEditor){
+                ed.gridEditor.destroy();
+                delete ed.gridEditor;
+            }else{
+                ed.destroy();
+            }
+        }
+        this.editor = null;
+        if(editor){
+            //not an instance, create it
+            if(!editor.isXType){
+                editor = Ext.create(editor, 'textfield');
+            }
+            this.editor = editor;
+        }
+    },
+
+    /**
      * Returns the {@link Ext.Editor editor} defined for this column that was created to wrap the {@link Ext.form.Field Field}
      * used to edit the cell.
      * @param {Number} rowIndex The row index
      * @return {Ext.Editor}
      */
     getCellEditor: function(rowIndex){
-        var editor = this.getEditor(rowIndex);
-        if(editor){
-            if(!editor.startEdit){
-                if(!editor.gridEditor){
-                    editor.gridEditor = new Ext.grid.GridEditor(editor);
+        var ed = this.getEditor(rowIndex);
+        if(ed){
+            if(!ed.startEdit){
+                if(!ed.gridEditor){
+                    ed.gridEditor = new Ext.grid.GridEditor(ed);
                 }
-                return editor.gridEditor;
-            }else if(editor.startEdit){
-                return editor;
+                ed = ed.gridEditor;
             }
         }
-        return null;
+        return ed;
     }
 });
 

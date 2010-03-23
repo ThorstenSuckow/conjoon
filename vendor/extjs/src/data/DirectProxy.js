@@ -1,6 +1,6 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
@@ -158,9 +158,14 @@ paramOrder: 'param1|param2|param'
      * @protected
      */
     onWrite : function(action, trans, result, res, rs) {
-        var data = trans.reader.extractData(result, false);
-        this.fireEvent("write", this, action, data, res, rs, trans.request.arg);
-        trans.request.callback.call(trans.request.scope, data, res, true);
+        var data = trans.reader.extractData(result[trans.reader.meta.root], false);
+        var success = result[trans.reader.meta.successProperty];
+        success = (success !== false);
+        if (success){
+            this.fireEvent("write", this, action, data, res, rs, trans.request.arg);
+        }else{
+            this.fireEvent('exception', this, 'remote', action, trans, result, rs);
+        }
+        trans.request.callback.call(trans.request.scope, data, res, success);
     }
 });
-

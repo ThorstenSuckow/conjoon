@@ -14,7 +14,7 @@
 
 Ext.namespace('com.conjoon.cudgets.data');
 
-if (Ext.version != '3.1.0') {
+if (Ext.version != '3.1.1') {
     throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.data.Store");
 }
 
@@ -27,7 +27,7 @@ com.conjoon.cudgets.data.Store = Ext.extend(Ext.data.Store, {
      */
     // @private callback-handler for remote CRUD actions
     // Do not override -- override loadRecords, onCreateRecords, onDestroyRecords and onUpdateRecords instead.
-    createCallback : function(action, rs) {
+    createCallback : function(action, rs, batch) {
         var actions = Ext.data.Api.actions;
 
         return (action == 'read') ? this.loadRecords : function(data, response, success) {
@@ -38,6 +38,8 @@ com.conjoon.cudgets.data.Store = Ext.extend(Ext.data.Store, {
             if (data && data.success !== undefined) {
                 this.fireEvent('write', this, action, data, response, rs);
             }
+            // added to be compatible with Ext 3.1.2 API
+            this.removeFromBatch(batch, action, data);
         };
     },
 
