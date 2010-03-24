@@ -61,7 +61,7 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
     isValid : function()
     {
         if (this.monitorValid) {
-            return this.bindHandler();
+            return this.bindHandler(true);
         }
 
         return true;
@@ -73,18 +73,32 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
      * Overrides parent implementation since we allow to add any element
      * in this component which must not be neccessarily be a form-element.
      * So before a call to "isValid()" is about to be made, this implementation
-     * checks first if the specific item sitting in this component has a method "isValid" - if it
-     * does not exists, it will be added on the fly.
+     * checks first if the specific item sitting in this component has a method
+     * "isValid" - if it does not exists, it will be added on the fly.
+     *
+     * @param {Boolean} doreturn if true, this method will return the actual
+     * value of the formItems
+     *
      */
-    bindHandler : function()
+    bindHandler : function(doReturn)
     {
+        var an = function() {
+            return true;
+        };
+        var valid = true;
         this.form.items.each(function(f){
-            if(!f.isValid){
-                f.isValid = Ext.emptyFn;
+            if (!f.isValid) {
+                f.isValid = an;
+            } else if(valid && !f.isValid(true)){
+                valid = false;
             }
         });
 
         Ext.ux.Wiz.Card.superclass.bindHandler.call(this);
+
+        if (doReturn === true) {
+            return valid;
+        }
     },
 
     /**
@@ -114,7 +128,6 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
     {
         var ly         = this.ownerCt.layout;
         var activeItem = ly.activeItem;
-
         if (activeItem && activeItem.id === this.id) {
             return this.fireEvent('beforecardhide', this);
         }
