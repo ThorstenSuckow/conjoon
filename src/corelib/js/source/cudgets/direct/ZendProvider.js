@@ -168,9 +168,8 @@ Ext.Ajax.on('beforerequest', function(conn, options) {
             url += '/format/' + options.ts.provider.format;
         }
 
-        options.url = url;
+        options.url            = url;
+        options.disableCaching = true;
     }
-
-    options.url += '?dc=' + Math.round((new Date()).getTime());
 
 });
