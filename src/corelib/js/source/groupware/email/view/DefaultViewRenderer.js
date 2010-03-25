@@ -446,7 +446,6 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         }
 
         var dom  = document.getElementById(this.viewId);
-        dom.parentNode.style.visibility = 'hidden';
 
         var doc = this.doc;
         if (doc) {
@@ -469,7 +468,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         if (next) {
             next.parentNode.removeChild(next);
         }
-        dom.parentNode.style.visibility = 'visible';
+
         this.cleared = true;
     },
 

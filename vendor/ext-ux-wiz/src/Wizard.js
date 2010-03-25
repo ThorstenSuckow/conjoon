@@ -18,12 +18,6 @@ Ext.namespace('Ext.ux');
  * and window-buttons ({@link Ext.Button}) which are linked to the {@link Ext.ux.Wiz.Card}s
  * which themself represent the forms the user has to fill out.
  *
- * In order to switch between the cards in the wizard, you need the {@link Ext.ux.layout.CardLayout},
- * which will check if an active-item can be hidden, before the requested new item will be set to
- * 'active', i.e. shown. This is needed since the wizard may not allow a card to be hidden, if
- * the input entered by the user was not valid. You can get this custom layout at
- * {@link http://www.siteartwork.de/cardlayout}.
- *
  * Note:
  * When data has been collected and teh "onFinish" listener triggers an AJAX-request,
  * you should call the "switchDialogState" method so that the the dialog shows a loadmask.
@@ -161,9 +155,7 @@ this.showLoadMask(true, 'validating');
 
     /**
      * @param {Ex.Panel} The card-panel that holds the various wizard cards
-     * ({@link Ext.ux.Wiz.Card}). The card-panel itself uses the custom
-     * {@link Ext.ux.layout.CardLayout}, which needs to be accessible by this class.
-     * You can get it at {@link http://www.siteartwork.de/cardlayout}.
+     * ({@link Ext.ux.Wiz.Card}).
      * @private
      */
     cardPanel : null,
@@ -339,9 +331,6 @@ this.showLoadMask(true, 'validating');
 
     /**
      * Creates the head- and the card-panel.
-     * Be sure to have the custom {@link Ext.ux.layout.CardLayout} available
-     * in order to make the card-panel work as expected by this component
-     * ({@link http://www.siteartwork.de/cardlayout}).
      */
     initPanels : function()
     {
@@ -355,7 +344,7 @@ this.showLoadMask(true, 'validating');
         this.headPanel = new Ext.ux.Wiz.Header(this.headerConfig);
 
         Ext.apply(cardPanelConfig, {
-            layout : new Ext.ux.layout.CardLayout(),
+            layout : 'card',
             items  : cards
         });
 

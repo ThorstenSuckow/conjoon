@@ -1,6 +1,6 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
@@ -301,7 +301,7 @@ Ext.ux.grid.LockingGridView = Ext.extend(Ext.grid.GridView, {
             if(!skipStripe){
                 row.className = row.className.replace(this.rowClsRe, ' ');
                 lrow.className = lrow.className.replace(this.rowClsRe, ' ');
-                if ((idx + 1) % 2 === 0){
+                if ((i + 1) % 2 === 0){
                     row.className += ' x-grid3-row-alt';
                     lrow.className += ' x-grid3-row-alt';
                 }
@@ -730,44 +730,78 @@ Ext.ux.grid.LockingGridView = Ext.extend(Ext.grid.GridView, {
 });
 
 Ext.ux.grid.LockingColumnModel = Ext.extend(Ext.grid.ColumnModel, {
+    /**
+     * Returns true if the given column index is currently locked
+     * @param {Number} colIndex The column index
+     * @return {Boolean} True if the column is locked
+     */
     isLocked : function(colIndex){
         return this.config[colIndex].locked === true;
     },
     
+    /**
+     * Locks or unlocks a given column
+     * @param {Number} colIndex The column index
+     * @param {Boolean} value True to lock, false to unlock
+     * @param {Boolean} suppressEvent Pass false to cause the columnlockchange event not to fire
+     */
     setLocked : function(colIndex, value, suppressEvent){
-        if(this.isLocked(colIndex) == value){
+        if (this.isLocked(colIndex) == value) {
             return;
         }
         this.config[colIndex].locked = value;
-        if(!suppressEvent){
+        if (!suppressEvent) {
             this.fireEvent('columnlockchange', this, colIndex, value);
         }
     },
     
+    /**
+     * Returns the total width of all locked columns
+     * @return {Number} The width of all locked columns
+     */
     getTotalLockedWidth : function(){
         var totalWidth = 0;
-        for(var i = 0, len = this.config.length; i < len; i++){
-            if(this.isLocked(i) && !this.isHidden(i)){
+        for (var i = 0, len = this.config.length; i < len; i++) {
+            if (this.isLocked(i) && !this.isHidden(i)) {
                 totalWidth += this.getColumnWidth(i);
             }
         }
+        
         return totalWidth;
     },
     
-    getLockedCount : function(){
-        for(var i = 0, len = this.config.length; i < len; i++){
-            if(!this.isLocked(i)){
+    /**
+     * Returns the total number of locked columns
+     * @return {Number} The number of locked columns
+     */
+    getLockedCount : function() {
+        var len = this.config.length;
+        
+        for (var i = 0; i < len; i++) {
+            if (!this.isLocked(i)) {
                 return i;
             }
         }
+        
+        //if we get to this point all of the columns are locked so we return the total
+        return len;
     },
     
+    /**
+     * Moves a column from one position to another
+     * @param {Number} oldIndex The current column index
+     * @param {Number} newIndex The destination column index
+     */
     moveColumn : function(oldIndex, newIndex){
-        if(oldIndex < newIndex && this.isLocked(oldIndex) && !this.isLocked(newIndex)){
+        var oldLocked = this.isLocked(oldIndex),
+            newLocked = this.isLocked(newIndex);
+        
+        if (oldIndex < newIndex && oldLocked && !newLocked) {
             this.setLocked(oldIndex, false, true);
-        }else if(oldIndex > newIndex && !this.isLocked(oldIndex) && this.isLocked(newIndex)){
+        } else if (oldIndex > newIndex && !oldLocked && newLocked) {
             this.setLocked(oldIndex, true, true);
         }
+        
         Ext.ux.grid.LockingColumnModel.superclass.moveColumn.apply(this, arguments);
     }
 });

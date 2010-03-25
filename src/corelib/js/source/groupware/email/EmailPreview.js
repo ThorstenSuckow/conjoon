@@ -188,7 +188,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
     {
         container = Ext.DomHelper.append(document.body, {
             id    : 'DOM:com.conjoon.groupware.email.EmailPreview.container',
-            style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
+            style : "position:absolute;overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
         }, true);
     };
 

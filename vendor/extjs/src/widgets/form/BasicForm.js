@@ -1,6 +1,6 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
@@ -34,50 +34,51 @@
  * @param {Mixed} el The form element or its id
  * @param {Object} config Configuration options
  */
-Ext.form.BasicForm = function(el, config){
-    Ext.apply(this, config);
-    if(Ext.isString(this.paramOrder)){
-        this.paramOrder = this.paramOrder.split(/[\s,|]/);
-    }
-    /**
-     * A {@link Ext.util.MixedCollection MixedCollection} containing all the Ext.form.Fields in this form.
-     * @type MixedCollection
-     * @property items
-     */
-    this.items = new Ext.util.MixedCollection(false, function(o){
-        return o.getItemId();
-    });
-    this.addEvents(
-        /**
-         * @event beforeaction
-         * Fires before any action is performed. Return false to cancel the action.
-         * @param {Form} this
-         * @param {Action} action The {@link Ext.form.Action} to be performed
-         */
-        'beforeaction',
-        /**
-         * @event actionfailed
-         * Fires when an action fails.
-         * @param {Form} this
-         * @param {Action} action The {@link Ext.form.Action} that failed
-         */
-        'actionfailed',
-        /**
-         * @event actioncomplete
-         * Fires when an action is completed.
-         * @param {Form} this
-         * @param {Action} action The {@link Ext.form.Action} that completed
-         */
-        'actioncomplete'
-    );
+Ext.form.BasicForm = Ext.extend(Ext.util.Observable, {
 
-    if(el){
-        this.initEl(el);
-    }
-    Ext.form.BasicForm.superclass.constructor.call(this);
-};
+    constructor: function(el, config){
+        Ext.apply(this, config);
+        if(Ext.isString(this.paramOrder)){
+            this.paramOrder = this.paramOrder.split(/[\s,|]/);
+        }
+        /**
+         * A {@link Ext.util.MixedCollection MixedCollection} containing all the Ext.form.Fields in this form.
+         * @type MixedCollection
+         * @property items
+         */
+        this.items = new Ext.util.MixedCollection(false, function(o){
+            return o.getItemId();
+        });
+        this.addEvents(
+            /**
+             * @event beforeaction
+             * Fires before any action is performed. Return false to cancel the action.
+             * @param {Form} this
+             * @param {Action} action The {@link Ext.form.Action} to be performed
+             */
+            'beforeaction',
+            /**
+             * @event actionfailed
+             * Fires when an action fails.
+             * @param {Form} this
+             * @param {Action} action The {@link Ext.form.Action} that failed
+             */
+            'actionfailed',
+            /**
+             * @event actioncomplete
+             * Fires when an action is completed.
+             * @param {Form} this
+             * @param {Action} action The {@link Ext.form.Action} that completed
+             */
+            'actioncomplete'
+        );
 
-Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
+        if(el){
+            this.initEl(el);
+        }
+        Ext.form.BasicForm.superclass.constructor.call(this);
+    },
+
     /**
      * @cfg {String} method
      * The request method to use (GET or POST) for form actions if one isn't supplied in the action options.
@@ -183,7 +184,7 @@ paramOrder: 'param1|param2|param'
      * <tt>{@link #paramOrder}</tt> nullifies this configuration.
      */
     paramsAsHash: false,
-    
+
     /**
      * @cfg {String} waitTitle
      * The default title to show for the waiting message box (defaults to <tt>'Please Wait...'</tt>)
@@ -493,6 +494,12 @@ myFormPanel.getForm().submit({
 
     // private
     beforeAction : function(action){
+        // Call HtmlEditor's syncValue before actions
+        this.items.each(function(f){
+            if(f.isFormField && f.syncValue){
+                f.syncValue();
+            }
+        });
         var o = action.options;
         if(o.waitMsg){
             if(this.waitMsgTarget === true){
@@ -650,7 +657,7 @@ myFormPanel.getForm().submit({
                 n = f.getName();
                 key = o[n];
                 val = f.getValue();
-                
+
                 if(Ext.isDefined(key)){
                     if(Ext.isArray(key)){
                         o[n].push(val);
