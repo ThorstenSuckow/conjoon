@@ -39,7 +39,7 @@ com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
                         border    : false,
                         bodyStyle : 'background-color:#F6F6F6;',
                         html      : '<div style="margin-top:20px;">'
-                                    +com.conjoon.Gettext.gettext("This wizard will guide you through the steps necessary to import an existing Twitter account.<br />Once this account is imported, you can tweet right away!")
+                                    +com.conjoon.Gettext.gettext("This wizard will guide you through the steps necessary to import an existing Twitter account.<br />Once this account is imported, you can tweet right away!<br /><br /><b>Note:</b><br /> The demo version will store account releated data in our database. We will not use this data for other purposes than to provide the needed functionality for you to access your Twitter account using the conjoon demo. However, if you do not like to provide this information, either use a temporary Twitter account or do not use the Twitter module in the conjoon demo at all.")
                                     +'</div>'
                     }]
                 }),
