@@ -32,6 +32,13 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
      */
     hideMode : 'display',
 
+    /**
+     * @type {Boolean} ignorePaging Set this to true from the wizard if you would
+     * like to ignore checks whether the wizard may change to a new card. This
+     * makes sense when you want to page to a previous card.
+     */
+    ignorePaging : false,
+
     initComponent : function()
     {
         this.addEvents(
@@ -128,7 +135,8 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
     {
         var ly         = this.ownerCt.layout;
         var activeItem = ly.activeItem;
-        if (activeItem && activeItem.id === this.id) {
+
+        if (!this.ignorePaging && activeItem && activeItem.id === this.id) {
             return this.fireEvent('beforecardhide', this);
         }
 
