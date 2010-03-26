@@ -358,7 +358,7 @@ com.conjoon.groupware.Reception = function() {
         );
 
         loginWindow.setFormIntroText(
-            com.conjoon.Gettext.gettext("Please sign in with your username and your password. Press &quot;Login&quot; when ready.")
+            com.conjoon.Gettext.gettext("Please sign in with your username and your password. Press &quot;Login&quot; when ready. <br /><br />Don't have an account for the conjoon demo yet? Register at <a target=\"_blank\" href=\"http://www.conjoon.org/demo\">http://www.conjoon.org/demo</a>!")
         );
     };
 
