@@ -64,7 +64,7 @@ class Conjoon_Modules_Default_Registry {
             ),
             'base' => array(
                 'conjoon' => array(
-                    'name'    => 'conjoon',
+                    'name'    => 'conjoon demo',
                     'version' => Conjoon_Version::VERSION,
                     'edition' => Zend_Registry::get(
                         Conjoon_Keys::REGISTRY_CONFIG_OBJECT
