@@ -26,7 +26,11 @@ if (!isset($_SESSION['support_key'])) {
 }
 
 if (!isset($_SESSION['edition'])) {
-    $_SESSION['edition'] = $_SESSION['setup_ini']['environment']['edition'];
+    if (isset($_SESSION['installation_info']['edition'])) {
+        $_SESSION['edition'] = $_SESSION['installation_info']['edition'];
+    } else {
+        $_SESSION['edition'] = $_SESSION['setup_ini']['environment']['edition'];
+    }
 }
 
 $WELCOME = array();
