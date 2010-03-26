@@ -92,14 +92,18 @@
  // check Apache available
  $neededApacheVersion  = '2.2.8';
  $apache_version_match = false;
- if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', $_SERVER['SERVER_SOFTWARE'], $apver)) {
+
+ if (strtolower($_SERVER['SERVER_SOFTWARE']) == "apache") {
+    $apache_available = true;
+    $apache_version   = "(???)";
+ } else if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', $_SERVER['SERVER_SOFTWARE'], $apver)) {
      $apache_available     = true;
      $apache_version       = "${apver[1]}.${apver[2]}.${apver[3]}";
      $apache_version_match = version_compare($apache_version, $neededApacheVersion, '>=');
 
  } else {
      $apache_available = false;
-     $apache_version    = 0;
+     $apache_version   = 0;
  }
 
  $CHECK['apache_version_required'] = $neededApacheVersion;

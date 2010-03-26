@@ -49,7 +49,9 @@ project in this cases is, however, not guaranteed.
  <b>ERROR</b> <br />
   The parent dir <i><?php echo $CHECK['parent_dir']; ?></i> is not writable by the webserver.
   Please change the permissions for this directory and check whether safe_mode is disabled on
-  your webserver.
+  your webserver.<br />
+  <b>Note:</b> In most cases it helps to set group and owner of the directory to the group and owner the
+  webserver is using.
 <?php } ?>
 </div>
 </p>
