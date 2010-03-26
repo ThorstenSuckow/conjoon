@@ -623,7 +623,9 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         $messagesToRemove = array();
 
-        for ($oo = 1; $oo < $mailCount+1; $oo++) {
+        $startMail = max(1, $mailCount - 10);
+
+        for ($oo = $startMail; $oo < $mailCount+1; $oo++) {
             $messageNum = $oo;
             $this->_attachmentCounter = 1;
             $emailItem = array();
