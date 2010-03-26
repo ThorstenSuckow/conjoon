@@ -516,7 +516,11 @@ this.showLoadMask(true, 'validating');
     onPreviousClick : function()
     {
         if (this.currentCard > 0) {
-            this.cardPanel.getLayout().setActiveItem(this.currentCard - 1);
+            var layout = this.cardPanel.getLayout();
+            var ai     = layout.activeItem;
+            ai.ignorePaging = true;
+            layout.setActiveItem(this.currentCard - 1);
+            ai.ignorePaging = false;
         }
     },
 

@@ -199,7 +199,14 @@
      !$CHECK['simplexml']
      ) {
      $_SESSION['check_failed'] = true;
- }
+ } else if ($CHECK['parent_dir_writable']) {
+    $_SESSION['check_failed'] = false;
+}
+
+ if (isset($_POST['check_post']) && $_POST['check_post'] == "1" && !$_SESSION['check_failed']) {
+    header("Location: ./?action=check_success");
+    die();
+}
 
 
  include_once './view/check.tpl';
