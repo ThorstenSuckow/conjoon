@@ -103,6 +103,23 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Returns the base inbox folder id for the specified account and the specified
+     * user, i.e. the folder with type "inbox".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     */
+    public function getInboxFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType(
+            $accountId, $userId, self::META_INFO_INBOX
+        );
+    }
+
+    /**
      * Returns the base outbox folder id for the specified account and the specified
      * user, i.e. the folder with type "outbox".
      * Returns 0 if the folder could not be found
