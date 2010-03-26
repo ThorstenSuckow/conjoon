@@ -212,3 +212,4 @@ project in this cases is, however, not guaranteed.
 <?php } ?>
 </div>
 </p>
+<input type="hidden" name="check_post" value="1" />
