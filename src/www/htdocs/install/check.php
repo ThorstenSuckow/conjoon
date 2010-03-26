@@ -51,6 +51,22 @@
             @unlink('../' . $dirName .'/' . $fileName);
             @rmdir('../' . $dirName);
         }
+
+        if ($CHECK['parent_dir_writable']) {
+            // if makeDir succeeded, we will check if we can move files
+            $moveA = './_moveTest/1';
+            $moveB = './_moveTest/2';
+
+            $moveResult = @rename($moveB, $moveA . '/2');
+
+            if ($moveResult) {
+                @rename($moveA . '/2', $moveB);
+                @file_put_contents($moveB .'/check.txt', "Moved successfully");
+            }
+
+            $CHECK['parent_dir_writable'] = $moveResult;
+        }
+
     } else {
         $CHECK['parent_dir_writable'] = false;
     }
