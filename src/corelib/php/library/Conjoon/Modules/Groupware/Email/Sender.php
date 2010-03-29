@@ -58,6 +58,24 @@ class Conjoon_Modules_Groupware_Email_Sender {
     {
     }
 
+    /**
+     * Added to the demo branch of conjoon - returns a signature with additional
+     * information about the origin of the generated message.
+     *
+     * @return string
+     */
+    private static function getAdditionalSignature()
+    {
+        return "\n\n\n-- \n"
+            ."This email was sent using the demo version of conjoon - "
+            ."http://www.conjoon.org\n\n"
+            ."Follow us on Twitter: http://twitter.com/conjoon"
+            ."\n"
+            ."Become a fan of conjoon: "
+            ."http://www.facebook.com/pages/conjoon/10150110840430717"
+            ."\n"
+            ."Please report abuse to admin@conjoon.org";
+    }
 
     /**
      * Sends the draft for the specified account
@@ -131,10 +149,12 @@ class Conjoon_Modules_Groupware_Email_Sender {
         }
 
         if ($plain !== "") {
-            $mail->setBodyText($plain);
+            // add the signature which is only visible to recipients
+            $mail->setBodyText($plain . self::getAdditionalSignature());
         }
         if ($html !== "") {
-            $mail->setBodyHtml($html);
+            // add the signature which is only visible to recipients
+            $mail->setBodyHtml($html . self::getAdditionalSignature());
         }
 
 
