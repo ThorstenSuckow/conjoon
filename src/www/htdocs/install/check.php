@@ -51,6 +51,22 @@
             @unlink('../' . $dirName .'/' . $fileName);
             @rmdir('../' . $dirName);
         }
+
+        if ($CHECK['parent_dir_writable']) {
+            // if makeDir succeeded, we will check if we can move files
+            $moveA = './_moveTest/1';
+            $moveB = './_moveTest/2';
+
+            $moveResult = @rename($moveB, $moveA . '/2');
+
+            if ($moveResult) {
+                @rename($moveA . '/2', $moveB);
+                @file_put_contents($moveB .'/check.txt', "Moved successfully");
+            }
+
+            $CHECK['parent_dir_writable'] = $moveResult;
+        }
+
     } else {
         $CHECK['parent_dir_writable'] = false;
     }
@@ -92,14 +108,18 @@
  // check Apache available
  $neededApacheVersion  = '2.2.8';
  $apache_version_match = false;
- if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', $_SERVER['SERVER_SOFTWARE'], $apver)) {
+
+ if (strtolower($_SERVER['SERVER_SOFTWARE']) == "apache") {
+    $apache_available = true;
+    $apache_version   = "(???)";
+ } else if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', $_SERVER['SERVER_SOFTWARE'], $apver)) {
      $apache_available     = true;
      $apache_version       = "${apver[1]}.${apver[2]}.${apver[3]}";
      $apache_version_match = version_compare($apache_version, $neededApacheVersion, '>=');
 
  } else {
      $apache_available = false;
-     $apache_version    = 0;
+     $apache_version   = 0;
  }
 
  $CHECK['apache_version_required'] = $neededApacheVersion;
@@ -179,7 +199,14 @@
      !$CHECK['simplexml']
      ) {
      $_SESSION['check_failed'] = true;
- }
+ } else if ($CHECK['parent_dir_writable']) {
+    $_SESSION['check_failed'] = false;
+}
+
+ if (isset($_POST['check_post']) && $_POST['check_post'] == "1" && !$_SESSION['check_failed']) {
+    header("Location: ./?action=check_success");
+    die();
+}
 
 
  include_once './view/check.tpl';

@@ -158,72 +158,6 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_EmailFolderController::rename.folder':
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-                $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-                    array(),
-                    Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_RENAME
-                );
-            break;
-
-            case 'Groupware_EmailFolderController::move.folder':
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-                $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-                    array(),
-                    Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_MOVE
-                );
-            break;
-
-            case 'Groupware_EmailFolderController::get.folder':
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-                $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-                    array(),
-                    Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_RESPONSE
-                );
-            break;
-
-            case 'Groupware_EmailFolderController::add.folder':
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Folder_Filter_Folder
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Folder/Filter/Folder.php';
-                $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Folder_Filter_Folder(
-                    array(),
-                    Conjoon_Modules_Groupware_Email_Folder_Filter_Folder::CONTEXT_CREATE
-                );
-            break;
-
-            case 'RegistryController::set.entries':
-                /**
-                 * @see Conjoon_Modules_Default_Registry_Filter_Registry
-                 */
-                require_once 'Conjoon/Modules/Default/Registry/Filter/Registry.php';
-                $this->_filters[$key] = new Conjoon_Modules_Default_Registry_Filter_Registry (
-                    array(),
-                    Conjoon_Modules_Default_Registry_Filter_Registry::CONTEXT_UPDATE_REQUEST
-                );
-            break;
-
-            case 'ApplicationCacheController::set.clear.flag':
-                /**
-                 * @see Conjoon_Modules_Default_ApplicationCache_Filter
-                 */
-                require_once 'Conjoon/Modules/Default/ApplicationCache/Filter.php';
-                $this->_filters[$key] = new Conjoon_Modules_Default_ApplicationCache_Filter (
-                    array(),
-                    Conjoon_Modules_Default_ApplicationCache_Filter::CONTEXT_CLEARFLAG_REQUEST
-                );
-            break;
-
         }
 
         return $this->_filters[$key];
@@ -240,12 +174,6 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
         $thisClass = get_class($this->getActionController());
 
         if ($thisClass != $class) {
-
-            /**
-             * @see Zend_Controller_Action_Exception
-             */
-            require_once 'Zend/Controller/Action/Exception.php';
-
             throw new Zend_Controller_Action_Exception(
                 "class for filter is not this controller: \"$thisClass\" \"$class\""
             );
@@ -299,23 +227,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
 
         $filter->setData($data);
 
-        try {
-            $filteredData = $filter->getProcessedData();
-        } catch (Zend_Filter_Exception $e) {
-            /**
-             * @see Conjoon_Error
-             */
-            require_once 'Conjoon/Error.php';
-
-            $error = Conjoon_Error::fromFilter($filter, $e);
-
-            /**
-             * @see Conjoon_Filter_Exception
-             */
-            require_once 'Conjoon/Filter/Exception.php';
-
-            throw new Conjoon_Filter_Exception($error->getMessage());
-        }
+        $filteredData = $filter->getProcessedData();
 
         foreach ($filteredData as $key => $value) {
             $this->getRequest()->setParam($key, $value);

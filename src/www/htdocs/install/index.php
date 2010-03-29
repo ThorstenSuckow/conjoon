@@ -99,7 +99,7 @@ session_start();
             "Welcome", "./index.php", "./index.php?action=welcome_check"
         ),
         'check' => array(
-            "Step 1", "./index.php?action=check"
+            "Step 1", "./index.php?action=check", "./?action=check_verify"
         ),
         'database' => array(
             "Step 2", "./index.php?action=database", "./?action=database_check"
@@ -142,6 +142,16 @@ session_start();
        // actions for checking prerequisites
        case 'check':
            include_once './check.php';
+       break;
+
+       case 'check_verify':
+            $VIEW['action'] = 'check';
+            include_once './check.php';
+       break;
+
+       case 'check_success':
+            header("Location: ./index.php?action=database");
+            die();
        break;
 
        // actions for setting up database
