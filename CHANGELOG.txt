@@ -1,4 +1,6 @@
-﻿Notable changes:
+﻿2010-03-29 0.1.2
+================
+Notable changes:
 
 [install wizard]
  - fixed an issue related to creating directories during the installation
