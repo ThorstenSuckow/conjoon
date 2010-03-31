@@ -59,6 +59,15 @@ class ErrorController extends Zend_Controller_Action {
 
         $this->getResponse()->clearBody();
 
+        /**
+         * @see Conjoon_Modules_Default_Registry
+         */
+        require_once 'Conjoon/Modules/Default/Registry.php';
+
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
+
         foreach ($result as $key => $value) {
             $this->view->{$key} = $value;
         }
