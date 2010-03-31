@@ -277,6 +277,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * of the statement. The optional argument $addTable allows for adding INNER JOIN sources
      * to the beginning of the statement. It keys are "name" which holds a value as specified
      * in the "from" method from Zend_Db_Select, and "cols".
+     * The base query will consider owner relationships for the folder the item sits in.
      *
      * @param integer $userId
      * @param array $sortInfo
@@ -315,6 +316,15 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                         'is_draft' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'draft', 'STRING'),
                         'is_outbox_pending' => $adapter->quoteInto('(`folders`.`meta_info` = ?)', 'outbox', 'STRING')
                     )
+                )
+                ->join(
+                    array('folders_users' => self::getTablePrefix() . 'groupware_email_folders_users'),
+                    '`folders_users`.`groupware_email_folders_id` = `items`.`groupware_email_folders_id` '
+                    .' AND '
+                    .$adapter->quoteInto('`folders_users`.`users_id`=?', $userId, 'INTEGER')
+                    .' AND '
+                    .$adapter->quoteInto('`folders_users`.`relationship`=?', 'owner', 'STRING'),
+                    array()
                 )
                 ->join(
                     array('flag' => self::getTablePrefix() . 'groupware_email_items_flags'),
