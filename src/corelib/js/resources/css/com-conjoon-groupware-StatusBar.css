@@ -34,3 +34,15 @@
     height:17px;
     width:12px;
 }
+
+.com-conjoon-groupware-StatusBar .downloadInfo {
+    background-image:url(../images/12x12/apps/groupware-statusbar-downloadinfo.png);
+    background-position:center;
+    background-repeat:no-repeat;
+    height:17px;
+    width:12px;
+}
+
+.com-conjoon-groupware-StatusBar .downloadInfo.inActive {
+    background:none;
+}

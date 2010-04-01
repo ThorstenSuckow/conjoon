@@ -119,6 +119,11 @@ require_once 'Conjoon/Util/Format.php';
 require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
 
 /**
+ * @see Conjoon_Modules_Groupware_Email_Attachment_Facade
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
+
+/**
  * A utility class for fetching/sending emails.
  *
  * @category   Email
@@ -138,11 +143,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
     private $_filterItem       = null;
     private $_filterInbox      = null;
 
-    private $_modelAttachment = null;
-    private $_modelFlag       = null;
-    private $_modelItem       = null;
-    private $_modelInbox      = null;
-    private $_modelFolder     = null;
+    private $_modelAttachment   = null;
+    private $_attachmentFacadce = null;
+    private $_modelFlag         = null;
+    private $_modelItem         = null;
+    private $_modelInbox        = null;
+    private $_modelFolder       = null;
 
     private $_lastIconvError = false;
 
@@ -182,11 +188,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
         $this->_filterItem       = new Conjoon_Modules_Groupware_Email_Item_Filter_Item(array(), $context);
         $this->_filterInbox      = new Conjoon_Modules_Groupware_Email_Item_Filter_Inbox(array(), $context);
 
-        $this->_modelAttachment = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
-        $this->_modelFlag       = new Conjoon_Modules_Groupware_Email_Item_Model_Flag();
-        $this->_modelItem       = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
-        $this->_modelInbox      = new Conjoon_Modules_Groupware_Email_Item_Model_Inbox();
-        $this->_modelFolder     = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+        $this->_modelAttachment  = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
+        $this->_modelFlag        = new Conjoon_Modules_Groupware_Email_Item_Model_Flag();
+        $this->_modelItem        = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
+        $this->_modelInbox       = new Conjoon_Modules_Groupware_Email_Item_Model_Inbox();
+        $this->_modelFolder      = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+        $this->_attachmentFacade = Conjoon_Modules_Groupware_Email_Attachment_Facade::getInstance();
     }
 
     /**
@@ -1345,7 +1352,8 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             'encoding'  => $contentTransferEncoding,
             'content'   => $part->getContent(),
             'fileName'  => $fileName,
-            'contentId' => $contentId
+            'contentId' => $contentId,
+            'key'       => $this->_attachmentFacade->generateAttachmentKey($emailItem['userId'])
         );
 
     }

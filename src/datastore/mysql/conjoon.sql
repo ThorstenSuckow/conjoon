@@ -357,3 +357,11 @@ CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_folders_users
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` CHANGE `update_interval` `update_interval` INT( 10 ) UNSIGNED NOT NULL DEFAULT '60000';
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD `key` VARCHAR( 32 ) NOT NULL AFTER `id`;
+
+UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(RAND()) WHERE key = '';
+
+ALTER TABLE `groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
+
+ALTER TABLE `groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;

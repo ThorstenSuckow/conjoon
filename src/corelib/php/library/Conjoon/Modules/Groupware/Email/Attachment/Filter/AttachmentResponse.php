@@ -40,7 +40,8 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse exten
          self::CONTEXT_RESPONSE => array(
             'id',
             'mimeType',
-            'fileName'
+            'fileName',
+            'key'
          )
     );
 

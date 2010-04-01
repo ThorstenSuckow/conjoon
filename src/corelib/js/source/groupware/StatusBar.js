@@ -104,6 +104,8 @@ com.conjoon.groupware.StatusBar = function(){
 
     var _connectionInfo = null;
 
+    var _downloadInfo = null;
+
     var _onBeforeRequest = function()
     {
         if (_activeRequestCount == 0) {
@@ -132,6 +134,25 @@ com.conjoon.groupware.StatusBar = function(){
         if (_activeRequestCount <= 0) {
             _progressBar.reset(true);
         }
+    };
+
+    var _activeDloads = 0;
+
+    var _dloadAbort = function()
+    {
+        _activeDloads--;
+
+        if (_activeDloads <= 0) {
+            _activeDloads = 0;
+            _downloadInfo.addClass('inActive');
+        }
+
+    };
+
+    var _dloadStart = function()
+    {
+        _downloadInfo.removeClass('inActive');
+        _activeDloads++;
     };
 
     var _transceive = function(subject, message)
@@ -172,6 +193,12 @@ com.conjoon.groupware.StatusBar = function(){
 
     var _subscribe = function()
     {
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.cancel',  _dloadAbort);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.request', _dloadStart);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.error',   _dloadAbort);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.failure', _dloadAbort);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.success', _dloadAbort);
+
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.beforeload', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.load', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.loadexception', _transceive);
@@ -202,6 +229,12 @@ com.conjoon.groupware.StatusBar = function(){
                 t.className = "com-conjoon-groupware-statusbar-ConnectionInfo";
                 _connectionInfo = new Ext.Toolbar.Item(t);
 
+                t = document.createElement('div');
+                t.id  = Ext.id();
+                t.innerHTML = '&#160;';
+                t.className = "downloadInfo inActive";
+                _downloadInfo = new Ext.Toolbar.Item(t);
+
                 _defaultText = com.conjoon.Gettext.gettext("Ready");
 
                 _statusItem = new Ext.Toolbar.TextItem({
@@ -218,6 +251,9 @@ com.conjoon.groupware.StatusBar = function(){
                         new Ext.Toolbar.Separator(),
                         new Ext.Toolbar.Spacer(),
                         _progressBar,
+                        new Ext.Toolbar.Separator(),
+                        new Ext.Toolbar.Spacer(),
+                        _downloadInfo,
                         new Ext.Toolbar.Spacer(),
                         new Ext.Toolbar.Separator(),
                         new Ext.Toolbar.Spacer(),

@@ -98,22 +98,28 @@
 /**
  * email view attachment items
  */
-a.com-conjoon-groupware-email-EmailView-attachmentItem {
+div.com-conjoon-groupware-email-EmailView-attachmentItem {
     background-repeat:no-repeat;
     float:left;
+    cursor:pointer;
     font-family:Tahoma,Helvetica,Arial;
     font-size:11px;
     color:black;
     text-decoration:none;
     border:1px solid white;
-    margin-right:2px;
+    margin:1px;
     padding:2px 2px 2px 20px;
 }
 
-a.com-conjoon-grupware-email-EmailView-attachmentItem:active {
-    background-color:#DFE8F6;
-    border:1px dotted #99BBE8;
+div.com-conjoon-groupware-email-EmailView-attachmentItem.request {
+    background-image:url(../images/loading.gif)!important;
 }
+
+div.com-conjoon-groupware-email-EmailView-attachmentItem:focus {
+    background-color:#DFE8F6!important;
+    border:1px dotted #99BBE8!important;
+}
+
 
 .com-conjoon-groupware-email-EmailView-body {
     border:0;

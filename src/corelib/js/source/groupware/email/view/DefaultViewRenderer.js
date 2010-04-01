@@ -377,9 +377,11 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var len = attachments.length;
 
         for (var i = 0; i < len; i++) {
-            attachItemsHtml += ts.attachmentItem.apply({
-                mimeIconCls : com.conjoon.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
-                name        : attachments[i].fileName
+            attachItemsHtml   += ts.attachmentItem.apply({
+                mimeIconCls   : com.conjoon.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
+                name          : attachments[i].fileName,
+                attachmentId  : attachments[i].id,
+                attachmentKey : attachments[i].key
             });
         }
 
@@ -609,7 +611,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.attachmentItem) {
             ts.attachmentItem = new Ext.Template(
-                '<a href="#" class="com-conjoon-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</a>'
+                '<div onclick="com.conjoon.groupware.DownloadManager.downloadEmailAttachment({attachmentId}, \'{attachmentKey}\', \'{name}\', this);" tabindex="0" class="com-conjoon-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</div>'
             );
         }
 
