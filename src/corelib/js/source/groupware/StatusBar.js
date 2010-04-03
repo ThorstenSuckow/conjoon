@@ -202,6 +202,19 @@ com.conjoon.groupware.StatusBar = function(){
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.beforeload', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.load', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.loadexception', _transceive);
+
+        var eao = Ext.Ajax;
+        eao.on('beforerequest',    _onBeforeRequest);
+        eao.on('requestcomplete',  _onRequestComplete);
+        eao.on('requestexception', _onRequestException);
+        _messageBroadcaster.subscribe('ext.lib.ajax.abort', _onRequestAbort);
+
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.cancel',  _onRequestComplete);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.request', _onBeforeRequest);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.error',   _onRequestComplete);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.failure', _onRequestComplete);
+        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.success', _onRequestComplete);
+
     };
 
     return {
@@ -270,15 +283,6 @@ com.conjoon.groupware.StatusBar = function(){
                     function() {
                         _connectionInfo.disable();
                     }
-                );
-
-                var eao = Ext.Ajax;
-                eao.on('beforerequest',    _onBeforeRequest);
-                eao.on('requestcomplete',  _onRequestComplete);
-                eao.on('requestexception', _onRequestException);
-                _messageBroadcaster.subscribe(
-                    'ext.lib.ajax.abort',
-                    _onRequestAbort
                 );
 
                 _subscribe();
