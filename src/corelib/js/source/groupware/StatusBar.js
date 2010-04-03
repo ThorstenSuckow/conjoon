@@ -193,11 +193,18 @@ com.conjoon.groupware.StatusBar = function(){
 
     var _subscribe = function()
     {
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.cancel',  _dloadAbort);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.request', _dloadStart);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.error',   _dloadAbort);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.failure', _dloadAbort);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.success', _dloadAbort);
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
+        DownloadManager.on('success', _dloadAbort);
+        DownloadManager.on('failure', _dloadAbort);
+        DownloadManager.on('error',   _dloadAbort);
+        DownloadManager.on('request', _dloadStart);
+        DownloadManager.on('cancel',  _dloadAbort);
+
+        DownloadManager.on('success', _onRequestComplete);
+        DownloadManager.on('failure', _onRequestComplete);
+        DownloadManager.on('error',   _onRequestComplete);
+        DownloadManager.on('request', _onBeforeRequest);
+        DownloadManager.on('cancel',  _onRequestComplete);
 
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.beforeload', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.load', _transceive);
@@ -208,13 +215,6 @@ com.conjoon.groupware.StatusBar = function(){
         eao.on('requestcomplete',  _onRequestComplete);
         eao.on('requestexception', _onRequestException);
         _messageBroadcaster.subscribe('ext.lib.ajax.abort', _onRequestAbort);
-
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.cancel',  _onRequestComplete);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.request', _onBeforeRequest);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.error',   _onRequestComplete);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.failure', _onRequestComplete);
-        _messageBroadcaster.subscribe('com.conjoon.groupware.DownloadManager.success', _onRequestComplete);
-
     };
 
     return {

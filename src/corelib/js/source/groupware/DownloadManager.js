@@ -143,7 +143,7 @@ com.conjoon.groupware.DownloadManager = function() {
 
         un : function(eventName, func, scope)
         {
-            kernel.on(eventName, func, scope);
+            kernel.un(eventName, func, scope);
         }
 
     };

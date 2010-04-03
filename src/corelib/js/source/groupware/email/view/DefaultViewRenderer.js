@@ -24,6 +24,16 @@ Ext.namespace('com.conjoon.groupware.email.view');
  */
 com.conjoon.groupware.email.view.DefaultViewRenderer = function(config){
 
+    var DownloadManager = com.conjoon.groupware.DownloadManager;
+
+    DownloadManager.on('request', this.onDownloadRequest, this);
+    DownloadManager.on('error',   this.onDownloadFinish,  this);
+    DownloadManager.on('failure', this.onDownloadFinish,  this);
+    DownloadManager.on('cancel',  this.onDownloadFinish,  this);
+    DownloadManager.on('success', this.onDownloadFinish,  this);
+
+    this.attachmentKeys = {};
+
     Ext.apply(this, config);
 };
 
@@ -113,6 +123,17 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
      * @type {Boolean}
      */
     isPlainTextView : false,
+
+    /**
+     * @type {Object} attachments An array that holds all attachment id/keys
+     * if this view has to display them
+     */
+    attachmentKeys : null,
+
+    /**
+     * @type {String} downloadTypeEmailAttachment
+     */
+    downloadTypeEmailAttachment : 'emailAttachment',
 
     /**
      * Returns the html-code for the iframe which displays the message content.
@@ -377,12 +398,19 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var len = attachments.length;
 
         for (var i = 0; i < len; i++) {
+            var attachmentTemplateId = Ext.id();
+
             attachItemsHtml   += ts.attachmentItem.apply({
-                mimeIconCls   : com.conjoon.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
-                name          : attachments[i].fileName,
-                attachmentId  : attachments[i].id,
-                attachmentKey : attachments[i].key
+                mimeIconCls          : com.conjoon.util.MimeIconFactory
+                                       .getIconCls(attachments[i].mimeType),
+                name                 : attachments[i].fileName,
+                attachmentId         : attachments[i].id,
+                attachmentKey        : attachments[i].key,
+                attachmentTemplateId : attachmentTemplateId
             });
+
+            this.attachmentKeys[attachments[i].id+'_'+attachments[i].key]
+                = attachmentTemplateId;
         }
 
         var DomHelper = Ext.DomHelper;
@@ -446,6 +474,8 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         if (this.cleared) {
             return;
         }
+
+        this.attachmentKeys = {};
 
         var dom  = document.getElementById(this.viewId);
 
@@ -611,7 +641,7 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.attachmentItem) {
             ts.attachmentItem = new Ext.Template(
-                '<div onclick="com.conjoon.groupware.DownloadManager.downloadEmailAttachment({attachmentId}, \'{attachmentKey}\', \'{name}\', this);" tabindex="0" class="com-conjoon-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</div>'
+                '<div id="{attachmentTemplateId}" onclick="com.conjoon.groupware.DownloadManager.downloadEmailAttachment({attachmentId}, \'{attachmentKey}\', \'{name}\');" tabindex="0" class="com-conjoon-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</div>'
             );
         }
 
@@ -637,6 +667,14 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
     // private
     destroy : function()
     {
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
+
+        DownloadManager.un('request', this.onDownloadRequest, this);
+        DownloadManager.un('error',   this.onDownloadFinish,  this);
+        DownloadManager.un('failure', this.onDownloadFinish,  this);
+        DownloadManager.un('cancel',  this.onDownloadFinish,  this);
+        DownloadManager.un('success', this.onDownloadFinish,  this);
+
         this.initData(null);
     },
 
@@ -669,6 +707,31 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         });
         this.layout();
         this.isPlainTextView = isPlainText;
-    }
+    },
 
+    onDownloadRequest : function(download, type, options)
+    {
+        if (type != this.downloadTypeEmailAttachment) {
+            return;
+        }
+
+        var key = options.attachmentId+'_'+options.attachmentKey;
+        if (this.attachmentKeys && this.attachmentKeys[key]) {
+            Ext.fly(document.getElementById(this.attachmentKeys[key]))
+                .addClass('request');
+        }
+    },
+
+    onDownloadFinish : function(download, type, options)
+    {
+        if (type != this.downloadTypeEmailAttachment) {
+            return;
+        }
+
+        var key = options.attachmentId+'_'+options.attachmentKey;
+        if (this.attachmentKeys && this.attachmentKeys[key]) {
+            Ext.fly(document.getElementById(this.attachmentKeys[key]))
+                .removeClass('request');
+        }
+    },
 };
