@@ -73,10 +73,12 @@ com.conjoon.groupware.forms.QuickContactForm = function() {
 
 
         _saveButton   = new Ext.Button({
-            text : com.conjoon.Gettext.gettext("Save")
+            text     : com.conjoon.Gettext.gettext("Save"),
+            disabled : true
         });
         _cancelButton = new Ext.Button({
-            text : com.conjoon.Gettext.gettext("Cancel")
+            text     : com.conjoon.Gettext.gettext("Cancel"),
+            disabled : true
         });
 
         _createLayout.call(this);
