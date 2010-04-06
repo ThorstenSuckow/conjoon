@@ -33,6 +33,9 @@ Ext.namespace('com.conjoon.cudgets.data');
  *      (set by the server)
  *
  *
+ * Inspired by Raj Bandi
+ * http://www.rajbandi.net/blog/post/2009/11/13/Ajax-File-Download.aspx
+ *
  * @class com.conjoon.cudgets.data.Download
  * @extends Ext.util.Observable
  */
