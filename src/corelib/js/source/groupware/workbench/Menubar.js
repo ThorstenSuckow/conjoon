@@ -223,7 +223,22 @@ com.conjoon.groupware.workbench.Menubar = function(){
                     }, {
                         text : com.conjoon.Gettext.gettext("?"),
                         menu : [{
-                            text : com.conjoon.Gettext.gettext("About"),
+                            text     : com.conjoon.Gettext.gettext("Online User Guide"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("conjoon Knowledge Base"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Make a Suggestion"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Report a Bug"),
+                            disabled : true
+                        }, '-', {
+                            text     : com.conjoon.Gettext.gettext("Check for Updates"),
+                            disabled : true
+                        }, '-', {
+                            text : com.conjoon.Gettext.gettext("About conjoon"),
                             handler : function() {
                                 com.conjoon.groupware.workbench.AboutDialog.show();
                             }
