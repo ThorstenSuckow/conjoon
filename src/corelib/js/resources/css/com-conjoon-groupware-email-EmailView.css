@@ -12,7 +12,11 @@
  * $URL$
  */
 
-.com-conjoon-groupware-email-EmailView-wrap {
+.com-conjoon-groupware-email-EmailView {
+    height:100%!important;
+}
+
+.com-conjoon-groupware-email-EmailView .wrap {
     border-bottom:1px solid #99BBE8;
     padding:5px;
     background-image:url(../images/email-preview-header-bg.png);
@@ -40,7 +44,7 @@
     background-image:url(../images/16x16/actions/groupware-email-editdraft.png)!important;
 }
 
-.com-conjoon-groupware-email-EmailView-dataInset {
+.com-conjoon-groupware-email-EmailView .dataInset {
     padding-left:62px;
     min-height:60px;
     background-image:url(../images/email-preview-header-icon.png);
@@ -48,7 +52,11 @@
     background-position:top left;
 }
 
-.com-conjoon-groupware-email-EmailView-date {
+.com-conjoon-groupware-email-EmailView.attachment .dataInset {
+    background-image:url(../images/email-preview-header-icon-attachment.png);
+}
+
+.com-conjoon-groupware-email-EmailView .dataInset .date {
     position:relative;
     float:right;
     font-size:11px;
@@ -57,7 +65,7 @@
     font-family:Tahoma, Verdana, Helvetica, Arial;
 }
 
-.com-conjoon-groupware-email-EmailView-subject {
+.com-conjoon-groupware-email-EmailView .subject {
     position:relative;
     margin-bottom:4px;
     font-size:11px;
@@ -69,25 +77,25 @@
     font-family:Tahoma, Verdana, Helvetica, Arial;
 }
 
-.com-conjoon-groupware-email-EmailView-headerTable {
+.com-conjoon-groupware-email-EmailView .dataInset .headerTable {
     margin-top:5px;
 }
 
-.com-conjoon-groupware-email-EmailView-headerTable td {
+.com-conjoon-groupware-email-EmailView .dataInset .headerTable td {
     font-size:11px;
     padding-bottom:4px;
     font-family:Tahoma, Verdana, Helvetica, Arial;
     vertical-align:top;
 }
 
-.com-conjoon-groupware-email-EmailView-headerTable .headerField {
+.com-conjoon-groupware-email-EmailView .dataInset .headerTable .headerField {
     white-space:nowrap;
     padding-right:8px;
     font-weight:bold;
     text-align:right;
 }
 
-.com-conjoon-groupware-email-EmailView-headerTable .headerValue {
+.com-conjoon-groupware-email-EmailView .dataInset .headerTable .headerValue {
     width:100%;
 }
 
@@ -101,6 +109,10 @@
 div.com-conjoon-groupware-email-EmailView-attachmentItem {
     background-repeat:no-repeat;
     float:left;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    width:180px;
     cursor:pointer;
     font-family:Tahoma,Helvetica,Arial;
     font-size:11px;
@@ -282,4 +294,25 @@ div.com-conjoon-groupware-email-EmailView-attachmentItem:focus {
 
 .com-conjoon-groupware-email-EmailView-body .sealed.emoticon {
     background-image:url(../images/20x20/apps/groupware-email-emoticonsealed.gif)!important;
+}
+
+.com-conjoon-groupware-email-EmailView .x-layout-split.x-layout-split-south {
+    background:transparent url(../images/splitter-x.png) no-repeat scroll 50% 2px !important;
+    width:100%!important;
+}
+
+.com-conjoon-groupware-email-EmailView .attachmentContainer {
+    padding:5px 2px 2px;
+    background-color:#F5F5F5;
+    border-top:1px solid #99BBE8;
+}
+
+.com-conjoon-groupware-email-EmailView .attachmentWrap {
+    overflow:auto;
+    background-color:white;
+    border:1px solid #767676;
+    padding:2px;
+    height:30px;
+    background-image:url(../images/attachment-container-bg.gif);
+    background-repeat:repeat-x;
 }

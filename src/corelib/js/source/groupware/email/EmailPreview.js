@@ -263,11 +263,11 @@ com.conjoon.groupware.email.EmailPreview = function() {
     {
         var templateConfig = {
             header : new Ext.Template(
-                '<div class="com-conjoon-groupware-email-EmailView-wrap">',
-                   '<div class="com-conjoon-groupware-email-EmailView-dataInset com-conjoon-groupware-email-EmailPreview-inset">',
-                    '<span class="com-conjoon-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
+                '<div class="wrap">',
+                   '<div class="dataInset com-conjoon-groupware-email-EmailPreview-inset">',
+                    '<span class="date">{date:date("d.m.Y H:i")}</span>',
                     '{subject}',
-                    '<table border="0" cellspacing="0" cellpadding="0" class="com-conjoon-groupware-email-EmailView-headerTable">',
+                    '<table border="0" cellspacing="0" cellpadding="0" class="headerTable">',
                     '{from}',
                     '{replyTo}',
                     '{to}',
@@ -288,8 +288,7 @@ com.conjoon.groupware.email.EmailPreview = function() {
                 fromValue        : com.conjoon.Gettext.gettext("From"),
                 toValue          : com.conjoon.Gettext.gettext("To"),
                 ccValue          : com.conjoon.Gettext.gettext("CC"),
-                bccValue         : com.conjoon.Gettext.gettext("BCC"),
-                attachmentValue  : com.conjoon.Gettext.gettext("Attachments")
+                bccValue         : com.conjoon.Gettext.gettext("BCC")
             }
         });
 

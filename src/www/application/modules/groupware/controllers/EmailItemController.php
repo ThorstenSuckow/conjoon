@@ -104,7 +104,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                     'attachment; filename="'.addslashes($data['fileName']).'"',
                     true
                  );
-sleep(10);
+
         $response->sendHeaders();
         $response->setBody($data['content']);
     }
