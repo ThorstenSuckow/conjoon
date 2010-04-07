@@ -84,6 +84,7 @@ class IndexController extends Zend_Controller_Action {
         $problemDescription = $this->_request->getParam('problemDescription');
         $problemType        = $this->_request->getParam('problemType');
         $public             = $this->_request->getParam('public');
+        $name               = $this->_request->getParam('name');
 
         /**
          * @see Zend_Http_Client
@@ -102,10 +103,11 @@ class IndexController extends Zend_Controller_Action {
             'securitytoken'          => 'guest',
             'username'               => 'Unregistered',
             'subject'                => "Component: \"".$problemType . "\" "
-                                        . "from conjoon (".$emailAddress.") "
-                                        . date("Y.m.d H:i:s", time()),
+                                        . "from conjoon "
+                                        . date("d.m.Y H:i:s", time()),
             'message'                => "Public: ".($public ? 'Yes' : 'No')."\n\n"
-                                        . $problemDescription
+                                        . $problemDescription."\n\nFiled by ".$name
+                                        ." <".$emailAddress.">"
         ));
 
         $http->setMethod(Zend_Http_Client::POST);
@@ -123,6 +125,7 @@ class IndexController extends Zend_Controller_Action {
         $suggestionDescription = $this->_request->getParam('suggestionDescription');
         $suggestionType        = $this->_request->getParam('suggestionType');
         $public                = $this->_request->getParam('public');
+        $name                  = $this->_request->getParam('name');
 
         /**
          * @see Zend_Http_Client
@@ -141,10 +144,11 @@ class IndexController extends Zend_Controller_Action {
             'securitytoken'          => 'guest',
             'username'               => 'Unregistered',
             'subject'                => "Component: \"".$suggestionType . "\" "
-                                        . "from conjoon (".$emailAddress.") "
-                                        . date("Y.m.d H:i:s", time()),
+                                        . "from conjoon "
+                                        . date("d.m.Y H:i:s", time()),
             'message'                => "Public: ".($public ? 'Yes' : 'No')."\n\n"
-                                        . $suggestionDescription
+                                        . $suggestionDescription."\n\nSuggested by "
+                                        . $name . " <" . $emailAddress .">"
         ));
 
         $http->setMethod(Zend_Http_Client::POST);

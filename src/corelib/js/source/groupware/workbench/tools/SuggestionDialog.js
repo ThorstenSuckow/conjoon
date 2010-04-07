@@ -30,7 +30,7 @@ com.conjoon.groupware.workbench.tools.SuggestionDialog = Ext.extend(Ext.ux.Wiz, 
     {
         Ext.apply(this, {
             finishButtonText : 'Send Suggestion',
-            height           : 450,
+            height           : 475,
             width            : 480,
             cls              : 'com-conjoon-groupware-workbench-tools-SuggestionDialog',
             title            : com.conjoon.Gettext.gettext("Make a Suggestion"),

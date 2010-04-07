@@ -38,8 +38,16 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
      */
     emailField : null,
 
+    /**
+     * @type {Ext.form.TextField} nameField
+     */
+    nameField : null,
+
     initComponent : function()
     {
+
+        var user = com.conjoon.groupware.Reception.getUser();
+
         this.problemTypeComboBox = new Ext.form.ComboBox({
             fieldLabel     : com.conjoon.Gettext.gettext("Component"),
             allowBlank     : false,
@@ -56,7 +64,15 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
         this.emailField = new Ext.form.TextField({
             fieldLabel : com.conjoon.Gettext.gettext("E-Mail (optional)"),
             name       : 'emailAddress',
-            emptyText  : com.conjoon.Gettext.gettext("Optionally provide your E-Mail Address")
+            emptyText  : com.conjoon.Gettext.gettext("Optionally provide your E-Mail Address"),
+            value      : user.emailAddress
+        });
+
+        this.nameField = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Name (optional)"),
+            name       : 'name',
+            emptyText  : com.conjoon.Gettext.gettext("Optionally provide your Name"),
+            value      : user.firstname+" "+user.lastname
         });
 
         this.problemDescriptionTextArea = new Ext.form.TextArea({
@@ -79,8 +95,13 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
                 anchor     : '100%'
             },
             items : [
+                new com.conjoon.groupware.util.FormIntro({
+                    style     : 'margin:10px 0 15px 0',
+                    labelText : com.conjoon.Gettext.gettext("Bug Report")
+                }),
                 this.problemTypeComboBox,
                 this.problemDescriptionTextArea,
+                this.nameField,
                 this.emailField
             ]
         });

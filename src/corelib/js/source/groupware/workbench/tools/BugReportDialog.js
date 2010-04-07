@@ -30,7 +30,7 @@ com.conjoon.groupware.workbench.tools.BugReportDialog = Ext.extend(Ext.ux.Wiz, {
     {
         Ext.apply(this, {
             finishButtonText : 'Send Report',
-            height           : 450,
+            height           : 475,
             width            : 480,
             cls              : 'com-conjoon-groupware-workbench-tools-BugReportDialog',
             title            : com.conjoon.Gettext.gettext("Report a Bug"),

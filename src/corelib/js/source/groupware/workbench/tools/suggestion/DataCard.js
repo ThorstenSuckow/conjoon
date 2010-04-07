@@ -38,8 +38,15 @@ com.conjoon.groupware.workbench.tools.suggestion.DataCard = Ext.extend(Ext.ux.Wi
      */
     emailField : null,
 
+    /**
+     * @type {Ext.form.TextField} nameField
+     */
+    nameField : null,
+
     initComponent : function()
     {
+        var user = com.conjoon.groupware.Reception.getUser();
+
         this.suggestionTypeComboBox = new Ext.form.ComboBox({
             fieldLabel     : com.conjoon.Gettext.gettext("Component"),
             allowBlank     : false,
@@ -56,7 +63,15 @@ com.conjoon.groupware.workbench.tools.suggestion.DataCard = Ext.extend(Ext.ux.Wi
         this.emailField = new Ext.form.TextField({
             fieldLabel : com.conjoon.Gettext.gettext("E-Mail (optional)"),
             name       : 'emailAddress',
-            emptyText  : com.conjoon.Gettext.gettext("Optionally provide your E-Mail Address")
+            emptyText  : com.conjoon.Gettext.gettext("Optionally provide your E-Mail Address"),
+            value      : user.emailAddress
+        });
+
+        this.nameField = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Name (optional)"),
+            name       : 'name',
+            emptyText  : com.conjoon.Gettext.gettext("Optionally provide your Name"),
+            value      : user.firstname+" "+user.lastname
         });
 
         this.suggestionDescriptionTextArea = new Ext.form.TextArea({
@@ -79,8 +94,13 @@ com.conjoon.groupware.workbench.tools.suggestion.DataCard = Ext.extend(Ext.ux.Wi
                 anchor     : '100%'
             },
             items : [
+                new com.conjoon.groupware.util.FormIntro({
+                    style     : 'margin:10px 0 15px 0',
+                    labelText : com.conjoon.Gettext.gettext("Suggestion")
+                }),
                 this.suggestionTypeComboBox,
                 this.suggestionDescriptionTextArea,
+                this.nameField,
                 this.emailField
             ]
         });
