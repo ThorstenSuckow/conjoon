@@ -1,4 +1,27 @@
-﻿2010-03-29 0.1.2
+﻿2010-04-07 0.1.3
+================
+Notable changes:
+
+[Workbench]
+ - enhanced "Help" menu, added dialogs for submitting suggestions/bug reports
+
+[Datastore - mysql]
+ - fixed an issue with datastructure for attachment table, since some
+attachments could not be saved due to restrictions of content length for "BLOB"
+fields - changed field "content" in "attachment" table from "BLOB" to "LONGBLOB"
+
+[Email module - client]
+ - added DownloadManager for queueing downloads in conjoon
+ - revamped DefaultViewRenderer for displaying email messages to show a
+resizable and scrollable attachment list
+
+[Email module - backend]
+ - fixed an security issue where models would not check for proper folder
+permissions before sending an email message / item to the client
+ - added functionality for downloading attachments
+
+
+2010-03-29 0.1.2
 ================
 Notable changes:
 
