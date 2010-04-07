@@ -75,3 +75,15 @@
     background-image: url(../images/16x16/actions/groupware-email-previewhide.png) !important;
 }
 
+#com-conjoon-groupware-email-bottomPreview,
+#com-conjoon-groupware-email-rightPreview {
+    border:1px solid #99BBE8;
+}
+
+#com-conjoon-groupware-email-bottomPreview-xsplit {
+    background:url(../images/splitter-x.png) no-repeat scroll 50% 1px #CAD9EC !important;
+}
+
+#com-conjoon-groupware-email-rightPreview-xsplit {
+    background:url(../images/splitter-y.png) no-repeat scroll 1px 50% #CAD9EC !important;
+}

@@ -25,72 +25,6 @@ com.conjoon.groupware.workbench.Menubar = function(){
 
     var _viewMenu = null;
 
-    var _emailMenu = null;
-
-    var _accStore = null;
-
-    /**
-     * Listener for the "Email"-menu "beforeshow"-event.
-     * Will either render the "Folder mappings..." menu item enabled or disabled
-     * based on the availability of IMAP accounts.
-     *
-     */
-    var _onEmailMenuBeforeShow = function()
-    {
-        if (!_accStore) {
-            _accStore = com.conjoon.groupware.email.AccountStore.getInstance();
-        }
-
-        var recs = _accStore.getRange();
-
-        var found = false;;
-        for (var i = 0, len = recs.length; i < len; i++) {
-            if (recs[i].get('protocol').toLowerCase() == 'imap') {
-                found = true;
-                break;
-            }
-        }
-
-        _emailMenu.menu.items.get(3).setDisabled(!found);
-    };
-
-    /**
-     *
-     * @return {Ext.Toolbar.Button}
-     */
-    var _getEmailMenu = function()
-    {
-        if (_emailMenu) {
-            return _emailMenu;
-        }
-
-        _emailMenu = new Ext.Toolbar.Button({
-            text : com.conjoon.Gettext.gettext("Email"),
-            menu : [{
-                text    : com.conjoon.Gettext.gettext("Add account"),
-                handler : function() {
-                    var w = new com.conjoon.groupware.email.EmailAccountWizard();
-                    w.show();
-                }
-            }, '-', {
-                text    : com.conjoon.Gettext.gettext("Accounts..."),
-                handler : function() {
-                    var dialog = new com.conjoon.groupware.email.EmailAccountDialog();
-                    dialog.show();
-                }
-            }, {
-                text    : com.conjoon.Gettext.gettext("Folder mappings..."),
-                handler : function() {
-                    com.conjoon.groupware.email.options.FolderMappingBaton.showDialog();
-                }
-            }]
-        });
-
-        _emailMenu.menu.on('beforeshow', _onEmailMenuBeforeShow);
-
-        return _emailMenu;
-    };
-
     /**
      *
      * @param workbench {com.conjoon.groupware.Workbench}
@@ -271,24 +205,51 @@ com.conjoon.groupware.workbench.Menubar = function(){
                             }
                         }]
                     }, _getViewMenu(workbench)
-                    , _getEmailMenu(), {
+                    , {
                         text : com.conjoon.Gettext.gettext("Extras"),
                         menu : [{
-                            text    : com.conjoon.Gettext.gettext("Feeds..."),
-                            handler : function() {
-                                var dialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
+                              text    : com.conjoon.Gettext.gettext("Feeds..."),
+                              handler : function() {
+                                  var dialog = new com.conjoon.groupware.feeds.FeedOptionsDialog();
+                                  dialog.show();
+                              }
+                              }, '-', {
+                              text    : com.conjoon.Gettext.gettext("Email accounts..."),
+                              handler : function() {
+                                var dialog = new com.conjoon.groupware.email.EmailAccountDialog();
                                 dialog.show();
+                              }
+                             }]
+                    }, {
+                        text : com.conjoon.Gettext.gettext("Help"),
+                        menu : [{
+                            text     : com.conjoon.Gettext.gettext("Online User Guide"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("conjoon Knowledge Base"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Make a Suggestion..."),
+                            handler  : function() {
+                                var sd = new com.conjoon.groupware.workbench.tools.SuggestionDialog();
+                                sd.show();
+                            }
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Report a Bug..."),
+                            handler  : function() {
+                                var brd = new com.conjoon.groupware.workbench.tools.BugReportDialog();
+                                brd.show();
+                            }
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Online Forums"),
+                            handler  : function() {
+                                window.open("http://www.conjoon.org/forum");
                             }
                         }, '-', {
-                            text : com.conjoon.Gettext.gettext("Local cache"),
-                            handler : function() {
-                                com.conjoon.groupware.localCache.options.Dialog.showDialog();
-                            }
-                        }]
-                    }, {
-                        text : com.conjoon.Gettext.gettext("?"),
-                        menu : [{
-                            text : com.conjoon.Gettext.gettext("About"),
+                            text     : com.conjoon.Gettext.gettext("Check for Updates"),
+                            disabled : true
+                        }, '-', {
+                            text : com.conjoon.Gettext.gettext("About conjoon"),
                             handler : function() {
                                 com.conjoon.groupware.workbench.AboutDialog.show();
                             }

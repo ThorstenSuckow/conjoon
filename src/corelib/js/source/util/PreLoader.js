@@ -46,6 +46,8 @@ com.conjoon.util.PreLoader = function() {
              */
             'beforestoreload'
         );
+
+        _kernel.superclass.constructor.call(this);
     };
 
     Ext.extend(_kernel, Ext.util.Observable, {

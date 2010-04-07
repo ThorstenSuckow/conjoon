@@ -294,6 +294,9 @@ function conjoon_mkdir($dir, $remove = false)
     $dir = str_replace("\\", "/", $dir);
 
     $parts  = explode('/', $dir);
+    if ($parts[0] == "") {
+        $parts[0] = "/";
+    }
     $tmpDir = realpath($parts[0]);
 
     if ($tmpDir === false) {

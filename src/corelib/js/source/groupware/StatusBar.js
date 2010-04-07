@@ -104,6 +104,8 @@ com.conjoon.groupware.StatusBar = function(){
 
     var _connectionInfo = null;
 
+    var _downloadInfo = null;
+
     var _onBeforeRequest = function()
     {
         if (_activeRequestCount == 0) {
@@ -132,6 +134,25 @@ com.conjoon.groupware.StatusBar = function(){
         if (_activeRequestCount <= 0) {
             _progressBar.reset(true);
         }
+    };
+
+    var _activeDloads = 0;
+
+    var _dloadAbort = function()
+    {
+        _activeDloads--;
+
+        if (_activeDloads <= 0) {
+            _activeDloads = 0;
+            _downloadInfo.addClass('inActive');
+        }
+
+    };
+
+    var _dloadStart = function()
+    {
+        _downloadInfo.removeClass('inActive');
+        _activeDloads++;
     };
 
     var _transceive = function(subject, message)
@@ -172,9 +193,28 @@ com.conjoon.groupware.StatusBar = function(){
 
     var _subscribe = function()
     {
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
+        DownloadManager.on('success', _dloadAbort);
+        DownloadManager.on('failure', _dloadAbort);
+        DownloadManager.on('error',   _dloadAbort);
+        DownloadManager.on('request', _dloadStart);
+        DownloadManager.on('cancel',  _dloadAbort);
+
+        DownloadManager.on('success', _onRequestComplete);
+        DownloadManager.on('failure', _onRequestComplete);
+        DownloadManager.on('error',   _onRequestComplete);
+        DownloadManager.on('request', _onBeforeRequest);
+        DownloadManager.on('cancel',  _onRequestComplete);
+
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.beforeload', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.load', _transceive);
         _messageBroadcaster.subscribe('com.conjoon.groupware.email.Letterman.loadexception', _transceive);
+
+        var eao = Ext.Ajax;
+        eao.on('beforerequest',    _onBeforeRequest);
+        eao.on('requestcomplete',  _onRequestComplete);
+        eao.on('requestexception', _onRequestException);
+        _messageBroadcaster.subscribe('ext.lib.ajax.abort', _onRequestAbort);
     };
 
     return {
@@ -202,6 +242,12 @@ com.conjoon.groupware.StatusBar = function(){
                 t.className = "com-conjoon-groupware-statusbar-ConnectionInfo";
                 _connectionInfo = new Ext.Toolbar.Item(t);
 
+                t = document.createElement('div');
+                t.id  = Ext.id();
+                t.innerHTML = '&#160;';
+                t.className = "downloadInfo inActive";
+                _downloadInfo = new Ext.Toolbar.Item(t);
+
                 _defaultText = com.conjoon.Gettext.gettext("Ready");
 
                 _statusItem = new Ext.Toolbar.TextItem({
@@ -218,6 +264,9 @@ com.conjoon.groupware.StatusBar = function(){
                         new Ext.Toolbar.Separator(),
                         new Ext.Toolbar.Spacer(),
                         _progressBar,
+                        new Ext.Toolbar.Separator(),
+                        new Ext.Toolbar.Spacer(),
+                        _downloadInfo,
                         new Ext.Toolbar.Spacer(),
                         new Ext.Toolbar.Separator(),
                         new Ext.Toolbar.Spacer(),
@@ -234,15 +283,6 @@ com.conjoon.groupware.StatusBar = function(){
                     function() {
                         _connectionInfo.disable();
                     }
-                );
-
-                var eao = Ext.Ajax;
-                eao.on('beforerequest',    _onBeforeRequest);
-                eao.on('requestcomplete',  _onRequestComplete);
-                eao.on('requestexception', _onRequestException);
-                _messageBroadcaster.subscribe(
-                    'ext.lib.ajax.abort',
-                    _onRequestAbort
                 );
 
                 _subscribe();

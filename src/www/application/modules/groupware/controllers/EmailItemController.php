@@ -33,10 +33,12 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      */
     public function init()
     {
+        $this->_helper->filterRequestData()
+                      ->registerFilter('Groupware_EmailItemController::download.attachment');
+
         $conjoonContext = $this->_helper->conjoonContext();
 
-        $conjoonContext
-                       ->addActionContext('fetch.emails',    self::CONTEXT_JSON)
+        $conjoonContext->addActionContext('fetch.emails',    self::CONTEXT_JSON)
                        ->addActionContext('move.items',      self::CONTEXT_JSON)
                        ->addActionContext('delete.items',    self::CONTEXT_JSON)
                        ->addActionContext('get.email.items', self::CONTEXT_JSON)
@@ -46,16 +48,71 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
     }
 
     /**
-     * Queries an email account for new wmails. If an account id was posted,
-     * only the specified account will be queried.
-     * Sends all newly fetched emails back to the client.
-     * This method will also check beforehand for any IMAP account that's about
-     * to be queried for new emails, if a default inbox folder was configured
-     * for this account. If no valid folder was found, the emthod will not query
-     * any account for new messages, and instead return an additional property
-     * named "missingInboxForAccountId", which holds the account id of the first
-     * account found for which no inbox folder was configured.
+     * Sets header to the mime type of the attachment as queried from the
+     * database and tries to send the file contents to the client.
+     * To identify the attachment, the action needs the parameters "key"
+     * and "id" as found in the data model of the attachments.
      *
+     */
+    public function downloadAttachmentAction()
+    {
+        $attachmentId  = $this->_request->getParam('id');
+        $attachmentKey = $this->_request->getParam('key');
+        $userId        = $this->_helper->registryAccess->getUserId();
+
+        $downloadCookieName = $this->_request->getParam('downloadCookieName');
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Attachment_Facade
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
+
+        $facade = Conjoon_Modules_Groupware_Email_Attachment_Facade::getInstance();
+
+        $data = $facade->getAttachmentDownloadDataForUserId(
+            $attachmentKey, $attachmentId, $userId
+        );
+
+        if (!$data) {
+            /**
+             * @see Conjoon_Exception
+             */
+            require_once 'Conjoon/Exception.php';
+
+            // we'll throw an exception, that's okay for now
+            throw new Conjoon_Exception("Sorry, but the requested attachment is not available.");
+
+            return;
+        }
+
+        $this->_helper->viewRenderer->setNoRender();
+
+
+        $response = $this->getResponse();
+        $response->clearAllHeaders();
+
+        setcookie($downloadCookieName, 'downloading', 0,  '/');
+
+        $response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true)
+                 ->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true)
+                 ->setHeader('Pragma', 'no-cache', true)
+                 ->setHeader('Content-Description', $data['fileName'], true)
+                 ->setHeader('Content-Type', $data['mimeType'], true)
+                 ->setHeader('Content-Transfer-Encoding', 'binary', true)
+                 ->setHeader(
+                    'Content-Disposition',
+                    'attachment; filename="'.addslashes($data['fileName']).'"',
+                    true
+                 );
+
+        $response->sendHeaders();
+        $response->setBody($data['content']);
+    }
+
+    /**
+     * Queriesan email account for new wmails. If an account id was posted, only the
+     * specified account will be queried.
+     * Sends all newly fetched emails back to the client.
      *
      */
     public function fetchEmailsAction()
@@ -127,34 +184,8 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                 return;
             }
 
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
-
-            //$facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
-
             for ($i = 0, $accLen = count($accounts); $i < $accLen; $i++) {
                 $currentAccount =& $accounts[$i];
-
-                // check here if we have an actual INBOX folder configured for the
-                // account. If not, break an return without fetching mails.
-                if ($currentAccount->getProtocol() == 'IMAP') {
-                    $folderId = false;/* $facade->getDefaultInboxFolderForAcountId(
-                        $currentAccount->getId()
-                    );*/
-
-                    if ($folderId === false) {
-                        $this->view->success                  = false;
-                        $this->view->totalCount               = 0;
-                        $this->view->items                    = array();
-                        $this->view->error                    = null;
-                        $this->view->missingInboxForAccountId = $currentAccount->getId();
-
-                        return;
-                    }
-                }
-
                 $tmpEmails = Conjoon_Modules_Groupware_Email_Letterman::fetchEmails($userId, $currentAccount);
 
                 $emails        = array_merge($emails, $tmpEmails['fetched']);
@@ -567,9 +598,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                    );
 
         if (!$message) {
-            $this->view->success    = true;
-            $this->view->error      = null;
-            $this->view->item       = null;
+            $this->view->success = true;
+            $this->view->error   = null;
+            $this->view->item    = null;
             return;
         }
 

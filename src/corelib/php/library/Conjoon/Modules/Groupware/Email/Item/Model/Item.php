@@ -277,6 +277,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * of the statement. The optional argument $addTable allows for adding INNER JOIN sources
      * to the beginning of the statement. It keys are "name" which holds a value as specified
      * in the "from" method from Zend_Db_Select, and "cols".
+     * The base query will consider owner relationships for the folder the item sits in.
      *
      * @param integer $userId
      * @param array $sortInfo
@@ -317,6 +318,15 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                     )
                 )
                 ->join(
+                    array('folders_users' => self::getTablePrefix() . 'groupware_email_folders_users'),
+                    '`folders_users`.`groupware_email_folders_id` = `items`.`groupware_email_folders_id` '
+                    .' AND '
+                    .$adapter->quoteInto('`folders_users`.`users_id`=?', $userId, 'INTEGER')
+                    .' AND '
+                    .$adapter->quoteInto('`folders_users`.`relationship`=?', 'owner', 'STRING'),
+                    array()
+                )
+                ->join(
                     array('flag' => self::getTablePrefix() . 'groupware_email_items_flags'),
                     '`flag`.`groupware_email_items_id` = `items`.`id`' .
                     ' AND '.
@@ -350,34 +360,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
 
         return $select;
-    }
 
-    /**
-     * Returns the total number of email items in this folder.
-     *
-     * @param integer $folderId
-     *
-     * @return integer
-     */
-    public function getEmailItemCountForFolder($folderId)
-    {
-        $folderId = (int)$folderId;
-
-        if ($folderId <= 0) {
-            return 0;
-        }
-
-        $select = $this->select()
-                  ->from($this, array('count' => 'count(id)'))
-                  ->where('`groupware_email_folders_id` = ?', $folderId);
-
-        $result = $this->fetchRow($select);
-
-        if (!$result || empty($result)) {
-            return 0;
-        }
-
-        return (int)$result->count;
     }
 
     /**
@@ -486,10 +469,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * The items will only be deleted if all rows in groupware_email_items_flags
      * for the corresponding item have been set to is_deleted=1. Otherwise,
      * only the is_deleted field for the specified user will be set to 1.
-     * If that is the case and the item gets entirely deleted, the method will
-     * use the accounts-model to check whether there are any accounts flagged
-     * as "is_deleted = 1" and also remove this accounts if no more items
-     * are exiting in the data storage.
      *
      * @param array $itemIds A numeric array with all id's of the items that are
      * about to be deleted
@@ -540,19 +519,11 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             $outboxModel     = new Conjoon_Modules_Groupware_Email_Item_Model_Outbox();
             $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Account_Model_Account
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
-
-            $accountModel    = new Conjoon_Modules_Groupware_Email_Account_Model_Account();
-
             $referencesModel->delete('is_pending=1 AND user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $flagModel->delete('user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $attachmentModel->delete('groupware_email_items_id IN ('.$idString.')');
             $inboxModel->delete('groupware_email_items_id IN ('.$idString.')');
             $outboxModel->delete('groupware_email_items_id IN ('.$idString.')');
-            $accountModel->removeAsDeletedFlaggedAccounts($userId);
         }
 
         return $deleted;

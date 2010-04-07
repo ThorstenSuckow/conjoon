@@ -88,23 +88,43 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             border   : false,
             hideMode : 'offsets',
             items    : [
-                this.gridPanel, {
-                id:'com.conjoon.groupware.email.rightPreview',
-                layout:'fit',
-                hideMode : 'offsets',
-                region:'east',
-                width:350,
-                split: true,
-                hidden:true
-            },{
-                id:'com.conjoon.groupware.email.bottomPreview',
-                layout:'fit',
-                items:this.preview,
-                hideMode : 'offsets',
-                height: 250,
-                split: true,
-                region:'south'
-            }]
+                this.gridPanel,
+                new Ext.Container({
+                    id       : 'com-conjoon-groupware-email-rightPreview',
+                    layout   : 'fit',
+                    hideMode : 'offsets',
+                    region   : 'east',
+                    split    : true,
+                    hidden   : true,
+                    listeners : {
+                        render : {
+                            fn : function() {
+                                var w = Math.round((this.centerPanel.el.getWidth()
+                                        - this.treePanel.el.getWidth())/2);
+                                Ext.getCmp('com-conjoon-groupware-email-rightPreview')
+                                    .width = w;
+                            }
+                        },
+                        scope : this
+                    }
+            }), new Ext.Container({
+                id        : 'com-conjoon-groupware-email-bottomPreview',
+                layout    : 'fit',
+                items     : this.preview,
+                hideMode  : 'offsets',
+                split     : true,
+                region    : 'south',
+                listeners : {
+                    render : {
+                        fn : function() {
+                            var h = Math.round(this.ownerCt.body.getHeight()/2);
+                            Ext.getCmp('com-conjoon-groupware-email-bottomPreview')
+                                .height = h;
+                        }
+                    },
+                    scope : this
+                }
+            })]
         });
 
         this.centerPanel = new Ext.Container({
@@ -772,8 +792,8 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     hidePreview : function(btn, evt)
     {
-        var right  = Ext.getCmp('com.conjoon.groupware.email.rightPreview');
-        var bot    = Ext.getCmp('com.conjoon.groupware.email.bottomPreview');
+        var right  = Ext.getCmp('com-conjoon-groupware-email-rightPreview');
+        var bot    = Ext.getCmp('com-conjoon-groupware-email-bottomPreview');
         var button = this.previewButton;
 
         if (btn instanceof Ext.Toolbar.SplitButton) {
@@ -1516,11 +1536,10 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
         if (this.clkNodeId == null) {
             return false;
-        } else if (!this.treePanel.getNodeById(this.clkNodeId).attributes.isSelectable) {
-            return false;
         }
 
         (options.params = options.params || {}).groupwareEmailFoldersId = this.clkNodeId;
+
     },
 
 
@@ -1528,38 +1547,30 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     {
         this.switchButtonState(0, null);
 
-        var attr = node && node.attributes
-                   ? node && node.attributes
-                   : false;
-
-        if (attr !== false && (attr.type != 'root' && attr.type != 'accounts_root')) {
+        if (node && node.attributes.type && (node.attributes.type != 'root' && node.attributes.type != 'accounts_root')) {
             this.clkNodeId = node.id;
-
-            this.previewButton.show();
-            this.centerPanel.getLayout().setActiveItem(1);
-
             if (this.clkNodeId != this.lastClkNodeId) {
                 var proxy = this.gridPanel.store.proxy;
-                var ar    = proxy.activeRequest[Ext.data.Api.actions.read];
-                if (ar) {
-                    proxy.getConnection().abort(ar);
+                if (proxy.activeRequest[Ext.data.Api.actions.read]) {
+                    proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.actions.read]);
                 }
                 this.gridPanel.store.removeAll();
-
-                if (!attr.isSelectable && ar) {
-                    this.gridPanel.loadMask.hide();
-                }
-                this.gridPanel.view.reset((attr.isSelectable ? true : false));
-
+                this.gridPanel.view.reset(true);
                 this.lastClkNodeId = this.clkNodeId;
             }
-
+            this.previewButton.show();
+            this.centerPanel.getLayout().setActiveItem(1);
             return;
         }
 
         this.lastClkNodeId = this.clkNodeId;
         this.clkNodeId = null;
 
+        /*var proxy = this.gridPanel.store.proxy;
+        if (proxy.activeRequest[Ext.data.Api.READ]) {
+            proxy.getConnection().abort(proxy.activeRequest[Ext.data.Api.READ]);
+        }*/
+        //this.gridPanel.store.removeAll();
         this.previewButton.hide();
         this.centerPanel.getLayout().setActiveItem(0);
     },
