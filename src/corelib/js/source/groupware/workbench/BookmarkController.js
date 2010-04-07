@@ -76,7 +76,8 @@ com.conjoon.groupware.workbench.BookmarkController = function() {
                             contentPanel.setActiveTab(homePanel);
                         }
                     }, '-', {
-                        text : com.conjoon.Gettext.gettext("Contacts")
+                        text     : com.conjoon.Gettext.gettext("Contacts"),
+                        disabled : true
                     }, {
                         text    : com.conjoon.Gettext.gettext("Emails"),
                         handler : function(){
@@ -88,9 +89,11 @@ com.conjoon.groupware.workbench.BookmarkController = function() {
                             contentPanel.setActiveTab(emailPanel);
                         }
                     }, {
-                        text : com.conjoon.Gettext.gettext("Calendar")
+                        text     : com.conjoon.Gettext.gettext("Calendar"),
+                        disabled : true
                     }, {
-                        text:com.conjoon.Gettext.gettext("Todos")
+                        text     : com.conjoon.Gettext.gettext("Todos"),
+                        disabled : true
                     }, '-'
                 ]});
             }

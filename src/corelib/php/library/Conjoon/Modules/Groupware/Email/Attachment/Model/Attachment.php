@@ -45,6 +45,83 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
     protected $_primary = 'id';
 
     /**
+     * Returns the attachment for the specified key and id.
+     *
+     * @param string $key The key of the attachment to query in the database.
+     * @param integer $id The id of the attachment to query in the database.
+     *
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getAttachmentForKeyAndId($key, $id)
+    {
+        $key = trim((string)$key);
+        $id  = (int)$id;
+
+        if ($key == "") {
+            throw new InvalidArgumentException("Invalid argument for key - $key");
+        }
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Invalid argument for id - $id");
+        }
+
+        $select = $this->select()
+                  ->from($this)
+                  ->where('`id`=?', $id)
+                  ->where('`key`=?', $key);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return array();
+        }
+
+        return $row->toArray();
+    }
+
+    /**
+     * Returns the email item id for the specified attachment key and id.
+     * Note: If the attachment was not found, this method will return "0"!
+     *
+     * @param string $key The key of the attachment to query in the database.
+     * @param integer $id The id of the attachment to query in the database.
+     *
+     * @return integer
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getEmailItemIdForAttachmentKeyAndId($key, $id)
+    {
+        $key = trim((string)$key);
+        $id  = (int)$id;
+
+        if ($key == "") {
+            throw new InvalidArgumentException("Invalid argument for key - $key");
+        }
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Invalid argument for id - $id");
+        }
+
+        $select = $this->select()
+                  ->from($this, 'groupware_email_items_id')
+                  ->where('`id`=?', $id)
+                  ->where('`key`=?', $key);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return 0;
+        }
+
+        $id = $row->groupware_email_items_id;
+
+        return (int)$id;
+    }
+
+    /**
      * Returns all the attachments for the specified item.
      */
     public function getAttachmentsForItem($groupwareEmailItemsId)

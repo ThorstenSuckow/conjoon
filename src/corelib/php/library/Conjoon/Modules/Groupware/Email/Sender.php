@@ -74,7 +74,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
         $mail = new Conjoon_Mail('UTF-8');
 
         // let everyone know...
-        $mail->addHeader('X-MailGenerator', 'Conjoon ' . Conjoon_Version::VERSION);
+        $mail->addHeader('X-MailGenerator', 'conjoon ' . Conjoon_Version::VERSION);
 
         /**
          * Some clients need the MIME-Version header field. For example,
@@ -150,12 +150,6 @@ class Conjoon_Modules_Groupware_Email_Sender {
                 'password' => $account->getPasswordOutbox(),
                 'port'     => $account->getPortOutbox()
             );
-
-            $ssl = $account->getOutboxConnectionType();
-
-            if ($ssl == 'SSL' || $ssl == 'TLS') {
-                $config['ssl'] = $ssl;
-            }
         }
 
         $transport = new Zend_Mail_Transport_Smtp($account->getServerOutbox(), $config);

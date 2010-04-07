@@ -358,28 +358,10 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` CHANGE `update_int
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
 
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ADD `inbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `port_outbox`,
-ADD `outbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `inbox_connection_type` ;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD `key` VARCHAR( 32 ) NOT NULL AFTER `id`;
 
-CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,`groupware_email_accounts_id` INT UNSIGNED NOT NULL ,`global_name` TEXT NULL ,`type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH' ) NOT NULL ,PRIMARY KEY ( `id` )) ENGINE = MYISAM;
+UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(RAND()) WHERE key = '';
 
- CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`key` VARCHAR( 255 ) NOT NULL ,
-`parent_id` INT UNSIGNED NOT NULL
-) ENGINE = MYISAM;
+ALTER TABLE `groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
 
- CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry_values` (
-`registry_id` INT UNSIGNED NOT NULL ,
-`user_id` INT UNSIGNED NOT NULL ,
-`name` VARCHAR( 255 ) NOT NULL ,
-`value` TEXT NOT NULL ,
-`type` ENUM( 'STRING', 'INTEGER', 'BOOLEAN', 'FLOAT') NOT NULL
-INDEX ( `registry_id` , `user_id` )
-) ENGINE = MYISAM;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD PRIMARY KEY ( `user_id` , `name` );
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry` ADD UNIQUE (`key` ,`parent_id`);
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD `is_editable` BOOL NOT NULL DEFAULT '1';
+ALTER TABLE `groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;

@@ -14,7 +14,7 @@
 
 <div id="content" class="page_template">
 
-<?php if (isset($_SESSION['check_failed'])) { ?>
+<?php if (isset($_SESSION['check_failed']) && $_SESSION['check_failed']) { ?>
 <div class="warning_box">
 <b>WARNING</b><br />
 Your server does not match the pre-requisites for a sucessfull conjoon installation.
