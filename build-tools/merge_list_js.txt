@@ -23,6 +23,7 @@ vendor/ext-ux-wiz/src/Header.js
 vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
+src/corelib/js/source/cudgets/data/Download.js
 src/corelib/js/source/cudgets/data/JsonReader.js
 src/corelib/js/source/cudgets/data/DirectProxy.js
 src/corelib/js/source/cudgets/data/Store.js
@@ -44,9 +45,16 @@ src/corelib/js/source/groupware/workbench/BookmarkController.js
 src/corelib/js/source/groupware/workbench/ToolbarController.js
 src/corelib/js/source/groupware/workbench/ContentPanel.js
 src/corelib/js/source/groupware/workbench/ClickRepeater.js
+src/corelib/js/source/groupware/workbench/tools/BugReportDialog.js
+src/corelib/js/source/groupware/workbench/tools/bugReport/WelcomeCard.js
+src/corelib/js/source/groupware/workbench/tools/bugReport/DataCard.js
+src/corelib/js/source/groupware/workbench/tools/SuggestionDialog.js
+src/corelib/js/source/groupware/workbench/tools/suggestion/WelcomeCard.js
+src/corelib/js/source/groupware/workbench/tools/suggestion/DataCard.js
 src/corelib/js/source/groupware/Workbench.js
 src/corelib/js/source/groupware/workbench/dd/TabDropZone.js
 src/corelib/js/source/groupware/workbench/dd/TabDragZone.js
+src/corelib/js/source/groupware/DownloadManager.js
 src/corelib/js/source/groupware/ResponseInspector.js
 src/corelib/js/source/groupware/Registry.js
 src/corelib/js/source/groupware/reception/LogoutWindow.js

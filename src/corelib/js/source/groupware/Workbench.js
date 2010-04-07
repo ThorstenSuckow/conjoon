@@ -328,6 +328,7 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             layoutConfig : {
                 animate : true
             },
+            id           : 'com-conjoon-groupware-QuickPanel-itemPanel-west',
             split        : true,
             minSize      : 0,
             margins      : '64 0 0 0',
@@ -386,9 +387,10 @@ com.conjoon.groupware.Workbench = Ext.extend(Ext.Viewport, {
             layoutConfig : {
                 animate : true
             },
+            id           : 'com-conjoon-groupware-QuickPanel-itemPanel-east',
             region       : 'east',
             split        : true,
-            width        : 225,
+            width        : 240,
             minSize      : 0,
             maxSize      : 600,
             border       : false,

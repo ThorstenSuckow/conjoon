@@ -49,7 +49,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers extends Conjoon_
      */
     protected $_primary = array(
         'groupware_email_folders_id',
-        'groupware_email_accounts_id'
+        'users_id'
     );
 
     protected function _checkRelationshipType($type)

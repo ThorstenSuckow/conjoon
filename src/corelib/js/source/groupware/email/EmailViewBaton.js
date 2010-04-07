@@ -224,8 +224,7 @@ com.conjoon.groupware.email.EmailViewBaton = function() {
                     toValue         : com.conjoon.Gettext.gettext("To"),
                     ccValue         : com.conjoon.Gettext.gettext("CC"),
                     bccValue        : com.conjoon.Gettext.gettext("BCC"),
-                    replyToValue    : com.conjoon.Gettext.gettext("Reply to"),
-                    attachmentValue : com.conjoon.Gettext.gettext("Attachments")
+                    replyToValue    : com.conjoon.Gettext.gettext("Reply to")
                 });
 
                 Ext.applyIf(config, {

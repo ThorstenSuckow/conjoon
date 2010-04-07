@@ -306,6 +306,16 @@ com.conjoon.groupware.workbench.ContentPanel = Ext.extend(Ext.TabPanel, {
 
     _onAdd : function(container, component, index)
     {
+        /**
+         * @Ext-bug 3.1.2
+         * we need to check this because working with bottom/right preview of
+         * the EmailPanel might trigger the add event that bubbles up here.
+         * not sure yet if this is an error or not
+         */
+        if (container.getId() != "DOM:com.conjoon.groupware.ContentPanel") {
+            return;
+        }
+
         if (!this._removeList) {
             this._removeList = [];
         }

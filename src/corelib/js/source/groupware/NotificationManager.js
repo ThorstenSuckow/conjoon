@@ -24,6 +24,32 @@ com.conjoon.groupware.NotificationManager = function(){
             'com.conjoon.groupware.feeds.AccountStore.update',
             _accountStoreUpdated
         );
+
+        com.conjoon.groupware.DownloadManager.on(
+            'request',
+            _downloadRequested
+        );
+    };
+
+    var _downloadRequested = function(download, type, options)
+    {
+        var fileName = "";
+
+        switch (type) {
+            case 'emailAttachment':
+                fileName = options.attachmentName;
+            break;
+        }
+
+        new Ext.ux.ToastWindow({
+                title   : gettext("Download"),
+                width   : 250,
+                delay   : 4000,
+                html    : String.format(
+                    com.conjoon.Gettext.gettext("The file \"{0}\" was put into the download queue."),
+                    fileName
+                )
+            }).show(document);
     };
 
     var _accountStoreUpdated = function(subject, message)

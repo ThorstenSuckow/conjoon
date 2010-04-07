@@ -18,13 +18,13 @@
 
 <html>
 <head>
-    <title>intraBuild 2.0 - fehler</title>
+    <title><?php echo $this->title; ?></title>
 
 
 </head>
 
 <body>
- <h1>Es ist ein fehler aufgetreten!</h1>
+ <h1>Sorry, I couldn't process your request. Something odd happened.</h1>
 
  <strong>code: </strong><?php echo $this->error->code; ?><br />
  <strong>file: </strong><?php echo $this->error->file; ?><br />

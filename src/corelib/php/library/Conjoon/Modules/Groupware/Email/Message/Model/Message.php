@@ -49,7 +49,7 @@ class Conjoon_Modules_Groupware_Email_Message_Model_Message
 
         $adapter = Conjoon_Db_Table::getDefaultAdapter();
 
-         $select= $adapter->select()
+        $select= $adapter->select()
                 ->from(array('items' => Conjoon_Db_Table::getTablePrefix() . 'groupware_email_items'),
                   array(
                       'id',
@@ -64,6 +64,15 @@ class Conjoon_Modules_Groupware_Email_Message_Model_Message
                       '(1) AS is_plain_text',
                       'groupware_email_folders_id'
                 ))
+                ->join(
+                    array('folders_users' => Conjoon_Db_Table::getTablePrefix() . 'groupware_email_folders_users'),
+                    '`folders_users`.`groupware_email_folders_id` = `items`.`groupware_email_folders_id` '
+                    .' AND '
+                    .$adapter->quoteInto('`folders_users`.`users_id`=?', $userId, 'INTEGER')
+                    .' AND '
+                    .$adapter->quoteInto('`folders_users`.`relationship`=?', 'owner', 'STRING'),
+                    array()
+                )
                 ->joinLeft(
                     array('flag' => Conjoon_Db_Table::getTablePrefix() . 'groupware_email_items_flags'),
                     '`flag`.`groupware_email_items_id` = `items`.`id`' .

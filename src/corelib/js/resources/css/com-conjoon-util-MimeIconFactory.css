@@ -15,3 +15,72 @@
 .com-conjoon-util-MimeIconFactory-mimeType-unknown {
     background-image:url(../images/16x16/mimetypes/unknown.png)!important;
 }
+
+.com-conjoon-util-MimeIconFactory-mimeType-image {
+    background-image:url(../images/16x16/mimetypes/image.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-wordprocessing {
+    background-image:url(../images/16x16/mimetypes/wordprocessing.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-pdf {
+    background-image:url(../images/16x16/mimetypes/pdf.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-sound {
+    background-image:url(../images/16x16/mimetypes/sound.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-compressed {
+    background-image:url(../images/16x16/mimetypes/compressed.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-spreadsheet {
+    background-image:url(../images/16x16/mimetypes/spreadsheet.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-presentation {
+    background-image:url(../images/16x16/mimetypes/presentation.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-php {
+    background-image:url(../images/16x16/mimetypes/php.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-video {
+    background-image:url(../images/16x16/mimetypes/video.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-vcard {
+    background-image:url(../images/16x16/mimetypes/vcard.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-signed {
+    background-image:url(../images/16x16/mimetypes/signed.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-patch {
+    background-image:url(../images/16x16/mimetypes/patch.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-message {
+    background-image:url(../images/16x16/mimetypes/message.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-stylesheet {
+    background-image:url(../images/16x16/mimetypes/stylesheet.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-html {
+    background-image:url(../images/16x16/mimetypes/html.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-directory {
+    background-image:url(../images/16x16/mimetypes/directory.png)!important;
+}
+
+.com-conjoon-util-MimeIconFactory-mimeType-txt {
+    background-image:url(../images/16x16/mimetypes/txt.png)!important;
+}
+

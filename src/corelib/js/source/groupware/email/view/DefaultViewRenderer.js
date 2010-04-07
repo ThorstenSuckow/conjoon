@@ -24,6 +24,16 @@ Ext.namespace('com.conjoon.groupware.email.view');
  */
 com.conjoon.groupware.email.view.DefaultViewRenderer = function(config){
 
+    var DownloadManager = com.conjoon.groupware.DownloadManager;
+
+    DownloadManager.on('request', this.onDownloadRequest, this);
+    DownloadManager.on('error',   this.onDownloadFinish,  this);
+    DownloadManager.on('failure', this.onDownloadFinish,  this);
+    DownloadManager.on('cancel',  this.onDownloadFinish,  this);
+    DownloadManager.on('success', this.onDownloadFinish,  this);
+
+    this.attachmentKeys = {};
+
     Ext.apply(this, config);
 };
 
@@ -43,11 +53,6 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
      * @cfg {String} ccValue
      */
     ccValue : 'CC',
-
-    /**
-     * @cfg {String} attachmentValue
-     */
-    attachmentValue : 'Attachments',
 
     /**
      * @cfg {String} bccValue
@@ -113,6 +118,22 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
      * @type {Boolean}
      */
     isPlainTextView : false,
+
+    /**
+     * @type {Object} attachments An array that holds all attachment id/keys
+     * if this view has to display them
+     */
+    attachmentKeys : null,
+
+    /**
+     * @type {String} downloadTypeEmailAttachment
+     */
+    downloadTypeEmailAttachment : 'emailAttachment',
+
+    /**
+     * @type {Ext.SplitBar} splitBar
+     */
+    splitBar : null,
 
     /**
      * Returns the html-code for the iframe which displays the message content.
@@ -265,12 +286,25 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var ifrAnchor = document.getElementById(this.viewId);
 
         var heightPrev = ifrAnchor.previousSibling ? Ext.fly(ifrAnchor.previousSibling).getHeight() : 0;
-        var heightNext = ifrAnchor.nextSibling ? Ext.fly(ifrAnchor.nextSibling).getHeight() : 0;
+
+        var heightNext = 0;
+        if (this.splitBar) {
+            var pn = ifrAnchor.parentNode;
+            heightNext = Ext.fly(pn.lastChild).getHeight();
+            this.splitBar.maxSize = (Ext.fly(pn).getHeight()
+                                    - Ext.fly(ifrAnchor.previousSibling).getHeight())
+                                    - this.splitBar.el.getHeight();
+
+            var m = Ext.fly(pn.lastChild).getHeight(true)
+                    - this.splitBar.el.getHeight(true);
+
+            pn.lastChild.firstChild.style.height = (m > 0 ? m : 0)+ "px";
+        }
 
         var nHeight = height - (heightPrev + heightNext);
 
         ifrAnchor.style.height = (nHeight < 0 ? 0 : nHeight) + "px";
-        iframe.style.height = (nHeight < 0 ? 0 : nHeight) + "px";
+        iframe.style.height    = (nHeight < 0 ? 0 : nHeight) + "px";
     },
 
     /**
@@ -377,10 +411,19 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         var len = attachments.length;
 
         for (var i = 0; i < len; i++) {
-            attachItemsHtml += ts.attachmentItem.apply({
-                mimeIconCls : com.conjoon.util.MimeIconFactory.getIconCls(attachments[i].mimeType),
-                name        : attachments[i].fileName
+            var attachmentTemplateId = Ext.id();
+
+            attachItemsHtml   += ts.attachmentItem.apply({
+                mimeIconCls          : com.conjoon.util.MimeIconFactory
+                                       .getIconCls(attachments[i].mimeType),
+                name                 : attachments[i].fileName,
+                attachmentId         : attachments[i].id,
+                attachmentKey        : attachments[i].key,
+                attachmentTemplateId : attachmentTemplateId
             });
+
+            this.attachmentKeys[attachments[i].id+'_'+attachments[i].key]
+                = attachmentTemplateId;
         }
 
         var DomHelper = Ext.DomHelper;
@@ -397,7 +440,11 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
                 attachments : attachHtml
             });
 
-            DomHelper.insertAfter(ifrAnchor, footer);
+            var foot = DomHelper.insertAfter(ifrAnchor, footer);
+
+            this.createSplitBar(ifrAnchor);
+
+            Ext.fly(ifrAnchor.parentNode).addClass('attachment');
         }
 
         var doc = this.doc;
@@ -445,7 +492,9 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             return;
         }
 
-        var dom  = document.getElementById(this.viewId);
+        this.attachmentKeys = {};
+
+        var dom = document.getElementById(this.viewId);
 
         var doc = this.doc;
         if (doc) {
@@ -459,11 +508,21 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
             }
         }
 
+        Ext.fly(dom.parentNode).removeClass('attachment');
 
         var prev = dom.previousSibling;
         var next = dom.nextSibling;
+
         if (prev) {
             prev.parentNode.removeChild(prev);
+        }
+
+        if (this.splitBar) {
+            this.splitBar.destroy();
+            this.splitBar = null;
+
+            var n = next.nextSibling;
+            n.parentNode.removeChild(n);
         }
         if (next) {
             next.parentNode.removeChild(next);
@@ -523,19 +582,25 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.master){
             ts.master = new Ext.Template(
-                     '<div style="height:100%">{header}<div id="'+this.viewId+'">',
-                     '<iframe name="'+Ext.id()+'" style="width:100%;border:0px;" frameborder="0" src="'+(Ext.SSL_SECURE_URL || "javascript:false")+'"></iframe></div>',
+                     '<div class="com-conjoon-groupware-email-EmailView">',
+                     '{header}',
+                     '<div id="'+this.viewId+'">',
+                     '<iframe name="'+Ext.id()+'"',
+                     ' style="width:100%;border:0px;" frameborder="0" ',
+                     'src="'+(Ext.SSL_SECURE_URL || "javascript:false")+'">',
+                     '</iframe></div>',
                      '{footer}</div>'
             );
         }
 
         if (!ts.header) {
             ts.header = new Ext.Template(
-                    '<div class="com-conjoon-groupware-email-EmailView-wrap">',
-                       '<div class="com-conjoon-groupware-email-EmailView-dataInset">',
-                        '<span class="com-conjoon-groupware-email-EmailView-date">{date:date("d.m.Y H:i")}</span>',
+                    '<div class="wrap">',
+                       '<div class="dataInset">',
+                        '<span class="date">{date:date("d.m.Y H:i")}</span>',
                         '{subject}',
-                        '<table border="0" cellspacing="0" cellpadding="0" class="com-conjoon-groupware-email-EmailView-headerTable">',
+                        '<table border="0" cellspacing="0" cellpadding="0" ',
+                        'class="headerTable">',
                         '{from}',
                         '{replyTo}',
                         '{to}',
@@ -555,61 +620,87 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
 
         if (!ts.subject) {
             ts.subject = new Ext.Template(
-                '<div class="com-conjoon-groupware-email-EmailView-subject">{subject}</div>'
+                '<div class="subject">{subject}</div>'
             );
         }
 
         if (!ts.from) {
             ts.from = new Ext.Template(
-                '<tr><td class="headerField">',this.fromValue,':</td><td class="headerValue">{from}</td></tr>'
+                '<tr><td class="headerField">',this.fromValue,':</td>',
+                '<td class="headerValue">{from}</td></tr>'
             );
         }
 
         if (!ts.to) {
             ts.to = new Ext.Template(
-                '<tr><td class="headerField">',this.toValue,':</td><td class="headerValue">{to}</td></tr>'
+                '<tr><td class="headerField">',this.toValue,':</td>',
+                '<td class="headerValue">{to}</td></tr>'
             );
         }
 
         if (!ts.replyTo) {
             ts.replyTo = new Ext.Template(
-                '<tr><td class="headerField">',this.replyToValue,':</td><td class="headerValue">{replyTo}</td></tr>'
+                '<tr><td class="headerField">',this.replyToValue,':</td>',
+                '<td class="headerValue">{replyTo}</td></tr>'
             );
         }
 
         if (!ts.cc) {
             ts.cc = new Ext.Template(
-                '<tr><td class="headerField">',this.ccValue,':</td><td class="headerValue">{cc}</td></tr>'
+                '<tr><td class="headerField">',this.ccValue,':</td>',
+                '<td class="headerValue">{cc}</td></tr>'
              );
         }
 
         if (!ts.bcc) {
             ts.bcc = new Ext.Template(
-                '<tr><td class="headerField">',this.bccValue,':</td><td class="headerValue">{bcc}</td></tr>'
+                '<tr><td class="headerField">',this.bccValue,':</td>',
+                '<td class="headerValue">{bcc}</td></tr>'
             );
         }
 
         if (!ts.footer) {
             ts.footer = new Ext.Template(
-                '<table  cellspacing="0" cellpadding="0" border="0" style="width:100%;"><tr><td style="padding:2px;background-color:#F5F5F5;border-top:1px solid #99BBE8">',
+                '<div class="attachmentContainer">',
                 '{attachments}',
-                '</td></tr></table>'
+                '</div>'
             );
         }
 
         if (!ts.attachments) {
             ts.attachments = new Ext.Template(
-                    '<table cellspacing="0" cellpadding="0" border="0" style="width:100%"><tr>',
-                        '<td style="width:60px;vertical-align:top;"><span style="font-family:Tahoma,Helvetica,Arial;font-size:11px;float:left;padding:2px;font-weight:bold;color:#15428B;">',this.attachmentValue,':</span></td>',
-                        '<td style="background:white;border:1px solid #767676;padding:2px;">',
-                        '{attachmentItems}',
-                    '</td></tr></table>'
+                    '<div class="attachmentWrap">',
+                    '{attachmentItems}',
+                    '</div>'
             );
         }
 
         if (!ts.attachmentItem) {
-            ts.attachmentItem = new Ext.Template(
-                '<a href="#" class="com-conjoon-groupware-email-EmailView-attachmentItem {mimeIconCls}">{name}</a>'
+            ts.attachmentItem = new Ext.XTemplate(
+                '<div id="{attachmentTemplateId}" ',
+                'onclick="com.conjoon.groupware.DownloadManager.',
+                'downloadEmailAttachment({attachmentId}, \'{attachmentKey}\', ',
+                '\'{[this.sanitize(values.name)]}\');" tabindex="0" ',
+                'class="com-conjoon-groupware-email-EmailView-attachmentItem ',
+                '{mimeIconCls}" ',
+                ' qtip="{[this.qtipName(values.name)]}"',
+                '>{[this.renderName(values.name)]}</div>', {
+                    sanitize : function(value) {
+                        return value.replace(/'/g, "\\'");
+                    },
+                    qtipName : function(value) {
+                        return value.replace(/"/g, '&quot;');
+                    },
+                    renderName : function(value) {
+                        /*value = Ext.util.Format.htmlDecode(value);
+                        if (value.length > 39) {
+                            value = value.substring(0, 16)+'...'+
+                                    value.substring(value.length-18);
+                        }*/
+
+                        return value;
+                    }
+                }
             );
         }
 
@@ -635,6 +726,18 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
     // private
     destroy : function()
     {
+        if (this.splitBar) {
+            this.splitBar.destroy();
+        }
+
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
+
+        DownloadManager.un('request', this.onDownloadRequest, this);
+        DownloadManager.un('error',   this.onDownloadFinish,  this);
+        DownloadManager.un('failure', this.onDownloadFinish,  this);
+        DownloadManager.un('cancel',  this.onDownloadFinish,  this);
+        DownloadManager.un('success', this.onDownloadFinish,  this);
+
         this.initData(null);
     },
 
@@ -667,6 +770,108 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
         });
         this.layout();
         this.isPlainTextView = isPlainText;
-    }
+    },
 
+    onDownloadRequest : function(download, type, options)
+    {
+        if (type != this.downloadTypeEmailAttachment) {
+            return;
+        }
+
+        var key = options.attachmentId+'_'+options.attachmentKey;
+        if (this.attachmentKeys && this.attachmentKeys[key]) {
+            Ext.fly(document.getElementById(this.attachmentKeys[key]))
+                .addClass('request');
+        }
+    },
+
+    onDownloadFinish : function(download, type, options)
+    {
+        if (type != this.downloadTypeEmailAttachment) {
+            return;
+        }
+
+        var key = options.attachmentId+'_'+options.attachmentKey;
+        if (this.attachmentKeys && this.attachmentKeys[key]) {
+            Ext.fly(document.getElementById(this.attachmentKeys[key]))
+                .removeClass('request');
+        }
+    },
+
+    createSplitBar : function(ifrAnchor)
+    {
+        var splitter = Ext.fly(ifrAnchor.parentNode).createChild({
+            cls  : 'x-layout-split x-layout-split-south',
+            html : "&#160;"
+        }, ifrAnchor.nextSibling);
+
+        this.splitBar = new Ext.SplitBar(
+            splitter, ifrAnchor, Ext.SplitBar.TOP
+        );
+
+        this.splitBar.on('beforeresize', this.onBeforeSplitBarResize, this);
+
+        this.splitBar.on('moved', this.onSplitBarMoved, this);
+
+        this.splitBar.dd.getTargetCoord = this.getTargetCoordForDD;
+    },
+
+    /**
+     * Called in the scope of this.splitBar.dd
+     *
+     */
+    getTargetCoordForDD : function(iPageX, iPageY)
+    {
+        var coord = Ext.dd.DDProxy.prototype.getTargetCoord.call(
+            this, iPageX, iPageY
+        );
+
+        if (this._mode == 'top' && this.maxY-coord.y <= 35) {
+            coord.y        = this.maxY;
+            this._showCont = false;
+        } else if (this._mode == 'bottom') {
+            if (this.maxY-coord.y <= 35 && this.maxY-coord.y > 5) {
+                coord.y = this.maxY-35;
+                this._showCont = true;
+            } else if (this.maxY-coord.y <= 5) {
+                coord.y = this.maxY;
+                this._showCont = false;
+            }
+        }
+        return coord;
+    },
+
+    onBeforeSplitBarResize : function(splitBar)
+    {
+        var dd   = splitBar.dd;
+        dd._mode = 'top';
+
+        if (dd.lastPageY == dd.maxY) {
+            dd._mode = 'bottom';
+        }
+    },
+
+    onSplitBarMoved : function(splitBar, newSize)
+    {
+        var ifrAnchor = document.getElementById(this.viewId);
+        var dd        = splitBar.dd;
+
+        if (splitBar.maxSize-newSize <= 35) {
+            if (!dd._showCont) {
+                newSize = splitBar.maxSize;
+            } else {
+                newSize = splitBar.maxSize-35;
+            }
+        }
+
+        var pn = ifrAnchor.parentNode;
+
+        pn.lastChild.style.height = (Ext.fly(pn).getHeight()
+                                     - Ext.fly(pn.firstChild).getHeight()
+                                     - newSize
+                                     - splitBar.el.getHeight(true))
+                                     + "px";
+
+        this.layout();
+    }
 };

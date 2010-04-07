@@ -36,6 +36,8 @@ require_once 'Conjoon/Filter/Raw.php';
  */
 class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjoon_Filter_Input {
 
+    const CONTEXT_DOWNLOAD_REQUEST = 'download_request';
+
     protected $_presence = array(
          self::CONTEXT_CREATE => array(
             'groupwareEmailItemsId',
@@ -43,15 +45,27 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjo
             'mimeType',
             'encoding',
             'content',
-            'contentId'
+            'contentId',
+            'key'
+        ),
+        self::CONTEXT_DOWNLOAD_REQUEST => array(
+            'id',
+            'key',
+            'downloadCookieName'
         )
     );
 
     protected $_filters = array(
+        'id' => array(
+            'Int'
+        ),
         'groupwareEmailItemsId' => array(
             'Int'
          ),
          'fileName' => array(
+            'StringTrim'
+         ),
+         'key' => array(
             'StringTrim'
          ),
          'mimeType' => array(
@@ -63,10 +77,17 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjo
          'content' => array(),
          'contentId' => array(
             'StringTrim'
+         ),
+         'downloadCookieName' => array(
+            'StringTrim'
          )
     );
 
     protected $_validators = array(
+        'id' => array(
+            'allowEmpty' => false,
+            'default'    => 0
+         ),
         'groupwareEmailItemsId' => array(
             'allowEmpty' => false
          ),
@@ -88,6 +109,13 @@ class Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment extends Conjo
          'contentId' => array(
             'allowEmpty' => true,
             'default' => ''
+         ),
+         'key' => array(
+            'allowEmpty' => false,
+            array('StringLength', 32, 32)
+         ),
+         'downloadCookieName' => array(
+            'allowEmpty' => false
          )
     );
 
