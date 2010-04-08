@@ -198,12 +198,21 @@
      ($CHECK['safe_mode_enabled'] && $CHECK['safe_mode_failure']) ||
      !$CHECK['simplexml']
      ) {
+
+     if ($CHECK['parent_dir_writable']) {
+        $_SESSION['check_prevent_paging'] = false;
+     } else {
+        $_SESSION['check_prevent_paging'] = true;
+     }
+
      $_SESSION['check_failed'] = true;
- } else if ($CHECK['parent_dir_writable']) {
-    $_SESSION['check_failed'] = false;
+
+ } else {
+    $_SESSION['check_failed']         = false;
+    $_SESSION['check_prevent_paging'] = false;
 }
 
- if (isset($_POST['check_post']) && $_POST['check_post'] == "1" && !$_SESSION['check_failed']) {
+ if (isset($_POST['check_post']) && $_POST['check_post'] == "1" && !$_SESSION['check_prevent_paging']) {
     header("Location: ./?action=check_success");
     die();
 }
