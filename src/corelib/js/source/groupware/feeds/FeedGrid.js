@@ -286,10 +286,6 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
             return;
         }
 
-        if (e.shiftKey || e.ctrlKey) {
-            return;
-        }
-
         this.clkRow    = this.view.getRow(rowIndex);
         this.clkRecord = this.store.getAt(rowIndex);
         com.conjoon.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);

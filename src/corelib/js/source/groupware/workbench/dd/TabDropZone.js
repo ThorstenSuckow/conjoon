@@ -146,6 +146,9 @@ Ext.extend(com.conjoon.groupware.workbench.dd.TabDropZone, Ext.dd.DropZone, {
 
             if (result) {
                 var info = this.getPanelInfoForTabEl(n);
+                if (!info) {
+                    return false;
+                }
                 for (var i = 0, len = this.notDroppables.length; i < len; i++) {
                     if (this.notDroppables[i].panel == info.panel) {
                         if (this.notDroppables[i].pos.indexOf(result) != -1) {

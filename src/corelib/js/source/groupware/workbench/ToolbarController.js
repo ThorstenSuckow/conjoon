@@ -80,17 +80,25 @@ com.conjoon.groupware.workbench.ToolbarController = function(){
                         com.conjoon.Gettext.gettext("Search"),
                         {
                             iconCls : 'com-conjoon-groupware-Toolbar-searchMenu-email-icon',
-                            menu : [
-                                {text: com.conjoon.Gettext.gettext("Contacts")},
-                                {text: com.conjoon.Gettext.gettext("Emails")},
-                                {text: com.conjoon.Gettext.gettext("Calendar")},
-                                {text: com.conjoon.Gettext.gettext("Todos")}
-                            ]
+                            menu : [{
+                                text     : com.conjoon.Gettext.gettext("Contacts"),
+                                disabled : true
+                            }, {
+                                text     : com.conjoon.Gettext.gettext("Emails"),
+                                disabled : true
+                            }, {
+                                text     : com.conjoon.Gettext.gettext("Calendar"),
+                                disabled : true
+                            }, {
+                                text     : com.conjoon.Gettext.gettext("Todos"),
+                                disabled : true
+                            }]
                         },
                         new Ext.form.TextField({
                             emptyText : com.conjoon.Gettext.gettext("<search in Emails>")
                         }), {
-                            iconCls : 'com-conjoon-groupware-Toolbar-startSearchButton-icon'
+                            iconCls  : 'com-conjoon-groupware-Toolbar-startSearchButton-icon',
+                            disabled : true
                         }
                     ]
                 });

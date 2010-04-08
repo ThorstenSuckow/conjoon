@@ -114,6 +114,16 @@ require_once 'Conjoon/Db/Util.php';
 require_once 'Conjoon/Util/Format.php';
 
 /**
+ * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
+
+/**
+ * @see Conjoon_Modules_Groupware_Email_Attachment_Facade
+ */
+require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
+
+/**
  * A utility class for fetching/sending emails.
  *
  * @category   Email
@@ -133,10 +143,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
     private $_filterItem       = null;
     private $_filterInbox      = null;
 
-    private $_modelAttachment = null;
-    private $_modelFlag       = null;
-    private $_modelItem       = null;
-    private $_modelInbox      = null;
+    private $_modelAttachment   = null;
+    private $_attachmentFacadce = null;
+    private $_modelFlag         = null;
+    private $_modelItem         = null;
+    private $_modelInbox        = null;
+    private $_modelFolder       = null;
 
     private $_lastIconvError = false;
 
@@ -176,10 +188,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
         $this->_filterItem       = new Conjoon_Modules_Groupware_Email_Item_Filter_Item(array(), $context);
         $this->_filterInbox      = new Conjoon_Modules_Groupware_Email_Item_Filter_Inbox(array(), $context);
 
-        $this->_modelAttachment = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
-        $this->_modelFlag       = new Conjoon_Modules_Groupware_Email_Item_Model_Flag();
-        $this->_modelItem       = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
-        $this->_modelInbox      = new Conjoon_Modules_Groupware_Email_Item_Model_Inbox();
+        $this->_modelAttachment  = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
+        $this->_modelFlag        = new Conjoon_Modules_Groupware_Email_Item_Model_Flag();
+        $this->_modelItem        = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
+        $this->_modelInbox       = new Conjoon_Modules_Groupware_Email_Item_Model_Inbox();
+        $this->_modelFolder      = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
+        $this->_attachmentFacade = Conjoon_Modules_Groupware_Email_Attachment_Facade::getInstance();
     }
 
     /**
@@ -247,11 +261,24 @@ class Conjoon_Modules_Groupware_Email_Letterman {
     /**
      * Assigns a folder id to the fetched email.
      *
+     * @param integer $userId
+     * @param integer $accountId
+     * @oaram array $emailItem
+     *
      * @todo implement logic, think about creating a filter from it
      */
-    private function _assignFolderId($userId, Array &$emailItem)
+    private function _assignFolderId($userId, $accountId, Array &$emailItem)
     {
-        $emailItem['groupwareEmailFoldersId'] = 2;
+        $folderId = $this->_modelFolder->getInboxFolderId($accountId, $userId);
+
+        if (!$folderId) {
+            throw new Exception(
+                "Critical exception: Could not find default inbox folder "
+                ."for user $userId"
+            );
+        }
+
+        $emailItem['groupwareEmailFoldersId'] = $folderId;
     }
 
     /**
@@ -567,20 +594,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         $isCopyLeftOnServer = $account->isCopyLeftOnServer();
 
-        $cconf = array(
+        $mail = new $transport(array(
             'host'     => $account->getServerInbox(),
             'port'     => $account->getPortInbox(),
             'user'     => $account->getUsernameInbox(),
             'password' => $account->getPasswordInbox()
-        );
-
-        $ssl = $account->getInboxConnectionType();
-
-        if ($ssl == 'SSL' || $ssl == 'TLS') {
-            $cconf['ssl'] = $ssl;
-        }
-
-        $mail = new $transport($cconf);
+        ));
 
         $hasUniqueId = $mail->hasUniqueId;
 
@@ -846,7 +865,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             }
 
             $this->_assignJunkStatus($userId, $emailItem);
-            $this->_assignFolderId($userId, $emailItem);
+            $this->_assignFolderId($userId, $accountId, $emailItem);
 
             $emailItem['rawHeader'] =& $rawHeader;
             $emailItem['rawBody']   =& $rawBody;
@@ -1333,7 +1352,8 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             'encoding'  => $contentTransferEncoding,
             'content'   => $part->getContent(),
             'fileName'  => $fileName,
-            'contentId' => $contentId
+            'contentId' => $contentId,
+            'key'       => $this->_attachmentFacade->generateAttachmentKey($emailItem['userId'])
         );
 
     }

@@ -168,7 +168,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
     {
         container = Ext.DomHelper.append(document.body, {
             id    : 'DOM:com.conjoon.groupware.feeds.FeedPreview.container',
-            style : "overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
+            style : "position:absolute;overflow:hidden;height:"+(height+5)+"px;width:"+width+"px"
         }, true);
 
     };

@@ -39,6 +39,7 @@ class Conjoon_Modules_Groupware_Email_Attachment implements Conjoon_BeanContext,
     private $id;
     private $fileName;
     private $mimeType;
+    private $key;
 
 
     /**
@@ -54,10 +55,12 @@ class Conjoon_Modules_Groupware_Email_Attachment implements Conjoon_BeanContext,
     public function getId(){return $this->id;}
     public function getFileName(){return $this->fileName;}
     public function getMimeType(){return $this->mimeType;}
+    public function getKey(){return $this->key;}
 
     public function setId($id){$this->id = $id;}
     public function setFileName($fileName){$this->fileName = $fileName;}
     public function setMimeType($mimeType){$this->mimeType = $mimeType;}
+    public function setKey($key){$this->key = $key;}
 
 
 // -------- interface Serializable
@@ -123,7 +126,8 @@ class Conjoon_Modules_Groupware_Email_Attachment implements Conjoon_BeanContext,
         return array(
             'id'           => $this->id,
             'fileName'     => $this->fileName,
-            'mimeType'     => $this->mimeType
+            'mimeType'     => $this->mimeType,
+            'key'          => $this->key
         );
     }
 
