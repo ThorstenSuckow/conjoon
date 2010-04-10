@@ -74,7 +74,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
         $mail = new Conjoon_Mail('UTF-8');
 
         // let everyone know...
-        $mail->addHeader('X-MailGenerator', 'Conjoon ' . Conjoon_Version::VERSION);
+        $mail->addHeader('X-MailGenerator', 'conjoon ' . Conjoon_Version::VERSION);
 
         /**
          * Some clients need the MIME-Version header field. For example,

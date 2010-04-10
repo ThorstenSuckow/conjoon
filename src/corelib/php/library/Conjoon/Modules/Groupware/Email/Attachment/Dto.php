@@ -23,5 +23,6 @@ class Conjoon_Modules_Groupware_Email_Attachment_Dto extends Conjoon_Dto {
     public $id;
     public $fileName;
     public $mimeType;
+    public $key;
 
 }

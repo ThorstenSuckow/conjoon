@@ -163,7 +163,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             message           : "",
             accountId         : null,
             sourceEditMode    : false,
-            recipients        : []
+            recipients        : [],
+            requestId         : null
         };
 
         var ajaxOptions = {
@@ -190,7 +191,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             });
         }
 
-        Ext.Ajax.request(ajaxOptions);
+        formValues[panel.id].requestId = Ext.Ajax.request(ajaxOptions);
 
         registerToolbar();
 
@@ -273,6 +274,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
     var onDraftLoadException = function(response, options)
     {
+        delete formValues[options.panelId];
+
         contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
         contentPanel.remove(Ext.getCmp(options.panelId));
         contentPanel.on('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
@@ -294,6 +297,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (!formValues[options.panelId]) {
             return;
         }
+
+        formValues[options.panelId].requestId = null;
 
         var data = com.conjoon.groupware.ResponseInspector.isSuccess(response);
 
@@ -1137,6 +1142,11 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     {
         if (activePanel && activePanel.id === panel.id) {
             activePanel = null;
+        }
+
+        var reqId = formValues[panel.id].requestId;
+        if (reqId) {
+            Ext.Ajax.abort(reqId);
         }
 
         formValues[panel.id] = null;

@@ -1,6 +1,6 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
@@ -301,11 +301,22 @@ Ext.form.CheckboxGroup = Ext.extend(Ext.form.Field, {
 
     // inherit docs from Field
     reset : function(){
-        this.eachItem(function(c){
-            if(c.reset){
-                c.reset();
-            }
-        });
+        if (this.originalValue) {
+            // Clear all items
+            this.eachItem(function(c){
+                if(c.setValue){
+                    c.setValue(false);
+                }
+            });
+            // Set items stored in originalValue
+            this.setValue(this.originalValue);
+        } else {
+            this.eachItem(function(c){
+                if(c.reset){
+                    c.reset();
+                }
+            });
+        }
         // Defer the clearInvalid so if BaseForm's collection is being iterated it will be called AFTER it is complete.
         // Important because reset is being called on both the group and the individual items.
         (function() {
@@ -344,14 +355,18 @@ myCheckboxGroup.setValue('cb-col-1,cb-col-3');
         return this;
     },
 
+
     onSetValue: function(id, value){
         if(arguments.length == 1){
             if(Ext.isArray(id)){
-                // an array of boolean values
                 Ext.each(id, function(val, idx){
-                    var item = this.items.itemAt(idx);
-                    if(item){
-                        item.setValue(val);
+                    if (Ext.isObject(val) && val.setValue){ // array of checkbox components to be checked
+                        val.setValue(true);
+                    } else { // an array of boolean values
+                        var item = this.items.itemAt(idx);
+                        if(item){
+                            item.setValue(val);
+                        }
                     }
                 }, this);
             }else if(Ext.isObject(id)){

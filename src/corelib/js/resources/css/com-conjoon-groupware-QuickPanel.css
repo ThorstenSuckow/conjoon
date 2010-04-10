@@ -92,6 +92,14 @@
     padding-left:4px;
 }
 
+#com-conjoon-groupware-QuickPanel-itemPanel-west-xsplit{
+    background:url(../images/splitter-y.png) no-repeat scroll 1px 50% #CAD9EC !important;
+}
+
+#com-conjoon-groupware-QuickPanel-itemPanel-east-xsplit{
+    background:url(../images/splitter-y.png) no-repeat scroll 1px 50% #CAD9EC !important;
+}
+
 .com-conjoon-groupware-QuickPanel-itemPanel .x-panel-body {
     background:#eef5fe url(../images/quickpanel-bg.png) repeat-x scroll 0 bottom;
 }

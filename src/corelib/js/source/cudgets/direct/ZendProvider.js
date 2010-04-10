@@ -14,7 +14,7 @@
 
 Ext.namespace('com.conjoon.cudgets.direct');
 
-if (Ext.version != '3.1.0') {
+if (Ext.version != '3.1.1') {
     throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.direct.ZendProvider");
 }
 
@@ -236,9 +236,8 @@ Ext.Ajax.on('beforerequest', function(conn, options) {
             url += '/format/' + options.ts.provider.format;
         }
 
-        options.url = url;
+        options.url            = url;
+        options.disableCaching = true;
     }
-
-    options.url += '?dc=' + Math.round((new Date()).getTime());
 
 });

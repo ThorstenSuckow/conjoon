@@ -383,3 +383,12 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD PRIMARY KEY ( `user_id`
 ALTER TABLE `{DATABASE.TABLE.PREFIX}registry` ADD UNIQUE (`key` ,`parent_id`);
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD `is_editable` BOOL NOT NULL DEFAULT '1';
+ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD `key` VARCHAR( 32 ) NOT NULL AFTER `id`;
+
+UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(RAND()) WHERE `key` = '';
+
+ALTER TABLE `groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
+
+ALTER TABLE `groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;

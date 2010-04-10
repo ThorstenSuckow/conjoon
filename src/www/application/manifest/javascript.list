@@ -1,4 +1,5 @@
 ../../js/conjoon/source/cudgets/data/DirectProxy.js
+../../js/conjoon/source/cudgets/data/Download.js
 ../../js/conjoon/source/cudgets/data/JsonReader.js
 ../../js/conjoon/source/cudgets/data/Store.js
 ../../js/conjoon/source/cudgets/data/StoreSync.js
@@ -17,6 +18,7 @@
 ../../js/conjoon/source/ext-bug-overrides.js
 ../../js/conjoon/source/Gettext.js
 ../../js/conjoon/source/groupware/DefaultProvider.js
+../../js/conjoon/source/groupware/DownloadManager.js
 ../../js/conjoon/source/groupware/email/AccountRecord.js
 ../../js/conjoon/source/groupware/email/AccountStore.js
 ../../js/conjoon/source/groupware/email/data/DefaultColumnModel.js
@@ -119,6 +121,12 @@
 ../../js/conjoon/source/groupware/workbench/Menubar.js
 ../../js/conjoon/source/groupware/workbench/PanelDragSource.js
 ../../js/conjoon/source/groupware/workbench/ToolbarController.js
+../../js/conjoon/source/groupware/workbench/tools/bugReport/DataCard.js
+../../js/conjoon/source/groupware/workbench/tools/bugReport/WelcomeCard.js
+../../js/conjoon/source/groupware/workbench/tools/BugReportDialog.js
+../../js/conjoon/source/groupware/workbench/tools/suggestion/DataCard.js
+../../js/conjoon/source/groupware/workbench/tools/suggestion/WelcomeCard.js
+../../js/conjoon/source/groupware/workbench/tools/SuggestionDialog.js
 ../../js/conjoon/source/groupware/Workbench.js
 ../../js/conjoon/source/iphone/groupware/reception/LoginWindow.js
 ../../js/conjoon/source/iphone/groupware/service/TwitterPanel.js
@@ -169,7 +177,6 @@
 ../../js/soundmanager/script/soundmanager2.js
 ../../js/ext-ux-util-messagebus/MessageBus.js
 ../../js/ext-ux-layout-slidelayout/SlideLayout.js
-../../js/ext-ux-layout-cardlayout/CardLayout.js
 ../../js/ext-ux-flashcontrol/flashcontrol-all-debug.js
 ../../js/ext-ux-flexaccord/flexaccord-all-debug.js
 ../../js/ext-ux-wiz/Card.js

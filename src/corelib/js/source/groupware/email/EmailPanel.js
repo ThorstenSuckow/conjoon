@@ -88,23 +88,43 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             border   : false,
             hideMode : 'offsets',
             items    : [
-                this.gridPanel, {
-                id:'com.conjoon.groupware.email.rightPreview',
-                layout:'fit',
-                hideMode : 'offsets',
-                region:'east',
-                width:350,
-                split: true,
-                hidden:true
-            },{
-                id:'com.conjoon.groupware.email.bottomPreview',
-                layout:'fit',
-                items:this.preview,
-                hideMode : 'offsets',
-                height: 250,
-                split: true,
-                region:'south'
-            }]
+                this.gridPanel,
+                new Ext.Container({
+                    id       : 'com-conjoon-groupware-email-rightPreview',
+                    layout   : 'fit',
+                    hideMode : 'offsets',
+                    region   : 'east',
+                    split    : true,
+                    hidden   : true,
+                    listeners : {
+                        render : {
+                            fn : function() {
+                                var w = Math.round((this.centerPanel.el.getWidth()
+                                        - this.treePanel.el.getWidth())/2);
+                                Ext.getCmp('com-conjoon-groupware-email-rightPreview')
+                                    .width = w;
+                            }
+                        },
+                        scope : this
+                    }
+            }), new Ext.Container({
+                id        : 'com-conjoon-groupware-email-bottomPreview',
+                layout    : 'fit',
+                items     : this.preview,
+                hideMode  : 'offsets',
+                split     : true,
+                region    : 'south',
+                listeners : {
+                    render : {
+                        fn : function() {
+                            var h = Math.round(this.ownerCt.body.getHeight()/2);
+                            Ext.getCmp('com-conjoon-groupware-email-bottomPreview')
+                                .height = h;
+                        }
+                    },
+                    scope : this
+                }
+            })]
         });
 
         this.centerPanel = new Ext.Container({
@@ -772,8 +792,8 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     hidePreview : function(btn, evt)
     {
-        var right  = Ext.getCmp('com.conjoon.groupware.email.rightPreview');
-        var bot    = Ext.getCmp('com.conjoon.groupware.email.bottomPreview');
+        var right  = Ext.getCmp('com-conjoon-groupware-email-rightPreview');
+        var bot    = Ext.getCmp('com-conjoon-groupware-email-bottomPreview');
         var button = this.previewButton;
 
         if (btn instanceof Ext.Toolbar.SplitButton) {

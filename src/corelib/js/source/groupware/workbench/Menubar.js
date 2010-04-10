@@ -286,9 +286,35 @@ com.conjoon.groupware.workbench.Menubar = function(){
                             }
                         }]
                     }, {
-                        text : com.conjoon.Gettext.gettext("?"),
+                        text : com.conjoon.Gettext.gettext("Help"),
                         menu : [{
-                            text : com.conjoon.Gettext.gettext("About"),
+                            text     : com.conjoon.Gettext.gettext("Online User Guide"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("conjoon Knowledge Base"),
+                            disabled : true
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Make a Suggestion..."),
+                            handler  : function() {
+                                var sd = new com.conjoon.groupware.workbench.tools.SuggestionDialog();
+                                sd.show();
+                            }
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Report a Bug..."),
+                            handler  : function() {
+                                var brd = new com.conjoon.groupware.workbench.tools.BugReportDialog();
+                                brd.show();
+                            }
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Online Forums"),
+                            handler  : function() {
+                                window.open("http://www.conjoon.org/forum");
+                            }
+                        }, '-', {
+                            text     : com.conjoon.Gettext.gettext("Check for Updates"),
+                            disabled : true
+                        }, '-', {
+                            text : com.conjoon.Gettext.gettext("About conjoon"),
                             handler : function() {
                                 com.conjoon.groupware.workbench.AboutDialog.show();
                             }

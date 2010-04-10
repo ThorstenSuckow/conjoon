@@ -59,6 +59,16 @@ class ErrorController extends Zend_Controller_Action {
 
         $this->getResponse()->clearBody();
 
+        $userId = $this->_helper->registryAccess()->getUserId();
+
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                             ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
+
         foreach ($result as $key => $value) {
             $this->view->{$key} = $value;
         }
