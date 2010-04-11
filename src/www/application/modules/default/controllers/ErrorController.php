@@ -37,6 +37,7 @@ class ErrorController extends Zend_Controller_Action {
         $conjoonContext = $this->_helper->conjoonContext();
 
         $conjoonContext->addActionContext('error', 'json')
+                       ->addActionContext('error', 'jsonHtml')
                        ->initContext();
     }
 
