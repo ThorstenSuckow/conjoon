@@ -158,7 +158,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_EmailItemController::download.attachment':
+            case 'Groupware_EmailAttachmentController::download.attachment':
                 /**
                  * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment
                  */

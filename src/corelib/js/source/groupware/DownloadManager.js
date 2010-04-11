@@ -104,7 +104,7 @@ com.conjoon.groupware.DownloadManager = function() {
          */
         downloadEmailAttachment : function(id, key, name)
         {
-            var url = './groupware/email.item/download.attachment/id/'
+            var url = './groupware/email.attachment/download.attachment/id/'
                 + id
                 + '/key/'
                 + key;
