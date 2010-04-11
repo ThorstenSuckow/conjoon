@@ -62,7 +62,7 @@ com.conjoon.cudgets.data.Download = function(config) {
         'request',
         /**
          * Fired when the download has been cancelled.
-         * @event request
+         * @event cancel
          * @param this
          */
         'cancel',
@@ -70,7 +70,7 @@ com.conjoon.cudgets.data.Download = function(config) {
          * Fired when the request to the server for downloading from "url" has
          * been initiated, the request has been processed and the server responded
          * with a cookie set to error_forbidden or error_notFound.
-         * @event request
+         * @event failure
          * @param this
          * @param {String} type either error_forbidden or error_notFound
          */
@@ -79,7 +79,7 @@ com.conjoon.cudgets.data.Download = function(config) {
          * Fired when the request to the server for downloading from "url" has
          * been initiated, but the request could not be processed, i.e. no
          * cookie has been set.
-         * @event request
+         * @event error
          * @param this
          * @param {String} responseString The response as returned by the
          * server, i.e. the content of the iframe's document
@@ -89,7 +89,7 @@ com.conjoon.cudgets.data.Download = function(config) {
          * Fired when the request to the server for downloading from url has
          * been initiated, and the server responded with a cookie set to
          * "downloading".
-         * @event download
+         * @event success
          * @param this
          */
         'success'
