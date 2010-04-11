@@ -506,7 +506,74 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 handler : function() {
                     _manageDraft('edit');
                 }
-            }]);
+            } ,'->', new Ext.BoxComponent({
+                        autoEl : {
+                            tag : 'div'
+                        },
+                        afterRender : function() {
+                            Ext.BoxComponent.prototype.afterRender.call(this);
+
+                            var ub = new com.conjoon.form.FileUploadButton({
+                                hideLabel  : true,
+                                buttonText : com.conjoon.Gettext.gettext("Add Attachment..."),
+                                buttonOnly : true,
+                                listeners  : {
+                                    fileselected : function(field) {
+                                        field.ownerCt.getForm().submit();
+                                    }
+                                }
+                            });
+
+                            ub.render(this.el);
+                        }
+                     })
+                /*new Ext.form.FormPanel({
+                border     : false,
+                fileUpload : true,
+                cls        : 'com-conjoon-groupware-email-EmailEditorManager-attachmentForm',
+                url       : './groupware/email.attachment/upload.attachment/format/jsonHtml',
+                listeners : {
+                        actioncomplete : {
+                            fn : function() {console.log("actioncomplete");}
+                        },
+                        actionfailed : {
+                            fn : function() {console.log("actionfailed");}
+                        },
+                        beforeaction : {
+                            fn : function() {console.log("beforeaction");}
+                        }
+                    },
+                items  : [new com.conjoon.form.FileUploadButton({
+                    hideLabel  : true,
+                    buttonText : com.conjoon.Gettext.gettext("Add Attachment..."),
+                    buttonOnly : true,
+                    listeners  : {
+                        fileselected : function(field) {
+                            field.ownerCt.getForm().submit();
+                        }
+                    }
+                })]
+            })*/]);
+
+
+            /**
+             * Override onDisable so the form for file uploads does not get overriden.
+             */
+            controlBar.onDisable = function(){
+                this.items.each(function(item){
+                    if (item instanceof Ext.form.FormPanel && item.disable) {
+                        item.items.each(function(myitem) {
+                            if (myitem.disable) {
+                                myitem.disable();
+                            }
+                        });
+                    } else {
+                        if(item.disable){
+                            item.disable();
+                        }
+                    }
+                });
+            };
 
             tbarManager.register('com.conjoon.groupware.email.EmailForm.toolbar', controlBar);
         }
