@@ -506,27 +506,19 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                 handler : function() {
                     _manageDraft('edit');
                 }
-            } ,'->', new Ext.BoxComponent({
-                        autoEl : {
-                            tag : 'div'
-                        },
-                        afterRender : function() {
-                            Ext.BoxComponent.prototype.afterRender.call(this);
-
-                            var ub = new com.conjoon.form.FileUploadButton({
+            } ,'->', new com.conjoon.cudgets.form.FileUploadButtonForm({
+                         uploadButton : new com.conjoon.form.FileUploadButton({
                                 hideLabel  : true,
                                 buttonText : com.conjoon.Gettext.gettext("Add Attachment..."),
                                 buttonOnly : true,
+                                allowBlank : false/*,
                                 listeners  : {
                                     fileselected : function(field) {
                                         field.ownerCt.getForm().submit();
                                     }
-                                }
-                            });
-
-                            ub.render(this.el);
-                        }
-                     })
+                                }*/
+                            })
+                        }),
                 /*new Ext.form.FormPanel({
                 border     : false,
                 fileUpload : true,

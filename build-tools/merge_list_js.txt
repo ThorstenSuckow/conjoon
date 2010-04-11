@@ -25,9 +25,11 @@ vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
 src/corelib/js/source/cudgets/data/Download.js
+src/corelib/js/source/cudgets/data/Upload.js
 src/corelib/js/source/cudgets/data/JsonReader.js
 src/corelib/js/source/cudgets/data/DirectProxy.js
 src/corelib/js/source/cudgets/data/Store.js
+src/corelib/js/source/cudgets/form/FileUploadButtonForm.js
 src/corelib/js/source/cudgets/direct/ZendProvider.js
 src/corelib/js/source/cudgets/direct/BatchedResponseHelper.js
 src/corelib/js/source/cudgets/ListView.js
