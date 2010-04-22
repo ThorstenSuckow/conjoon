@@ -88,7 +88,7 @@ com.conjoon.cudgets.data.Upload = function(config) {
 };
 
 
-Ext.extend (com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
+Ext.extend(com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
 
     /**
      * @cfg {String} url The url to upload the file(s) to
@@ -215,7 +215,7 @@ Ext.extend (com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
      * @abstract
      * @protected
      */
-    cleanupImpl : Ext.emptyFn.
+    cleanupImpl : Ext.emptyFn,
 
     /**
      * Returns true if arg represents an erroneous response after invoking
@@ -268,7 +268,6 @@ Ext.extend (com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
      * determined while uploading, otherwise false.
      *
      * @abstract
-     * @protected
      */
     isProgressAvailable : Ext.emptyFn
 
