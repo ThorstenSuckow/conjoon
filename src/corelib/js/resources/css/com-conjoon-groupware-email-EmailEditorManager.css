@@ -30,16 +30,20 @@
     background-position:2px 0;
 }
 
-.com-conjoon-groupware-email-EmailForm-toolbar-buttonSend-icon {
+.com-conjoon-groupware-email-EmailForm-toolbar .buttonSend-icon {
     background-image:url(../images/16x16/actions/groupware-email-send.png) !important;
 }
 
-.com-conjoon-groupware-email-EmailForm-toolbar-buttonOutbox-icon {
+.com-conjoon-groupware-email-EmailForm-toolbar .buttonOutbox-icon {
     background-image:url(../images/16x16/actions/groupware-email-addtooutbox.png) !important;
 }
 
-.com-conjoon-groupware-email-EmailForm-toolbar-buttonDraft-icon {
+.com-conjoon-groupware-email-EmailForm-toolbar .buttonDraft-icon {
     background-image:url(../images/16x16/actions/groupware-email-savedraft.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailForm-toolbar .buttonAttachment-icon {
+    background-image:url(../images/16x16/actions/groupware-email-addattachment.png) !important;
 }
 
 .com-conjoon-groupware-email-EmailForm-htmlEditor-body {

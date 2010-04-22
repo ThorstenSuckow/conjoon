@@ -164,7 +164,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             accountId         : null,
             sourceEditMode    : false,
             recipients        : [],
-            requestId         : null
+            requestId         : null,
+            attachmentButton  : null
         };
 
         var ajaxOptions = {
@@ -485,87 +486,31 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (controlBar == null) {
             var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
 
-            controlBar = new Ext.Toolbar([{
-                cls     : 'x-btn-text-icon',
-                iconCls : 'com-conjoon-groupware-email-EmailForm-toolbar-buttonSend-icon',
-                text    : '&#160;'+com.conjoon.Gettext.gettext("Send now"),
-                handler : function() {
-                    _manageDraft('send');
-                }
-            },{
-                cls     : 'x-btn-text-icon',
-                iconCls : 'com-conjoon-groupware-email-EmailForm-toolbar-buttonOutbox-icon',
-                text    : '&#160;'+com.conjoon.Gettext.gettext("Move to outbox"),
-                handler : function() {
-                    _manageDraft('outbox');
-                }
-            } ,'-', {
-                cls     : 'x-btn-text-icon',
-                iconCls : 'com-conjoon-groupware-email-EmailForm-toolbar-buttonDraft-icon',
-                text    : '&#160;'+com.conjoon.Gettext.gettext("Save as draft"),
-                handler : function() {
-                    _manageDraft('edit');
-                }
-            } ,'->', new com.conjoon.cudgets.form.FileUploadButtonForm({
-                         uploadButton : new com.conjoon.form.FileUploadButton({
-                                hideLabel  : true,
-                                buttonText : com.conjoon.Gettext.gettext("Add Attachment..."),
-                                buttonOnly : true,
-                                allowBlank : false/*,
-                                listeners  : {
-                                    fileselected : function(field) {
-                                        field.ownerCt.getForm().submit();
-                                    }
-                                }*/
-                            })
-                        }),
-                /*new Ext.form.FormPanel({
-                border     : false,
-                fileUpload : true,
-                cls        : 'com-conjoon-groupware-email-EmailEditorManager-attachmentForm',
-                url       : './groupware/email.attachment/upload.attachment/format/jsonHtml',
-                listeners : {
-                        actioncomplete : {
-                            fn : function() {console.log("actioncomplete");}
-                        },
-                        actionfailed : {
-                            fn : function() {console.log("actionfailed");}
-                        },
-                        beforeaction : {
-                            fn : function() {console.log("beforeaction");}
-                        }
-                    },
-                items  : [new com.conjoon.form.FileUploadButton({
-                    hideLabel  : true,
-                    buttonText : com.conjoon.Gettext.gettext("Add Attachment..."),
-                    buttonOnly : true,
-                    listeners  : {
-                        fileselected : function(field) {
-                            field.ownerCt.getForm().submit();
-                        }
+            controlBar = new Ext.Toolbar({
+                cls   : 'com-conjoon-groupware-email-EmailForm-toolbar',
+                items : [{
+                    cls     : 'x-btn-text-icon',
+                    iconCls : 'buttonSend-icon',
+                    text    : '&#160;'+com.conjoon.Gettext.gettext("Send now"),
+                    handler : function() {
+                        _manageDraft('send');
                     }
-                })]
-            })*/]);
-
-
-            /**
-             * Override onDisable so the form for file uploads does not get overriden.
-             */
-            controlBar.onDisable = function(){
-                this.items.each(function(item){
-                    if (item instanceof Ext.form.FormPanel && item.disable) {
-                        item.items.each(function(myitem) {
-                            if (myitem.disable) {
-                                myitem.disable();
-                            }
-                        });
-                    } else {
-                        if(item.disable){
-                            item.disable();
-                        }
+                },{
+                    cls     : 'x-btn-text-icon',
+                    iconCls : 'buttonOutbox-icon',
+                    text    : '&#160;'+com.conjoon.Gettext.gettext("Move to outbox"),
+                    handler : function() {
+                        _manageDraft('outbox');
                     }
-                });
-            };
+                } ,'-', {
+                    cls     : 'x-btn-text-icon',
+                    iconCls : 'buttonDraft-icon',
+                    text    : '&#160;'+com.conjoon.Gettext.gettext("Save as draft"),
+                    handler : function() {
+                        _manageDraft('edit');
+                    }
+                } ,'->']
+            });
 
             tbarManager.register('com.conjoon.groupware.email.EmailForm.toolbar', controlBar);
         }
@@ -1174,6 +1119,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         activePanel = null;
         var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
         tbarManager.hide('com.conjoon.groupware.email.EmailForm.toolbar');
+
+        if (formValues[panel.id].attachmentButton) {
+            formValues[panel.id].attachmentButton.hide();
+        }
     }
 
     var onActivatePanel = function(panel)
@@ -1188,6 +1137,21 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         contentPanel.layout.activeItem = masterPanel;
         contentPanel.layout.layout();
+
+        if (!formValues[panel.id].attachmentButton) {
+
+            formValues[panel.id].attachmentButton =
+                new com.conjoon.cudgets.form.HtmlFileChooserButton({
+                    buttonCfg : {
+                        iconCls : 'buttonAttachment-icon',
+                        text    : com.conjoon.Gettext.gettext("Add Attachment...")
+                    }
+                });
+            controlBar.add(formValues[panel.id].attachmentButton);
+            controlBar.doLayout();
+        }
+
+        formValues[panel.id].attachmentButton.show();
 
         var tbarManager = com.conjoon.groupware.workbench.ToolbarController;
         tbarManager.show('com.conjoon.groupware.email.EmailForm.toolbar');
