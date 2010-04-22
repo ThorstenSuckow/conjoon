@@ -218,7 +218,10 @@ Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
             this.isDownloading = false;
             this.task.stop(this.taskConfig);
             this.task = null;
-            document.body.removeChild(this.iframe);
+            var ifrId = this.iframe.id;
+            document.body.removeChild.defer(
+                500, document.body, [document.getElementById(ifrId)]
+            );
             this.iframe = null;
             Ext.util.Cookies.clear(this.cookieName);
             if (suspend !== true) {
@@ -298,6 +301,7 @@ Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
 
         var iframe = document.createElement('iframe');
         iframe.style.cssText = 'width:1px;height:1px;display:none';
+        iframe.id = Ext.id();
 
         document.body.appendChild(iframe);
 
