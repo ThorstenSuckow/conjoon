@@ -131,7 +131,15 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
         }
 
         $select = $this->select()
-                  ->from($this)
+                  ->from($this, array(
+                    'id',
+                    'key',
+                    'groupware_email_items_id',
+                    'file_name',
+                    'mime_type',
+                    'encoding',
+                    'content_id',
+                  ))
                   ->where('groupware_email_items_id=?', $groupwareEmailItemsId)
                   ->order('id ASC');
 
