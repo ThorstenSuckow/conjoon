@@ -28,6 +28,12 @@ Ext.namespace('com.conjoon.cudgets.form');
 com.conjoon.cudgets.form.HtmlFileChooserButton = Ext.extend(com.conjoon.cudgets.form.FileChooserButton, {
 
     /**
+     * @cfg {String} url The url the upload created with createUpload() will
+     * use
+     */
+    url : null,
+
+    /**
      * @type {Object} uploadButton The uploadButton for this form. Any component
      * is possible as long as it represents a html input element with its
      * attribute "type" set to "file". Take a look at the example folder that
@@ -71,13 +77,16 @@ com.conjoon.cudgets.form.HtmlFileChooserButton = Ext.extend(com.conjoon.cudgets.
      * Listener for the uploadButton's "fileselected" event.
      *
      * @param {Object} fileUploadButton The button thazt triggered the event
-     * @parsam {String} fileName
+     * @param {String} fileName
      *
      * @protected
      */
-    onFileSelected : function(fileUploadButton, fileName)
+    onFileSelected : function(fileUploadButton, fileName, inputName)
     {
-        this.fireEvent('fileselected', this, fileName);
+        this.fireEvent(
+            'fileselected', this, fileName, this.isMultipleFilesSupported(),
+            inputName
+        );
     },
 
 // -------- Ext.BoxComponent
@@ -215,7 +224,7 @@ com.conjoon.cudgets.form.HtmlFileChooserButton = Ext.extend(com.conjoon.cudgets.
             createFileInput : function() {
                 this.fileInput = this.wrap.createChild({
                     id   : this.getFileInputId(),
-                    name : this.getId(),
+                    name : Ext.id(),
                     cls  : 'input',
                     tag  : 'input',
                     type : 'file',
@@ -252,9 +261,10 @@ com.conjoon.cudgets.form.HtmlFileChooserButton = Ext.extend(com.conjoon.cudgets.
                         this.button.removeClass(['x-btn-over','x-btn-focus','x-btn-click'])
                     },
                     change: function() {
-                        var v = this.fileInput.dom.value;
+                        var fi = this.fileInput.dom;
+                        var v  = fi.value;
                         this.setValue(v);
-                        this.fireEvent('fileselected', this, v);
+                        this.fireEvent('fileselected', this, v, fi.name);
                     }
                 });
             },
@@ -312,6 +322,46 @@ com.conjoon.cudgets.form.HtmlFileChooserButton = Ext.extend(com.conjoon.cudgets.
     isMultipleFilesSupported : function()
     {
         return false;
+    },
+
+    /**
+     * Tells whether this button represents selection of local or remote files.
+     *
+     * @return {Boolean} true if this button supports local file selection,
+     * otherwise false.
+     *
+     * @abstract
+     */
+    isLocalFileSelectionSupported : function()
+    {
+        return true;
+    },
+
+    /**
+     * Resets the button so that it does not reference any selected
+     * files anymore.
+     */
+    reset : function()
+    {
+        this.uploadButton.reset();
+    },
+
+    /**
+     * Creates an instance of {com.conjoon.cudgets.data.Upload} so that
+     * remote operations related to moving/uploading using the referenced
+     * file(s) are possible.
+     *
+     * @param {Array} an Array of com.conjoon.cudgets.data.FileRecord
+     *
+     * @return {com.conjoon.cudgets.data.Upload}
+     */
+    createUpload : function(fileRecords)
+    {
+        return new com.conjoon.cudgets.data.HtmlUpload({
+            url         : this.url,
+            form        : this.form,
+            fileRecords : fileRecords
+        });
     }
 
 });

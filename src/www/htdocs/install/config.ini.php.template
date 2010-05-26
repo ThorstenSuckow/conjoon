@@ -81,6 +81,11 @@ edition = {EDITION}
 ;;;   APPLICATION    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [application]
+; The maximum size of files allowed for uploads. This value should be equal or less to
+; your php.ini setting post_max_size and the configuration option
+; database.variables.max_allowed_packet
+files.upload.max_size = 100000
+
 ; Since V0.1RC1, conjoon is able to detect if the Ext frontend has merged
 ; multiple requests into one, split them up and process them as if each
 ; was a single request made to the webserver.

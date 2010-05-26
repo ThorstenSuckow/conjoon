@@ -1,4 +1,22 @@
-﻿2010-04-08 0.1.3.2
+﻿2010-mm-dd 0.1.x
+================
+Notable changes:
+
+[cudgets library]
+ - fixed an issue in the Download-class where the iframe managing the related
+download would get removed to early before the file could be sent to the browser
+
+[Workbench]
+ - fixed an issue for Firefox where trying to focus an element that is not
+focusable would throw an error
+
+[Datastore - mysql]
+ - fixed an issue where the datastructure would not consider the chosen table
+prefix for the "groupware_email_items_attachments" table during the install
+process
+
+
+2010-04-08 0.1.3.2
 ==================
 Notable changes:
 

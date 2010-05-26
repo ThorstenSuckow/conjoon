@@ -165,7 +165,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             sourceEditMode    : false,
             recipients        : [],
             requestId         : null,
-            attachmentButton  : null
+            attachmentButton  : null,
+            uploadMediator    : null
         };
 
         var ajaxOptions = {
@@ -253,10 +254,10 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                     buttons : msg.YESNO,
                     fn      : function(btn){
                                   if (btn == 'yes') {
-                                      contentPanel.un('beforeremove',  onBeforeClose,    com.conjoon.groupware.email.EmailEditorManager);
+                                      contentPanel.un('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
                                       container.remove(component);
                                       if (tabCount > 0) {
-                                        contentPanel.on('beforeremove',  onBeforeClose,    com.conjoon.groupware.email.EmailEditorManager);
+                                        contentPanel.on('beforeremove',  onBeforeClose, com.conjoon.groupware.email.EmailEditorManager);
                                       }
                                   }
                               },
@@ -458,6 +459,13 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         if (!activePanel || activePanel.id != panelId) {
             return;
+        }
+
+        if (formValues[panelId].uploadMediator.isUploadPending()) {
+            controlBar.setDisabled(true);
+            formValues[panelId].attachmentButton.setDisabled(false);
+        } else {
+            controlBar.setDisabled(false);
         }
 
         subjectField.setValue(formValues[panelId].subject);
@@ -1123,6 +1131,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (formValues[panel.id].attachmentButton) {
             formValues[panel.id].attachmentButton.hide();
         }
+        form.fileGridPanel.hide();
+        form.fileGridPanel.getStore().removeAll();
+        form.fileGridPanel.ownerCt.doLayout();
     }
 
     var onActivatePanel = function(panel)
@@ -1142,13 +1153,71 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
             formValues[panel.id].attachmentButton =
                 new com.conjoon.cudgets.form.HtmlFileChooserButton({
+                    url       : './groupware/file/upload.file/format/jsonHtml',
                     buttonCfg : {
                         iconCls : 'buttonAttachment-icon',
                         text    : com.conjoon.Gettext.gettext("Add Attachment...")
+                    },
+                    listeners : {
+                        fileselected : function(fileChooserButton, fileName) {
+                            form.fileGridPanel.show();
+                            form.fileGridPanel.ownerCt.doLayout();
+                        }
                     }
                 });
             controlBar.add(formValues[panel.id].attachmentButton);
             controlBar.doLayout();
+
+            formValues[panel.id].uploadMediator = new com.conjoon.cudgets.data.FileSelectionMediator({
+                uploadOnFileSelected : true,
+                fileChooser          : formValues[panel.id].attachmentButton,
+                filePanel            : form.fileGridPanel,
+                listeners            : {
+                    request          :  function (mediator, files) {
+                        formValues[panel.id].dirty = true;
+                        controlBar.setDisabled(true);
+                        formValues[panel.id].attachmentButton.setDisabled(false);
+                    },
+                    cancel  : function() {
+                        if (activePanel.id == panel.id
+                            && !formValues[panel.id].pending
+                            && !formValues[panel.id].disabled
+                            && !formValues[panel.id].uploadMediator.isUploadPending()) {
+                            controlBar.setDisabled(false);
+                        }
+                    },
+                    success :  function() {
+                        if (activePanel.id == panel.id
+                            && !formValues[panel.id].pending
+                            && !formValues[panel.id].disabled
+                            && !formValues[panel.id].uploadMediator.isUploadPending()) {
+                            controlBar.setDisabled(false);
+                        }
+                    },
+                    failure : function(mediator, files, arg) {
+                        if (activePanel.id == panel.id
+                            && !formValues[panel.id].pending
+                            && !formValues[panel.id].disabled
+                            && !formValues[panel.id].uploadMediator.isUploadPending()) {
+                            controlBar.setDisabled(false);
+                        }
+                        com.conjoon.groupware.ResponseInspector.handleFailure(
+                            arg.response
+                        );
+                    }
+                }
+            });
+        }
+
+        var mf = formValues[panel.id].uploadMediator.getManagedFiles();
+        if (mf.length) {
+            var fg    = form.fileGridPanel;
+            var store = fg.getStore();
+            fg.show();
+            fg.ownerCt.doLayout();
+            for (var i = 0, len = mf.length; i < len; i++) {
+                store.add(mf[i].record);
+            }
         }
 
         formValues[panel.id].attachmentButton.show();
@@ -1171,6 +1240,9 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         if (reqId) {
             Ext.Ajax.abort(reqId);
         }
+
+        formValues[panel.id].attachmentButton.destroy();
+        formValues[panel.id].uploadMediator.destroy();
 
         formValues[panel.id] = null;
         delete formValues[panel.id];

@@ -23,8 +23,11 @@ vendor/ext-ux-wiz/src/Header.js
 vendor/ext-ux-wiz/src/Card.js
 vendor/ext-ux-grid-gridviewmenuplugin/src/GridViewMenuPlugin.js
 vendor/ext-ux-livegrid/build/livegrid-all-debug.js
+src/corelib/js/source/cudgets/util/Registry.js
+src/corelib/js/source/cudgets/util/MimeIconFactory.js
 src/corelib/js/source/cudgets/data/Download.js
 src/corelib/js/source/cudgets/data/Upload.js
+src/corelib/js/source/cudgets/data/HtmlUpload.js
 src/corelib/js/source/cudgets/data/JsonReader.js
 src/corelib/js/source/cudgets/data/DirectProxy.js
 src/corelib/js/source/cudgets/data/Store.js
@@ -32,6 +35,9 @@ src/corelib/js/source/cudgets/form/FileChooserButton.js
 src/corelib/js/source/cudgets/form/HtmlFileChooserButton.js
 src/corelib/js/source/cudgets/direct/ZendProvider.js
 src/corelib/js/source/cudgets/direct/BatchedResponseHelper.js
+src/corelib/js/source/cudgets/grid/FilePanelContextMenu.js
+src/corelib/js/source/cudgets/grid/ui/DefaultFilePanelContextMenuUi.js
+src/corelib/js/source/cudgets/grid/listener/DefaultFilePanelContextMenuListener.js
 src/corelib/js/source/cudgets/ListView.js
 src/corelib/js/source/cudgets/settings/Container.js
 src/corelib/js/source/cudgets/settings/Dialog.js

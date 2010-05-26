@@ -54,6 +54,8 @@ com.conjoon.cudgets.form.FileChooserButton = function(config) {
          * @param this
          * @param {com.conjoon.cudgets.data.FileRecord}
          * @param {Boolean} isMultipleFilesSupported
+         * @param {String} id Some string to identify the selected file with its
+         * input file
          */
         'fileselected'
     );
@@ -71,6 +73,50 @@ Ext.extend(com.conjoon.cudgets.form.FileChooserButton, Ext.BoxComponent, {
      *
      * @abstract
      */
-    isMultipleFilesSupported : Ext.emptyFn
+    isMultipleFilesSupported : Ext.emptyFn,
+
+    /**
+     * Tells whether this button represents selection of local or remote files.
+     *
+     * @return {Boolean} true if this button supports local file selection,
+     * otherwise false.
+     *
+     * @abstract
+     */
+    isLocalFileSelectionSupported : Ext.emptyFn,
+
+    /**
+     * Resets the button so that it does not reference any selected
+     * files anymore.
+     */
+    reset : Ext.emptyFn,
+
+    /**
+     * Creates an instance of {com.conjoon.cudgets.data.Upload} so that
+     * remote operations related to moving/uploading using the referenced
+     * file(s) are possible.
+     *
+     * @param {Array} an Array of com.conjoon.cudgets.data.FileRecord
+     *
+     * @return {com.conjoon.cudgets.data.Upload}
+     */
+    createUpload : Ext.emptyFn,
+
+    /**
+     * Returns either com.conjoon.cudgets.form.FileChooserButton.MODE_LOCAL
+     * or com.conjoon.cudgets.form.FileChooserButton.MODE_LOCAL based
+     * on the return value of isLocalFileSelectionSupported()
+     *
+     * @return {Mixed}
+     */
+    getSupportedSelectionType : function()
+    {
+        return this.isLocalFileSelectionSupported()
+               ? com.conjoon.cudgets.form.FileChooserButton.MODE_LOCAL
+               : com.conjoon.cudgets.form.FileChooserButton.MODE_REMOTE;
+    }
 
 });
+
+com.conjoon.cudgets.form.FileChooserButton.MODE_LOCAL = 1;
+com.conjoon.cudgets.form.FileChooserButton.MODE_REMOTE = 2;

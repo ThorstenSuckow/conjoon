@@ -12,6 +12,17 @@
  * $URL$
  */
 
+Ext.namespace('com.conjoon.groupware.email.form');
+
+/**
+ *
+ *
+ *
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ *
+ * @class com.conjoon.groupware.email.form.EmailForm
+ * @extends Ext.Panel
+ */
 com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
 
     __is : 'com.conjoon.groupware.email.EmailForm',
@@ -109,7 +120,18 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
             clicksToEdit:1
         });
 
-
+        this.fileGridPanel = new com.conjoon.cudgets.grid.FilePanel({
+            ui          : new com.conjoon.groupware.email.form
+                            .ui.AttachmentPanelUi(),
+            contextMenu : new com.conjoon.cudgets.grid.FilePanelContextMenu({
+                ui : new com.conjoon.cudgets.grid.ui.DefaultFilePanelContextMenuUi({
+                    cancelText   : com.conjoon.Gettext.gettext("Cancel"),
+                    removeText   : com.conjoon.Gettext.gettext("Remove"),
+                    downloadText : com.conjoon.Gettext.gettext("Download"),
+                    renameText   : com.conjoon.Gettext.gettext("Rename")
+                })
+            })
+        });
 
        this.subjectField = new Ext.form.TextField({
             name            : 'subject',
@@ -121,52 +143,65 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
         this.htmlEditor = new com.conjoon.groupware.email.form.EmailEditor();
 
         Ext.apply(this, {
-            items : [{
-                layout : 'border',
-                bodyStyle : 'background-color:#F6F6F6',
-                region : 'north',
-                split : true,
-                hideMode : 'offsets',
-                height:125,
-                minSize:125,
-                items  : [
-                    new Ext.form.FormPanel({
-                        labelWidth  : 30,
-                        region : 'north',
-                        height : 20,
-                        minSize: 20,
-                        hideMode : 'offsets',
-                        margins: '4 5 2 5',
-                        style  : 'background:none',
-                        baseCls     : 'x-small-editor',
-                        border : false,
-                        defaults : {
-                            labelStyle : 'width:30px;font-size:11px'
-                        },
-                        defaultType : 'textfield',
-                        items : [
-                            this.fromComboBox
-                        ]
-                  }), this.grid,
-                    new Ext.form.FormPanel({
-                        labelWidth  : 45,
-                        region : 'south',
-                        height : 20,
-                        hideMode : 'offsets',
-                        minSize: 20,
-                        style  : 'background:none',
-                        margins: '2 5 4 5',
-                        baseCls     : 'x-small-editor',
-                        border : false,
-                        defaults : {
-                            labelStyle : 'width:45px;font-size:11px'
-                        },
-                        defaultType : 'textfield',
-                        items : [
-                            this.subjectField
-                        ]
-                  })
-              ]},
+            cls   : 'com-conjoon-groupware-email-form-EmailForm',
+            items : [
+                new Ext.Container({
+                    cls       : 'northContainer',
+                    region    : 'north',
+                    layout    : 'border',
+                    split     : true,
+                    hideMode  : 'offsets',
+                    height    : 125,
+                    minSize   : 125,
+                    items     : [
+                        new Ext.Container({
+                            layout    : 'border',
+                            cls       : 'headerContainer',
+                            region    : 'center',
+                            split     : true,
+                            hideMode  : 'offsets',
+                            items     : [
+                            new Ext.form.FormPanel({
+                                labelWidth  : 30,
+                                region : 'north',
+                                height : 20,
+                                minSize: 20,
+                                hideMode : 'offsets',
+                                margins: '4 5 2 5',
+                                style  : 'background:none',
+                                baseCls     : 'x-small-editor',
+                                border : false,
+                                defaults : {
+                                    labelStyle : 'width:30px;font-size:11px'
+                                },
+                                defaultType : 'textfield',
+                                items : [
+                                    this.fromComboBox
+                                ]
+                          }), this.grid,
+                            new Ext.form.FormPanel({
+                                labelWidth  : 45,
+                                region : 'south',
+                                height : 20,
+                                hideMode : 'offsets',
+                                minSize: 20,
+                                style  : 'background:none',
+                                margins: '2 5 4 5',
+                                baseCls     : 'x-small-editor',
+                                border : false,
+                                defaults : {
+                                    labelStyle : 'width:45px;font-size:11px'
+                                },
+                                defaultType : 'textfield',
+                                items : [
+                                    this.subjectField
+                                ]
+                          })
+                      ]}),
+
+                        this.fileGridPanel
+                    ]
+                }),
                 new Ext.form.FormPanel({
                     region : 'center',
                     hideMode : 'offsets',
@@ -198,10 +233,71 @@ com.conjoon.groupware.email.form.EmailForm = Ext.extend(Ext.Panel, {
             this.view.focusEl.setWidth(rem);
         }, this.grid);
 
+        this.on('destroy', this._onDestroy, this);
+
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
+
+        DownloadManager.on('request', this.onDownloadStart, this);
+        DownloadManager.on('success', this.onDownloadEnd, this);
+        DownloadManager.on('error',   this.onDownloadEnd, this);
+        DownloadManager.on('failure', this.onDownloadEnd, this);
+        DownloadManager.on('cancel',  this.onDownloadEnd, this);
+
         com.conjoon.groupware.email.form.EmailForm.superclass.initEvents.call(this);
+    },
 
+    onDownloadStart : function(download, type, options)
+    {
+        var id;
+
+        switch (type) {
+            case 'file':
+                id = options.fileId;
+            break;
+
+            case 'emailAttachment':
+                id = options.attachmentId;
+            break;
+        }
+
+        var rec = this.fileGridPanel.getStore().getById(id);
+
+        if (rec) {
+            rec.set('state', com.conjoon.cudgets.data.FileRecord.STATE_DOWNLOADING);
+        }
+    },
+
+    onDownloadEnd : function(download, type, options)
+    {
+        var id;
+
+        switch (type) {
+            case 'file':
+                id = options.fileId;
+            break;
+
+            case 'emailAttachment':
+                id = options.attachmentId;
+            break;
+        }
+
+        var rec = this.fileGridPanel.getStore().getById(id);
+
+        if (rec) {
+            rec.set('state', '');
+        }
+    },
+
+    _onDestroy : function()
+    {
+        var DownloadManager = com.conjoon.groupware.DownloadManager;
+
+        DownloadManager.un('request', this.onDownloadStart, this);
+        DownloadManager.un('success', this.onDownloadEnd, this);
+        DownloadManager.un('error',   this.onDownloadEnd, this);
+        DownloadManager.un('failure', this.onDownloadEnd, this);
+        DownloadManager.un('cancel',  this.onDownloadEnd, this);
     }
-
 
 
 

@@ -58,7 +58,9 @@ com.conjoon.cudgets.data.Upload = function(config) {
          * @event request
          * @param this
          * @param {Array} files
-         * @param {Object} arg
+         * @param {Object} arg An object with additional information.
+         * At least the property "responseText" must be available, holding the
+         * undecoded response from the process.
          */
         'failure',
         /**
@@ -66,7 +68,9 @@ com.conjoon.cudgets.data.Upload = function(config) {
          * @event download
          * @param this
          * @param {Array} files
-         * @param {Object} arg
+         * @param {Object} arg An object with additional information.
+         * At least the property "responseText" must be available, holding the
+         * undecoded response from the process.
          */
         'success',
         /**
@@ -104,7 +108,7 @@ Ext.extend(com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
     /**
      * @type {Boolean} isUploadStarted True if the upload was started, otherwise
      * false. Api reserved. Check this value in your subclasses if you want to
-     * determine whether the upload was laready started. If the upload started,
+     * determine whether the upload was already started. If the upload started,
      * an instance of this class should not be reused.
      * @protected
      */
@@ -142,9 +146,10 @@ Ext.extend(com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
      */
     cancel : function()
     {
-        if (!this.isUploadStarted && this.files.length > 0) {
+        if (this.isUploadStarted && this.files.length > 0) {
             if (this.cancelImpl()) {
                 this.fireEvent('cancel', this, this.files);
+                this.cleanup();
             }
         }
     },
@@ -185,6 +190,7 @@ Ext.extend(com.conjoon.cudgets.data.Upload, Ext.util.Observable, {
 
         if (this.isErrorImpl(arg)) {
             this.fireEvent('failure', this, this.files, arg);
+            this.cleanup();
             return;
         }
 
