@@ -132,7 +132,7 @@ Ext.extend(com.conjoon.cudgets.data.HtmlUpload, com.conjoon.cudgets.data.Upload,
     startImpl : function()
     {
         if (Ext.isGecko) {
-            if (!com.conjoon.cudgets.data.Download._tmpFrame) {
+            if (!com.conjoon.cudgets.data.HtmlUpload._tmpFrame) {
                 var tmpiframe = document.createElement('iframe');
                 tmpiframe.style.cssText = 'width:1px;height:1px;display:none';
                 com.conjoon.cudgets.data.HtmlUpload._tmpFrame = tmpiframe;
@@ -147,11 +147,9 @@ Ext.extend(com.conjoon.cudgets.data.HtmlUpload, com.conjoon.cudgets.data.Upload,
             form     = this.form,
             encoding = 'multipart/form-data';
 
-        Ext.fly(frame).set({
-            id   : id,
-            name : id/*,
-            cls  : 'x-hidden'*/
-        });
+        frame.id            = id;
+        frame.name          = id;
+        frame.style.cssText = 'width:1px;height:1px;display:none';
 
         doc.body.appendChild(frame);
 
