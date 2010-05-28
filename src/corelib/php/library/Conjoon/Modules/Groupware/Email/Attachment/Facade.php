@@ -122,11 +122,11 @@ class Conjoon_Modules_Groupware_Email_Attachment_Facade {
 
         return array(
             'name'    => $data['file_name'],
-            'content' => $data['encoding'] == 'quoted-printable'
+            'content' => ($data['encoding'] == 'quoted-printable'
                           ? quoted_printable_decode($data['content'])
-                            : $data['encoding'] == 'base64'
+                            : ($data['encoding'] == 'base64'
                              ? base64_decode($data['content'])
-                           : $data['content'],
+                           : $data['content'])),
             'mimeType' => $data['mime_type']
                           ? $data['mime_type'] : 'text/plain'
         );
