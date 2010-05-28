@@ -43,7 +43,8 @@ class Conjoon_Modules_Groupware_Files_File_Filter_File extends Conjoon_Filter_In
             'id',
             'key',
             'downloadCookieName',
-            'type'
+            'type',
+            'name'
         )
     );
 
@@ -59,6 +60,10 @@ class Conjoon_Modules_Groupware_Files_File_Filter_File extends Conjoon_Filter_In
          ),
          'type' => array(
             'StringTrim'
+         ),
+         'name' => array(
+            'StringTrim',
+            'Urldecode'
          )
     );
 
@@ -77,7 +82,11 @@ class Conjoon_Modules_Groupware_Files_File_Filter_File extends Conjoon_Filter_In
          'type' => array(
             'allowEmpty' => false,
             array('InArray', array('file', 'emailAttachment'))
+         ),
+         'name' => array(
+            'allowEmpty' => true
          )
+
     );
 
     protected function _init()

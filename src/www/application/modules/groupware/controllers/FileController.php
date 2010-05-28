@@ -55,6 +55,7 @@ class Groupware_FileController extends Zend_Controller_Action {
         $key    = $this->_request->getParam('key');
         $userId = $this->_helper->registryAccess->getUserId();
         $type   = $this->_request->getParam('type');
+        $name   = $this->_request->getParam('name');
 
         $downloadCookieName = $this->_request->getParam('downloadCookieName');
 
@@ -106,12 +107,14 @@ class Groupware_FileController extends Zend_Controller_Action {
         $response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true)
                  ->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true)
                  ->setHeader('Pragma', 'no-cache', true)
-                 ->setHeader('Content-Description', $data['name'], true)
+                 ->setHeader('Content-Description', ($name != "" ? $name : $data['name']), true)
                  ->setHeader('Content-Type', $data['mimeType'], true)
                  ->setHeader('Content-Transfer-Encoding', 'binary', true)
                  ->setHeader(
                     'Content-Disposition',
-                    'attachment; filename="'.addslashes($data['name']).'"',
+                    'attachment; filename="'
+                    .addslashes($name != "" ? $name : $data['name'])
+                    .'"',
                     true
                  );
 
@@ -158,6 +161,7 @@ class Groupware_FileController extends Zend_Controller_Action {
                 Zend_Db_Table::getDefaultAdapter()
             );
         }
+
         $maxFileSize = min(
             (int)$config->application->files->upload->max_size,
             (int)$maxAllowedPacket

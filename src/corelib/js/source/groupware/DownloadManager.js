@@ -127,7 +127,10 @@ com.conjoon.groupware.DownloadManager = function() {
         }
 
         var download = new com.conjoon.cudgets.data.Download({
-            url : url
+            url    : url,
+            params : {
+                name : name
+            }
         });
 
         downloads[type][url] = download;
