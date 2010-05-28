@@ -31,10 +31,18 @@ com.conjoon.cudgets.data.FileRecord = Ext.data.Record.create([
     {name : 'id', type : 'int'},
 
     /**
+     * @type {Mixed} orgId
+     * The original id of this file, if available. in some cases you might
+     * want to set this value if you have a DataStorage where filecords
+     * from different sources are managed
+     */
+    {name : 'orgId', type : 'int'},
+
+    /**
      * @type {Mixed} folderId
      * The id of thie folder the file resists in, if available.
      */
-    {name : 'fodlerId', type : 'int'},
+    {name : 'folderId', type : 'int'},
 
     /**
      * @type {Mixed} key
@@ -72,7 +80,7 @@ com.conjoon.cudgets.data.FileRecord = Ext.data.Record.create([
      * com.conjoon.cudgets.data.FileRecord.STATE_DOWNLOADING
      * com.conjoon.cudgets.data.FileRecord.STATE_INVALID
      */
-    {name : 'state'},
+    {name : 'state', type : 'string'},
 
     /**
      * @type {String} location
@@ -81,7 +89,7 @@ com.conjoon.cudgets.data.FileRecord = Ext.data.Record.create([
      * com.conjoon.cudgets.data.FileRecord.LOCATION_LOCAL
      * com.conjoon.cudgets.data.FileRecord.LOCATION_REMOTE
      */
-    {name : 'location'}
+    {name : 'location', type : 'string'}
 
 ]);
 
@@ -89,9 +97,9 @@ com.conjoon.cudgets.data.FileRecord.META_TYPE_FILE             = 'file';
 com.conjoon.cudgets.data.FileRecord.META_TYPE_EMAIL_ATTACHMENT
     = 'emailAttachment';
 
-com.conjoon.cudgets.data.FileRecord.STATE_INVALID     = -1;
-com.conjoon.cudgets.data.FileRecord.STATE_UPLOADING   = 1;
-com.conjoon.cudgets.data.FileRecord.STATE_DOWNLOADING = 2;
+com.conjoon.cudgets.data.FileRecord.STATE_INVALID     = 'invalid';
+com.conjoon.cudgets.data.FileRecord.STATE_UPLOADING   = 'uploading';
+com.conjoon.cudgets.data.FileRecord.STATE_DOWNLOADING = 'downloading';
 
-com.conjoon.cudgets.data.FileRecord.LOCATION_LOCAL  = 1;
-com.conjoon.cudgets.data.FileRecord.LOCATION_REMOTE = 2;
+com.conjoon.cudgets.data.FileRecord.LOCATION_LOCAL  = 'local';
+com.conjoon.cudgets.data.FileRecord.LOCATION_REMOTE = 'remote';
