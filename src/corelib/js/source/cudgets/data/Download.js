@@ -106,6 +106,12 @@ com.conjoon.cudgets.data.Download = function(config) {
 Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
 
     /**
+     * @cfg {Object} params An additional set of params to send to the
+     * server
+     */
+    params : null,
+
+    /**
      * @cfg {String} cookieName The name for the download cookie.
      * this schould be a unique name, if not provided, the value will be
      * auto generated
@@ -308,11 +314,21 @@ Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
         var doc = iframe.contentWindow.document;
         doc.open();
         doc.clear();
+
+        var paramString = '';
+        if (this.params) {
+            for (var i in this.params) {
+                paramString += '<input type="hidden" name="'+i
+                               +'" value="'+escape(this.params[i])+'" />';
+            }
+        }
+
         doc.writeln(
             '<html>'
              + '<body>'
              + '<form method="post" action="'+this.url+'">'
              + '<input type="hidden" name="downloadCookieName" value="'+this.cookieName+'" />'
+             + paramString
              + '</form>'
              + '</body>'
              + '</html>'
