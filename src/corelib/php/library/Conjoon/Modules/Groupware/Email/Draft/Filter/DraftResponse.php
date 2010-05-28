@@ -100,7 +100,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
             'contentTextPlain',
             'contentTextHtml',
             'groupwareEmailFoldersId',
-            'groupwareEmailAccountsId'
+            'groupwareEmailAccountsId',
+            'attachments'
         ),
 
         self::CONTEXT_REPLY_ALL => array(
@@ -214,6 +215,9 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
          'userEmailAddresses' => array(
             'allowEmpty' => true,
             'default'    => ''
+         ),
+         'attachments' => array(
+            'Array'
          )
     );
 
@@ -247,6 +251,9 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
         ),
         'bcc' => array(
             array('EmailRecipients', false)
+        ),
+        'attachments' => array(
+            'Raw'
         )
     );
 
