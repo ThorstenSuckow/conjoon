@@ -45,6 +45,171 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
     protected $_primary = 'id';
 
     /**
+     * Adds an attachment to this table.
+     *
+     * @param array $data
+     *
+     * @return integer
+     *
+     * @throws InvalidArgumentException
+     */
+    public function addAttachmentForItem(Array $data, $itemId)
+    {
+        $itemId = (int)$itemId;
+        if ($itemId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument for itemId - $itemId"
+            );
+        }
+
+        return $this->insert(array(
+            'key'                      => md5(uniqid(mt_rand(), true)),
+            'groupware_email_items_id' => $itemId,
+            'file_name'                => $data['file_name'],
+            'mime_type'                => $data['mime_type'],
+            'encoding'                 => $data['encoding'],
+            'content'                  => $data['content']
+        ));
+    }
+
+    /**
+     * Deletes an attachment with the specified id.
+     *
+     * @param integer $id The id of the attachment
+     *
+     * @return integer
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteAttachmentForId($id)
+    {
+        $id = (int)$id;
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for id - $id"
+            );
+        }
+
+        return $this->delete('id='.$id);
+    }
+
+    /**
+     * Updates the name for a given attachment
+     *
+     * @param integer $id
+     * @param string $name
+     *
+     * @return int
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateNameForAttachment($id, $name)
+    {
+        $id   = (int)$id;
+        $name = trim((string)$name);
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument for id - $id"
+            );
+        }
+        if ($name == "") {
+            throw new InvalidArgumentException(
+                "Invalid argument for name - $name"
+            );
+        }
+
+        return $this->update(array('file_name' => $name), 'id='.$id);
+    }
+
+    /**
+     * Copies an attachment entry and saves it for a new item id.
+     * If the name was supplied, the attachment will also be stored under the
+     * new name.
+     *
+     * @param integer  $attachmentId
+     * @param $integer $itemId
+     * @param string $name
+     *
+     * @return integer
+     *
+     * @throws InvalidArgumentException
+     */
+    public function copyAttachmentForNewItemId($attachmentId, $itemId, $name = null)
+    {
+        $attachmentId = (int)$attachmentId;
+        $itemId       = (int)$itemId;
+
+        if ($attachmentId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument for attachmentId - $attachmentId"
+            );
+        }
+        if ($itemId <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument for itemId - $itemId"
+            );
+        }
+        if ($name !== null) {
+            $name = trim((string)$name);
+            if ($name == "") {
+               throw new InvalidArgumentException(
+                    "Invalid argument for name - $name"
+                );
+            }
+        }
+
+        $select = $this->select()
+                  ->from($this)
+                  ->where('`id`=?', $attachmentId);
+
+
+        $row = $this->fetchRow($select);
+
+        return $this->insert(array(
+            'key'                      => md5(uniqid(mt_rand(), true)),
+            'groupware_email_items_id' => $itemId,
+            'file_name'                => $name !== null ? $name : $row->file_name,
+            'mime_type'                => $row->mime_type,
+            'encoding'                 => $row->encoding,
+            'content'                  => $row->content
+        ));
+    }
+
+    /**
+     * Returns the attachment for the specified id.
+     * This method should only be used when its clear that the attachment for
+     * the specified id belongs to the user the attachment gets read out for.
+     *
+     * @param integer $id The id of the attachment to query in the database.
+     *
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getAttachmentForId($id)
+    {
+        $id  = (int)$id;
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Invalid argument for id - $id");
+        }
+
+        $select = $this->select()
+                  ->from($this)
+                  ->where('`id`=?', $id);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return array();
+        }
+
+        return $row->toArray();
+    }
+
+
+    /**
      * Returns the attachment for the specified key and id.
      *
      * @param string $key The key of the attachment to query in the database.
@@ -123,6 +288,8 @@ class Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
 
     /**
      * Returns all the attachments for the specified item.
+     *
+     * @return Zend_Db_Table_Rowset
      */
     public function getAttachmentsForItem($groupwareEmailItemsId)
     {
