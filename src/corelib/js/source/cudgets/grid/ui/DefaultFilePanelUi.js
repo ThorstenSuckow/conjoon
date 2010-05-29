@@ -86,7 +86,16 @@ com.conjoon.cudgets.grid.ui.DefaultFilePanelUi.prototype = {
             cls : 'com-conjoon-cudgets-grid-FilePanel',
             sm  : new Ext.grid.RowSelectionModel({
                 singleSelect : true
-            })
+            }),
+            clicksToEdit : 0,
+            /**
+             * Overwrite so default impl does not start editing the row when
+             * double clicked
+             */
+            onCellDblClick : function(g, row, col) {
+                return;
+                //this.startEditing(row, col);
+            }
         });
     },
 
