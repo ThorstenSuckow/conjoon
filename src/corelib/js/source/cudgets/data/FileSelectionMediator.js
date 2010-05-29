@@ -33,11 +33,8 @@ com.conjoon.cudgets.data.FileSelectionMediator = function(config) {
     Ext.apply(this, config);
 
     this.fileChooser.on('fileselected', this.onFileSelected, this);
-
-    this.filePanel.on('uploadcancel',    this.onFilePanelUploadCancel,    this);
-    this.filePanel.on('downloadcancel',  this.onFilePanelDownloadCancel,  this);
-    this.filePanel.on('downloadrequest', this.onFilePanelDownloadRequest, this);
-    this.filePanel.on('recordremove',    this.onFilePanelRecordRemove,    this);
+    this.filePanel.on('uploadcancel',   this.onFilePanelUploadCancel,    this);
+    this.filePanel.on('recordremove',   this.onFilePanelRecordRemove,    this);
 
     this.addEvents(
         /**
@@ -105,6 +102,26 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
     managedFiles : null,
 
     /**
+     * Adds one or more files to be managed by the mediator.
+     *
+     * @param {Array} records
+     */
+    addFileToManage : function(records)
+    {
+        records = [].concat(records);
+        this.getManagedFiles();
+
+        for (var i = 0, len = records.length; i < len; i++) {
+            this.managedFiles.push({
+                record : records[i],
+                upload : null
+            });
+        }
+
+        //this.filePanel.addFile(records);
+    },
+
+    /**
      * Listens to the FileChooser's "fileselected" event.
      *
      * @param {com.conjoon.cudgets.form.FileChooserButton} fileChooserButton
@@ -130,9 +147,7 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
             }, id);
         }
 
-        if (!this.managedFiles) {
-            this.managedFiles = [];
-        }
+        this.getManagedFiles();
 
         var obj = {
             record : fileRec,
@@ -165,7 +180,7 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
     isUploadPending : function()
     {
         var uploadState = com.conjoon.cudgets.data.FileRecord.STATE_UPLOADING,
-            mf          = this.managedFiles;
+            mf          = this.getManagedFiles();
         for (var i = 0, len = mf.length; i < len; i++) {
             if (mf[i].record.get('state') == uploadState) {
                 return true;
@@ -202,7 +217,9 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
             tmp[i] = this.managedFiles[i];
         }
         for (var i = 0, len = tmp.length; i < len; i++) {
-            tmp[i].upload.cancel();
+            if (tmp[i].upload) {
+                tmp[i].upload.cancel();
+            }
         }
     },
 
@@ -255,45 +272,25 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
     },
 
     /**
-     * Listener for the file panel's download request event.
+     * Updates the managed files if found for the given id with the given
+     * data.
      *
-     * @param {com.conjoon.cudgets.grid.FilePanel} filePanel
-     * @param {com.conjoon.cudgets.data.FielRecord} record
+     * @param {Number} recordId
+     * @param {Object} data
      */
-    onFilePanelDownloadRequest : function(filePanel, record)
+    updateManagedFile : function(recordId, data)
     {
-        com.conjoon.groupware.DownloadManager.downloadFile(
-            record.id, record.get('key'), record.get('name')
-        );
-    },
+        var mf = this.getManagedFiles(), i = 0, a = 0, len = 0, rec = null;
 
-    /**
-     * Listener for the attached filePanel's "downloadcancel" event.
-     *
-     * @param {com.conjoon.cudgets.grid.FilePanel} filePanel
-     * @param {Array} records
-     */
-    onFilePanelDownloadCancel : function(filePanel, records)
-    {
-        var DownloadManager = com.conjoon.groupware.DownloadManager,
-            type = null, metaType = null,
-            FileRecord = com.conjoon.cudgets.data.FileRecord;
-
-        for (var i = 0, len = records.length; i < len; i++) {
-            metaType = records[i].get('metaType');
-
-            type = metaType === FileRecord.META_TYPE_FILE
-                   ? DownloadManager.TYPE_FILE
-                    : metaType === FileRecord.META_TYPE_EMAIL_ATTACHMENT
-                      ? DownloadManager.TYPE_EMAIL_ATTACHMENT
-                      : false;
-
-            if (type === false) {
-                continue;
+        for (i = 0, len = mf.length; i < len; i++) {
+            rec = mf[i].record;
+            if (rec.id == recordId) {
+                for (a in data) {
+                    rec.set(a, data[a]);
+                }
+                rec.commit();
+                break;
             }
-            DownloadManager.cancelDownloadForIdAndKey(
-                records[i].id, records[i].get('key'), type
-            );
         }
     },
 
@@ -345,6 +342,7 @@ Ext.extend(com.conjoon.cudgets.data.FileSelectionMediator, Ext.util.Observable, 
             files[i].phantom = false;
             files[i]._phid   = files[i].id;
             files[i].id      = data.id;
+            data.orgId       = (data.orgId ? data.orgId : data.id);
             Ext.apply(files[i].data, data);
             files[i].commit();
         }
