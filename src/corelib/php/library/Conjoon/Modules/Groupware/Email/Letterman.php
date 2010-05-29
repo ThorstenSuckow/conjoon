@@ -519,7 +519,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             $itemData = $filterInbox->getProcessedData();
 
             Conjoon_Util_Array::underscoreKeys($itemData);
-            $modelInbox->insert($itemData);
+            $modelInbox->addInboxData($itemData);
 
             // filter and insert into groupware_email_items_flag
             $currFilter = $filterFlag;
@@ -537,7 +537,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 $filterAttachment->setData($emailItem['attachments'][$i]);
                 $itemData = $filterAttachment->getProcessedData();
                 Conjoon_Util_Array::underscoreKeys($itemData);
-                $modelAttachment->insert($itemData);
+                $modelAttachment->addAttachmentForItem($itemData, $id);
             }
 
             $dbAdapter->commit();
