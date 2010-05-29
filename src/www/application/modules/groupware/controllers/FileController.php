@@ -18,7 +18,38 @@
  */
 require_once 'Zend/Controller/Action.php';
 
+
 /**
+ *
+ *    +----------------------------------------+
+ *    | +------------------------------------+ |
+ *    | |                                    | |
+ *    | |     ,'";-------------------;"`.    | |
+ *    | |     ;[]; ................. ;[];    | |
+ *    | |     ;  ; ................. ;  ;    | |
+ *    | |     ;  ; ................. ;  ;    | |
+ *    | |     ;  ; ................. ;  ;    | |
+ *    | |     ;  ; ................. ;  ;    | |
+ *    | |     ;  ; ................. ;  ;    | |
+ *    | |     ;  ; ................. ;  ;    | |
+ *    | |     ;  `.                 ,'  ;    | |
+ *    | |     ;    """""""""""""""""    ;    | |
+ *    | |     ;    ,-------------.---.  ;    | |
+ *    | |     ;    ;  ;"";       ;   ;  ;    | |
+ *    | |     ;    ;  ;  ;       ;   ;  ;    | |
+ *    | |     ;    ;  ;  ;       ;   ;  ;    | |
+ *    | |     ;//||;  ;  ;       ;   ;||;    | |
+ *    | |     ;\\||;  ;__;       ;   ;\/;    | |
+ *    | |     `. _;          _  ;  _;  ;     | |
+ *    | |       " """"""""""" """"" """      | |
+ *    | |                                    | |
+ *    | +------------------------------------+ |
+ *    |                                        |
+ *    |        UPLOADING/DOWNLOADING           |
+ *    |                                        |
+ *    |              'nuff said                |
+ *    +----------------------------------------+
+ *
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
@@ -163,9 +194,13 @@ class Groupware_FileController extends Zend_Controller_Action {
         }
 
         $maxFileSize = min(
-            (int)$config->application->files->upload->max_size,
-            (int)$maxAllowedPacket
+            (float)$config->application->files->upload->max_size,
+            (float)$maxAllowedPacket
         );
+
+        // allowed filesize is max-filesize - 33-36 % of max filesize,
+        // due to base64 encoding which might happen
+        $maxFileSize = $maxFileSize - round($maxFileSize/3);
 
         // build up upload
         $upload = new Zend_File_Transfer_Adapter_Http();
