@@ -191,6 +191,11 @@ class Conjoon_Modules_Groupware_Email_Sender {
          */
         require_once 'Conjoon/Modules/Groupware/Email/Attachment/Model/Attachment.php';
 
+        /**
+         * @see Conjoon_Mime_Part
+         */
+        require_once 'Conjoon/Mime/Part.php';
+
         $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
         $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
@@ -253,26 +258,14 @@ class Conjoon_Modules_Groupware_Email_Sender {
         // another item
         for ($i = 0, $len = count($copyAttachmentIds); $i < $len; $i++) {
             $id = $copyAttachmentIds[$i];
-
-            $att = $attachmentModel->getAttachmentForKeyAndId(
+            $att = $attachmentModel->getAttachmentDataForKeyAndId(
                 $finalPostedAttachments[$id]['key'], $id
             );
 
             if ($att && !empty($att)) {
-                // collect all the ids of the fetched attachments
-
-                $mail->createAttachment(
-                    ($att['encoding'] == 'quoted-printable'
-                          ? quoted_printable_decode($att['content'])
-                            : ($att['encoding'] == 'base64'
-                             ? base64_decode($att['content'])
-                           : $att['content'])),
-                    $att['mime_type'] ? $att['mime_type'] : 'text/plain',
-                    Zend_Mime::DISPOSITION_ATTACHMENT,
-                    Zend_Mime::ENCODING_BASE64,
-                    $finalPostedAttachments[$id]['name']
-                );
-
+                $mail->addAttachment(self::_createAttachment(
+                    $att, $finalPostedAttachments[$id]['name'], $attachmentModel
+                ));
                 $att = null;
             }
         }
@@ -285,23 +278,14 @@ class Conjoon_Modules_Groupware_Email_Sender {
             if ($finalExistingAttachments[$id]->getFileName()
                 != $finalPostedAttachments[$id]['name']) {
 
-                $att = $attachmentModel->getAttachmentForKeyAndId(
+                $att = $attachmentModel->getAttachmentDataForKeyAndId(
                     $finalPostedAttachments[$id]['key'], $id
                 );
 
                 if ($att && !empty($att)) {
-                    $mail->createAttachment(
-                        ($att['encoding'] == 'quoted-printable'
-                              ? quoted_printable_decode($att['content'])
-                                : ($att['encoding'] == 'base64'
-                                 ? base64_decode($att['content'])
-                               : $att['content'])),
-                        $att['mime_type'] ? $att['mime_type'] : 'text/plain',
-                        Zend_Mime::DISPOSITION_ATTACHMENT,
-                        Zend_Mime::ENCODING_BASE64,
-                        $finalPostedAttachments[$id]['name']
-                    );
-
+                    $mail->addAttachment(self::_createAttachment(
+                        $att, $finalPostedAttachments[$id]['name'], $attachmentModel
+                    ));
                     $att = null;
                 }
 
@@ -321,24 +305,15 @@ class Conjoon_Modules_Groupware_Email_Sender {
         for ($i = 0 , $len = count($orgAttachmentIdsToPost); $i < $len; $i++) {
             $id = $orgAttachmentIdsToPost[$i];
 
-            $att = $attachmentModel->getAttachmentForKeyAndId(
+            $att = $attachmentModel->getAttachmentDataForKeyAndId(
                 $finalExistingAttachments[$id]->getKey(),
                 $finalExistingAttachments[$id]->getId()
             );
 
             if ($att && !empty($att)) {
-                $mail->createAttachment(
-                    ($att['encoding'] == 'quoted-printable'
-                          ? quoted_printable_decode($att['content'])
-                            : ($att['encoding'] == 'base64'
-                             ? base64_decode($att['content'])
-                           : $att['content'])),
-                    $att['mime_type'] ? $att['mime_type'] : 'text/plain',
-                    Zend_Mime::DISPOSITION_ATTACHMENT,
-                    Zend_Mime::ENCODING_BASE64,
-                    $att['file_name']
-                );
-
+                $mail->addAttachment(self::_createAttachment(
+                    $att, $att['file_name'], $attachmentModel
+                ));
                 $att = null;
             }
         }
@@ -346,23 +321,65 @@ class Conjoon_Modules_Groupware_Email_Sender {
         // copy files to attachments
         foreach ($finalPostedFiles as $id => $file) {
 
-            $dbFile = $fileModel->getFileForKeyAndId(
+            $dbFile = $fileModel->getFileDataForKeyAndId(
                 $file['key'], $file['orgId']
             );
 
-            if ($file && !empty($file)) {
-                $mail->createAttachment(
-                    $dbFile['content'],
-                    $dbFile['mime_type'],
-                    Zend_Mime::DISPOSITION_ATTACHMENT,
-                    Zend_Mime::ENCODING_BASE64,
-                    $file['name']
-                );
+            if ($dbFile && !empty($dbFile)) {
+                $mail->addAttachment(self::_createAttachment(array(
+                    'encoding'  => '',
+                    'mime_type' => $dbFile['mime_type'],
+                    'key'       => $dbFile['key'],
+                    'id'        => $dbFile['id']
+                ), $file['name'], $fileModel));
 
-                $file = null;
+                $dbFile = null;
             }
         }
 
+    }
+
+
+    protected static function _createAttachment(Array $att, $name, $model)
+    {
+        /**
+         * @see Conjoon_Mime_Part
+         */
+        require_once 'Conjoon/Mime/Part.php';
+
+        $validEncoding = ($att['encoding'] == 'quoted-printable'
+                         || $att['encoding'] == 'base64');
+
+
+        $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
+        $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
+
+        if ($model instanceof
+            Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment) {
+            $newAttachment = new Conjoon_Mime_Part(
+                $model->getAttachmentContentAsStreamForKeyAndId(
+                    $att['key'], $att['id']
+                ), $validEncoding
+            );
+        } else if ($model instanceof
+            Conjoon_Modules_Groupware_Files_File_Model_File) {
+            $newAttachment = new Conjoon_Mime_Part(
+                $model->getFileContentAsStreamForKeyAndId(
+                    $att['key'], $att['id']
+                ), $validEncoding
+            );
+        }
+
+        $newAttachment->encoding    = $validEncoding
+                                      ? $att['encoding']
+                                      : Zend_Mime::ENCODING_BASE64;
+        $newAttachment->type        = $att['mime_type']
+                                     ? $att['mime_type']
+                                     : 'text/plain';
+        $newAttachment->disposition = Zend_Mime::DISPOSITION_ATTACHMENT;
+        $newAttachment->filename    = $name;
+
+        return $newAttachment;
     }
 
 }
