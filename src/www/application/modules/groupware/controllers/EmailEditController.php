@@ -292,11 +292,11 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         $draft = Conjoon_BeanContext_Inspector::create(
             'Conjoon_Modules_Groupware_Email_Draft',
             $data
-        );
+        )->getDto();
 
         $this->view->success = true;
         $this->view->error   = null;
-        $this->view->draft   = $draft->getDto();
+        $this->view->draft   = $draft;
         $this->view->type    = $type;
     }
 
@@ -315,7 +315,6 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftInput.php';
 
-        $data = array();
         try {
             // the filter will transform the "message" into bodyHtml and bodyText, depending
             // on the passed format. both will only be filled if format equals to "multipart"
@@ -355,6 +354,12 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
 
         $toString  = array();
         $ccString  = array();
+
+        $postedAttachments = $data['attachments'];
+        $data['attachments'] = array();
+
+        $removeAttachmentIds = $data['removedAttachments'];
+        unset($data['removedAttachments']);
 
         foreach ($data['cc'] as $dcc) {
             $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
@@ -411,6 +416,24 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
                 true
         );
 
+        // check whether we need to apply attachments for a previously saved
+        // draft
+        if ($draft->getId() > 0) {
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
+            $attDecorator = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
+                new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
+                    array(),
+                    Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse::CONTEXT_RESPONSE
+                )
+            );
+            $atts = $attDecorator->getAttachmentsForItemAsEntity($draft->getId());
+            $draft->setAttachments($atts);
+        }
+
         /**
          * @see Conjoon_BeanContext_Decorator
          */
@@ -421,18 +444,23 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Modules/Groupware/Email/Item/Filter/ItemResponse.php';
 
-        $itemDecorator = new Conjoon_BeanContext_Decorator(
-            'Conjoon_Modules_Groupware_Email_Item_Model_Item',
-            new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
-                array(),
-                Conjoon_Filter_Input::CONTEXT_RESPONSE
-            ),
-            false
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Item_Model_Item
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
+
+        $itemModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
+
+        $attachmentMap = array();
+        $item = $itemModel->saveDraft(
+            $draft, $account, $userId, $data['type'], $data['referencesId'],
+            $postedAttachments, $removeAttachmentIds, $attachmentMap
         );
 
-        $item = $itemDecorator->saveDraftAsDto($draft, $account, $userId, $data['type'], $data['referencesId']);
-
-        if (!$item) {
+        if (!$item || empty($item)) {
+            /**
+             * @see Conjoon_Error
+             */
             require_once 'Conjoon/Error.php';
             $error = new Conjoon_Error();
             $error = $error->getDto();;
@@ -446,6 +474,24 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
         }
 
         /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+
+        Conjoon_Util_Array::camelizeKeys($item);
+
+        $irFilter = new Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse(
+            $item, Conjoon_Filter_Input::CONTEXT_RESPONSE
+        );
+
+        $item = $irFilter->getProcessedData();
+
+        $item = Conjoon_BeanContext_Inspector::create(
+            'Conjoon_Modules_Groupware_Email_Item',
+            $item
+        )->getDto();
+
+        /**
          * @see Conjoon_Modules_Groupware_Email_Message_Facade
          */
         require_once 'Conjoon/Modules/Groupware/Email/Message/Facade.php';
@@ -457,10 +503,22 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
                             true
                        );
 
-        $this->view->error       = null;
-        $this->view->success     = true;
-        $this->view->item        = $item;
-        $this->view->emailRecord = $emailRecord;
+        // silently add old ids to new ids from attachmentMap
+        $attachments =& $emailRecord->attachments;
+
+        foreach ($attachmentMap as $orgId => $newId) {
+            for ($i = 0, $len = count($attachments); $i < $len; $i++) {
+                if ($attachments[$i]->id == $newId) {
+                    $attachments[$i]->oldId    = $orgId;
+                }
+            }
+        }
+
+        $this->view->error         = null;
+        $this->view->success       = true;
+        $this->view->item          = $item;
+        $this->view->emailRecord   = $emailRecord;
+
     }
 
     /**
@@ -513,6 +571,12 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
 
         $toString  = array();
         $ccString  = array();
+
+        $postedAttachments = $data['attachments'];
+        $data['attachments'] = array();
+
+        $removeAttachmentIds = $data['removedAttachments'];
+        unset($data['removedAttachments']);
 
         foreach ($data['cc'] as $dcc) {
             $add        = new Conjoon_Modules_Groupware_Email_Address($dcc);
@@ -569,6 +633,29 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
                 true
         );
 
+        $updateCache = false;
+
+        // check whether we need to apply attachments for a previously saved
+        // draft
+        if ($draft->getId() > 0) {
+
+            $updateCache = true;
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/AttachmentResponse.php';
+            $attDecorator = new Conjoon_BeanContext_Decorator(
+                'Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment',
+                new Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse(
+                    array(),
+                    Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse::CONTEXT_RESPONSE
+                )
+            );
+            $atts = $attDecorator->getAttachmentsForItemAsEntity($draft->getId());
+            $draft->setAttachments($atts);
+        }
+
         /**
          * @see Conjoon_BeanContext_Decorator
          */
@@ -588,7 +675,10 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             false
         );
 
-        $item = $itemDecorator->moveDraftToOutboxAsDto($draft, $account, $userId, $data['type'], $data['referencesId']);
+        $item = $itemDecorator->moveDraftToOutboxAsDto(
+            $draft, $account, $userId, $data['type'], $data['referencesId'],
+            $postedAttachments, $removeAttachmentIds
+        );
 
         if (!$item) {
             require_once 'Conjoon/Error.php';
@@ -603,6 +693,20 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             return;
         }
 
+        if ($updateCache) {
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Message_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Message/Facade.php';
+
+            // update cache
+            Conjoon_Modules_Groupware_Email_Message_Facade::getInstance()
+                ->removeMessageFromCache(
+                    $item->id,
+                    $this->_helper->registryAccess()->getUserId()
+            );
+        }
 
         $this->view->error   = null;
         $this->view->success = true;

@@ -63,13 +63,21 @@ class Conjoon_Modules_Groupware_Email_Sender {
      * Sends the draft for the specified account
      *
      * @param Conjoon_Modules_Groupware_Email_Draft $draft The draft to send
-     * @param Conjoon_Modules_Groupware_Email_Account $account The account to use to send this email with
+     * @param Conjoon_Modules_Groupware_Email_Account $account The account to
+     * use to send this email with
+     * @param array $postedAttachments an array with additional posted attachments
+     * or attachments that need to get renamed
+     * @param array $removeAttachmentIds An array with attachment ids that need
+     * to be removed from the list of existing attachments
      *
      * @return Conjoon_Mail_Sent
      *
      * @throws Zend_Mail_Exception
      */
-    public static function send(Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account)
+    public static function send(
+        Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Modules_Groupware_Email_Account $account,
+        $postedAttachments = array(), $removeAttachmentIds = array()
+     )
     {
         $mail = new Conjoon_Mail('UTF-8');
 
@@ -137,6 +145,7 @@ class Conjoon_Modules_Groupware_Email_Sender {
             $mail->setBodyHtml($html);
         }
 
+        self::_applyAttachments($draft, $mail, $postedAttachments, $removeAttachmentIds);
 
         // send!
         $config = array();
@@ -164,6 +173,196 @@ class Conjoon_Modules_Groupware_Email_Sender {
 
 
         return new Conjoon_Mail_Sent($mail, $transport->header, $transport->body);
+    }
+
+
+    protected static function _applyAttachments(
+        Conjoon_Modules_Groupware_Email_Draft $draft, Conjoon_Mail $mail,
+        $postedAttachments = array(), $removeAttachmentIds = array())
+    {
+
+        /**
+         * @see Conjoon_Modules_Groupware_Files_File_Model_File
+         */
+        require_once 'Conjoon/Modules/Groupware/Files/File/Model/File.php';
+
+        /**
+         * @see Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
+         */
+        require_once 'Conjoon/Modules/Groupware/Email/Attachment/Model/Attachment.php';
+
+        $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
+        $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
+
+        // first off, get all the attachments from the draft
+        $draftAttachments = $draft->getAttachments();
+
+        $postedEmailAttachmentIds   = array();
+        $existingEmailAttachmentIds = array();
+        $postedFilesIds             = array();
+
+        $finalPostedFiles         = array();
+        $finalPostedAttachments   = array();
+        $finalExistingAttachments = array();
+
+        $orgAttachmentIdsToPost = array();
+
+        //get ids for emailAttachments
+        for ($i = 0, $len = count($postedAttachments); $i < $len; $i++) {
+            if ($postedAttachments[$i]['metaType'] == 'emailAttachment') {
+                $postedEmailAttachmentIds[] = $postedAttachments[$i]['orgId'];
+                $finalPostedAttachments[$postedAttachments[$i]['orgId']] =
+                    $postedAttachments[$i];
+            } else {
+                $postedFilesIds[] = $postedAttachments[$i]['orgId'];
+                $finalPostedFiles[$postedAttachments[$i]['orgId']] =
+                    $postedAttachments[$i];
+            }
+        }
+        for ($i = 0, $len = count($draftAttachments); $i < $len; $i++) {
+            // intersect will be created later
+            $existingEmailAttachmentIds[] = $draftAttachments[$i]->getId();
+
+            if (in_array($draftAttachments[$i]->getId(), $removeAttachmentIds)) {
+                continue;
+            }
+
+            $finalExistingAttachments[$draftAttachments[$i]->getId()] =
+                $draftAttachments[$i];
+        }
+
+        // finally create the intersection of all ids that are in the
+        // lists of items to remove and in the list of existing items
+        $removeAttachmentIds = array_values(array_intersect($removeAttachmentIds,
+            $existingEmailAttachmentIds
+        ));
+
+        // get the ids from the attachments that need to get changed
+        $changeNameIds = array_values(array_intersect(
+            $postedEmailAttachmentIds, $existingEmailAttachmentIds
+        ));
+
+        // get the ids from the attachments that need to get saved, i.e.
+        // when a draft was created with email attachments which currently
+        // beong to another email
+        $copyAttachmentIds = array_values(array_diff(
+            $postedEmailAttachmentIds, $existingEmailAttachmentIds
+        ));
+
+        // take care of getting the attachment ids that currently belong to
+        // another item
+        for ($i = 0, $len = count($copyAttachmentIds); $i < $len; $i++) {
+            $id = $copyAttachmentIds[$i];
+
+            $att = $attachmentModel->getAttachmentForKeyAndId(
+                $finalPostedAttachments[$id]['key'], $id
+            );
+
+            if ($att && !empty($att)) {
+                // collect all the ids of the fetched attachments
+
+                $mail->createAttachment(
+                    ($att['encoding'] == 'quoted-printable'
+                          ? quoted_printable_decode($att['content'])
+                            : ($att['encoding'] == 'base64'
+                             ? base64_decode($att['content'])
+                           : $att['content'])),
+                    $att['mime_type'] ? $att['mime_type'] : 'text/plain',
+                    Zend_Mime::DISPOSITION_ATTACHMENT,
+                    Zend_Mime::ENCODING_BASE64,
+                    $finalPostedAttachments[$id]['name']
+                );
+
+                $att = null;
+            }
+        }
+
+        // take care of renaming attachments
+        $cnids = array();
+        for ($i = 0, $len = count($changeNameIds); $i < $len; $i++) {
+            $id = $changeNameIds[$i];
+
+            if ($finalExistingAttachments[$id]->getFileName()
+                != $finalPostedAttachments[$id]['name']) {
+
+                $att = $attachmentModel->getAttachmentForKeyAndId(
+                    $finalPostedAttachments[$id]['key'], $id
+                );
+
+                if ($att && !empty($att)) {
+                    $mail->createAttachment(
+                        ($att['encoding'] == 'quoted-printable'
+                              ? quoted_printable_decode($att['content'])
+                                : ($att['encoding'] == 'base64'
+                                 ? base64_decode($att['content'])
+                               : $att['content'])),
+                        $att['mime_type'] ? $att['mime_type'] : 'text/plain',
+                        Zend_Mime::DISPOSITION_ATTACHMENT,
+                        Zend_Mime::ENCODING_BASE64,
+                        $finalPostedAttachments[$id]['name']
+                    );
+
+                    $att = null;
+                }
+
+                $cnids[] = $id;
+            }
+        }
+
+
+        // finally, get the ids from the attachments that are neither in
+        // $changeNameIds nor in $removeAttachmentIds
+        $orgAttachmentIdsToPost = array_values(array_diff(
+            $existingEmailAttachmentIds, $cnids,
+            $removeAttachmentIds
+        ));
+
+        // take care of org attachmentIds
+        for ($i = 0 , $len = count($orgAttachmentIdsToPost); $i < $len; $i++) {
+            $id = $orgAttachmentIdsToPost[$i];
+
+            $att = $attachmentModel->getAttachmentForKeyAndId(
+                $finalExistingAttachments[$id]->getKey(),
+                $finalExistingAttachments[$id]->getId()
+            );
+
+            if ($att && !empty($att)) {
+                $mail->createAttachment(
+                    ($att['encoding'] == 'quoted-printable'
+                          ? quoted_printable_decode($att['content'])
+                            : ($att['encoding'] == 'base64'
+                             ? base64_decode($att['content'])
+                           : $att['content'])),
+                    $att['mime_type'] ? $att['mime_type'] : 'text/plain',
+                    Zend_Mime::DISPOSITION_ATTACHMENT,
+                    Zend_Mime::ENCODING_BASE64,
+                    $att['file_name']
+                );
+
+                $att = null;
+            }
+        }
+
+        // copy files to attachments
+        foreach ($finalPostedFiles as $id => $file) {
+
+            $dbFile = $fileModel->getFileForKeyAndId(
+                $file['key'], $file['orgId']
+            );
+
+            if ($file && !empty($file)) {
+                $mail->createAttachment(
+                    $dbFile['content'],
+                    $dbFile['mime_type'],
+                    Zend_Mime::DISPOSITION_ATTACHMENT,
+                    Zend_Mime::ENCODING_BASE64,
+                    $file['name']
+                );
+
+                $file = null;
+            }
+        }
+
     }
 
 }
