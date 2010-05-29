@@ -69,7 +69,9 @@ Ext.extend(com.conjoon.cudgets.grid.data.DefaultFilePanelColumnModel, Ext.grid.C
             new Ext.grid.Column({
                 header    : 'Name',
                 dataIndex : 'name',
-                renderer  : this.columnRenderer.nameColumnRenderer
+                renderer  : this.columnRenderer.nameColumnRenderer,
+                editable  : true,
+                editor    : new Ext.form.TextField()
             })
         ];
     },
