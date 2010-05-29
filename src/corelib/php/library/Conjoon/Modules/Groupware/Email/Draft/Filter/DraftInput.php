@@ -68,7 +68,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'cc',
             'bcc',
             'type',
-            'attachments'
+            'attachments',
+            'removedAttachments'
         ),
         self::CONTEXT_DRAFT => array(
             'format',

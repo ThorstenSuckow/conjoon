@@ -83,7 +83,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
             'contentTextHtml',
             'groupwareEmailFoldersId',
             'groupwareEmailAccountsId',
-            'userEmailAddresses'
+            'userEmailAddresses',
+            'attachments'
         ),
 
         self::CONTEXT_FORWARD => array(
