@@ -134,9 +134,8 @@ class Conjoon_Modules_Groupware_Email_Draft_Model_Draft {
                 $draft['in_reply_to'] = '';
                 $draft['references']  = '';
 
-                // we are querying attachments here so we'll be able to
-                // present them to the client
-
+            case '':
+            case Conjoon_Modules_Groupware_Email_Keys::REFERENCE_TYPE_EDIT:
                 /**
                  * @see Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
                  */
