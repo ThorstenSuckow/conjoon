@@ -1183,17 +1183,10 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
 
         /**
-         * @see Conjoon_Modules_Groupware_Files_File_Model_File
-         */
-        require_once 'Conjoon/Modules/Groupware/Files/File/Model/File.php';
-
-        /**
          * @see Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
          */
         require_once 'Conjoon/Modules/Groupware/Email/Attachment/Model/Attachment.php';
 
-
-        $fileModel       = new Conjoon_Modules_Groupware_Files_File_Model_File();
         $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
         // first off, get all the attachments from the draft
@@ -1288,14 +1281,11 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
         // copy files to attachments
         foreach ($finalPostedFiles as $id => $file) {
-            $fileData = $fileModel->getFileForKeyAndId($file['key'], $file['orgId']);
 
-            $newAttachmentId = $attachmentModel->addAttachmentForItem(array(
-                'file_name' => $file['name'],
-                'mime_type' => $fileData['mime_type'],
-                'encoding'  => 'base64',
-                'content'   => base64_encode($fileData['content'])
-            ), $draft->getId());
+            $newAttachmentId = $attachmentModel->copyFromFilesForItemId(
+                $file['key'], $file['orgId'], $draft->getId(), $file['name']
+
+            );
 
             if ($newAttachmentId > 0) {
                 $attachmentMap[$finalPostedFiles[$id]['id']] =
