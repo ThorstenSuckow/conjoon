@@ -72,6 +72,10 @@ com.conjoon.cudgets.grid.listener.DefaultFilePanelListener.prototype = {
             this.onContextMenuRemoveItemClick, this
         );
 
+        panel.mon(cm.getRenameItem(), 'click',
+            this.onContextMenuRenameItemClick, this
+        );
+
         panel.mon(cm.getDownloadItem(), 'click',
             this.onContextMenuDownloadItemClick, this
         );
@@ -102,6 +106,27 @@ com.conjoon.cudgets.grid.listener.DefaultFilePanelListener.prototype = {
         }
 
         this.panel.fireEvent('downloadrequest', this.panel, rec);
+    },
+
+    /**
+     * Listener for the click event of the context menu's "rename"
+     * item.
+     *
+     * @param {Ext.menu.Item} item
+     */
+    onContextMenuRenameItemClick : function(item)
+    {
+        var rec = this.panel.getSelectionModel().getSelected();
+
+        if (!rec || (rec && rec.get('location') != com.conjoon.cudgets.data
+                                                   .FileRecord.LOCATION_REMOTE)) {
+            return;
+        }
+
+        this.panel.startEditing(
+            this.panel.getStore().indexOf(rec),
+            this.panel.getColumnModel().findColumnIndex('name')
+        );
     },
 
     /**
@@ -169,7 +194,7 @@ com.conjoon.cudgets.grid.listener.DefaultFilePanelListener.prototype = {
 
         for (var i = 0, len = recs.length; i < len; i++) {
             if (recs[i].get('state') == FileRecord.STATE_INVALID
-                || recs[i].get('state') == FileRecord.LOCATION_REMOTE) {
+                || recs[i].get('location') == FileRecord.LOCATION_REMOTE) {
                 fin.push(recs[i]);
             }
         }
