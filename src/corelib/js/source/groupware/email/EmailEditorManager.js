@@ -153,20 +153,21 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         });
 
         formValues[panel.id] = {
-            state             : STATE_LOADING,
-            emailItemRecord   : emailItemRecord,
-            signatureAttached : false,
-            dirty             : false,
-            pending           : false,
-            disabled          : true,
-            subject           : "",
-            message           : "",
-            accountId         : null,
-            sourceEditMode    : false,
-            recipients        : [],
-            requestId         : null,
-            attachmentButton  : null,
-            uploadMediator    : null
+            state              : STATE_LOADING,
+            emailItemRecord    : emailItemRecord,
+            signatureAttached  : false,
+            dirty              : false,
+            pending            : false,
+            disabled           : true,
+            subject            : "",
+            message            : "",
+            accountId          : null,
+            sourceEditMode     : false,
+            recipients         : [],
+            requestId          : null,
+            attachmentButton   : null,
+            uploadMediator     : null,
+            removedAttachments : []
         };
 
         var ajaxOptions = {
@@ -372,7 +373,36 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             folderId    : (data.type != 'edit' ? -1 : draft.groupwareEmailFoldersId)
         });
 
+        // we have a set of managed files if the draft gets loaded with
+        // attachments, which happens if a draft with attachments is being
+        // forwarded
+        var attachments = draft.attachments;
+        if (attachments && attachments.length) {
+            var FileRecord     = com.conjoon.cudgets.data.FileRecord;
+            var uploadMediator = formValues[options.panelId].uploadMediator,
+                metaType = FileRecord.META_TYPE_EMAIL_ATTACHMENT,
+                location = FileRecord.LOCATION_REMOTE;
+
+            // convert attachments to fiel Records
+            var fileRecords = [], attachment = null;
+            for (var i = 0, len = attachments.length; i < len; i++) {
+                attachment = attachments[i];
+                fileRecords.push(new FileRecord({
+                    id       : attachment.id+"-"+attachment.key,
+                    orgId    : attachment.id,
+                    folderId : -1,
+                    key      : attachment.key,
+                    name     : attachment.fileName,
+                    metaType : metaType,
+                    mimeType : attachment.mimeType,
+                    location : location
+                }, attachment.id+"-"+attachment.key));
+            }
+            uploadMediator.addFileToManage(fileRecords);
+        }
+
         completeForm(options.panelId);
+
 
         Ext.getCmp(options.panelId).setTitle(getTitle(draft.subject));
         Ext.getCmp(options.panelId).setIconClass(
@@ -466,6 +496,19 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             formValues[panelId].attachmentButton.setDisabled(false);
         } else {
             controlBar.setDisabled(false);
+        }
+
+        var mf = formValues[panelId].uploadMediator.getManagedFiles();
+        if (mf.length) {
+            var fg    = form.fileGridPanel;
+            var store = fg.getStore();
+            fg.show();
+            fg.ownerCt.doLayout();
+            for (var i = 0, len = mf.length; i < len; i++) {
+                if (!store.getById(mf[i].record.id)) {
+                    store.add(mf[i].record);
+                }
+            }
         }
 
         subjectField.setValue(formValues[panelId].subject);
@@ -686,6 +729,27 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         }
 
         var panelId = message.options.panelId;
+
+        if (subject == 'com.conjoon.groupware.email.editor.draftSave') {
+            var attachments = message.emailRecord.get('attachments');
+
+            if (attachments && attachments.length) {
+                var uploadMediator = formValues[panelId].uploadMediator,
+                    attachment = null, metaType = com.conjoon.cudgets.data
+                                                  .FileRecord.META_TYPE_EMAIL_ATTACHMENT;
+                for (var i = 0, len = attachments.length; i < len; i++) {
+                    if (attachments[i].oldId) {
+                        uploadMediator.updateManagedFile(attachments[i].oldId, {
+                            name     : attachments[i].fileName,
+                            orgId    : attachments[i].id,
+                            key      : attachments[i].key,
+                            metaType : metaType
+                        });
+                    }
+                }
+            }
+        }
+
         clearPendingState(panelId);
 
         formValues[panelId].emailItemRecord = message.itemRecord.copy();
@@ -776,16 +840,32 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
         var fValues = formValues[panelId];
 
+        var files       = fValues.uploadMediator.getManagedFiles(),
+            attachments = [];
+
+        var id = (fValues.type == 'edit' || type == 'edit')
+                 ? fValues.id
+                 : -1;
+
+        if (files.length) {
+            var FileRecord = com.conjoon.cudgets.data.FileRecord;
+
+            var f = null, data = null,
+                stateInvalid = FileRecord.STATE_INVALID;
+            for (var i = 0, len = files.length; i < len; i++) {
+                if (files[i].record.get('state') != stateInvalid) {
+                    attachments.push(files[i].record.data);
+                }
+            }
+        }
         var params = {
-            format       : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
-            id           : (
-                (fValues.type == 'edit' || type == 'edit')
-                ? fValues.id
-                : -1
-            ),
-            referencesId : (fValues.type == 'edit'
-                            ? -1
-                            : (fValues.emailItemRecord ? fValues.emailItemRecord.id : -1)),
+            format             : 'text/plain', // can be 'text/plain', 'text/html' or 'multipart'
+            id                 : id,
+            attachments        : Ext.encode(attachments),
+            removedAttachments : Ext.encode(fValues.removedAttachments),
+            referencesId       : (fValues.type == 'edit'
+                                 ? -1
+                                 : (fValues.emailItemRecord ? fValues.emailItemRecord.id : -1)),
             // this differs from the passed argument as this is the context of the email
             // being written, i.e. reply, reply_all, forward, new or edit
             type         : fValues.type,
@@ -1207,17 +1287,17 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                     }
                 }
             });
-        }
 
-        var mf = formValues[panel.id].uploadMediator.getManagedFiles();
-        if (mf.length) {
-            var fg    = form.fileGridPanel;
-            var store = fg.getStore();
-            fg.show();
-            fg.ownerCt.doLayout();
-            for (var i = 0, len = mf.length; i < len; i++) {
-                store.add(mf[i].record);
-            }
+            form.fileGridPanel.on('recordremove', function(filePanel, records) {
+                var metaTypeEmailAttachment = com.conjoon.cudgets.data
+                                              .FileRecord.META_TYPE_EMAIL_ATTACHMENT;
+                for (var i = 0, len = records.length; i < len; i++) {
+                    if (records[i].get('metaType') == metaTypeEmailAttachment) {
+                        formValues[panel.id].removedAttachments
+                            .push(records[i].get('orgId'));
+                    }
+                }
+            });
         }
 
         formValues[panel.id].attachmentButton.show();
