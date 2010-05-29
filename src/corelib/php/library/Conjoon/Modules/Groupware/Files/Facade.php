@@ -178,7 +178,7 @@ class Conjoon_Modules_Groupware_Files_Facade {
      * a Dto with further information about the file.
      *
      * @param string $name
-     * @param string $content
+     * @param resource|string $content
      * @param string $type
      *
      * @return mixed null if an error occured, otherwise an instance of
@@ -186,7 +186,7 @@ class Conjoon_Modules_Groupware_Files_Facade {
      *
      * @throws InvalidArgumentException
      */
-    public function addFileToTempFolderForUser($name, $content, $type, $userId)
+    public function addFileDataToTempFolderForUser($name, $content, $type, $userId)
     {
         $name   = trim((string)$name);
         $type   = trim((string)$type);

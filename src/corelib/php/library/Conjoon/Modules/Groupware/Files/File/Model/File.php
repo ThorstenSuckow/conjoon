@@ -47,9 +47,8 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      * Adds the given content to the file table.
      *
      * @param integer $folderId
-     * @param integer $userId
      * @param string $name
-     * @param string $content
+     * @param resource|string $content
      * @param string $type
      * @param string $key
      *
@@ -85,13 +84,59 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
             );
         }
 
-        return (int)$this->insert(array(
-            'name'                       => $name,
-            'mime_type'                  => $type,
-            'key'                        => $key,
-            'content'                    => $content,
-            'groupware_files_folders_id' => $folderId
-        ));
+        $db = self::getDefaultAdapter();
+
+        /**
+         * @see Zend_Db_Adapter_Pdo_Mysql
+         */
+        require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
+
+        if (!($db instanceof Zend_Db_Adapter_Pdo_Mysql)) {
+            /**
+             * @see Conjoon_Exception
+             */
+            require_once 'Conjoon/Exception.php';
+
+            throw new Conjoon_Exception(
+                "Cannot add file data - adapter not of type "
+                ."Zend_Db_Adapter_Pdo_Mysql, but ".get_class($db)
+            );
+        }
+
+        $statement = $db->prepare(
+            "INSERT INTO `".self::getTablePrefix() . "groupware_files`
+              (
+              `name`,
+              `mime_type`,
+              `key`,
+              `content`,
+              `groupware_files_folders_id`
+              )
+              VALUES
+              (
+                :name,
+                :mime_type,
+                :key,
+                :content,
+                :groupware_files_folders_id
+            )"
+        );
+
+        $statement->bindParam(':key', $key, PDO::PARAM_STR);
+        $statement->bindParam( ':groupware_files_folders_id', $folderId,
+            PDO::PARAM_INT
+        );
+        $statement->bindParam(':name',$name, PDO::PARAM_STR);
+        $statement->bindParam(':mime_type', $type, PDO::PARAM_STR);
+        $statement->bindParam(':content', $content, PDO::PARAM_LOB);
+
+        $statement->execute();
+
+        $result = $statement->rowCount();
+        if ($result > 0) {
+            return $db->lastInsertId();
+        }
+        return 0;
     }
 
     /**
@@ -181,6 +226,116 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
         }
 
         return true;
+    }
+
+    /**
+     * Returns the file data without the content for the specified key
+     * and id.
+     *
+     * @param string $key
+     * @param integer $id
+     *
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getFileDataForKeyAndId($key, $id)
+    {
+        $key = trim((string)$key);
+        $id  = (int)$id;
+
+        if ($key == "") {
+            throw new InvalidArgumentException("Invalid argument for key - $key");
+        }
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Invalid argument for id - $id");
+        }
+
+        $select = $this->select()
+                  ->from($this,  array(
+                    'id',
+                    'key',
+                    'groupware_files_folders_id',
+                    'name',
+                    'mime_type'
+                  ))
+                  ->where('`id`=?', $id)
+                  ->where('`key`=?', $key);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return array();
+        }
+
+        return $row->toArray();
+    }
+
+    /**
+     * Tries to return the contents from the file as a stream. If that
+     * cannot be realized, the content will be returned as a string.
+     *
+     * @param string $key
+     * @param integer $id
+     *
+     * @return resource|string
+     *
+     * @throws InvalidArgumentException
+     * @throws Conjoon_Exception
+     */
+    public function getFileContentAsStreamForKeyAndId($key, $id)
+    {
+        $key = trim((string)$key);
+        $id  = (int)$id;
+
+        if ($key == "") {
+            throw new InvalidArgumentException(
+                "Invalid argument for key - $key"
+            );
+        }
+        if ($id <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument for id - $id"
+            );
+        }
+
+        $db = self::getDefaultAdapter();
+
+        /**
+         * @see Zend_Db_Adapter_Pdo_Mysql
+         */
+        require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
+
+        if (!($db instanceof Zend_Db_Adapter_Pdo_Mysql)) {
+            /**
+             * @see Conjoon_Exception
+             */
+            require_once 'Conjoon/Exception.php';
+
+            throw new Conjoon_Exception(
+                "Cannot get file content  - "
+                ."adapter not of type Zend_Db_Adapter_Pdo_Mysql, but ".
+                get_class($db)
+            );
+        }
+
+        $statement = $db->prepare(
+            "SELECT `content` FROM `".self::getTablePrefix() . "groupware_files`
+             WHERE `key` = :key AND `id` = :id"
+        );
+        $statement->setFetchMode(PDO::FETCH_BOUND);
+
+        $statement->bindParam(':key', $key, PDO::PARAM_STR);
+        $statement->bindParam( ':id', $id,  PDO::PARAM_INT);
+
+        $statement->execute();
+
+        $statement->bindColumn('content', $content, PDO::PARAM_LOB);
+
+        $statement->fetch();
+
+        return $content;
     }
 
 }

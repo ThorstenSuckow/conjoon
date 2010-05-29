@@ -234,7 +234,8 @@ class Groupware_FileController extends Zend_Controller_Action {
         // extract file info
         $fileInfo = array_pop($upload->getFileInfo());
         $name     = $fileInfo['name'];
-        $content  = @file_get_contents($fileInfo['tmp_name']);
+        $fp       = @fopen($fileInfo['tmp_name'], 'rb');
+        $content  = $fp;
 
         if ($content === false) {
             /**
@@ -261,7 +262,7 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         $fileFacade = Conjoon_Modules_Groupware_Files_Facade::getInstance();
 
-        $file = $fileFacade->addFileToTempFolderForUser(
+        $file = $fileFacade->addFileDataToTempFolderForUser(
             $name, $content, $type,
             $this->_helper->registryAccess->getUserId()
         );
@@ -290,6 +291,8 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         $this->view->success = true;
         $this->view->files   = array($file);
+
+        @fclose($fp);
     }
 
 
