@@ -81,6 +81,14 @@ edition = {EDITION}
 ;;;   APPLICATION    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [application]
+; This allows to cache the plugins needed by the Zend Framework; a list of
+; include_once statements will be added to the bootstrapper, which includes
+; all found plugins so Zend framework does not have to look them up each time.
+; While stat calls to the native filesystem are greatly reduced using the
+; plugin cache, there might be a tradeoff in performance due to the additional
+; include_once statements.
+zf.use_plugin_cache = 1
+
 ; The maximum size of files allowed for uploads. This value should be equal or less to
 ; your php.ini setting post_max_size and the configuration option
 ; database.variables.max_allowed_packet

@@ -62,6 +62,7 @@
 // | Before doing anything else, load the config and set the include path if
 // | necessary, so that the lib files can be loaded
 // +----------------------------------------------------------------------------
+
    include_once './configCacheFunctions.php';
 
    $config = conjoon_initConfigCache();
@@ -116,6 +117,11 @@ require_once 'Conjoon/Controller/Plugin/Lock.php';
  */
 require_once 'Conjoon/Modules/Default/User.php';
 
+/**
+ * @see Zend_Loader_PluginLoader
+ */
+require_once 'Zend/Loader/PluginLoader.php';
+
 // +----------------------------------------------------------------------------
 // | Welcome! Start the session!
 // +----------------------------------------------------------------------------
@@ -129,6 +135,20 @@ require_once 'Conjoon/Modules/Default/User.php';
         $config = new Conjoon_Config_Array($config);
    }
    Zend_Registry::set(Conjoon_Keys::REGISTRY_CONFIG_OBJECT, $config);
+
+   if ($config->application->zf->use_plugin_cache) {
+       $parts = explode('/', ltrim($_SERVER['REQUEST_URI'], './'), 4);
+       array_pop($parts);
+       $file = implode('_', $parts);
+       $classFileIncCache= './_configCache/pluginLoader/'
+                           . ($file ? $file : 'default')
+                           . '.cache.php';
+       if (file_exists($classFileIncCache)) {
+         include_once $classFileIncCache;
+       }
+       Zend_Loader_PluginLoader::setIncludeFileCache($classFileIncCache);
+    }
+
 
    // init the logger here!
    if ($config->log) {
