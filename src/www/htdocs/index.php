@@ -137,9 +137,20 @@ require_once 'Zend/Loader/PluginLoader.php';
    Zend_Registry::set(Conjoon_Keys::REGISTRY_CONFIG_OBJECT, $config);
 
    if ($config->application->zf->use_plugin_cache) {
-       $parts = explode('/', ltrim($_SERVER['REQUEST_URI'], './'), 4);
-       array_pop($parts);
-       $file = implode('_', $parts);
+       if (isset($_SESSION[Conjoon_Keys::SESSION_AUTH_NAMESPACE])) {
+           $baseUrl = trim($config->environment->base_url);
+           $parts = explode('/',
+               ltrim(
+                ($baseUrl != "/"
+                ? str_replace($baseUrl, '', $_SERVER['REQUEST_URI'])
+                : $_SERVER['REQUEST_URI']),
+                './'),
+           4);
+           array_pop($parts);
+           $file = implode('_', $parts);
+       } else {
+           $file = "";
+       }
        $classFileIncCache= './_configCache/pluginLoader/'
                            . ($file ? $file : 'default')
                            . '.cache.php';
