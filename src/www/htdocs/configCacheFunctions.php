@@ -187,6 +187,35 @@
             }
         }
 
+        // take care of files
+        if (isset($initialConfig['files'])) {
+            // get the cache namespaces
+            $cacheBlocks =& $initialConfig['files'];
+            $namespaces  = array();
+
+            foreach ($cacheBlocks as $key => $value) {
+                $ns = explode(".", $key, 4);
+                if (!isset($ns[2])) {
+                    continue;
+                }
+                $namespaces[$ns[0].'.'.$ns[1].'.'.$ns[2]] = true;
+            }
+
+            foreach ($namespaces as $key => $value) {
+                $ck = $key.'.dir';
+                if (array_key_exists($ck, $cacheBlocks)) {
+                    $cacheDir = $cacheBlocks[$ck];
+                    if ($cacheDir && strpos($cacheDir, '/') !== 0 &&
+                        strpos($cacheDir, ':') !== 1) {
+                        $cacheBlocks[$ck] = $initialConfig['environment']['application_path']
+                                            . DIRECTORY_SEPARATOR
+                                            . $cacheDir;
+                    }
+                }
+            }
+
+        }
+
         // check if the library_path is set, and adjust the include_path if necessary
         if (($incPath = $initialConfig['environment']['include_path']) != null) {
            set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);

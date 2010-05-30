@@ -381,7 +381,8 @@ CREATE TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders` (
 `key` VARCHAR( 32 ) NOT NULL ,
 `name` VARCHAR( 255 ) NOT NULL ,
 `mime_type` VARCHAR( 255 ) NOT NULL ,
-`content` LONGBLOB NOT NULL
+`content` LONGBLOB NULL,
+`storage_container` VARCHAR( 255 ) NULL
 ) ENGINE = MYISAM;
 
 CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_files_folders_users` (

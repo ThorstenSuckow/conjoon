@@ -103,14 +103,14 @@ class Groupware_FileController extends Zend_Controller_Action {
             );
         } else {
             /**
-             * @see Conjoon_Modules_Groupware_Files_Facade
+             * @see Conjoon_Modules_Groupware_Files_File_Facade
              */
-            require_once 'Conjoon/Modules/Groupware/Files/Facade.php';
+            require_once 'Conjoon/Modules/Groupware/Files/File/Facade.php';
 
-            $facade = Conjoon_Modules_Groupware_Files_Facade::getInstance();
+            $facade = Conjoon_Modules_Groupware_Files_File_Facade::getInstance();
 
             $data = $facade->getFileDownloadDataForUserId(
-                $key, $id, $userId
+                $id, $key, $userId
             );
 
         }
@@ -166,48 +166,14 @@ class Groupware_FileController extends Zend_Controller_Action {
         $fileKey = array_pop(array_keys($_FILES));
 
         /**
-         * @see Zend_Registry
+         * @see Conjoon_Modules_Groupware_Files_Facade
          */
-        require_once 'Zend/Registry.php';
+        require_once 'Conjoon/Modules/Groupware/Files/Facade.php';
 
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
+        $facade = Conjoon_Modules_Groupware_Files_Facade::getInstance();
 
-        /**
-         * @see Zend_File_Transfer
-         */
-        require_once 'Zend/File/Transfer/Adapter/Http.php';
+        $upload = $facade->generateUploadObject();
 
-        $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
-        $maxAllowedPacket = $config->database->variables->max_allowed_packet;
-        if (!$maxAllowedPacket) {
-            /**
-             * @see Conjoon_Db_Util
-             */
-            require_once 'Conjoon/Db/Util.php';
-
-            $maxAllowedPacket = Conjoon_Db_Util::getMaxAllowedPacket(
-                Zend_Db_Table::getDefaultAdapter()
-            );
-        }
-
-        $maxFileSize = min(
-            (float)$config->application->files->upload->max_size,
-            (float)$maxAllowedPacket
-        );
-
-        // allowed filesize is max-filesize - 33-36 % of max filesize,
-        // due to base64 encoding which might happen
-        $maxFileSize = $maxFileSize - round($maxFileSize/3);
-
-        // build up upload
-        $upload = new Zend_File_Transfer_Adapter_Http();
-
-        // assign and check validators
-        $upload->addValidator('Count', true, array('min' => 1, 'max' => 1));
-        $upload->addValidator('Size', true, $maxFileSize);
         if (!$upload->isValid()) {
             // generate the error message
             $message  = $upload->getMessages();
@@ -222,61 +188,26 @@ class Groupware_FileController extends Zend_Controller_Action {
             require_once 'Conjoon/Error/Factory.php';
 
             $error = Conjoon_Error_Factory::createError(
-                implode("\n", $messages),
-                Conjoon_Error::LEVEL_WARNING, Conjoon_Error::INPUT,
-                null, null, null
-            )->getDto();
+                implode("\n", $messages), Conjoon_Error::LEVEL_WARNING,
+                Conjoon_Error::INPUT)->getDto();
             $this->view->success = false;
             $this->view->error   = $error;
             return;
         }
 
-        // extract file info
-        $fileInfo = array_pop($upload->getFileInfo());
-        $name     = $fileInfo['name'];
-        $fp       = @fopen($fileInfo['tmp_name'], 'rb');
-        $content  = $fp;
-
-        if ($content === false) {
-            /**
-             * @see Conjoon_Error_Factory
-             */
-            require_once 'Conjoon/Error/Factory.php';
-
-            $error = Conjoon_Error_Factory::createError(
-                "Could not get file contents to save \"".$name."\"",
-                Conjoon_Error::LEVEL_WARNING, Conjoon_Error::INPUT,
-                null, null, null
-            )->getDto();
-            $this->view->success = false;
-            $this->view->error   = $error;
-            return;
-        }
-
-        $type = $fileInfo['type'];
-
-        /**
-         * @see Conjoon_Modules_Groupware_Files_Facade
-         */
-        require_once 'Conjoon/Modules/Groupware/Files/Facade.php';
-
-        $fileFacade = Conjoon_Modules_Groupware_Files_Facade::getInstance();
-
-        $file = $fileFacade->addFileDataToTempFolderForUser(
-            $name, $content, $type,
-            $this->_helper->registryAccess->getUserId()
+        $fileDto = $facade->uploadFileToTempFolderForUser(
+            $upload, $this->_helper->registryAccess->getUserId()
         );
 
-        if ($file === null) {
+        if (!$fileDto) {
             /**
              * @see Conjoon_Error_Factory
              */
             require_once 'Conjoon/Error/Factory.php';
 
             $error = Conjoon_Error_Factory::createError(
-                "Could not upload file \"".$name."\"",
-                Conjoon_Error::LEVEL_WARNING, Conjoon_Error::INPUT,
-                null, null, null
+                "Sorry, I could not upload this file. Something went wrong",
+                Conjoon_Error::LEVEL_WARNING, Conjoon_Error::INPUT
             )->getDto();
             $this->view->success = false;
             $this->view->error   = $error;
@@ -285,14 +216,12 @@ class Groupware_FileController extends Zend_Controller_Action {
 
         // we will silently add the old id to Dto so the client can identify the
         // uploaded record properly
-        $file->oldId         = $fileKey;
-        $file->folderId      = $file->groupwareFilesFoldersId;
-        unset($file->groupwareFilesFoldersId);
+        $fileDto->oldId    = $fileKey;
+        $fileDto->folderId = $fileDto->groupwareFilesFoldersId;
+        unset($fileDto->groupwareFilesFoldersId);
 
         $this->view->success = true;
-        $this->view->files   = array($file);
-
-        @fclose($fp);
+        $this->view->files   = array($fileDto);
     }
 
 

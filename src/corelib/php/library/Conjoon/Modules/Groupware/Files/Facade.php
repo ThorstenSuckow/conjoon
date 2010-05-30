@@ -13,6 +13,12 @@
  * $URL$
  */
 
+
+/**
+ * @see Zend_File_Transfer_Adapter_Http
+ */
+require_once 'Zend/File/Transfer/Adapter/Http.php';
+
 /**
  *
  *
@@ -26,9 +32,14 @@ class Conjoon_Modules_Groupware_Files_Facade {
     private static $_instance = null;
 
     /**
-     * @var Conjoon_Modules_Groupware_Files_Folder_Model_Folder
+     * @var Conjoon_Modules_Groupware_Files_Folder_Facade $_folderFacade
      */
-    private $_folderModel = null;
+    private $_folderFacade = null;
+
+    /**
+     * @var Conjoon_Modules_Groupware_Files_File_Facade $_fileFacade
+     */
+    private $_fileFacade = null;
 
     /**
      * @var Conjoon_Modules_Groupware_Files_File_Model_File
@@ -55,122 +66,95 @@ class Conjoon_Modules_Groupware_Files_Facade {
 // -------- public api
 
     /**
-     * Generates a unique id for a file. This id is a string with a length
-     * of 32 chars, alphanumeric.
+     * Returns an upload object based on the global accessible $_FILES variable.
+     * The returned upload will be pre-configured with a validator for the
+     * system's max upload size and the count of allowed simultaneusly uploads
+     * set to 1.
      *
-     * @param integer $id The user id for which the unique id should be generated.
-     *
-     * @return string
+     * @return Zend_File_Transfer_Adapter_Http
      */
-    public function generateFileKey($userId)
+    public function generateUploadObject()
     {
-        return md5(uniqid(mt_rand(), true));
+        // build up upload
+        $upload = new Zend_File_Transfer_Adapter_Http();
+
+        // assign and check validators
+        $upload->addValidator('Count', true, array('min' => 1, 'max' => 1));
+        $upload->addValidator('Size', true, $this->_getUploadMaxFileSize());
+
+        return $upload;
     }
 
     /**
-     * Returns download data for the required file, i.e. mime type,
-     * name and content. The data will be returned in an associative array
-     * and is already prepared for sending to the client, i.e. the content to
-     * send has already been decoded if necessary.
+     * Uploads the specified file found in $upload for the specified user
+     * to the temp folder.
+     * As of know, only one file per upload is permitted.
+     * make sure the upload has been filtered and validated before passing it
+     * to this method
      *
-     * @param mixed   $key
-     * @param integer $id
-     * @param inter   $userId
+     * @param Zend_File_Transfer_Adapter_Http $upload
+     * @param int $userId
      *
-     * @return array an assoc array with the keys "name", "mimeType" and
-     * "content", or null if item is not available.
+     * @return null if an error occured or Conjoon_Groupware_Files_File_Dto
      *
      * @throws InvalidArgumentException
+     * @throws Conjoon_Modules_Groupware_Files_Exception
      */
-    public function getFileDownloadDataForUserId($key, $id, $userId)
+    public function uploadFileToTempFolderForUser(
+        Zend_File_Transfer_Adapter_Http $upload, $userId)
     {
-        $key    = trim((string)$key);
-        $id     = (int)$id;
-        $userId = (int)$userId;
+        $this->_checkArguments(array(
+            'userId'   => array('value' => &$userId,   'type' => 'int')
+        ));
 
-        if ($key == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for key - $key"
+        if (count($upload->getFilters()) && !$upload->isFiltered()) {
+            /**
+             * @see Conjoon_Modules_Groupware_Files_Exception
+             */
+            require_once 'Conjoon/Modules/Groupware/Files/Exception.php';
+
+            throw new Conjoon_Modules_Groupware_Files_Exception(
+                "The upload has not been filtered yet."
             );
         }
 
-        if ($id <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for id - $id"
+        if (!$upload->isValid()) {
+            /**
+             * @see Conjoon_Modules_Groupware_Files_Exception
+             */
+            require_once 'Conjoon/Modules/Groupware/Files/Exception.php';
+
+            throw new Conjoon_Modules_Groupware_Files_Exception(
+                "The upload has not been validated yet."
             );
         }
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for userId - $userId"
+
+
+        // check if only one file is available
+        if (count(array_keys($upload->getFileInfo())) != 1) {
+            throw new Conjoon_Modules_Groupware_Files_Exception(
+                "Only one file per download permitted."
             );
         }
 
-        if (!$this->isFileDownloadableForUserId(
-            $key, $id, $userId)) {
-            return null;
-        }
+        $fileInfo = array_pop($upload->getFileInfo());
+        $name     = $fileInfo['name'];
+        $path     = $fileInfo['tmp_name'];
+        $type     = $fileInfo['type'];
 
-        $fileModel = $this->_getFileModel();
-
-        $data = $fileModel->getFileForKeyAndId($key, $id);
-
-        if (empty($data)) {
-            return null;
-        }
-
-        return array(
-            'name'     => $data['name'],
-            'content'  => $data['content'],
-            'mimeType' => $data['mime_type']
-                          ? $data['mime_type'] : 'text/plain'
+        $tmpFolderId = $this->_getFolderFacade()->getTempFolderIdForUser(
+            $userId
         );
-    }
 
-    /**
-     * Returns true if the user may download the file with the specified
-     * id, otherwise false.
-     *
-     * @param string  $key The key of the file to download
-     * @param integer $id The id of the file to download
-     * @param integer $userId The id of the user who requests the file
-     * being downloaded
-     *
-     * @return boolean true if he may download the file, otherwise false
-     *
-     * @throws InvalidArgumentException
-     */
-    public function isFileDownloadableForUserId($key, $id, $userId)
-    {
-        $key    = trim((string)$key);
-        $id     = (int)$id;
-        $userId = (int)$userId;
+        $obj = $this->_getFileFacade()->moveFileToFolderForUserId(
+            $path, $tmpFolderId, $userId, $name, $type
+        );
 
-        if ($key == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for key - $key"
-            );
+        if (!$obj) {
+            return null;
         }
 
-        if ($id <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for id - $id"
-            );
-        }
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for userId - $userId"
-            );
-        }
-
-        $model = $this->_getFileModel();
-
-        $allowed = $model->isFileInFolderForUser($id, $userId);
-
-        if (!$allowed) {
-            return false;
-        }
-
-        return true;
+        return $obj->getDto();
     }
 
     /**
@@ -188,150 +172,151 @@ class Conjoon_Modules_Groupware_Files_Facade {
      */
     public function addFileDataToTempFolderForUser($name, $content, $type, $userId)
     {
-        $name   = trim((string)$name);
-        $type   = trim((string)$type);
-        $userId = (int)$userId;
+        $this->_checkArguments(array(
+            'name'   => array('value' => &$name,   'type' => 'string'),
+            'type'   => array('type'  => &$type,   'type' => 'string'),
+            'userId' => array('value' => &$userId, 'type' => 'int')
+        ));
 
-        if ($name == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for name - $name"
-            );
-        }
-
-        if ($type == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for type - $type"
-            );
-        }
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for userId - $userId"
-            );
-        }
 
         // first of, retrieve the id for the tmp folder of the specified user
         // in the db
-        $tmpFolderId = $this->createTempFolderForUser($userId);
+        $tmpFolderId = $this->_getFolderFacade()
+                       ->getTempFolderIdForUser($userId);
 
         if ($tmpFolderId === 0) {
             return null;
         }
 
-        $key = $this->generateFileKey($userId);
-        $id  = $this->_getFileModel()->addFileToFolder(
-            $tmpFolderId, $name, $content, $type, $key
+        $obj = $this->_getFileFacade()->createFileInFolderForUser(
+            $tmpFolderId, $name, $content, $type, $userId
         );
 
-        if ($id === 0) {
+        if (!$obj) {
             return null;
         }
 
-        /**
-         * @see Conjoon_Modules_Groupware_Files_File
-         */
-        require_once 'Conjoon/Modules/Groupware/Files/File.php';
-
-        $file = new Conjoon_Modules_Groupware_Files_File();
-        $file->setName($name);
-        $file->setKey($key);
-        $file->setMimeType($type);
-        $file->setId($id);
-        $file->setMetaType('file');
-        $file->setGroupwareFilesFoldersId($tmpFolderId);
-
-        return $file->getDto();
-
+        return $obj->getDto();
     }
 
-    /**
-     * Returns the id of the temp folder for the specified userId
-     *
-     * @param int $userId
-     *
-     * @return int
-     *
-     * @throws InvalidArgumentException
-     */
-    public function getIdForTempFolderForUser($userId)
-    {
-        $userId = (int)$userId;
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for userId - $userId"
-            );
-        }
-
-        return $this->_getFolderModel()->getTempFolderIdForUser($userId);
-    }
-
-    /**
-     * Creates the temp folder if it does not already exists and returns the id
-     * of the temp folder.
-     *
-     * @param int $userId
-     *
-     * @return int
-     *
-     * @throws InvalidArgumentException
-     */
-    public function createTempFolderForUser($userId)
-    {
-        $userId = (int)$userId;
-
-        if ($userId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for userId - $userId"
-            );
-        }
-
-        $id = $this->_getFolderModel()->getTempFolderIdForUser($userId);
-
-        if ($id !== 0) {
-            return $id;
-        }
-
-        return $this->_getFolderModel()->createTempFolderForUser($userId);
-    }
 
 // -------- api
 
     /**
+     * Returns the number of bytes denoting the maximum file size for uploads.
      *
-     * @return Conjoon_Modules_Groupware_Files_Folder_Model_Folder
+     * @return float
      */
-    private function _getFolderModel()
+    public function _getUploadMaxFileSize()
     {
-        if (!$this->_folderModel) {
-             /**
-             * @see Conjoon_Modules_Groupware_Files_Folder_Model_Folder
-             */
-            require_once 'Conjoon/Modules/Groupware/Files/Folder/Model/Folder.php';
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
 
-            $this->_folderModel = new Conjoon_Modules_Groupware_Files_Folder_Model_Folder();
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        /**
+         * @see Zend_File_Transfer
+         */
+        require_once 'Zend/File/Transfer/Adapter/Http.php';
+
+        $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+        $maxAllowedPacket = $config->database->variables->max_allowed_packet;
+        if (!$maxAllowedPacket) {
+            /**
+             * @see Conjoon_Db_Util
+             */
+            require_once 'Conjoon/Db/Util.php';
+
+            $maxAllowedPacket = Conjoon_Db_Util::getMaxAllowedPacket(
+                Zend_Db_Table::getDefaultAdapter()
+            );
         }
 
-        return $this->_folderModel;
+        $maxFileSize = min(
+            (float)$config->files->upload->max_size,
+            (float)$maxAllowedPacket
+        );
+
+        // allowed filesize is max-filesize - 33-36 % of max filesize,
+        // due to base64 encoding which might happen
+        $maxFileSize = $maxFileSize - round($maxFileSize/3);
+
+        return $maxFileSize;
     }
 
     /**
      *
-     * @return Conjoon_Modules_Groupware_Files_File_Model_File
+     *
      */
-    private function _getFileModel()
+    protected function _checkArguments(Array $data)
     {
-        if (!$this->_fileModel) {
-             /**
-             * @see Conjoon_Modules_Groupware_Files_File_Model_File
-             */
-            require_once 'Conjoon/Modules/Groupware/Files/File/Model/File.php';
+        foreach ($data as $argumentName => $config) {
+            switch ($config['type']) {
+                case 'string':
+                    $config['value'] = trim((string)$config['value']);
+                    if ($config['value'] == "") {
+                        throw new InvalidArgumentException(
+                            "Invalid argument supplied for $argumentName - "
+                            .$config['value']
+                        );
+                    }
+                break;
 
-            $this->_fileModel = new Conjoon_Modules_Groupware_Files_File_Model_File();
+                case 'int':
+                    $config['value'] = (int)$config['value'];
+                    if ($config['value'] == "") {
+                        throw new InvalidArgumentException(
+                            "Invalid argument supplied for $argumentName - "
+                            .$config['value']
+                        );
+                    }
+                break;
+            }
         }
-
-        return $this->_fileModel;
     }
 
+    /**
+     *
+     * @return Conjoon_Modules_Groupware_Files_Folder_Facade
+     */
+    private function _getFolderFacade()
+    {
+        if (!$this->_folderFacade) {
+             /**
+             * @see Conjoon_Modules_Groupware_Files_Folder_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Files/Folder/Facade.php';
+
+            $this->_folderFacade = Conjoon_Modules_Groupware_Files_Folder_Facade
+                                   ::getInstance();
+        }
+
+        return $this->_folderFacade;
+    }
+
+
+    /**
+     *
+     * @return Conjoon_Modules_Groupware_Files_File_Facade
+     */
+    private function _getFileFacade()
+    {
+        if (!$this->_fileFacade) {
+             /**
+             * @see Conjoon_Modules_Groupware_Files_File_Facade
+             */
+            require_once 'Conjoon/Modules/Groupware/Files/File/Facade.php';
+
+            $this->_fileFacade = Conjoon_Modules_Groupware_Files_File_Facade
+                                   ::getInstance();
+        }
+
+        return $this->_fileFacade;
+    }
 
 }

@@ -44,6 +44,30 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
     protected $_primary = 'id';
 
     /**
+     * removes the row with the specified id.
+     *
+     * @param integer $id
+     *
+     * @return integer The number of rows deleted
+     *
+     * @throws InvalidArgumentException
+     */
+    public function removeFile($id)
+    {
+        $id = (int)$id;
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException(
+                "Invalid argument supplied for id - $id"
+            );
+        }
+
+        $where = $this->getAdapter()->quoteInto('id = ?', $id);
+
+        return $this->delete($where);
+    }
+
+    /**
      * Adds the given content to the file table.
      *
      * @param integer $folderId
@@ -51,12 +75,14 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      * @param resource|string $content
      * @param string $type
      * @param string $key
+     * @param string $storageContainer
      *
      * @return integer
      *
      * @throws InvalidArgumentException
      */
-    public function addFileToFolder($folderId, $name, $content, $type, $key)
+    public function addFileToFolder($folderId, $name, $content, $type, $key,
+        $storageContainer = null)
     {
         $folderId = (int)$folderId;
         $name     = trim((string)$name);
@@ -82,6 +108,14 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
             throw new InvalidArgumentException(
                 "Invalid argument supplied for key - $key"
             );
+        }
+        if ($storageContainer !== null) {
+            $storageContainer = trim((string)$storageContainer);
+            if ($storageContainer == "") {
+                throw new InvalidArgumentException(
+                    "Invalid argument supplied for storageContainer - $storageContainer"
+                );
+            }
         }
 
         $db = self::getDefaultAdapter();
@@ -110,7 +144,8 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
               `mime_type`,
               `key`,
               `content`,
-              `groupware_files_folders_id`
+              `groupware_files_folders_id`,
+              `storage_container`
               )
               VALUES
               (
@@ -118,7 +153,8 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
                 :mime_type,
                 :key,
                 :content,
-                :groupware_files_folders_id
+                :groupware_files_folders_id,
+                :storage_container
             )"
         );
 
@@ -129,6 +165,7 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
         $statement->bindParam(':name',$name, PDO::PARAM_STR);
         $statement->bindParam(':mime_type', $type, PDO::PARAM_STR);
         $statement->bindParam(':content', $content, PDO::PARAM_LOB);
+        $statement->bindParam(':storage_container', $storageContainer, PDO::PARAM_STR);
 
         $statement->execute();
 
@@ -140,7 +177,8 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
     }
 
     /**
-     * Returns the file for the specified key and id.
+     * Returns the file for the specified key and id plain, without
+     * creating resources or similiar.
      *
      * @param string $key The key of the file to query in the database.
      * @param integer $id The id of the file to query in the database.
@@ -258,7 +296,8 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
                     'key',
                     'groupware_files_folders_id',
                     'name',
-                    'mime_type'
+                    'mime_type',
+                    'storage_container'
                   ))
                   ->where('`id`=?', $id)
                   ->where('`key`=?', $key);

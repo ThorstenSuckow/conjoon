@@ -89,11 +89,6 @@ edition = {EDITION}
 ; include_once statements.
 zf.use_plugin_cache = 1
 
-; The maximum size of files allowed for uploads. This value should be equal or less to
-; your php.ini setting post_max_size and the configuration option
-; database.variables.max_allowed_packet
-files.upload.max_size = 100000
-
 ; Since V0.1RC1, conjoon is able to detect if the Ext frontend has merged
 ; multiple requests into one, split them up and process them as if each
 ; was a single request made to the webserver.
@@ -328,6 +323,64 @@ db.metadata.backend.hashed_directory_level = 0
 ; namespace "twitter.accounts" for cached twitter account lists.
 twitter.accounts.caching = {CACHE.TWITTER.ACCOUNTS.CACHING}
 twitter.accounts.backend.cache_dir = {CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}
+
+;;;;;;;;;;;;;;;;;;;;;
+;;    FILES/LOB    ;;
+;;;;;;;;;;;;;;;;;;;;;
+[files]
+; Tells whether LOBs (large objects) will be stored in the filesystem. By default,
+; conjoon stores LOBs in the database. However, there are reasons why you would
+; want to store this data in the native filesystem, specially performancewise.
+; You can enable/disable this value during runtime, and conjoon will still provide
+; the application with the needed data. However, make sure you did/do not delete
+; the related folders where the LOBs of a user can be found.
+; if this property is not set to "0", files will not be stored in the filesystem.
+; However, if this was previously set to "1", data which was stored in the
+; database will be flagged as stored in the file system. So before changing the dirs
+; make sure you move all content to their new location as the app will still try to
+; fetch data from the filesystem once iit has been marked as stored in filesystem.
+storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
+
+; if files.storage.use_filesystem is activated, the following configuration
+; properties tell the application where to store/look up related LOBs.
+; if you do not provide absolute paths, the application will assume those
+; directories are relative to the application_path.
+; NOTE:
+; YOU ARE RESPONSIBLE FOR TAKING CARE OF PROPER SETTING THE PERMISSIONS FOR
+; THE SPECIFIED FOLDERS. MAKE SURE THOSE FOLDERS ARE ONLY ACCESSIBLE BY PHP/
+; YOUR WEBSERVER. MAKE SURE YOU FREQUENTLY DO A BACKUP OF THOSE FOLDERS.
+; IF YOU ARE NOT SURE WHAT YOU ARE DOING, SET storage.filesystem TO 0 and
+; LET conjoon TAKE CARE OF STORING LOBs IN THE DATABASE
+
+; [EMAIL-MODULE] the path to the folder where attachments will be stored.
+; Either absolute or relative to the application_path setting.
+; TAKE CARE OF PROPER FILE PERMISSIONS!
+storage.email.attachments.dir = {FILES.STORAGE.EMAIL.ATTACHMENTS.DIR}
+
+; [EMAIL-MODULE] the path to the folder where inbox data will be stored
+; (header/bodies). Either absolute or relative to the application_path setting.
+; TAKE CARE OF PROPER FILE PERMISSIONS!
+storage.email.inbox.dir = {FILES.STORAGE.EMAIL.INBOX.DIR}
+
+; [EMAIL-MODULE] the path to the folder where outbox data will be stored
+; (header/bodies). Either absolute or relative to the application_path setting.
+; TAKE CARE OF PROPER FILE PERMISSIONS!
+storage.email.outbox.dir = {FILES.STORAGE.EMAIL.OUTBOX.DIR}
+
+; [FILE_MODULE] the path to the folder where files for a user get stored, for
+; example when a user uploads a file.  Either absolute or relative to the
+; application_path setting.
+; TAKE CARE OF PROPER FILE PERMISSIONS!
+storage.files.default.dir = {FILES.STORAGE.FILES.DEFAULT.DIR}
+
+; The maximum size of files allowed for uploads. This value should be equal or
+; less to your php.ini setting post_max_size and the configuration option
+; database.variables.max_allowed_packet. If the value exceeds those limits,
+; always the minimum of post max size and max_allowed_packet will be used for
+; determing max allowed upload filesize. Please note, that this value is
+; ignored as long as you choose to store LOBs in the local filesystem of
+; your server
+upload.max_size = {FILES.UPLOAD.MAX_SIZE}
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
