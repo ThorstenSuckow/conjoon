@@ -139,7 +139,7 @@ class Groupware_FileController extends Zend_Controller_Action {
                  ->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true)
                  ->setHeader('Pragma', 'no-cache', true)
                  ->setHeader('Content-Description', ($name != "" ? $name : $data['name']), true)
-                 ->setHeader('Content-Type', $data['mimeType'], true)
+                 ->setHeader('Content-Type', $data['mime_type'], true)
                  ->setHeader('Content-Transfer-Encoding', 'binary', true)
                  ->setHeader(
                     'Content-Disposition',
@@ -150,7 +150,7 @@ class Groupware_FileController extends Zend_Controller_Action {
                  );
 
         $response->sendHeaders();
-        $response->setBody($data['content']);
+        $response->setBody($data['resource']);
     }
 
     /**
