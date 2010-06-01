@@ -19,6 +19,21 @@
 require_once 'Conjoon/Db/Table.php';
 
 /**
+ * @see Conjoon_Db_LobAccess
+ */
+require_once 'Conjoon/Db/LobAccess.php';
+
+/**
+ * @see Conjoon_Data_Exeption
+ */
+require_once 'Conjoon/Data/Exception.php';
+
+/**
+ * @see Conjoon_Util_ArgumentCheck
+ */
+require_once 'Conjoon/Util/ArgumentCheck.php';
+
+/**
  * Table data gateway. Models the table <tt>groupware_files</tt>.
  *
  * @uses Conjoon_Db_Table
@@ -28,7 +43,8 @@ require_once 'Conjoon/Db/Table.php';
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
-class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
+class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
+    implements Conjoon_Db_LobAccess {
 
     /**
      * The name of the table in the underlying datastore this
@@ -50,21 +66,16 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      *
      * @return integer The number of rows deleted
      *
-     * @throws InvalidArgumentException
+     * @throws Conjoon_Data_Exception
+     * @deprecated use deleteLob instead
      */
     public function removeFile($id)
     {
-        $id = (int)$id;
+        $data = array(
+            'id' => $id
+        );
 
-        if ($id <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for id - $id"
-            );
-        }
-
-        $where = $this->getAdapter()->quoteInto('id = ?', $id);
-
-        return $this->delete($where);
+        return $this->deleteLobForId($data);
     }
 
     /**
@@ -79,101 +90,27 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      *
      * @return integer
      *
-     * @throws InvalidArgumentException
+     * @throws Conjoon_Data_Exception
+     *
+     * @deprecated use addLob/addLobfromStream
      */
     public function addFileToFolder($folderId, $name, $content, $type, $key,
         $storageContainer = null)
     {
-        $folderId = (int)$folderId;
-        $name     = trim((string)$name);
-        $type     = trim((string)$type);
-        $key      = trim((string)$key);
-
-        if ($folderId <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for folderId - $folderId"
-            );
-        }
-        if ($name == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for name - $name"
-            );
-        }
-        if ($type == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for type - $type"
-            );
-        }
-        if ($key == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument supplied for key - $key"
-            );
-        }
-        if ($storageContainer !== null) {
-            $storageContainer = trim((string)$storageContainer);
-            if ($storageContainer == "") {
-                throw new InvalidArgumentException(
-                    "Invalid argument supplied for storageContainer - $storageContainer"
-                );
-            }
-        }
-
-        $db = self::getDefaultAdapter();
-
-        /**
-         * @see Zend_Db_Adapter_Pdo_Mysql
-         */
-        require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
-
-        if (!($db instanceof Zend_Db_Adapter_Pdo_Mysql)) {
-            /**
-             * @see Conjoon_Exception
-             */
-            require_once 'Conjoon/Exception.php';
-
-            throw new Conjoon_Exception(
-                "Cannot add file data - adapter not of type "
-                ."Zend_Db_Adapter_Pdo_Mysql, but ".get_class($db)
-            );
-        }
-
-        $statement = $db->prepare(
-            "INSERT INTO `".self::getTablePrefix() . "groupware_files`
-              (
-              `name`,
-              `mime_type`,
-              `key`,
-              `content`,
-              `groupware_files_folders_id`,
-              `storage_container`
-              )
-              VALUES
-              (
-                :name,
-                :mime_type,
-                :key,
-                :content,
-                :groupware_files_folders_id,
-                :storage_container
-            )"
+        $data = array(
+            'groupwareFilesFoldersId' => $folderId,
+            'name'                    => $name,
+            'resource'                => $content,
+            'mimeType'                => $type,
+            'key'                     => $key,
+            'storageContainer'        => $storageContainer
         );
 
-        $statement->bindParam(':key', $key, PDO::PARAM_STR);
-        $statement->bindParam( ':groupware_files_folders_id', $folderId,
-            PDO::PARAM_INT
-        );
-        $statement->bindParam(':name',$name, PDO::PARAM_STR);
-        $statement->bindParam(':mime_type', $type, PDO::PARAM_STR);
-        $statement->bindParam(':content', $content, PDO::PARAM_LOB);
-        $statement->bindParam(':storage_container', $storageContainer, PDO::PARAM_STR);
-
-        $statement->execute();
-
-        $result = $statement->rowCount();
-        if ($result > 0) {
-            return $db->lastInsertId();
+        if (is_resource($content)) {
+            return $this->addLobFromStream($data);
         }
-        return 0;
+
+        return $this->addLob($data);
     }
 
     /**
@@ -185,33 +122,19 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      *
      * @return array
      *
-     * @throws InvalidArgumentException
+     * @throws Conjoon_Data_Exception
+     *
+     * @deprecated use getLobData
      */
     public function getFileForKeyAndId($key, $id)
     {
-        $key = trim((string)$key);
-        $id  = (int)$id;
+        $data = array(
+            'includeResource'  => true,
+            'key'              => $key,
+            'id'               => $id
+        );
 
-        if ($key == "") {
-            throw new InvalidArgumentException("Invalid argument for key - $key");
-        }
-
-        if ($id <= 0) {
-            throw new InvalidArgumentException("Invalid argument for id - $id");
-        }
-
-        $select = $this->select()
-                  ->from($this)
-                  ->where('`id`=?', $id)
-                  ->where('`key`=?', $key);
-
-        $row = $this->fetchRow($select);
-
-        if (!$row) {
-            return array();
-        }
-
-        return $row->toArray();
+        return $this->getLobData($data);
     }
 
     /**
@@ -275,40 +198,18 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      *
      * @return array
      *
-     * @throws InvalidArgumentException
+     * @throws Conjoon_Data_Exception
+     *
+     * @deprecated use getLobData
      */
     public function getFileDataForKeyAndId($key, $id)
     {
-        $key = trim((string)$key);
-        $id  = (int)$id;
+        $data = array(
+            'key' => $key,
+            'id'  => $id
+        );
 
-        if ($key == "") {
-            throw new InvalidArgumentException("Invalid argument for key - $key");
-        }
-
-        if ($id <= 0) {
-            throw new InvalidArgumentException("Invalid argument for id - $id");
-        }
-
-        $select = $this->select()
-                  ->from($this,  array(
-                    'id',
-                    'key',
-                    'groupware_files_folders_id',
-                    'name',
-                    'mime_type',
-                    'storage_container'
-                  ))
-                  ->where('`id`=?', $id)
-                  ->where('`key`=?', $key);
-
-        $row = $this->fetchRow($select);
-
-        if (!$row) {
-            return array();
-        }
-
-        return $row->toArray();
+        return $this->getLobData($data);
     }
 
     /**
@@ -318,27 +219,421 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
      * @param string $key
      * @param integer $id
      *
-     * @return resource|string
+     * @return resource|null
      *
-     * @throws InvalidArgumentException
-     * @throws Conjoon_Exception
+     * @throws Conjoon_Data_Exception
+     *
+     * @deprecated use getLobAsStream
      */
     public function getFileContentAsStreamForKeyAndId($key, $id)
     {
-        $key = trim((string)$key);
-        $id  = (int)$id;
+        $data = array(
+            'key' => $key,
+            'id'  => $id
+        );
 
-        if ($key == "") {
-            throw new InvalidArgumentException(
-                "Invalid argument for key - $key"
+        return $this->getLobAsStream($data);
+    }
+
+// --------- Conjoon_Data_LobAccess
+
+    /**
+     * Copies a Lob.
+     * The following properties have to be specified in $data
+     * - id The id of the row from which the row should be copied
+     * - key The key of the row that should be copied
+     * - newKey The new key for the copied row
+     * - name optional the new name for the lob
+     * - storageContainer optional a name for the storageContainer
+     * if not specified, the one from the original entry will be used
+     * - groupwareFilesFoldersId optional, the new folderId for the file.
+     * If not specified, the folder from the original entry will be used
+     *
+     * @param array $data
+     *
+     * @return id the id of the newly inserted row, or null if this was not
+     * successfull
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function copyLob(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int'),
+            'key' => array('type' => 'string'),
+            'newKey' => array('type' => 'string')
+        ), $data, 'Conjoon_Data_Exception');
+
+        $name = isset($data['name']) ? $data['name'] : null;
+
+        $storageContainer = isset($data['storageContainer'])
+                            ? $data['storageContainer'] : null;
+
+        $folderId = isset($data['groupwareFilesFoldersId'])
+                ? $data['groupwareFilesFoldersId'] : null;
+
+        if ($folderId !== null) {
+            $folderId = (int)$folderId;
+            if ($folderId <= 0) {
+               throw new Conjoon_Data_Exception(
+                    "Invalid argument for groupwareFilesFoldersId - $groupwareFilesFoldersId"
+                );
+            }
+        }
+
+        if ($name !== null) {
+            $name = trim((string)$name);
+            if ($name == "") {
+               throw new Conjoon_Data_Exception(
+                    "Invalid argument for name - $name"
+                );
+            }
+        }
+
+        if ($storageContainer !== null) {
+            $storageContainer = trim((string)$storageContainer);
+            if ($storageContainer == "") {
+               throw new Conjoon_Data_Exception(
+                    "Invalid argument for storageContainer - $storageContainer"
+                );
+            }
+        }
+
+        $db = self::getDefaultAdapter();
+
+        /**
+         * @see Zend_Db_Adapter_Pdo_Mysql
+         */
+        require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
+
+        if (!($db instanceof Zend_Db_Adapter_Pdo_Mysql)) {
+            /**
+             * @see Conjoon_Exception
+             */
+            require_once 'Conjoon/Exception.php';
+
+            throw new Conjoon_Data_Exception(
+                "Cannot copy data - "
+                ."adapter not of type Zend_Db_Adapter_Pdo_Mysql, but ".
+                get_class($db)
             );
         }
-        if ($id <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid argument for id - $id"
+
+        $stmt = $db->query("INSERT INTO ".
+                   "`".self::getTablePrefix() . "groupware_files`
+                   (`key`, `groupware_files_folders_id`, `name`,
+                   `mime_type`, `content`, `storage_container`
+                   )
+                   (SELECT "
+                   .$db->quote($data['newKey'])." AS `key`, "
+
+                   .(!$folderId ? "`groupware_files_folders_id`, "
+                                : $db->quote($folderId)." AS `groupware_files_folders_id`, ")
+                   .(!$name ? "`name`," : $db->quote($name)." AS `name`,")
+                   ." `mime_type`, `content`,"
+                   .(!$storageContainer ? "`storage_container`"
+                                        : $db->quote($storageContainer)." AS `storage_container`")
+                   ." FROM "
+                   ."`".self::getTablePrefix() . "groupware_files`
+                   WHERE `id` = ".$data['id']
+                   ." AND `key`=".$db->quote($data['key']).")"
+        );
+
+        $result = $stmt->rowCount();
+        if ($result > 0) {
+            return $db->lastInsertId();
+        }
+        return null;
+    }
+
+    /**
+     * Moves a Lob.
+     * The following properties have to be specified in $data
+     * - id The id of the row from which the row should be moved
+     * - key The key of the row that should be moved
+     * - name optional the new name for the lob
+     * - groupwareFilesFoldersId the new folderId for the lob.
+     * If not specified, the folder from the original entry will be used
+     * - storageContainer optional a name for the storageContainer
+     * if not specified, the one from the original entry will be used
+     *
+     * @param array $data
+     *
+     * @return integer the id of the lob which should equal to the id passed
+     * in the data array, otherwise null
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function moveLob(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int'),
+            'key' => array('type' => 'string'),
+            'groupwareFilesFoldersId' => array('type' => 'int')
+        ), $data, 'Conjoon_Data_Exception');
+
+        $name = isset($data['name']) ? $data['name'] : null;
+
+        $storageContainer = isset($data['storageContainer'])
+                            ? $data['storageContainer'] : null;
+
+        if ($name !== null) {
+            $name = trim((string)$name);
+            if ($name == "") {
+               throw new Conjoon_Data_Exception(
+                    "Invalid argument for name - $name"
+                );
+            }
+        }
+
+        if ($storageContainer !== null) {
+            $storageContainer = trim((string)$storageContainer);
+            if ($storageContainer == "") {
+               throw new Conjoon_Data_Exception(
+                    "Invalid argument for storageContainer - $storageContainer"
+                );
+            }
+        }
+
+        $dataArray = array(
+            'groupware_files_folders_id' => $data['groupwareFilesFoldersId']
+        );
+
+        if ($name !== null) {
+            $dataArray['name'] = $name;
+        }
+
+        if ($name !== null) {
+            $dataArray['storage_container'] = $storageContainer;
+        }
+
+        if ($this->update($dataArray, 'id='.$data['id']." AND key='".$data['key']."'") > 0) {
+            return $data['id'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Deletes a lob for an id.
+     * The following properties need to be available in $data
+     * - id the id of the row
+     *
+     * @param int  $data
+     *
+     * @return bool true on success, otherwise false
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function deleteLobForId($id)
+    {
+        $data = array('id' => $id);
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('value' => $id, 'type' => 'int')
+        ), $data, 'Conjoon_Data_Exception');
+
+        $id = $data['id'];
+
+        if ($this->delete('id='.$id) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Deletes a lob.
+     * The following properties need to be available in $data
+     * - id the id of the row
+     *
+     * @param array $data
+     *
+     * @return bool true on success, otherwise false
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function deleteLob(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int')
+        ), $data, 'Conjoon_Data_Exception');
+
+        if ($this->delete('id='.$data['id']) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Sets the name for a lob.
+     * The following properties need to be available in $data
+     * - id the id of the row
+     * - key the key of the row
+     * - name The new name for the lob
+     *
+     * @param array $data
+     *
+     * @return bool true on success, otherwise false
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function setLobName(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int'),
+            'key' => array('type' => 'string'),
+            'name' => array('type' => 'string')
+        ), $data, 'Conjoon_Data_Exception');
+
+        if ($this->update(array(
+                'name' => $data['name']
+            ), 'id='.$data['id']." AND key='".$data['key']."'") > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns the lob's content.
+     * The following properties need to be available in $data
+     * - id the id of the row
+     * - key the key of the row
+     *
+     * @param array $data
+     *
+     * @return string
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function getLobContent(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int'),
+            'key' => array('type' => 'string')
+        ), $data, 'Conjoon_Data_Exception');
+
+        $select = $this->select()
+                  ->from($this,  array(
+                    'content'
+                  ))
+                  ->where('`id`=?', $data['id'])
+                  ->where('`key`=?', $data['key']);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return "";
+        }
+
+        return (string)$row->content;
+    }
+
+    /**
+     * Returns the meta data for the lob.
+     * - id the id of the row
+     * - key the key of the row
+     * - includeResource true to return the content. Content will be available
+     * in the "resource" property of the returned array
+     *
+     * @param array $data
+     *
+     * @return array or null if not exists
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function getLobData(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int'),
+            'key' => array('type' => 'string')
+        ), $data, 'Conjoon_Data_Exception');
+
+        $fields = array(
+            'id',
+            'groupware_files_folders_id',
+            'key',
+            'name',
+            'mime_type',
+            'storage_container',
+        );
+
+        if (isset($data['includeResource']) && $data['includeResource'] === true) {
+            $fields[] = 'content AS resource';
+        }
+
+        $select = $this->select()
+                  ->from($this,  $fields)
+                  ->where('`id`=?',  $data['id'])
+                  ->where('`key`=?', $data['key']);
+
+        $row = $this->fetchRow($select);
+
+        if (!$row || empty($row)) {
+            return null;
+        }
+
+        return $row->toArray();
+    }
+
+    /**
+     * Returns a stream resource for a lob.
+     * - id the id of the row
+     * - key the key of the row
+     *
+     * @param array $data
+     *
+     * @return resource|null
+     *
+     * @throws Conjoon_Data_Exception
+     * @see isStreamAccessSupported
+     */
+    public function getLobAsStream(Array $data)
+    {
+        if (!$this->isStreamAccessSupported()) {
+            throw new Conjoon_Data_Exception(
+                "Stream access for ".get_class(self)." is not supported."
             );
         }
 
+        Conjoon_Util_ArgumentCheck::check(array(
+            'id' => array('type' => 'int'),
+            'key' => array('type' => 'string')
+        ), $data, 'Conjoon_Data_Exception');
+
+        $db = self::getDefaultAdapter();
+
+        $statement = $db->prepare(
+            "SELECT `content` FROM `".self::getTablePrefix() . "groupware_files`
+             WHERE `key` = :key AND `id` = :id"
+        );
+
+
+        $statement->bindParam(':key', $data['key'], PDO::PARAM_STR);
+        $statement->bindParam( ':id', $data['id'],  PDO::PARAM_INT);
+
+        $statement->execute();
+
+        $statement->bindColumn('content', $content, PDO::PARAM_LOB);
+
+        $statement->fetch(PDO::FETCH_BOUND);
+
+        if (!is_resource($content)) {
+            return null;
+        }
+
+        return $content;
+    }
+
+    /**
+     * Returns true if this class is capable of returning a lob as a
+     * stream, otherwise false
+     *
+     * @return bool
+     */
+    public function isStreamAccessSupported()
+    {
         $db = self::getDefaultAdapter();
 
         /**
@@ -359,22 +654,156 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table {
             );
         }
 
-        $statement = $db->prepare(
-            "SELECT `content` FROM `".self::getTablePrefix() . "groupware_files`
-             WHERE `key` = :key AND `id` = :id"
-        );
-        $statement->setFetchMode(PDO::FETCH_BOUND);
+        $version = $db->getServerVersion();
 
-        $statement->bindParam(':key', $key, PDO::PARAM_STR);
-        $statement->bindParam( ':id', $id,  PDO::PARAM_INT);
+        if (!$version) {
+            return false;
+        }
+
+        $res = version_compare($version, '5.1');
+
+        return $res < 0;
+    }
+
+    /**
+     * Returns true if this class is capable of writing a lob as a
+     * stream, otherwise false
+     *
+     * @return bool
+     */
+    public function isStreamWritingSupported()
+    {
+        return $this->isStreamAccessSupported();
+    }
+
+    /**
+     * Saves the lob specified in $data
+     * The following properties must be available in $data:
+     * - groupwareFilesFoldersId
+     * - key
+     * - name
+     * - mimeType
+     * - resource
+     * - storageContainer
+     *
+     * @param array $data
+     *
+     * @return mixed a unique identifier for this lob, or null
+     *
+     * @throws Conjoon_Data_Exception
+     */
+    public function addLob(Array $data)
+    {
+        Conjoon_Util_ArgumentCheck::check(array(
+            'groupwareFilesFoldersId' => array('type' => 'int'),
+            'key' => array('type' => 'string'),
+            'name' => array('type' => 'string'),
+            'mimeType' => array('type' => 'string'),
+            'storageContainer' => array('type' => 'string', 'allowEmpty' => true)
+        ), $data, 'Conjoon_Data_Exception');
+
+        if (isset($data['resource']) && is_resource($data['resource'])) {
+            throw new Conjoon_Exception(
+                "Passed property resource must not be a resource"
+            );
+        }
+
+        $db = self::getDefaultAdapter();
+
+        $res = $this->insert(array(
+            'groupware_files_folders_id' => $data['groupwareFilesFoldersId'],
+            'key'                        => $data['key'],
+            'name'                       => $data['name'],
+            'mime_type'                  => $data['mimeType'],
+            'storage_container'          => $data['storageContainer'],
+            'content'                    => $data['resource'] ? $data['resource'] : ""
+        ));
+
+        if (!$res || $res < 0) {
+            return null;
+        }
+
+        return (int)$res;
+    }
+
+    /**
+     * Adds the lob from a stream.
+     * - groupwareFilesFoldersId
+     * - key
+     * - name
+     * - mimeType
+     * - resource
+     * - storageContainer
+     *
+     * @param array $data
+     *
+     * @return mixed a unique identifier for this lob, or null
+     *
+     * @throws Conjoon_Data_Exception
+     * @see isStreamWritingSupported
+     */
+    public function addLobFromStream(Array $data)
+    {
+        if (!$this->isStreamWritingSupported()) {
+            throw new Conjoon_Data_Exception(
+                "Stream writing for ".get_class(self)." is not supported."
+            );
+        }
+
+        Conjoon_Util_ArgumentCheck::check(array(
+            'groupwareFilesFoldersId' => array('type' => 'int'),
+            'key' => array('type' => 'string'),
+            'name' => array('type' => 'string'),
+            'mimeType' => array('type' => 'string'),
+            'storageContainer' => array('type' => 'string', 'allowEmpty' => true)
+        ), $data, 'Conjoon_Data_Exception');
+
+        if (isset($data['resource']) && !is_resource($data['resource'])) {
+            throw new Conjoon_Exception(
+                "Passed property resource must be a resource"
+            );
+        }
+
+        $db = self::getDefaultAdapter();
+
+        $statement = $db->prepare(
+            "INSERT INTO `".self::getTablePrefix() . "groupware_files`
+              (
+              `name`,
+              `mime_type`,
+              `key`,
+              `content`,
+              `groupware_files_folders_id`,
+              `storage_container`
+              )
+              VALUES
+              (
+                :name,
+                :mime_type,
+                :key,
+                :content,
+                :groupware_files_folders_id,
+                :storage_container
+            )"
+        );
+
+        $statement->bindParam(':key', $data['key'], PDO::PARAM_STR);
+        $statement->bindParam( ':groupware_files_folders_id', $data['groupwareFilesFoldersId'],
+            PDO::PARAM_INT
+        );
+        $statement->bindParam(':name',$data['name'], PDO::PARAM_STR);
+        $statement->bindParam(':mime_type', $data['mimeType'], PDO::PARAM_STR);
+        $statement->bindParam(':content', $data['resource'], PDO::PARAM_LOB);
+        $statement->bindParam(':storage_container', $data['storageContainer'], PDO::PARAM_STR);
 
         $statement->execute();
 
-        $statement->bindColumn('content', $content, PDO::PARAM_LOB);
-
-        $statement->fetch();
-
-        return $content;
+        $result = $statement->rowCount();
+        if ($result > 0) {
+            return $db->lastInsertId();
+        }
+        return null;
     }
+
 
 }
