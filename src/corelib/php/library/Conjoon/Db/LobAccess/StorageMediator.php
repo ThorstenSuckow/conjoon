@@ -25,10 +25,20 @@ require_once 'Conjoon/Data/Exception.php';
 require_once 'Conjoon/Util/Array.php';
 
 /**
- * An abstract class to mediate between two classes that implement
- * Conjoon_Data_LobAccess to share storing of LOBs in either the first or
- * the second Conjoon_Data_LobAccess instance.
- *
+/**
+ * A storage mediator is responsible for determining whether to store
+ * lobs in the database or in the file system. It takes care of processing
+ * various operations related to lobs such as retrieving their content and
+ * properly storing them, while maintaining relations between the db data
+ * and the lob itself, no matter if it has been saved in the filesystem
+ * or the db.
+ * While configuring the system is up to the server administrator, a mediator
+ * is able to provide fallbacks if the used instances of Conjoon_File_LobAccess
+ * and Conjoon_Db_LobAccess have been implemented properly: As long as the
+ * hint for the storage_container maintains valid, lob data can be retrieved from
+ * the filesystem even if the application's configuration is set to storing the
+ * lobs in the database (this goes for lobs that have been saved before
+ * configuration changed).
  *
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
