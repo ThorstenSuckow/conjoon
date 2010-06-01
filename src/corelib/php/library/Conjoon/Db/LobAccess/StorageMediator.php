@@ -18,6 +18,10 @@
  */
 require_once 'Conjoon/Data/Exception.php';
 
+/**
+ * @see Conjoon_Argument_Check
+ */
+require_once 'Conjoon/Argument/Check.php';
 
 /**
  * @see Conjoon_Util_Array
@@ -116,10 +120,10 @@ abstract class Conjoon_Db_LobAccess_StorageMediator {
      */
     public function getLobContentWithData(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $lobData = $this->_dbLobAccess->getLobData($data);
 
@@ -338,7 +342,8 @@ abstract class Conjoon_Db_LobAccess_StorageMediator {
 
         Conjoon_Util_Array::apply($data, array(
             'id'       => $id,
-            'resource' => $resource
+            'resource' => $resource,
+            'dbResult' => $id
         ));
 
         $file     = $this->_generateFileNameStringForLob($data);

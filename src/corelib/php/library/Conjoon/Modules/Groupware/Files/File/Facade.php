@@ -24,9 +24,9 @@ require_once 'Conjoon/Db/LobAccess/StorageMediator.php';
 require_once 'Conjoon/File/LobAccess.php';
 
 /**
- * @see Conjoon_Util_ArgumentCheck
+ * @see Conjoon_Argument_Check
  */
-require_once 'Conjoon/Util/ArgumentCheck.php';
+require_once 'Conjoon/Argument/Check.php';
 
 /**
  *
@@ -93,12 +93,12 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
             'mimeType'                => $type
         );
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'groupwareFilesFoldersId' => array('type' => 'int'),
             'userId' => array('type' => 'int'),
             'name' => array('type' => 'string'),
             'mimeType' => array('type' => 'string'),
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $lob = $this->_createLob($data, true, true);
 
@@ -137,9 +137,9 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
             'userId'          => $userId
         );
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'userId' => array('type' => 'int')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
 
         if (!$this->isFileDownloadableForUserId($data['id'], $data['userId'])) {
@@ -168,10 +168,10 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
             'userId' => $userId
         );
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id'     => array('type' => 'int'),
             'userId' => array('type' => 'int')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $model = $this->_getFileModel();
 
@@ -245,10 +245,10 @@ class Conjoon_Modules_Groupware_Files_File_Facade extends Conjoon_Db_LobAccess_S
      */
     protected function _generateFileNameStringForLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id'  =>  array('type' => 'int'),
             'key' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         return $data['id'] . '-' . $data['key'];
     }

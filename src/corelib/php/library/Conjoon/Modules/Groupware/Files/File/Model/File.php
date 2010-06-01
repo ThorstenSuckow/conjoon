@@ -29,9 +29,9 @@ require_once 'Conjoon/Db/LobAccess.php';
 require_once 'Conjoon/Data/Exception.php';
 
 /**
- * @see Conjoon_Util_ArgumentCheck
+ * @see Conjoon_Argument_Check
  */
-require_once 'Conjoon/Util/ArgumentCheck.php';
+require_once 'Conjoon/Argument/Check.php';
 
 /**
  * Table data gateway. Models the table <tt>groupware_files</tt>.
@@ -258,11 +258,11 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function copyLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string'),
             'newKey' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $name = isset($data['name']) ? $data['name'] : null;
 
@@ -366,11 +366,11 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function moveLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string'),
             'groupwareFilesFoldersId' => array('type' => 'int')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $name = isset($data['name']) ? $data['name'] : null;
 
@@ -428,9 +428,9 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
     public function deleteLobForId($id)
     {
         $data = array('id' => $id);
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('value' => $id, 'type' => 'int')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $id = $data['id'];
 
@@ -454,9 +454,9 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function deleteLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         if ($this->delete('id='.$data['id']) > 0) {
             return true;
@@ -480,11 +480,11 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function setLobName(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string'),
             'name' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         if ($this->update(array(
                 'name' => $data['name']
@@ -509,10 +509,10 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function getLobContent(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $select = $this->select()
                   ->from($this,  array(
@@ -545,10 +545,10 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function getLobData(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $fields = array(
             'id',
@@ -597,10 +597,10 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
             );
         }
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'id' => array('type' => 'int'),
             'key' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $db = self::getDefaultAdapter();
 
@@ -694,13 +694,13 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
      */
     public function addLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'groupwareFilesFoldersId' => array('type' => 'int'),
             'key' => array('type' => 'string'),
             'name' => array('type' => 'string'),
             'mimeType' => array('type' => 'string'),
             'storageContainer' => array('type' => 'string', 'allowEmpty' => true)
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         if (isset($data['resource']) && is_resource($data['resource'])) {
             throw new Conjoon_Exception(
@@ -750,13 +750,13 @@ class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
             );
         }
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'groupwareFilesFoldersId' => array('type' => 'int'),
             'key' => array('type' => 'string'),
             'name' => array('type' => 'string'),
             'mimeType' => array('type' => 'string'),
             'storageContainer' => array('type' => 'string', 'allowEmpty' => true)
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         if (isset($data['resource']) && !is_resource($data['resource'])) {
             throw new Conjoon_Exception(

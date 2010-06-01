@@ -19,9 +19,9 @@
 require_once 'Conjoon/Data/LobAccess.php';
 
 /**
- * @see Conjoon_Util_ArgumentCheck
+ * @see Conjoon_Argument_Check
  */
-require_once 'Conjoon/Util/ArgumentCheck.php';
+require_once 'Conjoon/Argument/Check.php';
 
 /**
  * @see Conjoon_Util_Array
@@ -102,9 +102,9 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
      */
     public function deleteLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $path = $this->_sanitizePath($data['path']);
 
@@ -153,10 +153,10 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
      */
     public function setLobName(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string'),
             'name' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $path = $this->_sanitizePath($data['path']);
         $to   = $this->_sanitizePath(dirname($path));
@@ -181,9 +181,9 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
      */
     public function getLobContent(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $path = $this->_sanitizePath($data['path']);
 
@@ -232,9 +232,9 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
      */
     public function getLobData(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $path = $this->_sanitizePath($data['path']);
 
@@ -283,9 +283,9 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
             );
         }
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $path = $this->_sanitizePath($path);
 
@@ -353,9 +353,9 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
      */
     public function addLob(Array $data)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         if (!isset($data['resource'])) {
             throw new Conjoon_Data_Exception(
@@ -413,9 +413,9 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
             );
         }
 
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'path' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         if (!isset($data['resource'])) {
             throw new Conjoon_Data_Exception(
@@ -463,11 +463,11 @@ class Conjoon_File_LobAccess implements Conjoon_Data_LobAccess {
 
     protected function _moveOrCopyLob(Array $data, $type)
     {
-        Conjoon_Util_ArgumentCheck::check(array(
+        Conjoon_Argument_Check::check(array(
             'from' => array('type' => 'string'),
             'to'   => array('type' => 'string'),
             'name' => array('type' => 'string')
-        ), $data, 'Conjoon_Data_Exception');
+        ), $data);
 
         $from = $this->_sanitizePath($data['from']);
         $to   = $this->_sanitizePath($data['to']);
