@@ -14,6 +14,11 @@
  */
 
 /**
+ * @see Conjoon_Data_LobAccess
+ */
+require_once 'Conjoon/Data/LobAccess.php';
+
+/**
  * An interface for objects that gain read/write access to LOBs.
  *
  *
