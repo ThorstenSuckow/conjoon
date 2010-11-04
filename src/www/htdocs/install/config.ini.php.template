@@ -81,10 +81,6 @@ edition = {EDITION}
 ;;;   APPLICATION    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [application]
-; The API-Key for youtube chromeless API. Change this if you have
-; multiple users accessing your application to an API-key of your own.
-service.youtube.chromeless.apiKey = AI39si45RiG5JYvA3RglrDhw4d7S91erkkKH2HWXjdfoaOm4Q4vDC5OYnn8sjoPDILyhZGbiJ_Eawt_dAruGg3RMkVInXCrjxg
-
 ; Since V0.1RC1, conjoon is able to detect if the Ext frontend has merged
 ; multiple requests into one, split them up and process them as if each
 ; was a single request made to the webserver.

@@ -65,7 +65,7 @@ final class Conjoon_BeanContext_Decorator {
     protected $_decoratedMethods = array();
 
     /**
-     * @var mixed
+     * @var Zend_Db_Table
      */
     protected $_decoratedModel = null;
 

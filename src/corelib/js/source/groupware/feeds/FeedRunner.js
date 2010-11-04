@@ -24,7 +24,7 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
 
     var store = new Ext.data.Store({
         autoLoad   : false,
-        reader     : new com.conjoon.cudgets.data.JsonReader({
+        reader     : new Ext.data.JsonReader({
                           root: 'items',
                           id : 'id'
                       }, com.conjoon.groupware.feeds.ItemRecord),
@@ -32,10 +32,8 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
             removeold : false,
             timeout   : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
         },
-        proxy   : new com.conjoon.cudgets.data.DirectProxy({
-            api : {
-                read : com.conjoon.groupware.provider.feedsItem.getFeedItems
-            },
+        proxy : new Ext.data.HttpProxy({
+            url      : './groupware/feeds.item/get.feed.items/format/json',
             timeout  : com.conjoon.groupware.feeds.AccountStore.getTimeoutSum()
         })
     });
@@ -133,16 +131,14 @@ com.conjoon.groupware.feeds.FeedRunner = function(){
 
         var timeout = com.conjoon.groupware.feeds.AccountStore.getTimeoutSum();
 
-        if (store.baseParams.timeout != timeout) {
-            store.baseParams.timeout = timeout;
-            com.conjoon.groupware.feeds.FeedStore.setProviderTimeout(timeout);
-        }
+        store.baseParams.timeout = timeout;
+        store.proxy.conn.timeout = timeout;
 
         if (!firstTimeLoaded) {
-            store.load({params : {timeout : timeout, removeold : false}});
+            store.load();
             firstTimeLoaded = true;
         } else {
-            store.reload({params : {timeout : timeout, removeold : false}});
+            store.reload();
         }
 
     };
