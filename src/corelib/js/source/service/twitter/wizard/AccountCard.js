@@ -46,10 +46,11 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
          };
 
         this.nameField = new Ext.form.TextField({
-            fieldLabel : com.conjoon.Gettext.gettext("Name"),
+            fieldLabel : "",
             allowBlank : false,
             validator  : this.validateAccountName.createDelegate(this),
-            name       : 'name'
+            name       : 'name',
+            hidden     : true
         });
 
 
@@ -64,10 +65,18 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
             new com.conjoon.groupware.util.FormIntro({
                 style     : 'margin:10px 0 15px 0',
                 labelText : com.conjoon.Gettext.gettext("Account settings"),
-                text      : com.conjoon.Gettext.gettext("Enter your Twitter name and your password here. You need to have this account already registered at the Twitter service.<br />Make sure you did not already import this account.")
+                text      : com.conjoon.Gettext.gettext("By clicking on the button below, you will be redirected to the Twitter service, where you can chose whether conjoon may access your Twitter account or not. If you decide to allow conjoon access to your Twitter account, only a security token will be stored along with your username, but not your password.")
             }),
-            this.nameField,
-            this.passwordField
+            new Ext.Button({
+                validator : this.validateAccountName.createDelegate(this),
+                text      : com.conjoon.Gettext.gettext("Click here to start authorization at Twitter"),
+                listeners  : {
+                    click : function(button) {
+                        button.setDisabled(true);
+                        window.open('./service/twitter.account/authorize.account');
+                    }
+               },
+            }), this.nameField
         ];
 
         com.conjoon.service.twitter.wizard.AccountCard.superclass.initComponent.call(this);
@@ -75,6 +84,7 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
 
     validateAccountName : function(value)
     {
+        return false;
         value = value.trim();
 
         if (value === "") {

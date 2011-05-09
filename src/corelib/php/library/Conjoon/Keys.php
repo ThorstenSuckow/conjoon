@@ -35,6 +35,9 @@ interface Conjoon_Keys {
 // -------- session reception controller
     const SESSION_CONTROLLER_RECEPTION = 'com.conjoon.session.receptionController';
 
+// -------- session twitter oauth
+    const SESSION_SERVICE_TWITTER_OAUTH = 'com.conjoon.service.twitter.oauth';
+
 // -------- cache key emails
     const CACHE_EMAIL_MESSAGE = 'com.conjoon.cache.email.message';
 

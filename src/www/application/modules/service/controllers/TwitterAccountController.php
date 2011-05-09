@@ -306,4 +306,79 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $this->view->updated = $updated;
     }
 
+    /**
+     * Action redirects to Twitter for letting a user decide whether
+     * he wants conjoon give access to his Twitter Account via oauth.
+     *
+     */
+    public function authorizeAccountAction()
+    {
+        require_once 'Zend/Session/Namespace.php';
+        require_once 'Conjoon/Keys.php';
+
+        $sessionOauth = new Zend_Session_Namespace(
+            Conjoon_Keys::SESSION_SERVICE_TWITTER_OAUTH
+        );
+
+        require_once 'Zend/Oauth/Consumer.php';
+
+        $options = array(
+            'callbackUrl'    => 'http://01fix.conjoon.de/service/twitter.account/authorize.okay',
+            'siteUrl'        => 'http://twitter.com/oauth',
+            'consumerKey'    => 'r6wFIOHrhaoHoNmJeA',
+            'consumerSecret' => 'qAvjmC33eJuDJLhhV1fJTLUmytNeEp5y1bW58heSIM',
+        );
+
+        $consumer = new Zend_Oauth_Consumer($options);
+
+        $token = $consumer->getRequestToken();
+        $sessionOauth->requestToken = serialize($token);
+        $consumer->redirect();
+        die();
+
+        /*if (isset($_SESSION['ACCESS_TOKEN'])) {
+            $token = unserialize($_SESSION['ACCESS_TOKEN']);
+            $client = $token->getHttpClient($options);
+
+            require_once 'Zend/Service/Twitter.php';
+            $twitter = new Zend_Service_Twitter();
+            $twitter->setLocalHttpClient($client);
+            $response = $twitter->status->update('Nachricht gesendet authentifiziert via OAuth');
+        }*/
+
+    }
+
+    public function authorizeOkayAction()
+    {
+        require_once 'Zend/Session/Namespace.php';
+        require_once 'Conjoon/Keys.php';
+
+        $sessionOauth = new Zend_Session_Namespace(
+            Conjoon_Keys::SESSION_SERVICE_TWITTER_OAUTH
+        );
+        require_once 'Zend/Oauth/Consumer.php';
+
+        $options = array(
+            'callbackUrl'    => 'http://01fix.conjoon.de/service/twitter.account/authorize.okay',
+            'siteUrl'        => 'http://twitter.com/oauth',
+            'consumerKey'    => 'r6wFIOHrhaoHoNmJeA',
+            'consumerSecret' => 'qAvjmC33eJuDJLhhV1fJTLUmytNeEp5y1bW58heSIM'
+        );
+
+        $consumer = new Zend_Oauth_Consumer($options);
+
+        echo "<pre>";
+
+        $accessToken = $consumer->getAccessToken(
+            $_GET, unserialize($sessionOauth->requestToken)
+        );
+
+        $_SESSION['ACCESS_TOKEN'] = serialize($token);
+        var_dump($token);
+        unset($_SESSION['REQUEST_TOKEN']);
+
+
+        var_dump($_GET);
+        die();
+    }
 }
