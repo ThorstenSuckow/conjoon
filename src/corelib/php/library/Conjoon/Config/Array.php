@@ -57,8 +57,12 @@ class Conjoon_Config_Array extends Zend_Config_Ini {
      * @throws Zend_Config_Exception
      * @return array
      */
-    protected function _loadIniFile(Array $config)
+    protected function _loadIniFile($config)
     {
+        if (!is_array($config)) {
+            throw new InvalidArgumentException("\"config\" must be an array");
+        }
+
         $loaded = $config;
 
         $iniArray = array();
