@@ -58,8 +58,7 @@ com.conjoon.service.twitter.optionsDialog.DialogListener = Ext.extend(
     onRender : function()
     {
         if (com.conjoon.service.twitter.data.AccountStore.getInstance().getRange().length == 0) {
-            var wizard = new com.conjoon.service.twitter.wizard.AccountWizard();
-            wizard.show.defer(500, wizard);
+            com.conjoon.service.twitter.wizard.AccountWizardBaton.show({defer : 500});
         }
     }
 

@@ -38,8 +38,7 @@ com.conjoon.service.twitter.optionsDialog.ContainerListener = Ext.extend(
      */
     onAddEntryButtonClick : function(button)
     {
-        var wizard = new com.conjoon.service.twitter.wizard.AccountWizard();
-        wizard.show();
+        com.conjoon.service.twitter.wizard.AccountWizardBaton.show();
     }
 
 

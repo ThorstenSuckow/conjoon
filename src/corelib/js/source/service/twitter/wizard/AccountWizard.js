@@ -15,6 +15,11 @@
 Ext.namespace('com.conjoon.service.twitter.wizard');
 
 /**
+ * Do not create instances of this class directly, instead, use the singleton
+ * com.conjoon.service.twitter.wizard.AccountWizardBaton, since functionality
+ * in this implementation will open new browser windows, which will then refer
+ * to methods in this class. The browser window is unaware of instances of this
+ * class and needs to communicate with the baton to get things working right.
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
