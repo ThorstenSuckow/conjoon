@@ -19,6 +19,11 @@
 require_once 'Conjoon/Service/Twitter.php';
 
 /**
+ * @see Zend_Oauth_Token_Access
+ */
+require_once 'Zend/Oauth/Token/Access.php';
+
+/**
  * This class proxies requests to the Twitter service and takes care
  * of returning appropriate and easy to use objects depending on the
  * requested actions.
@@ -33,9 +38,9 @@ class Conjoon_Service_Twitter_Proxy  {
      */
     private $_twitter;
 
-    public function __construct($username, $password)
+    public function __construct(Array $options)
     {
-        $this->_twitter = new Conjoon_Service_Twitter($username, $password);
+        $this->_twitter = new Conjoon_Service_Twitter($options);
     }
 
     /**
@@ -76,9 +81,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$response->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -132,9 +135,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$response->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -171,9 +172,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$response->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -222,9 +221,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$favoriteStatus->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -306,9 +303,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$destroyStatus->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -389,9 +384,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$tweet->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -480,9 +473,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$tweets->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -583,9 +574,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$tweets->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -681,9 +670,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$tweets->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }
@@ -730,9 +717,7 @@ class Conjoon_Service_Twitter_Proxy  {
 
             return Conjoon_Error_Factory::createError(
                 (string)$tweet->error .
-                " [username: \"" .$this->_twitter->getUsername() . "\"; ".
-                " using password: " . ($this->_twitter->getPassword() != null ? "yes" : "no") .
-                "]",
+                " [username: \"" .$this->_twitter->getUsername() . "\"]",
                 Conjoon_Error::LEVEL_ERROR
             );
         }

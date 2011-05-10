@@ -18,7 +18,7 @@ class Conjoon_Modules_Service_Twitter_Account_Dto {
     public $id;
     public $userId;
     public $name;
-    public $password;
+    public $accessToken;
     public $updateInterval;
     public $twitterId;
     public $twitterName;

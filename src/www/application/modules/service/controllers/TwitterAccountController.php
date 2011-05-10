@@ -350,35 +350,74 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
     public function authorizeOkayAction()
     {
+        $this->view->title = "conjoon - Twitter Account Authorization";
+
         require_once 'Zend/Session/Namespace.php';
         require_once 'Conjoon/Keys.php';
 
         $sessionOauth = new Zend_Session_Namespace(
             Conjoon_Keys::SESSION_SERVICE_TWITTER_OAUTH
         );
-        require_once 'Zend/Oauth/Consumer.php';
 
-        $options = array(
-            'callbackUrl'    => 'http://01fix.conjoon.de/service/twitter.account/authorize.okay',
-            'siteUrl'        => 'http://twitter.com/oauth',
-            'consumerKey'    => 'r6wFIOHrhaoHoNmJeA',
-            'consumerSecret' => 'qAvjmC33eJuDJLhhV1fJTLUmytNeEp5y1bW58heSIM'
-        );
+        if (!isset($sessionOauth->accessToken)) {
 
-        $consumer = new Zend_Oauth_Consumer($options);
+            require_once 'Zend/Session/Namespace.php';
+            require_once 'Conjoon/Keys.php';
 
-        echo "<pre>";
+            $sessionOauth = new Zend_Session_Namespace(
+                Conjoon_Keys::SESSION_SERVICE_TWITTER_OAUTH
+            );
+            require_once 'Zend/Oauth/Consumer.php';
 
-        $accessToken = $consumer->getAccessToken(
-            $_GET, unserialize($sessionOauth->requestToken)
-        );
+            $options = array(
+                'callbackUrl'    => 'http://01fix.conjoon.de/service/twitter.account/authorize.okay',
+                'siteUrl'        => 'http://twitter.com/oauth',
+                'consumerKey'    => 'r6wFIOHrhaoHoNmJeA',
+                'consumerSecret' => 'qAvjmC33eJuDJLhhV1fJTLUmytNeEp5y1bW58heSIM'
+            );
 
-        $_SESSION['ACCESS_TOKEN'] = serialize($token);
-        var_dump($token);
-        unset($_SESSION['REQUEST_TOKEN']);
+            $consumer = new Zend_Oauth_Consumer($options);
+
+            try {
+                $accessToken = $consumer->getAccessToken(
+                    $_GET, unserialize($sessionOauth->requestToken)
+                );
+            } catch (Zend_Oauth_Exception $zoe) {
+                die("ERROR");
+            }
+
+            $sessionOauth->accessToken = serialize($accessToken);
+            //var_dump($accessToken);
+            die();
 
 
-        var_dump($_GET);
-        die();
+        } else {
+
+            require_once 'Zend/Oauth/Token/Access.php';
+
+            echo "<pre>";
+            $accessToken = unserialize($sessionOauth->accessToken);
+            var_dump($accessToken->getParam('screen_name'));
+            var_dump($accessToken->getParam('user_id'));
+
+            require_once 'Conjoon/Service/Twitter/Proxy.php';
+
+
+            $twitter = new Conjoon_Service_Twitter_Proxy(array(
+                'username'    => $accessToken->getParam('screen_name'),
+                'accessToken' => $accessToken
+            ));
+            $dto = $twitter->accountVerifyCredentials();
+
+            if ($dto instanceof Conjoon_Error) {
+                $this->view->success           = false;
+                $this->view->error             = $dto->getDto();
+                $this->view->connectionFailure = true;
+                return;
+            }
+
+            $this->view->success = true;
+            $this->view->account = $dto;
+        }
     }
 }
