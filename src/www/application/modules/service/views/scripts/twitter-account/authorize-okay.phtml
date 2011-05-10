@@ -1,0 +1,117 @@
+<?php
+/**
+ * conjoon
+ * (c) 2002-2011 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title><?php echo $this->title; ?></title>
+    <link rel="shortcut icon" href="./favicon.png" type="image/png" />
+    <link rel="stylesheet" type="text/css" href="./../../js/extjs/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="./../../js/conjoon/resources/css/conjoon-all.css" />
+
+</head>
+
+<body>
+<!-- SPLASHSCREEN -->
+<div id="DOM:com.conjoon.groupware.Startup" class="com-conjoon-service-Twitter-oauth-wrap">
+ <div class="x-shadow" style="margin-top:-150px;margin-left:-248px;z-index: 9002; left: 50%; top: 50%; height:330px;width:502px; display: block;">
+  <div class="xst">
+   <div class="xstl"></div>
+   <div class="xstc" style="width: 490px;"></div>
+   <div class="xstr"></div>
+  </div>
+  <div class="xsc" style="height: 322px;">
+   <div class="xsml"></div>
+   <div class="xsmc" style="width: 490px;"></div>
+   <div class="xsmr"></div>
+  </div>
+  <div class="xsb">
+   <div class="xsbl"></div>
+   <div class="xsbc" style="width: 490px;"></div>
+   <div class="xsbr"></div>
+  </div>
+ </div>
+
+ <div class="x-window" style="z-index: 9003;position:absolute;left:50%;top:50%;margin-top:-157px;margin-left:-248px;height:315px;width:494px;">
+  <div class="x-window-tl x-panel-noheader"><div class="x-window-tr"><div class="x-window-tc" style="height:8px;"></div></div></div>
+   <div class="x-window-bwrap">
+    <div class="x-window-ml"><div class="x-window-mr"><div class="x-window-mc">
+     <div class="com-conjoon-service-Twitter-oauth-body">
+      <div class="appName">conjoon - Twitter Account Authorization</div>
+      <div class="accountInfoWrap">
+       <div class="accountInfo" style="background-image:url(<?php echo $this->account->twitterProfileImageUrl; ?>);">
+
+        <?php if ($this->success === true) { ?>
+           <div class="name"><?php echo $this->account->twitterName; ?></div>
+           <div class="twitterInfo">
+            <span class="screenName">@<?php echo $this->account->twitterScreenName; ?></span>
+            <span class="location"><?php echo $this->account->twitterLocation; ?></span>
+           </div>
+           <div class="description"><?php echo $this->account->twitterDescription; ?></div>
+
+           <div class="successInfo">Congratulations! You have successfully added this account. You can now close this window.</div>
+        <?php } else { ?>
+           <div class="failureInfo">I'm sorry, something went wrong :( The requested account could not be authorized.</div>
+        <?php } ?>
+
+       </div>
+      </div>
+      <div class="errorPanel"
+           <?php if ($this->success === false && $this->error) { ?>style="display:block" <?php } ?>
+      >
+        <div class="textContainer">
+            <span class="notice">
+             <?php echo ($this->error ? $this->error->type : ""); ?>
+            </span>
+            <div class="message">
+             <?php echo ($this->error ? $this->error->message : ""); ?>
+            </div>
+        </div>
+      </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="x-window-bl x-panel-nofooter"><div class="x-window-br"><div class="x-window-bc"></div></div></div>
+ </div>
+
+</div>
+<!-- SPLASHSCREEN -->
+
+<script type="text/javascript">
+
+    /*public $id;
+    public $userId;
+    public $name;
+    public $accessToken;
+    public $updateInterval;
+    public $twitterId;
+    public $twitterName;
+    public $twitterScreenName;
+    public $twitterLocation;
+    public $twitterProfileImageUrl;
+    public $twitterUrl;
+    public $twitterProtected;
+    public $twitterDescription;
+    public $twitterFollowersCount;*/
+
+</script>
+
+</body>
+</html>
