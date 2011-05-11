@@ -25,15 +25,15 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
 
     nameField : null,
 
-    passwordField : null,
+    twitterIdField : null,
 
-    accountStore : null,
+    oauthTokenField : null,
+
+    oauthTokenSecretField : null,
 
     initComponent : function()
     {
         this.monitorValid = true;
-
-        this.accountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
 
         this.baseCls    = 'x-small-editor';
         this.labelWidth = 75;
@@ -48,17 +48,29 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
         this.nameField = new Ext.form.TextField({
             fieldLabel : "",
             allowBlank : false,
-            validator  : this.validateAccountName.createDelegate(this),
             name       : 'name',
             hidden     : true
         });
 
-
-        this.passwordField = new Ext.form.TextField({
-            fieldLabel : com.conjoon.Gettext.gettext("Password"),
+        this.twitterIdField = new Ext.form.TextField({
+            fieldLabel : "",
             allowBlank : false,
-            inputType  : 'password',
-            name       : 'password'
+            name       : 'twitterId',
+            hidden     : true
+        });
+
+        this.oauthTokenField = new Ext.form.TextField({
+            fieldLabel : "",
+            allowBlank : false,
+            name       : 'oauthToken',
+            hidden     : true
+        });
+
+        this.oauthTokenSecretField = new Ext.form.TextField({
+            fieldLabel : "",
+            allowBlank : false,
+            name       : 'oauthTokenSecret',
+            hidden     : true
         });
 
         this.items = [
@@ -68,7 +80,6 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
                 text      : com.conjoon.Gettext.gettext("By clicking on the button below, you will be redirected to the Twitter service, where you can chose whether conjoon may access your Twitter account or not. If you decide to allow conjoon access to your Twitter account, only a security token will be stored along with your username, but not your password.")
             }),
             new Ext.Button({
-                validator : this.validateAccountName.createDelegate(this),
                 text      : com.conjoon.Gettext.gettext("Click here to start authorization at Twitter"),
                 listeners  : {
                     click : function(button) {
@@ -76,36 +87,20 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
                         window.open('./service/twitter.account/authorize.account');
                     }
                },
-            }), this.nameField
+            }), this.nameField, this.twitterIdField, this.oauthTokenField, this.oauthTokenSecretField
         ];
 
         com.conjoon.service.twitter.wizard.AccountCard.superclass.initComponent.call(this);
     },
 
-    validateAccountName : function(value)
+    applyDataFromOauth : function(accountData)
     {
-        return false;
-        value = value.trim();
-
-        if (value === "") {
-            return false;
-        } else {
-            /**
-             * @ext-bug 2.0.2 seems to look for any match
-             */
-            //var index = this.accountStore.find('name', value, 0, false, false);
-            var recs = this.accountStore.getRange();
-            for (var i = 0, len = recs.length; i < len; i++) {
-                if (recs[i].get('name').toLowerCase() === value) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-
-        return true;
+        this.nameField.setValue(accountData.name);
+        this.twitterIdField.setValue(accountData.twitterId);
+        this.oauthTokenField.setValue(accountData.oauthToken);
+        this.oauthTokenSecretField.setValue(accountData.oauthTokenSecret);
     }
+
+
 
 });

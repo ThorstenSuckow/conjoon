@@ -96,7 +96,25 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
                 /**
                  * @todo move to separate model
                  */
-                $twitter = new Conjoon_Service_Twitter($dto->name, $dto->password);
+
+                /**
+                 * @see Zend_Oauth_Token_Access
+                 */
+                require_once 'Zend/Oauth/Token/Access.php';
+
+                $accessToken = new Zend_Oauth_Token_Access();
+                $accessToken->setParams(array(
+                    'oauth_token'        => $dto->oauthToken,
+                    'oauth_token_secret' => $dto->oauthTokenSecret,
+                    'user_id'            => $dto->twitterId,
+                    'screen_name'        => $dto->name
+                ));
+
+                $twitter = new Conjoon_Service_Twitter(array(
+                    'username'    => $dto->name,
+                    'accessToken' => $accessToken
+                ));
+
                 $response = $twitter->userShow($dto->name);
 
                 $dto->twitterId              = (string)$response->id;
@@ -120,7 +138,7 @@ class Conjoon_Modules_Service_Twitter_Account_Builder extends Conjoon_Builder {
                 // ignore
             }
 
-            $dto->password = str_pad("", strlen($dto->password), '*');
+            $dto->oauthTokenSecret = str_pad("", strlen($dto->oauthTokenSecret), '*');
         }
 
         return $accounts;

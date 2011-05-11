@@ -96,6 +96,13 @@
 
 <script type="text/javascript">
 
+    opener.com.conjoon.service.twitter.wizard.AccountWizardBaton.setData({
+        name             : "<?php echo $this->account->twitterScreenName; ?>",
+        twitterId        : "<?php echo $this->account->twitterId; ?>",
+        oauthToken       : "<?php echo $this->account->oauthToken; ?>",
+        oauthTokenSecret : "<?php echo $this->account->oauthTokenSecret; ?>"
+    });
+
     /*public $id;
     public $userId;
     public $name;

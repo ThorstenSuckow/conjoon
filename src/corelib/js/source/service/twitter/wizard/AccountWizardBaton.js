@@ -70,11 +70,12 @@ com.conjoon.service.twitter.wizard.AccountWizardBaton = function(){
          * @param {Object} accountData An object with the data of the authorized
          *account
          */
-        accountAuthorized : function(accountData)
+        setData : function(accountData)
         {
             if (!_instance) {
                 return;
             }
+            _instance.accountCard.applyDataFromOauth(accountData);
         }
 
     };

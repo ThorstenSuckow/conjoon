@@ -37,10 +37,72 @@ class Conjoon_Service_Twitter_Proxy  {
      * @var Conjoon_Service_Twitter
      */
     private $_twitter;
-
-    public function __construct(Array $options)
+    
+    /**
+     * Creates a new instance of Conjoon_Service_Twitter_Proxy
+     *
+     * @param array|Zend_Config a configuration object for this class, with at
+     * least the following key/values:
+     * - oauth_token - as provided by Twitter's oauth
+     * - oauth_token_secret - as provided by Twitter's oauth
+     * - user_id - id of the user as provided by the twitter service
+     * - screen_name - screen name of the user as provided by the twitter 
+     *                 service
+     *
+     * @throws InvalidArgumentException if $options was not of type 
+     * array or Zend_Config or if any expected key was missing in $options
+     */
+    public function __construct($options)
     {
-        $this->_twitter = new Conjoon_Service_Twitter($options);
+        /**
+         * @see Zend_Config
+         */
+        require_once 'Zend/Config.php';
+        
+        if ($options instanceof Zend_Config) {
+            $options = $options->toArray();
+        } else if (!is_array($options)) {
+            throw new InvalidArgumentException(
+                "\"options\" was neither of type array nor of type Zend_Config"
+            );
+        }
+        
+        /**
+         * @see Conjoon_Util_Array
+         */
+        require_once 'Conjoon/Util/Array.php';
+        
+        
+        $whitelist = array(
+            'oauth_token', 'oauth_token_secret', 'user_id', 'screen_name'
+        );
+        
+        $accessTokenOptions = Conjoon_Util_Array::extractByKeys($options, $whitelist);
+        
+        if ($accessTokenOptions === false) {
+            $exists = Conjoon_Util_Array::arrayKeysExist($options, $whitelist);     
+            if ($exists !== true) {
+               throw new InvalidArgumentException(
+                    "key \"$exists\" was not specified in options"
+                );    
+            }
+            throw new InvalidArgumentException(
+                "could not extract whitelisted keys from options array"
+            );
+        } 
+        
+        /**
+         * @see Zend_Oauth_Token_Access
+         */
+        require_once 'Zend/Oauth/Token/Access.php'; 
+        
+        $accessToken = new Zend_Oauth_Token_Access();
+        $accessToken->setParams($accessTokenOptions);
+        
+        $this->_twitter = new Conjoon_Service_Twitter(array(
+            'username'    => $accessTokenOptions['screen_name'],
+            'accessToken' => $accessToken
+        ));
     }
 
     /**

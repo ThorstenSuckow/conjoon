@@ -28,11 +28,15 @@ Ext.namespace('com.conjoon.service.twitter.wizard');
  */
 com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
 
+    accountCard : null,
+
     /**
      * Inits this component.
      */
     initComponent : function()
     {
+        this.accountCard = new com.conjoon.service.twitter.wizard.AccountCard();
+
         Ext.apply(this, {
             cards : [
                 new Ext.ux.Wiz.Card({
@@ -48,7 +52,7 @@ com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
                                     +'</div>'
                     }]
                 }),
-                new com.conjoon.service.twitter.wizard.AccountCard(),
+                this.accountCard,
                 new com.conjoon.service.twitter.wizard.FinishCard()
             ],
             cls          : 'com-conjoon-service-twitter-wizard-AccountWizard',
@@ -65,7 +69,7 @@ com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
      * Callback for the "finish" button. Collects all form values and sends them
      * to the server to create a new twitter account.
      */
-    onFinish : function()
+    onFinish : function(data)
     {
         var values = {};
         var formValues = {};
@@ -85,8 +89,10 @@ com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
         };
 
         com.conjoon.service.provider.twitterAccount.addAccount({
-            name     : values['name'],
-            password : values['password']
+            name             : values['name'],
+            twitterId        : values['twitterId'],
+            oauthToken       : values['oauthToken'],
+            oauthTokenSecret : values['oauthTokenSecret']
         }, function (result, remotingObject) {
             Ext.apply(myObj, {
                 result         : result,

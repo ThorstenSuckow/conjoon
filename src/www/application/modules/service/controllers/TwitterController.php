@@ -102,9 +102,12 @@ class Service_TwitterController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy(
-            $accountDto->name, $accountDto->password
-        );
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+             'oauth_token'        => $accountDto->oauthToken,
+             'oauth_token_secret' => $accountDto->oauthTokenSecret,
+             'user_id'            => $accountDto->twitterId,
+             'screen_name'        => $accountDto->name
+        ));
 
         $tweets = $twitter->statusFriendsTimeline();
         $twitter->accountEndSession();
