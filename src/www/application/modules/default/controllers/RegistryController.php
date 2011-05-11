@@ -68,6 +68,24 @@ class RegistryController extends Zend_Controller_Action {
                 )
             ),
             array(
+                'key'   => '/server/environment/host',
+                'value' => Conjoon_Modules_Default_Registry::get(
+                    '/server/environment/host'
+                )
+            ),
+            array(
+                'key'   => '/server/environment/protocol',
+                'value' => Conjoon_Modules_Default_Registry::get(
+                    '/server/environment/protocol'
+                )
+            ),
+            array(
+                'key'   => '/server/environment/port',
+                'value' => Conjoon_Modules_Default_Registry::get(
+                    '/server/environment/port'
+                )
+            ),
+            array(
                 'key'   => '/base/conjoon/name',
                 'value' => Conjoon_Modules_Default_Registry::get(
                     '/base/conjoon/name'
