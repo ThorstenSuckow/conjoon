@@ -28,7 +28,7 @@ com.conjoon.service.twitter.data.TwitterUserRecord = Ext.data.Record.create([
     /**
      * @type {Number} id The id of the twitter user as managed by the Twitter service.
      */
-    {name : 'id',            type : 'float'},
+    {name : 'id',            type : 'string'},
 
     /**
      * @type {String} name The name of the user as managed by the
