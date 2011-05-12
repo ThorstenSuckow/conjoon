@@ -138,6 +138,7 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
             'name',
             'oauth_token',
             'oauth_token_secret',
+            'twitter_id',
             'update_interval'
         );
 
