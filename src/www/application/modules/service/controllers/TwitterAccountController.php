@@ -411,8 +411,7 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         );
 
         if (!isset($sessionOauth->oauthToken) || !isset($sessionOauth->oauthTokenSecret)) {
-            redirect('./blabla');
-            die();
+            die("invalid data.");
         }
 
         /**
@@ -454,27 +453,19 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
         $consumer = new Zend_Oauth_Consumer($options);
 
-        try {
+        require_once 'Zend/Oauth/Token/Request.php';
 
-            require_once 'Zend/Oauth/Token/Request.php';
+        $requestToken = new Zend_Oauth_Token_Request();
 
-            $requestToken = new Zend_Oauth_Token_Request();
-
-            $requestToken->setParams(array(
-                'oauth_token'        => $sessionOauth->oauthToken,
-                'oauth_token_secret' => $sessionOauth->oauthTokenSecret
-            ));
+        $requestToken->setParams(array(
+            'oauth_token'        => $sessionOauth->oauthToken,
+            'oauth_token_secret' => $sessionOauth->oauthTokenSecret
+        ));
 
 
-            $accessToken = $consumer->getAccessToken(
-                $_GET, $requestToken
-            );
-        } catch (Zend_Oauth_Exception $zoe) {
-            echo "<pre>";
-            var_dump($zoe);
-            die("ERROR");
-        }
-
+        $accessToken = $consumer->getAccessToken(
+            $_GET, $requestToken
+        );
 
         require_once 'Zend/Oauth/Token/Access.php';
 
@@ -501,6 +492,9 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
             $this->view->connectionFailure = true;
             return;
         }
+
+        unset($sessionOauth->oauthToken);
+        unset($sessionOauth->oauthTokenSecret);
 
         $dto->oauthToken       = $oauthToken;
         $dto->oauthTokenSecret = $oauthTokenSecret;
