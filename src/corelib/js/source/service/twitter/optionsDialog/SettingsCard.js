@@ -64,7 +64,7 @@ com.conjoon.service.twitter.optionsDialog.SettingsCard = Ext.extend(com.conjoon.
             fieldLabel      : com.conjoon.Gettext.gettext("Twitter user"),
             allowBlank      : false,
             validator       : this.isNameValid.createDelegate(this),
-            itemCls         : 'com-conjoon-margin-b-10',
+            itemCls         : 'com-conjoon-margin-b-15',
             enableKeyEvents : true,
             name            : 'name',
             disabled        : true
