@@ -1,4 +1,32 @@
-﻿2010-04-08 0.1.3.2
+﻿2011-13-05 0.1.4RC1
+===================
+Notable changes:
+
+[Twitter module - client]
+ - changed ui of both Wizard/Options panel to consider Twitter's new oauth
+authorization process
+
+[Twitter module - backend]
+ - changed backend implementation to use Twitter's Oauth process now. Changed
+structure of datastorage accordingly so that no Twitter related passwords will
+be stored there anymore
+fixed a showstopper which would prevent a successful installation when
+check for prerequisites fails and users would not be able to page through the
+install process(reported by odomera)
+ - fixed some issues related to deprecated parameters Zend Framework would
+still use when communicating with the Twitter API (see ZF-9215)
+ - fixed types of fields which would still be set to "int"/"float" whereas
+"string" should be used now
+
+[General backend]
+ - fixed the override of Conjoon_Config_Array::_loadIniFile() which would
+trigger a notice if E_STRICT error reporting is activated
+
+[Vendor]
+ - Updated Zend Framework to version 1.11.6
+
+
+2010-04-08 0.1.3.2
 ==================
 Notable changes:
 
