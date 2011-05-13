@@ -194,7 +194,16 @@ class Service_TwitterController extends Zend_Controller_Action {
             ));
 
             if ($friends->user) {
+
+                // looks like we won't get an array if the twitter user
+                // has only one friend. instead we'll get directly a
+                // SimpleXMLElement
+                if (!is_array($friends->user)) {
+                    $friends->user = array($friends->user);
+                }
+
                 foreach ($friends->user as $friend) {
+
                     $users[] = array(
                         'id'              => (string)$friend->id,
                         'name'            => (string)$friend->name,
@@ -212,7 +221,6 @@ class Service_TwitterController extends Zend_Controller_Action {
             }
 
             $cursor = (string)$friends->next_cursor;
-
         }
 
         $twitter->account->endSession();
