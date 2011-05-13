@@ -191,12 +191,19 @@ com.conjoon.service.twitter.wizard.AccountWizard = Ext.extend(Ext.ux.Wiz, {
      */
     addAccount : function(accountObject)
     {
+        var ns    = com.conjoon.service.twitter.data;
+        var store = ns.AccountStore.getInstance();
+
         var rec = com.conjoon.util.Record.convertTo(
-            com.conjoon.service.twitter.data.AccountRecord,
+            ns.AccountRecord,
             accountObject, accountObject.id
         );
 
-        com.conjoon.service.twitter.data.AccountStore.getInstance().addSorted(rec);
+        if (store.getById(accountObject.id)) {
+            return;
+        }
+
+        store.addSorted(rec);
     }
 
 
