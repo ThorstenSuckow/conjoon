@@ -39,6 +39,12 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
     actionListener : null,
 
     /**
+     * @cfg {Array} additionalMessageValues
+     * An array of additional strings that are used for formatting the removeMsg
+     */
+    additionalMessageValues : null,
+
+    /**
      * @cfg {String} removeMsg The message to show if confirmBeforeRemove is set to true and the user
      * must confirm removing an entry.
      */
@@ -60,6 +66,12 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
      * @cfg {String} errorTitle The default title for the error dialog.
      */
     errorTitle : com.conjoon.Gettext.gettext("Error"),
+
+    /**
+     * @cfg {Number} entryContainerHeight The height of the entryContainer which holds the
+     * list of records which can be edited. Defaults to 240.
+     */
+    entryContainerHeight : 240,
 
     /**
      * @cfg {String} updateMsg The default title to show in a load mask when an
@@ -207,7 +219,7 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
             multiSelect  : false,
             singleSelect : true,
             cls          : 'listView',
-            height       : 240,
+            height       : this.entryContainerHeight,
             emptyText    : com.conjoon.Gettext.gettext("No data"),
             hideHeaders  : true,
             columns: [{
@@ -320,7 +332,9 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
         var value = record.get(container.storeSync.dataIndex);
 
         container.showConfirmDialog(
-            String.format(this.removeMsg, value),
+            String.format.apply(String.prototype,[this.removeMsg, value].concat(
+                (this.additionalMessageValues ? this.additionalMessageValues : []))
+            ),
             String.format(this.removeTitle, value),
             options
         );
