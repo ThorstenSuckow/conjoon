@@ -156,6 +156,22 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
 
         $addData['user_id'] = $userId;
 
+        // we will first look up a twitter account that has
+        // already the twitterid, the name and the userid.
+        // if found, we will update it with the data.
+        $row = $this->fetchRow(
+            $this->select()
+                ->where('user_id=?',    $addData['user_id'])
+                ->where('twitter_id=?', $addData['twitter_id'])
+                ->where('name=?',       $addData['name'])
+        );
+
+        if ($row && ($row instanceof Zend_Db_Table_Row)) {
+            $where = $this->getAdapter()->quoteInto('id = ?', $row->id, 'INTEGER');
+            $affected = $this->update($addData, $where);
+            return (int)$row->id;
+        }
+
         $id = $this->insert($addData);
 
         if ((int)$id == 0) {
