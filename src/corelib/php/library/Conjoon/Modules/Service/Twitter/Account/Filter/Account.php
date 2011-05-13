@@ -55,9 +55,6 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
             'data'
         ),
         'update' => array(
-            'name',
-            'oauthToken',
-            'oauthTokenSecret',
             'updateInterval',
             'id'
         )
@@ -145,14 +142,6 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
             if (isset($data['updateInterval'])) {
                 $v = $data['updateInterval'];
                 $data['update_interval'] = $v;
-            }
-
-            if ($data['name'] === NULL) {
-                unset($data['name']);
-            }
-            if ($data['oauthTokenSecret'] === NULL
-                || str_replace('*', '', $data['oauthTokenSecret']) == "") {
-                unset($data['oauthTokenSecret']);
             }
         }
 

@@ -209,8 +209,6 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
         $updateData = array();
 
         $whiteList = array(
-            'name',
-            'password',
             'update_interval'
         );
 
