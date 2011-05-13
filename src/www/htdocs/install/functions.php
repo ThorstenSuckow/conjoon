@@ -122,6 +122,14 @@ function conjoon_createDatastructure($db, $path, $prefix = "")
         $migrate = true;
     }
 
+    // twitter migrate
+    $twittersql = "SELECT twitter_id FROM ".$prefix."service_twitter_accounts";
+    $twitterresult = $db->query($twittersql);
+
+    if (!$twitterresult) {
+        $db->query("TRUNCATE TABLE `".$prefix."service_twitter_accounts`");
+    }
+
     $sqlFile = file_get_contents($path);
 
     // remove sql comments
