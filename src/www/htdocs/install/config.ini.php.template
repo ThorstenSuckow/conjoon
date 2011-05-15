@@ -81,9 +81,11 @@ edition = {EDITION}
 ;;;   APPLICATION    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [application]
-; The API-Key for youtube chromeless API. Change this if you have
-; multiple users accessing your application to an API-key of your own.
-service.youtube.chromeless.apiKey = AI39si45RiG5JYvA3RglrDhw4d7S91erkkKH2HWXjdfoaOm4Q4vDC5OYnn8sjoPDILyhZGbiJ_Eawt_dAruGg3RMkVInXCrjxg
+; Twitter specific parameters for the Oauth process.
+twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
+twitter.oauth.siteUrl        = http://twitter.com/oauth
+twitter.oauth.consumerKey    = r6wFIOHrhaoHoNmJeA
+twitter.oauth.consumerSecret = qAvjmC33eJuDJLhhV1fJTLUmytNeEp5y1bW58heSIM
 
 ; Since V0.1RC1, conjoon is able to detect if the Ext frontend has merged
 ; multiple requests into one, split them up and process them as if each
@@ -103,7 +105,7 @@ ext.direct.request.parameter = extDirectData
 ; This property defines whether an exception that occured while processing
 ; the initial request for a merged Ext.Direct-request should be copied for
 ; each request that was merged and send back to the client, or if a single
-; exception should be thrown. For conjoon V0.1RC1 and late rversions,
+; exception should be thrown. For conjoon V0.1RC1 and later versions,
 ; this should be set to "0"
 ext.direct.request.singleException = 0
 

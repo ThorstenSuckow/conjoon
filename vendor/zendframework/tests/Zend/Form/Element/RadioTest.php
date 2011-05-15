@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RadioTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: RadioTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Form_Element_RadioTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Element_RadioTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Form/Element/Radio.php';
 
@@ -35,7 +33,7 @@ require_once 'Zend/Form/Element/Radio.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -168,7 +166,36 @@ class Zend_Form_Element_RadioTest extends PHPUnit_Framework_TestCase
                 'test' => 'Test',
             ));
         $html = $this->element->render($this->getView());
-        $this->assertRegexp('#<dt[^>]*>&nbsp;</dt>.*?<dd#s', $html, $html);
+        $this->assertRegexp('#<dt[^>]*>&\#160;</dt>.*?<dd#s', $html, $html);
+    }
+
+    /**
+     * @group ZF-9682
+     */
+    public function testCustomLabelDecorator()
+    {
+        $form = new Zend_Form();
+        $form->addElementPrefixPath('My_Decorator', dirname(__FILE__) . '/../_files/decorators/', 'decorator');
+
+        $form->addElement($this->element);
+
+        $element = $form->getElement('foo');
+
+        $this->assertType('My_Decorator_Label', $element->getDecorator('Label'));
+    }
+
+    /**
+     * @group ZF-6426
+     */
+    public function testRenderingShouldCreateLabelWithoutForAttribute()
+    {
+        $this->element->setMultiOptions(array(
+                'foo'  => 'Foo',
+                'bar'  => 'Bar',
+             ))
+             ->setLabel('Foo');
+        $html = $this->element->render($this->getView());
+        $this->assertNotContains('for="foo"', $html);
     }
 
     /**
@@ -182,6 +209,17 @@ class Zend_Form_Element_RadioTest extends PHPUnit_Framework_TestCase
         if (strtolower(substr(PHP_OS, 0, 3)) == 'win' && version_compare(PHP_VERSION, '5.1.4', '=')) {
             $this->markTestIncomplete('Error occurs for PHP 5.1.4 on Windows');
         }
+    }
+
+    /**
+     * Prove the fluent interface on Zend_Form_Element_Radio::loadDefaultDecorators
+     *
+     * @link http://framework.zend.com/issues/browse/ZF-9913
+     * @return void
+     */
+    public function testFluentInterfaceOnLoadDefaultDecorators()
+    {
+        $this->assertSame($this->element, $this->element->loadDefaultDecorators());
     }
 }
 

@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IdenticalTest.php 17700 2009-08-20 22:02:50Z thomas $
+ * @version    $Id: IdenticalTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Validate_IdenticalTest::main() if this source file is executed directly.
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Validate_IdenticalTest::main');
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /** Zend_Validate_Identical */
 require_once 'Zend/Validate/Identical.php';
@@ -37,7 +35,7 @@ require_once 'Zend/Validate/Identical.php';
  * @package    Zend
  * @subpackage UnitTests
  * @uses       Zend_Validate_Identical
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -45,7 +43,6 @@ class Zend_Validate_IdenticalTest extends PHPUnit_Framework_TestCase
 {
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
         $suite  = new PHPUnit_Framework_TestSuite('Zend_Validate_IdenticalTest');
         $result = PHPUnit_TextUI_TestRunner::run($suite);
     }
@@ -105,19 +102,7 @@ class Zend_Validate_IdenticalTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-6511
-     */
-    public function testNotSameMessageContainsTokenAndValue()
-    {
-        $this->testValidatingAgainstTokenWithNonMatchingValueReturnsFalse();
-        $messages = $this->validator->getMessages();
-        $this->assertContains("The token 'foo'", $messages['notSame']);
-        $this->assertContains('bar', $messages['notSame']);
-        $this->assertContains('does not match', $messages['notSame']);
-    }
-
-    /**
-     * @see ZF-6953
+     * @group ZF-6953
      */
     public function testValidatingAgainstEmptyToken()
     {
@@ -126,7 +111,7 @@ class Zend_Validate_IdenticalTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-7128
+     * @group ZF-7128
      */
     public function testValidatingAgainstNonStrings()
     {
@@ -137,6 +122,22 @@ class Zend_Validate_IdenticalTest extends PHPUnit_Framework_TestCase
         $this->validator->setToken(array('one' => 'two', 'three'));
         $this->assertTrue($this->validator->isValid(array('one' => 'two', 'three')));
         $this->assertFalse($this->validator->isValid(array()));
+    }
+
+    public function testValidatingTokenArray()
+    {
+        $validator = new Zend_Validate_Identical(array('token' => 123));
+        $this->assertTrue($validator->isValid(123));
+        $this->assertFalse($validator->isValid(array('token' => 123)));
+    }
+
+    public function testValidatingNonStrictToken()
+    {
+        $validator = new Zend_Validate_Identical(array('token' => 123, 'strict' => false));
+        $this->assertTrue($validator->isValid('123'));
+
+        $validator->setStrict(true);
+        $this->assertFalse($validator->isValid(array('token' => '123')));
     }
 }
 

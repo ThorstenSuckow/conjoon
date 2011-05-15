@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MysqlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: MysqlTest.php 23986 2011-05-03 20:10:42Z ralph $
  */
 
 
@@ -33,14 +33,11 @@ require_once 'Zend/Db/Adapter/Pdo/TestCommon.php';
 require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
-
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -108,7 +105,7 @@ class Zend_Db_Adapter_Pdo_MysqlTest extends Zend_Db_Adapter_Pdo_TestCommon
     /**
      * Ensures that driver_options are properly passed along to PDO
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-285
+     * @group ZF-285
      * @return void
      */
     public function testAdapterDriverOptions()
@@ -243,7 +240,7 @@ class Zend_Db_Adapter_Pdo_MysqlTest extends Zend_Db_Adapter_Pdo_TestCommon
     /**
      * test that describeTable() returns correct types
      * @group ZF-3624
-     * 
+     *
      */
     public function testAdapterDescribeTableAttributeColumnFloat()
     {
@@ -288,7 +285,7 @@ class Zend_Db_Adapter_Pdo_MysqlTest extends Zend_Db_Adapter_Pdo_TestCommon
         $params = $this->_util->getParams();
         $params['driver_options'] = array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true);
         $db = Zend_Db::factory($this->getDriver(), $params);
-        
+
         // Set default bound value
         $customerId = 1;
 
@@ -301,7 +298,7 @@ class Zend_Db_Adapter_Pdo_MysqlTest extends Zend_Db_Adapter_Pdo_TestCommon
 
         // Reset statement
         $stmt->closeCursor();
-        
+
         // Stored procedure returns a single row
         $stmt = $db->prepare('CALL zf_test_procedure(:customerId)');
         $stmt->bindParam('customerId', $customerId, PDO::PARAM_INT);
@@ -310,9 +307,27 @@ class Zend_Db_Adapter_Pdo_MysqlTest extends Zend_Db_Adapter_Pdo_TestCommon
         $this->assertEquals(1, $result[0]['product_id']);
     }
 
+    /**
+     * @group ZF-11304
+     */
+    public function testAdapterIncludesCharsetInsideGeneratedPdoDsn()
+    {
+        $adapter = new ZendTest_Db_Adapter_Pdo_Mysql(array('dbname' => 'foo', 'charset' => 'XYZ', 'username' => 'bar', 'password' => 'foo'));
+        $this->assertEquals('mysql:dbname=foo;charset=XYZ', $adapter->_dsn());
+    }
+    
     public function getDriver()
     {
         return 'Pdo_Mysql';
     }
 
 }
+
+class ZendTest_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Mysql
+{
+    public function _dsn()
+    {
+        return parent::_dsn();
+    }
+}
+

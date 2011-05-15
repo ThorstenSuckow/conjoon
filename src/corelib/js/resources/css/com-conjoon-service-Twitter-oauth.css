@@ -1,0 +1,124 @@
+/**
+ * conjoon
+ * (c) 2002-2011 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-service-Twitter-oauth-wrap {
+    position:absolute;
+    height:100%;
+    width:100%;
+    z-index:1000000;
+    top:0;
+    left:0;
+    background-image:url(../images/startup-bg.png);
+    background-position:top;
+    background-repeat:repeat-x;
+    background-color:#355899;
+}
+
+.com-conjoon-service-Twitter-oauth-body {
+    height:315px;
+    width:481px;
+    background-image:url(../images/splash.png);
+}
+
+.com-conjoon-service-Twitter-oauth-body .errorPanel {
+    background-image:url(../images/splashscreen-error-bg.png);
+    color:#FFFFFF;
+    height:85px;
+    left:10px;
+    padding:4px;
+    position:absolute;
+    top:220px;
+    width:467px;
+    display:none;
+}
+
+.com-conjoon-service-Twitter-oauth-body .errorPanel .textContainer {
+    background-image:url(../images/32x32/actions/splashscreen-startup-error.png);
+    background-repeat:no-repeat;
+    height:86px;
+    padding:0px 0px 0px 42px;
+}
+
+.com-conjoon-service-Twitter-oauth-body .errorPanel .textContainer .message {
+    overflow:auto;
+    height:60px;
+}
+
+.com-conjoon-service-Twitter-oauth-body .errorPanel .textContainer .notice {
+    font-weight:bold;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo {
+    padding-left:10px;
+    padding-bottom:10px;
+    height:170px;
+    overflow:auto;
+    background-repeat:no-repeat;
+    background-position:top left;
+    padding-left:64px;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .name {
+    font-size:16px;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .twitterInfo {
+    padding-top:2px;
+    padding-bottom:5px;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .twitterInfo .screenName {
+    font-size:12px;
+    font-weight:bold;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .twitterInfo .location {
+
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .description {
+    font-style:italic
+}
+
+.com-conjoon-service-Twitter-oauth-body .appName {
+    padding:5px;
+    font-size:12px;
+    font-weight:bold;
+    color:#2D5094
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfoWrap {
+    position:absolute;
+    top:55px;
+    left:88px;
+    width:330px;
+    height:50px;
+    color:#2D5094;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .successInfo,
+.com-conjoon-service-Twitter-oauth-body .accountInfo .failureInfo {
+    margin-top:40px;
+    background-repeat:no-repeat;
+    background-position:0 0;
+    padding-left:24px;
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .successInfo {
+    background-image:url(../images/16x16/actions/groupware-success.png);
+}
+
+.com-conjoon-service-Twitter-oauth-body .accountInfo .failureInfo {
+    background-image: url(../images/16x16/actions/groupware-failure.png);
+}

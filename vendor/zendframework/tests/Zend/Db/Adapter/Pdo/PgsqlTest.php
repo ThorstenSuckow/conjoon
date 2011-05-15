@@ -15,20 +15,19 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
 
 require_once 'Zend/Db/Adapter/Pdo/TestCommon.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -182,4 +181,60 @@ class Zend_Db_Adapter_Pdo_PgsqlTest extends Zend_Db_Adapter_Pdo_TestCommon
         return 'Pdo_Pgsql';
     }
 
+    /**
+     * @group ZF-3972
+     */
+    public function testAdapterCharacterVarying()
+    {
+        $this->_util->createTable('zf_pgsql_charvary',
+                                  array('pg_id' => 'character varying(4) NOT NULL',
+                                        'pg_info' => "character varying(1) NOT NULL DEFAULT 'A'::character varying"));
+        $description = $this->_db->describeTable('zf_pgsql_charvary');
+        $this->_util->dropTable('zf_pgsql_charvary');
+        $this->assertEquals(null , $description['pg_id']['DEFAULT']);
+        $this->assertEquals('A', $description['pg_info']['DEFAULT']);
+    }
+
+    /**
+     * @group ZF-7640
+     */
+    public function testAdapterBpchar()
+    {
+        $this->_util->createTable('zf_pgsql_bpchar',
+                                  array('pg_name' => "character(100) DEFAULT 'Default'::bpchar"));
+        $description = $this->_db->describeTable('zf_pgsql_bpchar');
+        $this->_util->dropTable('zf_pgsql_bpchar');
+        $this->assertEquals('Default', $description['pg_name']['DEFAULT']);
+    }
+
+    /**
+     * @group ZF-10160
+     * @group ZF-10257
+     */
+    public function testQuoteIdentifiersInSequence()
+    {
+        $this->_util->createSequence('camelCase_id_seq');
+        $this->_util->createSequence("single'quotes");
+
+        $this->_db->nextSequenceId('camelCase_id_seq');
+        $this->_db->nextSequenceId($this->_db->quoteIdentifier('camelCase_id_seq', true));
+        $this->_db->lastSequenceId('camelCase_id_seq');
+        $this->_db->lastSequenceId($this->_db->quoteIdentifier('camelCase_id_seq', true));
+
+        require_once 'Zend/Db/Expr.php';
+        $this->_db->lastSequenceId(new Zend_Db_Expr('camelCase_id_seq'));
+        $lastId = $this->_db->lastSequenceId(new Zend_Db_Expr('camelCase_id_seq'));
+        $this->assertEquals(2, $lastId);
+
+        $this->_db->nextSequenceId('"public"."camelCase_id_seq"');
+        $lastId = $this->_db->lastSequenceId('"public"."camelCase_id_seq"');
+        $this->assertEquals(3, $lastId);
+
+        $this->_db->nextSequenceId("single'quotes");
+        $lastId = $this->_db->lastSequenceId("single'quotes");
+        $this->assertEquals(1, $lastId);
+
+        $this->_util->dropSequence("single'quotes");
+        $this->_util->dropSequence('camelCase_id_seq');
+    }
 }

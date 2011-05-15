@@ -15,11 +15,11 @@
  * @category   Zend
  * @package    Zend_Service_Nirvanix
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ResponseTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ResponseTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
- 
+
 /**
  * @see Zend_Service_Nirvanix_Response
  */
@@ -29,7 +29,7 @@ require_once 'Zend/Service/Nirvanix/Response.php';
  * @category   Zend
  * @package    Zend_Service_Nirvanix
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Nirvanix
@@ -37,7 +37,7 @@ require_once 'Zend/Service/Nirvanix/Response.php';
 class Zend_Service_Nirvanix_ResponseTest extends PHPUnit_Framework_TestCase
 {
     // Constructor
-    
+
     public function testThrowsWhenInputStringIsNotXML()
     {
         $notXml = 'foo';
@@ -71,7 +71,7 @@ class Zend_Service_Nirvanix_ResponseTest extends PHPUnit_Framework_TestCase
         } catch (Zend_Service_Nirvanix_Exception $e) {
             $this->assertEquals(42, $e->getCode());
             $this->assertEquals('foo', $e->getMessage());
-        }        
+        }
     }
 
     // getSxml()
@@ -102,7 +102,7 @@ class Zend_Service_Nirvanix_ResponseTest extends PHPUnit_Framework_TestCase
     }
 
     // __call()
-    
+
     public function testUndefinedMethodIsDelegatedToSimpleXMLElement()
     {
         $xml = "<?xml version='1.0'?>
@@ -111,7 +111,7 @@ class Zend_Service_Nirvanix_ResponseTest extends PHPUnit_Framework_TestCase
                     <foo>bar</foo>
                   </Response>";
         $resp = new Zend_Service_Nirvanix_Response($xml);
-        $this->assertEquals('Response', $resp->getName());        
+        $this->assertEquals('Response', $resp->getName());
     }
-    
+
 }

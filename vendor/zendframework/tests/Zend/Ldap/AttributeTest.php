@@ -15,15 +15,11 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AttributeTest.php 17831 2009-08-26 15:24:30Z sgehrig $
+ * @version    $Id: AttributeTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 /**
  * Zend_Ldap_Attribute
  */
@@ -33,7 +29,7 @@ require_once 'Zend/Ldap/Attribute.php';
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  */
@@ -46,8 +42,8 @@ class Zend_Ldap_AttributeTest extends PHPUnit_Framework_TestCase
 
     protected function _assertUtcDateTimeString($localTimestamp, $value)
     {
-        $currentOffset = date('Z');
-        $utcTimestamp = $localTimestamp - $currentOffset;
+        $localOffset = date('Z', $localTimestamp);
+        $utcTimestamp = $localTimestamp - $localOffset;
         $this->assertEquals(date('YmdHis', $utcTimestamp) . 'Z', $value);
     }
 
@@ -307,7 +303,7 @@ class Zend_Ldap_AttributeTest extends PHPUnit_Framework_TestCase
     {
         $data=array('ts' => array('dummy'));
         $retTs=Zend_Ldap_Attribute::getDateTimeAttribute($data, 'ts', 0);
-        $this->assertNull($retTs);
+        $this->assertEquals('dummy', $retTs);
     }
 
     public function testGetDateTimeValueNegativeOffet()
@@ -414,6 +410,13 @@ class Zend_Ldap_AttributeTest extends PHPUnit_Framework_TestCase
     public function testConvertFromLdapDateTimeValue()
     {
         $ldap='20080625123030+0200';
+        $this->assertEquals(gmmktime(10, 30, 30, 6, 25, 2008),
+            Zend_Ldap_Attribute::convertFromLdapDateTimeValue($ldap));
+    }
+
+    public function testConvertFromLdapDateTimeValueActiveDirectory()
+    {
+        $ldap='20080625123030.0+0200';
         $this->assertEquals(gmmktime(10, 30, 30, 6, 25, 2008),
             Zend_Ldap_Attribute::convertFromLdapDateTimeValue($ldap));
     }

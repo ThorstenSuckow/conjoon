@@ -4,13 +4,13 @@
 	'cut': 'Retalla',
 	'delete': 'Suprimeix',
 	'indent': 'Sagnat',
-	'insertHorizontalRule': 'Regle horitzontal',
+	'insertHorizontalRule': 'Regla horitzontal',
 	'insertOrderedList': 'Llista numerada',
 	'insertUnorderedList': 'Llista de vinyetes',
 	'italic': 'Cursiva',
 	'justifyCenter': 'Centra',
 	'justifyFull': 'Justifica',
-	'justifyLeft': 'Alinea a la esquerra',
+	'justifyLeft': 'Alinea a l\'esquerra',
 	'justifyRight': 'Alinea a la dreta',
 	'outdent': 'Sagna a l\'esquerra',
 	'paste': 'Enganxa',
@@ -38,8 +38,11 @@
 	'fontSize': 'Cos de la lletra',
 	'fontName': 'Nom del tipus de lletra',
 	'tabIndent': 'Sagnat',
+	"fullScreen": "Commuta pantalla completa",
+	"viewSource": "Visualitza font HTML",
+	"print": "Imprimeix",
+	"newPage": "Pàgina nova",
 	/* Error messages */
 	'systemShortcut': 'L\'acció "${0}" és l\'única disponible al navegador utilitzant una drecera del teclat. Utilitzeu ${1}.',
 	'ctrlKey':'control+${0}'
 })
-

@@ -16,9 +16,9 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Gbase
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Query.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Query.php 23805 2011-03-16 00:55:40Z tjohns $
  */
 
 /**
@@ -34,7 +34,7 @@ require_once('Zend/Gdata/Query.php');
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Gbase
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_Gbase_Query extends Zend_Gdata_Query
@@ -43,18 +43,18 @@ class Zend_Gdata_Gbase_Query extends Zend_Gdata_Query
     /**
      * Path to the customer items feeds on the Google Base server.
      */
-    const GBASE_ITEM_FEED_URI = 'http://www.google.com/base/feeds/items';
+    const GBASE_ITEM_FEED_URI = 'https://www.google.com/base/feeds/items';
 
     /**
      * Path to the snippets feeds on the Google Base server.
      */
-    const GBASE_SNIPPET_FEED_URI = 'http://www.google.com/base/feeds/snippets';
+    const GBASE_SNIPPET_FEED_URI = 'https://www.google.com/base/feeds/snippets';
 
     /**
      * The default URI for POST methods
      *
      * @var string
-     */    
+     */
     protected $_defaultFeedUri = self::GBASE_ITEM_FEED_URI;
 
     /**

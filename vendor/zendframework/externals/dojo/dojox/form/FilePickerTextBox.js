@@ -1,28 +1,25 @@
 dojo.provide("dojox.form.FilePickerTextBox");
 
-dojo.require("dojox.widget.FilePicker");
+dojo.require("dojo.window");
 dojo.require("dijit.form.ValidationTextBox");
-dojo.require("dojox.form._HasDropDown");
+dojo.require("dijit._HasDropDown");
+dojo.require("dojox.widget.FilePicker");
 
 dojo.declare(
 	"dojox.form.FilePickerTextBox",
-	[dijit.form.ValidationTextBox, dojox.form._HasDropDown],
+	[dijit.form.ValidationTextBox, dijit._HasDropDown],
 	{
 		// summary:
 		//		A validating text box tied to a file picker popup
 		
 		baseClass: "dojoxFilePickerTextBox",
 		
-		templatePath: dojo.moduleUrl("dojox.form", "resources/FilePickerTextBox.html"),
+		templateString: dojo.cache("dojox.form", "resources/FilePickerTextBox.html"),
 		
 		// searchDelay: Integer
 		//		Delay in milliseconds between when user types something and we start
 		//		searching based on that value
 		searchDelay: 500,
-		
-		// _stopClickEvent: boolean
-		//		Set to false since we want to handle our own click events
-		_stopClickEvents: false,
 		
 		// valueItem: item
 		//		The item, in our store, of the directory relating to our value
@@ -103,7 +100,7 @@ dojo.declare(
 			this.inherited(arguments);
 			// Make sure our display is up-to-date with our value
 			if(this._opened){ 
-				this.dropDown.attr("pathValue", this.attr("value"));
+				this.dropDown.attr("pathValue", this.get("value"));
 			}
 		},
 		
@@ -151,7 +148,7 @@ dojo.declare(
 			// summary: sets the value of the widget once focus has left
 			if(this.dropDown && !this._settingBlurValue){
 				this._settingBlurValue = true;
-				this.attr("value", this.focusNode.value);
+				this.set("value", this.focusNode.value);
 			}else{
 				delete this._settingBlurValue;
 				this.inherited(arguments);
@@ -244,7 +241,7 @@ dojo.declare(
 								}
 								targetString = targetString.substring(dir.length);
 								window.setTimeout(function(){
-									dijit.scrollIntoView(first.domNode);
+									dojo.window.scrollIntoView(first.domNode);
 								}, 1);
 								fn.value = oVal + targetString;
 								dijit.selectInputText(fn, oVal.length);

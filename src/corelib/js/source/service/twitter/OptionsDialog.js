@@ -29,7 +29,8 @@ com.conjoon.service.twitter.OptionsDialog = Ext.extend(
 
             settingsContainer : new com.conjoon.cudgets.settings.Container({
                 ui : new com.conjoon.service.twitter.optionsDialog.ContainerUi({
-                    actionListener : new com.conjoon.service.twitter.optionsDialog.ContainerListener()
+                    entryContainerHeight : 190,
+                    actionListener       : new com.conjoon.service.twitter.optionsDialog.ContainerListener()
                 }),
                 storeSync : new com.conjoon.cudgets.data.StoreSync({
                     dataIndex : 'name',
@@ -45,8 +46,8 @@ com.conjoon.service.twitter.OptionsDialog = Ext.extend(
                 title          : com.conjoon.Gettext.gettext("Twitter Account Management"),
                 actionListener : new com.conjoon.service.twitter.optionsDialog.DialogListener()
             }),
-            width  : 550,
-            height : 375
+            width  : 500,
+            height : 325
 
         });
 

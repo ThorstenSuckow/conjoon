@@ -13,11 +13,11 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend
+ * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Contact.php 17689 2009-08-20 13:33:05Z alexander $
+ * @version    $Id: Contact.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -26,21 +26,21 @@
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Contact
 {
-  public $_explicitType = 'ContactVO';
-  public $id = 0;
-  public $firstname = "";
-  public $lastname = "";
-  public $email = "";
-  public $mobile = "";
+    public $_explicitType = 'ContactVO';
+    public $id = 0;
+    public $firstname = "";
+    public $lastname = "";
+    public $email = "";
+    public $mobile = "";
 
-  public function getASClassName()
-  {
-      return 'ContactVO';
-  }
+    public function getASClassName()
+    {
+        return 'ContactVO';
+    }
 }
-?>
+

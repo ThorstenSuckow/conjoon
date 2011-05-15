@@ -1,128 +1,228 @@
-Welcome to the Zend Framework 1.9 Release! 
+Welcome to the Zend Framework 1.11 Release! 
 
 RELEASE INFORMATION
--------------------
-Zend Framework 1.9.4 (r18529).
-Released on October 12, 2009.
+---------------
+Zend Framework 1.11.6 Release (r24018).
+Released on May 05, 2011.
 
-A detailed list of all features and bug fixes in this release may be found at:
+SECURITY NOTICE FOR 1.11.6
+--------------------------
 
-    http://framework.zend.com/changelog/1.9.4
+This release includes a patch that helps prevent SQL injection attacks
+in applications using the MySQL PDO driver of PHP while using non-ASCII
+compatible encodings. Developers using ASCII-compatible encodings like
+UTF8 or latin1 are not affected by this PHP issue, which is described
+in more detail here: http://bugs.php.net/bug.php?id=47802
+
+The PHP Group included a feature in PHP 5.3.6+ that allows any
+character set information to be passed as part of the DSN in PDO to
+allow both the database as well as the c-level driver to be aware of
+which charset is in use which is of special importance when PDO's
+quoting mechanisms are utilized, which Zend Framework also relies on.
+
+Our patch ensures that any charset information provided to the Zend_Db
+PDO MySQL adapter will be sent to PDO both as part of the DSN as well
+as in a SET NAMES query.  This ensures that any developer using ZF on
+PHP 5.3.6+ while using non-ASCII compatible encodings is safe from SQL
+injection while using the PDO's quoting mechanisms or emulated prepared
+statements.
+
+If you are using non-ASCII compatible encodings, like GBK, we strongly
+urge you to consider upgrading to at least PHP 5.3.6 and use
+Zend Framework version 1.11.6 or 1.10.9
 
 NEW FEATURES
 ------------
-* Zend_Queue and Zend_Service_Amazon_Sqs, which provide the ability to
-  use local and remote messaging and queue services for offloading
-  asynchronous processes. (Contributed by Justin Plock and Daniel Lo)
 
-* Zend_Queue_Adapter_PlatformJobQueue, a Zend_Queue adapter for Zend
-  Platform's Job Queue. (Contributed by Zend Technologies)
+Mobile Support:
 
-* Zend_Rest_Route, Zend_Rest_Controller, and
-  Zend_Controller_Plugin_PutHandler, which aid in providing RESTful
-  resources via the MVC layer. (Contributed by Luke Crouch, SourceForge)
+    Zend Framework 1.11 marks the first release with explicit support
+    for mobile devices, via the new component Zend_Http_UserAgent. This
+    component was developed by Raphael Carles, CTO of Interakting.
+    
+    Zend_Http_UserAgent performs two responsibilities:
+    
+     * User-Agent detection
+     * Device capabilities detection, based on User-Agent
+    
+    The component includes a "features" adapter mechanism that allows
+    developers to tie into different backends for the purpose of
+    discovering device capabilities. Currently, ships with adapters for
+    the WURFL (Wireless Universal Resource File) API, TeraWURFL, and
+    DeviceAtlas.
+    
+     * Note: Luca Passani, author and lead of the WURFL project, has
+       provided an exemption to Zend Framework to provide a non-GPL
+       adapter accessing the WURFL PHP API.
+    
+    Additional hooks into the component are provided via a
+    Zend_Application resource plugin, and a Zend_View helper, allowing
+    developers the ability to return output customized for the detected
+    device (e.g., alternate layouts, alternate images, Flash versus
+    HTML5 support, etc.).
 
-* Zend_Feed_Reader, which provides a common API to RSS and Atom feeds,
-  as well as extensions to each format, caching, and a slew of other
-  functionality. (Contributed by Pádraic Brady and Jurrien Stutterheim)
+Zend_Cloud: SimpleCloud API:
 
-* Zend_Db_Adapter_Sqlsrv, a Zend_Db adapter for Microsoft's SQL Server
-  driver for PHP. (Contributed by Juozas Kaziukenas and Rob Allen)
+    During ZendCon 2009, Zend announced a prototype of the SimpleCloud
+    API. This API was to provide hooks into cloud-based document
+    storage, queue services, and file storage.
 
-* Zend_Db_Table updates to allow using Zend_Db_Table as a concrete
-  class by passing it one or more table definitions via the
-  constructor. (Contributed by Ralph Schindler)
+    Zend Framework 1.11.0 markes the first official, stable release of
+    Zend_Cloud, Zend Framework's PHP version of the SimpleCloud API.
+    Current support includes:
 
-* Zend_Test_PHPUnit_Db, which provides Zend_Db support for PHPUnit's
-  DBUnit support, allowing developers to do functional and integration
-  testing against databases using data fixtures. (Contributed by
-  Benjamin Eberlei)
+    * Document Services:
+      - Amazon SimpleDB
+      - Windows Azure's Table Storage
+    * Queue Services:
+      - Amazon Simple Queue Service (SQS)
+      - Windows Azure's Queue Service
+      - All adapters supported by Zend_Queue:
+        * Zend Platform JobQueue
+        * Memcacheq
+        * Relational Database
+        * ActiveMQ
+    * Storage Services:
+      - Amazon Simple Storage Service (S3)
+      - Windows Azure's Blog Storage
+      - Nirvanix
+      - Local filesystem
 
-* Annotation processing support for Zend_Pdf, as well as performance
-  improvements. (Contributed by Alexander Veremyev)
+    When using any of the SimpleCloud APIs, your code will be portable
+    across the various adapters provided, allowing you to pick and
+    choose your services, as well as try different services until you
+    find one that suits your application or business needs.
+    Additionally, if you find you need to code adapter-specific
+    features, you can drop down to the specific adapter in order to do
+    so.
 
-* Zend_Dojo custom build layer support. (Contributed by Matthew Weier
-  O'Phinney)
+    More adapters will be arriving in the coming months, giving you even
+    more options!
 
-* Dojo upgraded to 1.3.2.
+    We thank Wil Sinclair and Stas Malyshev for their assistance in the
+    initial releases of Zend_Cloud.
 
-* Numerous Zend_Ldap improvements, including full support for CRUD
-  operations, search, and manipulating tree structures. (Contributed by
-  Stefan Gehrig)
+Security:
 
-* Zend_Log_Writer_Syslog, a Zend_Log writer for writing to your system
-  log. (Contributed by Thomas Gelf)
+    Several classes in Zend Framework were patched to eliminate the
+    potential for leaking timing information from the direct comparison
+    of sensitive data such as plaintext passwords or cryptographic
+    signatures to user input. These leaks arise from the normal process
+    of comparing any two strings in PHP. The nature of the leaks is that
+    strings are often compared byte by byte, with a negative result
+    being returned early as soon as any set of non-matching bytes is
+    detected. The more bytes that are equal (starting from the first
+    byte) between both sides of the comparison, the longer it takes for
+    a final result to be returned. Based on the time it takes to return
+    a negative or positive result, it is possible that an attacker
+    could, over many samples of requests, craft a string that compares
+    positively to another secret string value known only to a target
+    server simply by guessing the string one byte at a time and
+    measuring each guess' execution time. This server secret could be a
+    plaintext password or the correct cryptographic signature of a
+    request the attacker wants to execute, such as is used in several
+    open protocols including OpenID and OAuth. This could obviously
+    enable an attacker to gain sufficient information to perform a
+    secondary attack such as masquerading as an authenticated user.
 
-* Zend_View_Helper_BaseUrl, a view helper for returning the current base
-  URL to your application, as well as for constructing URLs to public
-  resources. (Contributed by Robin Skoglund and Geoffrey Tran)
+    This form of attack is known as a Remote Timing Attack. Timing
+    Attacks have been problematic in the past but to date have been very
+    difficult to perform remotely over the internet due to the
+    interference of network jitter which limits their effectiveness in
+    resolving very small timing differences. While the internet still
+    poses a challenge to performing successful Timing Attacks against a
+    remote server, the increasing use of frameworks on local networks
+    and in cloud computing, where network jitter may be significantly
+    reduced, raises the distinct possibility that remote Timing Attacks
+    will become feasible against ever smaller timing information leaks,
+    such as those leaked when comparing any two strings. As a
+    precaution, the applied changes implement a fixed time comparison
+    for several classes which would be attractive targets in any
+    potential remote Timing Attack. A fixed time comparison function
+    does not leak any timing information useful to an attacker thus
+    proactively preventing any future vulnerability to these forms of
+    attack.
 
-* Zend_Date now has support for the DateTime extension. (Contributed by
-  Thomas Weidner)
+    We thank Padraic Brady for his efforts in identifying and patching
+    these vulnerabilities.
 
-* Zend_Locale has been upgraded to CLDR 1.7. (Contributed by Thomas
-  Weidner)
+SimpleDB Support:
 
-* Zend_Translate now has plurals support for the Gettext, Csv, and Array
-  adapters. (Contributed by Thomas Weidner)
+    Zend Framework has provided support for Amazon's Simple Storage
+    Service (S3), Simple Queue Service (SQS), and Elastic Cloud Compute
+    (EC2) platforms for several releases. Zend Framework 1.11.0 adds
+    support for SimpleDB, Amazon's non-relational document storage
+    database offering. Support is available for all SimpleDB operations
+    via Zend_Service_Amazon_SimpleDb.
+    
+    Zend Framework's SimpleDB adapter was originally written by Wil
+    Sinclair.
 
-* PHP 5.3 compatibility, including support for new features in the
-  mysqli extension. All components are fully tested on both PHP 5.2.x
-  and PHP 5.3.0.
+eBay Findings API Support:
 
-In addition, a large number of smaller improvements were made throughout
-the framework, and around 700 issues have been resolved or closed since
-the release of 1.8.0!
+    eBay has an extensive REST API, allowing developers to build
+    applications interacting with their extensive data. Zend Framework
+    1.11.0 includes Zend_Service_Ebay_Findings, which provides complete
+    support for the eBay Findings API. This API allows developers to
+    query eBay for details on active auctions, using categories or
+    keywords.
+
+    Zend_Service_Ebay was contributed by Renan de Lima and Ramon
+    Henrique Ornelas.
+
+New Configuration Formats:
+
+    Zend_Config has been a quite popular component in Zend Framework,
+    and has offerred adapters for PHP arrays, XML, and INI configuration
+    files. Zend Framework 1.11.0 now offers two additional configuration
+    formats: YAML and JSON.
+
+    Zend_Config_Yaml provides a very rudimentary YAML-parser that should
+    work with most configuration formats. However, it also allows you to
+    specify an alternate YAML parser if desired, allowing you to lever
+    tools such as PECL's ext/syck or Symfony's YAML component, sfYaml.
+
+    Zend_Config_Json leverages the Zend_Json component, and by extension
+    ext/json.
+
+    Both adapters have support for PHP constants, as well as provide the
+    ability to write configuration files based on configuration objects.
+
+    Stas Malyshev created both adapters for Zend Framework;
+    Zend_Config_Json also had assistance from Sudheer Satyanarayana.
+
+URL Shortening:
+
+    Zend_Service_ShortUrl was added for this release. The component
+    provides a simple interface for use with most URL shortening
+    services, defining simply the methods "shorten" and "unshorten".
+    Adapters for the services http://is.gd, http://jdem.cz,
+    http://metamark.net, and http://tinyurl.com, are provided with this
+    release. 
+
+    Zend_Service_ShortUrl was contributed by Martin Hujer.
+
+Additional View Helpers:
+
+    Several new view helpers are now exposed:
+
+    * Zend_View_Helper_UserAgent ties into the Zend_Http_UserAgent
+      component, detailed above. It gives you access to the UserAgent
+      instance, allowing you to query for the device and capabilities.
+    * Zend_View_Helper_TinySrc is an additional portion of Zend
+      Framework's mobile offering for version 1.11.0. The helper ties
+      into the TinySrc API, allowing you to a) provide device-specific
+      image sizes and formats for your site, and b) offload generation
+      of those images to this third-party service. The helper creates
+      img tags pointing to the service, and provides options for
+      specifying adaptive sizing and formats.
+    * Zend_View_Helper_Gravatar ties into the Gravatar API, allowing you
+      to provide avatar images for registered users that utilize the
+      Gravatar service. This helper was contributed by Marcin Morawski.
 
 A detailed list of all features and bug fixes in this release may be found at:
 
-    http://framework.zend.com/changelog/1.9.4
-
-IMPORTANT CHANGES
------------------
-Zend_Http_Client:
-A change was made in Zend_Http_Client to correct ZF-5744 (Multiple file uploads
-using the same $formname in setFileUpload). Instead of returning an associative
-array of element name => upload information pairs, it now returns an array of
-arrays, with the element name as part of the upload information. This allows
-multiple file uploads using the same element name.
-
-Zend_Config_Xml:
-One deciding factor for many when choosing which Zend_Config format to use for
-their application config had to do with support for constants. Our application
-recommendations include defining two constants, APPLICATION_ENV and
-APPLICATION_PATH, and many developers have found it useful that in INI and PHP
-configurations, these constants are expanded during parsing. Zend_Config_Xml
-now supports this via an XML namespace as follows:
-
-    <config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
-        <production>
-            <includePath><zf:const
-                zf:name="APPLICATION_PATH"/>/library</includePath>
-        </production>
-    </config>
-
-On the PHP side, nothing changes.
-
-Zend_Translate_Adapter_Ini:
-Prior to PHP 5.3, parse_ini_file() and parse_ini_string() handled non-ASCII
-characters in INI option values without an issue. However, starting in PHP 5.3,
-such options will now be silently dropped in the array returned. If you are
-upgrading to PHP 5.3 and using Zend_Translate_Adapter_Ini, this could cause
-potential issues for you. If you use UTF-8 or Latin-1 characters in your INI
-option keys (which are the message IDs for translation), you should either
-modify these to use only ASCII characters, or choose a different translation
-adapter.
-
-Zend_Service_Amazon:
-Zend_Service_Amazon has been updated to comply with the latest Amazon
-ECommerce APIs -- which, as of 15 August 2009, will require an API key
-for authentication. As a result, if you now use Zend_Service_Amazon, you
-will need to pass your API key to the Zend_Service_Amazon constructor:
-    
-    $amazon = new Zend_Service_Amazon($appId, $countryCode, $apiKey);
-
-Otherwise, usage of this component remains the same.
+http://framework.zend.com/changelog/
 
 SYSTEM REQUIREMENTS
 -------------------

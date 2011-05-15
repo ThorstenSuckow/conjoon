@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlFlashTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HtmlFlashTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HtmlFlashTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HtmlFlashTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/View.php';
 require_once 'Zend/View/Helper/HtmlFlash.php';
@@ -34,12 +32,12 @@ require_once 'Zend/View/Helper/HtmlFlash.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
  */
-class Zend_View_Helper_HtmlFlashTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_HtmlFlashTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_View_Helper_HtmlFlash
@@ -54,7 +52,6 @@ class Zend_View_Helper_HtmlFlashTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_View_Helper_HtmlFlashTest");
         PHPUnit_TextUI_TestRunner::run($suite);
@@ -83,7 +80,7 @@ class Zend_View_Helper_HtmlFlashTest extends PHPUnit_Framework_TestCase
         $htmlFlash = $this->helper->htmlFlash('/path/to/flash.swf');
 
         $objectStartElement = '<object data="/path/to/flash.swf" type="application/x-shockwave-flash">';
-  
+
         $this->assertContains($objectStartElement, $htmlFlash);
         $this->assertContains('</object>', $htmlFlash);
     }

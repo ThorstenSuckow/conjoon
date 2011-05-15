@@ -36,44 +36,31 @@ function readFile(/*String*/path, /*String?*/encoding){
 
 //TODO: inlining this function since the new shrinksafe.jar is used, and older
 //versions of Dojo's buildscripts are not compatible.
-function optimizeJs(/*String fileName*/fileName, /*String*/fileContents, /*String*/copyright, /*String*/optimizeType){
+function optimizeJs(/*String fileName*/fileName, /*String*/fileContents, /*String*/copyright, /*String*/optimizeType, /*String*/stripConsole){
 	//summary: either strips comments from string or compresses it.
 	copyright = copyright || "";
 
 	//Use rhino to help do minifying/compressing.
-	//Even when using Dean Edwards' Packer, run it through the custom rhino so
-	//that the source is formatted nicely for Packer's consumption (in particular get
-	//commas after function definitions).
 	var context = Packages.org.mozilla.javascript.Context.enter();
 	try{
 		// Use the interpreter for interactive input (copied this from Main rhino class).
 		context.setOptimizationLevel(-1);
 
-		if(optimizeType.indexOf("shrinksafe") == 0){
+		// the "packer" type is now just a synonym for shrinksafe
+		if(optimizeType.indexOf("shrinksafe") == 0 || optimizeType == "packer"){
 			//Apply compression using custom compression call in Dojo-modified rhino.
-			fileContents = new String(Packages.org.dojotoolkit.shrinksafe.Compressor.compressScript(fileContents, 0, 1));
+			fileContents = new String(Packages.org.dojotoolkit.shrinksafe.Compressor.compressScript(fileContents, 0, 1, stripConsole));
 			if(optimizeType.indexOf(".keepLines") == -1){
 				fileContents = fileContents.replace(/[\r\n]/g, "");
 			}
-		}else if(optimizeType == "comments" || optimizeType == "packer"){
+		}else if(optimizeType == "comments"){
 			//Strip comments
 			var script = context.compileString(fileContents, fileName, 1, null);
 			fileContents = new String(context.decompileScript(script, 0));
 			
-			if(optimizeType == "packer"){
-				buildUtil.setupPacker();
-
-				// var base62 = false;
-				// var shrink = true;
-				var base62 = true;
-				var shrink = true;
-				var packer = new Packer();
-				fileContents = packer.pack(fileContents, base62, shrink);
-			}else{
-				//Replace the spaces with tabs.
-				//Ideally do this in the pretty printer rhino code.
-				fileContents = fileContents.replace(/    /g, "\t");
-			}
+			//Replace the spaces with tabs.
+			//Ideally do this in the pretty printer rhino code.
+			fileContents = fileContents.replace(/    /g, "\t");
 
 			//If this is an nls bundle, make sure it does not end in a ;
 			//Otherwise, bad things happen.
@@ -94,7 +81,7 @@ build = {
 		//The path to this file. Assumes dojo builds under it.
 		/*String*/builderPath,
 		
-		//"1.1.1" or "1.2.0": used to choose directory of dojo to use.
+		//"1.1.1" or "1.3.2": used to choose directory of dojo to use.
 		/*String*/version,
 		
 		//"google" or "aol" 
@@ -108,7 +95,7 @@ build = {
 
 
 		//Validate.
-		if(version != "1.2.0"){
+		if(version != "1.3.2"){
 			return "invalid version";
 		}
 		if(cdnType != "google" && cdnType != "aol"){
@@ -210,7 +197,7 @@ build = {
 		}
 		
 		//Minify the contents
-		return optimizeJs(layerName, layerContents, layerLegalText, kwArgs.layerOptimize);
+		return optimizeJs(layerName, layerContents, layerLegalText, kwArgs.layerOptimize, "");
 
 	}
 };

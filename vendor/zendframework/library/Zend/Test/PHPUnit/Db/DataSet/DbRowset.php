@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbRowset.php 16607 2009-07-09 21:51:46Z beberlei $
+ * @version    $Id: DbRowset.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -25,6 +25,9 @@
  */
 require_once "Zend/Db/Table/Rowset/Abstract.php";
 
+/**
+ * @see PHPUnit_Extensions_Database_DataSet_AbstractTable
+ */
 require_once "PHPUnit/Extensions/Database/DataSet/AbstractTable.php";
 
 /**
@@ -34,14 +37,14 @@ require_once "PHPUnit/Extensions/Database/DataSet/AbstractTable.php";
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Test_PHPUnit_Db_DataSet_DbRowset extends PHPUnit_Extensions_Database_DataSet_AbstractTable
 {
     /**
      * Construct Table object from a Zend_Db_Table_Rowset
-     * 
+     *
      * @param Zend_Db_Table_Rowset_Abstract $rowset
      * @param string $tableName
      */

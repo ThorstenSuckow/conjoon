@@ -15,25 +15,27 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Ldap_Dn_AllTests::main');
 }
 
+require_once 'Zend/Ldap/Dn/EscapingTest.php';
+require_once 'Zend/Ldap/Dn/ExplodingTest.php';
+require_once 'Zend/Ldap/Dn/ImplodingTest.php';
+require_once 'Zend/Ldap/Dn/CreationTest.php';
+require_once 'Zend/Ldap/Dn/ModificationTest.php';
+require_once 'Zend/Ldap/Dn/MiscTest.php';
+
 /**
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  * @group      Zend_Ldap_Dn
@@ -49,35 +51,11 @@ class Zend_Ldap_Dn_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Ldap_Dn');
 
-        /**
-         * @see Zend_Ldap_Dn_EscapingTest
-         */
-        require_once 'Zend/Ldap/Dn/EscapingTest.php';
         $suite->addTestSuite('Zend_Ldap_Dn_EscapingTest');
-        /**
-         * @see Zend_Ldap_Dn_ExplodingTest
-         */
-        require_once 'Zend/Ldap/Dn/ExplodingTest.php';
         $suite->addTestSuite('Zend_Ldap_Dn_ExplodingTest');
-        /**
-         * @see Zend_Ldap_Dn_ImplodingTest
-         */
-        require_once 'Zend/Ldap/Dn/ImplodingTest.php';
         $suite->addTestSuite('Zend_Ldap_Dn_ImplodingTest');
-        /**
-         * @see Zend_Ldap_Dn_CreationTest
-         */
-        require_once 'Zend/Ldap/Dn/CreationTest.php';
         $suite->addTestSuite('Zend_Ldap_Dn_CreationTest');
-        /**
-         * @see Zend_Ldap_Dn_ModificationTest
-         */
-        require_once 'Zend/Ldap/Dn/ModificationTest.php';
         $suite->addTestSuite('Zend_Ldap_Dn_ModificationTest');
-        /**
-         * @see Zend_Ldap_Dn_MiscTest
-         */
-        require_once 'Zend/Ldap/Dn/MiscTest.php';
         $suite->addTestSuite('Zend_Ldap_Dn_MiscTest');
 
         return $suite;

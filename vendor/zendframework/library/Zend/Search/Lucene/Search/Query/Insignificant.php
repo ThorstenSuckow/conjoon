@@ -15,17 +15,14 @@
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage Search
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Insignificant.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Insignificant.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
 /** Zend_Search_Lucene_Search_Query */
 require_once 'Zend/Search/Lucene/Search/Query.php';
-
-/** Zend_Search_Lucene_Search_Weight_Empty */
-require_once 'Zend/Search/Lucene/Search/Weight/Empty.php';
 
 
 /**
@@ -34,7 +31,7 @@ require_once 'Zend/Search/Lucene/Search/Weight/Empty.php';
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage Search
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Search_Lucene_Search_Query_Insignificant extends Zend_Search_Lucene_Search_Query
@@ -69,6 +66,7 @@ class Zend_Search_Lucene_Search_Query_Insignificant extends Zend_Search_Lucene_S
      */
     public function createWeight(Zend_Search_Lucene_Interface $reader)
     {
+        require_once 'Zend/Search/Lucene/Search/Weight/Empty.php';
         return new Zend_Search_Lucene_Search_Weight_Empty();
     }
 

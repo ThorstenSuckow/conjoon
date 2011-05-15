@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: ViewTest.php 23992 2011-05-04 03:32:01Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -25,20 +25,17 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 /**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
-
-/**
  * Zend_Loader_Autoloader
  */
 require_once 'Zend/Loader/Autoloader.php';
+
+require_once 'Zend/Application/Resource/View.php';
 
 /**
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -89,7 +86,6 @@ class Zend_Application_Resource_ViewTest extends PHPUnit_Framework_TestCase
 
     public function testInitializationInitializesViewObject()
     {
-        require_once 'Zend/Application/Resource/View.php';
         $resource = new Zend_Application_Resource_View(array());
         $resource->init();
         $this->assertTrue($resource->getView() instanceof Zend_View);
@@ -97,7 +93,6 @@ class Zend_Application_Resource_ViewTest extends PHPUnit_Framework_TestCase
 
     public function testInitializationInjectsViewIntoViewRenderer()
     {
-        require_once 'Zend/Application/Resource/View.php';
         $resource = new Zend_Application_Resource_View(array());
         $resource->init();
         $view = $resource->getView();
@@ -117,7 +112,123 @@ class Zend_Application_Resource_ViewTest extends PHPUnit_Framework_TestCase
         $paths = $view->getScriptPaths();
         $this->assertContains(dirname(__FILE__) . '/', $paths, var_export($paths, 1));
     }
+
+    public function testDoctypeIsSet()
+    {
+        $options = array('doctype' => 'XHTML1_FRAMESET');
+        $resource = new Zend_Application_Resource_View($options);
+        $resource->init();
+        $view  = $resource->getView();
+        $this->assertEquals('XHTML1_FRAMESET', $view->doctype()->getDoctype());
+    }
+
+    /**
+     * @group ZF-10343
+     */
+    public function testContentTypeIsSet()
+    {
+        $contentType = 'text/html; charset=UTF-8';
+        $options = array('contentType' => $contentType);
+        $resource = new Zend_Application_Resource_View($options);
+        $headMetaHelper = $resource->init()->headMeta();
+
+        $actual = null;
+        $container = $headMetaHelper->getContainer();
+        foreach ($container as $item) {
+            if ('Content-Type' == $item->{$item->type}) {
+                $actual = $item->content;
+                break;
+            }
+        }
+
+        $this->assertEquals($contentType, $actual);
+
+        Zend_View_Helper_Placeholder_Registry::getRegistry()
+            ->deleteContainer('Zend_View_Helper_HeadMeta');
+    }
+
+    /**
+     * @group ZF-10343
+     */
+    public function testSetMetaCharsetForHtml5()
+    {
+        $charset = 'UTF-8';
+        $options = array(
+            'doctype' => 'HTML5',
+            'charset' => $charset,
+        );
+        $resource = new Zend_Application_Resource_View($options);
+        $view = $resource->init();
+        $headMetaHelper = $view->headMeta();
+
+        $actual = null;
+        $container = $headMetaHelper->getContainer();
+        foreach ($container as $item) {
+            if ('charset' == $item->type) {
+                $actual = $item->charset;
+                break;
+            }
+        }
+
+        $this->assertTrue($view->doctype()->isHtml5());
+        $this->assertEquals($charset, $actual);
+
+        $registry = Zend_View_Helper_Placeholder_Registry::getRegistry();
+        $registry->deleteContainer('Zend_View_Helper_HeadMeta');
+        $registry->deleteContainer('Zend_View_Helper_Doctype');
+    }
+
+    /**
+     * @group ZF-10343
+     */
+    public function testSetMetaCharsetShouldOnlyAvailableForHtml5()
+    {
+    	$charset = 'UTF-8';
+        $options = array(
+            'doctype' => 'XHTML1_STRICT',
+            'charset' => $charset,
+        );
+        $resource = new Zend_Application_Resource_View($options);
+        $view = $resource->init();
+        $headMetaHelper = $view->headMeta();
+
+        $actual = null;
+        $container = $headMetaHelper->getContainer();
+        foreach ($container as $item) {
+            if ('charset' == $item->type) {
+                $actual = $item->charset;
+                break;
+            }
+        }
+
+        $this->assertFalse($view->doctype()->isHtml5());
+        $this->assertNull($actual);
+
+        $registry = Zend_View_Helper_Placeholder_Registry::getRegistry();
+        $registry->deleteContainer('Zend_View_Helper_HeadMeta');
+        $registry->deleteContainer('Zend_View_Helper_Doctype');
+    }
+    
+    /**
+     * @group ZF-10042
+     */
+    public function testAssignmentsAreSet()
+    {
+        $options = array(
+            'assign' => array(
+                'foo' => 'barbapapa',
+                'bar' => 'barbazoo',
+            )
+        );
+        $resource = new Zend_Application_Resource_View($options);
+        $view = $resource->init();
+ 
+        $this->assertEquals('barbapapa', $view->foo);
+        $this->assertEquals('barbazoo', $view->bar);
+    }
+
 }
+
 
 if (PHPUnit_MAIN_METHOD == 'Zend_Application_Resource_ViewTest::main') {
     Zend_Application_Resource_ViewTest::main();

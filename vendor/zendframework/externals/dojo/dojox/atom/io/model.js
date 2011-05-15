@@ -3,7 +3,6 @@ dojo.provide("dojox.atom.io.model");
 dojo.require("dojox.xml.parser");
 dojo.require("dojo.string");
 dojo.require("dojo.date.stamp");
-dojo.requireLocalization("dojox.atom.io", "messages");
 
 dojox.atom.io.model._Constants = {
 	//	summary: 
@@ -139,13 +138,12 @@ dojox.atom.io.model.util = {
 		//	description: 
 		//		Utility function to escape XML special characters in an HTML string.
 		//
-		// 	str: 
+		//	str: 
 		//		The string to escape
 		//	returns: 
 		//		HTML String with special characters (<,>,&, ", etc,) escaped.
-		str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-		str = str.replace(/'/gm, "&#39;"); 
-		return str;
+		return str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;")
+			.replace(/'/gm, "&#39;"); // String
 	},
 	unEscapeHtml: function(/*String*/str){
 		//	summary: 
@@ -157,9 +155,8 @@ dojox.atom.io.model.util = {
 		//		The string to un-escape.
 		//	returns: 
 		//		HTML String converted back to the normal text (unescaped) characters (<,>,&, ", etc,).
-		str = str.replace(/&amp;/gm, "&").replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&quot;/gm, "\"");
-		str = str.replace(/&#39;/gm, "'"); 
-		return str;
+		return str.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&quot;/gm, "\"")
+			.replace(/&#39;/gm, "'").replace(/&amp;/gm, "&"); // String
 	},
 	getNodename: function(/*DOM node*/node){
 		//	summary: 
@@ -298,7 +295,7 @@ dojo.declare('dojox.atom.io.model.Node', null, {
 dojo.declare("dojox.atom.io.model.AtomItem",dojox.atom.io.model.Node,{
 	 constructor: function(args){
 		this.ATOM_URI = dojox.atom.io.model._Constants.ATOM_URI;
-		this.links = null;				  		//Array of Link
+		this.links = null;						//Array of Link
 		this.authors = null;					//Array of Person
 		this.categories = null;					//Array of Category
 		this.contributors = null;				//Array of Person   
@@ -601,7 +598,7 @@ dojo.declare("dojox.atom.io.model.Category",dojox.atom.io.model.Node,{
 	buildFromDom: function(/*DOM node*/node){
 		//	summary: 
 		//		Function to do construction of the Category data from the DOM node containing it.
-		// 	description: 
+		//	description: 
 		//		Function to do construction of the Category data from the DOM node containing it.
 		//
 		//	node: 
@@ -634,7 +631,28 @@ dojo.declare("dojox.atom.io.model.Content",dojox.atom.io.model.Node,{
 		//
 		//	node: 
 		//		The DOM node to process for content.
-		if(node.innerHTML){
+		//Handle checking for XML content as the content type
+		var type = node.getAttribute("type");
+		if(type){
+			type = type.toLowerCase();
+			if(type == "xml" || "text/xml"){
+				type = this.XML;
+			}
+		}else{
+			type="text";
+		}
+		if(type === this.XML){
+			if(node.firstChild){
+				var i;
+				this.value = "";
+				for(i = 0; i < node.childNodes.length; i++){
+					var c = node.childNodes[i];
+					if(c){
+						this.value += dojox.xml.parser.innerXML(c);
+					}
+				}
+			}
+		} else if(node.innerHTML){
 			this.value = node.innerHTML;
 		}else{
 			this.value = dojox.xml.parser.textContent(node);
@@ -652,7 +670,7 @@ dojo.declare("dojox.atom.io.model.Content",dojox.atom.io.model.Node,{
 		//We need to unescape the HTML content here so that it can be displayed correctly when the value is fetched.
 		var lowerType = this.type.toLowerCase();
 		if(lowerType === "html" || lowerType === "text/html" || lowerType === "xhtml" || lowerType === "text/xhtml"){
-			this.value = dojox.atom.io.model.util.unEscapeHtml(this.value);
+			this.value = this.value?dojox.atom.io.model.util.unEscapeHtml(this.value):"";
 		}
 
 		if(this._postBuild){this._postBuild();}
@@ -910,7 +928,7 @@ dojo.declare("dojox.atom.io.model.Entry",dojox.atom.io.model.AtomItem,{
 		//	description: 
 		//		Function to get the href that allows editing of this feed entry.
 		//
-		// 	returns: 
+		//	returns: 
 		//		The href that specifies edit capability.
 		if(this.links === null || this.links.length === 0){
 			return null;
@@ -970,8 +988,7 @@ dojo.declare("dojox.atom.io.model.Feed",dojox.atom.io.model.AtomItem,{
 		//	entry: 
 		//		The entry object to add.
 		if(!entry.id){
-			var _nlsResources = dojo.i18n.getLocalization("dojox.atom.io", "messages");
-			throw new Error(_nlsResources.noId);
+			throw new Error("The entry object must be assigned an ID attribute.");
 		}
 		if(!this.entries){this.entries = [];}
 		entry.feedUrl = this.getSelfHref();
@@ -1124,9 +1141,7 @@ dojo.declare("dojox.atom.io.model.Service",dojox.atom.io.model.AtomItem,{
 		//
 		//	node: 
 		//		The DOM node to process for content.
-		var href;
 		var i;
-		var len = node.childNodes ? node.childNodes.length : 0;
 		this.workspaces = [];
 		if(node.tagName != "service"){
 			// FIXME: Need 0.9 DOM util...
@@ -1218,10 +1233,9 @@ dojo.declare("dojox.atom.io.model.Workspace",dojox.atom.io.model.AtomItem,{
 					if(name === "title"){
 						this.title = dojox.xml.parser.textContent(child);
 					}
-				}else{/*Only accept the PURL name_space for now */
-					var _nlsResources = dojo.i18n.getLocalization("dojox.atom.io", "messages");
-					throw new Error(_nlsResources.badNS);
 				}
+				//FIXME: Add an extension point so others can impl different namespaces.  For now just
+				//ignore unknown namespace tags.
 			}
 		}
 	}

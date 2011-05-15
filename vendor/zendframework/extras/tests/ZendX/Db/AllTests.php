@@ -16,7 +16,7 @@
  * @category   ZendX
  * @package    ZendX_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id: $
  */
@@ -61,7 +61,7 @@ require_once 'Zend/Db/Profiler/AllTests.php';
  * @category   ZendX
  * @package    ZendX_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendX_Db_AllTests
@@ -86,11 +86,11 @@ class ZendX_Db_AllTests
             define('TESTS_ZENDX_DB_ADAPTER_STATIC_ENABLED', false);
         }
 
-		self::_addDbTestSuites($suite, 'Firebird');
+        self::_addDbTestSuites($suite, 'Firebird');
 
         /**
          * @todo  self::_addDbTestSuites($suite, 'Odbc');
-         */		
+         */
 
         if (self::$_skipTestSuite !== null) {
             $suite->addTest(self::$_skipTestSuite);
@@ -104,14 +104,14 @@ class ZendX_Db_AllTests
     protected static function _addDbTestSuites($suite, $driver)
     {
         $DRIVER = strtoupper($driver);
-        $enabledConst = "TESTS_ZENDX_DB_ADAPTER_{$DRIVER}_ENABLED";
+        $enabledConst = "TESTS_ZEND_DB_ADAPTER_{$DRIVER}_ENABLED";
         if (!defined($enabledConst) || constant($enabledConst) != true) {
             self::_skipTestSuite($driver, "this Adapter is not enabled in TestConfiguration.php");
             return;
         }
 
         $ext = array(
-			'Firebird' => 'interbase',
+            'Firebird' => 'interbase',
             /**
              * @todo  'Odbc'
              */

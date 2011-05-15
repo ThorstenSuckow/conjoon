@@ -1,6 +1,6 @@
 ({
 	insertTableTitle: "แทรกตาราง",
-	modifyTableTitle: "ปรับเปลี่ยนตาราง",
+	modifyTableTitle: "ปรับเปลี่ยนไขตาราง",
 	rows: "แถว:",
 	columns: "คอลัมน์:",
 	align: "จัดตำแหน่ง:",
@@ -10,7 +10,6 @@
 	backgroundColor: "สีพื้นหลัง:",
 	borderColor: "สีเส้นขอบ:",
 	borderThickness: "ความหนาเส้นขอบ",
-	pixels: "พิกเซล",
 	percent: "เปอร์เซ็นต์",
 	pixels: "พิกเซล",
 	"default": "ดีฟอลต์",
@@ -19,6 +18,7 @@
 	right: "ขวา",
 	buttonSet: "ตั้งค่า", // translated elsewhere?
 	buttonInsert: "แทรก",
+	buttonCancel: "ยกเลิก",
 
 	selectTableLabel: "เลือกตาราง",
 	insertTableRowBeforeLabel: "เพิ่มแถวก่อน",
@@ -28,4 +28,3 @@
 	deleteTableRowLabel: "ลบแถว",
 	deleteTableColumnLabel: "ลบคอลัมน์"
 })
-

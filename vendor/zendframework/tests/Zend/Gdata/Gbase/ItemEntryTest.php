@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Gbase
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Gbase
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Gbase
@@ -62,7 +62,7 @@ class Zend_Gdata_Gbase_ItemEntryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(count($rowDataFromXML), 1);
         $this->assertEquals($rowDataFromXML[0]->getName(), 'price');
         $this->assertEquals($rowDataFromXML[0]->getText(), '10.99 USD');
-        $this->assertEquals($rowDataFromXML[0]->getType(), 'floatUnit');        
+        $this->assertEquals($rowDataFromXML[0]->getType(), 'floatUnit');
     }
 
 }

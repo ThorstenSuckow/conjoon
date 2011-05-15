@@ -15,35 +15,34 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Cache_AllTests::main');
 }
 
-require_once 'Zend/Cache/FactoryTest.php';
-require_once 'Zend/Cache/CoreTest.php';
-require_once 'Zend/Cache/FileBackendTest.php';
-require_once 'Zend/Cache/SqliteBackendTest.php';
-require_once 'Zend/Cache/OutputFrontendTest.php';
-require_once 'Zend/Cache/FunctionFrontendTest.php';
-require_once 'Zend/Cache/ClassFrontendTest.php';
-require_once 'Zend/Cache/FileFrontendTest.php';
 require_once 'Zend/Cache/ApcBackendTest.php';
-require_once 'Zend/Cache/XcacheBackendTest.php';
+require_once 'Zend/Cache/ClassFrontendTest.php';
+require_once 'Zend/Cache/CoreTest.php';
+require_once 'Zend/Cache/FactoryTest.php';
+require_once 'Zend/Cache/FileBackendTest.php';
+require_once 'Zend/Cache/FileFrontendTest.php';
+require_once 'Zend/Cache/FunctionFrontendTest.php';
+require_once 'Zend/Cache/ManagerTest.php';
 require_once 'Zend/Cache/MemcachedBackendTest.php';
+require_once 'Zend/Cache/LibmemcachedBackendTest.php';
+require_once 'Zend/Cache/OutputFrontendTest.php';
 require_once 'Zend/Cache/PageFrontendTest.php';
-require_once 'Zend/Cache/ZendPlatformBackendTest.php';
 require_once 'Zend/Cache/SkipTests.php';
+require_once 'Zend/Cache/SqliteBackendTest.php';
+require_once 'Zend/Cache/StaticBackendTest.php';
 require_once 'Zend/Cache/TwoLevelsBackendTest.php';
+require_once 'Zend/Cache/WinCacheBackendTest.php';
+require_once 'Zend/Cache/XcacheBackendTest.php';
+require_once 'Zend/Cache/ZendPlatformBackendTest.php';
 require_once 'Zend/Cache/ZendServerDiskTest.php';
 require_once 'Zend/Cache/ZendServerShMemTest.php';
 
@@ -51,7 +50,7 @@ require_once 'Zend/Cache/ZendServerShMemTest.php';
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
@@ -69,11 +68,13 @@ class Zend_Cache_AllTests
         $suite->addTestSuite('Zend_Cache_FactoryTest');
         $suite->addTestSuite('Zend_Cache_CoreTest');
         $suite->addTestSuite('Zend_Cache_FileBackendTest');
+        $suite->addTestSuite('Zend_Cache_StaticBackendTest');
         $suite->addTestSuite('Zend_Cache_OutputFrontendTest');
         $suite->addTestSuite('Zend_Cache_FunctionFrontendTest');
         $suite->addTestSuite('Zend_Cache_ClassFrontendTest');
         $suite->addTestSuite('Zend_Cache_FileFrontendTest');
         $suite->addTestSuite('Zend_Cache_PageFrontendTest');
+        $suite->addTestSuite('Zend_Cache_ManagerTest');
 
         /*
          * Check if SQLite tests are enabled, and if extension and driver are available.
@@ -107,6 +108,22 @@ class Zend_Cache_AllTests
             $suite->addTestSuite('Zend_Cache_ApcBackendTest');
         }
 
+    	/*
+         * Check if WinCache tests are enabled, and if extension is available.
+         */
+        if (!defined('TESTS_ZEND_CACHE_WINCACHE_ENABLED') ||
+            constant('TESTS_ZEND_CACHE_WINCACHE_ENABLED') === false) {
+            $skipTest = new Zend_Cache_WinCacheBackendTest_SkipTests();
+            $skipTest->message = 'Tests are not enabled in TestConfiguration.php';
+            $suite->addTest($skipTest);
+        } else if (!extension_loaded('wincache')) {
+            $skipTest = new Zend_Cache_WinCacheBackendTest_SkipTests();
+            $skipTest->message = "Extension 'wincache' is not loaded";
+            $suite->addTest($skipTest);
+        } else {
+            $suite->addTestSuite('Zend_Cache_WinCacheBackendTest');
+        }
+        
         /*
          * Check if Xcache tests are enabled, and if extension is available.
          */
@@ -133,7 +150,7 @@ class Zend_Cache_AllTests
             $suite->addTest($skipTest);
         } else if (!extension_loaded('memcache')) {
             $skipTest = new Zend_Cache_MemcachedBackendTest_SkipTests();
-            $skipTest->message = "Extension 'APC' is not loaded";
+            $skipTest->message = "Extension 'memcache' is not loaded";
             $suite->addTest($skipTest);
         } else {
             if (!defined('TESTS_ZEND_CACHE_MEMCACHED_HOST')) {
@@ -146,6 +163,31 @@ class Zend_Cache_AllTests
                 define('TESTS_ZEND_CACHE_MEMCACHED_PERSISTENT', true);
             }
             $suite->addTestSuite('Zend_Cache_MemcachedBackendTest');
+        }
+
+        /*
+         * Check if Memcached2 tests are enabled, and if extension is available.
+         */
+        if (!defined('TESTS_ZEND_CACHE_LIBMEMCACHED_ENABLED') ||
+            constant('TESTS_ZEND_CACHE_LIBMEMCACHED_ENABLED') === false) {
+            $skipTest = new Zend_Cache_LibmemcachedBackendTest_SkipTests();
+            $skipTest->message = 'Tests are not enabled in TestConfiguration.php';
+            $suite->addTest($skipTest);
+        } else if (!extension_loaded('memcached')) {
+            $skipTest = new Zend_Cache_LibmemcachedBackendTest_SkipTests();
+            $skipTest->message = "Extension 'Memcached' is not loaded";
+            $suite->addTest($skipTest);
+        } else {
+            if (!defined('TESTS_ZEND_CACHE_LIBMEMCACHED_HOST')) {
+                define('TESTS_ZEND_CACHE_LIBMEMCACHED_HOST', '127.0.0.1');
+            }
+            if (!defined('TESTS_ZEND_CACHE_LIBMEMCACHED_PORT')) {
+                define('TESTS_ZEND_CACHE_LIBMEMCACHED_PORT', 11211);
+            }
+            if (!defined('TESTS_ZEND_CACHE_LIBMEMCACHED_WEIGHT')) {
+                define('TESTS_ZEND_CACHE_LIBMEMCACHED_WEIGHT', 1);
+            }
+            $suite->addTestSuite('Zend_Cache_LibmemcachedBackendTest');
         }
 
         /*
@@ -197,6 +239,22 @@ class Zend_Cache_AllTests
             $suite->addTestSuite('Zend_Cache_ZendServerShMemTest');
         }
 
+    	/*
+         * Check if WinCache tests are enabled, and if extension is available.
+         */
+        if (!defined('TESTS_ZEND_CACHE_WINCACHE_ENABLED') ||
+            constant('TESTS_ZEND_CACHE_WINCACHE_ENABLED') === false) {
+            $skipTest = new Zend_Cache_TwoLevelsBackendTest_SkipTests();
+            $skipTest->message = 'Tests are not enabled in TestConfiguration.php';
+            $suite->addTest($skipTest);
+        } else if (!extension_loaded('wincache')) {
+            $skipTest = new Zend_Cache_TwoLevelsBackendTest_SkipTests();
+            $skipTest->message = "Extension 'wincache' is not loaded";
+            $suite->addTest($skipTest);
+        } else {
+            $suite->addTestSuite('Zend_Cache_TwoLevelsBackendTest');
+        }
+        
         return $suite;
     }
 }

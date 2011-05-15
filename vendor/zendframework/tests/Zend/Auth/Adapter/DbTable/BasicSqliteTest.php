@@ -15,18 +15,10 @@
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BasicSqliteTest.php 18066 2009-09-10 18:47:53Z ralph $
+ * @version    $Id: BasicSqliteTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
-
-/**
- * PHPUnit_Framework_TestCase
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 
 /**
  * @see Zend_Db_Adapter_Pdo_Sqlite
@@ -53,7 +45,7 @@ require_once 'Zend/Auth/Adapter/DbTable.php';
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Auth
  * @group      Zend_Db_Table
@@ -84,7 +76,7 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
         $this->_setupDbAdapter();
         $this->_setupAuthAdapter();
     }
-    
+
     public function tearDown()
     {
         $this->_adapter = null;
@@ -210,7 +202,7 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
         $resultRow = $this->_adapter->getResultRowObject(null, 'password');
         $this->assertEquals('O:8:"stdClass":3:{s:2:"id";s:1:"1";s:8:"username";s:11:"my_username";s:9:"real_name";s:12:"My Real Name";}', serialize($resultRow));
     }
-    
+
     /**
      * @group ZF-5957
      */
@@ -218,7 +210,7 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
     {
         $this->assertTrue($this->_adapter->getDbSelect() instanceof Zend_Db_Select);
     }
-    
+
     /**
      * @group ZF-5957
      */
@@ -236,7 +228,7 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
             $profiler->getLastQueryProfile()->getQuery()
             );
     }
-    
+
     /**
      * @group ZF-5957
      */
@@ -327,7 +319,7 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
     }
 
     /**
-     * 
+     *
      * @group ZF-3068
      */
     public function testDbTableAdapterUsesCaseFolding()
@@ -341,11 +333,128 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
         $this->_db->foldCase(Zend_Db::CASE_UPPER);
         $this->_adapter->authenticate();
     }
-    
+
+
+    /**
+     * Test fallback to default database adapter, when no such adapter set
+     *
+     * @expectedException Zend_Auth_Adapter_Exception
+     * @group ZF-7510
+     */
+    public function testAuthenticateWithDefaultDbAdapterNoAdapterException()
+    {
+        require_once('Zend/Db/Table/Abstract.php');
+        // preserve default db adapter between cases
+        $tmp = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // make sure that no default adapter exists
+        Zend_Db_Table_Abstract::setDefaultAdapter(null);
+        try {
+            $this->_adapter = new Zend_Auth_Adapter_DbTable();
+        } catch (Exception $e) {
+            $this->assertContains('No database adapter present', $e->getMessage());
+            throw $e;
+        }
+
+        // restore adapter
+        Zend_Db_Table_Abstract::setDefaultAdapter($tmp);
+    }
+
+    /**
+     * Test fallback to default database adapter
+     *
+     * @group ZF-7510
+     */
+    public function testAuthenticateWithDefaultDbAdapter()
+    {
+        require_once('Zend/Db/Table/Abstract.php');
+        // preserve default adapter between cases
+        $tmp = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // make sure that default db adapter exists
+        Zend_Db_Table_Abstract::setDefaultAdapter($this->_db);
+
+        // check w/o passing adapter
+        $this->_adapter = new Zend_Auth_Adapter_DbTable();
+        $this->_adapter
+            ->setTableName('users')
+            ->setIdentityColumn('username')
+            ->setCredentialColumn('password')
+            ->setTableName('users')
+            ->setIdentity('my_username')
+            ->setCredential('my_password');
+        $result = $this->_adapter->authenticate();
+        $this->assertTrue($result->isValid());
+
+        // restore adapter
+        Zend_Db_Table_Abstract::setDefaultAdapter($tmp);
+    }
+    /**
+     * Test to see same usernames with different passwords can not authenticate
+     * when flag is not set. This is the current state of
+     * Zend_Auth_Adapter_DbTable (up to ZF 1.10.6)
+     *
+     * @group   ZF-7289
+     */
+    public function testEqualUsernamesDifferentPasswordShouldNotAuthenticateWhenFlagIsNotSet()
+    {
+        $this->_db->insert('users', array (
+            'username' => 'my_username',
+            'password' => 'my_otherpass',
+            'real_name' => 'Test user 2',
+        ));
+
+        // test if user 1 can authenticate
+        $this->_adapter->setIdentity('my_username')
+                       ->setCredential('my_password');
+        $result = $this->_adapter->authenticate();
+        $this->assertTrue(in_array('More than one record matches the supplied identity.',
+            $result->getMessages()));
+        $this->assertFalse($result->isValid());
+    }
+    /**
+     * Test to see same usernames with different passwords can authenticate when
+     * a flag is set
+     *
+     * @group   ZF-7289
+     */
+    public function testEqualUsernamesDifferentPasswordShouldAuthenticateWhenFlagIsSet()
+    {
+        $this->_db->insert('users', array (
+            'username' => 'my_username',
+            'password' => 'my_otherpass',
+            'real_name' => 'Test user 2',
+        ));
+
+        // test if user 1 can authenticate
+        $this->_adapter->setIdentity('my_username')
+                       ->setCredential('my_password')
+                       ->setAmbiguityIdentity(true);
+        $result = $this->_adapter->authenticate();
+        $this->assertFalse(in_array('More than one record matches the supplied identity.',
+            $result->getMessages()));
+        $this->assertTrue($result->isValid());
+        $this->assertEquals('my_username', $result->getIdentity());
+
+        $this->_adapter = null;
+        $this->_setupAuthAdapter();
+
+        // test if user 2 can authenticate
+        $this->_adapter->setIdentity('my_username')
+                       ->setCredential('my_otherpass')
+                       ->setAmbiguityIdentity(true);
+        $result2 = $this->_adapter->authenticate();
+        $this->assertFalse(in_array('More than one record matches the supplied identity.',
+            $result->getMessages()));
+        $this->assertTrue($result->isValid());
+        $this->assertEquals('my_username', $result->getIdentity());
+    }
+
+
     protected function _setupDbAdapter($optionalParams = array())
     {
-        $params = array('dbname' => TESTS_ZEND_AUTH_ADAPTER_DBTABLE_PDO_SQLITE_DATABASE); 
-        
+        $params = array('dbname' => TESTS_ZEND_AUTH_ADAPTER_DBTABLE_PDO_SQLITE_DATABASE);
+
         if (!empty($optionalParams)) {
             $params['options'] = $optionalParams;
         }
@@ -363,12 +472,12 @@ class Zend_Auth_Adapter_DbTable_BasicSqliteTest extends PHPUnit_Framework_TestCa
                    . 'VALUES ("my_username", "my_password", "My Real Name")';
         $this->_db->query($sqlInsert);
     }
-    
+
     protected function _setupAuthAdapter()
     {
         $this->_adapter = new Zend_Auth_Adapter_DbTable($this->_db, 'users', 'username', 'password');
     }
-    
+
 
 }
 

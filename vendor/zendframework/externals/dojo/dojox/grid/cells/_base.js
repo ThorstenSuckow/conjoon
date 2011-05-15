@@ -1,6 +1,21 @@
 dojo.provide("dojox.grid.cells._base");
 
 dojo.require("dojox.grid.util");
+dojo.require("dijit._Widget");
+
+dojo.declare("dojox.grid._DeferredTextWidget", dijit._Widget, {
+	deferred: null,
+	_destroyOnRemove: true,
+	postCreate: function(){
+		if(this.deferred){
+			this.deferred.addBoth(dojo.hitch(this, function(text){
+				if(this.domNode){
+					this.domNode.innerHTML = text;
+				}
+			}));
+		}
+	}
+});
 
 (function(){
 	var focusSelectNode = function(inNode){
@@ -32,6 +47,7 @@ dojo.require("dojox.grid.util");
 		value: null,
 		hidden: false,
 		noresize: false,
+		draggable: true,
 		//private
 		_valueProp: "value",
 		_formatPending: false,
@@ -39,8 +55,38 @@ dojo.require("dojox.grid.util");
 		constructor: function(inProps){
 			this._props = inProps || {};
 			dojo.mixin(this, inProps);
+			if(this.draggable === undefined){
+				this.draggable = true;
+			}
 		},
 
+		_defaultFormat: function(inValue, callArgs){
+			var s = this.grid.formatterScope || this;
+			var f = this.formatter;
+			if(f && s && typeof f == "string"){
+				f = this.formatter = s[f];
+			}
+			var v = (inValue != this.defaultValue && f) ? f.apply(s, callArgs) : inValue;
+			if(typeof v == "undefined"){
+				return this.defaultValue;
+			}
+			if(v && v.addBoth){
+				// Check if it's a deferred
+				v = new dojox.grid._DeferredTextWidget({deferred: v},
+									dojo.create("span", {innerHTML: this.defaultValue}));
+			}
+			if(v && v.declaredClass && v.startup){
+				return "<div class='dojoxGridStubNode' linkWidget='" +
+						v.id +
+						"' cellIdx='" +
+						this.index +
+						"'>" +
+						this.defaultValue +
+						"</div>";
+			}
+			return v;
+		},
+		
 		// data source
 		format: function(inRowIndex, inItem){
 			// summary:
@@ -49,12 +95,11 @@ dojo.require("dojox.grid.util");
 			// grid row index
 			// returns: html for a given grid cell
 			var f, i=this.grid.edit.info, d=this.get ? this.get(inRowIndex, inItem) : (this.value || this.defaultValue);
-			d = (d && d.replace && this.grid.escapeHTMLInData) ? d.replace(/</g, '&lt;') : d;
+			d = (d && d.replace && this.grid.escapeHTMLInData) ? d.replace(/&/g, '&amp;').replace(/</g, '&lt;') : d;
 			if(this.editable && (this.alwaysEditing || (i.rowIndex==inRowIndex && i.cell==this))){
 				return this.formatEditing(d, inRowIndex);
 			}else{
-				var v = (d != this.defaultValue && (f = this.formatter)) ? f.call(this, d, inRowIndex) : d;
-				return (typeof v == "undefined" ? this.defaultValue : v);
+				return this._defaultFormat(d, [d, inRowIndex, this]);
 			}
 		},
 		formatEditing: function(inDatum, inRowIndex){
@@ -168,8 +213,8 @@ dojo.require("dojox.grid.util");
 			//	value of editor
 			var n = this.getEditNode(inRowIndex);
 			if(n){
-				n[this._valueProp] = inValue
-			};
+				n[this._valueProp] = inValue;
+			}
 		},
 		focus: function(inRowIndex, inNode){
 			// summary:
@@ -227,36 +272,38 @@ dojo.require("dojox.grid.util");
 		var d = dojo;
 		var formatter = d.trim(d.attr(node, "formatter")||"");
 		if(formatter){
-			cellDef.formatter = dojo.getObject(formatter);
+			cellDef.formatter = dojo.getObject(formatter)||formatter;
 		}
 		var get = d.trim(d.attr(node, "get")||"");
 		if(get){
 			cellDef.get = dojo.getObject(get);
 		}
-		var getBoolAttr = function(attr){
+		var getBoolAttr = function(attr, cell, cellAttr){
 			var value = d.trim(d.attr(node, attr)||"");
-			return value ? !(value.toLowerCase()=="false") : undefined;
-		}
-		cellDef.sortDesc = getBoolAttr("sortDesc");
-		cellDef.editable = getBoolAttr("editable");
-		cellDef.alwaysEditing = getBoolAttr("alwaysEditing");
-		cellDef.noresize = getBoolAttr("noresize");
+			if(value){ cell[cellAttr||attr] = !(value.toLowerCase()=="false"); }
+		};
+		getBoolAttr("sortDesc", cellDef);
+		getBoolAttr("editable", cellDef);
+		getBoolAttr("alwaysEditing", cellDef);
+		getBoolAttr("noresize", cellDef);
+		getBoolAttr("draggable", cellDef);
 
 		var value = d.trim(d.attr(node, "loadingText")||d.attr(node, "defaultValue")||"");
 		if(value){
 			cellDef.defaultValue = value;
 		}
 
-		var getStrAttr = function(attr){
-			return d.trim(d.attr(node, attr)||"")||undefined;
+		var getStrAttr = function(attr, cell, cellAttr){
+			var value = d.trim(d.attr(node, attr)||"")||undefined;
+			if(value){ cell[cellAttr||attr] = value; }
 		};
-		cellDef.styles = getStrAttr("styles");
-		cellDef.headerStyles = getStrAttr("headerStyles");
-		cellDef.cellStyles = getStrAttr("cellStyles");
-		cellDef.classes = getStrAttr("classes");
-		cellDef.headerClasses = getStrAttr("headerClasses");
-		cellDef.cellClasses = getStrAttr("cellClasses");
-	}
+		getStrAttr("styles", cellDef);
+		getStrAttr("headerStyles", cellDef);
+		getStrAttr("cellStyles", cellDef);
+		getStrAttr("classes", cellDef);
+		getStrAttr("headerClasses", cellDef);
+		getStrAttr("cellClasses", cellDef);
+	};
 
 	dojo.declare("dojox.grid.cells.Cell", dgc._Base, {
 		// summary
@@ -299,7 +346,7 @@ dojo.require("dojox.grid.util");
 		if(keyFilter){
 			cellDef.keyFilter = new RegExp(keyFilter);
 		}
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.RowIndex", dgc.Cell, {
 		name: 'Row',
@@ -313,7 +360,7 @@ dojo.require("dojox.grid.util");
 	});
 	dgc.RowIndex.markupFactory = function(node, cellDef){
 		dgc.Cell.markupFactory(node, cellDef);
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.Select", dgc.Cell, {
 		// summary:
@@ -368,7 +415,7 @@ dojo.require("dojox.grid.util");
 				cell.values = v;
 			}
 		}
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.AlwaysEdit", dgc.Cell, {
 		// summary:
@@ -385,7 +432,7 @@ dojo.require("dojox.grid.util");
 	});
 	dgc.AlwaysEdit.markupFactory = function(node, cell){
 		dgc.Cell.markupFactory(node, cell);
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.Bool", dgc.AlwaysEdit, {
 		// summary:
@@ -402,5 +449,5 @@ dojo.require("dojox.grid.util");
 	});
 	dgc.Bool.markupFactory = function(node, cell){
 		dgc.AlwaysEdit.markupFactory(node, cell);
-	}
+	};
 })();

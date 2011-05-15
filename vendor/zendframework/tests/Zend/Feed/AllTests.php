@@ -15,26 +15,14 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Feed_AllTests::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
-
-/**
- * Exclude from code coverage report
- */
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
 
 require_once 'Zend/Feed/ArrayAccessTest.php';
 require_once 'Zend/Feed/AtomEntryOnlyTest.php';
@@ -53,16 +41,32 @@ require_once 'Zend/Feed/Reader/Entry/AtomTest.php';
 require_once 'Zend/Feed/Reader/Feed/CommonTest.php';
 require_once 'Zend/Feed/Reader/Entry/CommonTest.php';
 
+require_once 'Zend/Feed/Reader/Feed/AtomSourceTest.php';
+require_once 'Zend/Feed/Reader/Entry/AtomStandaloneEntryTest.php';
+
 require_once 'Zend/Feed/Reader/Integration/WordpressRss2DcAtomTest.php';
 require_once 'Zend/Feed/Reader/Integration/WordpressAtom10Test.php';
 require_once 'Zend/Feed/Reader/Integration/LautDeRdfTest.php';
 require_once 'Zend/Feed/Reader/Integration/H-OnlineComAtom10Test.php';
 
+require_once 'Zend/Feed/Writer/FeedTest.php';
+require_once 'Zend/Feed/Writer/EntryTest.php';
+require_once 'Zend/Feed/Writer/DeletedTest.php';
+require_once 'Zend/Feed/Writer/Renderer/Feed/AtomTest.php';
+require_once 'Zend/Feed/Writer/Renderer/Feed/RssTest.php';
+require_once 'Zend/Feed/Writer/Renderer/Entry/AtomTest.php';
+require_once 'Zend/Feed/Writer/Renderer/Entry/RssTest.php';
+
+require_once 'Zend/Feed/Writer/Extension/ITunes/EntryTest.php';
+require_once 'Zend/Feed/Writer/Extension/ITunes/FeedTest.php';
+
+require_once 'Zend/Feed/Pubsubhubbub/AllTests.php';
+
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Feed
  */
@@ -101,6 +105,10 @@ class Zend_Feed_AllTests
         $suite->addTestSuite('Zend_Feed_Reader_Feed_CommonTest');
         // COMMON - Entry Level
         $suite->addTestSuite('Zend_Feed_Reader_Entry_CommonTest');
+        // ATOM - Entry Level (Source Feed Metadata)
+        $suite->addTestSuite('Zend_Feed_Reader_Feed_AtomSourceTest');
+        // ATOM - Entry Level (Standalone Entry Documents)
+        $suite->addTestSuite('Zend_Feed_Reader_Entry_AtomStandaloneEntryTest');
         /**
          * Real World Feed Tests
          */
@@ -108,6 +116,19 @@ class Zend_Feed_AllTests
         $suite->addTestSuite('Zend_Feed_Reader_Integration_WordpressAtom10Test');
         $suite->addTestSuite('Zend_Feed_Reader_Integration_LautDeRdfTest');
         $suite->addTestSuite('Zend_Feed_Reader_Integration_HOnlineComAtom10Test');
+
+        $suite->addTestSuite('Zend_Feed_Writer_FeedTest');
+        $suite->addTestSuite('Zend_Feed_Writer_EntryTest');
+        $suite->addTestSuite('Zend_Feed_Writer_DeletedTest');
+        $suite->addTestSuite('Zend_Feed_Writer_Renderer_Feed_AtomTest');
+        $suite->addTestSuite('Zend_Feed_Writer_Renderer_Feed_RssTest');
+        $suite->addTestSuite('Zend_Feed_Writer_Renderer_Entry_AtomTest');
+        $suite->addTestSuite('Zend_Feed_Writer_Renderer_Entry_RssTest');
+
+        $suite->addTestSuite('Zend_Feed_Writer_Extension_ITunes_EntryTest');
+        $suite->addTestSuite('Zend_Feed_Writer_Extension_ITunes_FeedTest');
+
+        $suite->addTest(Zend_Feed_Pubsubhubbub_AllTests::suite());
 
         return $suite;
     }

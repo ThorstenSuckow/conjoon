@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IntTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: IntTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Validate_Int
@@ -36,7 +30,7 @@ require_once 'Zend/Validate/Int.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -113,5 +107,26 @@ class Zend_Validate_IntTest extends PHPUnit_Framework_TestCase
     public function testNonStringValidation()
     {
         $this->assertFalse($this->_validator->isValid(array(1 => 1)));
+    }
+
+    /**
+     * @ZF-7489
+     */
+    public function testUsingApplicationLocale()
+    {
+        Zend_Registry::set('Zend_Locale', new Zend_Locale('de'));
+        $valid = new Zend_Validate_Int();
+        $this->assertTrue($valid->isValid('10.000'));
+    }
+
+    /**
+     * @ZF-7703
+     */
+    public function testLocaleDetectsNoEnglishLocaleOnOtherSetLocale()
+    {
+        Zend_Registry::set('Zend_Locale', new Zend_Locale('de'));
+        $valid = new Zend_Validate_Int();
+        $this->assertTrue($valid->isValid(1200));
+        $this->assertFalse($valid->isValid('1,200'));
     }
 }

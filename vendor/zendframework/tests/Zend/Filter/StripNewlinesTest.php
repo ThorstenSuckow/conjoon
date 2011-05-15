@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_StripNewlines
@@ -34,7 +29,7 @@ require_once 'Zend/Filter/StripNewlines.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -65,14 +60,14 @@ class Zend_Filter_StripNewlinesTest extends PHPUnit_Framework_TestCase
     public function testBasic ()
     {
         $valuesExpected = array(
-        	'' => '',
-        	"\n" => '',
-        	"\r" => '',
-        	"\r\n" => '',
-        	'\n' => '\n',
-        	'\r' => '\r',
-        	'\r\n' => '\r\n',
-        	"Some text\nthat we have\r\nstuff in" => 'Some textthat we havestuff in'
+            '' => '',
+            "\n" => '',
+            "\r" => '',
+            "\r\n" => '',
+            '\n' => '\n',
+            '\r' => '\r',
+            '\r\n' => '\r\n',
+            "Some text\nthat we have\r\nstuff in" => 'Some textthat we havestuff in'
         );
         foreach ($valuesExpected as $input => $output) {
             $this->assertEquals($output, $this->_filter->filter($input));

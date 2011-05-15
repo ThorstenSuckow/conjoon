@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StringToLowerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: StringToLowerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_StringToLower
@@ -36,7 +30,7 @@ require_once 'Zend/Filter/StringToLower.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -99,6 +93,86 @@ class Zend_Filter_StringToLowerTest extends PHPUnit_Framework_TestCase
         } catch (Zend_Filter_Exception $e) {
             $this->assertContains('mbstring is required', $e->getMessage());
         }
+    }
 
+    /**
+     * @return void
+     */
+    public function testFalseEncoding()
+    {
+        if (!function_exists('mb_strtolower')) {
+            $this->markTestSkipped('mbstring required');
+        }
+
+        try {
+            $this->_filter->setEncoding('aaaaa');
+            $this->fail();
+        } catch (Zend_Filter_Exception $e) {
+            $this->assertContains('is not supported', $e->getMessage());
+        }
+    }
+
+    /**
+     * @ZF-8989
+     */
+    public function testInitiationWithEncoding()
+    {
+        $valuesExpected = array(
+            'Ü'     => 'ü',
+            'Ñ'     => 'ñ',
+            'ÜÑ123' => 'üñ123'
+        );
+
+        try {
+            $filter = new Zend_Filter_StringToLower(array('encoding' => 'UTF-8'));
+            foreach ($valuesExpected as $input => $output) {
+                $this->assertEquals($output, $filter->filter($input));
+            }
+        } catch (Zend_Filter_Exception $e) {
+            $this->assertContains('mbstring is required', $e->getMessage());
+        }
+    }
+
+    /**
+     * @ZF-9058
+     */
+    public function testCaseInsensitiveEncoding()
+    {
+        $valuesExpected = array(
+            'Ü'     => 'ü',
+            'Ñ'     => 'ñ',
+            'ÜÑ123' => 'üñ123'
+        );
+
+        try {
+            $this->_filter->setEncoding('UTF-8');
+            foreach ($valuesExpected as $input => $output) {
+                $this->assertEquals($output, $this->_filter->filter($input));
+            }
+
+            $this->_filter->setEncoding('utf-8');
+            foreach ($valuesExpected as $input => $output) {
+                $this->assertEquals($output, $this->_filter->filter($input));
+            }
+
+            $this->_filter->setEncoding('UtF-8');
+            foreach ($valuesExpected as $input => $output) {
+                $this->assertEquals($output, $this->_filter->filter($input));
+            }
+        } catch (Zend_Filter_Exception $e) {
+            $this->assertContains('mbstring is required', $e->getMessage());
+        }
+    }
+
+    /**
+     * @group ZF-9854
+     */
+    public function testDetectMbInternalEncoding()
+    {
+        if (!function_exists('mb_internal_encoding')) {
+            $this->markTestSkipped("Function 'mb_internal_encoding' not available");
+        }
+
+        $this->assertEquals(mb_internal_encoding(), $this->_filter->getEncoding());
     }
 }

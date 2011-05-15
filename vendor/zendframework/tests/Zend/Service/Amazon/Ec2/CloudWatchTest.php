@@ -15,12 +15,11 @@
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: CloudWatchTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Service/Amazon/Ec2/CloudWatch.php';
 require_once 'Zend/Http/Client.php';
 require_once 'Zend/Http/Client/Adapter/Test.php';
@@ -31,7 +30,7 @@ require_once 'Zend/Http/Client/Adapter/Test.php';
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Amazon
@@ -204,8 +203,115 @@ class Zend_Service_Amazon_Ec2_CloudWatchTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrReturn, $return);
+    }
 
+    public function testZF8149()
+    {
 
+        $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
+                    . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
+                    . "Server: hi\r\n"
+                    . "Last-modified: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
+                    . "Status: 200 OK\r\n"
+                    . "Content-type: application/xml; charset=utf-8\r\n"
+                    . "Expires: Tue, 31 Mar 1981 05:00:00 GMT\r\n"
+                    . "Connection: close\r\n"
+                    . "\r\n"
+                    ."<GetMetricStatisticsResponse xmlns=\"http://monitoring.amazonaws.com/doc/2009-05-15/\">\r\n"
+                    ."  <GetMetricStatisticsResult>\r\n"
+                    ."    <Datapoints>\r\n"
+                    ."      <member>\r\n"
+                    ."        <Timestamp>2009-11-19T21:52:00Z</Timestamp>\r\n"
+                    ."        <Unit>Percent</Unit>\r\n"
+                    ."        <Samples>1.0</Samples>\r\n"
+                    ."        <Average>0.09</Average>\r\n"
+                    ."      </member>\r\n"
+                    ."      <member>\r\n"
+                    ."        <Timestamp>2009-11-19T21:55:00Z</Timestamp>\r\n"
+                    ."        <Unit>Percent</Unit>\r\n"
+                    ."        <Samples>1.0</Samples>\r\n"
+                    ."        <Average>0.18</Average>\r\n"
+                    ."      </member>\r\n"
+                    ."      <member>\r\n"
+                    ."        <Timestamp>2009-11-19T21:54:00Z</Timestamp>\r\n"
+                    ."        <Unit>Percent</Unit>\r\n"
+                    ."        <Samples>1.0</Samples>\r\n"
+                    ."        <Average>0.09</Average>\r\n"
+                    ."      </member>\r\n"
+                    ."      <member>\r\n"
+                    ."        <Timestamp>2009-11-19T21:51:00Z</Timestamp>\r\n"
+                    ."        <Unit>Percent</Unit>\r\n"
+                    ."        <Samples>1.0</Samples>\r\n"
+                    ."        <Average>0.18</Average>\r\n"
+                    ."      </member>\r\n"
+                    ."      <member>\r\n"
+                    ."        <Timestamp>2009-11-19T21:53:00Z</Timestamp>\r\n"
+                    ."        <Unit>Percent</Unit>\r\n"
+                    ."        <Samples>1.0</Samples>\r\n"
+                    ."        <Average>0.09</Average>\r\n"
+                    ."      </member>\r\n"
+                    ."    </Datapoints>\r\n"
+                    ."    <Label>CPUUtilization</Label>\r\n"
+                    ."  </GetMetricStatisticsResult>\r\n"
+                    ."  <ResponseMetadata>\r\n"
+                    ."    <RequestId>6fb864fd-d557-11de-ac37-475775222f21</RequestId>\r\n"
+                    ."  </ResponseMetadata>\r\n"
+                    ."</GetMetricStatisticsResponse>";
+        $this->adapter->setResponse($rawHttpResponse);
+
+        $return = $this->Zend_Service_Amazon_Ec2_CloudWatch->getMetricStatistics(
+            array(
+            	'MeasureName' => 'CPUUtilization',
+             	'Statistics' =>  array('Average'),
+             	'Dimensions'=>   array('InstanceId'=>'i-93ba31fa'),
+             	'StartTime'=>    '2009-11-19T21:51:57+00:00',
+             	'EndTime'=>      '2009-11-19T21:56:57+00:00'
+           )
+        );
+
+        $arrReturn = array (
+          'label' => 'CPUUtilization',
+          'datapoints' =>
+          array (
+            0 =>
+            array (
+              'Timestamp' => '2009-11-19T21:52:00Z',
+              'Unit' => 'Percent',
+              'Samples' => '1.0',
+              'Average' => '0.09',
+            ),
+            1 =>
+            array (
+              'Timestamp' => '2009-11-19T21:55:00Z',
+              'Unit' => 'Percent',
+              'Samples' => '1.0',
+              'Average' => '0.18',
+            ),
+            2 =>
+            array (
+              'Timestamp' => '2009-11-19T21:54:00Z',
+              'Unit' => 'Percent',
+              'Samples' => '1.0',
+              'Average' => '0.09',
+            ),
+            3 =>
+            array (
+              'Timestamp' => '2009-11-19T21:51:00Z',
+              'Unit' => 'Percent',
+              'Samples' => '1.0',
+              'Average' => '0.18',
+            ),
+            4 =>
+            array (
+              'Timestamp' => '2009-11-19T21:53:00Z',
+              'Unit' => 'Percent',
+              'Samples' => '1.0',
+              'Average' => '0.09',
+            ),
+          ),
+        );
+
+        $this->assertSame($arrReturn, $return);
     }
 
 }

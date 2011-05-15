@@ -7,8 +7,8 @@ dojo.declare("dijit.CheckedMenuItem",
 		{
 		// summary:
 		//		A checkbox-like menu item for toggling on and off
-		
-		templatePath: dojo.moduleUrl("dijit", "templates/CheckedMenuItem.html"),
+
+		templateString: dojo.cache("dijit", "templates/CheckedMenuItem.html"),
 
 		// checked: Boolean
 		//		Our checked state
@@ -35,7 +35,7 @@ dojo.declare("dijit.CheckedMenuItem",
 			// tags:
 			//		private
 			if(!this.disabled){
-				this.attr("checked", !this.checked);
+				this.set("checked", !this.checked);
 				this.onChange(this.checked);
 			}
 			this.inherited(arguments);

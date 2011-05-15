@@ -15,14 +15,12 @@
  * @category   Zend
  * @package    Zend_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ReturnValueTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version $Id: ReturnValueTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Server/Reflection/ReturnValue.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'PHPUnit/Framework/IncompleteTestError.php';
 
 /**
  * Test case for Zend_Server_Reflection_ReturnValue
@@ -30,22 +28,22 @@ require_once 'PHPUnit/Framework/IncompleteTestError.php';
  * @category   Zend
  * @package    Zend_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Server
  */
-class Zend_Server_Reflection_ReturnValueTest extends PHPUnit_Framework_TestCase 
+class Zend_Server_Reflection_ReturnValueTest extends PHPUnit_Framework_TestCase
 {
     /**
      * __construct() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - type: Optional; has default; 
-     * - description: Optional; has default; 
-     * 
-     * Returns: void 
+     * - type: Optional; has default;
+     * - description: Optional; has default;
+     *
+     * Returns: void
      */
     public function test__construct()
     {
@@ -56,9 +54,9 @@ class Zend_Server_Reflection_ReturnValueTest extends PHPUnit_Framework_TestCase
     /**
      * getType() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: string 
+     * Returns: string
      */
     public function testGetType()
     {
@@ -72,12 +70,12 @@ class Zend_Server_Reflection_ReturnValueTest extends PHPUnit_Framework_TestCase
     /**
      * setType() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - type: 
-     * 
-     * Returns: void 
+     * - type:
+     *
+     * Returns: void
      */
     public function testSetType()
     {
@@ -90,9 +88,9 @@ class Zend_Server_Reflection_ReturnValueTest extends PHPUnit_Framework_TestCase
     /**
      * getDescription() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: string 
+     * Returns: string
      */
     public function testGetDescription()
     {
@@ -106,12 +104,12 @@ class Zend_Server_Reflection_ReturnValueTest extends PHPUnit_Framework_TestCase
     /**
      * setDescription() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - description: 
-     * 
-     * Returns: void 
+     * - description:
+     *
+     * Returns: void
      */
     public function testSetDescription()
     {

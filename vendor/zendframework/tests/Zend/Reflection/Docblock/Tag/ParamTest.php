@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: ParamTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Reflection/File.php';
@@ -26,7 +26,7 @@ require_once 'Zend/Reflection/File.php';
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Reflection
  * @group      Zend_Reflection_Docblock
@@ -35,10 +35,10 @@ require_once 'Zend/Reflection/File.php';
  */
 class Zend_Reflection_Docblock_Tag_ParamTest extends PHPUnit_Framework_TestCase
 {
-    
+
 
     static protected $_sampleClassFileRequired = false;
-    
+
     public function setup()
     {
         if (self::$_sampleClassFileRequired === false) {
@@ -47,7 +47,7 @@ class Zend_Reflection_Docblock_Tag_ParamTest extends PHPUnit_Framework_TestCase
             self::$_sampleClassFileRequired = true;
         }
     }
-    
+
     public function testType()
     {
         $classReflection = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass5');
@@ -55,7 +55,7 @@ class Zend_Reflection_Docblock_Tag_ParamTest extends PHPUnit_Framework_TestCase
         $paramTag = $classReflection->getMethod('doSomething')->getDocblock()->getTag('param');
         $this->assertEquals($paramTag->getType(), 'int');
     }
-    
+
     public function testVariableName()
     {
         $classReflection = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass5');
@@ -63,16 +63,29 @@ class Zend_Reflection_Docblock_Tag_ParamTest extends PHPUnit_Framework_TestCase
         $paramTag = $classReflection->getMethod('doSomething')->getDocblock()->getTag('param');
         $this->assertEquals($paramTag->getVariableName(), '$one');
     }
-    
+
     public function testAllowsMultipleSpacesInDocblockTagLine()
     {
-    	$classReflection = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass6');
-    	
+        $classReflection = new Zend_Reflection_Class('Zend_Reflection_TestSampleClass6');
+
         $paramTag = $classReflection->getMethod('doSomething')->getDocblock()->getTag('param');
-        
+
         $this->assertEquals($paramTag->getType(), 'int', 'Second Match Failed');
-    	$this->assertEquals($paramTag->getVariableName(), '$var', 'Third Match Failed');
-    	$this->assertEquals($paramTag->getDescription(),'Description of $var', 'Final Match Failed');
+        $this->assertEquals($paramTag->getVariableName(), '$var', 'Third Match Failed');
+        $this->assertEquals($paramTag->getDescription(),'Description of $var', 'Final Match Failed');
+    }
+
+    /**
+     * @group ZF-8307
+     */
+    public function testNamespaceInParam()
+    {    
+        $classReflection = new Zend_Reflection_Class('Zend_Reflection_Docblock_Param_WithNamespace');
+        $paramTag = $classReflection->getMethod('doSomething')->getDocblock()->getTag('param');
+
+        $this->assertEquals('Zend\Foo\Bar', $paramTag->getType());
+        $this->assertEquals('$var', $paramTag->getVariableName());
+        $this->assertEquals('desc', $paramTag->getDescription());
     }
 }
-    
+

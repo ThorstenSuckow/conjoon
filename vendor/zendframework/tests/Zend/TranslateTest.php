@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-require_once dirname(__FILE__) . '/../TestHelper.php';
 
 /**
  * Zend_Translate
@@ -28,10 +26,15 @@ require_once dirname(__FILE__) . '/../TestHelper.php';
 require_once 'Zend/Translate.php';
 
 /**
+ * Zend_Translate_Plural
+ */
+require_once 'Zend/Translate/Plural.php';
+
+/**
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Translate
  */
@@ -448,6 +451,18 @@ class Zend_TranslateTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests getting of single message ids
+     */
+    public function testGettingSingleMessageIds()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_ARRAY, array('msg1' => 'Message 1', 'msg2' => 'Message 2'), 'en');
+        $lang->addTranslation(array('msg1' => 'Message 1 (ru)'), 'ru');
+        $this->assertEquals('msg1', $lang->getMessageId('Message 1 (ru)'));
+        $this->assertEquals('msg2', $lang->getMessageId('Message 2', 'en'));
+        $this->assertFalse($lang->getMessageId('Message 5'));
+    }
+
+    /**
      * Tests getting of all messages
      */
     public function testGettingAllMessages()
@@ -575,6 +590,312 @@ class Zend_TranslateTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * ZF-7508
+     */
+    public function testDontLogUntranslatedMessageWithIsTranslated()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_CSV, dirname(__FILE__) . '/Translate/Adapter/_files', 'en', array('delimiter' => ','));
+        $this->assertFalse($lang->isTranslated('ignored'));
+
+        $stream = fopen('php://memory', 'w+');
+        require_once 'Zend/Log/Writer/Stream.php';
+        $writer = new Zend_Log_Writer_Stream($stream);
+        require_once 'Zend/Log.php';
+        $log    = new Zend_Log($writer);
+
+        $lang->setOptions(array('logUntranslated' => true, 'log' => $log));
+        $this->assertFalse($lang->isTranslated('ignored'));
+
+        rewind($stream);
+        $this->assertNotContains('ignored', stream_get_contents($stream));
+    }
+
+    /**
+     * ZF-7130
+     */
+    public function testMultiFolderScan()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_ARRAY, dirname(__FILE__) . '/Translate/Adapter/_files/testarray', 'en_GB', array('scan' => Zend_Translate::LOCALE_DIRECTORY));
+        $this->assertEquals('Message 1 (ja)', $lang->_('Message 1', 'ja'        ));
+        $this->assertEquals('Message 1 (en)', $lang->_('Message 1'              ));
+    }
+
+    /**
+     * ZF-7214
+     */
+    public function testMultiClear()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_ARRAY, dirname(__FILE__) . '/Translate/Adapter/_files/testarray', 'en_GB', array('scan' => Zend_Translate::LOCALE_DIRECTORY));
+        $this->assertEquals('Message 1 (ja)', $lang->_('Message 1', 'ja'));
+        $lang->addTranslation(dirname(__FILE__) . '/Translate/Adapter/_files/translation_en.php', 'ja', array('clear'));
+        $this->assertEquals('Message 1 (en)', $lang->_('Message 1', 'ja'));
+    }
+
+    /**
+     * ZF-7941
+     */
+    public function testEmptyTranslation()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_ARRAY, null, null, array('disableNotices' => true));
+        $this->assertEquals(0, count($lang->getList()));
+    }
+
+    /**
+     * Translating Object
+     */
+    public function testObjectTranslation()
+    {
+        $lang = new Zend_Translate(Zend_Translate::AN_ARRAY, dirname(__FILE__) . '/Translate/Adapter/_files/testarray', 'en_GB', array('scan' => Zend_Translate::LOCALE_DIRECTORY));
+        $this->assertEquals('Message 1 (ja)', $lang->_('Message 1', 'ja'));
+
+        $this->assertEquals($lang, $lang->translate($lang));
+    }
+
+    /**
+     * Tests getting plurals from lowered locale
+     */
+    public function testGettingPluralsUsingOwnRule()
+    {
+        $lang = new Zend_Translate(
+            Zend_Translate::AN_ARRAY,
+            array('singular' =>
+                array('plural_0 (en)',
+                    'plural_1 (en)',
+                    'plural_2 (en)',
+                    'plural_3 (en)'),
+                'plural' => ''), 'en'
+        );
+        $lang->addTranslation(array('msg1' => 'Message 1 (ru)'), 'en_US');
+        $lang->setLocale('en_US');
+
+        Zend_Translate_Plural::setPlural(array($this, 'customPlural'), 'en_US');
+        $this->assertEquals('plural_1 (en)', $lang->translate(array('singular', 'plural', 1)));
+        $this->assertEquals('plural_1 (en)', $lang->plural('singular', 'plural', 1));
+        $this->assertEquals('plural_1 (en)', $lang->translate(array('singular', 'plural', 0)));
+        $this->assertEquals('plural_1 (en)', $lang->plural('singular', 'plural', 0));
+    }
+
+    /**
+     * @group ZF-9489
+     */
+    public function testAddingAdapterToSourceUsingOwnRule()
+    {
+        $translate = new Zend_Translate(
+            Zend_Translate::AN_ARRAY,
+            array('singular' =>
+                array('plural_0 (en)',
+                    'plural_1 (en)',
+                    'plural_2 (en)',
+                    'plural_3 (en)'),
+                'plural' => ''), 'en'
+        );
+
+        $this->assertFalse($translate->isTranslated('Message 1'));
+        $adapter = new Zend_Translate_Adapter_Gettext(dirname(__FILE__) . '/Translate/Adapter/_files/translation_en.mo', 'en');
+        $translate->addTranslation($adapter);
+
+        $this->assertTrue($adapter->isTranslated('Message 1'));
+
+        $adapter2 = new Zend_Translate_Adapter_Gettext(dirname(__FILE__) . '/Translate/Adapter/_files/testmo/de_AT/LC_TEST/translation-de_DE.mo', 'de_AT');
+        $adapter2->addTranslation(dirname(__FILE__) . '/Translate/Adapter/_files/translation_en2.mo', 'fr');
+        $translate->addTranslation($adapter2, 'fr');
+
+        $languages = $translate->getList();
+        $this->assertFalse(array_key_exists('de_AT', $languages));
+        $this->assertTrue(array_key_exists('fr', $languages));
+    }
+
+    /**
+     * @group ZF-9500
+     */
+    public function testIgnoreMultipleDirectories()
+    {
+        $translate = new Zend_Translate(
+            Zend_Translate::AN_ARRAY,
+            dirname(__FILE__) . '/Translate/Adapter/_files/testarray/',
+            'auto',
+            array(
+                'scan' => Zend_Translate::LOCALE_FILENAME,
+                'ignore' => array('.', 'ignoreme', 'LC_TEST')
+            )
+        );
+
+        $langs = $translate->getList();
+        $this->assertFalse(array_key_exists('de_DE', $langs));
+        $this->assertTrue(array_key_exists('ja', $langs));
+        $this->assertTrue(array_key_exists('en_US', $langs));
+
+        $translate2 = new Zend_Translate(
+            Zend_Translate::AN_ARRAY,
+            dirname(__FILE__) . '/Translate/Adapter/_files/testarray/',
+            'auto',
+            array(
+                'scan' => Zend_Translate::LOCALE_FILENAME,
+                'ignore' => array('.', 'regex_1' => '/de_DE/', 'regex' => '/ja/')
+            )
+        );
+
+        $langs = $translate2->getList();
+        $this->assertFalse(array_key_exists('de_DE', $langs));
+        $this->assertFalse(array_key_exists('ja', $langs));
+        $this->assertTrue(array_key_exists('en_US', $langs));
+    }
+
+    /**
+     * @group ZF-2736
+     */
+    public function testReroutingForTranslations()
+    {
+        $translate = new Zend_Translate(
+            array(
+                'adapter' => Zend_Translate::AN_ARRAY,
+                'content' => dirname(__FILE__) . '/Translate/Adapter/_files/testarray/',
+                'locale'  => 'auto',
+                'scan'    => Zend_Translate::LOCALE_FILENAME,
+                'ignore'  => array('.', 'ignoreme', 'LC_OTHER'),
+                'route'   => array('ja' => 'en_US'),
+            )
+        );
+
+        $translate2 = new Zend_Translate(
+            array(
+                'adapter' => Zend_Translate::AN_CSV,
+                'content' => dirname(__FILE__) . '/Translate/Adapter/_files/translation_en.csv',
+                'locale'  => 'en_US',
+            )
+        );
+
+        $translate->addTranslation($translate2);
+        $langs = $translate->getList();
+        $this->assertFalse(array_key_exists('de_AT', $langs));
+        $this->assertTrue(array_key_exists('ja', $langs));
+        $this->assertTrue(array_key_exists('en_US', $langs));
+        $this->assertEquals('Message 5 (en)', $translate->translate('Message 5', 'ja'));
+    }
+
+    /**
+     * @group ZF-2736
+     */
+    public function testCircleReroutingForTranslations()
+    {
+        $translate = new Zend_Translate(
+            array(
+                'adapter' => Zend_Translate::AN_ARRAY,
+                'content' => dirname(__FILE__) . '/Translate/Adapter/_files/testarray/',
+                'locale'  => 'auto',
+                'scan'    => Zend_Translate::LOCALE_FILENAME,
+                'ignore'  => array('.', 'ignoreme', 'LC_TEST'),
+                'route'   => array('ja' => 'en_US', 'en_US' => 'ja'),
+            )
+        );
+
+        $translate2 = new Zend_Translate(
+            array(
+                'adapter' => Zend_Translate::AN_CSV,
+                'content' => dirname(__FILE__) . '/Translate/Adapter/_files/translation_en.csv',
+                'locale'  => 'en_US',
+            )
+        );
+
+        $translate->addTranslation($translate2);
+
+        $langs = $translate->getList();
+        $this->assertFalse(array_key_exists('de_DE', $langs));
+        $this->assertTrue(array_key_exists('ja', $langs));
+        $this->assertTrue(array_key_exists('en_US', $langs));
+        $this->assertEquals('Message 5 (en)', $translate->translate('Message 5', 'ja'));
+        $this->assertEquals('Message 10', $translate->translate('Message 10', 'ja'));
+    }
+
+    /**
+     * @group ZF-2736
+     */
+    public function testDoubleReroutingForTranslations()
+    {
+        $translate = new Zend_Translate(
+            array(
+                'adapter' => Zend_Translate::AN_ARRAY,
+                'content' => dirname(__FILE__) . '/Translate/Adapter/_files/testarray/',
+                'locale'  => 'auto',
+                'scan'    => Zend_Translate::LOCALE_FILENAME,
+                'ignore'  => array('.', 'ignoreme', 'LC_TEST'),
+                'route'   => array('ja' => 'en_US', 'en_US' => 'ja'),
+            )
+        );
+
+        $translate2 = new Zend_Translate(
+            array(
+                'adapter' => Zend_Translate::AN_CSV,
+                'content' => dirname(__FILE__) . '/Translate/Adapter/_files/translation_en.csv',
+                'locale'  => 'en_US',
+            )
+        );
+
+        $translate->addTranslation($translate2);
+
+        $langs = $translate->getList();
+        $this->assertFalse(array_key_exists('de_DE', $langs));
+        $this->assertTrue(array_key_exists('ja', $langs));
+        $this->assertTrue(array_key_exists('en_US', $langs));
+        $this->assertEquals('Message 5 (en)', $translate->translate('Message 5', 'ja'));
+        $this->assertEquals('Message 5 (en)', $translate->translate('Message 5', 'ja'));
+    }
+
+    /**
+     * ZF-9877
+     */
+    public function testSetCacheThroughOptions()
+    {
+        require_once 'Zend/Cache.php';
+        $cache = Zend_Cache::factory('Core', 'File',
+            array('lifetime' => 120, 'automatic_serialization' => true),
+            array('cache_dir' => dirname(__FILE__) . '/_files/'));
+
+        $translate = new Zend_Translate(array(
+            'adapter' => Zend_Translate::AN_ARRAY,
+            'content' => array('msg1' => 'Message 1 (en)'),
+            'locale'  => 'en',
+            'cache'   => $cache,
+        ));
+
+        $return = Zend_Translate::getCache();
+        $this->assertTrue($return instanceof Zend_Cache_Core);
+        $this->assertTrue(Zend_Translate::hasCache());
+    }
+
+    /**
+     * @ZF-10051
+     */
+    public function testSettingLogPriorityForLog()
+    {
+        $stream = fopen('php://memory', 'w+');
+        require_once 'Zend/Log/Writer/Stream.php';
+        $writer = new Zend_Log_Writer_Stream($stream);
+        require_once 'Zend/Log.php';
+        $log    = new Zend_Log($writer);
+
+        $lang = new Zend_Translate(array(
+            'adapter'     => Zend_Translate::AN_CSV,
+            'content'     => dirname(__FILE__) . '/Translate/Adapter/_files',
+            'locale'      => 'en',
+            'delimiter'   => ',',
+            'logPriority' => 3,
+            'log'         => $log)
+        );
+
+        $lang->setLocale('ru');
+
+        rewind($stream);
+        $this->assertContains('ERR (3)', stream_get_contents($stream));
+
+        $lang->setOptions(array('logPriority' => 1));
+        $lang->setLocale('sv');
+
+        rewind($stream);
+        $this->assertContains('ALERT (1)', stream_get_contents($stream));
+    }
+
+    /**
      * Ignores a raised PHP error when in effect, but throws a flag to indicate an error occurred
      *
      * @param  integer $errno
@@ -587,6 +908,16 @@ class Zend_TranslateTest extends PHPUnit_Framework_TestCase
     public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
     {
         $this->_errorOccured = true;
+    }
+
+    /**
+     * Custom callback for testGettingPluralsUsingOwnRule
+     *
+     * @param  integer $number
+     * @return integer
+     */
+    public function customPlural($number) {
+        return 1;
     }
 }
 

@@ -15,23 +15,23 @@
  * @category   Zend
  * @package    Zend_Layout
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ZendLayoutFunctionalTestErrorController.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ZendLayoutFunctionalTestErrorController.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
  * @category   Zend
  * @package    Zend_Layout
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendLayoutFunctionalTestErrorController extends Zend_Controller_Action
 {
-    
+
     public function errorAction()
     {
     }
-    
+
 }

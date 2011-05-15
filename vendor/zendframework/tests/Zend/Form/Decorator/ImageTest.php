@@ -15,19 +15,15 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ImageTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ImageTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Form_Decorator_ImageTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Decorator_ImageTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 require_once 'Zend/Form/Decorator/Image.php';
 
@@ -42,11 +38,11 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
-class Zend_Form_Decorator_ImageTest extends PHPUnit_Framework_TestCase 
+class Zend_Form_Decorator_ImageTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -55,7 +51,6 @@ class Zend_Form_Decorator_ImageTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Form_Decorator_ImageTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -160,7 +155,7 @@ class Zend_Form_Decorator_ImageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2714
+     * @group ZF-2714
      */
     public function testImageElementAttributesPassedWithDecoratorOptionsToViewHelper()
     {

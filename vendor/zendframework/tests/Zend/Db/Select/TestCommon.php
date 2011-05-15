@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 18511 2009-10-12 14:33:35Z ralph $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,14 +27,14 @@
 require_once 'Zend/Db/TestSetup.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
 
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
@@ -1236,7 +1236,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
             ->order('2');
         return $select;
     }
-    
+
     public function testSelectOrderByPosition()
     {
         $select = $this->_selectOrderByPosition();
@@ -1256,7 +1256,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
             ->order('2 ASC');
         return $select;
     }
-    
+
     public function testSelectOrderByPositionAsc()
     {
         $select = $this->_selectOrderByPositionAsc();
@@ -1276,7 +1276,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
             ->order('2 DESC');
         return $select;
     }
-    
+
     public function testSelectOrderByPositionDesc()
     {
         $select = $this->_selectOrderByPositionDesc();
@@ -1296,7 +1296,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
             ->order(array('2 DESC', '1 DESC'));
         return $select;
     }
-    
+
     public function testSelectOrderByMultiplePositions()
     {
         $select = $this->_selectOrderByMultiplePositions();
@@ -1610,6 +1610,24 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     }
 
     /**
+     * @group ZF-4772
+     * @expectedException Zend_Db_Select_Exception
+     */
+    public function testSelectUnionNoArrayThrowsException()
+    {
+        $this->_db->select()->union('string');
+    }
+
+    /**
+     * @group ZF-4772
+     * @expectedException Zend_Db_Select_Exception
+     */
+    public function testSelectUnionInvalidUnionTypeThrowsException()
+    {
+        $this->_db->select()->union(array(), 'foo');
+    }
+
+    /**
      * @group ZF-6653
      */
     public function testSelectIsTheSameWhenCallingFromAndJoinInDifferentOrders()
@@ -1626,7 +1644,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
         $sqlSelectJoinThenFrom = $selectJoinThenFrom->assemble();
         $this->assertEquals($sqlSelectFromThenJoin, $sqlSelectJoinThenFrom);
     }
-    
+
     /**
      * @group ZF-6653
      */
@@ -1646,7 +1664,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
         $sqlSelectJoinThenFrom = $selectJoinThenFrom->assemble();
         $this->assertEquals($sqlSelectFromThenJoin, $sqlSelectJoinThenFrom);
     }
-    
+
     /**
      * @group ZF-6653
      */
@@ -1654,15 +1672,15 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
     {
         $select = $this->_selectWithMultipleFromsAfterAJoinWillProperlyOrderColumns();
         $quote = $this->_db->getQuoteIdentifierSymbol();
-        $target = 'SELECT `f`.`columnfoo`, `d`.`columndoo`, `b`.`barcolumn` AS `baralias` FROM `foo` AS `f`'
-            . "\n" . ' INNER JOIN `doo` AS `d`'
-            . "\n" . ' LEFT JOIN `bar` AS `b` ON f.columnfoo2 = b.barcolumn2';
+        $target = 'SELECT `f`.`columnfoo`, `d`.`columndoo`, `b`.`barcolumn` AS `baralias` FROM ' . $this->_db->quoteTableAs('foo', 'f')
+            . "\n" . ' INNER JOIN ' . $this->_db->quoteTableAs('doo', 'd')
+            . "\n" . ' LEFT JOIN ' . $this->_db->quoteTableAs('bar', 'b') . ' ON f.columnfoo2 = b.barcolumn2';
         if ($quote != '`') {
             $target = str_replace('`', $quote, $target);
         }
         $this->assertEquals($target, $select->assemble());
     }
-    
+
     protected function _selectWithMultipleFromsAfterAJoinWillProperlyOrderColumns()
     {
         $selectJoinThenFrom = $this->_db->select();
@@ -1671,7 +1689,7 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
             ->from(array('d' => 'doo'), array('columndoo'));
         return $selectJoinThenFrom;
     }
-    
+
     public function testSerializeSelect()
     {
         /* checks if the adapter has effectively gotten serialized,

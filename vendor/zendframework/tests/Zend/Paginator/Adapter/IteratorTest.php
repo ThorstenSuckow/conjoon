@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IteratorTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: IteratorTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -28,13 +28,12 @@ require_once 'Zend/Paginator/Adapter/Iterator.php';
 /**
  * @see PHPUnit_Framework_TestCase
  */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Paginator
  */
@@ -44,7 +43,7 @@ class Zend_Paginator_Adapter_IteratorTest extends PHPUnit_Framework_TestCase
      * @var Zend_Paginator_Adapter_Iterator
      */
     private $_adapter;
-    
+
     /**
      * Prepares the environment before running a test.
      */
@@ -62,40 +61,40 @@ class Zend_Paginator_Adapter_IteratorTest extends PHPUnit_Framework_TestCase
         $this->_adapter = null;
         parent::tearDown();
     }
-    
+
     public function testGetsItemsAtOffsetZero()
     {
         $actual = $this->_adapter->getItems(0, 10);
         $this->assertType('LimitIterator', $actual);
-        
+
         $i = 1;
         foreach ($actual as $item) {
             $this->assertEquals($i, $item);
             $i++;
         }
     }
-    
+
     public function testGetsItemsAtOffsetTen()
     {
         $actual = $this->_adapter->getItems(10, 10);
         $this->assertType('LimitIterator', $actual);
-        
+
         $i = 11;
         foreach ($actual as $item) {
             $this->assertEquals($i, $item);
             $i++;
         }
     }
-    
+
     public function testReturnsCorrectCount()
     {
         $this->assertEquals(101, $this->_adapter->count());
     }
-    
+
     public function testThrowsExceptionIfNotCountable()
     {
         $iterator = new LimitIterator(new ArrayIterator(range(1, 101)));
-        
+
         try {
             new Zend_Paginator_Adapter_Iterator($iterator);
         } catch (Exception $e) {
@@ -103,7 +102,7 @@ class Zend_Paginator_Adapter_IteratorTest extends PHPUnit_Framework_TestCase
             $this->assertEquals('Iterator must implement Countable', $e->getMessage());
         }
     }
-    
+
     /**
      * @group ZF-4151
      */
@@ -116,5 +115,25 @@ class Zend_Paginator_Adapter_IteratorTest extends PHPUnit_Framework_TestCase
         } catch (OutOfBoundsException $e) {
             $this->fail('Empty iterator caused in an OutOfBoundsException');
         }
+    }
+
+    /**
+     * @group ZF-8084
+     */
+    public function testGetItemsSerializable() {
+        $items = $this->_adapter->getItems(0, 1);
+        $innerIterator = $items->getInnerIterator();
+        $items = unserialize(serialize($items));
+        $this->assertTrue( ($items->getInnerIterator() == $innerIterator), 'getItems has to be serializable to use caching');
+    }
+
+    /**
+     * @group ZF-4151
+     */
+    public function testEmptySet() {
+        $iterator = new ArrayIterator(array());
+        $this->_adapter = new Zend_Paginator_Adapter_Iterator($iterator);
+        $actual = $this->_adapter->getItems(0, 10);
+        $this->assertEquals(array(), $actual);
     }
 }

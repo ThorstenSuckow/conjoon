@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_App
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata/App.php';
  * @category   Zend
  * @package    Zend_Gdata_App
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_App
@@ -44,12 +44,12 @@ class Zend_Gdata_App_ContentTest extends PHPUnit_Framework_TestCase
                 true);
         $this->content = new Zend_Gdata_App_Extension_Content();
     }
-      
+
     public function testEmptyContentShouldHaveEmptyExtensionsList() {
         $this->assertTrue(is_array($this->content->extensionElements));
         $this->assertTrue(count($this->content->extensionElements) == 0);
     }
-      
+
     public function testEmptyContentToAndFromStringShouldMatch() {
         $contentXml = $this->content->saveXML();
         $newContent = new Zend_Gdata_App_Extension_Content();

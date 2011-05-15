@@ -1,6 +1,5 @@
 dojo.provide("dijit._editor._Plugin");
 dojo.require("dijit._Widget");
-dojo.require("dijit.Editor");
 dojo.require("dijit.form.Button");
 
 dojo.declare("dijit._editor._Plugin", null, {
@@ -9,9 +8,8 @@ dojo.declare("dijit._editor._Plugin", null, {
 	//		a single button on the Toolbar and some associated code
 
 	constructor: function(/*Object?*/args, /*DomNode?*/node){
-		if(args){
-			dojo.mixin(this, args);
-		}
+		this.params = args || {};
+		dojo.mixin(this, this.params);
 		this._connects=[];
 	},
 
@@ -24,31 +22,24 @@ dojo.declare("dijit._editor._Plugin", null, {
 	iconClassPrefix: "dijitEditorIcon",
 
 	// button: dijit._Widget?
-	//		Pointer to `dijit.form.Button` or other widget (ex: `dijit.form.FilteringSelect`) that controls this plugin.
+	//		Pointer to `dijit.form.Button` or other widget (ex: `dijit.form.FilteringSelect`)
+	//		that is added to the toolbar to control this plugin.
 	//		If not specified, will be created on initialization according to `buttonClass`
 	button: null,
-
-	// queryCommand: ???
-	//		TODO: unused, remove
-	queryCommand: null,
 
 	// command: String
 	//		String like "insertUnorderedList", "outdent", "justifyCenter", etc. that represents an editor command.
 	//		Passed to editor.execCommand() if `useDefaultCommand` is true.
 	command: "",
 
-	// commandArg: anything
-	//		Argument to execCommand() after command.
-	//		TODO: unused, remove
-	commandArg: null,
-
 	// useDefaultCommand: Boolean
 	//		If true, this plugin executes by calling Editor.execCommand() with the argument specified in `command`.
 	useDefaultCommand: true,
 
 	// buttonClass: Widget Class
-	//		Class for button to control this plugin.   This is used to instantiate the button, unless `button` itself
-	//		is specified directly.
+	//		Class of widget (ex: dijit.form.Button or dijit.form.FilteringSelect)
+	//		that is added to the toolbar to control this plugin.
+	//		This is used to instantiate the button, unless `button` itself is specified directly.
 	buttonClass: dijit.form.Button,
 
 	getLabel: function(/*String*/key){
@@ -59,33 +50,34 @@ dojo.declare("dijit._editor._Plugin", null, {
 		return this.editor.commands[key];		// String
 	},
 
-	_initButton: function(props){
+	_initButton: function(){
 		// summary:
-		//		Initialize the button that will control this plugin.
+		//		Initialize the button or other widget that will control this plugin.
 		//		This code only works for plugins controlling built-in commands in the editor.
 		// tags:
 		//		protected extension
 		if(this.command.length){
-			var label = this.getLabel(this.command);
-			var className = this.iconClassPrefix+" "+this.iconClassPrefix + this.command.charAt(0).toUpperCase() + this.command.substr(1);
+			var label = this.getLabel(this.command),
+				editor = this.editor,
+				className = this.iconClassPrefix+" "+this.iconClassPrefix + this.command.charAt(0).toUpperCase() + this.command.substr(1);
 			if(!this.button){
-				props = dojo.mixin({
+				var props = dojo.mixin({
 					label: label,
+					dir: editor.dir,
+					lang: editor.lang,
 					showLabel: false,
 					iconClass: className,
 					dropDown: this.dropDown,
 					tabIndex: "-1"
-				}, props || {});
+				}, this.params || {});
 				this.button = new this.buttonClass(props);
 			}
 		}
 	},
 
-	destroy: function(f){
+	destroy: function(){
 		// summary:
 		//		Destroy this plugin
-
-		// TODO: remove f parameter, it's unused
 
 		dojo.forEach(this._connects, dojo.disconnect);
 		if(this.dropDown){
@@ -123,13 +115,13 @@ dojo.declare("dijit._editor._Plugin", null, {
 				enabled = e.queryCommandEnabled(c);
 				if(this.enabled !== enabled){
 					this.enabled = enabled;
-					this.button.attr('disabled', !enabled);
+					this.button.set('disabled', !enabled);
 				}
 				if(typeof this.button.checked == 'boolean'){
 					checked = e.queryCommandState(c);
 					if(this.checked !== checked){
 						this.checked = checked;
-						this.button.attr('checked', e.queryCommandState(c));
+						this.button.set('checked', e.queryCommandState(c));
 					}
 				}
 			}catch(e){
@@ -144,31 +136,31 @@ dojo.declare("dijit._editor._Plugin", null, {
 
 		// TODO: refactor code to just pass editor to constructor.
 
-		// FIXME: detatch from previous editor!!
+		// FIXME: detach from previous editor!!
 		this.editor = editor;
 
 		// FIXME: prevent creating this if we don't need to (i.e., editor can't handle our command)
 		this._initButton();
 
-		// FIXME: wire up editor to button here!
-		if(this.command.length &&
-			!this.editor.queryCommandAvailable(this.command)){
-			// console.debug("hiding:", this.command);
-			if(this.button){
-				this.button.domNode.style.display = "none";
+		// Processing for buttons that execute by calling editor.execCommand()
+		if(this.button && this.useDefaultCommand){
+			if(this.editor.queryCommandAvailable(this.command)){
+				this.connect(this.button, "onClick",
+					dojo.hitch(this.editor, "execCommand", this.command, this.commandArg)
+				);
+			}else{
+				// hide button because editor doesn't support command (due to browser limitations)
+				this.button.domNode.style.display = "none";			
 			}
 		}
-		if(this.button && this.useDefaultCommand){
-			this.connect(this.button, "onClick",
-				dojo.hitch(this.editor, "execCommand", this.command, this.commandArg)
-			);
-		}
+
 		this.connect(this.editor, "onNormalizedDisplayChanged", "updateState");
 	},
 
 	setToolbar: function(/*dijit.Toolbar*/ toolbar){
 		// summary:
-		//		Tell the plugin to add itself to the toolbar (if there is a button associated with the plugin).
+		//		Tell the plugin to add it's controller widget (often a button)
+		//		to the toolbar.  Does nothing if there is no controller widget.
 
 		// TODO: refactor code to just pass toolbar to constructor.
 

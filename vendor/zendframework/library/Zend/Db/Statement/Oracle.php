@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Statement
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Oracle.php 17857 2009-08-27 22:01:47Z ralph $
+ * @version    $Id: Oracle.php 23959 2011-05-03 10:45:47Z yoshida@zend.co.jp $
  */
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Db/Statement.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Statement
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_Statement_Oracle extends Zend_Db_Statement
@@ -87,7 +87,7 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
     protected function _prepare($sql)
     {
         $connection = $this->_adapter->getConnection();
-        $this->_stmt = oci_parse($connection, $sql);
+        $this->_stmt = @oci_parse($connection, $sql);
         if (!$this->_stmt) {
             /**
              * @see Zend_Db_Statement_Oracle_Exception
@@ -229,16 +229,9 @@ class Zend_Db_Statement_Oracle extends Zend_Db_Statement
     public function _execute(array $params = null)
     {
         $connection = $this->_adapter->getConnection();
+
         if (!$this->_stmt) {
             return false;
-        }
-
-        if (! $this->_stmt) {
-            /**
-             * @see Zend_Db_Adapter_Oracle_Exception
-             */
-            require_once 'Zend/Db/Statement/Oracle/Exception.php';
-            throw new Zend_Db_Statement_Oracle_Exception(oci_error($connection));
         }
 
         if ($params !== null) {

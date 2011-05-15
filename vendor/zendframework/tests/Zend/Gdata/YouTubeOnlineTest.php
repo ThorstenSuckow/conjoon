@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 require_once 'Zend/Gdata/YouTube.php';
 require_once 'Zend/Gdata/YouTube/VideoQuery.php';
@@ -30,7 +28,7 @@ require_once 'Zend/Gdata/ClientLogin.php';
  * @category   Zend
  * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_YouTube
@@ -146,13 +144,13 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL= 'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $this->user,
-                                          $password = $this->pass,
-                                          $service = $service,
-                                          $client = null,
-                                          $source = 'Google-UnitTests-1.0',
-                                          $loginToken = null,
-                                          $loginCaptcha = null,
+                                          $this->user,
+                                          $this->pass,
+                                          $service,
+                                          null,                    // client
+                                          'Google-UnitTests-1.0',  // source
+                                          null,                    // loginToken
+                                          null,                    // loginCaptcha
                                           $authenticationURL);
 
         $this->gdata = new Zend_Gdata_YouTube($httpClient,
@@ -183,7 +181,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
       $feed = $this->gdata->getPlaylistListFeed($this->ytAccount);
       $firstEntry = $feed->entries[0];
       $this->assertTrue($firstEntry instanceof Zend_Gdata_YouTube_PlaylistListEntry);
-      $this->assertTrue($firstEntry->getSummary()->text != null);                  
+      $this->assertTrue($firstEntry->getSummary()->text != null);
     }
 
     public function testRetrievePlaylistVideoFeed()
@@ -265,7 +263,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             }
         }
     }
-    
+
     public function testPerformV2Query_Location()
     {
         $this->gdata->setMajorProtocolVersion(2);
@@ -278,7 +276,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             'Could not retrieve a single entry for location search:' .
             $query->getQueryUrl(2));
     }
-    
+
     public function testPerformV2Query_SafeSearch()
     {
         $this->gdata->setMajorProtocolVersion(2);
@@ -306,26 +304,26 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
                 $mg->getMediaCredit()->getYTtype());
         }
     }
-    
+
     public function testAddUpdateAndDeletePlaylistV2()
     {
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $this->user,
-                                          $password = $this->pass,
-                                          $service = $service,
-                                          $client = null,
-                                          $source = 'Google-UnitTests-1.0',
-                                          $loginToken = null,
-                                          $loginCaptcha = null,
+                                          $this->user,
+                                          $this->pass,
+                                          $service,
+                                          null,                    // client
+                                          'Google-UnitTests-1.0',  // source
+                                          null,                    // $loginToken
+                                          null,                    // loginCaptcha
                                           $authenticationURL);
 
         $yt = new Zend_Gdata_YouTube(
             $httpClient, 'Google-UnitTests-1.0',
             'ytapi-gdataops-12345-u78960r7-0',
-            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' . 
+            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' .
             'yu1IuvkioESqzRcf3voDLymIUGIrxdMx2aTufdbf5D7E51NyLYyfeaw');
 
         $yt->setMajorProtocolVersion(2);
@@ -345,7 +343,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         } catch (Zend_Gdata_App_Exception $e) {
             $successfulInsertion = false;
         }
-        
+
         $this->assertTrue($successfulInsertion, 'Failed to insert a new ' .
             'playlist.');
 
@@ -361,7 +359,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
                 break;
             }
         }
-        
+
         $this->assertTrue($playlistFound, 'Could not find the newly inserted ' .
             'playlist.');
 
@@ -374,10 +372,10 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         } catch (Zend_Gdata_App_Exception $e) {
             $updatedSuccesfully = false;
         }
-        
+
         $this->assertTrue($updatedSuccesfully, 'Could not succesfully update ' .
             'a new playlist.');
-        
+
         // Delete it
         $deletedSuccesfully = true;
         try {
@@ -389,26 +387,26 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($deletedSuccesfully, 'Could not succesfully delete ' .
             'a new playlist.');
     }
-    
+
     public function testAddAndDeleteSubscriptionToChannelV2()
     {
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
         $authenticationURL =
             'https://www.google.com/youtube/accounts/ClientLogin';
         $httpClient = Zend_Gdata_ClientLogin::getHttpClient(
-                                          $username = $this->user,
-                                          $password = $this->pass,
-                                          $service = $service,
-                                          $client = null,
-                                          $source = 'Google-UnitTests-1.0',
-                                          $loginToken = null,
-                                          $loginCaptcha = null,
+                                          $this->user,
+                                          $this->pass,
+                                          $service,
+                                          null,                    // client
+                                          'Google-UnitTests-1.0',  // source
+                                          null,                    // loginToken
+                                          null,                    // loginCaptcha
                                           $authenticationURL);
 
         $yt = new Zend_Gdata_YouTube(
             $httpClient, 'Google-UnitTests-1.0',
             'ytapi-gdataops-12345-u78960r7-0',
-            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' . 
+            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' .
             'yu1IuvkioESqzRcf3voDLymIUGIrxdMx2aTufdbf5D7E51NyLYyfeaw');
 
         $yt->setMajorProtocolVersion(2);
@@ -426,7 +424,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             // examine the correct category element since there are multiple
             foreach($categories as $category) {
                 if ($category->getScheme() ==
-                    'http://gdata.youtube.com/schemas/2007/' . 
+                    'http://gdata.youtube.com/schemas/2007/' .
                     'subscriptiontypes.cat') {
                         $subscriptionType = $category->getTerm();
                     }
@@ -444,7 +442,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             }
         }
         $this->assertTrue($successDeletionUpFront, 'Found existing ' .
-            'subscription in unit test, could not delete prior to running ' . 
+            'subscription in unit test, could not delete prior to running ' .
             'test -- ' . $message);
 
         // Channel
@@ -454,7 +452,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $this->subscriptionTypeSchema));
         $newSubscription->setUsername($yt->newUsername(
             $channelToSubscribeTo));
-        
+
         $postUrl =
             'http://gdata.youtube.com/feeds/api/users/default/subscriptions';
 
@@ -503,13 +501,13 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $yt = new Zend_Gdata_YouTube(
             $httpClient, 'Google-UnitTests-1.0',
             'ytapi-gdataops-12345-u78960r7-0',
-            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' . 
+            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' .
             'yu1IuvkioESqzRcf3voDLymIUGIrxdMx2aTufdbf5D7E51NyLYyfeaw');
 
         $yt->setMajorProtocolVersion(2);
-        
+
         $usernameOfFavoritesToSubscribeTo = 'CBS';
-        
+
         // Test for deletion first in case something went wrong
         // last time the test was run (network, etc...)
         $subscriptionFeed = $yt->getSubscriptionFeed($this->ytAccount);
@@ -521,7 +519,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             // examine the correct category element since there are multiple
             foreach($categories as $category) {
                 if ($category->getScheme() ==
-                    'http://gdata.youtube.com/schemas/2007/' . 
+                    'http://gdata.youtube.com/schemas/2007/' .
                     'subscriptiontypes.cat') {
                         $subscriptionType = $category->getTerm();
                     }
@@ -539,7 +537,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             }
         }
         $this->assertTrue($successDeletionUpFront, 'Found existing ' .
-            'subscription in unit test, could not delete prior to running ' . 
+            'subscription in unit test, could not delete prior to running ' .
             'test -- ' . $message);
 
         // CBS's favorites
@@ -549,7 +547,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $this->subscriptionTypeSchema));
         $newSubscription->setUsername($yt->newUsername(
             $usernameOfFavoritesToSubscribeTo));
-        
+
         $postUrl =
             'http://gdata.youtube.com/feeds/api/users/default/subscriptions';
 
@@ -564,7 +562,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $message = $e->getMessage();
             $successPosting = false;
         }
-        
+
         $this->assertTrue($successPosting, $message);
 
         // Delete it
@@ -579,7 +577,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($successDeletion, $message);
     }
-    
+
     public function testAddAndDeleteSubscriptionToPlaylistV2()
     {
         $service = Zend_Gdata_YouTube::AUTH_SERVICE_NAME;
@@ -598,12 +596,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $yt = new Zend_Gdata_YouTube(
             $httpClient, 'Google-UnitTests-1.0',
             'ytapi-gdataops-12345-u78960r7-0',
-            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' . 
+            'AI39si6c-ZMGFZ5fkDAEJoCNHP9LOM2LSO1XuycZF7E' .
             'yu1IuvkioESqzRcf3voDLymIUGIrxdMx2aTufdbf5D7E51NyLYyfeaw');
 
         $yt->setMajorProtocolVersion(2);
         $playlistIdToSubscribeTo = '7A2BB4AFFEBED2A4';
-        
+
         // Test for deletion first in case something went wrong
         // last time the test was run (network, etc...)
         $subscriptionFeed = $yt->getSubscriptionFeed($this->ytAccount);
@@ -615,7 +613,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             // examine the correct category element since there are multiple
             foreach($categories as $category) {
                 if ($category->getScheme() ==
-                    'http://gdata.youtube.com/schemas/2007/' . 
+                    'http://gdata.youtube.com/schemas/2007/' .
                     'subscriptiontypes.cat') {
                         $subscriptionType = $category->getTerm();
                     }
@@ -633,7 +631,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             }
         }
         $this->assertTrue($successDeletionUpFront, 'Found existing ' .
-            'subscription in unit test, could not delete prior to running ' . 
+            'subscription in unit test, could not delete prior to running ' .
             'test -- ' . $message);
 
         // Playlist of McGyver videos
@@ -644,7 +642,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $this->subscriptionTypeSchema));
         $newSubscription->setPlaylistId($yt->newPlaylistId(
             $playlistIdToSubscribeTo));
-        
+
         $postUrl =
             'http://gdata.youtube.com/feeds/api/users/default/subscriptions';
 
@@ -659,7 +657,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $message = $e->getMessage();
             $successPosting = false;
         }
-        
+
         $this->assertTrue($successPosting, $message);
 
         // Delete it
@@ -697,7 +695,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
         $yt->setMajorProtocolVersion(2);
         $queryStringToSubscribeTo = 'zend';
-        
+
         // Test for deletion first in case something went wrong
         // last time the test was run (network, etc...)
         $subscriptionFeed = $yt->getSubscriptionFeed($this->ytAccount);
@@ -709,7 +707,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             // examine the correct category element since there are multiple
             foreach($categories as $category) {
                 if ($category->getScheme() ==
-                    'http://gdata.youtube.com/schemas/2007/' . 
+                    'http://gdata.youtube.com/schemas/2007/' .
                     'subscriptiontypes.cat') {
                         $subscriptionType = $category->getTerm();
                     }
@@ -727,7 +725,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             }
         }
         $this->assertTrue($successDeletionUpFront, 'Found existing ' .
-            'subscription in unit test, could not delete prior to running ' . 
+            'subscription in unit test, could not delete prior to running ' .
             'test -- ' . $message);
 
         // Query
@@ -737,7 +735,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $this->subscriptionTypeSchema));
         $newSubscription->setQueryString($yt->newQueryString(
             $queryStringToSubscribeTo));
-        
+
         $postUrl =
             'http://gdata.youtube.com/feeds/api/users/default/subscriptions';
 
@@ -752,7 +750,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $message = $e->getMessage();
             $successPosting = false;
         }
-        
+
         $this->assertTrue($successPosting, $message);
 
         // Delete it
@@ -809,10 +807,10 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
             $exceptionThrown = true;
         }
         $this->assertTrue($exceptionThrown, 'Was expecting an exception when ' .
-            'making a request to the YouTube Activity feed without a ' . 
+            'making a request to the YouTube Activity feed without a ' .
             'developer key.');
     }
-    
+
     public function testRetrieveActivityFeedForMultipleUsers()
     {
         $developerKey = constant(
@@ -834,7 +832,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Activity of ' . $this->ytAccount .
             ',associatedpress', $feed->title->text);
     }
-    
+
     public function testRetrieveFriendFeed()
     {
         $developerKey = constant(
@@ -892,12 +890,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
 
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
             $clientId, $developerKey);
-        
+
         $inboxFeed = $youtube->getInboxFeedForCurrentUser();
         $this->assertTrue($inboxFeed instanceof Zend_Gdata_YouTube_InboxFeed);
         $this->assertTrue(count($inboxFeed->entries) > 0, 'Test account ' .
             $this->ytAccount . ' had no messages in their inbox.');
-        
+
         // get the first entry
         $inboxFeed->rewind();
         $inboxEntry = $inboxFeed->current();
@@ -919,12 +917,12 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
             $clientId, $developerKey);
         $youtube->setMajorProtocolVersion(2);
-        
+
         $inboxFeed = $youtube->getInboxFeedForCurrentUser();
         $this->assertTrue($inboxFeed instanceof Zend_Gdata_YouTube_InboxFeed);
         $this->assertTrue(count($inboxFeed->entries) > 0, 'Test account ' .
             $this->ytAccount . ' had no messages in their inbox.');
-     
+
         // get the first entry
         $inboxFeed->rewind();
         $inboxEntry = $inboxFeed->current();
@@ -933,7 +931,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($inboxEntry->getTitle()->text != '');
     }
 
-    
+
     public function testSendAMessageV2()
     {
         $developerKey = constant('TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
@@ -998,7 +996,7 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($exceptionCaught, 'Was expecting an exception if ' .
             'sending a message without a video');
     }
-    
+
     public function testCommentOnAComment()
     {
         $developerKey = constant('TESTS_ZEND_GDATA_YOUTUBE_DEVELOPER_KEY');
@@ -1009,22 +1007,22 @@ class Zend_Gdata_YouTubeOnlineTest extends PHPUnit_Framework_TestCase
         $youtube = new Zend_Gdata_YouTube($client, 'ZF_UnitTest',
             $clientId, $developerKey);
         $youtube->setMajorProtocolVersion(2);
-        
+
         $mostDiscussedFeed = $youtube->getVideoFeed(
             'http://gdata.youtube.com/feeds/api/standardfeeds/most_discussed');
-        
+
         // get first entry
         $mostDiscussedFeed->rewind();
         $firstEntry = $mostDiscussedFeed->current();
-        
+
         $this->assertTrue($firstEntry instanceof Zend_Gdata_YouTube_VideoEntry);
-        
+
         $commentFeed = $youtube->getVideoCommentFeed($firstEntry->getVideoId());
 
         // get first comment
         $commentFeed->rewind();
         $firstCommentEntry = $commentFeed->current();
-        
+
         $commentedComment = $youtube->replyToCommentEntry($firstCommentEntry,
             'awesome ! (ZFUnitTest-test)');
         $this->assertTrue(

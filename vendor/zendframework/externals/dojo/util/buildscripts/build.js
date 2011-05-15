@@ -1,17 +1,26 @@
 //Main build script for Dojo
 var buildTimerStart = (new Date()).getTime();
-
-load("jslib/logger.js");
-load("jslib/fileUtil.js");
-load("jslib/buildUtil.js");
-load("jslib/buildUtilXd.js");
-load("jslib/i18nUtil.js");
+buildScriptsPath = typeof buildScriptsPath == "undefined" ? "./" : buildScriptsPath;
+load(buildScriptsPath + "jslib/logger.js");
+load(buildScriptsPath + "jslib/fileUtil.js");
+load(buildScriptsPath + "jslib/buildUtil.js");
+load(buildScriptsPath + "jslib/buildUtilXd.js");
+load(buildScriptsPath + "jslib/i18nUtil.js");
 
 //NOTE: See buildUtil.DojoBuildOptions for the list of build options.
 
 //*****************************************************************************
 //Convert arguments to keyword arguments.
 var kwArgs = buildUtil.makeBuildOptions(arguments);
+
+//Remove the default namespaces that are created by Rhino, but only
+//if asked to -- it has bad consequences if the build system is used
+//with other rhino-based server-side code.
+if(kwArgs.removeDefaultNameSpaces){
+	delete com;
+	delete net;
+	delete org;
+}
 
 //Set logging level.
 logger.level = kwArgs["log"];
@@ -74,8 +83,8 @@ function release(){
 	var dependencies = kwArgs.profileProperties.dependencies;
 	var prefixes = dependencies.prefixes;
 	var lineSeparator = fileUtil.getLineSeparator();
-	var copyrightText = fileUtil.readFile("copyright.txt");
-	var buildNoticeText = fileUtil.readFile("build_notice.txt");
+	var copyrightText = fileUtil.readFile(buildScriptsPath + "copyright.txt");
+	var buildNoticeText = fileUtil.readFile(buildScriptsPath + "build_notice.txt");
 	
 	//Find the dojo prefix path. Need it to process other module prefixes.
 	var dojoPrefixPath = buildUtil.getDojoPrefixPath(prefixes);
@@ -112,7 +121,7 @@ function release(){
 	//Do this after the copy step above. If it is done as part
 	//of that loop, then dojo path gets set first usually, and any prefixes
 	//after it are wrong.
-	for(var i = 0; i < prefixes.length; i++){
+	for(i = 0; i < prefixes.length; i++){
 		prefixes[i][1] = kwArgs.releaseDir + "/"  + prefixes[i][0].replace(/\./g, "/");
 	}
 
@@ -122,7 +131,7 @@ function release(){
 	}
 
 	logger.trace("Building dojo.js and layer files");
-	var result = buildUtil.makeDojoJs(buildUtil.loadDependencyList(kwArgs.profileProperties, kwArgs), kwArgs.version, kwArgs);
+	var result = buildUtil.makeDojoJs(buildUtil.loadDependencyList(kwArgs.profileProperties, kwArgs, buildScriptsPath), kwArgs.version, kwArgs);
 
 	//Save the build layers. The first layer is dojo.js.
 	var defaultLegalText = copyrightText + buildNoticeText;
@@ -136,13 +145,13 @@ function release(){
 		kwArgs.buildLayers += ",";
 		kwArgs.buildLayers = kwArgs.buildLayers.replace(/\\/g, "/");
 	}
-	for(var i = 0; i < result.length; i++){
+	for(i = 0; i < result.length; i++){
 		var currentLayer = result[i];
 		var layerName = currentLayer.layerName;
 		var layerLegalText = (currentLayer.copyrightFile ? fileUtil.readFile(currentLayer.copyrightFile) : defaultLegalText);
 		var fileName = dojoReleaseDir + currentLayer.layerName;
 		var fileContents = currentLayer.contents;
-		
+
 		//Build up string of files to ignore for the directory optimization step
 		var ignoreName = layerName.replace(/\.\.\//g, "");
 		var nameSegment = ignoreName.replace(/\.js$/, "");
@@ -170,15 +179,12 @@ function release(){
 		}
 
 		//Burn in xd path for dojo if requested, and only do this in dojo.xd.js.
-		if(layerName.match(/dojo\.xd\.js/) && kwArgs.xdDojoPath){
+		if(layerName == "dojo.xd.js" && kwArgs.xdDojoPath){
 			fileContents = buildUtilXd.setXdDojoConfig(fileContents, kwArgs.xdDojoPath);
 		}
 
 		//Flatten resources
 		fileContents = i18nUtil.flattenLayerFileBundles(fileName, fileContents, kwArgs);
-
-		//Remove console statements if desired
-		fileContents = buildUtil.stripConsole(fileContents, kwArgs.stripConsole);
 
 		//Save uncompressed file.
 		var uncompressedFileName = fileName + ".uncompressed.js";
@@ -192,7 +198,7 @@ function release(){
 		//"dojo" gets converted to a shortened name.
 		if(kwArgs.internStrings){
 			logger.info("Interning strings for file: " + fileName);
-			var prefixes = dependencies["prefixes"] || [];
+			prefixes = dependencies["prefixes"] || [];
 			var skiplist = dependencies["internSkipList"] || [];
 			buildUtil.internTemplateStringsInFile(uncompressedFileName, dojoReleaseDir, prefixes, skiplist);
 
@@ -204,14 +210,13 @@ function release(){
 
 		//Save compressed file.
 		logger.trace("Optimizing (" + kwArgs.layerOptimize + ") file: " + fileName);
-		var compressedContents = buildUtil.optimizeJs(fileName, fileContents, layerLegalText, kwArgs.layerOptimize);
+		var compressedContents = buildUtil.optimizeJs(fileName, fileContents, layerLegalText, kwArgs.layerOptimize, kwArgs.stripConsole);
 		fileUtil.saveUtf8File(fileName, compressedContents);
-
 	}
 
 	//Save the dependency lists to build.txt
 	var buildText = "Files baked into this build:" + lineSeparator;
-	for(var i = 0; i < result.length; i++){
+	for(i = 0; i < result.length; i++){
 		buildText += lineSeparator + result[i].layerName + ":" + lineSeparator;
 		buildText += result[i].depList.join(lineSeparator) + lineSeparator;
 	}
@@ -223,8 +228,8 @@ function release(){
 	var layerIgnoreRegExp = new RegExp("(" + layerIgnoreString + ")");
 	var nlsIgnoreRegExp = new RegExp("\\/nls\\/(" + nlsIgnoreString + ")_");
 
-	for(var i = 0; i < prefixes.length; i++){
-		var copyrightText = null;
+	for(i = 0; i < prefixes.length; i++){
+		copyrightText = null;
 		if(prefixes[i][2]){
 			copyrightText = fileUtil.readFile(prefixes[i][2]);
 		}
@@ -267,7 +272,7 @@ function _copyToRelease(/*String*/prefixName, /*String*/prefixPath, /*Object*/kw
 	}
 	
 	if(kwArgs.mini){
-		copyRegExps.exclude = /\/tests\/|\/demos\/|tests\.js|dijit\/bench|dijit\/themes\/noir|dijit\/themes\/themeTest|dijit\/themes\/templateThemeTest/;
+		copyRegExps.exclude = /\/tests\/|\/demos\/|tests\.js|dijit\/bench|dijit\/themes\/themeTest|(\.php$)/;
 	}
 
 	logger.info("Copying: " + prefixPath + " to: " + releasePath);
@@ -278,7 +283,11 @@ function _copyToRelease(/*String*/prefixName, /*String*/prefixPath, /*Object*/kw
 	if(prefixName == "dojo" && kwArgs.query == "sizzle"){
 		fileUtil.copyFile(releasePath + "/_base/query-sizzle.js", releasePath + "/_base/query.js");
 	}
-
+	
+	if(!copiedFiles){ 
+		logger.info(" ********** Not Copied: " + prefixPath ); 
+	}
+	
 	//Make sure to copy over any "source" files for the layers be targeted by
 	//buildLayers. Otherwise dependencies will not be calculated correctly.
 	if(buildLayers){
@@ -320,7 +329,9 @@ function _copyToRelease(/*String*/prefixName, /*String*/prefixPath, /*Object*/kw
 			}
 		}
 
-		buildUtil.addGuardsAndBaseRequires(copiedFiles, needBaseRequires);
+		if(kwArgs.addGuards){
+			buildUtil.addGuardsAndBaseRequires(copiedFiles, needBaseRequires);
+		}
 	}
 }
 //********* End _copyToRelease *********

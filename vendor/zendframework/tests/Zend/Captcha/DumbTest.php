@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DumbTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DumbTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Captcha_DumbTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Captcha_DumbTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 require_once 'Zend/Form/Element/Captcha.php';
 require_once 'Zend/View.php';
@@ -34,7 +32,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Captcha
  */
@@ -64,10 +62,10 @@ class Zend_Captcha_DumbTest extends PHPUnit_Framework_TestCase
         }
 
         $this->element = new Zend_Form_Element_Captcha(
-            'captchaD', 
+            'captchaD',
             array(
                 'captcha' => array(
-                    'Dumb', 
+                    'Dumb',
                     'sessionClass' => 'Zend_Captcha_DumbTest_SessionContainer'
                 )
             )

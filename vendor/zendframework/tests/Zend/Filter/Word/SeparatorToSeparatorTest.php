@@ -15,19 +15,16 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SeparatorToSeparatorTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SeparatorToSeparatorTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Filter_SeparatorToSeparatorTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
-    require_once dirname(dirname(dirname(__FILE__))) . '/TestHelper.php';
     define("PHPUnit_MAIN_METHOD", "Zend_Filter_Word_SeparatorToSeparatorTest::main");
 }
 
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 require_once 'Zend/Filter/Word/SeparatorToSeparator.php';
 
@@ -37,11 +34,11 @@ require_once 'Zend/Filter/Word/SeparatorToSeparator.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
-class Zend_Filter_Word_SeparatorToSeparatorTest extends PHPUnit_Framework_TestCase 
+class Zend_Filter_Word_SeparatorToSeparatorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -49,9 +46,8 @@ class Zend_Filter_Word_SeparatorToSeparatorTest extends PHPUnit_Framework_TestCa
      * @access public
      * @static
      */
-    public static function main() 
+    public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Filter_Word_SeparatorToSeparatorTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -66,7 +62,7 @@ class Zend_Filter_Word_SeparatorToSeparatorTest extends PHPUnit_Framework_TestCa
         $this->assertNotEquals($string, $filtered);
         $this->assertEquals('dash-separated-words', $filtered);
     }
-    
+
     public function testFilterSeparatesWordsWithSearchSpecified()
     {
         $string   = 'dash=separated=words';
@@ -76,7 +72,7 @@ class Zend_Filter_Word_SeparatorToSeparatorTest extends PHPUnit_Framework_TestCa
         $this->assertNotEquals($string, $filtered);
         $this->assertEquals('dash-separated-words', $filtered);
     }
-    
+
     public function testFilterSeparatesWordsWithSearchAndReplacementSpecified()
     {
         $string   = 'dash=separated=words';
@@ -86,7 +82,7 @@ class Zend_Filter_Word_SeparatorToSeparatorTest extends PHPUnit_Framework_TestCa
         $this->assertNotEquals($string, $filtered);
         $this->assertEquals('dash?separated?words', $filtered);
     }
-    
+
 }
 
 // Call Zend_Filter_Word_SeparatorToSeparatorTest::main() if this source file is executed directly.

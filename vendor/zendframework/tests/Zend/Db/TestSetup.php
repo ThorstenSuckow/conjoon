@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestSetup.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: TestSetup.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 /**
  * @see Zend_Loader
@@ -36,25 +30,12 @@ require_once 'Zend/Loader.php';
  */
 require_once 'Zend/Db.php';
 
-/**
- * PHPUnit_Framework_TestCase
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
- * PHPUnit_Util_Filter
- */
-require_once 'PHPUnit/Util/Filter.php';
-
-
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  */
@@ -117,6 +98,7 @@ abstract class Zend_Db_TestSetup extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->_util->tearDown();
+        $this->_db->closeConnection();
         $this->_db = null;
     }
 

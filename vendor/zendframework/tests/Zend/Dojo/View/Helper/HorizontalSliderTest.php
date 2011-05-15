@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HorizontalSliderTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HorizontalSliderTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dojo_View_Helper_HorizontalSliderTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_View_Helper_HorizontalSliderTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_View_Helper_HorizontalSlider */
 require_once 'Zend/Dojo/View/Helper/HorizontalSlider.php';
@@ -51,12 +49,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
  */
-class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -106,8 +104,8 @@ class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestC
     public function getElement()
     {
         return $this->helper->horizontalSlider(
-            'elementId', 
-            '', 
+            'elementId',
+            '',
             array(
                 'minimum'        => -10,
                 'maximum'        => 10,
@@ -237,8 +235,8 @@ class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestC
     public function testShouldAllowPassingLabelParametersViaDecorationParameters()
     {
         $html = $this->helper->horizontalSlider(
-            'elementId', 
-            '', 
+            'elementId',
+            '',
             array(
                 'minimum'        => -10,
                 'maximum'        => 10,
@@ -302,9 +300,9 @@ class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestC
                     'topDecorationDijit' => 'HorizontalRuleLabels',
                     'topDecorationLabels' => array('0%', '50%', '100%'),
                     'topDecorationParams' => array('style' => 'padding-bottom: 20px;')
-                )   
-            );      
-                    
+                )
+            );
+
         $form->addSubForm($sliderForm, 'slidertab')
              ->setView($this->getView());
         $html = $form->render();

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Nirvanix
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ImfsTest.php 18287 2009-09-18 20:22:42Z padraic $
+ * @version    $Id: ImfsTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -34,7 +34,7 @@ require_once 'Zend/Service/Nirvanix/FunctionalTestCase.php';
  * @category   Zend
  * @package    Zend_Service_Nirvanix
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Nirvanix
@@ -102,7 +102,7 @@ class Zend_Service_Nirvanix_Namespace_ImfsTest extends Zend_Service_Nirvanix_Fun
     }
 
     /**
-     * @issue ZF-6860
+     * @group ZF-6860
      */
     public function testDestinationPathFormatSentToServiceAsParameterUsesUnixConvention()
     {

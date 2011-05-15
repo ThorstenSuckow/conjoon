@@ -15,17 +15,14 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AbstractTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AbstractTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Validate_AbstractTest::main');
 }
-
-/** Test helper */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /** Zend_Validate_Abstract */
 require_once 'Zend/Validate/Abstract.php';
@@ -40,7 +37,7 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -204,7 +201,7 @@ class Zend_Validate_AbstractTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-4463
+     * @group ZF-4463
      */
     public function testDoesNotFailOnObjectInput()
     {

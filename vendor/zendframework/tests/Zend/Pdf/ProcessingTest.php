@@ -15,31 +15,28 @@
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ProcessingTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ProcessingTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Pdf */
 require_once 'Zend/Pdf.php';
 
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 /**
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Pdf
  */
 class Zend_Pdf_ProcessingTest extends PHPUnit_Framework_TestCase
 {
-	public function setUp()
-	{
-		date_default_timezone_set('GMT');
-	}
+    public function setUp()
+    {
+        date_default_timezone_set('GMT');
+    }
 
     public function testCreate()
     {
@@ -71,7 +68,13 @@ class Zend_Pdf_ProcessingTest extends PHPUnit_Framework_TestCase
         $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.8))
               ->setLineColor(new Zend_Pdf_Color_GrayScale(0.2))
               ->setLineDashingPattern(array(3, 2, 3, 4), 1.6)
-              ->drawRectangle(60, 400, 400, 350);
+              ->drawRectangle(60, 400, 500, 350);
+
+        // Draw rounded rectangle
+        $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.9))
+              ->setLineColor(new Zend_Pdf_Color_GrayScale(0.5))
+              ->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
+              ->drawRoundedRectangle(425, 350, 475, 400, 20);
 
         // Draw circle
         $page2->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
@@ -107,7 +110,7 @@ class Zend_Pdf_ProcessingTest extends PHPUnit_Framework_TestCase
 
         // Draw line
         $page2->setLineWidth(0.5)
-              ->drawLine(60, 375, 400, 375);
+              ->drawLine(60, 375, 500, 375);
 
         $pdf->save(dirname(__FILE__) . '/_files/output.pdf');
         unset($pdf);
@@ -171,7 +174,13 @@ class Zend_Pdf_ProcessingTest extends PHPUnit_Framework_TestCase
         $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.8))
               ->setLineColor(new Zend_Pdf_Color_GrayScale(0.2))
               ->setLineDashingPattern(array(3, 2, 3, 4), 1.6)
-              ->drawRectangle(60, 400, 400, 350);
+              ->drawRectangle(60, 400, 500, 350);
+
+        // Draw rounded rectangle
+        $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.9))
+              ->setLineColor(new Zend_Pdf_Color_GrayScale(0.5))
+              ->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
+              ->drawRoundedRectangle(425, 350, 475, 400, 20);
 
         // Draw circle
         $page2->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
@@ -207,7 +216,7 @@ class Zend_Pdf_ProcessingTest extends PHPUnit_Framework_TestCase
 
         // Draw line
         $page2->setLineWidth(0.5)
-              ->drawLine(60, 375, 400, 375);
+              ->drawLine(60, 375, 500, 375);
 
         $pdf->save(dirname(__FILE__) . '/_files/output.pdf');
 

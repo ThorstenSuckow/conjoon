@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HeadScriptTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HeadScriptTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HeadScriptTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HeadScriptTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /** Zend_View_Helper_HeadScript */
 require_once 'Zend/View/Helper/HeadScript.php';
@@ -42,7 +40,7 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -408,7 +406,7 @@ document.write(bar.strlen());');
     }
 
     /**
-     * @issue ZF-3928
+     * @group ZF-3928
      * @link http://framework.zend.com/issues/browse/ZF-3928
      */
     public function testTurnOffAutoEscapeDoesNotEncodeAmpersand()
@@ -424,8 +422,16 @@ document.write(bar.strlen());');
         $this->assertContains('<!--[if lt IE 7]>', $test);
     }
 
+    public function testConditionalScriptWidthIndentation()
+    {
+        $this->helper->headScript()->appendFile('/js/foo.js', 'text/javascript', array('conditional' => 'lt IE 7'));
+        $this->helper->headScript()->setIndent(4);
+        $test = $this->helper->headScript()->toString();
+        $this->assertContains('    <!--[if lt IE 7]>', $test);
+    }
+
     /**
-     * @issue ZF-5435
+     * @group ZF-5435
      */
     public function testContainerMaintainsCorrectOrderOfItems()
     {
@@ -438,10 +444,10 @@ document.write(bar.strlen());');
 
         $test = $this->helper->toString();
 
-        $expected = '<script type="text/javascript" src="test1.js"></script>
-<script type="text/javascript" src="test4.js"></script>
-<script type="text/javascript" src="test3.js"></script>
-<script type="text/javascript" src="test2.js"></script>';
+        $expected = '<script type="text/javascript" src="test1.js"></script>' . PHP_EOL
+                  . '<script type="text/javascript" src="test4.js"></script>' . PHP_EOL
+                  . '<script type="text/javascript" src="test3.js"></script>' . PHP_EOL
+                  . '<script type="text/javascript" src="test2.js"></script>';
 
         $this->assertEquals($expected, $test);
     }

@@ -8,7 +8,7 @@ dojo.require("dojo._base.connect");
 //>>excludeEnd("webkitMobile");
 	// DOM event listener machinery
 	var del = (dojo._event_listener = {
-		add: function(/*DOMNode*/node, /*String*/name, /*Function*/fp){
+		add: function(/*DOMNode*/ node, /*String*/ name, /*Function*/ fp){
 			if(!node){return;} 
 			name = del._normalizeEventName(name);
 			fp = del._fixCallback(name, fp);
@@ -22,14 +22,7 @@ dojo.require("dojo._base.connect");
 				var ofp = fp;
 				//oname = name;
 				name = (name == "mouseenter") ? "mouseover" : "mouseout";
-				fp = function(e){		
-					if(dojo.isFF <= 2) {
-						// check tagName to fix a FF2 bug with invalid nodes (hidden child DIV of INPUT)
-						// which causes isDescendant to return false which causes
-						// spurious, and more importantly, incorrect mouse events to fire.
-						// TODO: remove tagName check when Firefox 2 is no longer supported
-						try{ e.relatedTarget.tagName; }catch(e2){ return; }
-					}
+				fp = function(e){
 					if(!dojo.isDescendant(e.relatedTarget, node)){
 						// e.type = oname; // FIXME: doesn't take? SJM: event.type is generally immutable.
 						return ofp.call(this, e); 
@@ -39,7 +32,7 @@ dojo.require("dojo._base.connect");
 			node.addEventListener(name, fp, false);
 			return fp; /*Handle*/
 		},
-		remove: function(/*DOMNode*/node, /*String*/event, /*Handle*/handle){
+		remove: function(/*DOMNode*/ node, /*String*/ event, /*Handle*/ handle){
 			// summary:
 			//		clobbers the listener from the node
 			// node:
@@ -57,13 +50,13 @@ dojo.require("dojo._base.connect");
 				node.removeEventListener(event, handle, false);
 			}
 		},
-		_normalizeEventName: function(/*String*/name){
+		_normalizeEventName: function(/*String*/ name){
 			// Generally, name should be lower case, unless it is special
 			// somehow (e.g. a Mozilla DOM event).
 			// Remove 'on'.
 			return name.slice(0,2) =="on" ? name.slice(2) : name;
 		},
-		_fixCallback: function(/*String*/name, fp){
+		_fixCallback: function(/*String*/ name, fp){
 			// By default, we only invoke _fixEvent for 'keypress'
 			// If code is added to _fixEvent for other events, we have
 			// to revisit this optimization.
@@ -108,7 +101,7 @@ dojo.require("dojo._base.connect");
 
 	// DOM events
 	
-	dojo.fixEvent = function(/*Event*/evt, /*DOMNode*/sender){
+	dojo.fixEvent = function(/*Event*/ evt, /*DOMNode*/ sender){
 		// summary:
 		//		normalizes properties on the event object including event
 		//		bubbling methods, keystroke normalization, and x/y positions
@@ -119,7 +112,7 @@ dojo.require("dojo._base.connect");
 		return del._fixEvent(evt, sender);
 	}
 
-	dojo.stopEvent = function(/*Event*/evt){
+	dojo.stopEvent = function(/*Event*/ evt){
 		// summary:
 		//		prevents propagation and clobbers the default action of the
 		//		passed event
@@ -160,7 +153,8 @@ dojo.require("dojo._base.connect");
 	// keyCode against these named constants, as the
 	// actual codes can vary by browser.
 	dojo.keys = {
-		// summary: definitions for common key values
+		// summary:
+		//		Definitions for common key values
 		BACKSPACE: 8,
 		TAB: 9,
 		CLEAR: 12,
@@ -168,6 +162,7 @@ dojo.require("dojo._base.connect");
 		SHIFT: 16,
 		CTRL: 17,
 		ALT: 18,
+		META: dojo.isSafari ? 91 : 224,		// the apple key on macs
 		PAUSE: 19,
 		CAPS_LOCK: 20,
 		ESCAPE: 27,
@@ -218,9 +213,96 @@ dojo.require("dojo._base.connect");
 		F14: 125,
 		F15: 126,
 		NUM_LOCK: 144,
-		SCROLL_LOCK: 145
+		SCROLL_LOCK: 145,
+		// virtual key mapping
+		copyKey: dojo.isMac && !dojo.isAIR ? (dojo.isSafari ? 91 : 224 ) : 17
 	};
 	
+	var evtCopyKey = dojo.isMac ? "metaKey" : "ctrlKey";
+	
+	dojo.isCopyKey = function(e){
+		// summary:
+		//		Checks an event for the copy key (meta on Mac, and ctrl anywhere else)
+		// e: Event
+		//		Event object to examine
+		return e[evtCopyKey];	// Boolean
+	};
+
+	// Public: decoding mouse buttons from events
+
+/*=====
+	dojo.mouseButtons = {
+		// LEFT: Number
+		//		Numeric value of the left mouse button for the platform.
+		LEFT:   0,
+		// MIDDLE: Number
+		//		Numeric value of the middle mouse button for the platform.
+		MIDDLE: 1,
+		// RIGHT: Number
+		//		Numeric value of the right mouse button for the platform.
+		RIGHT:  2,
+	
+		isButton: function(e, button){
+			// summary:
+			//		Checks an event object for a pressed button
+			// e: Event
+			//		Event object to examine
+			// button: Number
+			//		The button value (example: dojo.mouseButton.LEFT)
+			return e.button == button; // Boolean
+		},
+		isLeft: function(e){
+			// summary:
+			//		Checks an event object for the pressed left button
+			// e: Event
+			//		Event object to examine
+			return e.button == 0; // Boolean
+		},
+		isMiddle: function(e){
+			// summary:
+			//		Checks an event object for the pressed middle button
+			// e: Event
+			//		Event object to examine
+			return e.button == 1; // Boolean
+		},
+		isRight: function(e){
+			// summary:
+			//		Checks an event object for the pressed right button
+			// e: Event
+			//		Event object to examine
+			return e.button == 2; // Boolean
+		}
+	};
+=====*/
+
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+	if(dojo.isIE){
+		dojo.mouseButtons = {
+			LEFT:   1,
+			MIDDLE: 4,
+			RIGHT:  2,
+			// helper functions
+			isButton: function(e, button){ return e.button & button; },
+			isLeft:   function(e){ return e.button & 1; },
+			isMiddle: function(e){ return e.button & 4; },
+			isRight:  function(e){ return e.button & 2; }
+		};
+	}else{
+	//>>excludeEnd("webkitMobile");
+		dojo.mouseButtons = {
+			LEFT:   0,
+			MIDDLE: 1,
+			RIGHT:  2,
+			// helper functions
+			isButton: function(e, button){ return e.button == button; },
+			isLeft:   function(e){ return e.button == 0; },
+			isMiddle: function(e){ return e.button == 1; },
+			isRight:  function(e){ return e.button == 2; }
+		};
+	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
+	}
+	//>>excludeEnd("webkitMobile");
+
 	//>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 	// IE event normalization
 	if(dojo.isIE){ 
@@ -273,7 +355,7 @@ dojo.require("dojo._base.connect");
 		}
 
 		dojo.mixin(del, {
-			add: function(/*DOMNode*/node, /*String*/event, /*Function*/fp){
+			add: function(/*DOMNode*/ node, /*String*/ event, /*Function*/ fp){
 				if(!node){return;} // undefined
 				event = del._normalizeEventName(event);
 				if(event=="onkeypress"){
@@ -292,7 +374,7 @@ dojo.require("dojo._base.connect");
 				}
 				return iel.add(node, event, del._fixCallback(fp));
 			},
-			remove: function(/*DOMNode*/node, /*String*/event, /*Handle*/handle){
+			remove: function(/*DOMNode*/ node, /*String*/ event, /*Handle*/ handle){
 				event = del._normalizeEventName(event);
 				iel.remove(node, event, handle); 
 				if(event=="onkeypress"){
@@ -303,19 +385,21 @@ dojo.require("dojo._base.connect");
 					}
 				}
 			},
-			_normalizeEventName: function(/*String*/eventName){
+			_normalizeEventName: function(/*String*/ eventName){
 				// Generally, eventName should be lower case, unless it is
 				// special somehow (e.g. a Mozilla event)
 				// ensure 'on'
 				return eventName.slice(0,2) != "on" ? "on" + eventName : eventName;
 			},
 			_nop: function(){},
-			_fixEvent: function(/*Event*/evt, /*DOMNode*/sender){
+			_fixEvent: function(/*Event*/ evt, /*DOMNode*/ sender){
 				// summary:
 				//		normalizes properties on the event object including event
 				//		bubbling methods, keystroke normalization, and x/y positions
-				// evt: native event object
-				// sender: node to treat as "currentTarget"
+				// evt:
+				//		native event object
+				// sender:
+				//		node to treat as "currentTarget"
 				if(!evt){
 					var w = sender && (sender.ownerDocument || sender.document || sender).parentWindow || window;
 					evt = w.event; 
@@ -470,7 +554,7 @@ dojo.require("dojo._base.connect");
 		del._remove = del.remove;
 
 		dojo.mixin(del, {
-			add: function(/*DOMNode*/node, /*String*/event, /*Function*/fp){
+			add: function(/*DOMNode*/ node, /*String*/ event, /*Function*/ fp){
 				if(!node){return;} // undefined
 				var handle = del._add(node, event, fp);
 				if(del._normalizeEventName(event) == "keypress"){
@@ -483,7 +567,7 @@ dojo.require("dojo._base.connect");
 						var k=evt.keyCode;
 						// These are Windows Virtual Key Codes
 						// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/UserInput/VirtualKeyCodes.asp
-						var unprintable = k!=13 && k!=32 && k!=27 && (k<48 || k>90) && (k<96 || k>111) && (k<186 || k>192) && (k<219 || k>222);
+						var unprintable = k!=13 && k!=32 && (k<48 || k>90) && (k<96 || k>111) && (k<186 || k>192) && (k<219 || k>222);
 						// synthesize keypress for most unprintables and CTRL-keys
 						if(unprintable || evt.ctrlKey){
 							var c = unprintable ? 0 : k;
@@ -507,7 +591,7 @@ dojo.require("dojo._base.connect");
 				return handle; /*Handle*/
 			},
 
-			remove: function(/*DOMNode*/node, /*String*/event, /*Handle*/handle){
+			remove: function(/*DOMNode*/ node, /*String*/ event, /*Handle*/ handle){
 				if(node){
 					if(handle._stealthKeyDownHandle){
 						del._remove(node, "keydown", handle._stealthKeyDownHandle);
@@ -539,7 +623,11 @@ if(dojo.isIE){
 	// closing over 'iel' or 'ieh' b0rks leak prevention
 	// ls[i] is an index into the master handler array
 	dojo._ieDispatcher = function(args, sender){
-		var ap=Array.prototype, h=dojo._ie_listener.handlers, c=args.callee, ls=c[dojo._ieListenersName], t=h[c.target];
+		var ap = Array.prototype,
+			h = dojo._ie_listener.handlers,
+			c = args.callee,
+			ls = c[dojo._ieListenersName],
+			t = h[c.target];
 		// return value comes from original target function
 		var r = t && t.apply(sender, args);
 		// make local copy of listener array so it's immutable during processing

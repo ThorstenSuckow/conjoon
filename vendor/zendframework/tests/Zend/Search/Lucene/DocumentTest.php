@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DocumentTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DocumentTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -41,20 +41,32 @@ require_once 'Zend/Search/Lucene/Document/Pptx.php';
 require_once 'Zend/Search/Lucene/Document/Xlsx.php';
 
 /**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Search_Lucene
  */
 class Zend_Search_Lucene_DocumentTest extends PHPUnit_Framework_TestCase
 {
+
+    private function _clearDirectory($dirName)
+    {
+        if (!file_exists($dirName) || !is_dir($dirName))  {
+            return;
+        }
+
+        // remove files from temporary direcytory
+        $dir = opendir($dirName);
+        while (($file = readdir($dir)) !== false) {
+            if (!is_dir($dirName . '/' . $file)) {
+                @unlink($dirName . '/' . $file);
+            }
+        }
+        closedir($dir);
+    }
+
     public function testCreate()
     {
         $document =  new Zend_Search_Lucene_Document();
@@ -171,9 +183,63 @@ class Zend_Search_Lucene_DocumentTest extends PHPUnit_Framework_TestCase
                                 'contributing.html'));
     }
 
+
+    /**
+     * @group ZF-4252
+     */
+    public function testHtmlInlineTagsIndexing()
+    {
+        $index = Zend_Search_Lucene::create(dirname(__FILE__) . '/_index/_files');
+
+        $htmlString = '<html><head><title>Hello World</title></head>'
+                    . '<body><b>Zend</b>Framework' . "\n" . ' <div>Foo</div>Bar ' . "\n"
+                    . ' <strong>Test</strong></body></html>';
+
+        $doc = Zend_Search_Lucene_Document_Html::loadHTML($htmlString);
+
+        $index->addDocument($doc);
+
+        $hits = $index->find('FooBar');
+        $this->assertEquals(count($hits), 0);
+
+        $hits = $index->find('ZendFramework');
+        $this->assertEquals(count($hits), 1);
+
+        unset($index);
+        $this->_clearDirectory(dirname(__FILE__) . '/_index/_files');
+    }
+
+    /**
+     * @group ZF-8740
+     */
+    public function testHtmlAreaTags()
+    {
+        $html = '<HTML>'
+                . '<HEAD><TITLE>Page title</TITLE></HEAD>'
+                . '<BODY>'
+                .   'Document body.'
+                .   '<img src="img.png" width="640" height="480" alt="some image" usemap="#some_map" />'
+                .   '<map name="some_map">'
+                .     '<area shape="rect" coords="0,0,100,100" href="link3.html" alt="Link 3" />'
+                .     '<area shape="rect" coords="200,200,300,300" href="link4.html" alt="Link 4" />'
+                .   '</map>'
+                .   '<a href="link1.html">Link 1</a>.'
+                .   '<a href="link2.html" rel="nofollow">Link 1</a>.'
+                . '</BODY>'
+              . '</HTML>';
+
+        $oldNoFollowValue = Zend_Search_Lucene_Document_Html::getExcludeNoFollowLinks();
+
+        Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(false);
+        $doc1 = Zend_Search_Lucene_Document_Html::loadHTML($html);
+        $this->assertTrue($doc1 instanceof Zend_Search_Lucene_Document_Html);
+        $links = array('link1.html', 'link2.html', 'link3.html', 'link4.html');
+        $this->assertTrue(array_values($doc1->getLinks()) == $links);
+    }
+
     public function testHtmlNoFollowLinks()
     {
-    	$html = '<HTML>'
+        $html = '<HTML>'
                 . '<HEAD><TITLE>Page title</TITLE></HEAD>'
                 . '<BODY>'
                 .   'Document body.'
@@ -197,56 +263,65 @@ class Zend_Search_Lucene_DocumentTest extends PHPUnit_Framework_TestCase
 
     public function testDocx()
     {
-    	if (!class_exists('ZipArchive')) {
-    		$this->markTestSkipped('ZipArchive class (Zip extension) is not loaded');
-    	}
+        if (!class_exists('ZipArchive')) {
+            $this->markTestSkipped('ZipArchive class (Zip extension) is not loaded');
+        }
 
-		$docxDocument = Zend_Search_Lucene_Document_Docx::loadDocxFile(dirname(__FILE__) . '/_openXmlDocuments/test.docx', true);
+        $docxDocument = Zend_Search_Lucene_Document_Docx::loadDocxFile(dirname(__FILE__) . '/_openXmlDocuments/test.docx', true);
 
         $this->assertTrue($docxDocument instanceof Zend_Search_Lucene_Document_Docx);
-		$this->assertEquals($docxDocument->getFieldValue('title'), 'Test document');
-		$this->assertEquals($docxDocument->getFieldValue('description'), 'This is a test document which can be used to demonstrate something.');
-		$this->assertTrue($docxDocument->getFieldValue('body') != '');
+        $this->assertEquals($docxDocument->getFieldValue('title'), 'Test document');
+        $this->assertEquals($docxDocument->getFieldValue('description'), 'This is a test document which can be used to demonstrate something.');
+        $this->assertTrue($docxDocument->getFieldValue('body') != '');
 
-		try {
-			$docxDocument1 = Zend_Search_Lucene_Document_Docx::loadDocxFile(dirname(__FILE__) . '/_openXmlDocuments/dummy.docx', true);
+        try {
+            $docxDocument1 = Zend_Search_Lucene_Document_Docx::loadDocxFile(dirname(__FILE__) . '/_openXmlDocuments/dummy.docx', true);
 
-			$this->fail('File not readable exception is expected.');
-		} catch (Zend_Search_Lucene_Document_Exception $e) {
-			if (strpos($e->getMessage(), 'is not readable') === false) {
-				// Passthrough exception
-				throw $e;
-			}
-		}
+            $this->fail('File not readable exception is expected.');
+        } catch (Zend_Search_Lucene_Document_Exception $e) {
+            if (strpos($e->getMessage(), 'is not readable') === false) {
+                // Passthrough exception
+                throw $e;
+            }
+        }
     }
 
     public function testPptx()
     {
-    	if (!class_exists('ZipArchive')) {
-    		$this->markTestSkipped('ZipArchive class (Zip extension) is not loaded');
-    	}
+        if (!class_exists('ZipArchive')) {
+            $this->markTestSkipped('ZipArchive class (Zip extension) is not loaded');
+        }
 
-		$pptxDocument = Zend_Search_Lucene_Document_Pptx::loadPptxFile(dirname(__FILE__) . '/_openXmlDocuments/test.pptx', true);
+        $pptxDocument = Zend_Search_Lucene_Document_Pptx::loadPptxFile(dirname(__FILE__) . '/_openXmlDocuments/test.pptx', true);
 
         $this->assertTrue($pptxDocument instanceof Zend_Search_Lucene_Document_Pptx);
-		$this->assertEquals($pptxDocument->getFieldValue('title'), 'Test document');
-		$this->assertEquals($pptxDocument->getFieldValue('description'), 'This is a test document which can be used to demonstrate something.');
-		$this->assertTrue($pptxDocument->getFieldValue('body') != '');
+        $this->assertEquals($pptxDocument->getFieldValue('title'), 'Test document');
+        $this->assertEquals($pptxDocument->getFieldValue('description'), 'This is a test document which can be used to demonstrate something.');
+        $this->assertTrue($pptxDocument->getFieldValue('body') != '');
     }
 
     public function testXlsx()
     {
-    	if (!class_exists('ZipArchive')) {
-    		$this->markTestSkipped('ZipArchive class (Zip extension) is not loaded');
-    	}
+        if (!class_exists('ZipArchive')) {
+            $this->markTestSkipped('ZipArchive class (Zip extension) is not loaded');
+        }
 
-		$xlsxDocument = Zend_Search_Lucene_Document_Xlsx::loadXlsxFile(dirname(__FILE__) . '/_openXmlDocuments/test.xlsx', true);
+        $xlsxDocument = Zend_Search_Lucene_Document_Xlsx::loadXlsxFile(dirname(__FILE__) . '/_openXmlDocuments/test.xlsx', true);
 
         $this->assertTrue($xlsxDocument instanceof Zend_Search_Lucene_Document_Xlsx);
-		$this->assertEquals($xlsxDocument->getFieldValue('title'), 'Test document');
-		$this->assertEquals($xlsxDocument->getFieldValue('description'), 'This is a test document which can be used to demonstrate something.');
-		$this->assertTrue($xlsxDocument->getFieldValue('body') != '');
-		$this->assertTrue( strpos($xlsxDocument->getFieldValue('body'), 'ipsum') !== false );
+        $this->assertEquals($xlsxDocument->getFieldValue('title'), 'Test document');
+        $this->assertEquals($xlsxDocument->getFieldValue('description'), 'This is a test document which can be used to demonstrate something.');
+        $this->assertTrue($xlsxDocument->getFieldValue('body') != '');
+        $this->assertTrue( strpos($xlsxDocument->getFieldValue('body'), 'ipsum') !== false );
+    }
+
+    /**
+     * @group ZF-10686
+     */
+    public function testLoadHtmlWithAttributesInTagHTML()
+    {
+        $doc = Zend_Search_Lucene_Document_Html::loadHTML('<HTML lang="en_US"><HEAD><TITLE>Page title</TITLE></HEAD><BODY>Document body.</BODY></HTML>');
+        $this->assertEquals('Page title ', $doc->title);
     }
 }
 

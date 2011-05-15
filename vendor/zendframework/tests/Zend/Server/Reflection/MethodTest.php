@@ -15,14 +15,12 @@
  * @category   Zend
  * @package    Zend_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: MethodTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version $Id: MethodTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Server/Reflection/Method.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'PHPUnit/Framework/IncompleteTestError.php';
 
 require_once 'Zend/Server/Reflection.php';
 
@@ -32,11 +30,11 @@ require_once 'Zend/Server/Reflection.php';
  * @category   Zend
  * @package    Zend_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Server
  */
-class Zend_Server_Reflection_MethodTest extends PHPUnit_Framework_TestCase 
+class Zend_Server_Reflection_MethodTest extends PHPUnit_Framework_TestCase
 {
     protected $_classRaw;
     protected $_class;
@@ -52,15 +50,15 @@ class Zend_Server_Reflection_MethodTest extends PHPUnit_Framework_TestCase
     /**
      * __construct() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - class: 
-     * - r: 
-     * - namespace: Optional; 
-     * - argv: Optional; has default; 
-     * 
-     * Returns: void 
+     * - class:
+     * - r:
+     * - namespace: Optional;
+     * - argv: Optional; has default;
+     *
+     * Returns: void
      */
     public function test__construct()
     {
@@ -75,9 +73,9 @@ class Zend_Server_Reflection_MethodTest extends PHPUnit_Framework_TestCase
     /**
      * getDeclaringClass() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: Zend_Server_Reflection_Class 
+     * Returns: Zend_Server_Reflection_Class
      */
     public function testGetDeclaringClass()
     {
@@ -92,9 +90,9 @@ class Zend_Server_Reflection_MethodTest extends PHPUnit_Framework_TestCase
     /**
      * __wakeup() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: void 
+     * Returns: void
      */
     public function test__wakeup()
     {

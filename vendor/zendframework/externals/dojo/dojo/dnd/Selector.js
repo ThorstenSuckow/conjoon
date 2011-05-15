@@ -10,19 +10,37 @@ dojo.require("dojo.dnd.Container");
 		"Anchor"	- an item is selected, and is an anchor for a "shift" selection
 */
 
+/*=====
+dojo.declare("dojo.dnd.__SelectorArgs", [dojo.dnd.__ContainerArgs], {
+	//	singular: Boolean
+	//		allows selection of only one element, if true
+	singular: false,
+
+	//	autoSync: Boolean
+	//		autosynchronizes the source with its list of DnD nodes,
+	autoSync: false
+});
+=====*/
+
 dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
-	// summary: a Selector object, which knows how to select its children
+	// summary:
+	//		a Selector object, which knows how to select its children
 	
+	/*=====
+	// selection: Set<String>
+	//		The set of id's that are currently selected, such that this.selection[id] == 1
+	//		if the node w/that id is selected.  Can iterate over selected node's id's like:
+	//	|		for(var id in this.selection)
+	selection: {},
+	=====*/
+
 	constructor: function(node, params){
-		// summary: a constructor of the Selector
-		// node: Node: node or node's id to build the selector on
-		// params: Object: a dict of parameters, recognized parameters are:
-		//	singular: Boolean
-		//		allows selection of only one element, if true
-		//		the rest of parameters are passed to the container
-		//	autoSync: Boolean
-		//		autosynchronizes the source with its list of DnD nodes,
-		//		false by default
+		// summary:
+		//		constructor of the Selector
+		// node: Node||String
+		//		node or node's id to build the selector on
+		// params: dojo.dnd.__SelectorArgs?
+		//		a dictionary of parameters
 		if(!params){ params = {}; }
 		this.singular = params.singular;
 		this.autoSync = params.autoSync;
@@ -41,21 +59,24 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 	
 	// methods
 	getSelectedNodes: function(){
-		// summary: returns a list (an array) of selected nodes
+		// summary:
+		//		returns a list (an array) of selected nodes
 		var t = new dojo.NodeList();
 		var e = dojo.dnd._empty;
 		for(var i in this.selection){
 			if(i in e){ continue; }
 			t.push(dojo.byId(i));
 		}
-		return t;	// Array
+		return t;	// NodeList
 	},
 	selectNone: function(){
-		// summary: unselects all items
+		// summary:
+		//		unselects all items
 		return this._removeSelection()._removeAnchor();	// self
 	},
 	selectAll: function(){
-		// summary: selects all items
+		// summary:
+		//		selects all items
 		this.forInItems(function(data, id){
 			this._addItemClass(dojo.byId(id), "Selected");
 			this.selection[id] = 1;
@@ -63,7 +84,8 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		return this._removeAnchor();	// self
 	},
 	deleteSelectedNodes: function(){
-		// summary: deletes all selected items
+		// summary:
+		//		deletes all selected items
 		var e = dojo.dnd._empty;
 		for(var i in this.selection){
 			if(i in e){ continue; }
@@ -76,8 +98,9 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		return this;	// self
 	},
 	forInSelectedItems: function(/*Function*/ f, /*Object?*/ o){
-		// summary: iterates over selected items,
-		// see dojo.dnd.Container.forInItems() for details
+		// summary:
+		//		iterates over selected items;
+		//		see `dojo.dnd.Container.forInItems()` for details
 		o = o || dojo.global;
 		var s = this.selection, e = dojo.dnd._empty;
 		for(var i in s){
@@ -86,7 +109,8 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		}
 	},
 	sync: function(){
-		// summary: synch up the node list with the data map
+		// summary:
+		//		sync up the node list with the data map
 		
 		dojo.dnd.Selector.superclass.sync.call(this);
 		
@@ -112,11 +136,16 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		return this;	// self
 	},
 	insertNodes: function(addSelected, data, before, anchor){
-		// summary: inserts new data items (see Container's insertNodes method for details)
-		// addSelected: Boolean: all new nodes will be added to selected items, if true, no selection change otherwise
-		// data: Array: a list of data items, which should be processed by the creator function
-		// before: Boolean: insert before the anchor, if true, and after the anchor otherwise
-		// anchor: Node: the anchor node to be used as a point of insertion
+		// summary:
+		//		inserts new data items (see `dojo.dnd.Container.insertNodes()` method for details)
+		// addSelected: Boolean
+		//		all new nodes will be added to selected items, if true, no selection change otherwise
+		// data: Array
+		//		a list of data items, which should be processed by the creator function
+		// before: Boolean
+		//		insert before the anchor, if true, and after the anchor otherwise
+		// anchor: Node
+		//		the anchor node to be used as a point of insertion
 		var oldCreator = this._normalizedCreator;
 		this._normalizedCreator = function(item, hint){
 			var t = oldCreator.call(this, item, hint);
@@ -141,7 +170,8 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		return this;	// self
 	},
 	destroy: function(){
-		// summary: prepares the object to be garbage-collected
+		// summary:
+		//		prepares the object to be garbage-collected
 		dojo.dnd.Selector.superclass.destroy.call(this);
 		this.selection = this.anchor = null;
 	},
@@ -154,13 +184,15 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 
 	// mouse events
 	onMouseDown: function(e){
-		// summary: event processor for onmousedown
-		// e: Event: mouse event
+		// summary:
+		//		event processor for onmousedown
+		// e: Event
+		//		mouse event
 		if(this.autoSync){ this.sync(); }
 		if(!this.current){ return; }
-		if(!this.singular && !dojo.dnd.getCopyKeyState(e) && !e.shiftKey && (this.current.id in this.selection)){
+		if(!this.singular && !dojo.isCopyKey(e) && !e.shiftKey && (this.current.id in this.selection)){
 			this.simpleSelection = true;
-			if(e.button === dojo.dnd._lmb){
+			if(e.button === dojo.mouseButtons.LEFT){
 				// accept the left button and stop the event
 				// for IE we don't stop event when multiple buttons are pressed
 				dojo.stopEvent(e);
@@ -168,7 +200,7 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 			return;
 		}
 		if(!this.singular && e.shiftKey){
-			if(!dojo.dnd.getCopyKeyState(e)){
+			if(!dojo.isCopyKey(e)){
 				this._removeSelection();
 			}
 			var c = this.getAllNodes();
@@ -197,7 +229,7 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		}else{
 			if(this.singular){
 				if(this.anchor == this.current){
-					if(dojo.dnd.getCopyKeyState(e)){
+					if(dojo.isCopyKey(e)){
 						this.selectNone();
 					}
 				}else{
@@ -207,7 +239,7 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 					this.selection[this.current.id] = 1;
 				}
 			}else{
-				if(dojo.dnd.getCopyKeyState(e)){
+				if(dojo.isCopyKey(e)){
 					if(this.anchor == this.current){
 						delete this.selection[this.anchor.id];
 						this._removeAnchor();
@@ -238,8 +270,10 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		dojo.stopEvent(e);
 	},
 	onMouseUp: function(e){
-		// summary: event processor for onmouseup
-		// e: Event: mouse event
+		// summary:
+		//		event processor for onmouseup
+		// e: Event
+		//		mouse event
 		if(!this.simpleSelection){ return; }
 		this.simpleSelection = false;
 		this.selectNone();
@@ -250,23 +284,28 @@ dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
 		}
 	},
 	onMouseMove: function(e){
-		// summary: event processor for onmousemove
-		// e: Event: mouse event
+		// summary
+		//		event processor for onmousemove
+		// e: Event
+		//		mouse event
 		this.simpleSelection = false;
 	},
 	
 	// utilities
 	onOverEvent: function(){
-		// summary: this function is called once, when mouse is over our container
+		// summary:
+		//		this function is called once, when mouse is over our container
 		this.onmousemoveEvent = dojo.connect(this.node, "onmousemove", this, "onMouseMove");
 	},
 	onOutEvent: function(){
-		// summary: this function is called once, when mouse is out of our container
+		// summary:
+		//		this function is called once, when mouse is out of our container
 		dojo.disconnect(this.onmousemoveEvent);
 		delete this.onmousemoveEvent;
 	},
 	_removeSelection: function(){
-		// summary: unselects all items
+		// summary:
+		//		unselects all items
 		var e = dojo.dnd._empty;
 		for(var i in this.selection){
 			if(i in e){ continue; }

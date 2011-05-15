@@ -3,8 +3,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Chapter 1. ZendX_Console_Process_Unix</title>
 <link rel="stylesheet" href="dbstyle.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
-<link rel="start" href="index.html" title="Programmer's Reference Guide">
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Programmer's Reference Guide">
 <link rel="up" href="index.html" title="Programmer's Reference Guide">
 <link rel="prev" href="index.html" title="Programmer's Reference Guide">
 <link rel="next" href="zendx.jquery.html" title="Chapter 2. ZendX_JQuery">
@@ -24,7 +24,7 @@
 </td>
 </tr>
 </table></div>
-<div class="chapter" lang="en">
+<div class="chapter" title="Chapter 1. ZendX_Console_Process_Unix">
 <div class="titlepage"><div><div><h2 class="title">
 <a name="zendx.console.process.unix"></a>Chapter 1. ZendX_Console_Process_Unix</h2></div></div></div>
 <div class="toc">
@@ -37,14 +37,14 @@
 </dl></dd>
 </dl>
 </div>
-<div class="sect1" lang="en">
+<div class="sect1" title="1.1. ZendX_Console_Process_Unix">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="zendx.console.process.unix.overview"></a>1.1. ZendX_Console_Process_Unix</h2></div></div></div>
-<div class="sect2" lang="en">
+<div class="sect2" title="1.1.1. Introduction">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="zendx.console.process.unix.introduction"></a>1.1.1. Introduction</h3></div></div></div>
 <p>
-            <code class="code">ZendX_Console_Process_Unix</code> allows developers to spawn
+            <code class="classname">ZendX_Console_Process_Unix</code> allows developers to spawn
             an object as a new process, and so do multiple tasks in parallel on
             console environments. Through its specific nature, it is only
             working on *nix based systems like Linux, Solaris, Mac/OSx and such.
@@ -54,30 +54,30 @@
             exception after instantiating the component.
         </p>
 </div>
-<div class="sect2" lang="en">
+<div class="sect2" title="1.1.2. Basic usage of ZendX_Console_Process_Unix">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="zendx.console.process.unix.basic"></a>1.1.2. Basic usage of ZendX_Console_Process_Unix</h3></div></div></div>
 <p>
-            <code class="code">ZendX_Console_Process_Unix</code> is an abstract class, which
+            <code class="classname">ZendX_Console_Process_Unix</code> is an abstract class, which
             requires the user to extend it. It has a single abstract method
-            called <code class="code">_run()</code> which has to be implemented to create a
+            called <code class="methodname">_run()</code> which has to be implemented to create a
             working process. It also comes with multiple methods for checking
             the alive status and share variables between the parent and the
             child process.
         </p>
 <p>
-            The <code class="code">_run()</code> method and every method which is called
+            The <code class="methodname">_run()</code> method and every method which is called
             by it is executed by the child process. Every other method which is
             called directly by the parent is executed by the parent process.
         </p>
 <p>
-            <code class="code">setVariable()</code> and <code class="code">getVariable()</code> can be
+            <code class="methodname">setVariable()</code> and <code class="methodname">getVariable()</code> can be
             used from both the parent- and the child process to share variables.
             To observe the alive status, the child process should call
-            <code class="code">_setAlive()</code> in a frequent interval, so that the parent
-            process can check the last alive time via <code class="code">getLastAlive()</code>.
+            <code class="methodname">_setAlive()</code> in a frequent interval, so that the parent
+            process can check the last alive time via <code class="methodname">getLastAlive()</code>.
             To get the PID of the child process, the parent can call
-            <code class="code">getPid()</code>.
+            <code class="methodname">getPid()</code>.
         </p>
 <div class="example">
 <a name="zendx.console.process.unix.example"></a><p class="title"><b>Example 1.1. Basic example for processing</b></p>
@@ -104,13 +104,12 @@ $process1-&gt;start();
 $process2 = new MyProcess();
 $process2-&gt;start();
 
-while ($process1-&gt;isRunning() &amp;&amp; $process2-&gt;isRunning()) {
+while ($process1-&gt;isRunning() || $process2-&gt;isRunning()) {
     sleep(1);
 }
 
 echo 'All processes completed';
-
-            </pre>
+</pre>
 <p>
                 In this example a process is forked twice and executed. As every
                 process runs 10 seconds, the parent process will be finished after

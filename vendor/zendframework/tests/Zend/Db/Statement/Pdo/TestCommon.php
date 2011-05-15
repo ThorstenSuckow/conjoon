@@ -15,20 +15,19 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
 
 require_once 'Zend/Db/Statement/TestCommon.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
 /*
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Statement
@@ -94,13 +93,13 @@ abstract class Zend_Db_Statement_Pdo_TestCommon extends Zend_Db_Statement_TestCo
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Statement_Exception', $e,
                 'Expecting object of type Zend_Db_Statement_Exception, got '.get_class($e));
-            $this->assertTrue($e->hasChainedException());
-            $this->assertType('PDOException', $e->getChainedException());
+            $this->assertTrue($e->hasChainedException(), 'Missing Chained Exception');
+            $this->assertType('PDOException', $e->getChainedException(), 'Wrong type of Exception');
         }
     }
-    
+
     /**
-     * 
+     *
      * @group ZF-5868
      */
     public function testStatementWillPersistBindParamsInQueryProfilerAfterExecute()
@@ -113,12 +112,12 @@ abstract class Zend_Db_Statement_Pdo_TestCommon extends Zend_Db_Statement_TestCo
         $stmt = $this->_db->prepare($sql);
         $stmt->bindValue('product_id', 1);
         $stmt->execute();
-        
+
         $params = $this->_db->getProfiler()->getLastQueryProfile()->getQueryParams();
 
         $target = array(':product_id' => 1);
         $this->assertEquals($target, $params);
-        
+
     }
-    
+
 }

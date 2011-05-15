@@ -280,12 +280,12 @@ class Conjoon_Modules_Default_Registry_Facade {
      * system configurations.
      * The values that get applied are:
      *
-     * service/youtube/chromeless/api-key - read form application config
      * client/environment/device - either iphone or default (HTTP_USER_AGENT)
      * base/conjoon/name - hardcoded to "conjoon" as of now
      * base/conjoon/version - read from Conjoon_Version (Conjoon_Version::VERSION)
      * base/conjoon/edition - read from application config
      * server/php/max_execution_time - read from php ini
+     * server/environment host, port, protocol - server environment settings
      *
      * @param array
      */
@@ -301,18 +301,6 @@ class Conjoon_Modules_Default_Registry_Facade {
          */
         require_once 'Conjoon/Keys.php';
 
-        // youtube api key
-        $apiKeyPath = $this->_pathToIndex('service/youtube/chromeless', $entries);
-        if (!empty($apiKeyPath)) {
-            $entries[array_pop($apiKeyPath)]['values'][] = array(
-                'name'        => 'api-key',
-                'value'       => Zend_Registry::get(
-                                     Conjoon_Keys::REGISTRY_CONFIG_OBJECT
-                                 )->application->service->youtube->chromeless->apiKey,
-                'type'        => 'STRING',
-                'is_editable' => 0
-            );
-        }
 
         // base/conjoon
         $baseName = $this->_pathToIndex('base/conjoon', $entries);
@@ -361,6 +349,32 @@ class Conjoon_Modules_Default_Registry_Facade {
             );
         }
 
+        // server environment
+        $path2 = $this->_pathToIndex('server/environment', $entries);
+        if (!empty($path2)) {
+            $ind = array_pop($path2);
+            $entries[$ind]['values'][] = array(
+                'name'        => 'host',
+                'value'       => $_SERVER['SERVER_NAME'],
+                'type'        => 'STRING',
+                'is_editable' => 0
+            );
+            $entries[$ind]['values'][] = array(
+                'name'        => 'port',
+                'value'       => $_SERVER['SERVER_PORT'],
+                'type'        => 'INTEGER',
+                'is_editable' => 0
+            );
+            $entries[$ind]['values'][] = array(
+                'name'        => 'protocol',
+                'value'       => ((stripos($_SERVER['SERVER_PROTOCOL'], 'https') === false)
+                                  ? 'http'
+                                  : 'https'),
+                'type'        => 'STRING',
+                'is_editable' => 0
+            );
+        }
+
         // server/php
         $path = $this->_pathToIndex('server/php', $entries);
         if (!empty($path)) {
@@ -371,6 +385,7 @@ class Conjoon_Modules_Default_Registry_Facade {
                 'is_editable' => 0
             );
         }
+
     }
 
     /**

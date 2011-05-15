@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage PHP
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Docblock.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Docblock.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -33,7 +33,7 @@ require_once 'Zend/CodeGenerator/Php/Docblock/Tag.php';
 /**
  * @category   Zend
  * @package    Zend_CodeGenerator
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
@@ -42,12 +42,12 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
      * @var string
      */
     protected $_shortDescription = null;
-    
+
     /**
      * @var string
      */
     protected $_longDescription = null;
-    
+
     /**
      * @var array
      */
@@ -57,7 +57,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
      * @var string
      */
     protected $_indentation = '';
-    
+
     /**
      * fromReflection() - Build a docblock generator object from a reflection object
      *
@@ -67,20 +67,20 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
     public static function fromReflection(Zend_Reflection_Docblock $reflectionDocblock)
     {
         $docblock = new self();
-        
+
         $docblock->setSourceContent($reflectionDocblock->getContents());
         $docblock->setSourceDirty(false);
-        
+
         $docblock->setShortDescription($reflectionDocblock->getShortDescription());
         $docblock->setLongDescription($reflectionDocblock->getLongDescription());
-        
+
         foreach ($reflectionDocblock->getTags() as $tag) {
             $docblock->setTag(Zend_CodeGenerator_Php_Docblock_Tag::fromReflection($tag));
         }
-        
+
         return $docblock;
     }
-    
+
     /**
      * setShortDescription()
      *
@@ -92,7 +92,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         $this->_shortDescription = $shortDescription;
         return $this;
     }
-    
+
     /**
      * getShortDescription()
      *
@@ -102,7 +102,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
     {
         return $this->_shortDescription;
     }
-    
+
     /**
      * setLongDescription()
      *
@@ -114,7 +114,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         $this->_longDescription = $longDescription;
         return $this;
     }
-    
+
     /**
      * getLongDescription()
      *
@@ -124,7 +124,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
     {
         return $this->_longDescription;
     }
-    
+
     /**
      * setTags()
      *
@@ -136,10 +136,10 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         foreach ($tags as $tag) {
             $this->setTag($tag);
         }
-        
+
         return $this;
     }
-    
+
     /**
      * setTag()
      *
@@ -157,11 +157,11 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
                 . 'instance of Zend_CodeGenerator_Php_Docblock_Tag'
                 );
         }
-        
+
         $this->_tags[] = $tag;
         return $this;
     }
-    
+
     /**
      * getTags
      *
@@ -171,7 +171,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
     {
         return $this->_tags;
     }
-    
+
     /**
      * generate()
      *
@@ -182,7 +182,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         if (!$this->isSourceDirty()) {
             return $this->_docCommentize($this->getSourceContent());
         }
-        
+
         $output  = '';
         if (null !== ($sd = $this->getShortDescription())) {
             $output .= $sd . self::LINE_FEED . self::LINE_FEED;
@@ -194,10 +194,10 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         foreach ($this->getTags() as $tag) {
             $output .= $tag->generate() . self::LINE_FEED;
         }
-        
+
         return $this->_docCommentize(trim($output));
     }
-    
+
     /**
      * _docCommentize()
      *
@@ -211,10 +211,14 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         $content = wordwrap($content, 80, self::LINE_FEED);
         $lines = explode(self::LINE_FEED, $content);
         foreach ($lines as $line) {
-            $output .= $indent . ' * ' . $line . self::LINE_FEED;
+            $output .= $indent . ' *';
+            if ($line) {
+                $output .= " $line";
+            }
+            $output .= self::LINE_FEED;
         }
         $output .= $indent . ' */' . self::LINE_FEED;
         return $output;
     }
-    
+
 }

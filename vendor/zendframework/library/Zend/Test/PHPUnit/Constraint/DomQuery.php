@@ -14,30 +14,32 @@
  *
  * @category   Zend
  * @package    Zend_Test
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @subpackage PHPUnit
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DomQuery.php 18234 2009-09-18 14:06:43Z sgehrig $
+ * @version    $Id: DomQuery.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/** PHPUnit_Framework_Constraint */
+/** @see PHPUnit_Framework_Constraint */
 require_once 'PHPUnit/Framework/Constraint.php';
 
-/** Zend_Dom_Query */
+/** @see Zend_Dom_Query */
 require_once 'Zend/Dom/Query.php';
 
 /**
  * Zend_Dom_Query-based PHPUnit Constraint
  *
  * @uses       PHPUnit_Framework_Constraint
+ * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Test_PHPUnit_Constraint_DomQuery extends PHPUnit_Framework_Constraint
 {
     /**#@+
-     * @const string Assertion type constants
+     * Assertion type constants
      */
     const ASSERT_QUERY            = 'assertQuery';
     const ASSERT_CONTENT_CONTAINS = 'assertQueryContentContains';
@@ -89,6 +91,12 @@ class Zend_Test_PHPUnit_Constraint_DomQuery extends PHPUnit_Framework_Constraint
      * @var bool
      */
     protected $_useXpath          = false;
+
+    /**
+     * XPath namespaces
+     * @var array
+     */
+    protected $_xpathNamespaces = array();
 
     /**
      * Constructor; setup constraint state
@@ -152,6 +160,7 @@ class Zend_Test_PHPUnit_Constraint_DomQuery extends PHPUnit_Framework_Constraint
 
         $method   = $this->_useXpath ? 'queryXpath' : 'query';
         $domQuery = new Zend_Dom_Query($other);
+        $domQuery->registerXpathNamespaces($this->_xpathNamespaces);
         $result   = $domQuery->$method($this->_path);
         $argv     = func_get_args();
         $argc     = func_num_args();
@@ -265,6 +274,17 @@ class Zend_Test_PHPUnit_Constraint_DomQuery extends PHPUnit_Framework_Constraint
     }
 
     /**
+     * Register XPath namespaces
+     *
+     * @param   array $xpathNamespaces
+     * @return  void
+     */
+    public function registerXpathNamespaces($xpathNamespaces)
+    {
+        $this->_xpathNamespaces = $xpathNamespaces;
+    }
+
+    /**
      * Check to see if content is matched in selected nodes
      *
      * @param  Zend_Dom_Query_Result $result
@@ -273,6 +293,8 @@ class Zend_Test_PHPUnit_Constraint_DomQuery extends PHPUnit_Framework_Constraint
      */
     protected function _matchContent($result, $match)
     {
+        $match = (string) $match;
+
         if (0 == count($result)) {
             return false;
         }

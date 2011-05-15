@@ -46,7 +46,7 @@ dojo.declare("dojox.wire.Wire", null, {
 				//First check the object tree for it.  Might be defined variable
 				//name/global function (like a jsId, or just a function name).
 				var convertObject = dojo.getObject(this.converter);
-				if (dojo.isFunction(convertObject)){
+				if(dojo.isFunction(convertObject)){
 					//We need to see if this is a pure function or an object constructor...
 					try{
 						var testObj = new convertObject();
@@ -68,7 +68,7 @@ dojo.declare("dojox.wire.Wire", null, {
 
 				//No object with that name (Converter is still a string), 
 				//then look for a class that needs to be dynamically loaded...
-				if (dojo.isString(this.converter)) {
+				if(dojo.isString(this.converter)){
 					var converterClass = dojox.wire._getClass(this.converter);
 					if(converterClass){
 						this.converter = new converterClass();
@@ -277,7 +277,9 @@ dojo.declare("dojox.wire.Wire", null, {
 			value = object.getPropertyValue(property);
 		}else{
 			var getter = "get" + property.charAt(0).toUpperCase() + property.substring(1);
-			if(this._useAttr(object)){
+			if(this._useGet(object)){
+				value = object.get(property);
+			}else if(this._useAttr(object)){
 				value = object.attr(property);
 			} else if(object[getter]){
 				value = object[getter]();
@@ -325,7 +327,9 @@ dojo.declare("dojox.wire.Wire", null, {
 			object.setPropertyValue(property, value);
 		}else{
 			var setter = "set" + property.charAt(0).toUpperCase() + property.substring(1);
-			if(this._useAttr(object)){
+			if(this._useSet(object)){
+				object.set(property, value);
+			}else if(this._useAttr(object)){
 				object.attr(property, value);
 			}else if(object[setter]){
 				object[setter](value);
@@ -335,10 +339,34 @@ dojo.declare("dojox.wire.Wire", null, {
 		}
 	},
 
-	_useAttr: function(object) {
-		//	summary:
-	   	//		Function to detect if dijit.attr support exists on the target
-		//	object:
+	_useGet: function(object){
+		// summary:
+		//		Function to detect if dijit.get support exists on the target
+		// object:
+		//		The target object to set the property of.
+		var useGet = false;
+		if(dojo.isFunction(object.get)){
+			useGet = true;
+		}
+		return useGet;
+	},
+
+	_useSet: function(object){
+		// summary:
+		//		Function to detect if dijit.set support exists on the target
+		// object:
+		//		The target object to set the property of.
+		var useSet = false;
+		if(dojo.isFunction(object.set)){
+			useSet = true;
+		}
+		return useSet;
+	},
+
+	_useAttr: function(object){
+		// summary:
+		//		Function to detect if dijit.attr support exists on the target
+		// object:
 		//		The target object to set the property of.
 		var useAttr = false;
 		if(dojo.isFunction(object.attr)){

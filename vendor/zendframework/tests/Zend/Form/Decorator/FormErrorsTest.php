@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ArrayAccessTest.php 16225 2009-06-21 20:34:55Z thomas $
+ * @version    $Id: FormErrorsTest.php 23853 2011-04-10 16:06:30Z ramon $
  */
 
 // Call Zend_Form_Decorator_FormErrorsTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Decorator_FormErrorsTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Form/Decorator/FormErrors.php';
 require_once 'Zend/Form.php';
@@ -38,11 +36,11 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
-class Zend_Form_Decorator_FormErrorsTest extends PHPUnit_Framework_TestCase 
+class Zend_Form_Decorator_FormErrorsTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -136,6 +134,18 @@ class Zend_Form_Decorator_FormErrorsTest extends PHPUnit_Framework_TestCase
     {
         $form = new Zend_Form();
         $this->decorator->setElement($form);
+        $content = 'test content';
+        $this->assertSame($content, $this->decorator->render($content));
+    }
+
+    public function testNotGeneratingSubformErrorMarkupWrappingWhenNoErrors()
+    {
+        $form1 = new Zend_Form_SubForm();
+        $form2 = new Zend_Form();
+        $form2->addSubForm($form1, 'sub');
+        $form2->setView($this->getView());
+        $this->decorator->setElement($form2);
+
         $content = 'test content';
         $this->assertSame($content, $this->decorator->render($content));
     }
@@ -254,6 +264,44 @@ class Zend_Form_Decorator_FormErrorsTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testRenderIsArrayForm()
+    {
+        $this->setupForm();
+        $this->form->setName('foo')
+                   ->setIsArray(true);
+        $content = 'test content';
+        $test = $this->decorator->render($content);
+        $this->assertContains($content, $test);
+        foreach ($this->form->getMessages() as $name => $messages) {
+            while (($message = current($messages))) {
+                if (is_string($message)) {
+                    $this->assertContains($message, $test, var_export($messages, 1));
+                }
+                if (false === next($messages) && is_array(prev($messages))) {
+                    $messages = current($messages);
+                }
+            }
+        }
+    }
+
+    public function testCustomFormErrors()
+    {
+        $this->setupForm();
+        $this->form->addDecorator($this->decorator)
+                   ->addError('form-badness');
+        $html = $this->form->render();
+        $this->assertContains('form-badness', $html);
+
+        $this->decorator->setOnlyCustomFormErrors(true);
+        $html = $this->form->render();
+        $this->assertNotRegexp('/form-errors.*?Master Foo/', $html);
+
+        $this->decorator->setShowCustomFormErrors(false);
+        $html = $this->form->render();
+        $this->assertNotContains('form-badness', $html);
+    }
+
+
     /**
      * @dataProvider markupOptionMethodsProvider
      */
@@ -268,6 +316,17 @@ class Zend_Form_Decorator_FormErrorsTest extends PHPUnit_Framework_TestCase
         } else {
             $this->assertEquals('foo', $this->decorator->$getter());
         }
+    }
+
+    /**
+     * @group ZF-11151
+     */
+    public function testOptionShowCustomFormErrors()
+    {
+        $this->decorator
+             ->setOption('showCustomFormErrors', true);
+
+        $this->assertTrue($this->decorator->getShowCustomFormErrors());
     }
 
     public function markupOptionMethodsProvider()

@@ -8,17 +8,17 @@
 	cellSpacing: "Razmik med celicami:",
 	tableWidth: "Širina tabele:",
 	backgroundColor: "Barva ozadja:",
-	borderColor: "Barva roba:",
-	borderThickness: "Debelina roba",
-	pixels: "Piksli",
-	percent: "odstotek",
-	pixels: "piksli",
+	borderColor: "Barva obrobe:",
+	borderThickness: "Debelina obrobe",
+	percent: "odstotkov",
+	pixels: "pikslov",
 	"default": "privzeto",
 	left: "levo",
-	center: "sredina",
+	center: "na sredini",
 	right: "desno",
 	buttonSet: "Nastavi", // translated elsewhere?
 	buttonInsert: "Vstavi",
+	buttonCancel: "Prekliči",
 
 	selectTableLabel: "Izberi tabelo",
 	insertTableRowBeforeLabel: "Dodaj vrstico pred",
@@ -28,4 +28,5 @@
 	deleteTableRowLabel: "Izbriši vrstico",
 	deleteTableColumnLabel: "Izbriši stolpec"
 })
+	
 

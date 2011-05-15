@@ -15,12 +15,14 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTable.php 16670 2009-07-12 13:35:45Z beberlei $
+ * @version    $Id: DbTable.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-
+/**
+ * @see PHPUnit_Extensions_Database_DataSet_QueryTable
+ */
 require_once "PHPUnit/Extensions/Database/DataSet/QueryTable.php";
 
 /**
@@ -35,14 +37,14 @@ require_once "Zend/Db/Table/Abstract.php";
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Test_PHPUnit_Db_DataSet_DbTable extends PHPUnit_Extensions_Database_DataSet_QueryTable
 {
     /**
      * Zend_Db_Table object
-     * 
+     *
      * @var Zend_Db_Table_Abstract
      */
     protected $_table = null;

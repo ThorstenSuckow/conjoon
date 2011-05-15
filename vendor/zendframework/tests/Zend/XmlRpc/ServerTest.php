@@ -15,17 +15,10 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ServerTest.php 18443 2009-09-30 13:35:47Z lars $
+ * @version $Id: ServerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-// Call Zend_XmlRpc_ServerTest::main() if this source file is executed directly.
-if (!defined('PHPUnit_MAIN_METHOD')) {
-    define('PHPUnit_MAIN_METHOD', 'Zend_XmlRpc_ServerTest::main');
-}
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 require_once 'Zend/XmlRpc/Server.php';
 require_once 'Zend/XmlRpc/Request.php';
@@ -37,11 +30,11 @@ require_once 'Zend/XmlRpc/Response.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
-class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase 
+class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Zend_XmlRpc_Server object
@@ -50,20 +43,9 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     protected $_server;
 
     /**
-     * Runs the test methods of this class.
-     *
-     * @return void
-     */
-    public static function main()
-    {
-        $suite  = new PHPUnit_Framework_TestSuite("Zend_XmlRpc_ServerTest");
-        $result = PHPUnit_TextUI_TestRunner::run($suite);
-    }
-
-    /**
      * Setup environment
      */
-    public function setUp() 
+    public function setUp()
     {
         $this->_server = new Zend_XmlRpc_Server();
     }
@@ -71,7 +53,7 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * Teardown environment
      */
-    public function tearDown() 
+    public function tearDown()
     {
         unset($this->_server);
     }
@@ -79,9 +61,9 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * __construct() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: void 
+     * Returns: void
      */
     public function test__construct()
     {
@@ -91,13 +73,13 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * addFunction() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - function: 
-     * - namespace: Optional; has default; 
-     * 
-     * Returns: void 
+     * - function:
+     * - namespace: Optional; has default;
+     *
+     * Returns: void
      */
     public function testAddFunction()
     {
@@ -225,12 +207,12 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * handle() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - request: Optional; 
-     * 
-     * Returns: Zend_XmlRpc_Response|Zend_XmlRpc_Fault 
+     * - request: Optional;
+     *
+     * Returns: Zend_XmlRpc_Response|Zend_XmlRpc_Fault
      */
     public function testHandle()
     {
@@ -271,12 +253,12 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * setResponseClass() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - class: 
-     * 
-     * Returns: boolean 
+     * - class:
+     *
+     * Returns: boolean
      */
     public function testSetResponseClass()
     {
@@ -292,9 +274,9 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * listMethods() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: array 
+     * Returns: array
      */
     public function testListMethods()
     {
@@ -309,12 +291,12 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * methodHelp() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - method: 
-     * 
-     * Returns: string 
+     * - method:
+     *
+     * Returns: string
      */
     public function testMethodHelp()
     {
@@ -328,12 +310,12 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * methodSignature() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - method: 
-     * 
-     * Returns: array 
+     * - method:
+     *
+     * Returns: array
      */
     public function testMethodSignature()
     {
@@ -348,12 +330,12 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     /**
      * multicall() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - methods: 
-     * 
-     * Returns: array 
+     * - methods:
+     *
+     * Returns: array
      */
     public function testMulticall()
     {
@@ -416,12 +398,14 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     public function testGetSetEncoding()
     {
         $this->assertEquals('UTF-8', $this->_server->getEncoding());
-        $this->_server->setEncoding('ISO-8859-1');
+        $this->assertEquals('UTF-8', Zend_XmlRpc_Value::getGenerator()->getEncoding());
+        $this->assertSame($this->_server, $this->_server->setEncoding('ISO-8859-1'));
         $this->assertEquals('ISO-8859-1', $this->_server->getEncoding());
+        $this->assertEquals('ISO-8859-1', Zend_XmlRpc_Value::getGenerator()->getEncoding());
     }
 
     /**
-     * Test request/response encoding 
+     * Test request/response encoding
      */
     public function testRequestResponseEncoding()
     {
@@ -617,7 +601,7 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2872
+     * @group ZF-2872
      */
     public function testCanMarshalBase64Requests()
     {
@@ -679,12 +663,12 @@ class Zend_XmlRpc_ServerTest extends PHPUnit_Framework_TestCase
 }
 
 /**
- * Zend_XmlRpc_Server_testFunction 
+ * Zend_XmlRpc_Server_testFunction
  *
  * Function for use with xmlrpc server unit tests
- * 
- * @param array $var1 
- * @param string $var2 
+ *
+ * @param array $var1
+ * @param string $var2
  * @return string
  */
 function Zend_XmlRpc_Server_testFunction($var1, $var2 = 'optional')
@@ -696,7 +680,7 @@ function Zend_XmlRpc_Server_testFunction($var1, $var2 = 'optional')
  * Zend_XmlRpc_Server_testFunction2
  *
  * Function for use with xmlrpc server unit tests
- * 
+ *
  * @return string
  */
 function Zend_XmlRpc_Server_testFunction2()
@@ -712,7 +696,7 @@ class Zend_XmlRpc_Server_testClass
 
     /**
      * Constructor
-     * 
+     *
      * @return void
      */
     public function __construct($value1 = null, $value2 = null)
@@ -722,11 +706,11 @@ class Zend_XmlRpc_Server_testClass
     }
 
     /**
-     * Test1 
+     * Test1
      *
      * Returns 'String: ' . $string
-     * 
-     * @param string $string 
+     *
+     * @param string $string
      * @return string
      */
     public function test1($string)
@@ -735,11 +719,11 @@ class Zend_XmlRpc_Server_testClass
     }
 
     /**
-     * Test2 
+     * Test2
      *
      * Returns imploded array
-     * 
-     * @param array $array 
+     *
+     * @param array $array
      * @return string
      */
     public static function test2($array)
@@ -748,10 +732,10 @@ class Zend_XmlRpc_Server_testClass
     }
 
     /**
-     * Test3 
+     * Test3
      *
      * Should not be available...
-     * 
+     *
      * @return void
      */
     protected function _test3()
@@ -769,8 +753,8 @@ class Zend_XmlRpc_Server_testClass
 
     /**
      * Test base64 encoding in request and response
-     * 
-     * @param  base64 $data 
+     *
+     * @param  base64 $data
      * @return base64
      */
     public function base64($data)

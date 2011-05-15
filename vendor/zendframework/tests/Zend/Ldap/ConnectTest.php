@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConnectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ConnectTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Ldap
@@ -40,7 +35,7 @@ require_once 'Zend/Ldap.php';
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  */
@@ -192,6 +187,35 @@ class Zend_Ldap_ConnectTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(0x31, $zle->getCode());
             $this->assertEquals(0x0, Zend_Ldap_Exception::getLdapCode($ldap));
             $this->assertEquals(0x0, Zend_Ldap_Exception::getLdapCode(null));
+        }
+    }
+
+    /**
+     * @group ZF-8274
+     */
+    public function testConnectWithUri()
+    {
+        $host = TESTS_ZEND_LDAP_HOST;
+        $port = 0;
+        if (defined('TESTS_ZEND_LDAP_PORT') && TESTS_ZEND_LDAP_PORT != 389) $port = TESTS_ZEND_LDAP_PORT;
+        $useSsl = false;
+        if (defined('TESTS_ZEND_LDAP_USE_SSL')) $useSsl = TESTS_ZEND_LDAP_USE_SSL;
+        if ($useSsl) {
+            $host = 'ldaps://' . $host;
+        } else {
+            $host = 'ldap://' . $host;
+        }
+        if ($port) {
+            $host = $host . ':' . $port;
+        }
+
+        $ldap = new Zend_Ldap();
+        try {
+            $ldap->connect($host)
+                 ->bind('CN=ignored,DC=example,DC=com', 'ignored');
+            $this->fail('Expected exception for invalid username');
+        } catch (Zend_Ldap_Exception $zle) {
+            $this->assertContains('Invalid credentials', $zle->getMessage());
         }
     }
 }

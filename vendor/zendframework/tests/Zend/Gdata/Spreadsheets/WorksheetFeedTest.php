@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Spreadsheets
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Spreadsheets
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Spreadsheets
@@ -49,12 +49,12 @@ class Zend_Gdata_Spreadsheets_WorksheetFeedTest extends PHPUnit_Framework_TestCa
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Spreadsheets_WorksheetEntry);
         }
-        
+
         $newWksFeed = new Zend_Gdata_Spreadsheets_WorksheetFeed();
         $doc = new DOMDocument();
         $doc->loadXML($this->wksFeed->saveXML());
         $newWksFeed->transferFromDom($doc->documentElement);
-        
+
         $this->assertTrue(count($newWksFeed->entries) == 1);
         foreach($newWksFeed->entries as $entry)
         {

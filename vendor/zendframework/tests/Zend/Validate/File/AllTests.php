@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Validate_File_AllTests::main');
@@ -46,12 +41,13 @@ require_once 'Zend/Validate/File/NotExistsTest.php';
 require_once 'Zend/Validate/File/Sha1Test.php';
 require_once 'Zend/Validate/File/SizeTest.php';
 require_once 'Zend/Validate/File/UploadTest.php';
+require_once 'Zend/Validate/File/WordCountTest.php';
 
 /**
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  * @group      Zend_Validate_File
@@ -83,6 +79,7 @@ class Zend_Validate_File_AllTests
         $suite->addTestSuite('Zend_Validate_File_Sha1Test');
         $suite->addTestSuite('Zend_Validate_File_SizeTest');
         $suite->addTestSuite('Zend_Validate_File_UploadTest');
+        $suite->addTestSuite('Zend_Validate_File_WordCountTest');
 
         return $suite;
     }

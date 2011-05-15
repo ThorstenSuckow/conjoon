@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Generic.php 16607 2009-07-09 21:51:46Z beberlei $
+ * @version    $Id: Generic.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -25,6 +25,9 @@
  */
 require_once "Zend/Db/Adapter/Abstract.php";
 
+/**
+ * @see PHPUnit_Extensions_Database_DB_IMetaData
+ */
 require_once "PHPUnit/Extensions/Database/DB/IMetaData.php";
 
 /**
@@ -34,14 +37,14 @@ require_once "PHPUnit/Extensions/Database/DB/IMetaData.php";
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Test_PHPUnit_Db_Metadata_Generic implements PHPUnit_Extensions_Database_DB_IMetaData
 {
     /**
      * Zend_Db Connection
-     * 
+     *
      * @var Zend_Db_Adapter_Abstract
      */
     protected $_connection;
@@ -55,7 +58,7 @@ class Zend_Test_PHPUnit_Db_Metadata_Generic implements PHPUnit_Extensions_Databa
 
     /**
      * Cached Table metadata
-     * 
+     *
      * @var array
      */
     protected $_tableMetadata = array();
@@ -75,7 +78,7 @@ class Zend_Test_PHPUnit_Db_Metadata_Generic implements PHPUnit_Extensions_Databa
 
     /**
      * List Tables
-     * 
+     *
      * @return array
      */
     public function getTableNames()
@@ -85,7 +88,7 @@ class Zend_Test_PHPUnit_Db_Metadata_Generic implements PHPUnit_Extensions_Databa
 
     /**
      * Get Table information
-     * 
+     *
      * @param  string $tableName
      * @return array
      */

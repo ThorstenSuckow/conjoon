@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_OpenSearch
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata_OpenSearch
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_OpenSearch
@@ -41,7 +41,7 @@ class Zend_Gdata_OpenSearchItemsPerPageTest extends PHPUnit_Framework_TestCase
                 true);
         $this->openSearchItemsPerPage = new Zend_Gdata_Extension_OpenSearchItemsPerPage();
     }
-    
+
     public function testEmptyOpenSearchItemsPerPageShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->openSearchItemsPerPage->extensionElements));
         $this->assertTrue(count($this->openSearchItemsPerPage->extensionElements) == 0);
@@ -63,14 +63,14 @@ class Zend_Gdata_OpenSearchItemsPerPageTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->openSearchItemsPerPage->extensionAttributes));
         $this->assertTrue(count($this->openSearchItemsPerPage->extensionAttributes) == 0);
     }
-    
+
     public function testNormalOpenSearchItemsPerPageShouldHaveNoExtensionElements() {
         $this->openSearchItemsPerPage->text = "200";
-        
+
         $this->assertEquals("200", $this->openSearchItemsPerPage->text);
-                
+
         $this->assertEquals(0, count($this->openSearchItemsPerPage->extensionElements));
-        $newOpenSearchItemsPerPage = new Zend_Gdata_Extension_OpenSearchItemsPerPage(); 
+        $newOpenSearchItemsPerPage = new Zend_Gdata_Extension_OpenSearchItemsPerPage();
         $newOpenSearchItemsPerPage->transferFromXML($this->openSearchItemsPerPage->saveXML());
         $this->assertEquals(0, count($newOpenSearchItemsPerPage->extensionElements));
         $newOpenSearchItemsPerPage->extensionElements = array(

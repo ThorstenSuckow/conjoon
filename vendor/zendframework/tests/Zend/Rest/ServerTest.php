@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ServerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ServerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Rest_ServerTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Rest_ServerTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Rest_Server
@@ -38,7 +36,7 @@ require_once 'Zend/Rest/Server.php';
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Rest
  * @group      Zend_Rest_Server
@@ -52,7 +50,6 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Rest_ServerTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -114,18 +111,18 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertContains('failed', $result);
     }
 
-  	public function testHandleFunctionNoArgsUsingRequest()
-	{
+      public function testHandleFunctionNoArgsUsingRequest()
+    {
         $_REQUEST = array(
             'method' => 'Zend_Rest_Server_TestFunc2'
         );
-		$server = new Zend_Rest_Server();
-		$server->addFunction('Zend_Rest_Server_TestFunc2');
-		ob_start();
-		$server->handle();
-		$result = ob_get_clean();
-		$this->assertContains('<Zend_Rest_Server_TestFunc2 generator="zend" version="1.0"><response>Hello World</response><status>success</status></Zend_Rest_Server_TestFunc2>', $result, "Bad Result");
-	}
+        $server = new Zend_Rest_Server();
+        $server->addFunction('Zend_Rest_Server_TestFunc2');
+        ob_start();
+        $server->handle();
+        $result = ob_get_clean();
+        $this->assertContains('<Zend_Rest_Server_TestFunc2 generator="zend" version="1.0"><response>Hello World</response><status>success</status></Zend_Rest_Server_TestFunc2>', $result, "Bad Result");
+    }
 
     public function testHandleAnonymousArgFunction()
     {
@@ -525,16 +522,18 @@ class Zend_Rest_ServerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @see ZF-1949
+     * @see ZF-7977
      * @group ZF-1949
+     * @group ZF-7977
      */
     public function testMissingArgumentsShouldResultInFaultResponse()
     {
         $server = new Zend_Rest_Server();
         $server->setClass('Zend_Rest_Server_Test');
         ob_start();
-        $server->handle(array('method' => 'testFunc6', 'arg1' => "Davey"));
+        $server->handle(array('method' => 'testFunc6', 'arg1' => 'Davey'));
         $result = ob_get_clean();
-        $this->assertRegexp('#<message>Invalid Method Call to(.*?)(Requires).*?(given).*?(</message>)#', $result);
+        $this->assertRegexp('#<message>Invalid Method Call to(.*?)(Missing argument\(s\): ).*?(</message>)#', $result);
         $this->assertContains('<status>failed</status>', $result);
     }
 

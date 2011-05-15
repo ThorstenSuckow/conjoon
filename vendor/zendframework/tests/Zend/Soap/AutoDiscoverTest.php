@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AutoDiscoverTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AutoDiscoverTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-require_once dirname(__FILE__)."/../../TestHelper.php";
-
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /** Zend_Soap_AutoDiscover */
 require_once 'Zend/Soap/AutoDiscover.php';
@@ -43,7 +38,7 @@ require_once "_files/commontypes.php";
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Soap
  */
@@ -72,7 +67,7 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
     function testSetClass()
     {
         $scriptUri = 'http://localhost/my_script.php';
-        
+
         $server = new Zend_Soap_AutoDiscover();
         $server->setClass('Zend_Soap_AutoDiscover_Test');
         $dom = new DOMDocument();
@@ -198,7 +193,7 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
               .                 '<xsd:element name="who" type="xsd:string"/>'
               .               '</xsd:sequence>'
               .             '</xsd:complexType>'
-              .           '</xsd:element>'           
+              .           '</xsd:element>'
               .           '<xsd:element name="testFunc2Response">'
               .             '<xsd:complexType>'
               .               '<xsd:sequence>'
@@ -213,7 +208,7 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
               .                 '<xsd:element name="when" type="xsd:int"/>'
               .               '</xsd:sequence>'
               .             '</xsd:complexType>'
-              .           '</xsd:element>'           
+              .           '</xsd:element>'
               .           '<xsd:element name="testFunc3Response">'
               .             '<xsd:complexType>'
               .               '<xsd:sequence>'
@@ -504,7 +499,6 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
                 '<operation name="Zend_Soap_AutoDiscover_TestFunc2">'.
                 '<soap:operation soapAction="' . $scriptUri . '#Zend_Soap_AutoDiscover_TestFunc2"/>'.
                 '<input><soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="' . $scriptUri . '"/></input>'.
-                '<output><soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="' . $scriptUri . '"/></output>'.
                 '</operation>'.
                 '<operation name="Zend_Soap_AutoDiscover_TestFunc3">'.
                 '<soap:operation soapAction="' . $scriptUri . '#Zend_Soap_AutoDiscover_TestFunc3"/>'.
@@ -561,7 +555,7 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($wsdl, $this->sanitizeWsdlXmlOutputForOsCompability($dom->saveXML()), "Generated WSDL did not match expected XML");
         $this->assertTrue($dom->schemaValidate(dirname(__FILE__) .'/schemas/wsdl.xsd'), "WSDL Did not validate");
 
-        
+
 
         unlink(dirname(__FILE__).'/_files/addfunction2.wsdl');
     }
@@ -688,7 +682,7 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
             $server->setPersistence("bogus");
             $this->fail();
         } catch(Zend_Soap_AutoDiscover_Exception $e) {
-            
+
         }
 
         try {
@@ -903,5 +897,39 @@ class Zend_Soap_AutoDiscoverTest extends PHPUnit_Framework_TestCase
             '<operation name="Zend_Soap_AutoDiscover_OneWay"><documentation>@param string $message</documentation><input message="tns:Zend_Soap_AutoDiscover_OneWayIn"/></operation>',
             $wsdl
         );
+    }
+
+    /**
+     * @group ZF-8948
+     * @group ZF-5766
+     */
+    public function testRecursiveWsdlDependencies()
+    {
+        $autodiscover = new Zend_Soap_AutoDiscover('Zend_Soap_Wsdl_Strategy_ArrayOfTypeComplex');
+        $autodiscover->setClass('Zend_Soap_AutoDiscover_Recursion');
+        $wsdl = $autodiscover->toXml();
+
+        //  <types>
+        //      <xsd:schema targetNamespace="http://localhost/my_script.php">
+        //          <xsd:complexType name="Zend_Soap_AutoDiscover_Recursion">
+        //              <xsd:all>
+        //                  <xsd:element name="recursion" type="tns:Zend_Soap_AutoDiscover_Recursion"/>
+
+
+        $path = '//wsdl:types/xsd:schema/xsd:complexType[@name="Zend_Soap_AutoDiscover_Recursion"]/xsd:all/xsd:element[@name="recursion" and @type="tns:Zend_Soap_AutoDiscover_Recursion"]';
+        $this->assertWsdlPathExists($wsdl, $path);
+    }
+
+    public function assertWsdlPathExists($xml, $path)
+    {
+        $doc = new DOMDocument('UTF-8');
+        $doc->loadXML($xml);
+
+        $xpath = new DOMXPath($doc);
+        $xpath->registerNamespace('wsdl', 'http://schemas.xmlsoap.org/wsdl/');
+
+        $nodes = $xpath->query($path);
+
+        $this->assertTrue($nodes->length >= 1, "Could not assert that XML Document contains a node that matches the XPath Expression: " . $path);
     }
 }

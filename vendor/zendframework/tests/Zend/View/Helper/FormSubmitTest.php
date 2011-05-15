@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormSubmitTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FormSubmitTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_FormSubmitTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_FormSubmitTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/View/Helper/FormSubmit.php';
 require_once 'Zend/View.php';
@@ -37,12 +35,12 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
  */
-class Zend_View_Helper_FormSubmitTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_FormSubmitTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -128,6 +126,15 @@ class Zend_View_Helper_FormSubmitTest extends PHPUnit_Framework_TestCase
         $this->view->doctype('XHTML1_STRICT');
         $test = $this->helper->formSubmit('foo', 'bar');
         $this->assertContains(' />', $test);
+    }
+
+    /**
+     * @group ZF-10529
+     */
+    public function testDoesNotOutputEmptyId()
+    {
+        $test = $this->helper->formSubmit('', 'bar');
+        $this->assertNotContains('id=""', $test);
     }
 }
 

@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ValidateTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ValidateTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../TestHelper.php';
 
 /**
  * @see Zend_Validate
@@ -36,10 +31,15 @@ require_once 'Zend/Validate.php';
 require_once 'Zend/Validate/Abstract.php';
 
 /**
+ * @see Zend_Translate
+ */
+require_once 'Zend/Translate.php';
+
+/**
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -140,8 +140,8 @@ class Zend_ValidateTest extends PHPUnit_Framework_TestCase
      */
     public function testStaticFactoryWithConstructorArguments()
     {
-        $this->assertTrue(Zend_Validate::is('12', 'Between', array(1, 12)));
-        $this->assertFalse(Zend_Validate::is('24', 'Between', array(1, 12)));
+        $this->assertTrue(Zend_Validate::is('12', 'Between', array('min' => 1, 'max' => 12)));
+        $this->assertFalse(Zend_Validate::is('24', 'Between', array('min' => 1, 'max' => 12)));
     }
 
     /**
@@ -152,33 +152,11 @@ class Zend_ValidateTest extends PHPUnit_Framework_TestCase
      *
      * @group  ZF-2724
      * @return void
+     * @expectedException Zend_Validate_Exception
      */
     public function testStaticFactoryClassNotFound()
     {
-        set_error_handler(array($this, 'handleNotFoundError'), E_WARNING);
-        try {
-            Zend_Validate::is('1234', 'UnknownValidator');
-        } catch (Zend_Exception $e) {
-        }
-        restore_error_handler();
-        $this->assertTrue($this->error);
-        $this->assertTrue(isset($e));
-        $this->assertContains('Validate class not found', $e->getMessage());
-    }
-
-    /**
-     * Handle file not found errors
-     *
-     * @group  ZF-2724
-     * @param  int $errnum
-     * @param  string $errstr
-     * @return void
-     */
-    public function handleNotFoundError($errnum, $errstr)
-    {
-        if (strstr($errstr, 'No such file')) {
-            $this->error = true;
-        }
+        Zend_Validate::is('1234', 'UnknownValidator');
     }
 
     /**
@@ -211,6 +189,62 @@ class Zend_ValidateTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('One', 'Two', 'Three'), Zend_Validate::getDefaultNamespaces());
 
         Zend_Validate::setDefaultNamespaces(array());
+    }
+
+    public function testIsValidWithParameters()
+    {
+        $this->assertTrue(Zend_Validate::is(5, 'Between', array(1, 10)));
+        $this->assertTrue(Zend_Validate::is(5, 'Between', array('min' => 1, 'max' => 10)));
+    }
+
+    public function testSetGetMessageLengthLimitation()
+    {
+        Zend_Validate::setMessageLength(5);
+        $this->assertEquals(5, Zend_Validate::getMessageLength());
+
+        $valid = new Zend_Validate_Between(1, 10);
+        $this->assertFalse($valid->isValid(24));
+        $message = current($valid->getMessages());
+        $this->assertTrue(strlen($message) <= 5);
+    }
+
+    public function testSetGetDefaultTranslator()
+    {
+        set_error_handler(array($this, 'errorHandlerIgnore'));
+        $translator = new Zend_Translate('array', array(), 'en');
+        restore_error_handler();
+        Zend_Validate_Abstract::setDefaultTranslator($translator);
+        $this->assertSame($translator->getAdapter(), Zend_Validate_Abstract::getDefaultTranslator());
+    }
+
+    /**
+     * Handle file not found errors
+     *
+     * @group  ZF-2724
+     * @param  int $errnum
+     * @param  string $errstr
+     * @return void
+     */
+    public function handleNotFoundError($errnum, $errstr)
+    {
+        if (strstr($errstr, 'No such file')) {
+            $this->error = true;
+        }
+    }
+
+    /**
+     * Ignores a raised PHP error when in effect, but throws a flag to indicate an error occurred
+     *
+     * @param  integer $errno
+     * @param  string  $errstr
+     * @param  string  $errfile
+     * @param  integer $errline
+     * @param  array   $errcontext
+     * @return void
+     */
+    public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
+    {
+        $this->_errorOccurred = true;
     }
 }
 

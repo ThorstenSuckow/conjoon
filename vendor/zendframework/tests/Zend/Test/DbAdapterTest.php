@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbAdapterTest.php 18391 2009-09-24 18:11:51Z beberlei $
+ * @version    $Id: DbAdapterTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
-
-require_once dirname(__FILE__)."/../../TestHelper.php";
 
 require_once "Zend/Test/DbAdapter.php";
 require_once "Zend/Test/DbStatement.php";
@@ -29,7 +27,7 @@ require_once "Zend/Test/DbStatement.php";
  * @category   Zend
  * @package    Zend_Test
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Test
  */
@@ -162,5 +160,12 @@ class Zend_Test_DbAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(1 => 1234), $qp->getQueryParams());
         $this->assertEquals("SELECT * FROM foo WHERE bar = ?", $qp->getQuery());
+    }
+
+    public function testGetSetQuoteIdentifierSymbol()
+    {
+        $this->assertEquals('', $this->_adapter->getQuoteIdentifierSymbol());
+        $this->_adapter->setQuoteIdentifierSymbol('`');
+        $this->assertEquals('`', $this->_adapter->getQuoteIdentifierSymbol());
     }
 }

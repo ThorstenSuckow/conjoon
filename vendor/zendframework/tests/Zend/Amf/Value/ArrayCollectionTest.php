@@ -15,15 +15,14 @@
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: ArrayCollectionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Amf_Value_ArrayCollectionTest::main');
 }
 
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 require_once 'Zend/Amf/Value/Messaging/ArrayCollection.php';
 
 /**
@@ -32,20 +31,20 @@ require_once 'Zend/Amf/Value/Messaging/ArrayCollection.php';
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Amf
  */
 class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
 {
-    
-    
-    /** 
+
+
+    /**
      * Refrence to the array collection
      * @var Zend_Amf_Value_Message_ArrayCollection
      */
     protected $_arrayCollection;
-    
+
     /**
      * Data to be used to populate the ArrayCollection
      */
@@ -67,9 +66,9 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $data[] = array('foo' => 'foo1', 'bar' => 'bar1');
         $data[] = array('foo' => 'foo2', 'bar' => 'bar2');
         $this->_data = $data;
-        
+
     }
-    
+
     public function tearDown()
     {
         unset($this->_arrayCollection);
@@ -78,10 +77,10 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testConstructorArrayCollectionTwo()
     {
-        $this->_arrayCollection = new Zend_Amf_Value_Messaging_ArrayCollectionTwo($this->_data);
-        $this->assertEquals('bar2', $this->_arrayCollection[1]['bar']);       
+        $this->_arrayCollection = new Zend_Amf_Value_Messaging_ArrayCollection($this->_data);
+        $this->assertEquals('bar2', $this->_arrayCollection[1]['bar']);
     }
-    
+
     /**
      * Check that the ArrayCollection can be accessed like a standard array.
      */
@@ -90,8 +89,8 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $this->_arrayCollection = new Zend_Amf_Value_Messaging_ArrayCollection($this->_data);
         $this->assertEquals('bar2', $this->_arrayCollection[1]['bar']);
     }
-    
-    /** 
+
+    /**
      * Check that we can get the count of the ArrayCollection
      */
     public function testCountable()
@@ -99,8 +98,8 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $this->_arrayCollection = new Zend_Amf_Value_Messaging_ArrayCollection($this->_data);
         $this->assertEquals(2, count($this->_arrayCollection));
     }
-    
-    /** 
+
+    /**
      * Test that we can foreach through the ArrayCollection
      */
     public function testIteratorArray()
@@ -113,16 +112,16 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         }
         $this->assertEquals(2, $count);
     }
-    
+
     /**
      * Test that we can alter an item based on it's offset
      */
     public function testOffsetExists()
     {
         $this->_arrayCollection = new Zend_Amf_Value_Messaging_ArrayCollection($this->_data);
-        $this->assertTrue($this->_arrayCollection->offsetExists(1));       
+        $this->assertTrue($this->_arrayCollection->offsetExists(1));
     }
-    
+
     /**
      * Check that you can set and get the changes to an offset key.
      */
@@ -133,9 +132,9 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $this->_arrayCollection->offsetSet(1,$data);
         $this->assertEquals($data, $this->_arrayCollection->offsetGet(1));
     }
-    
+
     /**
-     * Check that you can delete an item from the arraycollection based on key. 
+     * Check that you can delete an item from the arraycollection based on key.
      */
     public function testOffsetUnset()
     {
@@ -146,7 +145,7 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $this->_arrayCollection->offsetUnset(0);
         $this->assertEquals(1, count($this->_arrayCollection));
     }
-    
+
     /**
      * Check that you can transform an ArrayCollection into a standard array with iterator_to_array
      */
@@ -156,7 +155,7 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $standardArray = iterator_to_array($this->_arrayCollection);
         $this->assertTrue(is_array($standardArray));
     }
-    
+
     /**
      * Make sure that you can append more name values to the arraycollection
      */
@@ -166,9 +165,9 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $arrayCollectionTwo = new Zend_Amf_Value_Messaging_ArrayCollection();
         $arrayCollectionTwo->append(array('foo' => 'foo1', 'bar' => 'bar1'));
         $arrayCollectionTwo->append(array('foo' => 'foo2', 'bar' => 'bar2'));
-        $this->assertEquals($arrayCollectionTwo, $this->_arrayCollection);    
+        $this->assertEquals($arrayCollectionTwo, $this->_arrayCollection);
     }
-    
+
     /**
      * Test to make sure that when the iterator as data it is a valid iterator
      *
@@ -182,7 +181,7 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_arrayCollection->valid());
     }
     */
-    
+
     /*
     public function testArrayIterator()
     {
@@ -199,10 +198,10 @@ class Zend_Amf_Value_ArrayCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($data3,$this->_arrayCollection->current());
         $this->_arrayCollection->rewind();
         $this->assertEquals($data0,$this->_arrayCollection->current());
-        
+
     }
     */
-    
+
 
 }
 

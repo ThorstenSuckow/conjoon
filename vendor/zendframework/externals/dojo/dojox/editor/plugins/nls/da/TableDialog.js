@@ -10,8 +10,7 @@
 	backgroundColor: "Baggrundsfarve:",
 	borderColor: "Kantfarve:",
 	borderThickness: "Kanttykkelse",
-	pixels: "Pixel",
-	percent: "percent",
+	percent: "procent",
 	pixels: "pixel",
 	"default": "standard",
 	left: "venstre",
@@ -19,6 +18,7 @@
 	right: "højre",
 	buttonSet: "Definér", // translated elsewhere?
 	buttonInsert: "Indsæt",
+	buttonCancel: "Annullér",
 
 	selectTableLabel: "Markér tabel",
 	insertTableRowBeforeLabel: "Tilføj række før",

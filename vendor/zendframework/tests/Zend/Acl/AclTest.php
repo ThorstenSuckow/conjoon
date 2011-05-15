@@ -15,42 +15,22 @@
  * @category   Zend
  * @package    Zend_Acl
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AclTest.php 18286 2009-09-18 20:19:50Z matthew $
+ * @version    $Id: AclTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
 
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
-
-/**
- * Zend_Acl
- */
 require_once 'Zend/Acl.php';
-
-/**
- * Zend_Acl_Resource
- */
 require_once 'Zend/Acl/Resource.php';
-
-/**
- * Zend_Acl_Role
- */
 require_once 'Zend/Acl/Role.php';
-
-/**
- * @see Zend_Acl_MockAssertion
- */
 require_once dirname(__FILE__) . '/_files/MockAssertion.php';
-
 
 /**
  * @category   Zend
  * @package    Zend_Acl
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @group      Zend_Acl
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
@@ -98,7 +78,7 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
         $this->assertType('Zend_Acl_Role', $role);
         $this->assertEquals('area', $role->getRoleId());
     }
-    
+
     /**
      * Ensures that basic removal of a single Role works
      *
@@ -291,7 +271,7 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
         $resource = $this->_acl->get($resourceArea);
         $this->assertTrue($resourceArea === $resource);
     }
-    
+
     /**
      * Ensures that basic addition and retrieval of a single Resource works
      */
@@ -302,7 +282,7 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
         $this->assertType('Zend_Acl_Resource', $resource);
         $this->assertEquals('area', $resource->getResourceId());
     }
-    
+
     /**
      * Ensures that basic addition and retrieval of a single Resource works
      *
@@ -1072,7 +1052,7 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
      * Ensures that the $onlyParents argument to inheritsRole() works
      *
      * @return void
-     * @see    http://framework.zend.com/issues/browse/ZF-2502
+     * @group ZF-2502
      */
     public function testRoleInheritanceSupportsCheckingOnlyParents()
     {
@@ -1086,11 +1066,11 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
      * Ensures that the solution for ZF-2234 works as expected
      *
      * @return void
-     * @see    http://framework.zend.com/issues/browse/ZF-2234
+     * @group ZF-2234
      */
     public function testAclInternalDFSMethodsBehaveProperly()
     {
-    	require_once dirname(__FILE__) . '/_files/ExtendedAclZF2234.php';
+        require_once dirname(__FILE__) . '/_files/ExtendedAclZF2234.php';
         $acl = new Zend_Acl_ExtendedAclZF2234();
 
         $someResource = new Zend_Acl_Resource('someResource');
@@ -1130,82 +1110,84 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
             $this->assertEquals('$dfs parameter may not be null', $e->getMessage());
         }
     }
-    
-    
+
+
     /**
      * @group ZF-1721
      */
     public function testAclAssertionsGetProperRoleWhenInheritenceIsUsed()
     {
         $acl = $this->_loadUseCase1();
-        
+
         $user = new Zend_Acl_Role('publisher');
         $blogPost = new Zend_Acl_Resource('blogPost');
-        
+
         /**
          * @var Zend_Acl_UseCase1_UserIsBlogPostOwnerAssertion
          */
         $assertion = $acl->customAssertion;
-        
+
         $this->assertTrue($acl->isAllowed($user, $blogPost, 'modify'));
 
         $this->assertEquals('publisher', $assertion->lastAssertRole->getRoleId());
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @group ZF-1722
      */
     public function testAclAssertionsGetOriginalIsAllowedObjects()
     {
-    	$acl = $this->_loadUseCase1();
-    	
-    	$user = new Zend_Acl_UseCase1_User();
-    	$blogPost = new Zend_Acl_UseCase1_BlogPost();
-    	
-    	$this->assertTrue($acl->isAllowed($user, $blogPost, 'view'));
-    	
-    	/**
-    	 * @var Zend_Acl_UseCase1_UserIsBlogPostOwnerAssertion
-    	 */
-    	$assertion = $acl->customAssertion;
-    	
-    	$assertion->assertReturnValue = true;
-    	$user->role = 'contributor';
-    	$this->assertTrue($acl->isAllowed($user, $blogPost, 'modify'), 'Assertion should return true');
-    	$assertion->assertReturnValue = false;
-    	$this->assertFalse($acl->isAllowed($user, $blogPost, 'modify'), 'Assertion should return false');
+        $acl = $this->_loadUseCase1();
 
-    	// check to see if the last assertion has the proper objets
-    	$this->assertType('Zend_Acl_UseCase1_User', $assertion->lastAssertRole, 'Assertion did not recieve proper role object');
-    	$this->assertType('Zend_Acl_UseCase1_BlogPost', $assertion->lastAssertResource, 'Assertion did not recieve proper resource object');
+        $user = new Zend_Acl_UseCase1_User();
+        $blogPost = new Zend_Acl_UseCase1_BlogPost();
+
+        $this->assertTrue($acl->isAllowed($user, $blogPost, 'view'));
+
+        /**
+         * @var Zend_Acl_UseCase1_UserIsBlogPostOwnerAssertion
+         */
+        $assertion = $acl->customAssertion;
+
+        $assertion->assertReturnValue = true;
+        $user->role = 'contributor';
+        $this->assertTrue($acl->isAllowed($user, $blogPost, 'modify'), 'Assertion should return true');
+        $assertion->assertReturnValue = false;
+        $this->assertFalse($acl->isAllowed($user, $blogPost, 'modify'), 'Assertion should return false');
+
+        // check to see if the last assertion has the proper objets
+        $this->assertType('Zend_Acl_UseCase1_User', $assertion->lastAssertRole, 'Assertion did not recieve proper role object');
+        $this->assertType('Zend_Acl_UseCase1_BlogPost', $assertion->lastAssertResource, 'Assertion did not recieve proper resource object');
 
     }
 
     /**
-     * 
+     *
      * @return Zend_Acl_UseCase1_Acl
      */
     protected function _loadUseCase1()
     {
-    	if (!class_exists('Zend_Acl_UseCase1_Acl')) {
-	    	require_once dirname(__FILE__) . '/_files/UseCase1/User.php';
-	    	require_once dirname(__FILE__) . '/_files/UseCase1/BlogPost.php';
-	    	require_once dirname(__FILE__) . '/_files/UseCase1/UserIsBlogPostOwnerAssertion.php';
-	    	require_once dirname(__FILE__) . '/_files/UseCase1/Acl.php';
-    	}    	
-    	return new Zend_Acl_UseCase1_Acl();
+        if (!class_exists('Zend_Acl_UseCase1_Acl')) {
+            require_once dirname(__FILE__) . '/_files/UseCase1/User.php';
+            require_once dirname(__FILE__) . '/_files/UseCase1/BlogPost.php';
+            require_once dirname(__FILE__) . '/_files/UseCase1/UserIsBlogPostOwnerAssertion.php';
+            require_once dirname(__FILE__) . '/_files/UseCase1/Acl.php';
+        }
+        return new Zend_Acl_UseCase1_Acl();
     }
 
     /**
      * Returns an array of registered roles
-     * @issue ZF-5638
+     * @expectedException PHPUnit_Framework_Error
+     * @group ZF-5638
      */
     public function testGetRegisteredRoles()
     {
         $acl = $this->_acl;
         $acl->addRole('developer');
+
         $roles = $acl->getRegisteredRoles();
         $this->assertTrue(is_array($roles));
         $this->assertFalse(empty($roles));
@@ -1232,5 +1214,163 @@ class Zend_Acl_AclTest extends PHPUnit_Framework_TestCase
 
         // Check after fix
         $this->assertFalse($acl->hasRole('test0'));
+    }
+
+    /**
+     * @group ZF-8039
+     *
+     * Meant to test for the (in)existance of this notice:
+     * "Notice: Undefined index: allPrivileges in lib/Zend/Acl.php on line 682"
+     */
+    public function testMethodRemoveAllowDoesNotThrowNotice() {
+        $acl = new Zend_Acl();
+        $acl->addRole('admin');
+        $acl->addResource('blog');
+        $acl->allow('admin', 'blog', 'read');
+        $acl->removeAllow(array('admin'), array('blog'), null);
+    }
+
+    public function testRoleObjectImplementsToString() {
+        $role = new Zend_Acl_Role('_fooBar_');
+        $this->assertEquals('_fooBar_',(string)$role);
+    }
+
+    public function testResourceObjectImplementsToString() {
+        $resource = new Zend_Acl_Resource('_fooBar_');
+        $this->assertEquals('_fooBar_',(string)$resource);
+    }
+
+    /**
+     * @group ZF-7973
+     */
+    public function testAclPassesPrivilegeToAssertClass() {
+        require_once dirname(__FILE__) . '/_files/AssertionZF7973.php';
+        $assertion = new Zend_Acl_AclTest_AssertionZF7973();
+
+        $acl = new Zend_Acl();
+        $acl->addRole('role');
+        $acl->addResource('resource');
+        $acl->allow('role',null,null,$assertion);
+        $allowed = $acl->isAllowed('role','resource','privilege',$assertion);
+
+        $this->assertTrue($allowed);
+    }
+
+    /**
+     * @group ZF-8468
+     */
+    public function testGetRegisteredRolesIsDeprecated() {
+        try {
+            $this->_acl->getRegisteredRoles();
+            $this->fail('getRegisteredRoles() did not throw an exception');
+        } catch(PHPUnit_Framework_Error $e) {
+            return;
+        }
+
+        $this->fail('An expected notice has not been raised');
+    }
+
+    /**
+     * @group ZF-8468
+     */
+    public function testgetRoles() {
+        $this->assertEquals(array(),$this->_acl->getRoles());
+
+        $roleGuest = new Zend_Acl_Role('guest');
+        $this->_acl->addRole($roleGuest);
+        $this->_acl->addRole(new Zend_Acl_Role('staff'), $roleGuest);
+        $this->_acl->addRole(new Zend_Acl_Role('editor'), 'staff');
+        $this->_acl->addRole(new Zend_Acl_Role('administrator'));
+
+        $expected = array('guest', 'staff','editor','administrator');
+        $this->assertEquals($expected, $this->_acl->getRoles());
+    }
+
+    /**
+     * @group ZF-8468
+     */
+    public function testgetResources() {
+        $this->assertEquals(array(),$this->_acl->getResources());
+
+        $this->_acl->add(new Zend_Acl_Resource('someResource'));
+        $this->_acl->add(new Zend_Acl_Resource('someOtherResource'));
+
+        $expected = array('someResource', 'someOtherResource');
+        $this->assertEquals($expected, $this->_acl->getResources());
+    }
+
+    /**
+     * @group ZF-9643
+     */
+    public function testRemoveAllowWithNullResourceAfterResourceSpecificRulesAppliesToAllResources()
+    {
+        $this->_acl->addRole('guest');
+        $this->_acl->addResource('blogpost');
+        $this->_acl->addResource('newsletter');
+        $this->_acl->allow('guest', 'blogpost', 'read');
+        $this->_acl->allow('guest', 'newsletter', 'read');
+        $this->assertTrue($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+
+        $this->_acl->removeAllow('guest', 'newsletter', 'read');
+        $this->assertTrue($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+
+        $this->_acl->removeAllow('guest', null, 'read');
+        $this->assertFalse($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+
+        // ensure allow null/all resoures works
+        $this->_acl->allow('guest', null, 'read');
+        $this->assertTrue($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+    }
+
+    /**
+     * @group ZF-9643
+     */
+    public function testRemoveDenyWithNullResourceAfterResourceSpecificRulesAppliesToAllResources()
+    {
+        $this->_acl->addRole('guest');
+        $this->_acl->addResource('blogpost');
+        $this->_acl->addResource('newsletter');
+
+        $this->_acl->allow();
+        $this->_acl->deny('guest', 'blogpost', 'read');
+        $this->_acl->deny('guest', 'newsletter', 'read');
+        $this->assertFalse($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+
+        $this->_acl->removeDeny('guest', 'newsletter', 'read');
+        $this->assertFalse($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+
+        $this->_acl->removeDeny('guest', null, 'read');
+        $this->assertTrue($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+
+        // ensure deny null/all resources works
+        $this->_acl->deny('guest', null, 'read');
+        $this->assertFalse($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'newsletter', 'read'));
+    }
+
+    /**
+     * @group ZF-10649
+     */
+    public function testAllowAndDenyWithNullForResourcesWillApplyToAllResources()
+    {
+        $this->_acl->addRole('guest');
+        $this->_acl->addResource('blogpost');
+
+        $this->_acl->allow('guest');
+        $this->assertTrue($this->_acl->isAllowed('guest'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'blogpost'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'blogpost', 'read'));
+
+        $this->_acl->deny('guest');
+        $this->assertFalse($this->_acl->isAllowed('guest'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'blogpost'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'blogpost', 'read'));
     }
 }

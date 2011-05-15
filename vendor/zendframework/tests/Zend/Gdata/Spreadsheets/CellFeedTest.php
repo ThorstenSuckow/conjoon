@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Spreadsheets
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Spreadsheets
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Spreadsheets
@@ -44,7 +44,9 @@ class Zend_Gdata_Spreadsheets_CellFeedTest extends PHPUnit_Framework_TestCase
 
     public function testToAndFromString()
     {
-        $this->assertTrue(count($this->cellFeed->entries) == 1);
+        $this->assertTrue(count($this->cellFeed->entries) == 2);
+        $this->assertTrue($this->cellFeed->entries->count() == 2);
+
         foreach($this->cellFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Spreadsheets_CellEntry);
@@ -53,13 +55,15 @@ class Zend_Gdata_Spreadsheets_CellFeedTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->cellFeed->getRowCount()->getText() == '100');
         $this->assertTrue($this->cellFeed->getColumnCount() instanceof Zend_Gdata_Spreadsheets_Extension_ColCount);
         $this->assertTrue($this->cellFeed->getColumnCount()->getText() == '20');
-        
+
         $newCellFeed = new Zend_Gdata_Spreadsheets_CellFeed();
         $doc = new DOMDocument();
         $doc->loadXML($this->cellFeed->saveXML());
         $newCellFeed->transferFromDom($doc->documentElement);
-        
-        $this->assertTrue(count($newCellFeed->entries) == 1);
+
+        $this->assertTrue(count($newCellFeed->entries) == 2);
+        $this->assertTrue($newCellFeed->entries->count() == 2);
+
         foreach($newCellFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Spreadsheets_CellEntry);
@@ -69,17 +73,17 @@ class Zend_Gdata_Spreadsheets_CellFeedTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($newCellFeed->getColumnCount() instanceof Zend_Gdata_Spreadsheets_Extension_ColCount);
         $this->assertTrue($newCellFeed->getColumnCount()->getText() == '20');
     }
-    
+
     public function testGetSetCounts()
     {
         $newRowCount = new Zend_Gdata_Spreadsheets_Extension_RowCount();
         $newRowCount->setText("20");
         $newColCount = new Zend_Gdata_Spreadsheets_Extension_ColCount();
         $newColCount->setText("50");
-        
+
         $this->cellFeed->setRowCount($newRowCount);
         $this->cellFeed->setColumnCount($newColCount);
-        
+
         $this->assertTrue($this->cellFeed->getRowCount()->getText() == "20");
         $this->assertTrue($this->cellFeed->getColumnCount()->getText() == "50");
     }

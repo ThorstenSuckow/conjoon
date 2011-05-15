@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewControllerScriptsDirectory.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: ViewControllerScriptsDirectory.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -26,19 +26,35 @@
 require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
 
 /**
+ * @see Zend_Filter
+ */
+require_once 'Zend/Filter.php';
+
+/**
+ * @see Zend_Filter_Word_CamelCaseToDash
+ */
+require_once 'Zend/Filter/Word/CamelCaseToDash.php';
+
+/**
+ * @see Zend_Filter_StringToLower
+ */
+require_once 'Zend/Filter/StringToLower.php';
+
+
+/**
  * This class is the front most class for utilizing Zend_Tool_Project
  *
  * A profile is a hierarchical set of resources that keep track of
  * items within a specific project.
- * 
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_Tool_Project_Context_Filesystem_Directory
 {
-    
+
     /**
      * @var string
      */
@@ -48,7 +64,7 @@ class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_T
      * @var name
      */
     protected $_forControllerName = null;
-    
+
     /**
      * init()
      *
@@ -57,11 +73,11 @@ class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_T
     public function init()
     {
         $this->_forControllerName = $this->_resource->getAttribute('forControllerName');
-        $this->_filesystemName = $this->_forControllerName;
+        $this->_filesystemName = $this->_convertControllerNameToFilesystemName($this->_forControllerName);
         parent::init();
         return $this;
     }
-    
+
     /**
      * getPersistentAttributes()
      *
@@ -73,7 +89,7 @@ class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_T
             'forControllerName' => $this->_forControllerName
             );
     }
-    
+
     /**
      * getName()
      *
@@ -83,5 +99,13 @@ class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_T
     {
         return 'ViewControllerScriptsDirectory';
     }
-    
+
+    protected function _convertControllerNameToFilesystemName($controllerName)
+    {
+        $filter = new Zend_Filter();
+        $filter->addFilter(new Zend_Filter_Word_CamelCaseToDash())
+            ->addFilter(new Zend_Filter_StringToLower());
+        return $filter->filter($controllerName);
+    }
+
 }

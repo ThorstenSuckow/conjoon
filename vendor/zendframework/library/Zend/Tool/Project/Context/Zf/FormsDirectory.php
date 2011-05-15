@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormsDirectory.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: FormsDirectory.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -30,10 +30,10 @@ require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
  *
  * A profile is a hierarchical set of resources that keep track of
  * items within a specific project.
- * 
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Context_Zf_FormsDirectory extends Zend_Tool_Project_Context_Filesystem_Directory
@@ -43,7 +43,7 @@ class Zend_Tool_Project_Context_Zf_FormsDirectory extends Zend_Tool_Project_Cont
      * @var string
      */
     protected $_filesystemName = 'forms';
-    
+
     /**
      * getName()
      *

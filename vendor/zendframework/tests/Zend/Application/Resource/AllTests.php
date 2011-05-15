@@ -15,35 +15,38 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 18204 2009-09-17 22:13:16Z beberlei $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Application_Resource_AllTests::main');
 }
 
 require_once 'Zend/Application/Resource/ResourceAbstractTest.php';
+require_once 'Zend/Application/Resource/CacheManagerTest.php';
 require_once 'Zend/Application/Resource/DbTest.php';
+require_once 'Zend/Application/Resource/DojoTest.php';
 require_once 'Zend/Application/Resource/FrontcontrollerTest.php';
 require_once 'Zend/Application/Resource/LayoutTest.php';
 require_once 'Zend/Application/Resource/LocaleTest.php';
+require_once 'Zend/Application/Resource/LogTest.php';
+require_once 'Zend/Application/Resource/MailTest.php';
 require_once 'Zend/Application/Resource/ModulesTest.php';
+require_once 'Zend/Application/Resource/MultidbTest.php';
 require_once 'Zend/Application/Resource/NavigationTest.php';
+require_once 'Zend/Application/Resource/RouterTest.php';
 require_once 'Zend/Application/Resource/SessionTest.php';
+require_once 'Zend/Application/Resource/TranslateTest.php';
+require_once 'Zend/Application/Resource/UseragentTest.php';
 require_once 'Zend/Application/Resource/ViewTest.php';
 
 /**
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  * @group      Zend_Application_Resource
@@ -60,13 +63,21 @@ class Zend_Application_Resource_AllTests
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Application_Resource');
 
         $suite->addTestSuite('Zend_Application_Resource_ResourceAbstractTest');
+        $suite->addTestSuite('Zend_Application_Resource_CacheManagerTest');
         $suite->addTestSuite('Zend_Application_Resource_DbTest');
+        $suite->addTestSuite('Zend_Application_Resource_DojoTest');
         $suite->addTestSuite('Zend_Application_Resource_FrontcontrollerTest');
         $suite->addTestSuite('Zend_Application_Resource_LayoutTest');
         $suite->addTestSuite('Zend_Application_Resource_LocaleTest');
+        $suite->addTestSuite('Zend_Application_Resource_LogTest');
+        $suite->addTestSuite('Zend_Application_Resource_MailTest');
         $suite->addTestSuite('Zend_Application_Resource_ModulesTest');
+        $suite->addTestSuite('Zend_Application_Resource_MultidbTest');
         $suite->addTestSuite('Zend_Application_Resource_NavigationTest');
+        $suite->addTestSuite('Zend_Application_Resource_RouterTest');
         $suite->addTestSuite('Zend_Application_Resource_SessionTest');
+        $suite->addTestSuite('Zend_Application_Resource_TranslateTest');
+        $suite->addTestSuite('Zend_Application_Resource_UseragentTest');
         $suite->addTestSuite('Zend_Application_Resource_ViewTest');
 
         return $suite;

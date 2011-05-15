@@ -389,6 +389,14 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD `key`
 
 UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(RAND()) WHERE `key` = '';
 
-ALTER TABLE `groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
 
-ALTER TABLE `groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` DROP `password`;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token` VARCHAR( 255 ) NOT NULL AFTER `name` ;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token_secret` VARCHAR( 255 ) NOT NULL AFTER `oauth_token` ;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `twitter_id` VARCHAR( 255 ) NOT NULL AFTER `name` ;

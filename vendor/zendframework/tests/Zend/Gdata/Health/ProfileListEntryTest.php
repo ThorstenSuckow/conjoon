@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Health
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata/Health/ProfileListEntry.php';
  * @category   Zend
  * @package    Zend_Gdata_Health
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Health
@@ -41,7 +41,7 @@ class Zend_Gdata_Health_ProfileListEntryTest extends PHPUnit_Framework_TestCase
         $this->entryText = file_get_contents(
             'Zend/Gdata/Health/_files/TestDataHealthProfileListEntrySample.xml', true);
     }
-    
+
     public function testEmptyProfileEntryToAndFromStringShouldMatch() {
         $this->entry->transferFromXML($this->entryText);
         $entryXml = $this->entry->saveXML();
@@ -50,12 +50,12 @@ class Zend_Gdata_Health_ProfileListEntryTest extends PHPUnit_Framework_TestCase
         $newProfileListEntryXML = $newProfileListEntry->saveXML();
         $this->assertTrue($entryXml == $newProfileListEntryXML);
     }
-    
+
     public function testGetProfileID() {
         $this->entry->transferFromXML($this->entryText);
         $this->assertEquals('vndCn5sdfwdEIY', $this->entry->getProfileID());
     }
-    
+
     public function testGetProfileName() {
         $this->entry->transferFromXML($this->entryText);
         $this->assertEquals('profile name', $this->entry->getProfileName());

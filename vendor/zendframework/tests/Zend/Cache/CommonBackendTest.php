@@ -15,29 +15,23 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CommonBackendTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: CommonBackendTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Util/Filter.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
-/**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
-class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
+abstract class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
 
     protected $_instance;
     protected $_className;
@@ -98,7 +92,9 @@ class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
 
     public function tearDown()
     {
-        $this->_instance->clean();
+        if ($this->_instance) {
+            $this->_instance->clean();
+        }
         $this->rmdir();
     }
 
@@ -174,14 +170,13 @@ class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
     {
         $this->assertTrue($this->_instance->remove('bar'));
         $this->assertFalse($this->_instance->test('bar'));
-
-        $this->_instance->remove('barbar');
+        $this->assertFalse($this->_instance->remove('barbar'));
         $this->assertFalse($this->_instance->test('barbar'));
     }
 
     public function testTestWithAnExistingCacheId()
     {
-    	$res = $this->_instance->test('bar');
+        $res = $this->_instance->test('bar');
         if (!$res) {
             $this->fail('test() return false');
         }

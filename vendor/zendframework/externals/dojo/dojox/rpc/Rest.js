@@ -45,10 +45,10 @@ dojo.provide("dojox.rpc.Rest");
 
 	function index(deferred, service, range, id){
 		deferred.addCallback(function(result){
-			if(range){
-				// try to record the total number of items from the range header
-				range = deferred.ioArgs.xhr && deferred.ioArgs.xhr.getResponseHeader("Content-Range");
-				deferred.fullLength = range && (range=range.match(/\/(.*)/)) && parseInt(range[1]);
+			if(deferred.ioArgs.xhr && range){
+					// try to record the total number of items from the range header
+					range = deferred.ioArgs.xhr.getResponseHeader("Content-Range");
+					deferred.fullLength = range && (range=range.match(/\/(.*)/)) && parseInt(range[1]);
 			}
 			return result;
 		});
@@ -59,7 +59,6 @@ dojo.provide("dojox.rpc.Rest");
 		//		Creates a REST service using the provided path.
 		var service;
 		// it should be in the form /Table/
-		path = path.match(/\/$/) ? path : (path + '/');
 		service = function(id, args){
 			return drr._get(service, id, args);
 		};
@@ -76,8 +75,20 @@ dojo.provide("dojox.rpc.Rest");
 		};
 		// the default XHR args creator:
 		service._getRequest = getRequest || function(id, args){
+			if(dojo.isObject(id)){
+				id = dojo.objectToQuery(id);
+				id = id ? "?" + id: "";
+			}
+			if(args && args.sort && !args.queryStr){
+				id += (id ? "&" : "?") + "sort("
+				for(var i = 0; i<args.sort.length; i++){
+					var sort = args.sort[i];
+					id += (i > 0 ? "," : "") + (sort.descending ? '-' : '+') + encodeURIComponent(sort.attribute); 
+				}
+				id += ")";
+			}
 			var request = {
-				url: path + (dojo.isObject(id) ? '?' + dojo.objectToQuery(id) : id == null ? "" : id), 
+				url: path + (id == null ? "" : id),
 				handleAs: isJson ? 'json' : 'text', 
 				contentType: isJson ? 'application/json' : 'text/plain',
 				sync: dojox.rpc._sync,

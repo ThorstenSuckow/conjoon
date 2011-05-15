@@ -15,11 +15,11 @@
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: ArrayOfTypeComplexStrategyTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-require_once dirname(__FILE__)."/../../../TestHelper.php";
+
 require_once dirname(__FILE__)."/../_files/commontypes.php";
 
 /** Zend_Soap_Wsdl */
@@ -32,7 +32,7 @@ require_once 'Zend/Soap/Wsdl/Strategy/ArrayOfTypeComplex.php';
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Soap
  * @group      Zend_Soap_Wsdl
@@ -54,7 +54,7 @@ class Zend_Soap_Wsdl_ArrayOfTypeComplexStrategyTest extends PHPUnit_Framework_Te
             $this->wsdl->addComplexType('Zend_Soap_Wsdl_ComplexTest[][]');
             $this->fail();
         } catch(Zend_Soap_Wsdl_Exception $e) {
-            
+
         }
     }
 
@@ -131,7 +131,7 @@ class Zend_Soap_Wsdl_ArrayOfTypeComplexStrategyTest extends PHPUnit_Framework_Te
         );
 
         $this->assertContains(
-            '<xsd:complexType name="Zend_Soap_Wsdl_ComplexObjectWithObjectStructure"><xsd:all><xsd:element name="object" type="tns:Zend_Soap_Wsdl_ComplexTest"/></xsd:all></xsd:complexType>',
+            '<xsd:complexType name="Zend_Soap_Wsdl_ComplexObjectWithObjectStructure"><xsd:all><xsd:element name="object" type="tns:Zend_Soap_Wsdl_ComplexTest" nillable="true"/></xsd:all></xsd:complexType>',
             $wsdl
         );
 
@@ -220,14 +220,10 @@ class Zend_Soap_Wsdl_ArrayOfTypeComplexStrategyTest extends PHPUnit_Framework_Te
 
     /**
      * @group ZF-5754
+     * @group ZF-8948
      */
     public function testNestingOfSameTypesDoesNotLeadToInfiniteRecursionButWillThrowException()
     {
-        try {
-            $return = $this->wsdl->addComplexType("Zend_Soap_AutoDiscover_Recursion");
-        } catch(Exception $e) {
-            $this->assertTrue($e instanceof Zend_Soap_Wsdl_Exception);
-            $this->assertEquals("Infinite recursion, cannot nest 'Zend_Soap_AutoDiscover_Recursion' into itsself.", $e->getMessage());
-        }
+        $return = $this->wsdl->addComplexType("Zend_Soap_AutoDiscover_Recursion");
     }
 }

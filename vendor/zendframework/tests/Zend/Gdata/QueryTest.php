@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata/Query.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -75,7 +75,7 @@ class Zend_Gdata_QueryTest extends PHPUnit_Framework_TestCase
         $query = new Zend_Gdata_Query();
         $query->setPublishedMin('2007-01-01');
         $this->assertEquals('2007-01-01', $query->getPublishedMin());
-        $this->assertContains('published-min=2007-01-01', 
+        $this->assertContains('published-min=2007-01-01',
                 $query->getQueryUrl());
     }
 
@@ -116,7 +116,7 @@ class Zend_Gdata_QueryTest extends PHPUnit_Framework_TestCase
         $query = new Zend_Gdata_Query();
         $query->setStartIndex(12);
         $this->assertEquals(12, $query->getStartIndex());
-        $this->assertContains('start-index=12', $query->getQueryUrl()); 
+        $this->assertContains('start-index=12', $query->getQueryUrl());
     }
 
 }

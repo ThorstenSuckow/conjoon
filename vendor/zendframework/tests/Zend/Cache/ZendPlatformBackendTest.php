@@ -15,11 +15,11 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ZendPlatformBackendTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ZendPlatformBackendTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
- 
+
 /**
  * Zend_Cache
  */
@@ -32,48 +32,43 @@ require_once 'Zend/Cache/Backend/ZendPlatform.php';
 require_once 'CommonBackendTest.php';
 
 /**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
 class Zend_Cache_ZendPlatformBackendTest extends Zend_Cache_CommonBackendTest {
-    
+
     protected $_instance;
- 
+
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
         parent::__construct('Zend_Cache_Backend_ZendPlatform', $data, $dataName);
     }
-       
+
     public function setUp($notag = false)
-    {        
+    {
         if(!function_exists('output_cache_get')) {
             $this->markTestSkipped('Zend Platform is not installed, skipping test');
             return;
         }
         $this->_instance = new Zend_Cache_Backend_ZendPlatform(array());
-        parent::setUp($notag);          
+        parent::setUp($notag);
     }
-    
+
     public function tearDown()
     {
         parent::tearDown();
         unset($this->_instance);
     }
-    
+
     public function testConstructorCorrectCall()
     {
-        $test = new Zend_Cache_Backend_ZendPlatform();    
+        $test = new Zend_Cache_Backend_ZendPlatform();
     }
-       
+
     public function testRemoveCorrectCall()
     {
         $this->assertTrue($this->_instance->remove('bar'));

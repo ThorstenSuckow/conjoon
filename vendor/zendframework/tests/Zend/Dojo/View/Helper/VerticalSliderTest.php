@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: VerticalSliderTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: VerticalSliderTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dojo_View_Helper_VerticalSliderTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_View_Helper_VerticalSliderTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_View_Helper_VerticalSlider */
 require_once 'Zend/Dojo/View/Helper/VerticalSlider.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
  */
-class Zend_Dojo_View_Helper_VerticalSliderTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_View_Helper_VerticalSliderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -100,8 +98,8 @@ class Zend_Dojo_View_Helper_VerticalSliderTest extends PHPUnit_Framework_TestCas
     public function getElement()
     {
         return $this->helper->verticalSlider(
-            'elementId', 
-            '', 
+            'elementId',
+            '',
             array(
                 'minimum'        => -10,
                 'maximum'        => 10,
@@ -207,7 +205,7 @@ class Zend_Dojo_View_Helper_VerticalSliderTest extends PHPUnit_Framework_TestCas
     {
         $html = $this->getElement();
         $this->assertRegexp('/<div[^>]*(dojoType="dijit.form.VerticalRule")/', $html, $html);
-        $this->assertRegexp('/<div[^>]*(dojoType="dijit.form.VerticalRuleLabels")/', $html, $html);
+        $this->assertRegexp('/<ol[^>]*(dojoType="dijit.form.VerticalRuleLabels")/', $html, $html);
         $this->assertContains('leftDecoration', $html);
         $this->assertContains('rightDecoration', $html);
     }

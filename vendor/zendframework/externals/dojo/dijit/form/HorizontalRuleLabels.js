@@ -35,8 +35,8 @@ dojo.declare("dijit.form.HorizontalRuleLabels", dijit.form.HorizontalRule,
 	constraints: {pattern:"#%"},
 
 	_positionPrefix: '<div class="dijitRuleLabelContainer dijitRuleLabelContainerH" style="left:',
-	_labelPrefix: '"><span class="dijitRuleLabel dijitRuleLabelH">',
-	_suffix: '</span></div>',
+	_labelPrefix: '"><div class="dijitRuleLabel dijitRuleLabelH">',
+	_suffix: '</div></div>',
 
 	_calcPosition: function(pos){
 		// summary:
@@ -70,8 +70,8 @@ dojo.declare("dijit.form.HorizontalRuleLabels", dijit.form.HorizontalRule,
 		if(!labels.length && this.count > 1){
 			var start = this.minimum;
 			var inc = (this.maximum - start) / (this.count-1);
-			for (var i=0; i < this.count; i++){
-				labels.push((i<this.numericMargin||i>=(this.count-this.numericMargin))? '' : dojo.number.format(start, this.constraints));
+			for(var i=0; i < this.count; i++){
+				labels.push((i < this.numericMargin || i >= (this.count-this.numericMargin)) ? '' : dojo.number.format(start, this.constraints));
 				start += inc;
 			}
 		}

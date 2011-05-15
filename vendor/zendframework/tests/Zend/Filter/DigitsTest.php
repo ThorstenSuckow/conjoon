@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DigitsTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DigitsTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_Digits
@@ -36,7 +30,7 @@ require_once 'Zend/Filter/Digits.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -55,7 +49,7 @@ class Zend_Filter_DigitsTest extends PHPUnit_Framework_TestCase
      * @var mixed
      **/
     protected static $_unicodeEnabled;
-    
+
     /**
      * Creates a new Zend_Filter_Digits object for each test method
      *
@@ -77,34 +71,34 @@ class Zend_Filter_DigitsTest extends PHPUnit_Framework_TestCase
     public function testBasic()
     {
         if (self::$_unicodeEnabled && extension_loaded('mbstring')) {
-        	// Filter for the value with mbstring
-	        /**
-	         * The first element of $valuesExpected contains multibyte digit characters.
-	         *   But , Zend_Filter_Digits is expected to return only singlebyte digits.
-	         *
-	         * The second contains multibyte or singebyte space, and also alphabet.
-	         * The third  contains various multibyte characters.
-	         * The last contains only singlebyte digits.
-	         */
-	        $valuesExpected = array(
-	            '1９2八3四８'     => '123',
-	            'Ｃ 4.5B　6'      => '456',
-	            '9壱8＠7．6，5＃4' => '987654',
-	            '789'              => '789'
-	            );
+            // Filter for the value with mbstring
+            /**
+             * The first element of $valuesExpected contains multibyte digit characters.
+             *   But , Zend_Filter_Digits is expected to return only singlebyte digits.
+             *
+             * The second contains multibyte or singebyte space, and also alphabet.
+             * The third  contains various multibyte characters.
+             * The last contains only singlebyte digits.
+             */
+            $valuesExpected = array(
+                '1９2八3四８'     => '123',
+                'Ｃ 4.5B　6'      => '456',
+                '9壱8＠7．6，5＃4' => '987654',
+                '789'              => '789'
+                );
         } else {
-        	// POSIX named classes are not supported, use alternative 0-9 match
-        	// Or filter for the value without mbstring
-        	$valuesExpected = array(
-	            'abc123'  => '123',
-	            'abc 123' => '123',
-	            'abcxyz'  => '',
-	            'AZ@#4.3' => '43',
-	            '1.23'    => '123',
-	            '0x9f'    => '09'
-	            );
-	    }
-	            
+            // POSIX named classes are not supported, use alternative 0-9 match
+            // Or filter for the value without mbstring
+            $valuesExpected = array(
+                'abc123'  => '123',
+                'abc 123' => '123',
+                'abcxyz'  => '',
+                'AZ@#4.3' => '43',
+                '1.23'    => '123',
+                '0x9f'    => '09'
+                );
+        }
+
         foreach ($valuesExpected as $input => $output) {
             $this->assertEquals(
                 $output,

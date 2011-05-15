@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: QueryTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: QueryTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dom_QueryTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dom_QueryTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /** Zend_Dom_Query */
 require_once 'Zend/Dom/Query.php';
@@ -36,11 +34,11 @@ require_once 'Zend/Dom/Query.php';
  * @category   Zend
  * @package    Zend_Dom
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dom
  */
-class Zend_Dom_QueryTest extends PHPUnit_Framework_TestCase 
+class Zend_Dom_QueryTest extends PHPUnit_Framework_TestCase
 {
     public $html;
 
@@ -87,6 +85,11 @@ class Zend_Dom_QueryTest extends PHPUnit_Framework_TestCase
     public function loadHtml()
     {
         $this->query->setDocument($this->getHtml());
+    }
+
+    public function handleError($msg, $code = 0)
+    {
+        $this->error = $msg;
     }
 
     public function testConstructorShouldNotRequireArguments()
@@ -154,11 +157,14 @@ class Zend_Dom_QueryTest extends PHPUnit_Framework_TestCase
 
     public function testQueryingInvalidDocumentShouldThrowException()
     {
+        set_error_handler(array($this, 'handleError'));
         $this->query->setDocumentXml('some bogus string');
         try {
             $this->query->query('.foo');
+            restore_error_handler();
             $this->fail('Querying invalid document should throw exception');
         } catch (Zend_Dom_Exception $e) {
+            restore_error_handler();
             $this->assertContains('Error parsing', $e->getMessage());
         }
     }
@@ -221,6 +227,87 @@ class Zend_Dom_QueryTest extends PHPUnit_Framework_TestCase
         $this->loadHtml();
         $result = $this->query->queryXpath('//li[contains(@dojotype, "bar")]');
         $this->assertEquals(2, count($result), $result->getXpathQuery());
+    }
+
+    /**
+     * @group ZF-9243
+     */
+    public function testLoadingDocumentWithErrorsShouldNotRaisePhpErrors()
+    {
+        $file = file_get_contents(dirname(__FILE__) . '/_files/bad-sample.html');
+        $this->query->setDocument($file);
+        $this->query->query('p');
+        $errors = $this->query->getDocumentErrors();
+        $this->assertTrue(is_array($errors));
+        $this->assertTrue(0 < count($errors));
+    }
+
+    /**
+     * @group ZF-9765
+     */
+    public function testCssSelectorShouldFindNodesWhenMatchingMultipleAttributes()
+    {
+        $html = <<<EOF
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<body>
+  <form action="#" method="get">
+    <input type="hidden" name="foo" value="1" id="foo"/>
+    <input type="hidden" name="bar" value="0" id="bar"/>
+    <input type="hidden" name="baz" value="1" id="baz"/>
+  </form>
+</body>
+</html>
+EOF;
+
+        $this->query->setDocument($html);
+        $results = $this->query->query('input[type="hidden"][value="1"]');
+        $this->assertEquals(2, count($results), $results->getXpathQuery());
+        $results = $this->query->query('input[value="1"][type~="hidden"]');
+        $this->assertEquals(2, count($results), $results->getXpathQuery());
+        $results = $this->query->query('input[type="hidden"][value="0"]');
+        $this->assertEquals(1, count($results));
+    }
+
+    /**
+     * @group ZF-3938
+     */
+    public function testAllowsSpecifyingEncodingAtConstruction()
+    {
+        $doc = new Zend_Dom_Query($this->getHtml(), 'iso-8859-1');
+        $this->assertEquals('iso-8859-1', $doc->getEncoding());
+    }
+
+    /**
+     * @group ZF-3938
+     */
+    public function testAllowsSpecifyingEncodingWhenSettingDocument()
+    {
+        $this->query->setDocument($this->getHtml(), 'iso-8859-1');
+        $this->assertEquals('iso-8859-1', $this->query->getEncoding());
+    }
+
+    /**
+     * @group ZF-3938
+     */
+    public function testAllowsSpecifyingEncodingViaSetter()
+    {
+        $this->query->setEncoding('iso-8859-1');
+        $this->assertEquals('iso-8859-1', $this->query->getEncoding());
+    }
+
+    /**
+     * @group ZF-3938
+     */
+    public function testSpecifyingEncodingSetsEncodingOnDomDocument()
+    {
+        $this->query->setDocument($this->getHtml(), 'utf-8');
+        $test = $this->query->query('.foo');
+        $this->assertType('Zend_Dom_Query_Result', $test);
+        $doc  = $test->getDocument();
+        $this->assertType('DOMDocument', $doc);
+        $this->assertEquals('utf-8', $doc->encoding);
     }
 }
 

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: FileOfFunctions.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 function zend_reflection_function1() {
@@ -27,7 +27,7 @@ function zend_reflection_function1() {
 
 /**
  * Zend Function Two
- * 
+ *
  * This is the long description for funciton two
  *
  * @param unknown_type $one
@@ -35,7 +35,7 @@ function zend_reflection_function1() {
  * @return string
  */
 function zend_reflection_function2($one, $two = 'two') {
-    
+
     return 'blah';
 }
 

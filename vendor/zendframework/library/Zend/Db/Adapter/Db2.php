@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Db2.php 16541 2009-07-07 06:59:03Z bkarwin $
+ * @version    $Id: Db2.php 23775 2011-03-01 17:25:24Z ralph $
  *
  */
 
@@ -39,7 +39,7 @@ require_once 'Zend/Db/Statement/Db2.php';
 
 /**
  * @package    Zend_Db
- * @copyright  Copyright (c) 2005-2009 Zend Technologies Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -152,6 +152,14 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                 Zend_Db::CASE_LOWER   => DB2_CASE_LOWER
             );
             $this->_config['driver_options']['DB2_ATTR_CASE'] = $caseAttrMap[$this->_config['options'][Zend_Db::CASE_FOLDING]];
+        }
+
+        if ($this->_isI5 && isset($this->_config['driver_options']['i5_naming'])) {
+            if ($this->_config['driver_options']['i5_naming']) {
+                $this->_config['driver_options']['i5_naming'] = DB2_I5_NAMING_ON;
+            } else {
+                $this->_config['driver_options']['i5_naming'] = DB2_I5_NAMING_OFF;
+            }
         }
 
         if ($this->_config['host'] !== 'localhost' && !$this->_isI5) {
@@ -373,7 +381,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
         if ($schemaName === null && $this->_config['schema'] != null) {
             $schemaName = $this->_config['schema'];
         }
-        
+
         if (!$this->_isI5) {
 
             $sql = "SELECT DISTINCT c.tabschema, c.tabname, c.colname, c.colno,
@@ -402,16 +410,16 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             $sql = "SELECT DISTINCT C.TABLE_SCHEMA, C.TABLE_NAME, C.COLUMN_NAME, C.ORDINAL_POSITION,
                 C.DATA_TYPE, C.COLUMN_DEFAULT, C.NULLS ,C.LENGTH, C.SCALE, LEFT(C.IDENTITY,1),
                 LEFT(tc.TYPE, 1) AS tabconsttype, k.COLSEQ
-                FROM QSYS2.SYSCOLUMNS C     
+                FROM QSYS2.SYSCOLUMNS C
                 LEFT JOIN (QSYS2.syskeycst k JOIN QSYS2.SYSCST tc
                     ON (k.TABLE_SCHEMA = tc.TABLE_SCHEMA
                       AND k.TABLE_NAME = tc.TABLE_NAME
-                      AND LEFT(tc.type,1) = 'P'))                  
+                      AND LEFT(tc.type,1) = 'P'))
                     ON (C.TABLE_SCHEMA = k.TABLE_SCHEMA
                        AND C.TABLE_NAME = k.TABLE_NAME
-                       AND C.COLUMN_NAME = k.COLUMN_NAME)                          
+                       AND C.COLUMN_NAME = k.COLUMN_NAME)
                 WHERE "
-                 . $this->quoteInto('UPPER(C.TABLE_NAME) = UPPER(?)', $tableName);
+                . $this->quoteInto('UPPER(C.TABLE_NAME) = UPPER(?)', $tableName);
 
             if ($schemaName) {
                 $sql .= $this->quoteInto(' AND UPPER(C.TABLE_SCHEMA) = UPPER(?)', $schemaName);

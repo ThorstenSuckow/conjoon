@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Connection.php 16607 2009-07-09 21:51:46Z beberlei $
+ * @version    $Id: Connection.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -43,14 +43,14 @@ require_once "Zend/Test/PHPUnit/Db/Metadata/Generic.php";
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Test_PHPUnit_Db_Connection extends PHPUnit_Extensions_Database_DB_DefaultDatabaseConnection
 {
     /**
      * Zend_Db_Adapter_Abstract
-     * 
+     *
      * @var Zend_Db_Adapter_Abstract
      */
     protected $_connection;
@@ -71,7 +71,7 @@ class Zend_Test_PHPUnit_Db_Connection extends PHPUnit_Extensions_Database_DB_Def
 
     /**
      * Construct Connection based on Zend_Db_Adapter_Abstract
-     * 
+     *
      * @param Zend_Db_Adapter_Abstract $db
      * @param string $schema
      */

@@ -47,11 +47,6 @@ if(typeof dojo != "undefined"){
 					return id; // DomNode
 				}
 			},
-			isString: function(item){
-				// summary: 
-				//		is item a string?
-				return (typeof item == "string"); // Boolean
-			},
 			// the default document to search
 			doc: document,
 			// the constructor for node list objects returned from query()
@@ -136,8 +131,7 @@ if(typeof dojo != "undefined"){
 	// 					d.isOpera; // float
 	// 					d.isWebKit; // float
 	// 					d.doc ; // document element
-	var qlc = d._queryListCtor = 		d.NodeList;
-	var isString = 		d.isString;
+	var qlc = d._NodeListCtor = 		d.NodeList;
 
 	var getDoc = function(){ return d.doc; };
 	// NOTE(alex): the spec is idiotic. CSS queries should ALWAYS be case-sensitive, but nooooooo
@@ -487,7 +481,7 @@ if(typeof dojo != "undefined"){
 
 	var getArr = function(i, arr){
 		// helps us avoid array alloc when we don't need it
-		var r = arr||[]; // FIXME: should this be 'new d._queryListCtor()' ?
+		var r = arr||[]; // FIXME: should this be 'new d._NodeListCtor()' ?
 		if(i){ r.push(i); }
 		return r;
 	};
@@ -645,8 +639,7 @@ if(typeof dojo != "undefined"){
 	var pseudos = {
 		"checked": function(name, condition){
 			return function(elem){
-				// FIXME: make this more portable!!
-				return !!d.attr(elem, "checked");
+				return !!("checked" in elem ? elem.checked : elem.selected);
 			}
 		},
 		"first-child": function(){ return _lookLeft; },
@@ -1098,7 +1091,7 @@ if(typeof dojo != "undefined"){
 				ret.nozip = true;
 			}
 			var gef = getElementsFunc(qp);
-			while(te = candidates[x--]){
+			for(var j = 0; (te = candidates[j]); j++){
 				// for every root, get the elements that match the descendant
 				// selector, adding them to the "ret" array and filtering them
 				// via membership in this level's bag. If there are more query
@@ -1189,8 +1182,20 @@ if(typeof dojo != "undefined"){
 		!!getDoc()[qsa] && 
 		// see #5832
 		(!d.isSafari || (d.isSafari > 3.1) || is525 )
-	); 
+	);
+
+	//Don't bother with n+3 type of matches, IE complains if we modify those.
+	var infixSpaceRe = /n\+\d|([^ ])?([>~+])([^ =])?/g;
+	var infixSpaceFunc = function(match, pre, ch, post) {
+		return ch ? (pre ? pre + " " : "") + ch + (post ? " " + post : "") : /*n+3*/ match;
+	};
+
 	var getQueryFunc = function(query, forceDOM){
+		//Normalize query. The CSS3 selectors spec allows for omitting spaces around
+		//infix operators, >, ~ and +
+		//Do the work here since detection for spaces is used as a simple "not use QSA"
+		//test below.
+		query = query.replace(infixSpaceRe, infixSpaceFunc);
 
 		if(qsaAvail){
 			// if we've got a cached variant and we think we can do it, run it!
@@ -1230,7 +1235,11 @@ if(typeof dojo != "undefined"){
 			// FIXME:
 			//		need to tighten up browser rules on ":contains" and "|=" to
 			//		figure out which aren't good
-			(query.indexOf(":contains") == -1) &&
+			//		Latest webkit (around 531.21.8) does not seem to do well with :checked on option
+			//		elements, even though according to spec, selected options should
+			//		match :checked. So go nonQSA for it:
+			//		http://bugs.dojotoolkit.org/ticket/5179
+			(query.indexOf(":contains") == -1) && (query.indexOf(":checked") == -1) && 
 			(query.indexOf("|=") == -1) // some browsers don't grok it
 		);
 
@@ -1326,7 +1335,7 @@ if(typeof dojo != "undefined"){
 		if(arr && arr.nozip){ 
 			return (qlc._wrap) ? qlc._wrap(arr) : arr;
 		}
-		// var ret = new d._queryListCtor();
+		// var ret = new d._NodeListCtor();
 		var ret = new qlc();
 		if(!arr || !arr.length){ return ret; }
 		if(arr[0]){
@@ -1517,7 +1526,7 @@ if(typeof dojo != "undefined"){
 
 		//Set list constructor to desired value. This can change
 		//between calls, so always re-assign here.
-		qlc = d._queryListCtor;
+		qlc = d._NodeListCtor;
 
 		if(!query){
 			return new qlc();
@@ -1526,10 +1535,10 @@ if(typeof dojo != "undefined"){
 		if(query.constructor == qlc){
 			return query;
 		}
-		if(!isString(query)){
+		if(typeof query != "string"){ // inline'd type check
 			return new qlc(query); // dojo.NodeList
 		}
-		if(isString(root)){
+		if(typeof root == "string"){ // inline'd type check
 			root = d.byId(root);
 			if(!root){ return new qlc(); }
 		}
@@ -1566,7 +1575,7 @@ if(typeof dojo != "undefined"){
 
 	// one-off function for filtering a NodeList based on a simple selector
 	d._filterQueryResult = function(nodeList, simpleFilter){
-		var tmpNodeList = new d._queryListCtor();
+		var tmpNodeList = new d._NodeListCtor();
 		var filterFunc = getSimpleFilterFunc(getQueryParts(simpleFilter)[0]);
 		for(var x = 0, te; te = nodeList[x]; x++){
 			if(filterFunc(te)){ tmpNodeList.push(te); }
@@ -1585,22 +1594,22 @@ if(!dojo["query"]){
 		var ctr = 0;
 		// QSA-only for webkit mobile. Welcome to the future.
 		dojo.query = function(query, root){
-			d._queryListCtor = dojo.NodeList;
+			d._NodeListCtor = dojo.NodeList;
 			if(!query){
-				return new d._queryListCtor();
+				return new d._NodeListCtor();
 			}
 
-			if(query.constructor == d._queryListCtor){
+			if(query.constructor == d._NodeListCtor){
 				return query;
 			}
 
-			if(!dojo.isString(query)){
-				return new d._queryListCtor(query); // dojo.NodeList
+			if(typeof query != "string"){ // inline'd type check
+				return new d._NodeListCtor(query); // dojo.NodeList
 			}
 
-			if(dojo.isString(root)){
+			if(typeof root == "string"){ // inline'd type check
 				root = dojo.byId(root);
-				if(!root){ return new d._queryListCtor(); }
+				if(!root){ return new d._NodeListCtor(); }
 			}
 
 			root = root||dojo.doc;
@@ -1617,7 +1626,7 @@ if(!dojo["query"]){
 			if(">~+".indexOf(query.slice(-1)) >= 0){
 				query += " *";
 			}
-			return d._queryListCtor._wrap(
+			return d._NodeListCtor._wrap(
 				Array.prototype.slice.call(
 					doc.querySelectorAll(query)
 				)

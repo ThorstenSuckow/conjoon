@@ -15,19 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlListTest.php 17691 2009-08-20 16:08:08Z alexander $
+ * @version    $Id: HtmlListTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HtmlListTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HtmlListTest::main");
 }
-
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/TestHelper.php';
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 require_once 'Zend/View.php';
 require_once 'Zend/View/Helper/HtmlList.php';
@@ -36,12 +32,12 @@ require_once 'Zend/View/Helper/HtmlList.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
  */
-class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_View_Helper_HtmlList
@@ -56,7 +52,6 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_View_Helper_HtmlListTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -91,7 +86,7 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         foreach ($items as $item) {
             $this->assertContains('<li>' . $item . '</li>', $list);
         }
-    } 
+    }
 
     public function testMakeOrderedList()
     {
@@ -104,7 +99,7 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         foreach ($items as $item) {
             $this->assertContains('<li>' . $item . '</li>', $list);
         }
-    } 
+    }
 
     public function testMakeUnorderedListWithAttribs()
     {
@@ -120,7 +115,7 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         foreach ($items as $item) {
             $this->assertContains('<li>' . $item . '</li>', $list);
         }
-    } 
+    }
 
     public function testMakeOrderedListWithAttribs()
     {
@@ -136,10 +131,10 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         foreach ($items as $item) {
             $this->assertContains('<li>' . $item . '</li>', $list);
         }
-    } 
+    }
 
     /*
-     * @see ZF-5018
+     * @group ZF-5018
      */
     public function testMakeNestedUnorderedList()
     {
@@ -152,10 +147,10 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         $this->assertContains('one<ul>' . Zend_View_Helper_HtmlList::EOL.'<li>four', $list);
         $this->assertContains('<li>six</li>' . Zend_View_Helper_HtmlList::EOL . '</ul>' .
             Zend_View_Helper_HtmlList::EOL . '</li>' . Zend_View_Helper_HtmlList::EOL . '<li>two', $list);
-    } 
-    
+    }
+
     /*
-     * @see ZF-5018
+     * @group ZF-5018
      */
     public function testMakeNestedDeepUnorderedList()
     {
@@ -167,9 +162,9 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         $this->assertContains('</ul>' . Zend_View_Helper_HtmlList::EOL, $list);
         $this->assertContains('one<ul>' . Zend_View_Helper_HtmlList::EOL . '<li>four', $list);
         $this->assertContains('<li>four<ul>' . Zend_View_Helper_HtmlList::EOL . '<li>six', $list);
-        $this->assertContains('<li>five</li>' . Zend_View_Helper_HtmlList::EOL . '</ul>' . 
+        $this->assertContains('<li>five</li>' . Zend_View_Helper_HtmlList::EOL . '</ul>' .
             Zend_View_Helper_HtmlList::EOL . '</li>' . Zend_View_Helper_HtmlList::EOL . '<li>two', $list);
-    } 
+    }
 
     public function testListWithValuesToEscapeForZF2283()
     {
@@ -179,11 +174,11 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
 
         $this->assertContains('<ul>', $list);
         $this->assertContains('</ul>', $list);
-        
+
         $this->assertContains('<li>one &lt;small&gt; test</li>', $list);
         $this->assertContains('<li>second &amp; third</li>', $list);
         $this->assertContains('<li>And \'some\' &quot;final&quot; test</li>', $list);
-    } 
+    }
 
     public function testListEscapeSwitchedOffForZF2283()
     {
@@ -193,12 +188,12 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
 
         $this->assertContains('<ul>', $list);
         $this->assertContains('</ul>', $list);
-        
+
         $this->assertContains('<li>one <b>small</b> test</li>', $list);
-    } 
+    }
 
     /**
-     * @see ZF-2527
+     * @group ZF-2527
      */
     public function testEscapeFlagHonoredForMultidimensionalLists()
     {
@@ -212,7 +207,7 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2527
+     * @group ZF-2527
      * Added the s modifier to match newlines after @see ZF-5018
      */
     public function testAttribsPassedIntoMultidimensionalLists()
@@ -220,29 +215,29 @@ class Zend_View_Helper_HtmlListTest extends PHPUnit_Framework_TestCase
         $items = array('one', array('four', 'five', 'six'), 'two', 'three');
 
         $list = $this->helper->htmlList($items, false, array('class' => 'foo'));
-        
+
         foreach ($items[1] as $item) {
             $this->assertRegexp('#<ul[^>]*?class="foo"[^>]*>.*?(<li>' . $item . ')#s', $list);
         }
-        
+
     }
 
     /**
-     * @see ZF-2870
+     * @group ZF-2870
      */
     public function testEscapeFlagShouldBePassedRecursively()
     {
         $items = array(
             '<b>one</b>',
             array(
-                '<b>four</b>', 
-                '<b>five</b>', 
+                '<b>four</b>',
+                '<b>five</b>',
                 '<b>six</b>',
                 array(
-                    '<b>two</b>', 
+                    '<b>two</b>',
                     '<b>three</b>',
                 ),
-            ), 
+            ),
         );
 
         $list = $this->helper->htmlList($items, false, false, false);

@@ -18,6 +18,7 @@ dojo.require("dojox.sketch.UndoStack");
 		this.size={ w:0, h:0 };
 		this.surface=null;
 		this.group=null;
+		//node should have tabindex set, otherwise keyboard action does not work
 		this.node=null;
 
 		this.zoomFactor=1;	//	multiplier for zooming.
@@ -110,11 +111,11 @@ dojo.require("dojox.sketch.UndoStack");
 		this._keydown=function(e){
 			var prevent=false;
 			if(e.ctrlKey){
-				if(e.keyCode===90){ //ctrl+z
+				if(e.keyCode===90 || e.keyCode===122){ //ctrl+z
 					self.undo();
 					prevent = true;
 				}
-				else if(e.keyCode===89){ //ctrl+y
+				else if(e.keyCode===89 || e.keyCode===121){ //ctrl+y
 					self.redo();
 					prevent = true;
 				}
@@ -132,14 +133,21 @@ dojo.require("dojox.sketch.UndoStack");
 	
 		//	drag handlers.
 		this._md=function(e){
+			//in IE, when clicking into the drawing canvas, the node does not get focused,
+			//do it manually here to force it, otherwise the keydown event listener is 
+			//never triggered in IE.
+			if(dojox.gfx.renderer=='vml'){
+				self.node.focus();
+			}
 			var o=self._fromEvt(e);
 			self._startPoint={ x:e.pageX, y:e.pageY };
 
-			//	figure out the coordinates within the iframe
-			self._ctr=dojo._abs(self.node);
-			//var win = dijit.getDocumentWindow(self.node.ownerDocument);
+			self._ctr=dojo.position(self.node);
+			//	figure out the coordinates taking scroll into account
+			var scroll={x:self.node.scrollLeft,y:self.node.scrollTop};
+			//var win = dojo.window.get(self.node.ownerDocument);
 			//var scroll=dojo.withGlobal(win,dojo._docScroll);
-			self._ctr={x:self._ctr.x, y:self._ctr.y}; //-scroll.x -scroll.y
+			self._ctr={x:self._ctr.x-scroll.x, y:self._ctr.y-scroll.y};
 			var X=e.clientX-self._ctr.x, Y=e.clientY-self._ctr.y;
 			self._lp={ x:X, y:Y };
 
@@ -210,6 +218,15 @@ dojo.require("dojox.sketch.UndoStack");
 	p.setTool=function(/*dojox.sketch._Plugin*/t){
 		this._ctool=t;
 	};
+    //gridSize: int
+    //      if it is greater than 0, all new shapes placed on the drawing will have coordinates
+    //      snapped to the gridSize. For example, if gridSize is set to 10, all coordinates
+    //      (only including coordinates which specifies the x/y position of shape are affected
+    //      by this parameter) will be dividable by 10
+    p.gridSize=0;
+    p._calCol=function(v){
+        return this.gridSize?(Math.round(v/this.gridSize)*this.gridSize):v;
+    };
 	p._delete=function(arr,noundo){
 		for(var i=0; i<arr.length; i++){
 			//var before=arr[i].serialize();
@@ -238,7 +255,6 @@ dojo.require("dojox.sketch.UndoStack");
 		//	.setFill("white");
 		this.group=this.surface.createGroup();
 
-		
 		this._cons=[];
 		var es=this.surface.getEventSource();
 		this._cons.push(
@@ -258,11 +274,9 @@ dojo.require("dojox.sketch.UndoStack");
 			// misc hooks
 			dojo.connect(es, 'onclick', this, 'onClick'),
 			dojo.connect(es, 'ondblclick', this._dblclick),
-			dojo.connect(es.ownerDocument, 'onkeydown', this._keydown));
+			dojo.connect(node, 'onkeydown', this._keydown));
 		
-		//	rect hack.  Fcuking VML.
-		//this.groupBackground=this.group.createRect({ x:0, y:0, width:this.size.w, height:this.size.h });
-		this.image=this.group.createImage({ width:this.size.w, height:this.size.h, src:this.imageSrc });
+		this.image=this.group.createImage({ width:this.imageSize.w, height:this.imageSize.h, src:this.imageSrc });
 	};
 
 	p.destroy=function(isLoading){
@@ -304,8 +318,8 @@ dojo.require("dojox.sketch.UndoStack");
 		//	assume fitting the parent node.
 //		var box=dojo.html.getContentBox(this.node.parentNode);
 		//the following should work under IE and FF, not sure about others though
-		var wF=(this.node.parentNode.clientWidth-5)/this.size.w;
-		var hF=(this.node.parentNode.clientHeight-5)/this.size.h;
+		var wF=(this.node.parentNode.offsetWidth-5)/this.size.w;
+		var hF=(this.node.parentNode.offsetHeight-5)/this.size.h;
 		return Math.min(wF, hF)*100;
 	};
 	p.unzoom=function(){
@@ -365,7 +379,7 @@ dojo.require("dojox.sketch.UndoStack");
 		if(idx>-1){ this.shapes.splice(idx, 1); }
 		return annotation;
 	};
-	p.get=function(id){
+	p.getAnnotator=function(id){
 		for(var i=0; i<this.shapes.length; i++){
 			if(this.shapes[i].id==id) {
 				return this.shapes[i];
@@ -435,7 +449,7 @@ dojo.require("dojox.sketch.UndoStack");
 		var obj=dojox.xml.DomParser.parse(text);
 		var node=this.node;
 		this.load(obj,node);
-		this.zoom(this.zoomFactor*100); //zoom to orignal scale
+		//this.zoom(this.zoomFactor*100); //zoom to orignal scale
 	};
 	p.load=function(obj, n){
 		//	create from pseudo-DOM
@@ -447,6 +461,10 @@ dojo.require("dojox.sketch.UndoStack");
 		};
 		var g=node.childrenByName("g")[0];
 		var img=g.childrenByName("image")[0];
+		this.imageSize={
+			w:parseFloat(img.getAttribute('width'),10), 
+			h:parseFloat(img.getAttribute('height'),10) 
+		};
 		this.imageSrc=img.getAttribute("xlink:href");
 		this.initialize(n);
 

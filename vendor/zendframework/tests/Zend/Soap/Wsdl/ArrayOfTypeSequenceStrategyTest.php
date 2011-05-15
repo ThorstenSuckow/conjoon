@@ -14,20 +14,15 @@
  *
  * @category   Zend
  * @package    Zend_Soap
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: ArrayOfTypeSequenceStrategyTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
  * @package Zend_Soap
  * @subpackage UnitTests
  */
-
-require_once dirname(__FILE__)."/../../../TestHelper.php";
-
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /** Zend_Soap_Wsdl */
 require_once 'Zend/Soap/Wsdl.php';
@@ -38,7 +33,7 @@ require_once 'Zend/Soap/Wsdl/Strategy/ArrayOfTypeSequence.php';
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Soap
  * @group      Zend_Soap_Wsdl
@@ -138,7 +133,7 @@ class Zend_Soap_Wsdl_ArrayOfTypeSequenceStrategyTest extends PHPUnit_Framework_T
 
     public function testAddComplexTypeArrayOfObject()
     {
-         
+
          $return = $this->wsdl->addComplexType('Zend_Soap_Wsdl_SequenceTest[]');
 
          $this->assertEquals("tns:ArrayOfZend_soap_wsdl_sequencetest", $return);

@@ -161,6 +161,7 @@
 ../../js/conjoon/source/service/twitter/UserInfoBox.js
 ../../js/conjoon/source/service/twitter/wizard/AccountCard.js
 ../../js/conjoon/source/service/twitter/wizard/AccountWizard.js
+../../js/conjoon/source/service/twitter/wizard/AccountWizardBaton.js
 ../../js/conjoon/source/service/twitter/wizard/FinishCard.js
 ../../js/conjoon/source/SystemMessage.js
 ../../js/conjoon/source/SystemMessageManager.js

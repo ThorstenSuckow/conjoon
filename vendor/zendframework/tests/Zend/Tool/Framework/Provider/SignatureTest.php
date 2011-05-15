@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: SignatureTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * @see TestHelper.php
- */
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /**
  * @see Zend_Tool_Framework_Provider_Repository
@@ -44,9 +39,9 @@ require_once '_files/ProviderFullFeaturedBadSpecialties2.php';
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * 
+ *
  * @group Zend_Tool
  * @group Zend_Tool_Framework
  * @group Zend_Tool_Framework_Provider
@@ -92,7 +87,7 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $signature->process();
         $this->assertEquals('FooBarBaz', $signature->getName());
     }
-    
+
     public function testGetProviderReturnsProvider()
     {
         $signature = new Zend_Tool_Framework_Provider_Signature(new Zend_Tool_Framework_Provider_ProviderOne());
@@ -100,7 +95,7 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $signature->process();
         $this->assertTrue($signature->getProvider() instanceof Zend_Tool_Framework_Provider_ProviderOne);
     }
-    
+
     public function testGetProviderReflectionWillReturnZendReflectionClassObject()
     {
         $signature = new Zend_Tool_Framework_Provider_Signature(new Zend_Tool_Framework_Provider_ProviderOne());
@@ -108,12 +103,12 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $signature->process();
         $this->assertTrue($signature->getProviderReflection() instanceof Zend_Reflection_Class);
     }
-    
+
     public function testGetSpecialtiesReturnsParsedSpecialties()
     {
         $this->assertEquals(array('_Global', 'Hi', 'BloodyMurder', 'ForYourTeam'), $this->_targetSignature->getSpecialties());
     }
-    
+
     public function testGetSpecialtiesReturnsParsedSpecialtiesFromMethodInsteadOfProperty()
     {
         $signature = new Zend_Tool_Framework_Provider_Signature(new Zend_Tool_Framework_Provider_ProviderFullFeatured2());
@@ -131,7 +126,7 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $signature->setRegistry($this->_registry);
         $signature->process();
     }
-    
+
     /**
      * @expectedException Zend_Tool_Framework_Provider_Exception
      */
@@ -141,7 +136,7 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $signature->setRegistry($this->_registry);
         $signature->process();
     }
-    
+
     public function testGetActionsWillReturnProperActions()
     {
         $actionArray = $this->_targetSignature->getActions();
@@ -152,11 +147,11 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $this->assertTrue($action instanceof Zend_Tool_Framework_Action_Base);
         $this->assertEquals('Scream', $action->getName());
     }
-    
+
     public function testGetActionableMethodsReturnsAllActionableMethods()
     {
         $this->assertEquals(5, count($this->_targetSignature->getActionableMethods()));
-        
+
         $actionableMethods = $this->_targetSignature->getActionableMethods();
         $actionableMethod = array_shift($actionableMethods);
         $this->assertEquals('say', $actionableMethod['methodName']);
@@ -169,21 +164,21 @@ class Zend_Tool_Framework_Provider_SignatureTest extends PHPUnit_Framework_TestC
         $actionableMethod = array_shift($actionableMethods);
         $this->assertEquals('screamForYourTeam', $actionableMethod['methodName']);
     }
-    
+
     public function testGetActionableMethodReturnsCorrectActionableMethod()
     {
         $actionableMethod = $this->_targetSignature->getActionableMethod('scream');
         $this->assertEquals('Scream', $actionableMethod['actionName']);
-        
+
         $this->assertFalse($this->_targetSignature->getActionableMethod('Foo'));
     }
-    
+
     public function testGetActionableMethodByActionNameReturnsCorrectActionableMethod()
     {
         $actionableMethod = $this->_targetSignature->getActionableMethodByActionName('Scream');
         $this->assertEquals('scream', $actionableMethod['methodName']);
-        
+
         $this->assertFalse($this->_targetSignature->getActionableMethodByActionName('Foo'));
     }
-    
+
 }

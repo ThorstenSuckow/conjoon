@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Reflection
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Class.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Class.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -37,7 +37,7 @@ require_once 'Zend/Reflection/Docblock.php';
 /**
  * @category   Zend
  * @package    Zend_Reflection
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Reflection_Class extends ReflectionClass
@@ -56,7 +56,7 @@ class Zend_Reflection_Class extends ReflectionClass
         }
         return $instance;
     }
-    
+
     /**
      * Return the classes Docblock reflection object
      *
@@ -78,7 +78,7 @@ class Zend_Reflection_Class extends ReflectionClass
         }
         return $instance;
     }
-    
+
     /**
      * Return the start line of the class
      *
@@ -92,10 +92,10 @@ class Zend_Reflection_Class extends ReflectionClass
                 return $this->getDocblock()->getStartLine();
             }
         }
-        
+
         return parent::getStartLine();
     }
-    
+
     /**
      * Return the contents of the class
      *
@@ -108,10 +108,10 @@ class Zend_Reflection_Class extends ReflectionClass
         $filelines = file($filename);
         $startnum  = $this->getStartLine($includeDocblock);
         $endnum    = $this->getEndLine() - $this->getStartLine();
-        
+
         return implode('', array_splice($filelines, $startnum, $endnum, true));
     }
-    
+
     /**
      * Get all reflection objects of implemented interfaces
      *
@@ -134,7 +134,7 @@ class Zend_Reflection_Class extends ReflectionClass
         unset($phpReflections);
         return $zendReflections;
     }
-    
+
     /**
      * Return method reflection by name
      *
@@ -220,7 +220,7 @@ class Zend_Reflection_Class extends ReflectionClass
         unset($phpReflection);
         return $zendReflection;
     }
-    
+
     /**
      * Return reflection properties of this class
      *

@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FilteringSelectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FilteringSelectTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dojo_View_Helper_FilteringSelectTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_View_Helper_FilteringSelectTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_View_Helper_FilteringSelect */
 require_once 'Zend/Dojo/View/Helper/FilteringSelect.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
  */
-class Zend_Dojo_View_Helper_FilteringSelectTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_View_Helper_FilteringSelectTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -100,8 +98,8 @@ class Zend_Dojo_View_Helper_FilteringSelectTest extends PHPUnit_Framework_TestCa
     public function getElementAsSelect()
     {
         return $this->helper->filteringSelect(
-            'elementId', 
-            'someCombo', 
+            'elementId',
+            'someCombo',
             array(),
             array(),
             array(
@@ -118,16 +116,16 @@ class Zend_Dojo_View_Helper_FilteringSelectTest extends PHPUnit_Framework_TestCa
     public function getElementAsRemoter()
     {
         return $this->helper->filteringSelect(
-            'elementId', 
-            'someCombo', 
+            'elementId',
+            'someCombo',
             array(
                 'store' => array(
-                    'store' => 'stateStore', 
-                    'type' => 'dojo.data.ItemFileReadStore', 
+                    'store' => 'stateStore',
+                    'type' => 'dojo.data.ItemFileReadStore',
                     'params' => array(
                         'url' => 'states.txt'
                     )
-                ), 
+                ),
                 'searchAttr' => 'name'
             ),
             array()
@@ -165,10 +163,12 @@ class Zend_Dojo_View_Helper_FilteringSelectTest extends PHPUnit_Framework_TestCa
         $this->assertRegexp('/<input[^>]*(type="text")/', $html);
         $this->assertNotNull($this->view->dojo()->getDijit('elementId'));
 
+        $this->assertContains('var stateStore;', $this->view->dojo()->getJavascript());
+
         $found = false;
-        $scripts = $this->view->dojo()->getJavascript();
+        $scripts = $this->view->dojo()->_getZendLoadActions();
         foreach ($scripts as $js) {
-            if (strstr($js, 'var stateStore;')) {
+            if (strstr($js, 'stateStore = new ')) {
                 $found = true;
                 break;
             }

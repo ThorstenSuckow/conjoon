@@ -65,4 +65,37 @@ class Conjoon_Service_Twitter extends Zend_Service_Twitter {
         return new Zend_Rest_Client_Result($response->getBody());
     }
 
+    /**
+     * @see #ZF-9215 - "page" parameter does not work, instead
+     * use "cursor"
+     *
+     * User friends
+     *
+     * @param  int|string $id Id or username of user for whom to fetch friends
+     * @throws Zend_Http_Client_Exception if HTTP request fails or times out
+     * @return Zend_Rest_Client_Result
+     */
+    public function userFriends(array $params = array())
+    {
+        $this->_init();
+        $path = '/1/statuses/friends';
+        $_params = array();
+
+        foreach ($params as $key => $value) {
+            switch (strtolower($key)) {
+                case 'id':
+                    $path .= '/' . $value;
+                    break;
+                case 'cursor':
+                    $_params['cursor'] = (string) $value;
+                    break;
+                default:
+                    break;
+            }
+        }
+        $path .= '.xml';
+        $response = $this->_get($path, $_params);
+        return new Zend_Rest_Client_Result($response->getBody());
+    }
+
 }

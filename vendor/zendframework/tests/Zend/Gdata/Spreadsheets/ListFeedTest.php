@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Spreadsheets
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Spreadsheets
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Spreadsheets
@@ -44,18 +44,20 @@ class Zend_Gdata_Spreadsheets_ListFeedTest extends PHPUnit_Framework_TestCase
 
     public function testToAndFromString()
     {
-        $this->assertTrue(count($this->listFeed->entries) == 1);
+        $this->assertTrue(count($this->listFeed->entries) == 2);
+        $this->assertTrue($this->listFeed->entries->count() == 2);
         foreach($this->listFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Spreadsheets_ListEntry);
         }
-        
+
         $newListFeed = new Zend_Gdata_Spreadsheets_ListFeed();
         $doc = new DOMDocument();
         $doc->loadXML($this->listFeed->saveXML());
         $newListFeed->transferFromDom($doc->documentElement);
-        
-        $this->assertTrue(count($newListFeed->entries) == 1);
+
+        $this->assertTrue(count($newListFeed->entries) == 2);
+        $this->assertTrue($newListFeed->entries->count() == 2);
         foreach($newListFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Spreadsheets_ListEntry);

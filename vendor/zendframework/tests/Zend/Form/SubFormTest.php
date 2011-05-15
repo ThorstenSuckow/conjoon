@@ -15,29 +15,26 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SubFormTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SubFormTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Form_SubFormTest::main');
 }
 
-require_once dirname(__FILE__) . '/../../TestHelper.php';
-require_once 'PHPUnit/Framework/TestSuite.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
-
 // error_reporting(E_ALL);
 
 require_once 'Zend/Form/SubForm.php';
 require_once 'Zend/View.php';
+require_once 'Zend/Version.php';
 
 /**
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -45,7 +42,6 @@ class Zend_Form_SubFormTest extends PHPUnit_Framework_TestCase
 {
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
         $suite  = new PHPUnit_Framework_TestSuite('Zend_Form_SubFormTest');
         $result = PHPUnit_TextUI_TestRunner::run($suite);
     }
@@ -99,7 +95,7 @@ class Zend_Form_SubFormTest extends PHPUnit_Framework_TestCase
     // Bugfixes
 
     /**
-     * @see ZF-2883
+     * @group ZF-2883
      */
     public function testDisplayGroupsShouldInheritSubFormNamespace()
     {
@@ -116,7 +112,7 @@ class Zend_Form_SubFormTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3272
+     * @group ZF-3272
      */
     public function testRenderedSubFormDtShouldContainNoBreakSpace()
     {
@@ -130,7 +126,18 @@ class Zend_Form_SubFormTest extends PHPUnit_Framework_TestCase
         $form->addSubForm($subForm, 'foobar')
              ->setView(new Zend_View);
         $html = $form->render();
-        $this->assertContains('<dt>&nbsp;</dt>', $html);
+        $this->assertContains('>&#160;</dt>', $html  );
+    }
+
+    /**
+     * Prove the fluent interface on Zend_Form_Subform::loadDefaultDecorators
+     *
+     * @link http://framework.zend.com/issues/browse/ZF-9913
+     * @return void
+     */
+    public function testFluentInterfaceOnLoadDefaultDecorators()
+    {
+        $this->assertSame($this->form, $this->form->loadDefaultDecorators());
     }
 }
 

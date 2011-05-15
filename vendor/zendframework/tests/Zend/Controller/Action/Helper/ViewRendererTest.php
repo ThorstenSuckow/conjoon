@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewRendererTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ViewRendererTest.php 23976 2011-05-03 17:36:13Z ralph $
  */
 
 // Call Zend_Controller_Action_Helper_ViewRendererTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Controller_Action_Helper_ViewRendererTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 require_once 'Zend/Controller/Action/Helper/ViewRenderer.php';
 require_once 'Zend/Controller/Front.php';
@@ -43,13 +41,13 @@ require_once dirname(__FILE__) . '/../../_files/modules/bar/controllers/IndexCon
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
  * @group      Zend_Controller_Action_Helper
  */
-class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_TestCase 
+class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Base path to controllers, views
@@ -278,7 +276,10 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
 
         $scriptPaths = $this->helper->view->getScriptPaths();
         $scriptPath  = $scriptPaths[0];
-        $this->assertContains($viewDir, $scriptPath);
+        $this->assertContains(
+            $this->_normalizePath($viewDir),
+            $this->_normalizePath($scriptPath)
+            );
 
         $helperPaths = $this->helper->view->getHelperPaths();
         $found       = false;
@@ -528,9 +529,9 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $controller = new Bar_IndexController($this->request, $this->response, array());
         $expected   = 'baz/bat.php';
         $this->assertEquals(
-            $expected, 
+            $expected,
             $this->helper->getViewScript(
-                null, 
+                null,
                 array('controller' => 'baz', 'action' => 'bat', 'suffix' => 'php')
             )
         );
@@ -744,13 +745,13 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
 
         require_once 'Zend/Filter/PregReplace.php';
         require_once 'Zend/Filter/Word/UnderscoreToSeparator.php';
-        
+
         $inflector = new Zend_Filter_Inflector('test.phtml');
         $inflector->addRules(array(
             ':module'     => array('Word_CamelCaseToDash', 'stringToLower'),
             ':controller' => array('Word_CamelCaseToDash', new Zend_Filter_Word_UnderscoreToSeparator(DIRECTORY_SEPARATOR), 'StringToLower'),
             ':action'     => array(
-                'Word_CamelCaseToDash', 
+                'Word_CamelCaseToDash',
                 new Zend_Filter_PregReplace('/[^a-z0-9]+/i', '-'),
                 'StringToLower'
             ),
@@ -761,7 +762,7 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $body = $this->response->getBody();
         $this->assertContains('Rendered index/test.phtml in bar module', $body);
     }
-    
+
     public function testStockInflectorAllowsSubDirectoryViewScripts()
     {
         $this->request->setModuleName('bar')
@@ -780,18 +781,20 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
                       ->setActionName('admin');
         $controller = new Bar_IndexController($this->request, $this->response, array());
         $this->helper->setActionController($controller);
-                      
+
         $this->helper->setViewBasePathSpec(':moduleDir/:module');
         $this->helper->initView();
-        
-        $viewScriptPaths = $this->helper->view->getAllPaths(); 
 
-        // we need this until View decides to not use DIRECTORY_SEPARATOR
-        $expectedPathRegex = (DIRECTORY_SEPARATOR == '\\') ? '#modules\\\\bar\\\\bar\\\\scripts\\\\$#' : '#modules/bar/bar/scripts/$#';
-        $this->assertRegExp($expectedPathRegex, $viewScriptPaths['script'][0]);
+        $viewScriptPaths = $this->helper->view->getAllPaths();
+
+        $expectedPathRegex = '#modules/bar/bar/scripts/$#';
+        $this->assertRegExp(
+            $expectedPathRegex,
+            $this->_normalizePath($viewScriptPaths['script'][0])
+            );
         $this->assertEquals($this->helper->getViewScript(), 'index/admin.phtml');
     }
-    
+
     /**
      * @see ZF-2738
      */
@@ -804,11 +807,14 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $this->helper->setActionController($controller);
         $viewScriptPaths = $this->helper->view->getAllPaths();
 
-        $expectedPathRegex = (DIRECTORY_SEPARATOR == '\\') ? '#modules\\\\foo\\\\views\\\\scripts\\\\$#' : '#modules/foo/views/scripts/$#';
-        $this->assertRegExp($expectedPathRegex, $viewScriptPaths['script'][0]);
+        $expectedPathRegex = '#modules/foo/views/scripts/$#';
+        $this->assertRegExp(
+            $expectedPathRegex,
+            $this->_normalizePath($viewScriptPaths['script'][0])
+            );
         $this->assertEquals('car-bar/baz.phtml', $this->helper->getViewScript());
     }
-    
+
     public function testCorrectViewHelperPathShouldBePropagatedWhenSubControllerInvoked()
     {
         require_once $this->basePath . '/_files/modules/foo/controllers/Admin/IndexController.php';
@@ -821,7 +827,7 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $body = $this->response->getBody();
         $this->assertContains('fooUseHelper invoked', $body, 'Received ' . $body);
     }
-    
+
     public function testCorrectViewHelperPathShouldBePropagatedWhenSubControllerInvokedInDefaultModule()
     {
         require_once $this->basePath . '/_files/modules/default/controllers/Admin/HelperController.php';
@@ -832,6 +838,30 @@ class Zend_Controller_Action_Helper_ViewRendererTest extends PHPUnit_Framework_T
         $this->helper->render();
         $body = $this->response->getBody();
         $this->assertContains('SampleZfHelper invoked', $body, 'Received ' . $body);
+    }
+    
+    /**
+     * @group ZF-11127
+     */
+    public function testViewSuffixInstanceNotSharedWhenViewHelperIsCloned()
+    {
+        $a = new Zend_Controller_Action_Helper_ViewRenderer();
+        $a->init();
+        $a->setViewSuffix('A');
+        
+        $this->assertEquals('A', $a->getViewSuffix());
+        
+        $b = clone $a;        
+        $this->assertEquals('A', $b->getViewSuffix());
+        $b->setViewSuffix('B');
+        
+        $this->assertEquals('B', $b->getViewSuffix());
+        $this->assertNotEquals('B', $a->getViewSuffix());
+    }
+
+    protected function _normalizePath($path)
+    {
+        return str_replace(array('/', '\\'), '/', $path);
     }
 }
 

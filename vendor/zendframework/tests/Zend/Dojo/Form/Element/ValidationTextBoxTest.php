@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ValidationTextBoxTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ValidationTextBoxTest.php 23929 2011-05-02 19:28:33Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_ValidationTextBoxTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_Form_Element_ValidationTextBoxTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_Form_Element_ValidationTextBox */
 require_once 'Zend/Dojo/Form/Element/ValidationTextBox.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_Form
  */
-class Zend_Dojo_Form_Element_ValidationTextBoxTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_Form_Element_ValidationTextBoxTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -179,6 +177,15 @@ class Zend_Dojo_Form_Element_ValidationTextBoxTest extends PHPUnit_Framework_Tes
     {
         $html = $this->element->render();
         $this->assertContains('dojoType="dijit.form.ValidationTextBox"', $html);
+    }
+    
+    public function testSettingMultipleConstraintsShouldNotOverridePreviousConstraints()
+    {
+        $this->element->setConstraint('foo', 'bar');
+        
+        $this->element->setConstraints(array('spam' => 'ham'));
+        
+        $this->assertEquals('bar', $this->element->getConstraint('foo'));
     }
 }
 

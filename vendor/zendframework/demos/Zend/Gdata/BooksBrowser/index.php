@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -115,7 +115,7 @@ if ($queryType === null) {
 } else {
     $books = new Zend_Gdata_Books();
     $query = $books->newVolumeQuery();
-    
+
     /* display a list of volumes */
     if (isset($_GET['searchTerm'])) {
         $searchTerm = $_GET['searchTerm'];
@@ -133,7 +133,7 @@ if ($queryType === null) {
         $minViewability = $_GET['minViewability'];
         $query->setMinViewability($minViewability);
     }
-    
+
     /* check for one of the restricted feeds, or list from 'all' videos */
     switch ($queryType) {
     case 'full_view':

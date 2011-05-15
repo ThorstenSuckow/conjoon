@@ -14,12 +14,19 @@
  *
  * @category   Zend
  * @package    Zend_Soap
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Wsdl.php 16210 2009-06-21 19:22:17Z thomas $
+ * @version    $Id: Wsdl.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
+/**
+ * @see Zend_Soap_Wsdl_Strategy_Interface
+ */
 require_once "Zend/Soap/Wsdl/Strategy/Interface.php";
+
+/**
+ * @see Zend_Soap_Wsdl_Strategy_Abstract
+ */
 require_once "Zend/Soap/Wsdl/Strategy/Abstract.php";
 
 /**
@@ -310,11 +317,17 @@ class Zend_Soap_Wsdl
 
         if (is_array($fault)) {
             $node = $this->_dom->createElement('fault');
+            /**
+             * Note. Do we really need name attribute to be also set at wsdl:fault node???
+             * W3C standard doesn't mention it (http://www.w3.org/TR/wsdl#_soap:fault)
+             * But some real world WSDLs use it, so it may be required for compatibility reasons.
+             */
             if (isset($fault['name'])) {
                 $node->setAttribute('name', $fault['name']);
             }
-            $soap_node = $this->_dom->createElement('soap:body');
-            foreach ($output as $name => $value) {
+
+            $soap_node = $this->_dom->createElement('soap:fault');
+            foreach ($fault as $name => $value) {
                 $soap_node->setAttribute($name, $value);
             }
             $node->appendChild($soap_node);
@@ -417,7 +430,7 @@ class Zend_Soap_Wsdl
         }
 
         $doc = $this->_dom->createElement('documentation');
-        $doc_cdata = $this->_dom->createTextNode($documentation);
+        $doc_cdata = $this->_dom->createTextNode(str_replace(array("\r\n", "\r"), "\n", $documentation));
         $doc->appendChild($doc_cdata);
 
         if($node->hasChildNodes()) {
@@ -595,10 +608,10 @@ class Zend_Soap_Wsdl
         // delegates the detection of a complex type to the current strategy
         return $strategy->addComplexType($type);
     }
-    
+
     /**
      * Parse an xsd:element represented as an array into a DOMElement.
-     * 
+     *
      * @param array $element an xsd:element represented as an array
      * @return DOMElement parsed element
      */
@@ -608,7 +621,7 @@ class Zend_Soap_Wsdl
             require_once "Zend/Soap/Wsdl/Exception.php";
             throw new Zend_Soap_Wsdl_Exception("The 'element' parameter needs to be an associative array.");
         }
-        
+
         $elementXml = $this->_dom->createElement('xsd:element');
         foreach ($element as $key => $value) {
             if (in_array($key, array('sequence', 'all', 'choice'))) {
@@ -630,10 +643,10 @@ class Zend_Soap_Wsdl
         }
         return $elementXml;
     }
-    
+
     /**
      * Add an xsd:element represented as an array to the schema.
-     * 
+     *
      * Array keys represent attribute names and values their respective value.
      * The 'sequence', 'all' and 'choice' keys must have an array of elements as their value,
      * to add them to a nested complexType.
@@ -645,7 +658,7 @@ class Zend_Soap_Wsdl
      *                  <xsd:element name="myString" type="string"/>
      *                  <xsd:element name="myInteger" type="int"/>
      *                </xsd:sequence></xsd:complexType></xsd:element>
-     * 
+     *
      * @param array $element an xsd:element represented as an array
      * @return string xsd:element for the given element array
      */

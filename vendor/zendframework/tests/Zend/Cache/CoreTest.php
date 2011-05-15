@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CoreTest.php 18255 2009-09-18 17:26:32Z padraic $
+ * @version    $Id: CoreTest.php 23800 2011-03-10 20:52:08Z mabe $
  */
 
 /**
@@ -28,18 +28,13 @@ require_once 'Zend/Cache/Core.php';
 require_once 'Zend/Cache/Backend/File.php'; // TODO : use only Test backend ?
 require_once 'Zend/Cache/Backend/Test.php';
 
-/**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 require_once 'Zend/Config.php';
 
 /**
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
@@ -67,7 +62,7 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-7568
+     * @group ZF-7568
      */
     public function testConstructorCorrectCallWithZendConfig()
     {
@@ -77,7 +72,7 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-7568
+     * @group ZF-7568
      */
     public function testSettingOptionsWithZendConfig()
     {
@@ -85,6 +80,17 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
         $test = new Zend_Cache_Core();
         $test->setConfig($config);
         $this->assertEquals(3600, $test->getOption('lifetime'));
+    }
+
+    /**
+     * @group ZF-9092
+     */
+    public function testSettingLifetimeAsEmptyIsInterpretedAsNull()
+    {
+        $config = new Zend_Config(array('lifetime' => '', 'caching' => true));
+        $test = new Zend_Cache_Core();
+        $test->setConfig($config);
+        $this->assertSame(NULL, $test->getOption('lifetime'));
     }
 
     public function testConstructorBadOption()
@@ -278,13 +284,15 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
 
     public function testSaveCorrectCallButFileCorruption()
     {
+        $cacheIdPrefix = 'cacheIdPrefix';
+        $this->_instance->setOption('cache_id_prefix', $cacheIdPrefix);
         $res = $this->_instance->save('data', 'false', array('tag1', 'tag2'));
         $logs = $this->_backend->getAllLogs();
         $expected1 = array(
             'methodName' => 'save',
             'args' => array(
                 0 => 'data',
-                1 => 'false',
+                1 => $cacheIdPrefix . 'false',
                 2 => array(
                     0 => 'tag1',
                     1 => 'tag2'
@@ -294,7 +302,7 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
         $expected2 = array(
             'methodName' => 'remove',
             'args' => array(
-                0 => 'false'
+                0 => $cacheIdPrefix.'false'
             )
         );
         $this->assertFalse($res);
@@ -479,4 +487,61 @@ class Zend_Cache_CoreTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $log);
     }
 
+    public function testGetIds()
+    {
+        $this->_instance->setOption('cache_id_prefix', 'prefix_');
+        $ids = $this->_instance->getIds();
+        $this->assertContains('id1', $ids);
+        $this->assertContains('id2', $ids);
+    }
+
+    public function testGetIdsMatchingTags()
+    {
+        $this->_instance->setOption('cache_id_prefix', 'prefix_');
+        $ids = $this->_instance->getIdsMatchingTags(array('tag1', 'tag2'));
+        $this->assertContains('id1', $ids);
+        $this->assertContains('id2', $ids);
+    }
+
+    public function testGetIdsNotMatchingTags()
+    {
+        $this->_instance->setOption('cache_id_prefix', 'prefix_');
+        $ids = $this->_instance->getIdsNotMatchingTags(array('tag3', 'tag4'));
+        $this->assertContains('id3', $ids);
+        $this->assertContains('id4', $ids);
+    }
+
+    public function testGetIdsMatchingAnyTags()
+    {
+        $this->_instance->setOption('cache_id_prefix', 'prefix_');
+        $ids = $this->_instance->getIdsMatchingAnyTags(array('tag5', 'tag6'));
+        $this->assertContains('id5', $ids);
+        $this->assertContains('id6', $ids);
+    }
+
+    public function testLoggerSanity()
+    {
+        $this->_instance = new Zend_Cache_Core(array(
+            'logging' => true
+        ));
+        $this->_instance->setBackend($this->_backend);
+
+        $logger = $this->_instance->getOption('logger');
+        $this->assertType('Zend_Log', $logger);
+    }
+
+    /**
+     * @group ZF-10189
+     */
+    public function testIfFileZendLogWasIncluded()
+    {
+        if (class_exists('Zend_Log', false)) {
+            $this->markTestSkipped('File Zend/Log.php already included');
+        }
+
+        $cacheCore = new Zend_Cache_Core(
+            array('logging' => true)
+        );
+        $this->assertTrue($cacheCore->getOption('logger') instanceof Zend_Log);
+    }
 }

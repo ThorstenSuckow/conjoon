@@ -1,15 +1,17 @@
 dojo.provide("dojox.json.ref");
 dojo.require("dojo.date.stamp");
 
-// summary:
-// Adds advanced JSON {de}serialization capabilities to the base json library.
-// This enhances the capabilities of dojo.toJson and dojo.fromJson,
-// adding referencing support, date handling, and other extra format handling.
-// On parsing, references are resolved. When references are made to
-// ids/objects that have been loaded yet, the loader function will be set to
-// _loadObject to denote a lazy loading (not loaded yet) object. 
 
 dojox.json.ref = {
+	// summary:
+	// 		Adds advanced JSON {de}serialization capabilities to the base json library.
+	// 		This enhances the capabilities of dojo.toJson and dojo.fromJson,
+	// 		adding referencing support, date handling, and other extra format handling.
+	// 		On parsing, references are resolved. When references are made to
+	// 		ids/objects that have been loaded yet, the loader function will be set to
+	// 		_loadObject to denote a lazy loading (not loaded yet) object. 
+
+
 	resolveJson: function(/*Object*/ root,/*Object?*/ args){
 		// summary:
 		// 		Indexes and resolves references in the JSON object.
@@ -45,6 +47,8 @@ dojox.json.ref = {
 		//		An object, the result of the processing
 		args = args || {};
 		var idAttribute = args.idAttribute || 'id';
+		var refAttribute = this.refAttribute;
+		var idAsRef = args.idAsRef;
 		var prefix = args.idPrefix || ''; 
 		var assignAbsoluteIds = args.assignAbsoluteIds;
 		var index = args.index || {}; // create an index if one doesn't exist
@@ -53,10 +57,10 @@ dojox.json.ref = {
 		var pathResolveRegex = /^(.*\/)?(\w+:\/\/)|[^\/\.]+\/\.\.\/|^.*\/(\/)/;
 		var addProp = this._addProp;
 		var F = function(){};
-		function walk(it, stop, defaultId, schema, defaultObject){
+		function walk(it, stop, defaultId, needsPrefix, schema, defaultObject){
 			// this walks the new graph, resolving references and making other changes
-		 	var update, val, id = idAttribute in it ? it[idAttribute] : defaultId;
-		 	if(id !== undefined){
+		 	var i, update, val, id = idAttribute in it ? it[idAttribute] : defaultId;
+		 	if(idAttribute in it || ((id !== undefined) && needsPrefix)){
 		 		id = (prefix + id).replace(pathResolveRegex,'$2$3');
 		 	}
 		 	var target = defaultObject || it;
@@ -73,6 +77,7 @@ dojox.json.ref = {
 				if(index[id] && ((it instanceof Array) == (index[id] instanceof Array))){ 
 					target = index[id];
 					delete target.$ref; // remove this artifact
+					delete target._loadObject;
 					update = true;
 				}else{
 				 	var proto = schema && schema.prototype; // and if has a prototype
@@ -87,23 +92,36 @@ dojox.json.ref = {
 					timeStamps[id] = args.time;
 				}
 			}
-			var properties = schema && schema.properties; 
+			while(schema){
+				var properties = schema.properties;
+				if(properties){
+					for(i in it){
+						var propertyDefinition = properties[i];
+						if(propertyDefinition && propertyDefinition.format == 'date-time' && typeof it[i] == 'string'){
+							it[i] = dojo.date.stamp.fromISOString(it[i]);
+						}
+					}
+				}
+				schema = schema["extends"];
+			}
 			var length = it.length;
-			for(var i in it){
+			for(i in it){
 				if(i==length){
 					break;		
 				}
 				if(it.hasOwnProperty(i)){
 					val=it[i];
-					var propertyDefinition = properties && properties[i];
-					if(propertyDefinition && propertyDefinition.format == 'date-time' && typeof val == 'string'){
-						val = dojo.date.stamp.fromISOString(val);
-					}else if((typeof val =='object') && val && !(val instanceof Date)){
-						ref=val.$ref;
+					if((typeof val =='object') && val && !(val instanceof Date) && i != '__parent'){
+						ref=val[refAttribute] || (idAsRef && val[idAttribute]);
+						if(!ref || !val.__parent){
+							if(it != reWalk){
+								val.__parent = target;
+							}
+						}
 						if(ref){ // a reference was found
 							// make sure it is a safe reference
 							delete it[i];// remove the property so it doesn't resolve to itself in the case of id.propertyName lazy values
-							var path = ref.replace(/(#)([^\.\[])/,'$1.$2').match(/(^([^\[]*\/)?[^#\.\[]*)#?([\.\[].*)?/); // divide along the path
+							var path = ref.toString().replace(/(#)([^\.\[])/,'$1.$2').match(/(^([^\[]*\/)?[^#\.\[]*)#?([\.\[].*)?/); // divide along the path
 							if((ref = (path[1]=='$' || path[1]=='this' || path[1]=='') ? root : index[(prefix + path[1]).replace(pathResolveRegex,'$2$3')])){  // a $ indicates to start with the root, otherwise start with an id
 								// if there is a path, we will iterate through the path references
 								if(path[3]){
@@ -113,19 +131,18 @@ dojox.json.ref = {
 								}
 							}
 							if(ref){
+								val = ref;
+							}else{
 								// otherwise, no starting point was found (id not found), if stop is set, it does not exist, we have
 								// unloaded reference, if stop is not set, it may be in a part of the graph not walked yet,
 								// we will wait for the second loop
-								val = ref;
-							}else{
 								if(!stop){
 									var rewalking;
 									if(!rewalking){
 										reWalk.push(target); // we need to rewalk it to resolve references
 									}
 									rewalking = true; // we only want to add it once
-								}else{
-									val = walk(val, false, val.$ref, propertyDefinition);
+									val = walk(val, false, val[refAttribute], true, propertyDefinition);
 									// create a lazy loaded object
 									val._loadObject = args.loader;
 								}
@@ -136,7 +153,8 @@ dojox.json.ref = {
 								val = walk(
 									val,
 									reWalk==it,
-									id && addProp(id, i), // the default id to use
+									id === undefined ? undefined : addProp(id, i), // the default id to use
+									false,
 									propertyDefinition, 
 									// if we have an existing object child, we want to 
 									// maintain it's identity, so we pass it as the default object
@@ -150,7 +168,8 @@ dojox.json.ref = {
 						var old = target[i];
 						target[i] = val; // only update if it changed
 						if(update && val !== old && // see if it is different 
-								!target._loadObject && // no updates if we are just lazy loading 
+								!target._loadObject && // no updates if we are just lazy loading
+								!(i.charAt(0) == '_' && i.charAt(1) == '_') && i != "$ref" &&  
 								!(val instanceof Date && old instanceof Date && val.getTime() == old.getTime()) && // make sure it isn't an identical date
 								!(typeof val == 'function' && typeof old == 'function' && val.toString() == old.toString()) && // make sure it isn't an indentical function
 								index.onUpdate){
@@ -160,10 +179,10 @@ dojox.json.ref = {
 				}
 			}
 	
-			if(update){
-				// this means we are updating, we need to remove deleted
+			if(update && (idAttribute in it || target instanceof Array)){
+				// this means we are updating with a full representation of the object, we need to remove deleted
 				for(i in target){
-					if(!target.__isDirty && target.hasOwnProperty(i) && !it.hasOwnProperty(i) && i != '__id' && i != '__clientId' && !(target instanceof Array && isNaN(i))){
+					if(!target.__isDirty && target.hasOwnProperty(i) && !it.hasOwnProperty(i) && !(i.charAt(0) == '_' && i.charAt(1) == '_') && !(target instanceof Array && isNaN(i))){
 						if(index.onUpdate && i != "_loadObject" && i != "_idAttr"){
 							index.onUpdate(target,i,target[i],undefined); // call the listener for each update
 						}
@@ -182,7 +201,7 @@ dojox.json.ref = {
 			return target;
 		}
 		if(root && typeof root == 'object'){
-			root = walk(root,false,args.defaultId); // do the main walk through
+			root = walk(root,false,args.defaultId, true); // do the main walk through
 			walk(reWalk,false); // re walk any parts that were not able to resolve references on the first round
 		}
 		return root;
@@ -201,7 +220,9 @@ dojox.json.ref = {
 	// return:
 	//		An object, the result of the evaluation
 		function ref(target){ // support call styles references as well
-			return {$ref:target};
+			var refObject = {};
+			refObject[this.refAttribute] = target;
+			return refObject;
 		}
 		try{
 			var root = eval('(' + str + ')'); // do the eval
@@ -235,6 +256,7 @@ dojox.json.ref = {
 		//		a String representing the serialized version of the passed object.
 		var useRefs = this._useRefs;
 		var addProp = this._addProp;
+		var refAttribute = this.refAttribute;
 		idPrefix = idPrefix || ''; // the id prefix for this context
 		var paths={};
 		var generated = {};
@@ -259,9 +281,9 @@ dojox.json.ref = {
 								ref = id;
 							}
 						}
-						return serialize({
-							$ref: ref
-						},'#');
+						var refObject = {};
+						refObject[refAttribute] = ref;
+						return serialize(refObject,'#');
 					}
 					path = id;
 				}else{
@@ -324,6 +346,11 @@ dojox.json.ref = {
 	_addProp: function(id, prop){
 		return id + (id.match(/#/) ? id.length == 1 ? '' : '.' : '#') + prop;
 	},
+	//	refAttribute: String
+	//		This indicates what property is the reference property. This acts like the idAttribute
+	// 		except that this is used to indicate the current object is a reference or only partially 
+	// 		loaded. This defaults to "$ref". 
+	refAttribute: "$ref",
 	_useRefs: false,
 	serializeFunctions: false
 }

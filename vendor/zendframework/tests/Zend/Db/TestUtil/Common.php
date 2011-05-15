@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Common.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: Common.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -26,20 +26,15 @@
  */
 require_once 'Zend/Db/Expr.php';
 
-/**
- * PHPUnit_Util_Filter
- */
-require_once 'PHPUnit/Util/Filter.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_TestUtil_Common
@@ -61,7 +56,7 @@ abstract class Zend_Db_TestUtil_Common
 
     protected function _getSqlCreateTable($tableName)
     {
-        return 'CREATE TABLE ' . $this->_db->quoteIdentifier($tableName, true);
+        return 'CREATE TABLE ' . $this->getAdapter()->quoteIdentifier($tableName, true);
     }
 
     protected function _getSqlCreateTableType()
@@ -71,7 +66,7 @@ abstract class Zend_Db_TestUtil_Common
 
     protected function _getSqlDropTable($tableName)
     {
-        return 'DROP TABLE ' . $this->_db->quoteIdentifier($tableName, true);
+        return 'DROP TABLE ' . $this->getAdapter()->quoteIdentifier($tableName, true);
     }
 
     public function getSqlType($type)
@@ -102,13 +97,13 @@ abstract class Zend_Db_TestUtil_Common
             $pKey = $columns['PRIMARY KEY'];
             unset($columns['PRIMARY KEY']);
             foreach (explode(',', $pKey) as $pKeyCol) {
-                $pKeys[] = $this->_db->quoteIdentifier($pKeyCol, true);
+                $pKeys[] = $this->getAdapter()->quoteIdentifier($pKeyCol, true);
             }
             $pKey = implode(', ', $pKeys);
         }
 
         foreach ($columns as $columnName => $type) {
-            $col[] = $this->_db->quoteIdentifier($columnName, true) . ' ' . $this->getSqlType($type);
+            $col[] = $this->getAdapter()->quoteIdentifier($columnName, true) . ' ' . $this->getSqlType($type);
         }
 
         if ($pKey) {
@@ -117,9 +112,9 @@ abstract class Zend_Db_TestUtil_Common
 
         $sql .= implode(",\n\t", $col);
         $sql .= "\n)" . $this->_getSqlCreateTableType();
-        $result = $this->_rawQuery($sql);
+        $result = $this->_tryRawQuery($sql);
         if ($result === false) {
-            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
         }
         $this->_tables[$tableName] = true;
     }
@@ -137,9 +132,9 @@ abstract class Zend_Db_TestUtil_Common
         if (!$sql) {
             return;
         }
-        $result = $this->_rawQuery($sql);
+        $result = $this->_tryRawQuery($sql);
         if ($result === false) {
-            throw new Zend_Db_Exception("DROP TABLE statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+            throw new Zend_Db_Exception("DROP TABLE statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
         }
         unset($this->_tables[$tableName]);
     }
@@ -164,9 +159,9 @@ abstract class Zend_Db_TestUtil_Common
         if (!$sql) {
             return;
         }
-        $result = $this->_rawQuery($sql);
+        $result = $this->_tryRawQuery($sql);
         if ($result === false) {
-            throw new Zend_Db_Exception("CREATE SEQUENCE statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+            throw new Zend_Db_Exception("CREATE SEQUENCE statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
         }
         $this->_sequences[$sequenceName] = true;
     }
@@ -184,9 +179,9 @@ abstract class Zend_Db_TestUtil_Common
         if (!$sql) {
             return;
         }
-        $result = $this->_rawQuery($sql);
+        $result = $this->_tryRawQuery($sql);
         if ($result === false) {
-            throw new Zend_Db_Exception("DROP SEQUENCE statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+            throw new Zend_Db_Exception("DROP SEQUENCE statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
         }
         unset($this->_sequences[$sequenceName]);
     }
@@ -417,44 +412,44 @@ abstract class Zend_Db_TestUtil_Common
         $tableName = $this->getTableName($tableId);
         $data = $this->{'_getData'.$tableId}();
         foreach ($data as $row) {
-            $sql = 'INSERT INTO ' .  $this->_db->quoteIdentifier($tableName, true);
+            $sql = 'INSERT INTO ' .  $this->getAdapter()->quoteIdentifier($tableName, true);
             $cols = array();
             $vals = array();
             foreach ($row as $col => $val) {
-                $cols[] = $this->_db->quoteIdentifier($col, true);
+                $cols[] = $this->getAdapter()->quoteIdentifier($col, true);
                 if ($val instanceof Zend_Db_Expr) {
                     $vals[] = $val->__toString();
                 } else {
-                    $vals[] = $this->_db->quote($val);
+                    $vals[] = $this->getAdapter()->quote($val);
                 }
             }
             $sql .=        ' (' . implode(', ', $cols) . ')';
             $sql .= ' VALUES (' . implode(', ', $vals) . ')';
-            $result = $this->_rawQuery($sql);
+            $result = $this->_tryRawQuery($sql);
             if ($result === false) {
-                throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+                throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
             }
         }
     }
 
     protected function _getSqlCreateView($viewName)
     {
-        return 'CREATE VIEW ' . $this->_db->quoteIdentifier($viewName, true);
+        return 'CREATE VIEW ' . $this->getAdapter()->quoteIdentifier($viewName, true);
     }
 
     protected function _getSqlDropView($viewName)
     {
-        return 'DROP VIEW ' . $this->_db->quoteIdentifier($viewName, true);
+        return 'DROP VIEW ' . $this->getAdapter()->quoteIdentifier($viewName, true);
     }
 
     public function createView()
     {
         $sql = $this->_getSqlCreateView('temp_view')
              . ' AS SELECT * FROM '
-             . $this->_db->quoteIdentifier('zfbugs', true);
-        $result = $this->_rawQuery($sql);
+             . $this->getAdapter()->quoteIdentifier('zfbugs', true);
+        $result = $this->_tryRawQuery($sql);
         if ($result === false) {
-            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
         }
     }
 
@@ -464,9 +459,9 @@ abstract class Zend_Db_TestUtil_Common
         if (!$sql) {
             return;
         }
-        $result = $this->_rawQuery($sql);
+        $result = $this->_tryRawQuery($sql);
         if ($result === false) {
-            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->_db->getConnection()->error);
+            throw new Zend_Db_Exception("Statement failed:\n$sql\nError: " . $this->getAdapter()->getConnection()->error);
         }
     }
 
@@ -500,12 +495,30 @@ abstract class Zend_Db_TestUtil_Common
         $this->_db = $db;
     }
 
+    protected function getAdapter()
+    {
+        if($this->_db == null) {
+            require_once "Zend/Db/Exception.php";
+            throw new Zend_Db_Exception("No adapter was set in TestUtils.");
+        }
+        return $this->_db;
+    }
+
     public function tearDown()
     {
         $this->dropView();
         $this->dropTable();
         $this->dropSequence();
-        $this->_db->closeConnection();
+        $this->getAdapter()->closeConnection();
+    }
+
+    protected function _tryRawQuery($sql)
+    {
+        if($this->_db == null) {
+            require_once "Zend/Db/Exception.php";
+            throw new Zend_Db_Exception("No database adapter set.");
+        }
+        $this->_rawQuery($sql);
     }
 
     protected abstract function _rawQuery($sql);

@@ -8,14 +8,14 @@ dojo.declare("dijit.ToolbarSeparator",
 		{
 		// summary:
 		//		A spacer between two `dijit.Toolbar` items
-		templateString: '<div class="dijitToolbarSeparator dijitInline"></div>',
+		templateString: '<div class="dijitToolbarSeparator dijitInline" waiRole="presentation"></div>',
 		postCreate: function(){ dojo.setSelectable(this.domNode, false); },
-		isFocusable: function(){ 
+		isFocusable: function(){
 			// summary:
 			//		This widget isn't focusable, so pass along that fact.
 			// tags:
 			//		protected
-			return false; 
+			return false;
 		}
 
 	});

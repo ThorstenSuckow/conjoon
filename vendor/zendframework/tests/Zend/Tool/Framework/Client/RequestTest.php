@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: RequestTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * @see TestHelper.php
- */
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /**
  * @see Zend_Tool_Framework_Client_Request
@@ -34,9 +29,9 @@ require_once 'Zend/Tool/Framework/Client/Request.php';
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * 
+ *
  * @group Zend_Tool
  * @group Zend_Tool_Framework
  * @group Zend_Tool_Framework_Client
@@ -48,30 +43,30 @@ class Zend_Tool_Framework_Client_RequestTest extends PHPUnit_Framework_TestCase
      * @var Zend_Tool_Framework_Client_Request
      */
     protected $_request = null;
-    
+
     public function setup()
     {
         $this->_request = new Zend_Tool_Framework_Client_Request();
     }
-    
+
     public function testProviderNameGetterAndSetter()
     {
         $this->_request->setProviderName('foo');
         $this->assertEquals('foo', $this->_request->getProviderName());
     }
-    
+
     public function testSpecialtyNameGetterAndSetter()
     {
         $this->_request->setSpecialtyName('foo');
         $this->assertEquals('foo', $this->_request->getSpecialtyName());
     }
-    
+
     public function testActionNameGetterAndSetter()
     {
         $this->_request->setActionName('foo');
         $this->assertEquals('foo', $this->_request->getActionName());
     }
-    
+
     public function testActionParametersGetterAndSetter()
     {
         $this->_request->setActionParameter('foo', 'bar');
@@ -81,7 +76,7 @@ class Zend_Tool_Framework_Client_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('bar', $this->_request->getActionParameters());
         $this->assertEquals(2, count($this->_request->getActionParameters()));
     }
-    
+
     public function testProviderParameterGetterAndSetter()
     {
         $this->_request->setProviderParameter('foo', 'bar');
@@ -91,21 +86,21 @@ class Zend_Tool_Framework_Client_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('bar', $this->_request->getProviderParameters());
         $this->assertEquals(2, count($this->_request->getProviderParameters()));
     }
-    
+
     public function testPretendGetterAndSetter()
     {
         $this->assertFalse($this->_request->isPretend());
         $this->_request->setPretend(true);
         $this->assertTrue($this->_request->isPretend());
     }
-    
+
     public function testDispatchableGetterAndSetter()
     {
         $this->assertTrue($this->_request->isDispatchable());
         $this->_request->setDispatchable(false);
         $this->assertFalse($this->_request->isDispatchable());
     }
-    
+
     /*
     protected $_providerName = null;
     protected $_specialtyName = null;
@@ -114,6 +109,6 @@ class Zend_Tool_Framework_Client_RequestTest extends PHPUnit_Framework_TestCase
     protected $_providerParameters = array();
     protected $_isPretend = false;
     protected $_isDispatchable = true;
-    */        
-    
+    */
+
 }

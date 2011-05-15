@@ -15,17 +15,18 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
+
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_View_Helper_AllTests::main');
 }
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/View/Helper/ActionTest.php';
 require_once 'Zend/View/Helper/BaseUrlTest.php';
+require_once 'Zend/View/Helper/CurrencyTest.php';
 require_once 'Zend/View/Helper/CycleTest.php';
 require_once 'Zend/View/Helper/DeclareVarsTest.php';
 require_once 'Zend/View/Helper/DoctypeTest.php';
@@ -45,6 +46,7 @@ require_once 'Zend/View/Helper/FormSubmitTest.php';
 require_once 'Zend/View/Helper/FormTest.php';
 require_once 'Zend/View/Helper/FormTextTest.php';
 require_once 'Zend/View/Helper/FormTextareaTest.php';
+require_once 'Zend/View/Helper/GravatarTest.php';
 require_once 'Zend/View/Helper/HeadLinkTest.php';
 require_once 'Zend/View/Helper/HeadMetaTest.php';
 require_once 'Zend/View/Helper/HeadScriptTest.php';
@@ -67,6 +69,7 @@ require_once 'Zend/View/Helper/Placeholder/ContainerTest.php';
 require_once 'Zend/View/Helper/Placeholder/RegistryTest.php';
 require_once 'Zend/View/Helper/Placeholder/StandaloneContainerTest.php';
 require_once 'Zend/View/Helper/ServerUrlTest.php';
+require_once 'Zend/View/Helper/TinySrcTest.php';
 require_once 'Zend/View/Helper/TranslateTest.php';
 require_once 'Zend/View/Helper/UrlTest.php';
 
@@ -75,7 +78,7 @@ require_once 'Zend/View/Helper/UrlTest.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -93,6 +96,7 @@ class Zend_View_Helper_AllTests
 
         $suite->addTestSuite('Zend_View_Helper_ActionTest');
         $suite->addTestSuite('Zend_View_Helper_BaseUrlTest');
+        $suite->addTestSuite('Zend_View_Helper_CurrencyTest');
         $suite->addTestSuite('Zend_View_Helper_CycleTest');
         $suite->addTestSuite('Zend_View_Helper_DeclareVarsTest');
         $suite->addTestSuite('Zend_View_Helper_DoctypeTest');
@@ -112,6 +116,7 @@ class Zend_View_Helper_AllTests
         $suite->addTestSuite('Zend_View_Helper_FormTest');
         $suite->addTestSuite('Zend_View_Helper_FormTextTest');
         $suite->addTestSuite('Zend_View_Helper_FormTextareaTest');
+        $suite->addTestSuite('Zend_View_Helper_GravatarTest');
         $suite->addTestSuite('Zend_View_Helper_HeadLinkTest');
         $suite->addTestSuite('Zend_View_Helper_HeadMetaTest');
         $suite->addTestSuite('Zend_View_Helper_HeadScriptTest');
@@ -134,9 +139,10 @@ class Zend_View_Helper_AllTests
         $suite->addTestSuite('Zend_View_Helper_Placeholder_RegistryTest');
         $suite->addTestSuite('Zend_View_Helper_Placeholder_StandaloneContainerTest');
         $suite->addTestSuite('Zend_View_Helper_ServerUrlTest');
+        $suite->addTestSuite('Zend_View_Helper_TinySrcTest');
         $suite->addTestSuite('Zend_View_Helper_TranslateTest');
         $suite->addTestSuite('Zend_View_Helper_UrlTest');
-        
+
         return $suite;
     }
 }

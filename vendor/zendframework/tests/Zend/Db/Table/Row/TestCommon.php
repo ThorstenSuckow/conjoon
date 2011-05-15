@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -26,7 +26,8 @@
  */
 require_once 'Zend/Db/Table/TestSetup.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+
 
 require_once 'Zend/Db/Table/Row.php';
 
@@ -35,7 +36,7 @@ require_once 'Zend/Db/Table/Row.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Table
@@ -75,6 +76,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
             'data'   => $data,
         );
 
+        $this->_useMyIncludePath();
         Zend_Loader::loadClass('My_ZendDbTable_Row_TestTableRow');
         return new My_ZendDbTable_Row_TestTableRow($config);
     }
@@ -130,7 +132,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
     public function testTableRowContructorWithTableNameSpecifiedInSubclass()
     {
         $this->_useMyIncludePath();
-        
+
         /**
          * @see Zend_Db_Table_Row_TestStandaloneRow
          */
@@ -234,18 +236,18 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
             $this->fail('Column "id" is set but isset() returns false');
         }
     }
-    
+
     public function testTableRowMagicUnset()
     {
         $table = $this->_table['bugs'];
         $row   = $table->find(1)->current();
-        
+
         unset($row->assigned_to);
         $this->assertFalse(isset($row->assigned_to));
         $diff = array_diff_key(array('assigned_to'=>''), $row->toArray());
         $this->assertEquals(array('assigned_to'),array_keys($diff));
     }
-    
+
     public function testTableRowMagicUnsetWhenUnsettingPkValueThrowsException()
     {
         $table = $this->_table['bugs'];
@@ -275,7 +277,7 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
     }
 
     // ZF-2013
-	public function testTableRowOffsetGet()
+    public function testTableRowOffsetGet()
     {
         $table = $this->_table['bugs'];
         $bug_id = $this->_db->foldCase('bug_id');
@@ -314,6 +316,30 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
         try {
             $row1->offsetSet($bug_description, 'foo');
             $this->assertEquals('foo', $row1->offsetGet($bug_description));
+        } catch (Zend_Exception $e) {
+            $this->fail("Caught exception of type \"".get_class($e)."\" where no exception was expected.  Exception message: \"".$e->getMessage()."\"\n");
+        }
+    }
+
+    /**
+     * @group ZF-8902
+     */
+    public function testTableRowOffsetUnset()
+    {
+        $table = $this->_table['bugs'];
+        $bug_description = $this->_db->foldCase('bug_description');
+
+        $rowset = $table->find(1);
+        $this->assertType('Zend_Db_Table_Rowset_Abstract', $rowset,
+            'Expecting object of type Zend_Db_Table_Rowset_Abstract, got '.get_class($rowset));
+        $row1 = $rowset->current();
+        $this->assertType('Zend_Db_Table_Row_Abstract', $row1,
+            'Expecting object of type Zend_Db_Table_Row_Abstract, got '.get_class($row1));
+
+        try {
+            $this->assertTrue($row1->offsetExists($bug_description));
+            $row1->offsetUnset($bug_description);
+            $this->assertFalse($row1->offsetExists($bug_description));
         } catch (Zend_Exception $e) {
             $this->fail("Caught exception of type \"".get_class($e)."\" where no exception was expected.  Exception message: \"".$e->getMessage()."\"\n");
         }
@@ -849,16 +875,36 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
             $this->assertEquals('Specified column is not a string', $e->getMessage());
         }
     }
-    
-    
-    
+
+    /**
+     * @group ZF-9836
+     */
+    public function testTableRowIsIterable()
+    {
+        $table = $this->_table['bugs'];
+
+        $rowset = $table->find(1);
+        $row = $rowset->current();
+        $this->assertTrue($row instanceof Traversable);
+        $this->assertTrue($row instanceof IteratorAggregate);
+        $this->assertType('ArrayIterator', $row->getIterator());
+
+        $count=0;
+        foreach ($row as $columnValue) {
+            $count++;
+        }
+
+        $this->assertEquals(8, $count, 'The row was iterated, there should be 8 columns iterated');
+    }
+
+
     /**
      * Utility methods below
      */
 
-    
-    
-    
+
+
+
     /**
      * Allow adapters with sequences to declare them
      * @return Zend_Db_Table_Abstract
@@ -867,5 +913,5 @@ abstract class Zend_Db_Table_Row_TestCommon extends Zend_Db_Table_TestSetup
     {
         return $this->_table['bugs'];
     }
-    
+
 }

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_OpenId
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,7 +34,7 @@ require_once 'Zend/Auth.php';
  * @package    Zend_OpenId
  * @subpackage Demos
  * @uses       Zend_Controller_Action
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class IndexController extends Zend_Controller_Action
@@ -44,7 +44,7 @@ class IndexController extends Zend_Controller_Action
      *
      * @return void
      */
-    public function indexAction() 
+    public function indexAction()
     {
         $auth = Zend_Auth::getInstance();
         if (!$auth->hasIdentity()) {
@@ -59,7 +59,7 @@ class IndexController extends Zend_Controller_Action
      *
      * @return void
      */
-    public function welcomeAction() 
+    public function welcomeAction()
     {
         $auth = Zend_Auth::getInstance();
         if (!$auth->hasIdentity()) {

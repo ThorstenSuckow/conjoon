@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Form.php 16204 2009-06-21 18:58:29Z thomas $
+ * @version    $Id: Form.php 23927 2011-05-02 19:24:53Z matthew $
  */
 
 /** Zend_Dojo_View_Helper_Dijit */
@@ -25,11 +25,11 @@ require_once 'Zend/Dojo/View/Helper/Dijit.php';
 
 /**
  * Dojo Form dijit
- * 
+ *
  * @uses       Zend_Dojo_View_Helper_Dijit
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
   */
 class Zend_Dojo_View_Helper_Form extends Zend_Dojo_View_Helper_Dijit
@@ -53,10 +53,10 @@ class Zend_Dojo_View_Helper_Form extends Zend_Dojo_View_Helper_Dijit
 
     /**
      * dijit.form.Form
-     * 
-     * @param  string $id 
+     *
+     * @param  string $id
      * @param  null|array $attribs HTML attributes
-     * @param  false|string $content 
+     * @param  false|string $content
      * @return string
      */
     public function form($id, $attribs = null, $content = false)
@@ -70,10 +70,6 @@ class Zend_Dojo_View_Helper_Form extends Zend_Dojo_View_Helper_Dijit
             $attribs['id'] = $id;
         }
 
-        if (false === $content) {
-            $content = '';
-        }
-
         $attribs = $this->_prepareDijit($attribs, array(), 'layout');
 
         return $this->getFormHelper()->form($id, $attribs, $content);
@@ -81,7 +77,7 @@ class Zend_Dojo_View_Helper_Form extends Zend_Dojo_View_Helper_Dijit
 
     /**
      * Get standard form helper
-     * 
+     *
      * @return Zend_View_Helper_Form
      */
     public function getFormHelper()

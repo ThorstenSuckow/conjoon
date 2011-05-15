@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com);
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 require_once 'Zend/Gdata/YouTube/UserProfileEntry.php';
 require_once 'Zend/Gdata/YouTube.php';
@@ -32,7 +27,7 @@ require_once 'Zend/Gdata/YouTube.php';
  * @category   Zend
  * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_YouTube
@@ -105,8 +100,8 @@ class Zend_Gdata_YouTube_UserProfileEntryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('zfgdata Channel',
             $userProfileEntry->title->text);;
         $this->assertEquals('self', $userProfileEntry->getLink('self')->rel);
-        $this->assertEquals("I'm a lonely test account, with little to do " . 
-            "but sit\naround and wait for people to use me. I get bored in " . 
+        $this->assertEquals("I'm a lonely test account, with little to do " .
+            "but sit\naround and wait for people to use me. I get bored in " .
             "between\nreleases and often sleep to pass the time. Please use " .
             "me more\noften, as I love to show off my talent in breaking " .
             "your\ncode.", $userProfileEntry->getAboutMe()->text);

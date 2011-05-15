@@ -32,7 +32,7 @@ dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Boolean?*/sync)
 	}
 	var plainXhr = dojo.xhr;
 	dojo.xhr = function(method,args){
-		(args.headers = args.headers || {})['Server-Methods'] = false;
+		(args.headers = args.headers || {})['Server-Methods'] = "false";
 		return plainXhr.apply(dojo,arguments);
 	}
 	var rootService= dojox.rpc.Rest(path,true);
@@ -61,7 +61,7 @@ dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Boolean?*/sync)
 					var methodDef = methodsDefinitions[j];
 					// if any method definitions indicate that the method should run on the server, than add 
 					// it to the prototype as a JSON-RPC method
-					if(methodDef.runAt == "server" && !methodsTarget[j]){
+					if(methodDef.runAt != "client" && !methodsTarget[j]){
 						methodsTarget[j] = (function(methodName){
 							return function(){
 								// execute a JSON-RPC call
@@ -94,7 +94,7 @@ dojox.data.PersevereStore.getStores = function(/*String?*/path,/*Boolean?*/sync)
 				setupHierarchy(schema);
 				setupMethods(schema.methods, schema.prototype = schema.prototype || {});
 				setupMethods(schema.staticMethods, schema);
-				stores[schemas[i].id] = new dojox.data.PersevereStore({target:new dojo._Url(path,schemas[i].id) + '',schema:schema});
+				stores[schemas[i].id] = new dojox.data.PersevereStore({target:new dojo._Url(path,schemas[i].id) + '/',schema:schema});
 			}
 		}
 		return (results = stores);

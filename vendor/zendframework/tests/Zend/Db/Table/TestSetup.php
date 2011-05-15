@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestSetup.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: TestSetup.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,14 +27,14 @@
 require_once 'Zend/Db/TestSetup.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
 
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Table
@@ -48,7 +48,7 @@ abstract class Zend_Db_Table_TestSetup extends Zend_Db_TestSetup
     protected $_table = array();
 
     protected $_runtimeIncludePath = null;
-    
+
     public function setUp()
     {
         parent::setUp();
@@ -64,8 +64,9 @@ abstract class Zend_Db_Table_TestSetup extends Zend_Db_TestSetup
         if ($this->_runtimeIncludePath) {
             $this->_restoreIncludePath();
         }
+        parent::tearDown();
     }
-    
+
     protected function _getTable($tableClass, $options = array())
     {
         if (is_array($options) && !isset($options['db'])) {
@@ -79,13 +80,13 @@ abstract class Zend_Db_Table_TestSetup extends Zend_Db_TestSetup
         $table = new $tableClass($options);
         return $table;
     }
-    
+
     protected function _useMyIncludePath()
     {
         $this->_runtimeIncludePath = get_include_path();
         set_include_path(dirname(__FILE__) . '/_files/' . PATH_SEPARATOR . $this->_runtimeIncludePath);
     }
-    
+
     protected function _restoreIncludePath()
     {
         set_include_path($this->_runtimeIncludePath);

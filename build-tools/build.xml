@@ -36,7 +36,6 @@
    <property file="./build-tools/build.properties" />
    <includepath classpath="./build-tools/phing" />
 
-   <property name="force.build_ext"  value="0" />
    <property name="force.build_zend" value="0" />
 
 
@@ -122,19 +121,8 @@
       </copy>
     </target>
 
-   <!-- builds ext js into htdocs. This will only rebuild the dir if either
-        the dir does not already exists or if ${force.build_ext} is set to
-        true -->
+   <!-- builds ext js into htdocs. -->
    <target name="build_ext">
-    <available file="./build/htdocs/install/files/js/extjs" property="ext.exists" value="exists" />
-    <if>
-      <or>
-       <equals arg1="${force.build_ext}" arg2="1" />
-       <not>
-       <equals arg1="${ext.exists}" arg2="exists" />
-       </not>
-      </or>
-    <then>
      <delete dir="./build/htdocs/install/files/js/extjs" />
      <copy file="./vendor/extjs/ext-all.js" tofile="./build/htdocs/install/files/js/extjs/ext-all.js" overwrite="true"/>
      <copy file="./vendor/extjs/adapter/ext/ext-base.js" tofile="./build/htdocs/install/files/js/extjs/ext-base.js" overwrite="true"/>
@@ -147,8 +135,6 @@
         <include name="**/*.jpg" />
       </fileset>
      </copy>
-     </then>
-    </if>
    </target>
 
    <!-- builds conjoon js into htdocs -->
@@ -334,6 +320,7 @@
          <exclude name="**/CHANGELOG.txt" />
          <exclude name="_configCache/**" />
          <exclude name="**/config.ini.php" />
+         <exclude name="**/.htaccess" />
          <exclude name="**/ext-config.js" />
          <exclude name="**/startup.js" />
          <exclude name="**/startup.iphone.js" />
@@ -361,7 +348,6 @@
 
    <!-- completely removes the build dir -->
    <target name="rebuild">
-     <property name="force.build_ext"  value="1" />
      <property name="force.build_zend" value="1" />
      <delete dir="./build" />
      <phingcall target="refresh" />

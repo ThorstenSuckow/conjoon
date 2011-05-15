@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -23,10 +23,15 @@
 set_include_path( dirname(dirname(dirname(dirname(__FILE__))))
                   . DIRECTORY_SEPARATOR . 'library' );
 
-/**
- * @see Zend_Pdf
- */
 require_once 'Zend/Pdf.php';
+require_once 'Zend/Pdf/Style.php';
+require_once 'Zend/Pdf/Color/Cmyk.php';
+require_once 'Zend/Pdf/Color/Html.php';
+require_once 'Zend/Pdf/Color/GrayScale.php';
+require_once 'Zend/Pdf/Color/Rgb.php';
+require_once 'Zend/Pdf/Page.php';
+require_once 'Zend/Pdf/Font.php';
+
 
 if (!isset($argv[1])) {
     echo "USAGE: php demo.php <pdf_file> [<output_pdf_file>]\n";
@@ -64,6 +69,7 @@ $style->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA_BOLD),
 
 try {
     // Create new image object
+    require_once 'Zend/Pdf/Image.php';
     $stampImage = Zend_Pdf_Image::imageWithPath(dirname(__FILE__) . '/stamp.jpg');
 } catch (Zend_Pdf_Exception $e) {
     // Example of operating with image loading exceptions.
@@ -157,7 +163,7 @@ $page2->drawPolygon($x, $y,
 // Coordination system movement
 $page2->saveGS();
 $page2->translate(60, 250); // Shift coordination system
-                    
+
 // Draw rectangle
 $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.8))
       ->setLineColor(new Zend_Pdf_Color_GrayScale(0.2))
@@ -195,7 +201,7 @@ for ($count = 0; $count < 8; $count++) {
 $page2->drawPolygon($x, $y,
                     Zend_Pdf_Page::SHAPE_DRAW_FILL_AND_STROKE,
                     Zend_Pdf_Page::FILL_METHOD_EVEN_ODD);
-                    
+
 // Draw line
 $page2->setLineWidth(0.5)
       ->drawLine(0, 25, 340, 25);
@@ -208,7 +214,7 @@ $page2->saveGS();
 $page2->translate(60, 150)     // Shift coordination system
       ->skew(0, 0, 0, -M_PI/9) // Skew coordination system
       ->scale(0.9, 0.9);       // Scale coordination system
-                    
+
 // Draw rectangle
 $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.8))
       ->setLineColor(new Zend_Pdf_Color_GrayScale(0.2))
@@ -246,7 +252,7 @@ for ($count = 0; $count < 8; $count++) {
 $page2->drawPolygon($x, $y,
                     Zend_Pdf_Page::SHAPE_DRAW_FILL_AND_STROKE,
                     Zend_Pdf_Page::FILL_METHOD_EVEN_ODD);
-                    
+
 // Draw line
 $page2->setLineWidth(0.5)
       ->drawLine(0, 25, 340, 25);

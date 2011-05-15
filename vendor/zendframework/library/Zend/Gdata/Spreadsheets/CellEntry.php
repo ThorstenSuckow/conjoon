@@ -16,9 +16,9 @@
  * @category     Zend
  * @package      Zend_Gdata
  * @subpackage   Spreadsheets
- * @copyright    Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CellEntry.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: CellEntry.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -37,7 +37,7 @@ require_once 'Zend/Gdata/Spreadsheets/Extension/Cell.php';
  * @category     Zend
  * @package      Zend_Gdata
  * @subpackage   Spreadsheets
- * @copyright    Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_Spreadsheets_CellEntry extends Zend_Gdata_Entry
@@ -92,7 +92,8 @@ class Zend_Gdata_Spreadsheets_CellEntry extends Zend_Gdata_Entry
 
     /**
      * Sets the Cell element of this Cell Entry.
-     * @param $cell Zend_Gdata_Spreadsheets_Extension_Cell $cell
+     * @param Zend_Gdata_Spreadsheets_Extension_Cell $cell
+		 * @return Zend_Gdata_Spreadsheets_CellEntry
      */
     public function setCell($cell)
     {

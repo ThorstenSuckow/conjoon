@@ -57,14 +57,13 @@ dojo.declare("dojox.sketch._Plugin", null, {
 	connect: function(o,f,tf){
 		this._connects.push(dojo.connect(o,f,this,tf));
 	},
-	setFigure: function(/*Widget*/figure){
+	setFigure: function(/*dijit._Widget*/ figure){
 		// FIXME: detatch from previous figure!!
 		this.figure = figure;
-
+	},
+	setToolbar: function(/*dijit._Widget*/ toolbar){
 		// FIXME: prevent creating this if we don't need to (i.e., figure can't handle our command)
 		this._initButton();
-	},
-	setToolbar: function(/*Widget*/toolbar){
 		if(this.button){
 			toolbar.addChild(this.button);
 		}

@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BindTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: BindTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Ldap
@@ -40,7 +35,7 @@ require_once 'Zend/Ldap.php';
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  */
@@ -234,5 +229,35 @@ class Zend_Ldap_BindTest extends PHPUnit_Framework_TestCase
             $this->assertContains('Binding requires username in DN form',
                 $zle->getMessage());
         }
+    }
+
+    /**
+     * @group ZF-8259
+     */
+    public function testBoundUserIsFalseIfNotBoundToLDAP()
+    {
+        $ldap = new Zend_Ldap($this->_options);
+        $this->assertFalse($ldap->getBoundUser());
+    }
+
+    /**
+     * @group ZF-8259
+     */
+    public function testBoundUserIsReturnedAfterBinding()
+    {
+        $ldap = new Zend_Ldap($this->_options);
+        $ldap->bind();
+        $this->assertEquals(TESTS_ZEND_LDAP_USERNAME, $ldap->getBoundUser());
+    }
+
+    /**
+     * @group ZF-8259
+     */
+    public function testResourceIsAlwaysReturned()
+    {
+        $ldap = new Zend_Ldap($this->_options);
+        $this->assertNotNull($ldap->getResource());
+        $this->assertTrue(is_resource($ldap->getResource()));
+        $this->assertEquals(TESTS_ZEND_LDAP_USERNAME, $ldap->getBoundUser());
     }
 }

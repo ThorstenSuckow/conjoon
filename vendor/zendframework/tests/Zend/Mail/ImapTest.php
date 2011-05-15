@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ImapTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ImapTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -35,17 +35,12 @@ require_once 'Zend/Mail/Protocol/Imap.php';
  */
 require_once 'Zend/Config.php';
 
-/**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 
 /**
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mail
  */
@@ -831,7 +826,7 @@ class Zend_Mail_ImapTest extends PHPUnit_Framework_TestCase
         $result = $protocol->store(array('\Flagged'), 1, null, '+', false);
         $this->assertTrue(in_array('\Flagged', $result[1]));
     }
-    
+
     public function testMove()
     {
         $mail = new Zend_Mail_Storage_Imap($this->_params);
@@ -851,18 +846,18 @@ class Zend_Mail_ImapTest extends PHPUnit_Framework_TestCase
     {
         $mail = new Zend_Mail_Storage_Imap($this->_params);
         foreach ($mail as $id => $message) {
-        	$mail->setFlags($id, array());
+            $mail->setFlags($id, array());
         }
-		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_SEEN), 0);
-		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_ANSWERED), 0);
-		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_FLAGGED), 0);
+        $this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_SEEN), 0);
+        $this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_ANSWERED), 0);
+        $this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_FLAGGED), 0);
 
-		$mail->setFlags(1, array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_ANSWERED));
-		$mail->setFlags(2, array(Zend_Mail_Storage::FLAG_SEEN));
-		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_SEEN), 2);
-		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_ANSWERED), 1);
-		$this->assertEquals($mail->countMessages(array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_ANSWERED)), 1);
-		$this->assertEquals($mail->countMessages(array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_FLAGGED)), 0);
-		$this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_FLAGGED), 0);
-    }    	
+        $mail->setFlags(1, array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_ANSWERED));
+        $mail->setFlags(2, array(Zend_Mail_Storage::FLAG_SEEN));
+        $this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_SEEN), 2);
+        $this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_ANSWERED), 1);
+        $this->assertEquals($mail->countMessages(array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_ANSWERED)), 1);
+        $this->assertEquals($mail->countMessages(array(Zend_Mail_Storage::FLAG_SEEN, Zend_Mail_Storage::FLAG_FLAGGED)), 0);
+        $this->assertEquals($mail->countMessages(Zend_Mail_Storage::FLAG_FLAGGED), 0);
+    }
 }

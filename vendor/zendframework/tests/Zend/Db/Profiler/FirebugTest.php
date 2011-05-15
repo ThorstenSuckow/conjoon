@@ -15,13 +15,10 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FirebugTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FirebugTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/** PHPUnit_Framework_TestCase */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /** Zend_Db */
 require_once 'Zend/Db.php';
@@ -46,7 +43,7 @@ require_once 'Zend/Controller/Response/Http.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Profiler
@@ -68,7 +65,6 @@ class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Db_Profiler_FirebugTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -101,7 +97,9 @@ class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $this->_db->getConnection()->exec('DROP TABLE foo');
+        if (extension_loaded('pdo_sqlite')) {
+            $this->_db->getConnection()->exec('DROP TABLE foo');
+        }
 
         Zend_Wildfire_Channel_HttpHeaders::destroyInstance();
         Zend_Wildfire_Plugin_FirePhp::destroyInstance();
@@ -165,7 +163,7 @@ class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
                                             [Zend_Wildfire_Plugin_FirePhp::PLUGIN_URI][0],0,38),
                             '[{"Type":"TABLE","Label":"Label 1 (1 @');
     }
-    
+
     public function testNoQueries()
     {
         $channel = Zend_Wildfire_Channel_HttpHeaders::getInstance();
@@ -176,7 +174,26 @@ class Zend_Db_Profiler_FirebugTest extends PHPUnit_Framework_TestCase
         Zend_Wildfire_Channel_HttpHeaders::getInstance()->flush();
 
         $messages = $protocol->getMessages();
-        
+
+        $this->assertFalse($messages);
+    }
+
+    /**
+     * @group ZF-6395
+     */
+    public function testNoQueriesAfterFiltering()
+    {
+        $channel = Zend_Wildfire_Channel_HttpHeaders::getInstance();
+        $protocol = $channel->getProtocol(Zend_Wildfire_Plugin_FirePhp::PROTOCOL_URI);
+
+        $profiler = $this->_profiler->setEnabled(true);
+        $profiler->setFilterQueryType(Zend_Db_Profiler::INSERT | Zend_Db_Profiler::UPDATE);
+        $this->_db->fetchAll('select * from foo');
+
+        Zend_Wildfire_Channel_HttpHeaders::getInstance()->flush();
+
+        $messages = $protocol->getMessages();
+
         $this->assertFalse($messages);
     }
 

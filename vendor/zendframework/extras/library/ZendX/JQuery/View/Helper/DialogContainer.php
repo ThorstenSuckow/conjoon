@@ -15,9 +15,9 @@
  * @category    ZendX
  * @package     ZendX_JQuery
  * @subpackage  View
- * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: DialogContainer.php 14483 2009-03-25 17:48:17Z beberlei $
+ * @version     $Id: DialogContainer.php 20744 2010-01-29 09:55:19Z beberlei $
  */
 
 /**
@@ -30,7 +30,7 @@ require_once "ZendX/JQuery/View/Helper/UiWidget.php";
  *
  * @package    ZendX_JQuery
  * @subpackage View
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendX_JQuery_View_Helper_DialogContainer extends ZendX_JQuery_View_Helper_UiWidget
@@ -45,8 +45,8 @@ class ZendX_JQuery_View_Helper_DialogContainer extends ZendX_JQuery_View_Helper_
      * @param  array $attribs
      * @return string
      */
-	public function dialogContainer($id, $content, $params=array(), $attribs=array())
-	{
+    public function dialogContainer($id, $content, $params=array(), $attribs=array())
+    {
         if (!array_key_exists('id', $attribs)) {
             $attribs['id'] = $id;
         }
@@ -58,17 +58,17 @@ class ZendX_JQuery_View_Helper_DialogContainer extends ZendX_JQuery_View_Helper_
         }
 
         $js = sprintf('%s("#%s").dialog(%s);',
-            ZendX_JQuery_View_Helper_JQuery::getJQueryHandler(),
-            $attribs['id'],
-            $params
+                ZendX_JQuery_View_Helper_JQuery::getJQueryHandler(),
+                $attribs['id'],
+                $params
         );
         $this->jquery->addOnLoad($js);
 
         $html = '<div'
-              . $this->_htmlAttribs($attribs)
-              . '>'
-              . $content
-              . '</div>';
+                . $this->_htmlAttribs($attribs)
+                . '>'
+                . $content
+                . '</div>';
         return $html;
-	}
+    }
 }

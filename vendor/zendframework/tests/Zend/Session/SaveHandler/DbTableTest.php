@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbTableTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DbTableTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Session_SaveHandler_DbTable
@@ -37,7 +32,7 @@ require_once 'Zend/Session/SaveHandler/DbTable.php';
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Session
  * @group      Zend_Db_Table
@@ -94,7 +89,9 @@ class Zend_Session_SaveHandler_DbTableTest extends PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->_dropTable();
+        if ($this->_db instanceof Zend_Db_Adapter_Abstract) {
+            $this->_dropTable();
+        }
     }
 
     public function testConfigPrimaryAssignmentFullConfig()
@@ -518,18 +515,105 @@ class Zend_Session_SaveHandler_DbTableTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group 9294
+     */
+    public function testDestroyWithAutoQuoteIdentifiersEnabledAndDisabled()
+    {
+        $id       = uniqid();
+        $config   = $this->_saveHandlerTableConfig;
+        $configDb = array(
+            'options' => array(
+                'autoQuoteIdentifiers' => false,
+            ),
+            'profiler' => true
+        );
+        $this->_setupDb($config['primary'], $configDb);
+        $config['db'] = $this->_db;
+
+        $saveHandler = new Zend_Session_SaveHandler_DbTable($config);
+        $saveHandler->destroy($id);
+        $lastQuery = $this->_db
+                          ->getProfiler()
+                          ->getLastQueryProfile()
+                          ->getQuery();
+        $partQueryExpected = "WHERE (id = '$id') AND (save_path = '') AND (name = '')";
+        $this->assertContains($partQueryExpected, $lastQuery);
+
+        $configDb = array(
+            'options' => array(
+                'autoQuoteIdentifiers' => true,
+            ),
+            'profiler' => true
+        );
+        $this->_setupDb($config['primary'], $configDb);
+        $config['db'] = $this->_db;
+
+        $saveHandler = new Zend_Session_SaveHandler_DbTable($config);
+        $saveHandler->destroy($id);
+        $lastQuery = $this->_db
+                          ->getProfiler()
+                          ->getLastQueryProfile()
+                          ->getQuery();
+        $partQueryExpected = "WHERE (\"id\" = '$id') AND (\"save_path\" = '') AND (\"name\" = '')";
+        $this->assertContains($partQueryExpected, $lastQuery);
+    }
+
+    /**
+     * @group 9294
+     */
+    public function testGcWithAutoQuoteIdentifiersEnabledAndDisabled()
+    {
+        $config = $this->_saveHandlerTableConfig;
+        $configDb = array(
+            'options' => array(
+                'autoQuoteIdentifiers' => false,
+            ),
+            'profiler' => true
+        );
+        $this->_setupDb($config['primary'], $configDb);
+        $config['db'] = $this->_db;
+
+        $saveHandler = new Zend_Session_SaveHandler_DbTable($config);
+        $saveHandler->gc(false);
+        $lastQuery = $this->_db
+                          ->getProfiler()
+                          ->getLastQueryProfile()
+                          ->getQuery();
+        $partQueryExpected = "WHERE (modified + lifetime < ";
+        $this->assertContains($partQueryExpected, $lastQuery);
+
+        $configDb = array(
+            'options' => array(
+                'autoQuoteIdentifiers' => true,
+            ),
+            'profiler' => true
+        );
+        $this->_setupDb($config['primary'], $configDb);
+        $config['db'] = $this->_db;
+
+        $saveHandler = new Zend_Session_SaveHandler_DbTable($config);
+        $saveHandler->gc(false);
+        $lastQuery = $this->_db
+                          ->getProfiler()
+                          ->getLastQueryProfile()
+                          ->getQuery();
+        $partQueryExpected = "WHERE (\"modified\" + \"lifetime\" < ";
+        $this->assertContains($partQueryExpected, $lastQuery);
+    }
+
+    /**
      * Sets up the database connection and creates the table for session data
      *
      * @param  array $primary
      * @return void
      */
-    protected function _setupDb(array $primary)
+    protected function _setupDb(array $primary, array $config = array())
     {
         if (!extension_loaded('pdo_sqlite')) {
             $this->markTestSkipped('The pdo_sqlite extension must be available and enabled for this test');
         }
 
-        $this->_db = Zend_Db::factory('Pdo_Sqlite', array('dbname' => ':memory:'));
+        $this->_db = Zend_Db::factory('Pdo_Sqlite', array('dbname' => ':memory:') + $config);
         Zend_Db_Table_Abstract::setDefaultAdapter($this->_db);
         $query = array();
         $query[] = 'CREATE TABLE `Sessions` ( ';

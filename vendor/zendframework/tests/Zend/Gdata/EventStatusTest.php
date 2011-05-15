@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -40,7 +40,7 @@ class Zend_Gdata_EventStatusTest extends PHPUnit_Framework_TestCase
                 true);
         $this->eventStatus = new Zend_Gdata_Extension_EventStatus();
     }
-    
+
     public function testEmptyEventStatusShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->eventStatus->extensionElements));
         $this->assertTrue(count($this->eventStatus->extensionElements) == 0);
@@ -62,14 +62,14 @@ class Zend_Gdata_EventStatusTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->eventStatus->extensionAttributes));
         $this->assertTrue(count($this->eventStatus->extensionAttributes) == 0);
     }
-    
+
     public function testNormalEventStatusShouldHaveNoExtensionElements() {
         $this->eventStatus->value = "http://schemas.google.com/g/2005#event.tentative";
-        
+
         $this->assertEquals("http://schemas.google.com/g/2005#event.tentative", $this->eventStatus->value);
-                
+
         $this->assertEquals(0, count($this->eventStatus->extensionElements));
-        $newEventStatus = new Zend_Gdata_Extension_EventStatus(); 
+        $newEventStatus = new Zend_Gdata_Extension_EventStatus();
         $newEventStatus->transferFromXML($this->eventStatus->saveXML());
         $this->assertEquals(0, count($newEventStatus->extensionElements));
         $newEventStatus->extensionElements = array(

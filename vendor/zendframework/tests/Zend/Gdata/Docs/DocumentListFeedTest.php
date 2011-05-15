@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Docs
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Docs
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Docs
@@ -37,25 +37,26 @@ class Zend_Gdata_Docs_DocumentListFeedTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->docFeed = new Zend_Gdata_Docs_DocumentListFeed( 
-                file_get_contents(dirname(__FILE__) . '/_files/TestDataDocumentListFeedSample.xml'), 
+        $this->docFeed = new Zend_Gdata_Docs_DocumentListFeed(
+                file_get_contents(dirname(__FILE__) . '/_files/TestDataDocumentListFeedSample.xml'),
                 true);
     }
 
     public function testToAndFromString()
     {
         // There should be 2 entries in the feed.
-        $this->assertTrue(count($this->docFeed->entries) == 1);
+        $this->assertTrue(count($this->docFeed->entries) == 2);
+        $this->assertTrue($this->docFeed->entries->count() == 2);
         foreach($this->docFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Docs_DocumentListEntry);
         }
-        
+
         $newDocFeed = new Zend_Gdata_Docs_DocumentListFeed();
         $doc = new DOMDocument();
         $doc->loadXML($this->docFeed->saveXML());
         $newDocFeed->transferFromDom($doc->documentElement);
-        
+
         $this->assertTrue(count($newDocFeed->entries) == count($this->docFeed->entries));
         foreach($newDocFeed->entries as $entry)
         {

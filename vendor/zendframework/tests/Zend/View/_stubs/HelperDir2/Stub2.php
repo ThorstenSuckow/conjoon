@@ -15,30 +15,29 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Stub2.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: Stub2.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Util/Filter.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
 
 /**
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_View_Helper_Stub2 
+class Zend_View_Helper_Stub2
 {
     public $view;
 
-	public function stub2()
-	{
-		return 'bar';
-	}
+    public function stub2()
+    {
+        return 'bar';
+    }
 
     public function setView(Zend_View $view)
     {

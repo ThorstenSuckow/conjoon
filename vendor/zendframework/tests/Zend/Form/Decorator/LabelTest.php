@@ -15,17 +15,16 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LabelTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: LabelTest.php 23779 2011-03-01 18:40:33Z matthew $
  */
 
+ 
 // Call Zend_Form_Decorator_LabelTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Decorator_LabelTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Form/Decorator/Label.php';
 
@@ -39,11 +38,11 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
-class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase 
+class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -52,7 +51,6 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Form_Decorator_LabelTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -214,7 +212,7 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3538
+     * @group ZF-3538
      */
     public function testRenderShouldNotUtilizeElementClass()
     {
@@ -297,6 +295,33 @@ class Zend_Form_Decorator_LabelTest extends PHPUnit_Framework_TestCase
                         ->setTag('');
         $content = $this->decorator->render('');
         $this->assertTrue(empty($content), $content);
+    }
+
+    /**
+     * @group ZF-4841
+     */
+    public function testSettingTagToEmptyValueShouldSetTagToNull()
+    {
+        $element = new Zend_Form_Element_Text('foo', array('label' => 'Foo'));
+        $this->decorator->setElement($element)
+                        ->setOptions(array('tag' => 'dt'));
+        $this->decorator->setTag('');
+        $tag = $this->decorator->getTag();
+        $this->assertTrue( NULL === $tag, $tag );
+    }
+    
+
+    /**
+     * @group ZF-4841
+     */
+    public function testSettingTagClassToEmptyValueShouldSetTagClassToNull()
+    {
+        $element = new Zend_Form_Element_Text('foo', array('label' => 'Foo'));
+        $this->decorator->setElement($element)
+                        ->setOptions(array('tag' => 'dt'));
+        $this->decorator->setTagClass('');
+        $tagClass = $this->decorator->getTagClass();
+        $this->assertTrue( NULL === $tagClass, $tagClass );
     }
 }
 

@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Service_Audioscrobbler
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AudioscrobblerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AudioscrobblerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Service_Audioscrobbler
@@ -37,19 +31,19 @@ require_once 'AudioscrobblerTestCase.php';
  * @category   Zend
  * @package    Zend_Service_Audioscrobbler
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Audioscrobbler
  */
 class Zend_Service_Audioscrobbler_AudioscrobblerTest extends Zend_Service_Audioscrobbler_AudioscrobblerTestCase
-{    
+{
     public function testRequestThrowsHttpClientExceptionWithNoUserError()
     {
         $this->setAudioscrobblerResponse(self::readTestResponse('errorNoUserExists'));
         $as = $this->getAudioscrobblerService();
         $as->set('user', 'foobarfoo');
-        
+
         try {
             $response = $as->userGetProfileInformation();
             $this->fail('Expected Zend_Service_Technorati_Exception not thrown');
@@ -63,7 +57,7 @@ class Zend_Service_Audioscrobbler_AudioscrobblerTest extends Zend_Service_Audios
         $this->setAudioscrobblerResponse(self::readTestResponse('errorResponseStatusError'));
         $as = $this->getAudioscrobblerService();
         $as->set('user', 'foobarfoo');
-        
+
         try {
             $response = $as->userGetProfileInformation();
             $this->fail('Expected Zend_Service_Technorati_Exception not thrown');

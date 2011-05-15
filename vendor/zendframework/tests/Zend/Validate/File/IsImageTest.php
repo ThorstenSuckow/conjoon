@@ -15,20 +15,15 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IsImageTest.php 18148 2009-09-16 19:27:43Z thomas $
+ * @version    $Id: IsImageTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Validate_File_IsImageTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Validate_File_IsImageTest::main");
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Validate_File_IsImage
@@ -41,7 +36,7 @@ require_once 'Zend/Validate/File/IsImage.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -155,6 +150,43 @@ class Zend_Validate_File_IsImageTest extends PHPUnit_Framework_TestCase
         $validator->addMimeType('');
         $this->assertEquals('image/gif,text,jpg,to,zip,ti', $validator->getMimeType());
         $this->assertEquals(array('image/gif', 'text', 'jpg', 'to', 'zip', 'ti'), $validator->getMimeType(true));
+    }
+
+    /**
+     * @ZF-8111
+     */
+    public function testErrorMessages()
+    {
+        $files = array(
+            'name'     => 'picture.jpg',
+            'type'     => 'image/jpeg',
+            'size'     => 200,
+            'tmp_name' => dirname(__FILE__) . '/_files/picture.jpg',
+            'error'    => 0
+        );
+
+        $validator = new Zend_Validate_File_IsImage('test/notype');
+        $validator->enableHeaderCheck();
+        $this->assertFalse($validator->isValid(dirname(__FILE__) . '/_files/picture.jpg', $files));
+        $error = $validator->getMessages();
+        $this->assertTrue(array_key_exists('fileIsImageFalseType', $error));
+    }
+
+    public function testOptionsAtConstructor()
+    {
+        if (!extension_loaded('fileinfo')) {
+            $this->markTestSkipped('This PHP Version has no finfo installed');
+        }
+
+        $validator = new Zend_Validate_File_IsImage(array(
+            'image/gif',
+            'image/jpg',
+            'magicfile' => dirname(__FILE__) . '/_files/magic.mime',
+            'headerCheck' => true));
+
+        $this->assertEquals(dirname(__FILE__) . '/_files/magic.mime', $validator->getMagicFile());
+        $this->assertTrue($validator->getHeaderCheck());
+        $this->assertEquals('image/gif,image/jpg', $validator->getMimeType());
     }
 }
 

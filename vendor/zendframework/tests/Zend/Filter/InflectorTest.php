@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: InflectorTest.php 17698 2009-08-20 21:43:00Z thomas $
+ * @version    $Id: InflectorTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -25,11 +25,6 @@
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Filter_InflectorTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_Inflector
@@ -48,7 +43,7 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -361,10 +356,6 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
     {
         $options = array(
             'target' => '$controller/$action.$suffix',
-            'filterPrefixPath' => array(
-                'Zend_View_Filter' => 'Zend/View/Filter/',
-                'Foo_Filter'       => 'foo/filters/'
-            ),
             'throwTargetExceptionsOn' => true,
             'targetReplacementIdentifier' => '$',
             'rules' => array(
@@ -377,6 +368,10 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
                     'rule2' => 'StringToUpper',
                 ),
                 'suffix' => 'php'
+            ),
+            'filterPrefixPath' => array(
+                'Zend_View_Filter' => 'Zend/View/Filter/',
+                'Foo_Filter'       => 'foo/filters/'
             ),
         );
         return $options;
@@ -433,7 +428,7 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
     /**
      * Added str_replace('\\', '\\\\', ..) to all processedParts values to disable backreferences
      *
-     * @issue ZF-2538 Zend_Filter_Inflector::filter() fails with all numeric folder on Windows
+     * @group ZF-2538 Zend_Filter_Inflector::filter() fails with all numeric folder on Windows
      */
     public function testCheckInflectorWithPregBackreferenceLikeParts()
     {
@@ -463,19 +458,20 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-2522
+     * @group ZF-2522
      */
     public function testTestForFalseInConstructorParams()
     {
         $inflector = new Zend_Filter_Inflector('something', array(), false, false);
         $this->assertFalse($inflector->isThrowTargetExceptionsOn());
         $this->assertEquals($inflector->getTargetReplacementIdentifier(), ':');
+
         $inflector = new Zend_Filter_Inflector('something', array(), false, '#');
         $this->assertEquals($inflector->getTargetReplacementIdentifier(), '#');
     }
 
     /**
-     * @issue ZF-2964
+     * @group ZF-2964
      */
     public function testNoInflectableTarget()
     {
@@ -485,7 +481,7 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-7544
+     * @group ZF-7544
      */
     public function testAddFilterRuleMultipleTimes()
     {
@@ -504,6 +500,47 @@ class Zend_Filter_InflectorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, count($rules));
     }
 
+    /**
+     * @group ZF-8997
+     */
+    public function testPassingArrayToConstructorSetsStateAndRules()
+    {
+        $options = $this->getOptions();
+        $inflector = new Zend_Filter_Inflector($options);
+        $this->_testOptions($inflector);
+    }
+
+    /**
+     * @group ZF-8997
+     */
+    public function testPassingArrayToSetConfigSetsStateAndRules()
+    {
+        $options = $this->getOptions();
+        $inflector = new Zend_Filter_Inflector();
+        $inflector->setOptions($options);
+        $this->_testOptions($inflector);
+    }
+
+    /**
+     * @group ZF-8997
+     */
+    public function testPassingZendConfigObjectToConstructorSetsStateAndRules()
+    {
+        $config = $this->getConfig();
+        $inflector = new Zend_Filter_Inflector($config);
+        $this->_testOptions($inflector);
+    }
+
+    /**
+     * @group ZF-8997
+     */
+    public function testPassingZendConfigObjectToSetConfigSetsStateAndRules()
+    {
+        $config = $this->getConfig();
+        $inflector = new Zend_Filter_Inflector();
+        $inflector->setOptions($config);
+        $this->_testOptions($inflector);
+    }
 }
 
 // Call Zend_Filter_InflectorTest::main() if this source file is executed directly.

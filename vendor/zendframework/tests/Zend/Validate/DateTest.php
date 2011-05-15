@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DateTest.php 17696 2009-08-20 20:12:33Z thomas $
+ * @version    $Id: DateTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Validate_Date
@@ -34,7 +29,7 @@ require_once 'Zend/Validate/Date.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -94,7 +89,7 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that characters trailing an otherwise valid date cause the input to be invalid
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-1804
+     * @group ZF-1804
      * @return void
      */
     public function testCharactersTrailingInvalid()
@@ -108,7 +103,7 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that characters leading an otherwise valid date cause the input to be invalid
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-1804
+     * @group ZF-1804
      * @return void
      */
     public function testCharactersLeadingInvalid()
@@ -132,7 +127,7 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that the validator can handle different manual dateformats
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-2003
+     * @group ZF-2003
      * @return void
      */
     public function testUseManualFormat()
@@ -158,7 +153,7 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that the validator can handle different dateformats from locale
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-2003
+     * @group ZF-2003
      * @return void
      */
     public function testUseLocaleFormat()
@@ -196,13 +191,16 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that the validator can handle different dateformats from locale
      *
-     * @see    http://framework.zend.com/issues/browse/ZF-2003
+     * @group ZF-2003
      * @return void
      */
     public function testLocaleContructor()
     {
+        set_error_handler(array($this, 'errorHandlerIgnore'));
         $valid = new Zend_Validate_Date('dd.MM.YYYY', 'de');
         $this->assertTrue($valid->isValid('10.April.2008'));
+
+        restore_error_handler();
     }
 
     /**
@@ -251,7 +249,7 @@ class Zend_Validate_DateTest extends PHPUnit_Framework_TestCase
      * @param  integer $errline
      * @param  array   $errcontext
      * @return void
-     * @see    http://framework.zend.com/issues/browse/ZF-2789
+     * @group ZF-2789
      */
     public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
     {

@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: CustomDijitTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
 
 // Call Zend_Dojo_View_Helper_CustomDijitTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_View_Helper_CustomDijitTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_View_Helper_CustomDijit */
 require_once 'Zend/Dojo/View/Helper/CustomDijit.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
  */
-class Zend_Dojo_View_Helper_CustomDijitTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_View_Helper_CustomDijitTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -158,6 +156,18 @@ class Zend_Dojo_View_Helper_CustomDijitTest extends PHPUnit_Framework_TestCase
         $content = $helper->fooContentPane()->captureEnd('foo');
         $this->assertContains(">Captured content started\n<", $content);
         $this->assertContains('dojoType="foo.ContentPane"', $content);
+    }
+
+    /**
+     * @group ZF-7890
+     */
+    public function testHelperShouldAllowSpecifyingRootNode()
+    {
+        $content = $this->view->customDijit('foo', 'content', array(
+            'dojoType' => 'custom.Dijit',
+            'rootNode' => 'select',
+        ));
+        $this->assertContains('<select', $content);
     }
 }
 

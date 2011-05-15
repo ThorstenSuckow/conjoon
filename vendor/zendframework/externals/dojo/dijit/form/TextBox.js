@@ -6,22 +6,22 @@ dojo.declare(
 	"dijit.form.TextBox",
 	dijit.form._FormValueWidget,
 	{
-		//	summary:
+		// summary:
 		//		A base class for textbox form inputs
 
-		//	trim: Boolean
+		// trim: Boolean
 		//		Removes leading and trailing whitespace if true.  Default is false.
 		trim: false,
 
-		//	uppercase: Boolean
+		// uppercase: Boolean
 		//		Converts all characters to uppercase if true.  Default is false.
 		uppercase: false,
 
-		//	lowercase: Boolean
+		// lowercase: Boolean
 		//		Converts all characters to lowercase if true.  Default is false.
 		lowercase: false,
 
-		//	propercase: Boolean
+		// propercase: Boolean
 		//		Converts the first character of each word to uppercase if true.
 		propercase: false,
 
@@ -29,12 +29,55 @@ dojo.declare(
 		//		HTML INPUT tag maxLength declaration.
 		maxLength: "",
 
-		templatePath: dojo.moduleUrl("dijit.form", "templates/TextBox.html"),
+		//	selectOnClick: [const] Boolean
+		//		If true, all text will be selected when focused with mouse
+		selectOnClick: false,
+
+		//	placeHolder: String
+		//		Defines a hint to help users fill out the input field (as defined in HTML 5).
+		//		This should only contain plain text (no html markup).
+		placeHolder: "",
+		
+		templateString: dojo.cache("dijit.form", "templates/TextBox.html"),
+		_singleNodeTemplate: '<input class="dijit dijitReset dijitLeft dijitInputField" dojoAttachPoint="textbox,focusNode" autocomplete="off" type="${type}" ${!nameAttrSetting} />',
+
+		_buttonInputDisabled: dojo.isIE ? "disabled" : "", // allows IE to disallow focus, but Firefox cannot be disabled for mousedown events
+
 		baseClass: "dijitTextBox",
 
 		attributeMap: dojo.delegate(dijit.form._FormValueWidget.prototype.attributeMap, {
-			maxLength: "focusNode" 
+			maxLength: "focusNode"
 		}),
+		
+		postMixInProperties: function(){
+			var type = this.type.toLowerCase();
+			if(this.templateString && this.templateString.toLowerCase() == "input" || ((type == "hidden" || type == "file") && this.templateString == dijit.form.TextBox.prototype.templateString)){
+				this.templateString = this._singleNodeTemplate;
+			}
+			this.inherited(arguments);
+		},
+
+		_setPlaceHolderAttr: function(v){
+			this.placeHolder = v;
+			if(!this._phspan){
+				this._attachPoints.push('_phspan');
+				/* dijitInputField class gives placeHolder same padding as the input field
+				 * parent node already has dijitInputField class but it doesn't affect this <span>
+				 * since it's position: absolute.
+				 */
+				this._phspan = dojo.create('span',{className:'dijitPlaceHolder dijitInputField'},this.textbox,'after');
+			}
+			this._phspan.innerHTML="";
+			this._phspan.appendChild(document.createTextNode(v));
+			
+			this._updatePlaceHolder();
+		},
+		
+		_updatePlaceHolder: function(){
+			if(this._phspan){
+				this._phspan.style.display=(this.placeHolder&&!this._focused&&!this.textbox.value)?"":"none";
+			}
+		},
 
 		_getValueAttr: function(){
 			// summary:
@@ -46,14 +89,14 @@ dojo.declare(
 			//		a "displayed value" and a separate "submit value",
 			//		This treats the "displayed value" as the master value, computing the
 			//		submit value from it via this.parse().
-			return this.parse(this.attr('displayedValue'), this.constraints);
+			return this.parse(this.get('displayedValue'), this.constraints);
 		},
 
 		_setValueAttr: function(value, /*Boolean?*/ priorityChange, /*String?*/ formattedValue){
 			// summary:
 			//		Hook so attr('value', ...) works.
 			//
-			// description: 
+			// description:
 			//		Sets the value of the widget to "value" which can be of
 			//		any type as determined by the widget.
 			//
@@ -66,7 +109,7 @@ dojo.declare(
 			//		otherwise a computed visual value is used.
 			//
 			// priorityChange:
-			//		If true, an onChange event is fired immediately instead of 
+			//		If true, an onChange event is fired immediately instead of
 			//		waiting for the next blur event.
 
 			var filteredValue;
@@ -83,6 +126,9 @@ dojo.declare(
 			if(formattedValue != null && formattedValue != undefined && ((typeof formattedValue) != "number" || !isNaN(formattedValue)) && this.textbox.value != formattedValue){
 				this.textbox.value = formattedValue;
 			}
+
+			this._updatePlaceHolder();
+
 			this.inherited(arguments, [filteredValue, priorityChange]);
 		},
 
@@ -92,7 +138,7 @@ dojo.declare(
 		//		this represents the displayed value.
 		//
 		//		Setting 'displayedValue' through attr('displayedValue', ...)
-		//		updates 'value', and vice-versa.  Othewise 'value' is updated
+		//		updates 'value', and vice-versa.  Otherwise 'value' is updated
 		//		from 'displayedValue' periodically, like onBlur etc.
 		//
 		//		TODO: move declaration to MappedTextBox?
@@ -102,11 +148,11 @@ dojo.declare(
 
 		getDisplayedValue: function(){
 			// summary:
-			//		Deprecated.   Use attr('displayedValue') instead.
+			//		Deprecated.   Use set('displayedValue') instead.
 			// tags:
 			//		deprecated
-			dojo.deprecated(this.declaredClass+"::getDisplayedValue() is deprecated. Use attr('displayedValue') instead.", "", "2.0");
-			return this.attr('displayedValue');
+			dojo.deprecated(this.declaredClass+"::getDisplayedValue() is deprecated. Use set('displayedValue') instead.", "", "2.0");
+			return this.get('displayedValue');
 		},
 
 		_getDisplayedValueAttr: function(){
@@ -117,25 +163,25 @@ dojo.declare(
 			// 		after filtering (ie, trimming spaces etc.).
 			//
 			//		For some subclasses of TextBox (like ComboBox), the displayed value
-			//		is different from the serialized value that's actually 
+			//		is different from the serialized value that's actually
 			//		sent to the server (see dijit.form.ValidationTextBox.serialize)
-			
+
 			return this.filter(this.textbox.value);
 		},
 
 		setDisplayedValue: function(/*String*/value){
 			// summary:
-			//		Deprecated.   Use attr('displayedValue', ...) instead.
+			//		Deprecated.   Use set('displayedValue', ...) instead.
 			// tags:
 			//		deprecated
-			dojo.deprecated(this.declaredClass+"::setDisplayedValue() is deprecated. Use attr('displayedValue', ...) instead.", "", "2.0");
-			this.attr('displayedValue', value);
+			dojo.deprecated(this.declaredClass+"::setDisplayedValue() is deprecated. Use set('displayedValue', ...) instead.", "", "2.0");
+			this.set('displayedValue', value);
 		},
-			
+
 		_setDisplayedValueAttr: function(/*String*/value){
 			// summary:
 			//		Hook so attr('displayedValue', ...) works.
-			//	description: 
+			// description:
 			//		Sets the value of the visual element to the string "value".
 			//		The widget value is also set to a corresponding,
 			//		but not necessarily the same, value.
@@ -143,7 +189,7 @@ dojo.declare(
 			if(value === null || value === undefined){ value = '' }
 			else if(typeof value != "string"){ value = String(value) }
 			this.textbox.value = value;
-			this._setValueAttr(this.attr('value'), undefined, value);
+			this._setValueAttr(this.get('value'), undefined, value);
 		},
 
 		format: function(/* String */ value, /* Object */ constraints){
@@ -185,7 +231,7 @@ dojo.declare(
 			if(this.intermediateChanges){
 				var _this = this;
 				// the setTimeout allows the key to post to the widget input box
-				setTimeout(function(){ _this._handleOnChange(_this.attr('value'), false); }, 0);
+				setTimeout(function(){ _this._handleOnChange(_this.get('value'), false); }, 0);
 			}
 			this._refreshState();
 		},
@@ -193,6 +239,23 @@ dojo.declare(
 		postCreate: function(){
 			// setting the value here is needed since value="" in the template causes "undefined"
 			// and setting in the DOM (instead of the JS object) helps with form reset actions
+			if(dojo.isIE){ // IE INPUT tag fontFamily has to be set directly using STYLE
+				// the setTimeout gives IE a chance to render the TextBox and to deal with font inheritance
+				setTimeout(dojo.hitch(this, function(){
+					var s = dojo.getComputedStyle(this.domNode);
+					if(s){
+						var ff = s.fontFamily;
+						if(ff){
+							var inputs = this.domNode.getElementsByTagName("INPUT");
+							if(inputs){
+								for(var i=0; i < inputs.length; i++){
+									inputs[i].style.fontFamily = ff;
+								}
+							}
+						}
+					}
+				}), 0);
+			}
 			this.textbox.setAttribute("value", this.textbox.value); // DOM and JS values shuld be the same
 			this.inherited(arguments);
 			if(dojo.isMoz || dojo.isOpera){
@@ -203,12 +266,6 @@ dojo.declare(
 				this.connect(this.textbox, "onpaste", this._onInput);
 				this.connect(this.textbox, "oncut", this._onInput);
 			}
-
-			/*#5297:if(this.srcNodeRef){
-				dojo.style(this.textbox, "cssText", this.style);
-				this.textbox.className += " " + this["class"];
-			}*/
-			this._layoutHack();
 		},
 
 		_blankValue: '', // if the textbox is blank, what value should be reported
@@ -250,17 +307,54 @@ dojo.declare(
 		},
 
 		_setBlurValue: function(){
-			this._setValueAttr(this.attr('value'), true);
+			this._setValueAttr(this.get('value'), true);
 		},
 
 		_onBlur: function(e){
 			if(this.disabled){ return; }
 			this._setBlurValue();
 			this.inherited(arguments);
+
+			if(this._selectOnClickHandle){
+				this.disconnect(this._selectOnClickHandle);
+			}
+			if(this.selectOnClick && dojo.isMoz){
+				this.textbox.selectionStart = this.textbox.selectionEnd = undefined; // clear selection so that the next mouse click doesn't reselect
+			}
+			
+			this._updatePlaceHolder();
 		},
 
-		_onFocus: function(e){
-			if(this.disabled){ return; }
+		_onFocus: function(/*String*/ by){
+			if(this.disabled || this.readOnly){ return; }
+
+			// Select all text on focus via click if nothing already selected.
+			// Since mouse-up will clear the selection need to defer selection until after mouse-up.
+			// Don't do anything on focus by tabbing into the widget since there's no associated mouse-up event.
+			if(this.selectOnClick && by == "mouse"){
+				this._selectOnClickHandle = this.connect(this.domNode, "onmouseup", function(){
+					// Only select all text on first click; otherwise users would have no way to clear
+					// the selection.
+					this.disconnect(this._selectOnClickHandle);
+
+					// Check if the user selected some text manually (mouse-down, mouse-move, mouse-up)
+					// and if not, then select all the text
+					var textIsNotSelected;
+					if(dojo.isIE){
+						var range = dojo.doc.selection.createRange();
+						var parent = range.parentElement();
+						textIsNotSelected = parent == this.textbox && range.text.length == 0;
+					}else{
+						textIsNotSelected = this.textbox.selectionStart == this.textbox.selectionEnd;
+					}
+					if(textIsNotSelected){
+						dijit.selectInputText(this.textbox);
+					}
+				});
+			}
+
+			this._updatePlaceHolder();
+			
 			this._refreshState();
 			this.inherited(arguments);
 		},
@@ -284,20 +378,19 @@ dijit.selectInputText = function(/*DomNode*/element, /*Number?*/ start, /*Number
 	element = dojo.byId(element);
 	if(isNaN(start)){ start = 0; }
 	if(isNaN(stop)){ stop = element.value ? element.value.length : 0; }
-	element.focus();
+	dijit.focus(element);
 	if(_document["selection"] && dojo.body()["createTextRange"]){ // IE
 		if(element.createTextRange){
 			var range = element.createTextRange();
 			with(range){
 				collapse(true);
-				moveStart("character", start);
-				moveEnd("character", stop);
+				moveStart("character", -99999); // move to 0
+				moveStart("character", start); // delta from 0 is the correct position
+				moveEnd("character", stop-start);
 				select();
 			}
 		}
 	}else if(_window["getSelection"]){
-		var selection = _window.getSelection();	// TODO: unused, remove
-		// FIXME: does this work on Safari?
 		if(element.setSelectionRange){
 			element.setSelectionRange(start, stop);
 		}

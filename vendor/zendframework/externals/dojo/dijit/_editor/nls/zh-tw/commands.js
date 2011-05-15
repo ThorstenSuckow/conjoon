@@ -17,7 +17,7 @@
 	'redo': '重做',
 	'removeFormat': '移除格式',
 	'selectAll': '全選',
-	'strikethrough': '加刪除線',
+	'strikethrough': '刪除線',
 	'subscript': '下標',
 	'superscript': '上標',
 	'underline': '底線',
@@ -38,6 +38,10 @@
 	'fontSize': '字型大小',
 	'fontName': '字型名稱',
 	'tabIndent': '標籤縮排',
+	"fullScreen": "切換全螢幕",
+	"viewSource": "檢視 HTML 原始檔",
+	"print": "列印",
+	"newPage": "新頁面",
 	/* Error messages */
 	'systemShortcut': '"${0}" 動作在您的瀏覽器中，只能使用鍵盤快速鍵。請使用 ${1}。'
 })

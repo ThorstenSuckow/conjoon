@@ -15,9 +15,9 @@
  * @category    ZendX
  * @package     ZendX_JQuery
  * @subpackage  View
- * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: UiWidget.php 13015 2008-12-04 15:00:03Z beberlei $
+ * @version     $Id: UiWidget.php 20165 2010-01-09 18:57:56Z bkarwin $
  */
 
 require_once "Zend/Form/Element.php";
@@ -27,7 +27,7 @@ require_once "Zend/Form/Element.php";
  *
  * @package    ZendX_JQuery
  * @subpackage Form
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendX_JQuery_Form_Element_UiWidget extends Zend_Form_Element
@@ -122,6 +122,7 @@ class ZendX_JQuery_Form_Element_UiWidget extends Zend_Form_Element
         if (empty($decorators)) {
             $this->addDecorator('UiWidgetElement')
                  ->addDecorator('Errors')
+                 ->addDecorator('Description', array('tag' => 'p', 'class' => 'description'))
                  ->addDecorator('HtmlTag', array('tag' => 'dd'))
                  ->addDecorator('Label', array('tag' => 'dt'));
         }

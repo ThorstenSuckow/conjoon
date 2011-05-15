@@ -31,8 +31,7 @@ if(typeof window != 'undefined'){
 		}
 
 		// FIXME
-		var cm = document.compatMode;
-		d.isQuirks = cm == "BackCompat" || cm == "QuirksMode";
+		d.isQuirks = document.compatMode == "BackCompat";
 
 		// FIXME
 		// TODO: is the HTML LANG attribute relevant?
@@ -91,7 +90,7 @@ if(typeof window != 'undefined'){
 			// alert("_getText: " + uri);
 
 			// NOTE: must be declared before scope switches ie. this._xhrObj()
-			var http = this._xhrObj();
+			var http = d._xhrObj();
 
 			if(!hasBase && dojo._Url){
 				uri = (new dojo._Url(uri)).toString();
@@ -148,7 +147,7 @@ if(typeof window != 'undefined'){
 			//		signal fired by impending window destruction. You may use
 			//		dojo.addOnWIndowUnload() or dojo.connect() to this method to perform
 			//		page/application cleanup methods. See dojo.addOnWindowUnload for more info.
-			var mll = this._windowUnloaders;
+			var mll = d._windowUnloaders;
 			while(mll.length){
 				(mll.pop())();
 			}

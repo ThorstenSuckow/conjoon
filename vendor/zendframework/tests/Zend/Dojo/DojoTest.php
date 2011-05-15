@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DojoTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DojoTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dojo_FormTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_DojoTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /** Zend_Dojo */
 require_once 'Zend/Dojo.php';
@@ -48,11 +46,11 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Date
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  */
-class Zend_Dojo_DojoTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_DojoTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.

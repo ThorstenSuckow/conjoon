@@ -6,12 +6,11 @@
 	align: "יישור:",
 	cellPadding: "ריפוד תאים:",
 	cellSpacing: "ריווח תאים:",
-	tableWidth: "רוחב טבלה:",
+	tableWidth: "רוחב טבלה:‏",
 	backgroundColor: "צבע רקע:",
 	borderColor: "צבע גבול:",
 	borderThickness: "עובי גבול",
-	pixels: "פיקסלים",
-	percent: "אחוז",
+	percent: "אחוזים",
 	pixels: "פיקסלים",
 	"default": "ברירת מחדל",
 	left: "ימין",
@@ -19,6 +18,7 @@
 	right: "שמאל",
 	buttonSet: "הגדרה", // translated elsewhere?
 	buttonInsert: "הוספה",
+	buttonCancel: "ביטול",
 
 	selectTableLabel: "בחירת טבלה",
 	insertTableRowBeforeLabel: "הוספת שורה לפני",

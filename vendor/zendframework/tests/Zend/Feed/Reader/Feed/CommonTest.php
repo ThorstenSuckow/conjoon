@@ -15,19 +15,19 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: CommonTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Feed/Reader.php';
+require_once 'Zend/Registry.php';
 
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Feed
  * @group      Zend_Feed_Reader
@@ -39,6 +39,7 @@ class Zend_Feed_Reader_Feed_CommonTest extends PHPUnit_Framework_TestCase
 
     public function setup()
     {
+        Zend_Feed_Reader::reset();
         if (Zend_Registry::isRegistered('Zend_Locale')) {
             $registry = Zend_Registry::getInstance();
             unset($registry['Zend_Locale']);
@@ -103,6 +104,28 @@ class Zend_Feed_Reader_Feed_CommonTest extends PHPUnit_Framework_TestCase
             file_get_contents($this->_feedSamplePath.'/atom.xml')
         );
         $this->assertEquals(null, $feed->getExtension('Foo'));
+    }
+    
+    /**
+     * @group ZF-8213
+     */
+    public function testReturnsEncodingOfFeed()
+    {
+        $feed = Zend_Feed_Reader::importString(
+            file_get_contents($this->_feedSamplePath.'/atom.xml')
+        );
+        $this->assertEquals('UTF-8', $feed->getEncoding());
+    }
+    
+    /**
+     * @group ZF-8213
+     */
+    public function testReturnsEncodingOfFeedAsUtf8IfUndefined()
+    {
+        $feed = Zend_Feed_Reader::importString(
+            file_get_contents($this->_feedSamplePath.'/atom_noencodingdefined.xml')
+        );
+        $this->assertEquals('UTF-8', $feed->getEncoding());
     }
 
 

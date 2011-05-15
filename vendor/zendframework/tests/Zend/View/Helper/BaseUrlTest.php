@@ -15,16 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: BaseUrlTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
 
 // Call Zend_View_Helper_BaseUrlTest::main() if this source file is executed directly.
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_View_Helper_BaseUrlTest::main');
 }
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_View_Helper_BaseUrl
@@ -40,7 +39,7 @@ require_once 'Zend/Controller/Front.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -60,7 +59,7 @@ class Zend_View_Helper_BaseUrlTest extends PHPUnit_Framework_TestCase
      * @var array
      */
     protected $_server;
-    
+
     /**
      * Main
      */
@@ -69,7 +68,7 @@ class Zend_View_Helper_BaseUrlTest extends PHPUnit_Framework_TestCase
         $suite  = new PHPUnit_Framework_TestSuite("Zend_View_Helper_BaseUrlTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
     }
-    
+
     /**
      * Prepares the environment before running a test.
      */

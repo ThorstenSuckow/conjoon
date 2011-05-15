@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_OpenSearch
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata_OpenSearch
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_OpenSearch
@@ -41,7 +41,7 @@ class Zend_Gdata_OpenSearchStartIndexTest extends PHPUnit_Framework_TestCase
                 true);
         $this->openSearchStartIndex = new Zend_Gdata_Extension_OpenSearchStartIndex();
     }
-    
+
     public function testEmptyOpenSearchStartIndexShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->openSearchStartIndex->extensionElements));
         $this->assertTrue(count($this->openSearchStartIndex->extensionElements) == 0);
@@ -63,14 +63,14 @@ class Zend_Gdata_OpenSearchStartIndexTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->openSearchStartIndex->extensionAttributes));
         $this->assertTrue(count($this->openSearchStartIndex->extensionAttributes) == 0);
     }
-    
+
     public function testNormalOpenSearchStartIndexShouldHaveNoExtensionElements() {
         $this->openSearchStartIndex->text = "20";
-        
+
         $this->assertEquals("20", $this->openSearchStartIndex->text);
-                
+
         $this->assertEquals(0, count($this->openSearchStartIndex->extensionElements));
-        $newOpenSearchStartIndex = new Zend_Gdata_Extension_OpenSearchStartIndex(); 
+        $newOpenSearchStartIndex = new Zend_Gdata_Extension_OpenSearchStartIndex();
         $newOpenSearchStartIndex->transferFromXML($this->openSearchStartIndex->saveXML());
         $this->assertEquals(0, count($newOpenSearchStartIndex->extensionElements));
         $newOpenSearchStartIndex->extensionElements = array(

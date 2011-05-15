@@ -43,8 +43,10 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
     protected $_presence = array(
         'create' => array(
             'name',
-            'password',
-            'updateInterval'
+            'oauthToken',
+            'oauthTokenSecret',
+            'updateInterval',
+            'twitterId'
         ),
         'delete' => array(
             'data'
@@ -53,8 +55,6 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
             'data'
         ),
         'update' => array(
-            'name',
-            'password',
             'updateInterval',
             'id'
         )
@@ -64,7 +64,13 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
         'name' => array(
             'StringTrim'
          ),
-        'password' => array(
+        'oauthToken' => array(
+            'StringTrim'
+         ),
+         'oauthTokenSecret' => array(
+            'StringTrim'
+         ),
+         'twitterId' => array(
             'StringTrim'
          ),
          'updateInterval' => array(
@@ -83,12 +89,18 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
         'name' => array(
             'allowEmpty' => false
          ),
-        'password' => array(
+        'oauthToken' => array(
+            'allowEmpty' => false
+         ),
+         'oauthTokenSecret' => array(
             'allowEmpty' => false
          ),
         'updateInterval' => array(
             'allowEmpty' => true,
             'default'    => 60000
+         ),
+         'twitterId' => array(
+            'allowEmpty' => false
          ),
          'id' => array(
             'allowEmpty' => false,
@@ -110,8 +122,6 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
         if ($this->_context == self::CONTEXT_DELETE) {
             $this->_filters['data'][] = 'PositiveArrayValues';
         } else if ($this->_context == self::CONTEXT_UPDATE) {
-            $this->_validators['name']['presence']           = 'optional';
-            $this->_validators['password']['presence']       = 'optional';
 
             $this->_validators['updateInterval'] = array(
                 'allowEmpty' => true,
@@ -132,14 +142,6 @@ class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Fil
             if (isset($data['updateInterval'])) {
                 $v = $data['updateInterval'];
                 $data['update_interval'] = $v;
-            }
-
-            if ($data['name'] === NULL) {
-                unset($data['name']);
-            }
-            if ($data['password'] === NULL
-                || str_replace('*', '', $data['password']) == "") {
-                unset($data['password']);
             }
         }
 

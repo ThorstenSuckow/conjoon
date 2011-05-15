@@ -5,13 +5,16 @@ dojo.require("dojo._base.xhr");
 (function() {
 	var registry;
 	var plainXhr;
+	function getPlainXhr(){
+		return plainXhr = dojox.io.xhrPlugins.plainXhr = plainXhr || dojo._defaultXhr || dojo.xhr;
+	}
 	dojox.io.xhrPlugins.register = function(){
 		//	summary:
 		// 		overrides the default xhr handler to implement a registry of
 		// 		xhr handlers
+		var plainXhr = getPlainXhr();
 		if(!registry){
 			registry = new dojo.AdapterRegistry();
-			plainXhr = dojox.io.xhrPlugins.plainXhr = dojo._defaultXhr || dojo.xhr;
 			// replaces the default xhr() method. Can we just use connect() instead?
 			dojo[dojo._defaultXhr ? "_defaultXhr" : "xhr"] = function(/*String*/ method, /*dojo.__XhrArgs*/ args, /*Boolean?*/ hasBody){
 				return registry.match.apply(registry,arguments);						
@@ -44,7 +47,7 @@ dojo.require("dojo._base.xhr");
 		//	|	dojo.xhr("GET",{url:"http://othersite.com/file"});
 		// 		It would result in the request (to your origin server):
 		//	|	GET /proxy?url=http%3A%2F%2Fothersite.com%2Ffile HTTP/1.1
-		
+		var plainXhr = getPlainXhr();
 		dojox.io.xhrPlugins.register(
 			"proxy",
 			function(method,args){
@@ -77,12 +80,14 @@ dojo.require("dojo._base.xhr");
 		// 		it should respond with the header like:
 		//	|	Access-Control: allow <*>
 		//		see: http://www.w3.org/TR/access-control/
+		var plainXhr = getPlainXhr();
 		if(csXhrSupport === undefined && window.XMLHttpRequest){
 			// just run this once to see if we have cross-site support
 			try{
 				var xhr = new XMLHttpRequest();
-				xhr.open("GET","http://fnadkfna.com",true);
+				xhr.open("GET","http://testing-cross-domain-capability.com",true);
 				csXhrSupport = true;
+				dojo.config.noRequestedWithHeaders = true;
 			}catch(e){
 				csXhrSupport = false;
 			}
@@ -118,7 +123,7 @@ dojo.require("dojo._base.xhr");
 					xdr.onerror = handler(404, 4); // an error, who knows what the real status is
 					return xdr;
 				};
-				var dfd = (httpAdapter ? httpAdapter(plainXhr) : plainXhr).apply(dojo,arguments);
+				var dfd = (httpAdapter ? httpAdapter(getPlainXhr()) : getPlainXhr()).apply(dojo,arguments);
 				dojo._xhrObj = normalXhrObj;
 				return dfd; 
 			}

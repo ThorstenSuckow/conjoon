@@ -15,20 +15,15 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StripTagsTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: StripTagsTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Filter_StripTagsTest::main() if this source file is executed directly.
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Filter_StripTagsTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_StripTags
@@ -40,7 +35,7 @@ require_once 'Zend/Filter/StripTags.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -60,7 +55,6 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -405,14 +399,15 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Ensures that a comment is not removed when comments are allowed
+     * Ensures that a comment IS removed when comments are flagged as allowed
      *
+     * @group ZF-8473
      * @return void
      */
-    public function testFilterCommentAllowed()
+    public function testSpecifyingCommentsAllowedStillStripsComments()
     {
         $input    = '<!-- a comment -->';
-        $expected = '<!-- a comment -->';
+        $expected = '';
         $this->_filter->setCommentsAllowed(true);
         $this->assertEquals($expected, $this->_filter->filter($input));
     }
@@ -420,25 +415,29 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that a comment containing tags is untouched when comments are allowed
      *
+     * @group ZF-8473
      * @return void
      */
-    public function testFilterCommentAllowedContainsTags()
+    public function testSpecifyingCommentsAllowedStripsCommentsContainingTags()
     {
         $input    = '<!-- a comment <br /> <h1>SuperLarge</h1> -->';
-        $expected = '<!-- a comment <br /> <h1>SuperLarge</h1> -->';
+        $expected = '';
         $this->_filter->setCommentsAllowed(true);
         $this->assertEquals($expected, $this->_filter->filter($input));
     }
 
     /**
-     * Ensures expected behavior when comments are allowed and a comment contains tags and linebreaks
+     * Ensures expected behavior when comments are marked as allowed (in our
+     * case, this should have no effect) and a comment contains tags and
+     * linebreaks
      *
+     * @group ZF-8473
      * @return void
      */
-    public function testFilterCommentsAllowedContainsTagsLinebreaks()
+    public function testSpecifyingCommentsAllowedFiltersCommentsContainingTagsAndLinebreaks()
     {
         $input    = "<br> test <p> text </p> with <!-- comments --> and <!-- hidd\n\nen <br> -->";
-        $expected = " test  text  with <!-- comments --> and <!-- hidd\n\nen <br> -->";
+        $expected = " test  text  with  and ";
         $this->_filter->setCommentsAllowed(true);
         $this->assertEquals($expected, $this->_filter->filter($input));
     }
@@ -446,26 +445,28 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures expected behavior when comments are allowed but nested
      *
+     * @group ZF-8473
      * @return void
      */
-    public function testFilterCommentsAllowedNested()
+    public function testSpecifyingCommentsAllowedShouldStillStripNestedComments()
     {
         $input    = '<a> <!-- <b> <!-- <c> --> <d> --> <e>';
-        $expected = ' <!-- <b> <!-- <c> -->  -- ';
+        $expected = '  ';
         $this->_filter->setCommentsAllowed(true);
         $this->assertEquals($expected, $this->_filter->filter($input));
     }
 
     /**
-     * Ensures that space is allowed between the double-hyphen '--' and the ending delimiter '>'
+     * Ensures that space between double-hyphen and closing bracket still matches as a comment delimiter
      *
+     * @group ZF-8473
      * @see    http://www.w3.org/TR/1999/REC-html401-19991224/intro/sgmltut.html#h-3.2.4
      * @return void
      */
     public function testFilterCommentsAllowedDelimiterEndingWhiteSpace()
     {
         $input    = '<a> <!-- <b> --  > <c>';
-        $expected = ' <!-- <b> --  > ';
+        $expected = '  ';
         $this->_filter->setCommentsAllowed(true);
         $this->assertEquals($expected, $this->_filter->filter($input));
     }
@@ -515,6 +516,95 @@ class Zend_Filter_StripTagsTest extends PHPUnit_Framework_TestCase
     "alert(&quot;Gotcha&quot;); return false;">http://framework.zend.com/issues</a>';
         $filtered = $this->_filter->filter($input);
         $this->assertNotContains('onclick', $filtered);
+    }
+
+    /**
+     * @ZF-8828
+     */
+    public function testFilterIsoChars()
+    {
+        $input    = 'äöü<!-- a comment -->äöü';
+        $expected = 'äöüäöü';
+        $this->assertEquals($expected, $this->_filter->filter($input));
+
+        $input    = 'äöü<!-- a comment -->äöü';
+        $input    = iconv("UTF-8", "ISO-8859-1", $input);
+        $output   = $this->_filter->filter($input);
+        $this->assertFalse(empty($output));
+    }
+
+    /**
+     * @ZF-8828
+     */
+    public function testFilterIsoCharsInComment()
+    {
+        $input    = 'äöü<!--üßüßüß-->äöü';
+        $expected = 'äöüäöü';
+        $this->assertEquals($expected, $this->_filter->filter($input));
+
+        $input    = 'äöü<!-- a comment -->äöü';
+        $input    = iconv("UTF-8", "ISO-8859-1", $input);
+        $output   = $this->_filter->filter($input);
+        $this->assertFalse(empty($output));
+    }
+
+    /**
+     * @ZF-8828
+     */
+    public function testFilterSplitCommentTags()
+    {
+        $input    = 'äöü<!-->üßüßüß<-->äöü';
+        $expected = 'äöüäöü';
+        $this->assertEquals($expected, $this->_filter->filter($input));
+    }
+
+    /**
+     * @group ZF-9434
+     */
+    public function testCommentWithTagInSameLine()
+    {
+        $input    = 'test <!-- testcomment --> test <div>div-content</div>';
+        $expected = 'test  test div-content';
+        $this->assertEquals($expected, $this->_filter->filter($input));
+    }
+
+    /**
+     * @group ZF-9833
+     */
+    public function testMultiParamArray()
+    {
+        $filter = new Zend_Filter_StripTags(array("a","b","hr"),array(),true);
+
+        $input    = 'test <a /> test <div>div-content</div>';
+        $expected = 'test <a /> test div-content';
+        $this->assertEquals($expected, $filter->filter($input));
+    }
+
+    /**
+     * @group ZF-9828
+     */
+    public function testMultiQuoteInput()
+    {
+        $filter = new Zend_Filter_StripTags(
+            array(
+                'allowTags' => 'img',
+                'allowAttribs' => array('width', 'height', 'src')
+            )
+        );
+
+        $input    = '<img width="10" height="10" src=\'wont_be_matched.jpg\'>';
+        $expected = '<img width="10" height="10" src=\'wont_be_matched.jpg\'>';
+        $this->assertEquals($expected, $filter->filter($input));
+    }
+
+    /**
+     * @group ZF-10256
+     */
+    public function testNotClosedHtmlCommentAtEndOfString()
+    {
+        $input    = 'text<!-- not closed comment at the end';
+        $expected = 'text';
+        $this->assertEquals($expected, $this->_filter->filter($input));
     }
 }
 

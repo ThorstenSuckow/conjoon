@@ -3,5 +3,11 @@
 	insertImageTitle: "Propiedades de la imagen",
 	url: "URL:",
 	text: "Descripción:",
-	set: "Establecer"
+	target: "Destino:",
+	set: "Establecer",
+	currentWindow: "Ventana actual",
+	parentWindow: "Ventana padre",
+	topWindow: "Ventana superior",
+	newWindow: "Nueva ventana"
 })
+

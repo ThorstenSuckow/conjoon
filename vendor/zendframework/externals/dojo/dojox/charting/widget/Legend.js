@@ -10,7 +10,9 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 	// summary: A legend for a chart. A legend contains summary labels for 
 	// each series of data contained in the chart.
 	//
-	// Set the boolean horizontal attribute to false to layout legend labels vertically.
+	// Set the horizontal attribute to boolean false to layout legend labels vertically.
+	// Set the horizontal attribute to a number to layout legend labels in horizontal
+	// rows each containing that number of labels (except possibly the last row).
 	//
 	// (Line or Scatter charts (colored lines with shape symbols) )
 	// -o- Series1		-X- Series2		-v- Series3
@@ -20,6 +22,7 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 	
 	chartRef:   "",
 	horizontal: true,
+	swatchSize: 18,
 	
 	templateString: "<table dojoAttachPoint='legendNode' class='dojoxLegendNode'><tbody dojoAttachPoint='legendBody'></tbody></table>",
 	
@@ -67,6 +70,7 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 			// make a container <tr>
 			this._tr = dojo.doc.createElement("tr");
 			this.legendBody.appendChild(this._tr);
+			this._inrow = 0;
 		}
 		
 		var s = this.series;
@@ -102,8 +106,8 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 			div  = dojo.doc.createElement("div");
 		dojo.addClass(icon, "dojoxLegendIcon");
 		dojo.addClass(text, "dojoxLegendText");
-		div.style.width  = "20px";
-		div.style.height = "20px";
+		div.style.width  = this.swatchSize + "px";
+		div.style.height = this.swatchSize + "px";
 		icon.appendChild(div);
 		
 		// create a skeleton
@@ -111,6 +115,12 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 			// horizontal
 			this._tr.appendChild(icon);
 			this._tr.appendChild(text);
+			if(++this._inrow === this.horizontal){
+				// make a fresh container <tr>
+				this._tr = dojo.doc.createElement("tr");
+				this.legendBody.appendChild(this._tr);
+				this._inrow = 0;
+			}
 		}else{
 			// vertical
 			var tr = dojo.doc.createElement("tr");
@@ -124,7 +134,7 @@ dojo.declare("dojox.charting.widget.Legend", [dijit._Widget, dijit._Templated], 
 		text.innerHTML = String(label);
 	},
 	_makeIcon: function(div, dyn){
-		var mb = {h: 14, w: 14};
+		var mb = { h: this.swatchSize, w: this.swatchSize };
 		var surface = dojox.gfx.createSurface(div, mb.w, mb.h);
 		this._surfaces.push(surface);
 		if(dyn.fill){

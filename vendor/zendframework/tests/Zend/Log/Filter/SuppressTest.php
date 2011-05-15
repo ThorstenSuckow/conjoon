@@ -15,13 +15,14 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SuppressTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SuppressTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/** PHPUnit_Framework_TestCase */
-require_once 'PHPUnit/Framework/TestCase.php';
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Log_Filter_SuppressTest::main');
+}
 
 /** Zend_Log */
 require_once 'Zend/Log.php';
@@ -33,17 +34,23 @@ require_once 'Zend/Log/Filter/Suppress.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Log
  */
 class Zend_Log_Filter_SuppressTest extends PHPUnit_Framework_TestCase
 {
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+
     public function setUp()
     {
         $this->filter = new Zend_Log_Filter_Suppress();
     }
-    
+
     public function testSuppressIsInitiallyOff()
     {
         $this->assertTrue($this->filter->accept(array()));
@@ -62,7 +69,7 @@ class Zend_Log_Filter_SuppressTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->filter->accept(array()));
         $this->assertTrue($this->filter->accept(array()));
     }
-    
+
     public function testSuppressCanBeReset()
     {
         $this->filter->suppress(true);
@@ -72,4 +79,19 @@ class Zend_Log_Filter_SuppressTest extends PHPUnit_Framework_TestCase
         $this->filter->suppress(true);
         $this->assertFalse($this->filter->accept(array()));
     }
+
+    public function testFactory()
+    {
+        $cfg = array('log' => array('memory' => array(
+            'writerName' => "Mock",
+            'filterName' => "Suppress"
+        )));
+
+        $logger = Zend_Log::factory($cfg['log']);
+        $this->assertTrue($logger instanceof Zend_Log);
+    }
+}
+
+if (PHPUnit_MAIN_METHOD == 'Zend_Log_Filter_SuppressTest::main') {
+    Zend_Log_Filter_SuppressTest::main();
 }

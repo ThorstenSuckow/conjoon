@@ -15,12 +15,11 @@
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: LocTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Validate/Sitemap/Loc.php';
 
 /**
@@ -29,7 +28,7 @@ require_once 'Zend/Validate/Sitemap/Loc.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -89,15 +88,32 @@ class Zend_Validate_Sitemap_LocTest extends PHPUnit_Framework_TestCase
             'www.example.com',
             '/news/',
             '#',
-            new stdClass(),
-            42,
             'http:/example.com/',
-            null,
             'https://www.exmaple.com/?foo="bar\'&bar=<bat>'
         );
 
         foreach ($values as $value) {
             $this->assertSame(false, $this->_validator->isValid($value));
+            $messages = $this->_validator->getMessages();
+            $this->assertContains('is no valid', current($messages));
         }
     }
+
+    /**
+     * Tests values that are not strings
+     *
+     */
+    public function testNotStrings()
+    {
+        $values = array(
+            1, 1.4, null, new stdClass(), true, false
+        );
+
+        foreach ($values as $value) {
+            $this->assertSame(false, $this->_validator->isValid($value));
+            $messages = $this->_validator->getMessages();
+            $this->assertContains('String expected', current($messages));
+        }
+    }
+
 }

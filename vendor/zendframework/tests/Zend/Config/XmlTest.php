@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: XmlTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Config_Xml
@@ -34,7 +29,7 @@ require_once 'Zend/Config/Xml.php';
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Config
  */
@@ -238,13 +233,13 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('live', $config->db->name);
         $this->assertEquals('multi', $config->one->two->three);
     }
-    
+
     public function testConstants()
     {
         if (!defined('ZEND_CONFIG_XML_TEST_CONSTANT')) {
             define('ZEND_CONFIG_XML_TEST_CONSTANT', 'test');
         }
-        
+
         $string = <<<EOT
 <?xml version="1.0"?>
 <config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
@@ -254,13 +249,13 @@ class Zend_Config_XmlTest extends PHPUnit_Framework_TestCase
     </all>
 </config>
 EOT;
-        
+
         $config = new Zend_Config_Xml($string, 'all');
-        
+
         $this->assertEquals('foo-test-bar-test', $config->foo);
         $this->assertEquals('ZEND_CONFIG_XML_TEST_CONSTANT', $config->bar->const->name);
     }
-    
+
     public function testNonExistentConstant()
     {
         $string = <<<EOT
@@ -271,7 +266,7 @@ EOT;
     </all>
 </config>
 EOT;
-        
+
         try {
             $config = new Zend_Config_Xml($string, 'all');
             $this->fail('An expected Zend_Config_Exception was not raised');
@@ -279,7 +274,7 @@ EOT;
             $this->assertEquals("Constant with name 'ZEND_CONFIG_XML_TEST_NON_EXISTENT_CONSTANT' was not defined", $e->getMessage());
         }
     }
-    
+
     public function testNamespacedExtends()
     {
         $string = <<<EOT
@@ -291,7 +286,7 @@ EOT;
     <staging zf:extends="all"/>
 </config>
 EOT;
-        
+
         $config = new Zend_Config_Xml($string);
 
         $this->assertEquals('bar', $config->staging->foo);
@@ -299,7 +294,7 @@ EOT;
 
     /*
      * @group 3702
-     * 
+     *
      */
     public function testLoadAnXMLString()
     {
@@ -333,7 +328,7 @@ EOT;
 
     /*
      * @group ZF-5800
-     * 
+     *
      */
     public function testArraysOfKeysCreatedUsingAttributesAndKeys()
     {

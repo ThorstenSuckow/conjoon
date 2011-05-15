@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: WsdlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: WsdlTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-require_once dirname(__FILE__)."/../../TestHelper.php";
-
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /** Zend_Soap_Wsdl */
 require_once 'Zend/Soap/Wsdl.php';
@@ -40,7 +35,7 @@ require_once 'Zend/Soap/Wsdl/Strategy/ArrayOfTypeSequence.php';
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Soap
  * @group      Zend_Soap_Wsdl
@@ -204,7 +199,7 @@ class Zend_Soap_WsdlTest extends PHPUnit_Framework_TestCase
                                    'operation3',
                                    array('use' => 'encoded', 'encodingStyle' => "http://schemas.xmlsoap.org/soap/encoding/"),
                                    array('use' => 'encoded', 'encodingStyle' => "http://schemas.xmlsoap.org/soap/encoding/"),
-                                   array('use' => 'encoded', 'encodingStyle' => "http://schemas.xmlsoap.org/soap/encoding/")
+                                   array('name' => 'MyFault', 'use' => 'encoded', 'encodingStyle' => "http://schemas.xmlsoap.org/soap/encoding/")
                                    );
 
         $this->assertEquals($this->sanitizeWsdlXmlOutputForOsCompability($wsdl->toXml()),
@@ -234,8 +229,8 @@ class Zend_Soap_WsdlTest extends PHPUnit_Framework_TestCase
                                .     '<output>'
                                .       '<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>'
                                .     '</output>'
-                               .     '<fault>'
-                               .       '<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>'
+                               .     '<fault name="MyFault">'
+                               .       '<soap:fault name="MyFault" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>'
                                .     '</fault>'
                                .   '</operation>'
                                . '</binding>'
@@ -559,7 +554,7 @@ class Zend_Soap_WsdlTest extends PHPUnit_Framework_TestCase
             $wsdl = new Zend_Soap_Wsdl('MyService', 'http://localhost/MyService.php', 'Zend_Soap_Wsdl_Strategy_UnknownStrategyType');
             $this->fail();
         } catch(Zend_Soap_Wsdl_Exception $e) {
-            
+
         }
     }
 
@@ -617,8 +612,8 @@ class Zend_Soap_WsdlTest extends PHPUnit_Framework_TestCase
                                .   '<xsd:schema targetNamespace="http://localhost/MyService.php">'
                                .     '<xsd:complexType name="Zend_Soap_Wsdl_Test">'
                                .       '<xsd:all>'
-                               .         '<xsd:element name="var1" type="xsd:int"/>'
-                               .         '<xsd:element name="var2" type="xsd:string"/>'
+                               .         '<xsd:element name="var1" type="xsd:int" nillable="true"/>'
+                               .         '<xsd:element name="var2" type="xsd:string" nillable="true"/>'
                                .       '</xsd:all>'
                                .     '</xsd:complexType>'
                                .   '</xsd:schema>'

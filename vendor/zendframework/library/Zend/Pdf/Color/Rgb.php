@@ -14,23 +14,25 @@
  *
  * @category   Zend
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Rgb.php 16978 2009-07-22 19:59:40Z alexander $
+ * @version    $Id: Rgb.php 23775 2011-03-01 17:25:24Z ralph $
  */
+
+
+/** Internally used classes */
+require_once 'Zend/Pdf/Element/Numeric.php';
+
 
 /** Zend_Pdf_Color */
 require_once 'Zend/Pdf/Color.php';
-
-/** Zend_Pdf_Element_Numeric */
-require_once 'Zend/Pdf/Element/Numeric.php';
 
 /**
  * RGB color implementation
  *
  * @category   Zend
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Pdf_Color_Rgb extends Zend_Pdf_Color

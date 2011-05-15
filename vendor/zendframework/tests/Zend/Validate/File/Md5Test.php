@@ -15,20 +15,15 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Md5Test.php 17667 2009-08-18 21:40:09Z mikaelkael $
+ * @version    $Id: Md5Test.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Validate_File_Md5Test::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Validate_File_Md5Test::main");
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Validate_File_Md5
@@ -41,7 +36,7 @@ require_once 'Zend/Validate/File/Md5.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -156,7 +151,7 @@ class Zend_Validate_File_Md5Test extends PHPUnit_Framework_TestCase
         $validator = new Zend_Validate_File_Md5('12345');
         $validator->setMd5('12333');
         $this->assertEquals(array('12333' => 'md5'), $validator->getMd5());
-        
+
         $validator->setMd5(array('12321', '12121'));
         $this->assertEquals(array('12321' => 'md5', '12121' => 'md5'), $validator->getMd5());
     }
@@ -171,7 +166,7 @@ class Zend_Validate_File_Md5Test extends PHPUnit_Framework_TestCase
         $validator = new Zend_Validate_File_Md5('12345');
         $validator->setHash('12333');
         $this->assertEquals(array('12333' => 'md5'), $validator->getMd5());
-        
+
         $validator->setHash(array('12321', '12121'));
         $this->assertEquals(array('12321' => 'md5', '12121' => 'md5'), $validator->getMd5());
     }

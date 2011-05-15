@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Health
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Ccr.php 16214 2009-06-21 19:34:03Z thomas $
+ * @version    $Id: Ccr.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Gdata/App/Extension/Element.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Health
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_Health_Extension_Ccr extends Zend_Gdata_App_Extension_Element
@@ -92,12 +92,11 @@ class Zend_Gdata_Health_Extension_Ccr extends Zend_Gdata_App_Extension_Element
      * return extract the user's conditions.
      *
      * @param string $name Name of the function to call
+     * @param unknown $args
      * @return array.<DOMElement> A list of the appropriate CCR data
      */
     public function __call($name, $args)
     {
-        $matches = array();
-
         if (substr($name, 0, 3) === 'get') {
             $category = substr($name, 3);
 

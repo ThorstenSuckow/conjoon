@@ -19,7 +19,7 @@ dojo.declare(
 		//		Milliseconds to fade in/fade out
 		duration: dijit.defaultDuration,
 
-		templatePath: dojo.moduleUrl("dijit", "templates/Tooltip.html"),
+		templateString: dojo.cache("dijit", "templates/Tooltip.html"),
 
 		postCreate: function(){
 			dojo.body().appendChild(this.domNode);
@@ -32,10 +32,10 @@ dojo.declare(
 
 		},
 
-		show: function(/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position){
+		show: function(/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position, /*Boolean*/ rtl){
 			// summary:
 			//		Display tooltip w/specified contents to right of specified node
-			//		(To left if there's no space on the right, or if LTR==right)
+			//		(To left if there's no space on the right, or if rtl == true)
 
 			if(this.aroundNode && this.aroundNode === aroundNode){
 				return;
@@ -48,35 +48,7 @@ dojo.declare(
 			}
 			this.containerNode.innerHTML=innerHTML;
 
-			// Firefox bug. when innerHTML changes to be shorter than previous
-			// one, the node size will not be updated until it moves.
-			this.domNode.style.top = (this.domNode.offsetTop + 1) + "px";
-
-			// position the element and change CSS according to position[] (a list of positions to try)
-			var align = {};
-			var ltr = this.isLeftToRight();
-			dojo.forEach( (position && position.length) ? position : dijit.Tooltip.defaultPosition, function(pos){
-				switch(pos){
-					case "after":				
-						align[ltr ? "BR" : "BL"] = ltr ? "BL" : "BR";
-						break;
-					case "before":
-						align[ltr ? "BL" : "BR"] = ltr ? "BR" : "BL";
-						break;
-					case "below":
-						// first try to align left borders, next try to align right borders (or reverse for RTL mode)
-						align[ltr ? "BL" : "BR"] = ltr ? "TL" : "TR";
-						align[ltr ? "BR" : "BL"] = ltr ? "TR" : "TL";
-						break;
-					case "above":
-					default:
-						// first try to align left borders, next try to align right borders (or reverse for RTL mode)
-						align[ltr ? "TL" : "TR"] = ltr ? "BL" : "BR";
-						align[ltr ? "TR" : "TL"] = ltr ? "BR" : "BL";
-						break;
-				}
-			});
-			var pos = dijit.placeOnScreenAroundElement(this.domNode, aroundNode, align, dojo.hitch(this, "orient"));
+			var pos = dijit.placeOnScreenAroundElement(this.domNode, aroundNode, dijit.getPopupAroundAlignment((position && position.length) ? position : dijit.Tooltip.defaultPosition, !rtl), dojo.hitch(this, "orient"));
 
 			// show it
 			dojo.style(this.domNode, "opacity", 0);
@@ -139,6 +111,7 @@ dojo.declare(
 			//		protected
 
 			this.domNode.style.cssText="";	// to position offscreen again
+			this.containerNode.innerHTML="";
 			if(this._onDeck){
 				// a show request has been queued up; do it now
 				this.show.apply(this, this._onDeck);
@@ -149,13 +122,13 @@ dojo.declare(
 	}
 );
 
-dijit.showTooltip = function(/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position){
+dijit.showTooltip = function(/*String*/ innerHTML, /*DomNode*/ aroundNode, /*String[]?*/ position, /*Boolean*/ rtl){
 	// summary:
 	//		Display tooltip w/specified contents in specified position.
 	//		See description of dijit.Tooltip.defaultPosition for details on position parameter.
 	//		If position is not specified then dijit.Tooltip.defaultPosition is used.
 	if(!dijit._masterTT){ dijit._masterTT = new dijit._MasterTooltip(); }
-	return dijit._masterTT.show(innerHTML, aroundNode, position);
+	return dijit._masterTT.show(innerHTML, aroundNode, position, rtl);
 };
 
 dijit.hideTooltip = function(aroundNode){
@@ -169,7 +142,7 @@ dojo.declare(
 	"dijit.Tooltip",
 	dijit._Widget,
 	{
-		// summary
+		// summary:
 		//		Pops up a tooltip (a help message) when you hover over a node.
 
 		// label: String
@@ -196,34 +169,68 @@ dojo.declare(
 		//		See description of `dijit.Tooltip.defaultPosition` for details on position parameter.
 		position: [],
 
-		_setConnectIdAttr: function(ids){
-			// TODO: erase old conections
-
-			this._connectNodes = [];
-
-			// TODO: rename connectId to connectIds for 2.0, and remove this code converting from string to array
-			this.connectId = dojo.isArrayLike(ids) ? ids : [ids];
-			
-			dojo.forEach(this.connectId, function(id) {
-				var node = dojo.byId(id);
-				if (node) {
-					this._connectNodes.push(node);
-					dojo.forEach(["onMouseEnter", "onMouseLeave", "onFocus", "onBlur"], function(event){
-						this.connect(node, event.toLowerCase(), "_"+event);
-					}, this);
-					if(dojo.isIE){
-						// BiDi workaround
-						node.style.zoom = 1;
-					}
-				}
-			}, this);
+		constructor: function(){
+			// Map id's of nodes I'm connected to to a list of the this.connect() handles
+			this._nodeConnectionsById = {};
 		},
 
-		postCreate: function(){	
+		_setConnectIdAttr: function(newIds){
+			for(var oldId in this._nodeConnectionsById){
+				this.removeTarget(oldId);
+			}
+			dojo.forEach(dojo.isArrayLike(newIds) ? newIds : [newIds], this.addTarget, this);
+		},
+
+		_getConnectIdAttr: function(){
+			var ary = [];
+			for(var id in this._nodeConnectionsById){
+				ary.push(id);
+			}
+			return ary;
+		},
+
+		addTarget: function(/*DOMNODE || String*/ id){
+			// summary:
+			//		Attach tooltip to specified node, if it's not already connected
+			var node = dojo.byId(id);
+			if(!node){ return; }
+			if(node.id in this._nodeConnectionsById){ return; }//Already connected
+
+			this._nodeConnectionsById[node.id] = [
+				this.connect(node, "onmouseenter", "_onTargetMouseEnter"),
+				this.connect(node, "onmouseleave", "_onTargetMouseLeave"),
+				this.connect(node, "onfocus", "_onTargetFocus"),
+				this.connect(node, "onblur", "_onTargetBlur")
+			];
+		},
+
+		removeTarget: function(/*DOMNODE || String*/ node){
+			// summary:
+			//		Detach tooltip from specified node
+
+			// map from DOMNode back to plain id string
+			var id = node.id || node;
+
+			if(id in this._nodeConnectionsById){
+				dojo.forEach(this._nodeConnectionsById[id], this.disconnect, this);
+				delete this._nodeConnectionsById[id];
+			}
+		},
+
+		postCreate: function(){
 			dojo.addClass(this.domNode,"dijitTooltipData");
 		},
 
-		_onMouseEnter: function(/*Event*/ e){
+		startup: function(){
+			this.inherited(arguments);
+
+			// If this tooltip was created in a template, or for some other reason the specified connectId[s]
+			// didn't exist during the widget's initialization, then connect now.
+			var ids = this.connectId;
+			dojo.forEach(dojo.isArrayLike(ids) ? ids : [ids], this.addTarget, this);
+		},
+
+		_onTargetMouseEnter: function(/*Event*/ e){
 			// summary:
 			//		Handler for mouseenter event on the target node
 			// tags:
@@ -231,7 +238,7 @@ dojo.declare(
 			this._onHover(e);
 		},
 
-		_onMouseLeave: function(/*Event*/ e){
+		_onTargetMouseLeave: function(/*Event*/ e){
 			// summary:
 			//		Handler for mouseleave event on the target node
 			// tags:
@@ -239,32 +246,24 @@ dojo.declare(
 			this._onUnHover(e);
 		},
 
-		_onFocus: function(/*Event*/ e){
+		_onTargetFocus: function(/*Event*/ e){
 			// summary:
 			//		Handler for focus event on the target node
 			// tags:
 			//		private
 
-			// TODO: this is dangerously named, as the dijit focus manager calls
-			// _onFocus() on any widget that gets focus (whereas in this class we
-			// are connecting onfocus on the *target* DOM node to this method
-
 			this._focus = true;
 			this._onHover(e);
-			this.inherited(arguments);
 		},
-		
-		_onBlur: function(/*Event*/ e){
+
+		_onTargetBlur: function(/*Event*/ e){
 			// summary:
 			//		Handler for blur event on the target node
 			// tags:
 			//		private
 
-			// TODO: rename; see above comment
-
 			this._focus = false;
 			this._onUnHover(e);
-			this.inherited(arguments);
 		},
 
 		_onHover: function(/*Event*/ e){
@@ -303,16 +302,14 @@ dojo.declare(
 			// tags:
 			//		private
 
-			target = target || this._connectNodes[0];
-			if(!target){ return; }
-
 			if(this._showTimer){
 				clearTimeout(this._showTimer);
 				delete this._showTimer;
 			}
-			dijit.showTooltip(this.label || this.domNode.innerHTML, target, this.position);
-			
+			dijit.showTooltip(this.label || this.domNode.innerHTML, target, this.position, !this.isLeftToRight());
+
 			this._connectNode = target;
+			this.onShow(target, this.position);
 		},
 
 		close: function(){
@@ -325,6 +322,7 @@ dojo.declare(
 				// if tooltip is currently shown
 				dijit.hideTooltip(this._connectNode);
 				delete this._connectNode;
+				this.onHide();
 			}
 			if(this._showTimer){
 				// if tooltip is scheduled to be shown (after a brief delay)
@@ -333,8 +331,23 @@ dojo.declare(
 			}
 		},
 
+		onShow: function(target, position){
+			// summary:
+			//		Called when the tooltip is shown
+			// tags:
+			//		callback
+		},
+
+		onHide: function(){
+			// summary:
+			//		Called when the tooltip is hidden
+			// tags:
+			//		callback
+		},
+
 		uninitialize: function(){
 			this.close();
+			this.inherited(arguments);
 		}
 	}
 );

@@ -1,6 +1,6 @@
 ({
 	'bold': '粗体',
-	'copy': '拷贝',
+	'copy': '复制',
 	'cut': '剪切',
 	'delete': '删除',
 	'indent': '增加缩进',
@@ -38,6 +38,11 @@
 	'fontSize': '字体大小',
 	'fontName': '字体名称',
 	'tabIndent': '制表符缩进',
+	"fullScreen": "切换全屏幕",
+	"viewSource": "查看 HTML 源代码",
+	"print": "打印",
+	"newPage": "新建页面",
 	/* Error messages */
 	'systemShortcut': '只能在浏览器中通过键盘快捷方式执行“${0}”操作。使用 ${1}。'
 })
+

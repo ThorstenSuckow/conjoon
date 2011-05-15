@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: StaticTest.php 23864 2011-04-19 16:14:07Z shahar $
  */
-
-require_once realpath(dirname(__FILE__) . '/../../../') . '/TestHelper.php';
 
 require_once 'Zend/Http/Client.php';
 
@@ -35,7 +33,7 @@ require_once 'Zend/Http/Client/Adapter/Test.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Http
  * @group      Zend_Http_Client
@@ -55,7 +53,7 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->_client = new Zend_Http_Client('http://www.example.com');
+        $this->_client = new Zend_Http_Client_StaticTest_Mock('http://www.example.com');
     }
 
     /**
@@ -293,6 +291,50 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test that when the encodecookies flag is set to FALSE, cookies captured
+     * from a response by Zend_Http_CookieJar are not encoded
+     *
+     * @group ZF-1850
+     */
+    public function testCaptureCookiesNoEncodeZF1850()
+    {
+        $cookieName = "cookieWithSpecialChars";
+        $cookieValue = "HID=XXXXXX&UN=XXXXXXX&UID=XXXXX";
+
+        $adapter = new Zend_Http_Client_Adapter_Test();
+        $adapter->setResponse(
+        	"HTTP/1.0 200 OK\r\n" .
+            "Content-type: text/plain\r\n" .
+            "Content-length: 2\r\n" .
+            "Connection: close\r\n" .
+            "Set-Cookie: $cookieName=$cookieValue; path=/\r\n" .
+            "\r\n" .
+            "OK"
+        );
+
+        $this->_client->setUri('http://example.example/test');
+        $this->_client->setConfig(array(
+            'adapter'       => $adapter,
+            'encodecookies' => false
+        ));
+
+        $this->_client->setCookieJar();
+
+        // First request is expected to set the cookie
+        $this->_client->request();
+
+        // Next request should contain the cookie
+        $this->_client->request();
+
+        $request = $this->_client->getLastRequest();
+        if (! preg_match("/^Cookie: $cookieName=([^;]+)/m", $request, $match)) {
+            $this->fail("Could not find cookie in request");
+        }
+
+        $this->assertEquals($cookieValue, $match[1]);
+    }
+
+    /**
      * Configuration Handling
      */
 
@@ -309,7 +351,7 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
 
         $this->_client->setConfig($config);
 
-        $hasConfig = $this->getObjectAttribute($this->_client, 'config');
+        $hasConfig = $this->_client->config;
         foreach($config as $k => $v) {
             $this->assertEquals($v, $hasConfig[$k]);
         }
@@ -333,7 +375,7 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
 
         $this->_client->setConfig($config);
 
-        $hasConfig = $this->getObjectAttribute($this->_client, 'config');
+        $hasConfig = $this->_client->config;
         $this->assertEquals($config->timeout, $hasConfig['timeout']);
         $this->assertEquals($config->nested->item, $hasConfig['nested']['item']);
     }
@@ -357,17 +399,17 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
      */
     public function testConfigPassToAdapterZF4557()
     {
-        $adapter = new Zend_Http_Client_Adapter_Test();
+        $adapter = new Zend_Http_Client_StaticTest_TestAdapter_Mock();
 
         // test that config passes when we set the adapter
         $this->_client->setConfig(array('param' => 'value1'));
         $this->_client->setAdapter($adapter);
-        $adapterCfg = $this->getObjectAttribute($adapter, 'config');
+        $adapterCfg = $adapter->config;
         $this->assertEquals('value1', $adapterCfg['param']);
 
         // test that adapter config value changes when we set client config
         $this->_client->setConfig(array('param' => 'value2'));
-        $adapterCfg = $this->getObjectAttribute($adapter, 'config');
+        $adapterCfg = $adapter->config;
         $this->assertEquals('value2', $adapterCfg['param']);
     }
 
@@ -534,6 +576,89 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group ZF-8057
+     */
+    public function testSetDisabledAuthBeforSettingUriBug()
+    {
+        $client = new Zend_Http_Client_StaticTest_Mock();
+        // if the bug exists this call should creates a fatal error
+        $client->setAuth(false);
+    }
+
+	/**
+     * Testing if the connection isn't closed
+     *
+     * @group ZF-9685
+     */
+    public function testOpenTempStreamWithValidFileDoesntThrowsException()
+    {
+    	$url = 'http://www.example.com';
+    	$config = array (
+			'output_stream' => realpath(dirname(__FILE__) . '/_files/zend_http_client_stream.file'),
+		);
+		$client = new Zend_Http_Client($url, $config);
+		try {
+			$result = $client->request();
+		} catch (Zend_Http_Client_Exception $e) {
+			$this->fail('Unexpected exception was thrown');
+		}
+		// we can safely return until we can verify link is still active
+		// @todo verify link is still active
+		return;
+    }
+
+    /**
+     * Testing if the connection can be closed
+     *
+     * @group ZF-9685
+     */
+    public function testOpenTempStreamWithBogusFileClosesTheConnection()
+    {
+    	$url = 'http://www.example.com';
+    	$config = array (
+			'output_stream' => '/path/to/bogus/file.ext',
+		);
+		$client = new Zend_Http_Client($url, $config);
+		try {
+			$result = $client->request();
+			$this->fail('Expected exception was not thrown');
+		} catch (Zend_Http_Client_Exception $e) {
+			// we return since we expect the exception
+			return;
+		}
+    }
+    
+	/**
+     * Test that we can handle trailing space in location header
+     * 
+     * @group ZF-11283
+     * @link http://framework.zend.com/issues/browse/ZF-11283
+     */
+    public function testRedirectWithTrailingSpaceInLocationHeaderZF11283()
+    {
+        $this->_client->setUri('http://example.com/');
+        $this->_client->setAdapter('Zend_Http_Client_Adapter_Test');
+        
+        $adapter = $this->_client->getAdapter(); /* @var $adapter Zend_Http_Client_Adapter_Test */
+        
+        $adapter->setResponse(<<<RESPONSE
+HTTP/1.1 302 Redirect
+Content-Type: text/html; charset=UTF-8
+Location: /test   
+Server: Microsoft-IIS/7.0
+Date: Tue, 19 Apr 2011 11:23:48 GMT
+
+RESPONSE
+        );
+
+        $res = $this->_client->request('GET');
+        
+        $lastUri = $this->_client->getUri();
+        
+        $this->assertEquals("/test", $lastUri->getPath());
+    }
+
+    /**
      * Data providers
      */
 
@@ -584,4 +709,26 @@ class Zend_Http_Client_StaticTest extends PHPUnit_Framework_TestCase
             array(55)
         );
     }
+}
+
+class Zend_Http_Client_StaticTest_Mock extends Zend_Http_Client
+{
+    public $config = array(
+        'maxredirects'    => 5,
+        'strictredirects' => false,
+        'useragent'       => 'Zend_Http_Client',
+        'timeout'         => 10,
+        'adapter'         => 'Zend_Http_Client_Adapter_Socket',
+        'httpversion'     => self::HTTP_1,
+        'keepalive'       => false,
+        'storeresponse'   => true,
+        'strict'          => true,
+        'output_stream'   => false,
+        'encodecookies'   => true,
+    );
+}
+
+class Zend_Http_Client_StaticTest_TestAdapter_Mock extends Zend_Http_Client_Adapter_Test
+{
+    public $config = array();
 }

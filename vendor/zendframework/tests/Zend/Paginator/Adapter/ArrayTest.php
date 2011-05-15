@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ArrayTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ArrayTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -28,13 +28,12 @@ require_once 'Zend/Paginator/Adapter/Array.php';
 /**
  * @see PHPUnit_Framework_TestCase
  */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Paginator
  */
@@ -44,7 +43,7 @@ class Zend_Paginator_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
      * @var Zend_Paginator_Adapter_Array
      */
     private $_adapter;
-    
+
     /**
      * Prepares the environment before running a test.
      */
@@ -61,23 +60,33 @@ class Zend_Paginator_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
         $this->_adapter = null;
         parent::tearDown();
     }
-    
+
     public function testGetsItemsAtOffsetZero()
     {
         $expected = range(1, 10);
         $actual = $this->_adapter->getItems(0, 10);
         $this->assertEquals($expected, $actual);
     }
-    
+
     public function testGetsItemsAtOffsetTen()
     {
         $expected = range(11, 20);
         $actual = $this->_adapter->getItems(10, 10);
         $this->assertEquals($expected, $actual);
     }
-    
+
     public function testReturnsCorrectCount()
     {
         $this->assertEquals(101, $this->_adapter->count());
+    }
+    
+
+    /**
+     * @group ZF-4151
+     */
+    public function testEmptySet() {
+        $this->_adapter = new Zend_Paginator_Adapter_Array(array());
+        $actual = $this->_adapter->getItems(0, 10);
+        $this->assertEquals(array(), $actual);
     }
 }

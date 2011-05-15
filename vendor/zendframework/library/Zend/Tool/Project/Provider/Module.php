@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Module.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Module.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -43,10 +43,10 @@ require_once 'Zend/Tool/Project/Profile/Iterator/EnabledResourceFilter.php';
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Project_Provider_Module 
+class Zend_Tool_Project_Provider_Module
     extends Zend_Tool_Project_Provider_Abstract
     implements Zend_Tool_Framework_Provider_Pretendable
 {
@@ -58,45 +58,45 @@ class Zend_Tool_Project_Provider_Module
         if ($targetModuleResource == null) {
             $targetModuleResource = $profile->search('applicationDirectory');
             $targetModuleEnabledResources = array(
-                'ControllersDirectory', 'ModelsDirectory', 'ViewsDirectory', 
+                'ControllersDirectory', 'ModelsDirectory', 'ViewsDirectory',
                 'ViewScriptsDirectory', 'ViewHelpersDirectory', 'ViewFiltersDirectory'
                 );
         }
-        
+
         // find the actual modules directory we will use to house our module
         $modulesDirectory = $profile->search('modulesDirectory');
-        
+
         // if there is a module directory already, except
         if ($modulesDirectory->search(array('moduleDirectory' => array('moduleName' => $moduleName)))) {
             throw new Zend_Tool_Project_Provider_Exception('A module named "' . $moduleName . '" already exists.');
         }
-        
+
         // create the module directory
         $moduleDirectory = $modulesDirectory->createResource('moduleDirectory', array('moduleName' => $moduleName));
-        
+
         // create a context filter so that we can pull out only what we need from the module skeleton
         $moduleContextFilterIterator = new Zend_Tool_Project_Profile_Iterator_ContextFilter(
-            $targetModuleResource, 
+            $targetModuleResource,
             array(
                 'denyNames' => array('ModulesDirectory', 'ViewControllerScriptsDirectory'),
                 'denyType'  => 'Zend_Tool_Project_Context_Filesystem_File'
                 )
             );
-        
+
         // the iterator for the module skeleton
         $targetIterator = new RecursiveIteratorIterator($moduleContextFilterIterator, RecursiveIteratorIterator::SELF_FIRST);
-        
+
         // initialize some loop state information
         $currentDepth = 0;
         $parentResources = array();
         $currentResource = $moduleDirectory;
-        
+
         // loop through the target module skeleton
         foreach ($targetIterator as $targetSubResource) {
-            
+
             $depthDifference = $targetIterator->getDepth() - $currentDepth;
             $currentDepth = $targetIterator->getDepth();
-            
+
             if ($depthDifference === 1) {
                 // if we went down into a child, make note
                 array_push($parentResources, $currentResource);
@@ -114,7 +114,7 @@ class Zend_Tool_Project_Provider_Module
             // get parameters for the newly created module resource
             $params = $targetSubResource->getAttributes();
             $currentChildResource = $currentResource->createResource($targetSubResource->getName(), $params);
-            
+
             // based of the provided list (Currently up top), enable specific resources
             if (isset($targetModuleEnabledResources)) {
                 $currentChildResource->setEnabled(in_array($targetSubResource->getName(), $targetModuleEnabledResources));
@@ -123,10 +123,10 @@ class Zend_Tool_Project_Provider_Module
             }
 
         }
-        
+
         return $moduleDirectory;
     }
-    
+
     /**
      * create()
      *
@@ -135,11 +135,15 @@ class Zend_Tool_Project_Provider_Module
     public function create($name) //, $moduleProfile = null)
     {
         $this->_loadProfile(self::NO_PROFILE_THROW_EXCEPTION);
+
+        // determine if testing is enabled in the project
+        require_once 'Zend/Tool/Project/Provider/Test.php';
+        //$testingEnabled = Zend_Tool_Project_Provider_Test::isTestingEnabled($this->_loadedProfile);
         
         $resources = self::createResources($this->_loadedProfile, $name);
-        
+
         $response = $this->_registry->getResponse();
-        
+
         if ($this->_registry->getRequest()->isPretend()) {
             $response->appendContent('I would create the following module and artifacts:');
             foreach (new RecursiveIteratorIterator($resources, RecursiveIteratorIterator::SELF_FIRST) as $resource) {
@@ -154,12 +158,24 @@ class Zend_Tool_Project_Provider_Module
                 $response->appendContent($resource->getContext()->getPath());
                 $resource->create();
             }
-            
+
+            $response->appendContent('Added a key for path module directory to the application.ini file');
+            $appConfigFile = $this->_loadedProfile->search('ApplicationConfigFile');
+            $appConfigFile->removeStringItem('resources.frontController.moduleDirectory', 'production');
+            $appConfigFile->addStringItem('resources.frontController.moduleDirectory', 'APPLICATION_PATH "/modules"', 'production', false);
+
+            if (strtolower($name) == 'default') {
+                $response->appendContent('Added a key for the default module to the application.ini file');
+                $appConfigFile->addStringItem('resources.frontController.params.prefixDefaultModule', '1', 'production');
+            }
+
+            $appConfigFile->create();
+
             // store changes to the profile
             $this->_storeProfile();
         }
-        
+
     }
-    
+
 }
 

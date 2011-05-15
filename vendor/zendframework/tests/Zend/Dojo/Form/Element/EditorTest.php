@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EditorTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: EditorTest.php 23921 2011-05-02 19:11:31Z matthew $
  */
 
 // Call Zend_Dojo_Form_Element_EditorTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_Form_Element_EditorTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_Form_Element_Editor */
 require_once 'Zend/Dojo/Form/Element/Editor.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_Form
  */
-class Zend_Dojo_Form_Element_EditorTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_Form_Element_EditorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -263,6 +261,35 @@ class Zend_Dojo_Form_Element_EditorTest extends PHPUnit_Framework_TestCase
         $this->element->setUpdateInterval(300);
         $this->assertEquals($this->element->getDijitParam('updateInterval'), $this->element->getUpdateInterval());
         $this->assertEquals(300, $this->element->getUpdateInterval());
+    }
+    
+    public function testCanAddMultipleSeparatorsToEditor()
+    {
+        $this->element->setPlugins(array('undo', '|', 'bold', '|', 'italic'));
+        
+        $plugins = $this->element->getPlugins();
+        $this->assertEquals(5, count($plugins));
+    }
+    
+    public function testMinHeightCanBeSetToPixels()
+    {
+        $this->element->setMinHeight('250px');
+        $this->assertEquals($this->element->getDijitParam('minHeight'), $this->element->getMinHeight());
+        $this->assertEquals('250px', $this->element->getMinHeight());
+    }
+    
+    public function testMinHeightCanBeSetToPercentage()
+    {
+        $this->element->setMinHeight('50%');
+        $this->assertEquals($this->element->getDijitParam('minHeight'), $this->element->getMinHeight());
+        $this->assertEquals('50%', $this->element->getMinHeight());
+    }
+    
+    public function testMinHeightDefaultMeasurementIsEm()
+    {
+        $this->element->setMinHeight('10');
+        $this->assertEquals($this->element->getDijitParam('minHeight'), $this->element->getMinHeight());
+        $this->assertEquals('10em', $this->element->getMinHeight());
     }
 }
 

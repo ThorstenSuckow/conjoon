@@ -1,7 +1,7 @@
 dojo.provide("dojox.form.CheckedMultiSelect");
 
 dojo.require("dijit.form.CheckBox");
-dojo.require("dojox.form._FormSelectWidget");
+dojo.require("dijit.form._FormSelectWidget");
 
 dojo.declare("dojox.form._CheckedMultiSelectItem", 
 	[dijit._Widget, dijit._Templated],
@@ -10,7 +10,7 @@ dojo.declare("dojox.form._CheckedMultiSelectItem",
 	//		The individual items for a CheckedMultiSelect
 
 	widgetsInTemplate: true,
-	templatePath: dojo.moduleUrl("dojox.form", "resources/_CheckedMultiSelectItem.html"),
+	templateString: dojo.cache("dojox.form", "resources/_CheckedMultiSelectItem.html"),
 
 	baseClass: "dojoxMultiSelectItem",
 
@@ -31,7 +31,7 @@ dojo.declare("dojox.form._CheckedMultiSelectItem",
 		// summary:
 		//		Set the appropriate _subClass value - based on if we are multi-
 		//		or single-select
-		if(this.parent._multiValue){
+		if(this.parent.multiple){
 			this._type = {type: "checkbox", baseClass: "dijitCheckBox"};
 		}else{
 			this._type = {type: "radio", baseClass: "dijitRadio"};
@@ -53,8 +53,8 @@ dojo.declare("dojox.form._CheckedMultiSelectItem",
 		//		Called to force the select to match the state of the check box
 		//		(only on click of the checkbox)  Radio-based calls _setValueAttr
 		//		instead.
-		if(this.attr("disabled") || this.attr("readOnly")){ return; }
-		if(this.parent._multiValue){
+		if(this.get("disabled") || this.get("readOnly")){ return; }
+		if(this.parent.multiple){
 			this.option.selected = this.checkBox.attr('value') && true;
 		}else{
 			this.parent.attr('value', this.option.value);
@@ -65,22 +65,11 @@ dojo.declare("dojox.form._CheckedMultiSelectItem",
 		// refocus the parent
 		this.parent.focus();
 	},
-
-	_onMouse: function(e){
-		// summary:
-		//		Sets the hover state depending on mouse state (passes through
-		//		to the check box)
-		if(this.attr("disabled") || this.attr("readOnly")){
-			dojo.stopEvent(e);
-		}else{
-			this.checkBox._onMouse(e);
-		}
-	},
 	
 	_onClick: function(e){
 		// summary:
 		//		Sets the click state (passes through to the check box)
-		if(this.attr("disabled") || this.attr("readOnly")){
+		if(this.get("disabled") || this.get("readOnly")){
 			dojo.stopEvent(e);
 		}else{
 			this.checkBox._onClick(e);
@@ -105,21 +94,19 @@ dojo.declare("dojox.form._CheckedMultiSelectItem",
 		// summary:
 		//		Sets read only (or unsets) all the children as well
 		this.checkBox.attr("readOnly", value);
-		this.checkBox._setStateClass();
 		this.readOnly = value;
 	}
 });
 
-dojo.declare("dojox.form.CheckedMultiSelect", dojox.form._FormSelectWidget, {
+dojo.declare("dojox.form.CheckedMultiSelect", dijit.form._FormSelectWidget, {
 	// summary:
 	//		Extends the core dijit MultiSelect to provide a "checkbox" selector
 
-	templateString: "",
-	templatePath: dojo.moduleUrl("dojox.form", "resources/CheckedMultiSelect.html"),
+	templateString: dojo.cache("dojox.form", "resources/CheckedMultiSelect.html"),
 
 	baseClass: "dojoxMultiSelect",
 
-	_mouseDown: function(e){
+	_onMouseDown: function(e){
 		// summary:
 		//		Cancels the mousedown event to prevent others from stealing
 		//		focus
@@ -177,7 +164,6 @@ dojo.declare("dojox.form.CheckedMultiSelect", dojox.form._FormSelectWidget, {
 				node.attr("readOnly", value);
 			}
 		});
-		this._setStateClass();
 	},
 
 	uninitialize: function(){
@@ -185,5 +171,6 @@ dojo.declare("dojox.form.CheckedMultiSelect", dojox.form._FormSelectWidget, {
 		dojo.forEach(this._getChildren(), function(child){
 			child.destroyRecursive();
 		});
+		this.inherited(arguments);
 	}
 });

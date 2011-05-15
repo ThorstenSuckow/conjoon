@@ -13,14 +13,14 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 		var i = 0;
 		pnode = node.parentNode;
 		while((n=pnode.childNodes[i++])){
-			if(n===node){
+			if(n === node){
 				--i;
 				break;
 			}
 		}
-		if(i>=pnode.childNodes.length){
-			dojo.debug("Error finding index of a node in dijit.range.getIndex");
-		}
+		//if(i>=pnode.childNodes.length){
+			//dojo.debug("Error finding index of a node in dijit.range.getIndex");
+		//}
 		ret.unshift(i);
 		retR.unshift(i-pnode.childNodes.length);
 		node = pnode;
@@ -29,14 +29,14 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 	//normalized() can not be called so often to prevent
 	//invalidating selection/range, so we have to detect
 	//here that any text nodes in a row
-	if(ret.length>0 && onode.nodeType==3){
+	if(ret.length > 0 && onode.nodeType == 3){
 		n = onode.previousSibling;
-		while(n && n.nodeType==3){
+		while(n && n.nodeType == 3){
 			ret[ret.length-1]--;
 			n = n.previousSibling;
 		}
 		n = onode.nextSibling;
-		while(n && n.nodeType==3){
+		while(n && n.nodeType == 3){
 			retR[retR.length-1]++;
 			n = n.nextSibling;
 		}
@@ -46,17 +46,17 @@ dijit.range.getIndex=function(/*DomNode*/node, /*DomNode*/parent){
 }
 
 dijit.range.getNode = function(/*Array*/index, /*DomNode*/parent){
-	if(!dojo.isArray(index) || index.length==0){
+	if(!dojo.isArray(index) || index.length == 0){
 		return parent;
 	}
 	var node = parent;
 //	if(!node)debugger
 	dojo.every(index, function(i){
-		if(i>=0&&i< node.childNodes.length){
+		if(i >= 0 && i < node.childNodes.length){
 			node = node.childNodes[i];
 		}else{
 			node = null;
-			console.debug('Error: can not find node with index',index,'under parent node',parent );
+			//console.debug('Error: can not find node with index',index,'under parent node',parent );
 			return false; //terminate dojo.every
 		}
 		return true; //carry on the every loop
@@ -65,12 +65,13 @@ dijit.range.getNode = function(/*Array*/index, /*DomNode*/parent){
 	return node;
 }
 
-dijit.range.getCommonAncestor = function(n1,n2){
+dijit.range.getCommonAncestor = function(n1,n2,root){
+	root = root||n1.ownerDocument.body;
 	var getAncestors = function(n){
 		var as=[];
 		while(n){
 			as.unshift(n);
-			if(n.nodeName!='BODY'){
+			if(n !== root){
 				n = n.parentNode;
 			}else{
 				break;
@@ -84,7 +85,7 @@ dijit.range.getCommonAncestor = function(n1,n2){
 	var m = Math.min(n1as.length,n2as.length);
 	var com = n1as[0]; //at least, one element should be in the array: the root (BODY by default)
 	for(var i=1;i<m;i++){
-		if(n1as[i]===n2as[i]){
+		if(n1as[i] === n2as[i]){
 			com = n1as[i]
 		}else{
 			break;
@@ -128,8 +129,8 @@ dijit.range.getBlockAncestor = function(/*DomNode*/node, /*RegEx?*/regex, /*DomN
 dijit.range.atBeginningOfContainer = function(/*DomNode*/container, /*DomNode*/node, /*Int*/offset){
 	var atBeginning = false;
 	var offsetAtBeginning = (offset == 0);
-	if(!offsetAtBeginning && node.nodeType==3){ //if this is a text node, check whether the left part is all space
-		if(dojo.trim(node.nodeValue.substr(0,offset))==0){
+	if(!offsetAtBeginning && node.nodeType == 3){ //if this is a text node, check whether the left part is all space
+		if(/^[\s\xA0]+$/.test(node.nodeValue.substr(0,offset))){
 			offsetAtBeginning = true;
 		}
 	}
@@ -150,8 +151,8 @@ dijit.range.atBeginningOfContainer = function(/*DomNode*/container, /*DomNode*/n
 dijit.range.atEndOfContainer = function(/*DomNode*/container, /*DomNode*/node, /*Int*/offset){
 	var atEnd = false;
 	var offsetAtEnd = (offset == (node.length || node.childNodes.length));
-	if(!offsetAtEnd && node.nodeType==3){ //if this is a text node, check whether the right part is all space
-		if(dojo.trim(node.nodeValue.substr(offset))==0){
+	if(!offsetAtEnd && node.nodeType == 3){ //if this is a text node, check whether the right part is all space
+		if(/^[\s\xA0]+$/.test(node.nodeValue.substr(offset))){
 			offsetAtEnd = true;
 		}
 	}
@@ -184,15 +185,15 @@ dijit.range.adjacentNoneTextNode=function(startnode, next){
 }
 
 dijit.range._w3c = Boolean(window['getSelection']);
-dijit.range.create = function(){
+dijit.range.create = function(/*Window?*/win){
 	if(dijit.range._w3c){
-		return dojo.doc.createRange();
+		return (win || dojo.global).document.createRange();
 	}else{//IE
 		return new dijit.range.W3CRange;
 	}
 }
 
-dijit.range.getSelection = function(win, /*Boolean?*/ignoreUpdate){
+dijit.range.getSelection = function(/*Window*/win, /*Boolean?*/ignoreUpdate){
 	if(dijit.range._w3c){
 		return win.getSelection();
 	}else{//IE
@@ -246,7 +247,7 @@ if(!dijit.range._w3c){
 			};
 		},
 		decomposeControlRange: function(range){
-			var firstnode = range.item(0), lastnode = range.item(range.length-1)
+			var firstnode = range.item(0), lastnode = range.item(range.length-1);
 			var startContainer = firstnode.parentNode, endContainer = lastnode.parentNode;
 			var startOffset = dijit.range.getIndex(firstnode, startContainer).o;
 			var endOffset = dijit.range.getIndex(lastnode, endContainer).o+1;
@@ -266,9 +267,9 @@ if(!dijit.range._w3c){
 						atmrange.moveToElementText(node);
 
 						if(atmrange.compareEndPoints(cmpstr,range) > 0){
-							startnode = node.previousSibling;
+							//startnode = node.previousSibling;
 							if(lastNode && lastNode.nodeType == 3){
-								//where share we put the start? in the text node or after?
+								//where shall we put the start? in the text node or after?
 								startnode = lastNode;
 								calOffset = true;
 							}else{
@@ -277,14 +278,14 @@ if(!dijit.range._w3c){
 								return false;
 							}
 						}else{
-							if(i==parentNode.childNodes.length-1){
+							if(i == parentNode.childNodes.length-1){
 								startnode = parentNode;
 								startOffset = parentNode.childNodes.length;
 								return false;
 							}
 						}
 					}else{
-						if(i==parentNode.childNodes.length-1){//at the end of this node
+						if(i == parentNode.childNodes.length-1){//at the end of this node
 							startnode = node;
 							calOffset = true;
 						}
@@ -323,9 +324,10 @@ if(!dijit.range._w3c){
 			//if at the end of startnode and we are dealing with start container, then
 			//move the startnode to nextSibling if it is a text node
 			//TODO: do this for end container?
-			if(!end && startnode.nodeType!=3 && startOffset == startnode.childNodes.length){
-				if(startnode.nextSibling && startnode.nextSibling.nodeType==3){
-					startnode = startnode.nextSibling;
+			if(!end && startnode.nodeType == 1 && startOffset == startnode.childNodes.length){
+				var nextnode=startnode.nextSibling;
+				if(nextnode && nextnode.nodeType == 3){
+					startnode = nextnode;
 					startOffset = 0;
 				}
 			}
@@ -337,20 +339,23 @@ if(!dijit.range._w3c){
 			if(container.nodeType!=3){ //normal node
 				if(offset > 0){
 					node = container.childNodes[offset-1];
-					if(node.nodeType==3){
-						container = node;
-						offset = node.length;
-						//pass through
-					}else{
-						if(node.nextSibling && node.nextSibling.nodeType==3){
-							container=node.nextSibling;
-							offset=0;
+					if(node){
+						if(node.nodeType == 3){
+							container = node;
+							offset = node.length;
 							//pass through
 						}else{
-							atmrange.moveToElementText(node.nextSibling?node:container);
-							var tempnode=node.parentNode.insertBefore(document.createTextNode(' '),node.nextSibling);
-							atmrange.collapse(false);
-							tempnode.parentNode.removeChild(tempnode);
+							if(node.nextSibling && node.nextSibling.nodeType == 3){
+								container=node.nextSibling;
+								offset=0;
+								//pass through
+							}else{
+								atmrange.moveToElementText(node.nextSibling?node:container);
+								var parent = node.parentNode;
+								var tempNode = parent.insertBefore(node.ownerDocument.createTextNode(' '), node.nextSibling);
+								atmrange.collapse(false);
+								parent.removeChild(tempNode);
+							}
 						}
 					}
 				}else{
@@ -358,7 +363,7 @@ if(!dijit.range._w3c){
 					atmrange.collapse(true);
 				}
 			}
-			if(container.nodeType==3){
+			if(container.nodeType == 3){
 				var prevnodeobj = dijit.range.adjacentNoneTextNode(container);
 				var prevnode = prevnodeobj[0];
 				len = prevnodeobj[1];
@@ -387,28 +392,31 @@ if(!dijit.range._w3c){
 		},
 		decomposeTextRange: function(range){
 			var tmpary = dijit.range.ie.getEndPoint(range);
-			var startContainter = tmpary[0], startOffset = tmpary[1];
-			var endContainter = tmpary[0], endOffset = tmpary[1];
+			var startContainer = tmpary[0], startOffset = tmpary[1];
+			var endContainer = tmpary[0], endOffset = tmpary[1];
 
 			if(range.htmlText.length){
 				if(range.htmlText == range.text){ //in the same text node
 					endOffset = startOffset+range.text.length;
 				}else{
 					tmpary = dijit.range.ie.getEndPoint(range,true);
-					endContainter = tmpary[0], endOffset = tmpary[1];
+					endContainer = tmpary[0], endOffset = tmpary[1];
+//					if(startContainer.tagName == "BODY"){
+//						startContainer = startContainer.firstChild;
+//					}
 				}
 			}
-			return [startContainter, startOffset,endContainter, endOffset];
+			return [startContainer, startOffset, endContainer, endOffset];
 		},
-		setRange: function(range, startContainter,
-			startOffset, endContainter, endOffset, collapsed){
-			var start=dijit.range.ie.setEndPoint(range, startContainter, startOffset);
+		setRange: function(range, startContainer,
+			startOffset, endContainer, endOffset, collapsed){
+			var start=dijit.range.ie.setEndPoint(range, startContainer, startOffset);
 
 			range.setEndPoint('StartToStart',start);
 			if(!collapsed){
-				var end=dijit.range.ie.setEndPoint(range, endContainter, endOffset);	
+				var end=dijit.range.ie.setEndPoint(range, endContainer, endOffset);
 			}
-			range.setEndPoint('EndToEnd',end||start);
+			range.setEndPoint('EndToEnd',end || start);
 
 			return range;
 		}
@@ -483,7 +491,7 @@ dojo.declare("dijit.range.W3CRange",null, {
 		this[what](node.parentNode, index.pop()+ext);
 	},
 	_getIERange: function(){
-		var r=(this._body||this.endContainer.ownerDocument.body).createTextRange();
+		var r = (this._body || this.endContainer.ownerDocument.body).createTextRange();
 		dijit.range.ie.setRange(r, this.startContainer, this.startOffset, this.endContainer, this.endOffset, this.collapsed);
 		return r;
 	},

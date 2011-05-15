@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Calendar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata/Calendar.php';
  * @category   Zend
  * @package    Zend_Gdata_Calendar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Calendar
@@ -41,7 +41,7 @@ class Zend_Gdata_Calendar_QuickAddTest extends PHPUnit_Framework_TestCase
                 true);
         $this->quickAdd = new Zend_Gdata_Calendar_Extension_QuickAdd();
     }
-      
+
     public function testEmptyQuickAddShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->quickAdd->extensionElements));
         $this->assertTrue(count($this->quickAdd->extensionElements) == 0);
@@ -63,12 +63,12 @@ class Zend_Gdata_Calendar_QuickAddTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->quickAdd->extensionAttributes));
         $this->assertTrue(count($this->quickAdd->extensionAttributes) == 0);
     }
-    
+
     public function testNormalQuickAddShouldHaveNoExtensionElements() {
         $this->quickAdd->value = false;
         $this->assertEquals($this->quickAdd->value, false);
         $this->assertEquals(count($this->quickAdd->extensionElements), 0);
-        $newQuickAdd = new Zend_Gdata_Calendar_Extension_QuickAdd(); 
+        $newQuickAdd = new Zend_Gdata_Calendar_Extension_QuickAdd();
         $newQuickAdd->transferFromXML($this->quickAdd->saveXML());
         $this->assertEquals(count($newQuickAdd->extensionElements), 0);
         $newQuickAdd->extensionElements = array(

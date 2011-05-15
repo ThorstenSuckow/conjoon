@@ -14,9 +14,9 @@ dojo.declare("dojox.widget._FileInfoPane",
 	//	delete our template string
 	templateString: "",
 	
-	// templatePath: string
-	//	Our template path
-	templatePath: dojo.moduleUrl("dojox.widget", "FilePicker/_FileInfoPane.html"),
+	// templateString: String
+	//		The template to be used to construct the widget.
+	templateString: dojo.cache("dojox.widget", "FilePicker/_FileInfoPane.html"),
 	
 	postMixInProperties: function(){
 		this._messages = dojo.i18n.getLocalization("dojox.widget", "FilePicker", this.lang);
@@ -174,7 +174,7 @@ dojo.declare("dojox.widget.FilePicker", dojox.widget.RollingList, {
 	_setPathValueAttr: function(/*string*/ path, /*boolean?*/ resetLastExec, /*function?*/ onSet){
 		// Summary: sets the value of this widget based off the given path
 		if(!path){
-			this.attr("value", null);
+			this.set("value", null);
 			return;
 		}
 		if(path.lastIndexOf(this.pathSeparator) == (path.length - 1)){
@@ -185,7 +185,7 @@ dojo.declare("dojox.widget.FilePicker", dojox.widget.RollingList, {
 											if(resetLastExec){ 
 												this._lastExecutedValue = v;
 											}
-											this.attr("value", v);
+											this.set("value", v);
 											if(onSet){ onSet(); }
 										},
 										scope: this});

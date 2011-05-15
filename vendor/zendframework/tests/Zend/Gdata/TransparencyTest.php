@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -40,7 +40,7 @@ class Zend_Gdata_TransparencyTest extends PHPUnit_Framework_TestCase
                 true);
         $this->transparency = new Zend_Gdata_Extension_Transparency();
     }
-    
+
     public function testEmptyTransparencyShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->transparency->extensionElements));
         $this->assertTrue(count($this->transparency->extensionElements) == 0);
@@ -62,14 +62,14 @@ class Zend_Gdata_TransparencyTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->transparency->extensionAttributes));
         $this->assertTrue(count($this->transparency->extensionAttributes) == 0);
     }
-    
+
     public function testNormalTransparencyShouldHaveNoExtensionElements() {
         $this->transparency->value = "http://schemas.google.com/g/2005#event.opaque";
-        
+
         $this->assertEquals("http://schemas.google.com/g/2005#event.opaque", $this->transparency->value);
-                
+
         $this->assertEquals(0, count($this->transparency->extensionElements));
-        $newTransparency = new Zend_Gdata_Extension_Transparency(); 
+        $newTransparency = new Zend_Gdata_Extension_Transparency();
         $newTransparency->transferFromXML($this->transparency->saveXML());
         $this->assertEquals(0, count($newTransparency->extensionElements));
         $newTransparency->extensionElements = array(

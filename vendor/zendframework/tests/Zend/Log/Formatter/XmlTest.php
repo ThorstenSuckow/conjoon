@@ -15,15 +15,14 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: XmlTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once dirname(__FILE__)."/../../../TestHelper.php";
-
-/** PHPUnit_Framework_TestCase */
-require_once 'PHPUnit/Framework/TestCase.php';
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Log_Formatter_XmlTest::main');
+}
 
 /** Zend_Log_Formatter_Xml */
 require_once 'Zend/Log/Formatter/Xml.php';
@@ -32,12 +31,18 @@ require_once 'Zend/Log/Formatter/Xml.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Log
  */
 class Zend_Log_Formatter_XmlTest extends PHPUnit_Framework_TestCase
 {
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+
     public function testDefaultFormat()
     {
         $f = new Zend_Log_Formatter_Xml();
@@ -46,22 +51,22 @@ class Zend_Log_Formatter_XmlTest extends PHPUnit_Framework_TestCase
         $this->assertContains('foo', $line);
         $this->assertContains((string)42, $line);
     }
-    
+
     public function testConfiguringElementMapping()
     {
         $f = new Zend_Log_Formatter_Xml('log', array('foo' => 'bar'));
         $line = $f->format(array('bar' => 'baz'));
         $this->assertContains('<log><foo>baz</foo></log>', $line);
     }
-    
+
     public function testXmlDeclarationIsStripped()
     {
         $f = new Zend_Log_Formatter_Xml();
         $line = $f->format(array('message' => 'foo', 'priority' => 42));
-        
+
         $this->assertNotContains('<\?xml version=', $line);
     }
-    
+
     public function testXmlValidates()
     {
         $f = new Zend_Log_Formatter_Xml();
@@ -95,4 +100,45 @@ class Zend_Log_Formatter_XmlTest extends PHPUnit_Framework_TestCase
 
         $this->assertContains('&amp;amp', $line);
     }
+
+    public function testConstructorWithArray()
+    {
+        $options = array(
+            'rootElement' => 'log',
+            'elementMap' => array(
+                'word' => 'message',
+                'priority' => 'priority'
+            )
+        );
+        $event = array(
+            'message' => 'tottakai',
+            'priority' => 4
+        );
+        $expected = '<log><word>tottakai</word><priority>4</priority></log>';
+
+        $formatter = new Zend_Log_Formatter_Xml($options);
+        $output = $formatter->format($event);
+        $this->assertContains($expected, $output);
+        $this->assertEquals('UTF-8', $formatter->getEncoding());
+    }
+
+    /**
+     * @group ZF-9176
+     */
+    public function testFactory()
+    {
+        $options = array(
+            'rootElement' => 'log',
+            'elementMap' => array(
+                'timestamp' => 'timestamp',
+                'response' => 'message'
+            )
+        );
+        $formatter = Zend_Log_Formatter_Xml::factory($options);
+        $this->assertType('Zend_Log_Formatter_Xml', $formatter);
+    }
+}
+
+if (PHPUnit_MAIN_METHOD == 'Zend_Log_Formatter_XmlTest::main') {
+    Zend_Log_Formatter_XmlTest::main();
 }

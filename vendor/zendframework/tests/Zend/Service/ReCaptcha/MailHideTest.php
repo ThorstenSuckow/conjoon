@@ -15,24 +15,22 @@
  * @category   Zend
  * @package    Zend_Service_ReCaptcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MailHideTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: MailHideTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /** @see Zend_Service_ReCaptcha_MailHide */
 require_once 'Zend/Service/ReCaptcha/MailHide.php';
+
+/** @see Zend_Config */
+require_once 'Zend/Config.php';
 
 /**
  * @category   Zend
  * @package    Zend_Service_ReCaptcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_ReCaptcha
@@ -95,7 +93,10 @@ class Zend_Service_ReCaptcha_MailHideTest extends PHPUnit_Framework_TestCase
         $server = Zend_Service_ReCaptcha_MailHide::MAILHIDE_SERVER;
         $pubKey = $this->_publicKey;
 
-        $this->assertNotSame(false, strstr($html, 'm<a href="' . $server . '?k=' . $pubKey . '&amp;c=mX82V4Dce5Y9dNGvrJszhI2ld_eMWxpNsMNovQGRrXs=" onclick="window.open(\'' . $server . '?k=' . $pubKey . '&amp;c=mX82V4Dce5Y9dNGvrJszhI2ld_eMWxpNsMNovQGRrXs=\', \'\', \'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300\'); return false;" title="Reveal this e-mail address">...</a>@example.com'));
+        // Static value of the encrypter version of mail@example.com
+        $encryptedEmail = 'XydrEdd6Eo90PE-LpxkmTEsq2G6SCeDzWkEQpF6f7v8=';
+
+        $this->assertNotSame(false, strstr($html, 'm<a href="' . $server . '?k=' . $pubKey . '&amp;c=' . $encryptedEmail . '" onclick="window.open(\'' . $server . '?k=' . $pubKey . '&amp;c=' . $encryptedEmail . '\', \'\', \'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300\'); return false;" title="Reveal this e-mail address">...</a>@example.com'));
     }
 
     public function testGetHtml() {

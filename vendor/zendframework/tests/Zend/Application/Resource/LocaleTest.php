@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: LocaleTest.php 23969 2011-05-03 14:48:31Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Application_Resource_LocaleTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * Zend_Loader_Autoloader
@@ -38,7 +33,7 @@ require_once 'Zend/Loader/Autoloader.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -106,6 +101,7 @@ class Zend_Application_Resource_LocaleTest extends PHPUnit_Framework_TestCase
         $options = array(
             'default'      => 'kok_IN',
             'registry_key' => 'Foo_Bar',
+            'force'        => true
         );
 
         $resource = new Zend_Application_Resource_Locale($options);
@@ -115,6 +111,76 @@ class Zend_Application_Resource_LocaleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('kok_IN', $locale->__toString());
         $this->assertTrue(Zend_Registry::isRegistered('Foo_Bar'));
         $this->assertSame(Zend_Registry::get('Foo_Bar'), $locale);
+    }
+
+    public function testOptionsPassedToResourceAreUsedToSetLocaleState1()
+    {
+        $options = array(
+            'default'      => 'kok_IN',
+        );
+
+        $resource = new Zend_Application_Resource_Locale($options);
+        $resource->setBootstrap($this->bootstrap);
+        $resource->init();
+        $locale   = $resource->getLocale();
+
+        // This test will fail if your configured locale is kok_IN
+        $this->assertEquals('kok_IN', $locale->__toString());
+        $this->assertSame(Zend_Registry::get('Zend_Locale'), $locale);
+    }
+
+    /**
+     * @group ZF-7058
+     */
+    public function testSetCache()
+    {
+        $cache = Zend_Cache::factory('Core', 'Black Hole', array(
+            'lifetime' => 120,
+            'automatic_serialization' => true
+        ));
+
+        $config = array(
+            'default' => 'fr_FR',
+            'cache' => $cache,
+        );
+        $resource = new Zend_Application_Resource_Locale($config);
+        $resource->init();
+        $backend = Zend_Locale::getCache()->getBackend();
+        $this->assertType('Zend_Cache_Backend_BlackHole', $backend);
+        Zend_Locale::removeCache();
+    }
+
+    /**
+     * @group ZF-7058
+     */
+    public function testSetCacheFromCacheManager()
+    {
+        $configCache = array(
+            'memory' => array(
+                'frontend' => array(
+                    'name' => 'Core',
+                    'options' => array(
+                        'lifetime' => 120,
+                        'automatic_serialization' => true
+                    )
+                ),
+                'backend' => array(
+                    'name' => 'Black Hole'
+                )
+            )
+        );
+        $this->bootstrap->registerPluginResource('cachemanager', $configCache);
+        $this->assertFalse(Zend_Locale::hasCache());
+
+        $config = array(
+            'bootstrap' => $this->bootstrap,
+            'cache' => 'memory',
+        );
+        $resource = new Zend_Application_Resource_Locale($config);
+        $resource->init();
+
+        $this->assertTrue(Zend_Locale::hasCache());
+        Zend_Locale::removeCache();
     }
 }
 

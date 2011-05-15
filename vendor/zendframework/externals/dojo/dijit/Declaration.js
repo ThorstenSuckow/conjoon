@@ -14,6 +14,10 @@ dojo.declare(
 		//		Flag to parser to leave alone the script tags contained inside of me
 		_noScript: true,
 
+		// stopParser: [private] Boolean
+		//		Flag to parser to not try and parse widgets declared inside of me
+		stopParser: true,
+
 		// widgetClass: String
 		//		Name of class being declared, ex: "acme.myWidget"
 		widgetClass: "",
@@ -35,7 +39,7 @@ dojo.declare(
 				regularConnects = dojo.query("> script[type^='dojo/connect']", src).orphan(),
 				srcType = src.nodeName;
 
-			var propList = this.defaults||{};
+			var propList = this.defaults || {};
 
 			// For all methods defined like <script type="dojo/method" event="foo">,
 			// add that method to prototype
@@ -54,7 +58,7 @@ dojo.declare(
 
 			propList.widgetsInTemplate = true;
 			propList._skipNodeCache = true;
-			propList.templateString = "<"+srcType+" class='"+src.className+"' dojoAttachPoint='"+(src.getAttribute("dojoAttachPoint")||'')+"' dojoAttachEvent='"+(src.getAttribute("dojoAttachEvent")||'')+"' >"+src.innerHTML.replace(/\%7B/g,"{").replace(/\%7D/g,"}")+"</"+srcType+">";
+			propList.templateString = "<"+srcType+" class='"+src.className+"' dojoAttachPoint='"+(src.getAttribute("dojoAttachPoint") || '')+"' dojoAttachEvent='"+(src.getAttribute("dojoAttachEvent") || '')+"' >"+src.innerHTML.replace(/\%7B/g,"{").replace(/\%7D/g,"}")+"</"+srcType+">";
 
 			// strip things so we don't create stuff under us in the initial setup phase
 			dojo.query("[dojoType]", src).forEach(function(node){
@@ -77,7 +81,7 @@ dojo.declare(
 			// in the _prototype_.
 			var connects = regularConnects.concat(postscriptConnects);
 			dojo.forEach(connects, function(s){
-				var evt = s.getAttribute("event")||"postscript",
+				var evt = s.getAttribute("event") || "postscript",
 					func = dojo.parser._functionFromScript(s);
 				dojo.connect(wc.prototype, evt, func);
 			});

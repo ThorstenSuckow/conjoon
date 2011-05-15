@@ -89,7 +89,8 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
 
     /**
      * Imports a new Twitter account into conjoon.
-     * Needed post parameters are "name" and "password".
+     * Needed post parameters are "name", "twitterId", "oauthToken" and
+     * "oauthTokenSecret".
      * The method will try to connect to the Twitter service to verify
      * the account credentials.
      * If this fails, the following information will be send to the client:
@@ -102,16 +103,23 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
      */
     public function addAccountAction()
     {
-        $name           = $this->_request->getParam('name');
-        $password       = $this->_request->getParam('password');
-        $updateInterval = $this->_request->getParam('updateInterval');
+        $name             = $this->_request->getParam('name');
+        $oauthToken       = $this->_request->getParam('oauthToken');
+        $oauthTokenSecret = $this->_request->getParam('oauthTokenSecret');
+        $twitterId        = $this->_request->getParam('twitterId');
+        $updateInterval   = $this->_request->getParam('updateInterval');
 
         /**
          * @see Conjoon_Service_Twitter_Proxy
          */
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $proxy = new Conjoon_Service_Twitter_Proxy($name, $password);
+        $proxy = new Conjoon_Service_Twitter_Proxy(array(
+            'oauth_token'        => $oauthToken,
+            'oauth_token_secret' => $oauthTokenSecret,
+            'user_id'            => $twitterId,
+            'screen_name'        => $name
+        ));
 
         $dto = $proxy->accountVerifyCredentials();
 
@@ -135,9 +143,11 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $model = new Conjoon_Modules_Service_Twitter_Account_Model_Account();
 
         $id = $model->addAccountForUserId(array(
-            'name'            => $name,
-            'update_interval' => $updateInterval,
-            'password'        => $password
+            'name'               => $name,
+            'update_interval'    => $updateInterval,
+            'oauth_token'        => $oauthToken,
+            'oauth_token_secret' => $oauthTokenSecret,
+            'twitter_id'         => $twitterId
         ), $this->_helper->registryAccess()->getUserId());
 
         if ($id == 0) {
@@ -306,4 +316,193 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
         $this->view->updated = $updated;
     }
 
+    /**
+     * Action redirects to Twitter for letting a user decide whether
+     * he wants conjoon give access to his Twitter Account via oauth.
+     * Note: When this action is called, conjoon is unaware of the fact
+     * whether the account the user is currently logged in with at Twitter
+     * is already registered at the datastore.
+     * This action will redirect to the oauth site url of Twitter and
+     * stop all script execution after this.
+     */
+    public function authorizeAccountAction()
+    {
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance();
+
+        $userId = $this->_helper->registryAccess()->getUserId();
+
+        $port     = $registry->getValueForKeyAndUserId('/server/environment/port', $userId);
+        $protocol = $registry->getValueForKeyAndUserId('/server/environment/protocol', $userId);
+        $host     = $registry->getValueForKeyAndUserId('/server/environment/host', $userId);
+
+        /**
+         * @see Zend_Session_Namespace
+         */
+        require_once 'Zend/Session/Namespace.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $sessionOauth = new Zend_Session_Namespace(
+            Conjoon_Keys::SESSION_SERVICE_TWITTER_OAUTH
+        );
+
+        /**
+         * @see Zend_Registry
+         */
+        require_once 'Zend/Registry.php';
+
+        $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+
+        $callbackUrl = $protocol . '://' . $host . ':' . $port . '/'
+                       . $config->environment->base_url . '/'
+                       . $config->application->twitter->oauth->callbackUrl;
+
+        $siteUrl        = $config->application->twitter->oauth->siteUrl;
+        $consumerKey    = $config->application->twitter->oauth->consumerKey;
+        $consumerSecret = $config->application->twitter->oauth->consumerSecret;
+
+        $options = array(
+            'callbackUrl'    => $callbackUrl,
+            'siteUrl'        => $siteUrl,
+            'consumerKey'    => $consumerKey,
+            'consumerSecret' => $consumerSecret
+        );
+
+        /**
+         * @see Zend_Oauth_Consumer
+         */
+        require_once 'Zend/Oauth/Consumer.php';
+        $consumer = new Zend_Oauth_Consumer($options);
+
+        $token = $consumer->getRequestToken();
+
+        $sessionOauth->oauthToken       = $token->getParam('oauth_token');
+        $sessionOauth->oauthTokenSecret = $token->getParam('oauth_token_secret');
+        $consumer->redirect();
+        die();
+    }
+
+    /**
+     * This is the action to which Twitter redirects once the user has authorized
+     * conjoon to use a specific Twitter account.
+     * Necessary configuration will be stored in the session. The Session parameters
+     * oauthToken and oauthTokenSecret must be available.
+     */
+    public function authorizeOkayAction()
+    {
+        $this->view->title = "conjoon - Twitter Account Authorization";
+
+        /**
+         * @see Zend_Session_Namespace
+         */
+        require_once 'Zend/Session/Namespace.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $sessionOauth = new Zend_Session_Namespace(
+            Conjoon_Keys::SESSION_SERVICE_TWITTER_OAUTH
+        );
+
+        if (!isset($sessionOauth->oauthToken) || !isset($sessionOauth->oauthTokenSecret)) {
+            die("invalid data.");
+        }
+
+        /**
+         * @see Zend_Oauth_Consumer
+         */
+        require_once 'Zend/Oauth/Consumer.php';
+
+        $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
+
+        /**
+         * @see Conjoon_Modules_Default_Registry_Facade
+         */
+        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+
+        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance();
+
+        $userId = $this->_helper->registryAccess()->getUserId();
+
+        $port     = $registry->getValueForKeyAndUserId('/server/environment/port', $userId);
+        $protocol = $registry->getValueForKeyAndUserId('/server/environment/protocol', $userId);
+        $host     = $registry->getValueForKeyAndUserId('/server/environment/host', $userId);
+
+        $callbackUrl = $protocol . '://' . $host . ':' . $port . '/'
+                       . $config->environment->base_url . '/'
+                       . $config->application->twitter->oauth->callbackUrl;
+
+        $siteUrl        = $config->application->twitter->oauth->siteUrl;
+        $consumerKey    = $config->application->twitter->oauth->consumerKey;
+        $consumerSecret = $config->application->twitter->oauth->consumerSecret;
+
+
+        $options = array(
+            'callbackUrl'    => $callbackUrl,
+            'siteUrl'        => $siteUrl,
+            'consumerKey'    => $consumerKey,
+            'consumerSecret' => $consumerSecret
+        );
+
+        $consumer = new Zend_Oauth_Consumer($options);
+
+        require_once 'Zend/Oauth/Token/Request.php';
+
+        $requestToken = new Zend_Oauth_Token_Request();
+
+        $requestToken->setParams(array(
+            'oauth_token'        => $sessionOauth->oauthToken,
+            'oauth_token_secret' => $sessionOauth->oauthTokenSecret
+        ));
+
+
+        $accessToken = $consumer->getAccessToken(
+            $_GET, $requestToken
+        );
+
+        require_once 'Zend/Oauth/Token/Access.php';
+
+        $screenName = $accessToken->getParam('screen_name');
+        $userId     = $accessToken->getParam('user_id');
+
+        $oauthToken       = $accessToken->getParam('oauth_token');
+        $oauthTokenSecret = $accessToken->getParam('oauth_token_secret');
+
+        require_once 'Conjoon/Service/Twitter/Proxy.php';
+
+
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+            'screen_name'        => $screenName,
+            'user_id'            => $userId,
+            'oauth_token'        => $oauthToken,
+            'oauth_token_secret' => $oauthTokenSecret
+        ));
+        $dto = $twitter->accountVerifyCredentials();
+
+        if ($dto instanceof Conjoon_Error) {
+            $this->view->success           = false;
+            $this->view->error             = $dto->getDto();
+            $this->view->connectionFailure = true;
+            return;
+        }
+
+        unset($sessionOauth->oauthToken);
+        unset($sessionOauth->oauthTokenSecret);
+
+        $dto->oauthToken       = $oauthToken;
+        $dto->oauthTokenSecret = $oauthTokenSecret;
+
+        $this->view->success = true;
+        $this->view->account = $dto;
+    }
 }

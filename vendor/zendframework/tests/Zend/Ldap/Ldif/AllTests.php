@@ -15,25 +15,23 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Ldap_Ldif_AllTests::main');
 }
 
+require_once 'Zend/Ldap/Ldif/SimpleEncoderTest.php';
+require_once 'Zend/Ldap/Ldif/SimpleDecoderTest.php';
+
 /**
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  * @group      Zend_Ldap_Ldif
@@ -49,15 +47,7 @@ class Zend_Ldap_Ldif_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Ldap_Ldif');
 
-        /**
-         * @see Zend_Ldap_Ldif_SimpleEncoderTest
-         */
-        require_once 'Zend/Ldap/Ldif/SimpleEncoderTest.php';
         $suite->addTestSuite('Zend_Ldap_Ldif_SimpleEncoderTest');
-        /**
-         * @see Zend_Ldap_Ldif_SimpleDecoderTest
-         */
-        require_once 'Zend/Ldap/Ldif/SimpleDecoderTest.php';
         $suite->addTestSuite('Zend_Ldap_Ldif_SimpleDecoderTest');
 
         if (defined('TESTS_ZEND_LDAP_ONLINE_ENABLED')

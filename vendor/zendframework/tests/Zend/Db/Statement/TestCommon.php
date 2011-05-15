@@ -15,22 +15,24 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 17857 2009-08-27 22:01:47Z ralph $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Db/TestSetup.php';
 
 require_once 'Zend/Db/Statement/Exception.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+
+
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Statement
@@ -324,7 +326,7 @@ abstract class Zend_Db_Statement_TestCommon extends Zend_Db_TestSetup
         } catch (Zend_Exception $e) {
             $this->assertType('Zend_Db_Statement_Exception', $e,
                 'Expecting object of type Zend_Db_Statement_Exception, got '.get_class($e));
-            $this->assertContains('invalid fetch mode', $e->getMessage());
+            $this->assertRegExp('#invalid fetch mode#i', $e->getMessage());
         }
     }
 
@@ -858,13 +860,14 @@ abstract class Zend_Db_Statement_TestCommon extends Zend_Db_TestSetup
         $this->assertEquals($valueArray, $stmt->getAttribute(1235), "Expected array #2");
         $this->assertEquals($value, $stmt->getAttribute(1234), "Expected '$value' #2");
     }
-    
+
     /**
      * @group ZF-7706
      */
     public function testStatementCanReturnDriverStatement()
     {
-        $statement = $this->_db->query('SELECT * FROM zfproducts');
+        $products = $this->_db->quoteIdentifier('zfproducts');
+        $statement = $this->_db->query("SELECT * FROM $products");
         $this->assertNotNull($statement->getDriverStatement());
         return $statement;
     }

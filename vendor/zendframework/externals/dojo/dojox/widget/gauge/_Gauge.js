@@ -116,7 +116,7 @@ dojo.declare("dojox.widget.gauge._Gauge",[dijit._Widget, dijit._Templated, dijit
 
 	// internal data
 	gaugeContent: undefined,
-	templatePath: dojo.moduleUrl("dojox.widget.gauge", "_Gauge.html"),
+	templateString: dojo.cache("dojox.widget.gauge", "_Gauge.html"),
 	_backgroundDefault: {color: '#E0E0E0'},
 	_rangeData: null,
 	_indicatorData: null,
@@ -184,9 +184,9 @@ dojo.declare("dojox.widget.gauge._Gauge",[dijit._Widget, dijit._Templated, dijit
 				this.removeIndicator(oldTicks._ticks[i]);
 			}
 		}
-		var t = { length: newTicks.length, 
-				  offset: newTicks.offset,
-				  noChange: true};
+		var t = {length: newTicks.length, 
+					offset: newTicks.offset,
+					noChange: true};
 		if(newTicks.color){ t.color = newTicks.color; }
 		if(newTicks.font){ t.font = newTicks.font; }
 		newTicks._ticks = [];
@@ -221,7 +221,7 @@ dojo.declare("dojox.widget.gauge._Gauge",[dijit._Widget, dijit._Templated, dijit
 		dojo.style(this.mouseNode, 'position', 'absolute');
 		dojo.style(this.mouseNode, 'z-index', '100');
 		if(this.useTooltip){
-			dijit.showTooltip('test',this.mouseNode);
+			dijit.showTooltip('test',this.mouseNode, !this.isLeftToRight());
 			dijit.hideTooltip(this.mouseNode);
 		}
 	},
@@ -405,7 +405,7 @@ dojo.declare("dojox.widget.gauge._Gauge",[dijit._Widget, dijit._Templated, dijit
 		if(this._lastHover != txt){
 			if(txt !== ''){ 
 				dijit.hideTooltip(this.mouseNode);
-				dijit.showTooltip(txt,this.mouseNode);
+				dijit.showTooltip(txt,this.mouseNode, !this.isLeftToRight());
 			}else{
 				dijit.hideTooltip(this.mouseNode);
 			}
@@ -681,15 +681,15 @@ dojo.declare("dojox.widget.gauge._Indicator",[dijit._Widget, dijit._Contained, d
 	// The title of the indicator, to be displayed next to it's input box for the text-representation.
 	title: "",
 
-	templatePath: dojo.moduleUrl("dojox.widget.gauge", "_Indicator.html"),
+	templateString: dojo.cache("dojox.widget.gauge", "_Indicator.html"),
 
-	startup: function() {
+	startup: function(){
 		if(this.onDragMove){
 			this.onDragMove = dojo.hitch(this.onDragMove);
 		}
 	},
 
-	postCreate: function() {
+	postCreate: function(){
 		if(this.title === ""){
 			dojo.style(this.domNode, "display", "none");
 		}
