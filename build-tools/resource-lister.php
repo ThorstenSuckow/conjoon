@@ -188,16 +188,6 @@ $resourceConfigs = array(
                 'dropFile'    => $dropFileConfig['javascript'][$buildType]
             ),
 
-            // layout-cardlayout - javascript only
-            array(
-                'name'        => 'layout-cardlayout - js',
-                'dir'         => '../vendor/ext-ux-layout-cardlayout/src',
-                'extensions'  => array('js'),
-                'pathReplace' => array('../vendor/ext-ux-layout-cardlayout/src', "../../js/ext-ux-layout-cardlayout/"),
-                'sections'    => array('build', 'dev'),
-                'dropFile'    => $dropFileConfig['javascript'][$buildType]
-            ),
-
             // flashcontrol - images only
             array(
                 'name'        => 'flashcontrol - images',
@@ -519,7 +509,16 @@ $final = array();
 foreach ($foundFiles as $dropFile => $sections) {
 
     foreach ($sections as $section => $fileEntries) {
-        file_put_contents($dropFile , implode("\n", $fileEntries));
+
+        $ufs = array();
+        for ($i = 0, $len = count($fileEntries); $i < $len; $i++) {
+            if (strpos($fileEntries[$i], " ") !== false) {
+                continue;
+            }
+            $ufs[] = $fileEntries[$i];
+        }
+
+        file_put_contents($dropFile , implode("\n", $ufs));
     }
 
 
