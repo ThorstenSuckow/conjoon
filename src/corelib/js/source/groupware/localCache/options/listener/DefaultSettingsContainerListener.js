@@ -209,6 +209,9 @@ com.conjoon.groupware.localCache.options.listener.DefaultSettingsContainerListen
      */
     onLocalCacheApiBuildFailure : function(adapter)
     {
+        this.container.getCachingContainer().getRebuildCacheCheckbox().setValue(
+            false
+        );
         this.container.setRequestPending(false);
     }
 

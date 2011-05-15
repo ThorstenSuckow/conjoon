@@ -137,12 +137,21 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                     this.fireEvent('clearfailure', this);
                 } else {
                     this.cacheEntryCount = succ.cacheEntryCount;
+
                     this.on(
                         'updateready', this._removeClearFlag, this,
                         {single : true}
                     );
 
+                    var api = com.conjoon.cudgets.localCache.Api;
+                    var stateBefore = api.getStatus();
                     window.applicationCache.update();
+                    var stateAfter = api.getStatus();
+                    if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
+                        this.un('updateready', this._removeClearFlag, this);
+                        this._removeClearFlag();
+                    }
+
                 }
 
         }, this);
@@ -165,12 +174,19 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                     this.fireEvent('buildfailure', this);
                 } else {
                     this.cacheEntryCount = succ.cacheEntryCount;
-                    this.on(
-                        'updateready', this._removeClearFlag.createDelegate(this, ['build']), this,
-                        {single : true}
-                    );
 
+                    var delegate = this._removeClearFlag.createDelegate(this, ['build']);
+
+                    this.on('updateready', delegate, this, {single : true});
+
+                    var api = com.conjoon.cudgets.localCache.Api;
+                    var stateBefore = api.getStatus();
                     window.applicationCache.update();
+                    var stateAfter = api.getStatus();
+                    if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
+                        this.un('updateready', delegate, this);
+                        this._removeClearFlag('build');
+                    }
                 }
 
         }, this);
@@ -217,13 +233,25 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
         this.on('progress',    this._onBuildProgress, this);
         this.on('updateready', this._onBuildUpdateReady, this, {single : true});
 
-        //try {
-            window.applicationCache.update();
-        //} catch (e) {
-        //    this.un('progress', this._onBuildProgress, this);
-        //    this.progressIndex = 0;
-        //    this.fireEvent('buildfailure', this);
-        //}
+        this.on('error', this._onError, this, {single : true});
+
+        var api = com.conjoon.cudgets.localCache.Api;
+        var stateBefore = api.getStatus();
+        window.applicationCache.update();
+        var stateAfter = api.getStatus();
+
+      if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
+            this.un('error', this._onError, this);
+            this.un('downloading', this._onDownloading, this);
+            this.un('progress',    this._onBuildProgress, this);
+            this.un('updateready', this._onBuildUpdateReady, this);
+            this.progressIndex = 0;
+            this.fireEvent('buildsuccess', this);
+        }
+
+        // in case of exception
+        // this.fireEvent('buildfailure', this);
+
     },
 
     /**
@@ -233,6 +261,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
     _onBuildUpdateReady : function()
     {
         window.applicationCache.swapCache();
+        this.un('error', this._onError, this);
         this.un('progress', this._onBuildProgress, this);
         this.progressIndex = 0;
 
@@ -244,6 +273,16 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
             com.conjoon.SystemMessageManager.hide();
             this.fireEvent('buildsuccess', this);
         }).defer(1000, this);
+    },
+
+    /**
+     *
+     * @private
+     */
+    _onError : function()
+    {
+        com.conjoon.SystemMessageManager.hide();
+        this.fireEvent('buildfailure', this);
     },
 
     /**
