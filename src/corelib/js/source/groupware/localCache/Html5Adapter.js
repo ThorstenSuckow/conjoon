@@ -291,16 +291,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
      */
     _onBuildProgress : function()
     {
-        // a little workaround for FF/Webkit adding the manifest
-        // as additional file to cache to the progress list
-        if (this.progressIndex == 0) {
-            this.progressIndex = -1;
-            return;
-        } else if (this.progressIndex == -1) {
-            this.progressIndex = 1;
-        } else {
-            this.progressIndex++;
-        }
+        this.progressIndex++;
 
         com.conjoon.SystemMessageManager.updateProgress(
             this.progressIndex/this.cacheEntryCount,
