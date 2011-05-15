@@ -31,10 +31,9 @@ com.conjoon.service.twitter.wizard.FinishCard = Ext.extend(Ext.ux.Wiz.Card, {
     {
         this.templates =  {
             master : new Ext.Template(
-                '<table style="margin-top:15px;" border="0", cellspacing="2" cellpadding="2">'+
+                '<table style="margin-top:25px;" border="0", cellspacing="2" cellpadding="2">'+
                     '<tbody>'+
-                    '<tr><td>'+com.conjoon.Gettext.gettext("Account name")+':</td><td>{name:htmlEncode}</td></tr>'+
-                    '<tr><td>'+com.conjoon.Gettext.gettext("Password")+':</td><td>{password}</td></tr>'+
+                    '<tr><td>'+com.conjoon.Gettext.gettext("Twitter account")+':</td><td>{name:htmlEncode}</td></tr>'+
                     '</tbody>'+
                 '</table>'
             )
@@ -58,7 +57,7 @@ com.conjoon.service.twitter.wizard.FinishCard = Ext.extend(Ext.ux.Wiz.Card, {
 
         this.items = [{
                 border    : false,
-                html      : "<div>"+com.conjoon.Gettext.gettext("You can now import your Twitter account. The Twitter service has to be contacted in order to verify your account settings.<br />Please verify your submitted data and correct them if necessary.")+"</div>",
+                html      : "<div>"+com.conjoon.Gettext.gettext("You can now import your Twitter account. The Twitter service will be contacted in order to verify your account settings.")+"</div>",
                 bodyStyle : 'background-color:#F6F6F6;margin:10px 0 10px 0'
             },
             this.contentPanel

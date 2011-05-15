@@ -102,9 +102,12 @@ class Service_TwitterController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy(
-            $accountDto->name, $accountDto->password
-        );
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+             'oauth_token'        => $accountDto->oauthToken,
+             'oauth_token_secret' => $accountDto->oauthTokenSecret,
+             'user_id'            => $accountDto->twitterId,
+             'screen_name'        => $accountDto->name
+        ));
 
         $tweets = $twitter->statusFriendsTimeline();
         $twitter->accountEndSession();
@@ -125,6 +128,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         $this->view->success = true;
         $this->view->tweets  = $dtoTweets;
         $this->view->error   = null;
+
     }
 
     /**
@@ -158,30 +162,65 @@ class Service_TwitterController extends Zend_Controller_Action {
             return;
         }
 
-        require_once 'Zend/Service/Twitter.php';
+        require_once 'Conjoon/Service/Twitter.php';
 
-        $twitter = new Zend_Service_Twitter($accountDto->name, $accountDto->password);
+        /**
+         * @see Zend_Oauth_Token_Access
+         */
+        require_once 'Zend/Oauth/Token/Access.php';
 
-        // retrieve the 100 firends
-        $friends = $twitter->user->friends();
+        $accessToken = new Zend_Oauth_Token_Access();
+        $accessToken->setParams(array(
+            'oauth_token'        => $accountDto->oauthToken,
+            'oauth_token_secret' => $accountDto->oauthTokenSecret,
+            'user_id'            => $accountDto->twitterId,
+            'screen_name'        => $accountDto->name,
+        ));
 
-        // Loop through results:
+        $twitter = new Conjoon_Service_Twitter(array(
+            'username'    => $accountDto->name,
+            'accessToken' => $accessToken
+        ));
+
+        $cursor = -1;
+
         $users = array();
 
-        if ($friends->user) {
-            foreach ($friends->user as $friend) {
-                $users[] = array(
-                    'id'              => (float)(string)$friend->id,
-                    'name'            => (string)$friend->name,
-                    'screenName'      => (string)$friend->screen_name,
-                    'location'        => (string)$friend->location,
-                    'profileImageUrl' => (string)$friend->profile_image_url,
-                    'url'             => (string)$friend->url,
-                    'description'     => (string)$friend->description,
-                    'protected'       => (string)$friend->protected,
-                    'followersCount'  => (int)(string)$friend->followers_count
-                );
+        while ($cursor != 0) {
+
+            $friends = $twitter->userFriends(array(
+                'id'   => $accountDto->twitterId,
+                'cursor' => $cursor
+            ));
+
+            if ($friends->user) {
+
+                // looks like we won't get an array if the twitter user
+                // has only one friend. instead we'll get directly a
+                // SimpleXMLElement
+                if (!is_array($friends->user)) {
+                    $friends->user = array($friends->user);
+                }
+
+                foreach ($friends->user as $friend) {
+
+                    $users[] = array(
+                        'id'              => (string)$friend->id,
+                        'name'            => (string)$friend->name,
+                        'screenName'      => (string)$friend->screen_name,
+                        'location'        => (string)$friend->location,
+                        'profileImageUrl' => (string)$friend->profile_image_url,
+                        'url'             => (string)$friend->url,
+                        'description'     => (string)$friend->description,
+                        'protected'       => (string)$friend->protected,
+                        'followersCount'  => (int)(string)$friend->followers_count
+                    );
+                }
+            } else {
+                break;
             }
+
+            $cursor = (string)$friends->next_cursor;
         }
 
         $twitter->account->endSession();
@@ -205,10 +244,10 @@ class Service_TwitterController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Error/Factory.php';
 
-        $userId    = (float)$this->_request->getParam('userId');
+        $userId    = (string)$this->_request->getParam('userId');
         $accountId = (int)$this->_request->getParam('id');
         $userName  = (string)$this->_request->getParam('userName');
-        $statusId  = (float)$this->_request->getParam('statusId');
+        $statusId  = (string)$this->_request->getParam('statusId');
 
         if ($userName != "" && $userId <= 0) {
             $userId = $userName;
@@ -250,9 +289,13 @@ class Service_TwitterController extends Zend_Controller_Action {
          */
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy(
-            $accountDto->name, $accountDto->password
-        );
+
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+            'oauth_token'        => $accountDto->oauthToken,
+            'oauth_token_secret' => $accountDto->oauthTokenSecret,
+            'user_id'            => $accountDto->twitterId,
+            'screen_name'        => $accountDto->name
+        ));
 
         if ($statusId > 0) {
             $tweets = $twitter->statusShow($statusId);
@@ -303,8 +346,8 @@ class Service_TwitterController extends Zend_Controller_Action {
         require_once 'Conjoon/Error/Factory.php';
 
         $accountId         = (int)$this->_request->getParam('accountId');
-        $inReplyToStatusId = (float)$this->_request->getParam('inReplyToStatusId');
-        $message            = (string)$this->_request->getParam('message');
+        $inReplyToStatusId = (string)$this->_request->getParam('inReplyToStatusId');
+        $message           = (string)$this->_request->getParam('message');
 
         if ($accountId <= 0) {
             $errorDto = Conjoon_Error_Factory::createError(
@@ -337,7 +380,12 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy($accountDto->name, $accountDto->password);
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+            'oauth_token'        => $accountDto->oauthToken,
+            'oauth_token_secret' => $accountDto->oauthTokenSecret,
+            'user_id'            => $accountDto->twitterId,
+            'screen_name'        => $accountDto->name
+        ));
 
         // check inReplyToStatusId and set to null if necessary
         $inReplyToStatusId = $inReplyToStatusId > 0 ? $inReplyToStatusId : null;
@@ -371,7 +419,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         require_once 'Conjoon/Error/Factory.php';
 
         $accountId  = (int)$this->_request->getParam('accountId');
-        $tweetId    = (float)$this->_request->getParam('tweetId');
+        $tweetId    = (string)$this->_request->getParam('tweetId');
 
         if ($accountId <= 0 || $tweetId <= 0) {
             $errorDto = Conjoon_Error_Factory::createError(
@@ -407,7 +455,12 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy($accountDto->name, $accountDto->password);
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+            'oauth_token'        => $accountDto->oauthToken,
+            'oauth_token_secret' => $accountDto->oauthTokenSecret,
+            'user_id'            => $accountDto->twitterId,
+            'screen_name'        => $accountDto->name
+        ));
 
         $result  = $twitter->deleteTweet($tweetId);
         $twitter->accountEndSession();
@@ -440,7 +493,7 @@ class Service_TwitterController extends Zend_Controller_Action {
         require_once 'Conjoon/Error/Factory.php';
 
         $accountId  = (int)$this->_request->getParam('accountId');
-        $tweetId    = (float)$this->_request->getParam('tweetId');
+        $tweetId    = (string)$this->_request->getParam('tweetId');
         /**
          * @todo Filter!!!
          */
@@ -482,7 +535,12 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy($accountDto->name, $accountDto->password);
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+            'oauth_token'        => $accountDto->oauthToken,
+            'oauth_token_secret' => $accountDto->oauthTokenSecret,
+            'user_id'            => $accountDto->twitterId,
+            'screen_name'        => $accountDto->name
+        ));
 
         $result  = $twitter->favoriteTweet($tweetId, $favorite);
         $twitter->accountEndSession();
@@ -552,10 +610,12 @@ class Service_TwitterController extends Zend_Controller_Action {
 
         require_once 'Conjoon/Service/Twitter/Proxy.php';
 
-        $twitter = new Conjoon_Service_Twitter_Proxy(
-            $accountDto->name,
-            $accountDto->password
-        );
+        $twitter = new Conjoon_Service_Twitter_Proxy(array(
+            'oauth_token'        => $accountDto->oauthToken,
+            'oauth_token_secret' => $accountDto->oauthTokenSecret,
+            'user_id'            => $accountDto->twitterId,
+            'screen_name'        => $accountDto->name
+        ));
 
         if ($createFriendship) {
             $result = $twitter->friendshipCreate($screenName);

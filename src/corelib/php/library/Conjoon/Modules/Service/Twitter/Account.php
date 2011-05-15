@@ -19,6 +19,11 @@
 require_once 'Conjoon/BeanContext.php';
 
 /**
+ * @see Zend_Oauth_Token_Access
+ */
+require_once 'Zend/Oauth/Token/Access.php';
+
+/**
  * @see Conjoon_Modules_Service_Twitter_Account_Dto
  */
 require_once 'Conjoon/Modules/Service/Twitter/Account/Dto.php';
@@ -39,7 +44,8 @@ class Conjoon_Modules_Service_Twitter_Account implements Conjoon_BeanContext, Se
     private $id;
     private $userId;
     private $name;
-    private $password;
+    private $oauthToken;
+    private $oauthTokenSecret;
     private $updateInterval;
     private $twitterId;
     private $twitterName;
@@ -64,7 +70,8 @@ class Conjoon_Modules_Service_Twitter_Account implements Conjoon_BeanContext, Se
     public function setId($id){$this->id = $id;}
     public function setUserId($userId){$this->userId = $userId;}
     public function setName($name){$this->name = $name;}
-    public function setPassword($password){$this->password = $password;}
+    public function setOauthToken($token){$this->oauthToken = $token;}
+    public function setOauthTokenSecret($token){$this->oauthTokenSecret = $token;}
     public function setUpdateInterval($updateInterval){$this->updateInterval = $updateInterval;}
     public function setTwitterId($twitterId){$this->twitterId = $twitterId;}
     public function setTwitterName($twitterName){$this->twitterName = $twitterName;}
@@ -79,7 +86,8 @@ class Conjoon_Modules_Service_Twitter_Account implements Conjoon_BeanContext, Se
     public function getId(){return $this->id;}
     public function getUserId(){return $this->userId;}
     public function getName(){return $this->name;}
-    public function getPassword(){return $this->password;}
+    public function getOauthToken(){return $this->oauthToken;}
+    public function getOauthTokenSecret(){return $this->oauthTokenSecret;}
     public function getPpdateInterval(){return $this->updateInterval;}
     public function getTwitterId(){return $this->twitterId;}
     public function getTwitterName(){return $this->twitterName;}
@@ -154,7 +162,8 @@ class Conjoon_Modules_Service_Twitter_Account implements Conjoon_BeanContext, Se
             'id'                     => $this->id,
             'userId'                 => $this->userId,
             'name'                   => $this->name,
-            'password'               => $this->password,
+            'oauthToken'             => $this->oauthToken,
+            'oauthTokenSecret'       => $this->oauthTokenSecret,
             'updateInterval'         => $this->updateInterval,
             'twitterId'              => $this->twitterId,
             'twitterName'            => $this->twitterName,
@@ -181,7 +190,8 @@ class Conjoon_Modules_Service_Twitter_Account implements Conjoon_BeanContext, Se
             'id'                     .': '.$this->id.', '.
             'userId'                 .': '.$this->userId.', '.
             'name'                   .': '.$this->name.', '.
-            'using password'         .': '.($this->password ? 'yes' : 'no').', '.
+            'oauthToken'             .': '.$this->oauthToken.', '.
+            'oauthTokenSecret'       .': '.($this->oauthTokenSecret ? '[yes]' : '[no]') .', '.
             'updateInterval'         .': '.$this->updateInterval.', '.
             'twitterId'              .': '.$this->twitterId.', '.
             'twitterName'            .': '.$this->twitterName.', '.

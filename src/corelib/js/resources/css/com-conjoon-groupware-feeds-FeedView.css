@@ -42,7 +42,9 @@
     padding:4px 4px 2px 52px;
 }
 
-.com-conjoon-groupware-feeds-FeedView-header .author, .name, .link {
+.com-conjoon-groupware-feeds-FeedView-header .author,
+.com-conjoon-groupware-feeds-FeedView-header .name,
+.com-conjoon-groupware-feeds-FeedView-header .link {
     margin-top:2px;
     font-size:11px;
     font-family:Tahoma, Verdana, Helvetica, Arial;

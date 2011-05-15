@@ -121,6 +121,7 @@ src/corelib/js/source/service/twitter/optionsDialog/SettingsCard.js
 src/corelib/js/source/service/twitter/optionsDialog/DialogListener.js
 src/corelib/js/source/service/twitter/data/AccountRecord.js
 src/corelib/js/source/service/twitter/data/AccountStore.js
+src/corelib/js/source/service/twitter/wizard/AccountWizardBaton.js
 src/corelib/js/source/service/twitter/wizard/AccountWizard.js
 src/corelib/js/source/service/twitter/wizard/AccountCard.js
 src/corelib/js/source/service/twitter/wizard/FinishCard.js

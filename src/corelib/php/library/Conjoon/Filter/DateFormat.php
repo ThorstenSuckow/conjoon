@@ -47,11 +47,6 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
      */
     private $_inputFormat = null;
 
-    /**
-     * @var Boolean
-     */
-    protected $_converted = false;
-
     public function __construct($format = null, $inputFormat = null)
     {
         if ($format != null) {
@@ -75,19 +70,22 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
      */
     public function filter($value)
     {
-        Zend_Date::setOptions(array('format_type' => 'php'));
+        // get Zend_Date options
+        $dateOptions = Zend_Date::setOptions();
 
-        if (!$this->_converted) {
-            if ($this->_inputFormat) {
-                $this->_inputFormat = Zend_Locale_Format::convertPhpToIsoFormat(
-                    $this->_inputFormat
-                );
-            }
+        // set format type to iso
+        Zend_Date::setOptions(array('format_type' => 'iso'));
 
-            $this->_format = Zend_Locale_Format::convertPhpToIsoFormat($this->_format);
+        $inputFormat = $this->_inputFormat;
+        $format      = $this->_format;
 
-            $this->_converted = true;
+        if ($inputFormat) {
+            $inputFormat = Zend_Locale_Format::convertPhpToIsoFormat(
+                $inputFormat
+            );
         }
+
+        $format = Zend_Locale_Format::convertPhpToIsoFormat($format);
 
         $d = $value;
 
@@ -97,7 +95,7 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
 
         if ($d === false) {
             try {
-                $date = new Zend_Date($value, $this->_inputFormat);
+                $date = new Zend_Date($value, $inputFormat);
             } catch (Zend_Date_Exception $e) {
                 $date = new Zend_Date("1970-01-01 00:00:00");
             }
@@ -109,9 +107,10 @@ class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
             }
         }
 
-        $d = $date->get($this->_format);
+        $d = $date->get($format);
 
-        Zend_Date::setOptions(array('format_type' => 'iso'));
+        Zend_Date::setOptions(array('format_type' => $dateOptions['format_type']));
+
         return $d;
     }
 }

@@ -30,7 +30,25 @@ com.conjoon.service.twitter.optionsDialog.ContainerUi = Ext.extend(
      * @cfg {String} removeMsg The message to show if confirmBeforeRemove is set to true and the user
      * must confirm removing an entry.
      */
-    removeMsg : com.conjoon.Gettext.gettext("Do you really want to remove the Twitter account \"{0}\"?"),
+    removeMsg : com.conjoon.Gettext.gettext("Do you really want to remove the Twitter account \"{0}\"? Please make also sure to update your application settings at <a target=\"_blank\" href=\"{1}\">{1}</a> accordingly."),
+
+    /**
+     * Inits the layout of the container.
+     * gets called from the initComponent's "initComponent()" method.
+     *
+     * @param {Ext.Container} container The container this ui will manage.
+     */
+    init : function(container)
+    {
+        if (this.container) {
+            return;
+        }
+
+        this.additionalMessageValues = ["http://twitter.com/settings/applications"];
+
+        com.conjoon.service.twitter.optionsDialog.ContainerUi
+        .superclass.init.call(this, container);
+    },
 
     /**
      * Returns an array with {Ext.FormPanel}s used to edit the

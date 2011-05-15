@@ -36,6 +36,8 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
 class Conjoon_Modules_Service_Twitter_Account_Model_Account
    extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable{
 
+    const UPDATE_INTERVAL_DEFAULT = 60000;
+
     /**
      * The name of the table in the underlying datastore this
      * class represents.
@@ -99,23 +101,31 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
      * Adss a Twitter account to the db.
      *
      * @param Array $data An assoc array with the following key/value pairs:
-     * name, password, updateInterval
+     * name, oauth_token, oauth_token_secret, updateInterval, twitter_id
      * @param integer $userId id of the ser for whom the data will be added
      *
      * @return the id of the added data, or 0 if an error occurred
      */
     public function addAccountForUserId($data, $userId)
     {
-        if (!isset($data['update_interval'])) {
-            return 0;
-        }
-
         if (!isset($data['name'])) {
             return 0;
         }
 
-        if (!isset($data['password'])) {
+        if (!isset($data['oauth_token'])) {
             return 0;
+        }
+
+        if (!isset($data['twitter_id'])) {
+            return 0;
+        }
+
+        if (!isset($data['oauth_token_secret'])) {
+            return 0;
+        }
+
+        if (!isset($data['update_interval'])) {
+            $data['update_interval'] = self::UPDATE_INTERVAL_DEFAULT;
         }
 
         $userId = (int)$userId;
@@ -126,7 +136,9 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
 
         $whiteList = array(
             'name',
-            'password',
+            'oauth_token',
+            'oauth_token_secret',
+            'twitter_id',
             'update_interval'
         );
 
@@ -143,6 +155,22 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
         }
 
         $addData['user_id'] = $userId;
+
+        // we will first look up a twitter account that has
+        // already the twitterid, the name and the userid.
+        // if found, we will update it with the data.
+        $row = $this->fetchRow(
+            $this->select()
+                ->where('user_id=?',    $addData['user_id'])
+                ->where('twitter_id=?', $addData['twitter_id'])
+                ->where('name=?',       $addData['name'])
+        );
+
+        if ($row && ($row instanceof Zend_Db_Table_Row)) {
+            $where = $this->getAdapter()->quoteInto('id = ?', $row->id, 'INTEGER');
+            $affected = $this->update($addData, $where);
+            return (int)$row->id;
+        }
 
         $id = $this->insert($addData);
 
@@ -197,8 +225,6 @@ class Conjoon_Modules_Service_Twitter_Account_Model_Account
         $updateData = array();
 
         $whiteList = array(
-            'name',
-            'password',
             'update_interval'
         );
 

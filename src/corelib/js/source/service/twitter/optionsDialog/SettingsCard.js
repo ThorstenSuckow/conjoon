@@ -37,11 +37,6 @@ com.conjoon.service.twitter.optionsDialog.SettingsCard = Ext.extend(com.conjoon.
     nameField : null,
 
     /**
-     * @type {Ext.form.TextField} passwordField The password for the account.
-     */
-    passwordField : null,
-
-    /**
      * @type {Ext.form.Combo} updateIntervalCombo  Combobox to store update/refresh
      * behavior.
      */
@@ -69,18 +64,10 @@ com.conjoon.service.twitter.optionsDialog.SettingsCard = Ext.extend(com.conjoon.
             fieldLabel      : com.conjoon.Gettext.gettext("Twitter user"),
             allowBlank      : false,
             validator       : this.isNameValid.createDelegate(this),
-            itemCls         : 'com-conjoon-margin-b-10',
-            enableKeyEvents : true,
-            name            : 'name'
-        });
-
-        this.passwordField = new Ext.form.TextField({
-            fieldLabel      : com.conjoon.Gettext.gettext("Password"),
-            allowBlank      : false,
-            inputType       : 'password',
             itemCls         : 'com-conjoon-margin-b-15',
             enableKeyEvents : true,
-            name            : 'password'
+            name            : 'name',
+            disabled        : true
         });
 
         this.updateIntervalCombo = new Ext.form.ComboBox({
@@ -135,7 +122,6 @@ com.conjoon.service.twitter.optionsDialog.SettingsCard = Ext.extend(com.conjoon.
             title : com.conjoon.Gettext.gettext("Account settings"),
             items : [
                 this.nameField,
-                this.passwordField,
                 new Ext.form.FieldSet({
                     defaults : {
                         labelStyle : 'font-size:11px',

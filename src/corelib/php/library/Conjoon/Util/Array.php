@@ -187,5 +187,52 @@ class Conjoon_Util_Array  {
     {
         return $a === $b ? $a + 1 : 0;
     }
-
+    
+    /**
+     * Checks whether a given array provides the listed keys.
+     * The method will eitehr return true if all keys are available or 
+     * the name of the first key that was missing.
+     * 
+     * @param array $array The associative array to check
+     * @param array $keys The list of keys to check for availability in 
+     * $array
+     *
+     * @return boolean|string either true if none of the keys in $list
+     * was missing as a key in $array, or the name of the first key that
+     * was found missing
+     */
+    public static function arrayKeysExist(Array $array, Array $keys)
+    {
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $array)) {
+                return $key;                
+            }    
+        }    
+        
+        return true;
+    }
+     
+    /**
+     * Extracts the specified keys from the array and saves them into a new array
+     * with their according values.
+     * 
+     * @param array $array The associative array to extract data from
+     * @param array $keys The list of keys which values should be extracted from 
+     * $array
+     *
+     * @return boolean|array either false if a key was missing in $array, or
+     * a new array with the extracted values
+     */
+    public static function extractByKeys(Array $array, Array $keys)
+    {
+        $new = array();
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $array)) {
+                return false;                
+            }    
+            $new[$key] = $array[$key];
+        }    
+        
+        return $new;
+    }
 }

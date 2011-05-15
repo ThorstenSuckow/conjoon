@@ -60,6 +60,13 @@ class Conjoon_Modules_Default_Registry {
             'server' => array(
                 'php' => array(
                     'max_execution_time' => ini_get('max_execution_time')
+                ),
+                'environment' => array(
+                    'protocol' => ((stripos($_SERVER['SERVER_PROTOCOL'], 'https') === false)
+                                  ? 'http'
+                                  : 'https'),
+                    'host'     => $_SERVER['SERVER_NAME'],
+                    'port'     => $_SERVER['SERVER_PORT']
                 )
             ),
             'base' => array(
