@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Version
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: VersionTest.php 18516 2009-10-12 16:42:32Z matthew $
+ * @version    $Id: VersionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_VersionTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../TestHelper.php';
 
 /**
  * @see Zend_Version
@@ -38,7 +33,7 @@ require_once 'Zend/Version.php';
  * @category   Zend
  * @package    Zend_Version
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Version
  */
@@ -59,7 +54,7 @@ class Zend_VersionTest extends PHPUnit_Framework_TestCase
         $expect = -1;
         // unit test breaks if ZF version > 1.x
         for ($i=0; $i <= 1; $i++) {
-            for ($j=0; $j < 10; $j++) {
+            for ($j=0; $j < 12; $j++) {
                 for ($k=0; $k < 20; $k++) {
                     foreach (array('dev', 'pr', 'PR', 'alpha', 'a1', 'a2', 'beta', 'b1', 'b2', 'RC', 'RC1', 'RC2', 'RC3', '', 'pl1', 'PL1') as $rel) {
                         $ver = "$i.$j.$k$rel";
@@ -74,7 +69,7 @@ class Zend_VersionTest extends PHPUnit_Framework_TestCase
                             }
                         } else {
                             $this->assertSame(
-                                Zend_Version::compareVersion($ver), 
+                                Zend_Version::compareVersion($ver),
                                 $expect,
                                 "For version '$ver' and Zend_Version::VERSION = '"
                                 . Zend_Version::VERSION . "': result=" . (Zend_Version::compareVersion($ver))
@@ -89,6 +84,18 @@ class Zend_VersionTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group ZF-10363
+     */
+    public function testFetchLatestVersion()
+    {
+        $actual = Zend_Version::getLatest();
+        if ('not available' === $actual) {
+            $this->markTestIncomplete('http://framework.zend.com/ may be down');
+        }
+
+        $this->assertRegExp('/^[1-2](\.[0-9]+){2}/', $actual);
+    }
 }
 
 if (PHPUnit_MAIN_METHOD == "Zend_VersionTest::main") {

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -40,7 +40,7 @@ class Zend_Gdata_ExtendedPropertyTest extends PHPUnit_Framework_TestCase
                 true);
         $this->extendedProperty = new Zend_Gdata_Extension_ExtendedProperty();
     }
-    
+
     public function testEmptyExtendedPropertyShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->extendedProperty->extensionElements));
         $this->assertTrue(count($this->extendedProperty->extensionElements) == 0);
@@ -62,16 +62,16 @@ class Zend_Gdata_ExtendedPropertyTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->extendedProperty->extensionAttributes));
         $this->assertTrue(count($this->extendedProperty->extensionAttributes) == 0);
     }
-    
+
     public function testNormalExtendedPropertyShouldHaveNoExtensionElements() {
         $this->extendedProperty->name = "http://www.example.com/schemas/2007#mycal.foo";
         $this->extendedProperty->value = "5678";
-        
+
         $this->assertEquals("http://www.example.com/schemas/2007#mycal.foo", $this->extendedProperty->name);
         $this->assertEquals("5678", $this->extendedProperty->value);
-                
+
         $this->assertEquals(0, count($this->extendedProperty->extensionElements));
-        $newExtendedProperty = new Zend_Gdata_Extension_ExtendedProperty(); 
+        $newExtendedProperty = new Zend_Gdata_Extension_ExtendedProperty();
         $newExtendedProperty->transferFromXML($this->extendedProperty->saveXML());
         $this->assertEquals(0, count($newExtendedProperty->extensionElements));
         $newExtendedProperty->extensionElements = array(

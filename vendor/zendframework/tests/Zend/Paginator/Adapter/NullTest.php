@@ -15,10 +15,15 @@
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NullTest.php 16225 2009-06-21 20:34:55Z thomas $
+ * @version    $Id: NullTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
+
+/**
+ * @see Zend_Paginator
+ */
+require_once 'Zend/Paginator.php';
 
 /**
  * @see Zend_Paginator_Adapter_Null
@@ -28,14 +33,14 @@ require_once 'Zend/Paginator/Adapter/Null.php';
 /**
  * @see PHPUnit_Framework_TestCase
  */
-require_once 'PHPUnit/Framework/TestCase.php';
 
 /**
  * @category   Zend
  * @package    Zend_Paginator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Paginator
  */
 class Zend_Paginator_Adapter_NullTest extends PHPUnit_Framework_TestCase
 {
@@ -43,7 +48,7 @@ class Zend_Paginator_Adapter_NullTest extends PHPUnit_Framework_TestCase
      * @var Zend_Paginator_Adapter_Array
      */
     private $_adapter;
-    
+
     /**
      * Prepares the environment before running a test.
      */
@@ -60,15 +65,57 @@ class Zend_Paginator_Adapter_NullTest extends PHPUnit_Framework_TestCase
         $this->_adapter = null;
         parent::tearDown();
     }
-    
+
     public function testGetsItems()
     {
         $actual = $this->_adapter->getItems(0, 10);
         $this->assertEquals(array_fill(0, 10, null), $actual);
     }
-    
+
     public function testReturnsCorrectCount()
     {
         $this->assertEquals(101, $this->_adapter->count());
+    }
+
+    /**
+     * @group ZF-3873
+     */
+    public function testAdapterReturnsCorrectValues()
+    {
+        $paginator = Zend_Paginator::factory(2);
+        $paginator->setCurrentPageNumber(1);
+        $paginator->setItemCountPerPage(5);
+
+        $pages = $paginator->getPages();
+
+        $this->assertEquals(2, $pages->currentItemCount);
+        $this->assertEquals(2, $pages->lastItemNumber);
+
+        $paginator = Zend_Paginator::factory(19);
+        $paginator->setCurrentPageNumber(4);
+        $paginator->setItemCountPerPage(5);
+
+        $pages = $paginator->getPages();
+
+        $this->assertEquals(4, $pages->currentItemCount);
+        $this->assertEquals(19, $pages->lastItemNumber);
+    }
+
+    /**
+     * @group ZF-4151
+     */
+    public function testEmptySet() {
+        $this->_adapter = new Zend_Paginator_Adapter_Null(0);
+        $actual = $this->_adapter->getItems(0, 10);
+        $this->assertEquals(array(), $actual);
+    }
+    
+    /**
+     * Verify that the fix for ZF-4151 doesn't create an OBO error
+     */
+    public function testSetOfOne() {
+        $this->_adapter = new Zend_Paginator_Adapter_Null(1);
+        $actual = $this->_adapter->getItems(0, 10);
+        $this->assertEquals(array_fill(0, 1, null), $actual);
     }
 }

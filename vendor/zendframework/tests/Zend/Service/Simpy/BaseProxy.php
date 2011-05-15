@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_Simpy
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpyTest.php 11973 2008-10-15 16:00:56Z matthew $
+ * @version    $Id: BaseProxy.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Service/Simpy.php';
  * @category   Zend
  * @package    Zend_Service_Simpy
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Service_Simpy_BaseProxy
@@ -49,7 +49,7 @@ abstract class Zend_Service_Simpy_BaseProxy
     protected $_test;
 
     /**
-     * Mapping of methods to the number of calls made per method for the 
+     * Mapping of methods to the number of calls made per method for the
      * current test case being executed
      *
      * @var array
@@ -90,7 +90,7 @@ abstract class Zend_Service_Simpy_BaseProxy
     }
 
     /**
-     * Returns the path to the file intended to contain the service consumer 
+     * Returns the path to the file intended to contain the service consumer
      * response for the current method call.
      *
      * @param string $name Name of the method being called

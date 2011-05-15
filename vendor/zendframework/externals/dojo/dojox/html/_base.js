@@ -139,9 +139,28 @@ dojo.require("dojo.html");
 		//	byRef will have {code: 'jscode'} when this scope leaves
 		byRef.code = "";
 
+		//Update script tags nested in comments so that the script tag collector doesn't pick
+		//them up.
+		cont = cont.replace(/<[!][-][-](.|\s){5,}?[-][-]>/g,
+			function(comment){
+				return comment.replace(/<(\/?)script\b/ig,"&lt;$1Script");
+			}
+		);
+
 		function download(src){
 			if(byRef.downloadRemote){
 				// console.debug('downloading',src);
+				//Fix up src, in case there were entity character encodings in it.
+				//Probably only need to worry about a subset.
+				src = src.replace(/&([a-z0-9#]+);/g, function(m, name) {
+					switch(name) {
+						case "amp"	: return "&";
+						case "gt"	: return ">";
+						case "lt"	: return "<";
+						default:
+							return name.charAt(0)=="#" ? String.fromCharCode(name.substring(1)) : "&"+name+";";
+					}
+				});
 				dojo.xhrGet({
 					url: src,
 					sync: true,
@@ -154,7 +173,7 @@ dojo.require("dojo.html");
 		}
 		
 		// match <script>, <script type="text/..., but not <script type="dojo(/method)...
-		return cont.replace(/<script\s*(?![^>]*type=['"]?dojo)(?:[^>]*?(?:src=(['"]?)([^>]*?)\1[^>]*)?)*>([\s\S]*?)<\/script>/gi,
+		return cont.replace(/<script\s*(?![^>]*type=['"]?(?:dojo\/|text\/html\b))(?:[^>]*?(?:src=(['"]?)([^>]*?)\1[^>]*)?)*>([\s\S]*?)<\/script>/gi,
 			function(ignore, delim, src, code){
 				if(src){
 					download(src);

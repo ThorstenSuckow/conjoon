@@ -15,20 +15,15 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ImageSizeTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ImageSizeTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Validate_File_ImageSizeTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Validate_File_ImageSizeTest::main");
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Validate_File_ImageSize
@@ -39,7 +34,7 @@ require_once 'Zend/Validate/File/ImageSize.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -86,7 +81,7 @@ class Zend_Validate_File_ImageSizeTest extends PHPUnit_Framework_TestCase
         $validator = new Zend_Validate_File_ImageSize(array('minwidth' => 0, 'minheight' => 10, 'maxwidth' => 1000, 'maxheight' => 2000));
         $this->assertEquals(false, $validator->isValid(dirname(__FILE__) . '/_files/nofile.jpg'));
         $failures = $validator->getMessages();
-        $this->assertContains('can not be read', $failures['fileImageSizeNotReadable']);
+        $this->assertContains('is not readable', $failures['fileImageSizeNotReadable']);
 
         $file['name'] = 'TestName';
         $validator = new Zend_Validate_File_ImageSize(array('minwidth' => 0, 'minheight' => 10, 'maxwidth' => 1000, 'maxheight' => 2000));

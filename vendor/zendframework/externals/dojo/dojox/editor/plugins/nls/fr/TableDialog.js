@@ -1,6 +1,6 @@
 ({
-	insertTableTitle: "Insérer un tableau",
-	modifyTableTitle: "Modifier un tableau",
+	insertTableTitle: "Insérer une table",
+	modifyTableTitle: "Modifier une table",
 	rows: "Lignes :",
 	columns: "Colonnes :",
 	align: "Aligner :",
@@ -10,7 +10,6 @@
 	backgroundColor: "Couleur d'arrière-plan :",
 	borderColor: "Couleur des bordures :",
 	borderThickness: "Epaisseur des bordures",
-	pixels: "Pixels",
 	percent: "pourcentage",
 	pixels: "pixels",
 	"default": "par défaut",
@@ -19,6 +18,7 @@
 	right: "aligné à droite",
 	buttonSet: "Définir", // translated elsewhere?
 	buttonInsert: "Insérer",
+	buttonCancel: "Annuler",
 
 	selectTableLabel: "Sélectionner une table",
 	insertTableRowBeforeLabel: "Ajouter une ligne avant",
@@ -28,3 +28,4 @@
 	deleteTableRowLabel: "Supprimer la ligne",
 	deleteTableColumnLabel: "Supprimer la colonne"
 })
+	

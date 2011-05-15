@@ -15,8 +15,8 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Registry.php 16541 2009-07-07 06:59:03Z bkarwin $
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Registry.php 23775 2011-03-01 17:25:24Z ralph $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,9 +34,9 @@ require_once 'Zend/View/Helper/Placeholder/Container.php';
  *
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- */ 
+ */
 class Zend_View_Helper_Placeholder_Registry
 {
     /**
@@ -59,7 +59,7 @@ class Zend_View_Helper_Placeholder_Registry
 
     /**
      * Retrieve or create registry instnace
-     * 
+     *
      * @return void
      */
     public static function getRegistry()
@@ -75,24 +75,24 @@ class Zend_View_Helper_Placeholder_Registry
     }
 
     /**
-     * createContainer 
-     * 
-     * @param  string $key 
-     * @param  array $value 
+     * createContainer
+     *
+     * @param  string $key
+     * @param  array $value
      * @return Zend_View_Helper_Placeholder_Container_Abstract
      */
     public function createContainer($key, array $value = array())
     {
         $key = (string) $key;
 
-        $this->_items[$key] = new $this->_containerClass(array());
+        $this->_items[$key] = new $this->_containerClass($value);
         return $this->_items[$key];
     }
 
     /**
      * Retrieve a placeholder container
-     * 
-     * @param  string $key 
+     *
+     * @param  string $key
      * @return Zend_View_Helper_Placeholder_Container_Abstract
      */
     public function getContainer($key)
@@ -109,8 +109,8 @@ class Zend_View_Helper_Placeholder_Registry
 
     /**
      * Does a particular container exist?
-     * 
-     * @param  string $key 
+     *
+     * @param  string $key
      * @return bool
      */
     public function containerExists($key)
@@ -122,9 +122,9 @@ class Zend_View_Helper_Placeholder_Registry
 
     /**
      * Set the container for an item in the registry
-     * 
-     * @param  string $key 
-     * @param  Zend_View_Placeholder_Container_Abstract $container 
+     *
+     * @param  string $key
+     * @param  Zend_View_Placeholder_Container_Abstract $container
      * @return Zend_View_Placeholder_Registry
      */
     public function setContainer($key, Zend_View_Helper_Placeholder_Container_Abstract $container)
@@ -136,8 +136,8 @@ class Zend_View_Helper_Placeholder_Registry
 
     /**
      * Delete a container
-     * 
-     * @param  string $key 
+     *
+     * @param  string $key
      * @return bool
      */
     public function deleteContainer($key)
@@ -153,8 +153,8 @@ class Zend_View_Helper_Placeholder_Registry
 
     /**
      * Set the container class to use
-     * 
-     * @param  string $name 
+     *
+     * @param  string $name
      * @return Zend_View_Helper_Placeholder_Registry
      */
     public function setContainerClass($name)
@@ -167,7 +167,9 @@ class Zend_View_Helper_Placeholder_Registry
         $reflection = new ReflectionClass($name);
         if (!$reflection->isSubclassOf(new ReflectionClass('Zend_View_Helper_Placeholder_Container_Abstract'))) {
             require_once 'Zend/View/Helper/Placeholder/Registry/Exception.php';
-            throw new Zend_View_Helper_Placeholder_Registry_Exception('Invalid Container class specified');
+            $e = new Zend_View_Helper_Placeholder_Registry_Exception('Invalid Container class specified');
+            $e->setView($this->view);
+            throw $e;
         }
 
         $this->_containerClass = $name;
@@ -176,7 +178,7 @@ class Zend_View_Helper_Placeholder_Registry
 
     /**
      * Retrieve the container class
-     * 
+     *
      * @return string
      */
     public function getContainerClass()

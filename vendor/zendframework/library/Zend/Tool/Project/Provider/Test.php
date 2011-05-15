@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Test.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Test.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -33,14 +33,14 @@ require_once 'Zend/Tool/Project/Provider/Exception.php';
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Provider_Test extends Zend_Tool_Project_Provider_Abstract
 {
-    
+
     protected $_specialties = array('Application', 'Library');
-    
+
     /**
      * isTestingEnabled()
      *
@@ -51,8 +51,23 @@ class Zend_Tool_Project_Provider_Test extends Zend_Tool_Project_Provider_Abstrac
     {
         $profileSearchParams = array('testsDirectory');
         $testsDirectory = $profile->search($profileSearchParams);
-        
+
         return $testsDirectory->isEnabled();
+    }
+
+    public static function isPHPUnitAvailable()
+    {
+        if (class_exists('PHPUnit_Runner_Version', false)) {
+            return true;
+        }
+        
+        $included = @include 'PHPUnit/Runner/Version.php';
+        
+        if ($included === false) {
+            return false;
+        } else {
+            return true;
+        }
     }
     
     /**
@@ -69,29 +84,39 @@ class Zend_Tool_Project_Provider_Test extends Zend_Tool_Project_Provider_Abstrac
         if (!is_string($controllerName)) {
             throw new Zend_Tool_Project_Provider_Exception('Zend_Tool_Project_Provider_View::createApplicationResource() expects \"controllerName\" is the name of a controller resource to create.');
         }
-        
+
         if (!is_string($actionName)) {
             throw new Zend_Tool_Project_Provider_Exception('Zend_Tool_Project_Provider_View::createApplicationResource() expects \"actionName\" is the name of a controller resource to create.');
         }
-        
+
         $testsDirectoryResource = $profile->search('testsDirectory');
-        
-        if (($testAppDirectoryResource = $testsDirectoryResource->search('testApplicationDirectory')) === false) {
-            $testAppDirectoryResource = $testsDirectoryResource->createResource('testApplicationDirectory');
+
+        // parentOfController could either be application/ or a particular module folder, which is why we use this name
+        if (($testParentOfControllerDirectoryResource = $testsDirectoryResource->search('testApplicationDirectory')) === false) {
+            $testParentOfControllerDirectoryResource = $testsDirectoryResource->createResource('testApplicationDirectory');
         }
-        
+
         if ($moduleName) {
-            //@todo $moduleName
-            $moduleName = '';
+            if (($testAppModulesDirectoryResource = $testParentOfControllerDirectoryResource->search('testApplicationModulesDirectory')) === false) {
+                $testAppModulesDirectoryResource = $testParentOfControllerDirectoryResource->createResource('testApplicationModulesDirectory');
+            }
+            
+            if (($testAppModuleDirectoryResource = $testAppModulesDirectoryResource->search(array('testApplicationModuleDirectory' => array('forModuleName' => $moduleName)))) === false) {
+                $testAppModuleDirectoryResource = $testAppModulesDirectoryResource->createResource('testApplicationModuleDirectory', array('forModuleName' => $moduleName));
+            }
+            
+            $testParentOfControllerDirectoryResource = $testAppModuleDirectoryResource;
+        }
+
+        if (($testAppControllerDirectoryResource = $testParentOfControllerDirectoryResource->search('testApplicationControllerDirectory', 'testApplicationModuleDirectory')) === false) {
+            $testAppControllerDirectoryResource = $testParentOfControllerDirectoryResource->createResource('testApplicationControllerDirectory');
+        }
+
+        if (($testAppControllerFileResource = $testAppControllerDirectoryResource->search(array('testApplicationControllerFile' => array('forControllerName' => $controllerName)))) === false) {
+            $testAppControllerFileResource = $testAppControllerDirectoryResource->createResource('testApplicationControllerFile', array('forControllerName' => $controllerName));
         }
         
-        if (($testAppControllerDirectoryResource = $testAppDirectoryResource->search('testApplicationControllerDirectory')) === false) {
-            $testAppControllerDirectoryResource = $testAppDirectoryResource->createResource('testApplicationControllerDirectory');
-        }
-        
-        $testAppControllerFileResource = $testAppControllerDirectoryResource->createResource('testApplicationControllerFile', array('forControllerName' => $controllerName));
-        
-        return $testAppControllerFileResource;
+        return $testAppControllerFileResource->createResource('testApplicationActionMethod', array('forActionName' => $actionName));
     }
 
     /**
@@ -104,63 +129,62 @@ class Zend_Tool_Project_Provider_Test extends Zend_Tool_Project_Provider_Abstrac
     public static function createLibraryResource(Zend_Tool_Project_Profile $profile, $libraryClassName)
     {
         $testLibraryDirectoryResource = $profile->search(array('TestsDirectory', 'TestLibraryDirectory'));
-        
-        
+
+
         $fsParts = explode('_', $libraryClassName);
-        
+
         $currentDirectoryResource = $testLibraryDirectoryResource;
-        
+
         while ($nameOrNamespacePart = array_shift($fsParts)) {
 
             if (count($fsParts) > 0) {
-                
+
                 if (($libraryDirectoryResource = $currentDirectoryResource->search(array('TestLibraryNamespaceDirectory' => array('namespaceName' => $nameOrNamespacePart)))) === false) {
                     $currentDirectoryResource = $currentDirectoryResource->createResource('TestLibraryNamespaceDirectory', array('namespaceName' => $nameOrNamespacePart));
                 } else {
                     $currentDirectoryResource = $libraryDirectoryResource;
                 }
 
-                
             } else {
-                
+
                 if (($libraryFileResource = $currentDirectoryResource->search(array('TestLibraryFile' => array('forClassName' => $libraryClassName)))) === false) {
                     $libraryFileResource = $currentDirectoryResource->createResource('TestLibraryFile', array('forClassName' => $libraryClassName));
                 }
-                
+
             }
-            
+
         }
-        
+
         return $libraryFileResource;
     }
-    
+
     public function enable()
     {
-        
+
     }
-    
+
     public function disable()
     {
-        
+
     }
-    
+
     /**
      * create()
      *
-     * @param unknown_type $libraryClassName
+     * @param string $libraryClassName
      */
     public function create($libraryClassName)
     {
         $profile = $this->_loadProfile();
-        
+
         if (!self::isTestingEnabled($profile)) {
             $this->_registry->getResponse()->appendContent('Testing is not enabled for this project.');
         }
-        
+
         $testLibraryResource = self::createLibraryResource($profile, $libraryClassName);
-        
+
         $response = $this->_registry->getResponse();
-        
+
         if ($this->_registry->getRequest()->isPretend()) {
             $response->appendContent('Would create a library stub in location ' . $testLibraryResource->getContext()->getPath());
         } else {
@@ -168,7 +192,7 @@ class Zend_Tool_Project_Provider_Test extends Zend_Tool_Project_Provider_Abstrac
             $testLibraryResource->create();
             $this->_storeProfile();
         }
-        
+
     }
-    
+
 }

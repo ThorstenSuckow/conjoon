@@ -15,13 +15,14 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SimpleTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SimpleTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/** PHPUnit_Framework_TestCase */
-require_once 'PHPUnit/Framework/TestCase.php';
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Log_Formatter_SimpleTest::main');
+}
 
 /** Zend_Log_Formatter_Simple */
 require_once 'Zend/Log/Formatter/Simple.php';
@@ -30,12 +31,18 @@ require_once 'Zend/Log/Formatter/Simple.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Log
  */
 class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
 {
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+
     public function testConstructorThrowsOnBadFormatString()
     {
         try {
@@ -46,14 +53,14 @@ class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
             $this->assertRegExp('/must be a string/i', $e->getMessage());
         }
     }
-    
+
     public function testDefaultFormat()
     {
         $fields = array('timestamp'    => 0,
                         'message'      => 'foo',
                         'priority'     => 42,
                         'priorityName' => 'bar');
-        
+
         $f = new Zend_Log_Formatter_Simple();
         $line = $f->format($fields);
 
@@ -62,7 +69,7 @@ class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
         $this->assertContains($fields['priorityName'], $line);
         $this->assertContains((string)$fields['priority'], $line);
     }
-    
+
     function testComplexValues()
     {
         $fields = array('timestamp'    => 0,
@@ -70,19 +77,19 @@ class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
                         'priorityName' => 'bar');
 
         $f = new Zend_Log_Formatter_Simple();
-        
+
         $fields['message'] = 'Foo';
         $line = $f->format($fields);
         $this->assertContains($fields['message'], $line);
-        
+
         $fields['message'] = 10;
         $line = $f->format($fields);
         $this->assertContains($fields['message'], $line);
-        
+
         $fields['message'] = 10.5;
         $line = $f->format($fields);
         $this->assertContains($fields['message'], $line);
-        
+
         $fields['message'] = true;
         $line = $f->format($fields);
         $this->assertContains('1', $line);
@@ -91,28 +98,44 @@ class Zend_Log_Formatter_SimpleTest extends PHPUnit_Framework_TestCase
         $line = $f->format($fields);
         $this->assertContains('Resource id ', $line);
         fclose($fields['message']);
-        
+
         $fields['message'] = range(1,10);
         $line = $f->format($fields);
         $this->assertContains('array', $line);
-        
+
         $fields['message'] = new Zend_Log_Formatter_SimpleTest_TestObject1();
         $line = $f->format($fields);
         $this->assertContains($fields['message']->__toString(), $line);
-        
+
         $fields['message'] = new Zend_Log_Formatter_SimpleTest_TestObject2();
         $line = $f->format($fields);
         $this->assertContains('object', $line);
     }
+
+    /**
+     * @group ZF-9176
+     */
+    public function testFactory()
+    {
+        $options = array(
+            'format' => '%timestamp% [%priority%]: %message% -- %info%'
+        );
+        $formatter = Zend_Log_Formatter_Simple::factory($options);
+        $this->assertType('Zend_Log_Formatter_Simple', $formatter);
+    }
 }
 
 class Zend_Log_Formatter_SimpleTest_TestObject1 {
-  
+
     public function __toString()
     {
-        return 'Hello World';      
+        return 'Hello World';
     }
 }
 
 class Zend_Log_Formatter_SimpleTest_TestObject2 {
+}
+
+if (PHPUnit_MAIN_METHOD == 'Zend_Log_Formatter_SimpleTest::main') {
+    Zend_Log_Formatter_SimpleTest::main();
 }

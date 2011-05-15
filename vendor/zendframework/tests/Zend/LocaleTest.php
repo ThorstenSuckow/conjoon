@@ -15,15 +15,14 @@
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_LocaleTest::main');
 }
-
-require_once dirname(__FILE__) . '/../TestHelper.php';
 
 // define('TESTS_ZEND_LOCALE_BCMATH_ENABLED', false); // uncomment to disable use of bcmath extension by Zend_Date
 
@@ -37,8 +36,9 @@ require_once 'Zend/Cache.php';
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @group      Zend_Locale
  */
 class Zend_LocaleTest extends PHPUnit_Framework_TestCase
 {
@@ -534,7 +534,7 @@ class Zend_LocaleTest extends PHPUnit_Framework_TestCase
 
         $char = Zend_LocaleTestHelper::getTranslationList('characters', 'de_DE');
         $this->assertEquals("[a ä b-o ö p-s ß t u ü v-z]", $char['characters']);
-        $this->assertEquals("[á à ă â å ä ā æ ç é è ĕ ê ë ē í ì ĭ î ï ī ñ ó ò ŏ ô ö ø ō œ ß ú ù ŭ û ü ū ÿ]", $char['auxiliary']);
+        $this->assertEquals("[á à ă â å ā æ ç é è ĕ ê ë ē í ì ĭ î ï ī ñ ó ò ŏ ô ø ō œ ú ù ŭ û ū ÿ]", $char['auxiliary']);
         $this->assertEquals("[a-z]", $char['currencySymbol']);
 
         $char = Zend_LocaleTestHelper::getTranslationList('characters', 'en');
@@ -579,7 +579,7 @@ class Zend_LocaleTest extends PHPUnit_Framework_TestCase
         try {
             $this->assertTrue(is_array(Zend_LocaleTestHelper::getQuestion('environment')));
         } catch (Zend_Locale_Exception $e) {
-            $this->assertContains('Autodetection', $e->getMessage());
+            $this->assertContains('ocale', $e->getMessage());
         }
     }
 
@@ -793,7 +793,7 @@ class Zend_LocaleTest extends PHPUnit_Framework_TestCase
         $locale = $value->toString();
         $this->assertTrue(!empty($locale));
 
-        $this->assertTrue(Zend_LocaleTestHelper::isLocale(null));
+        $this->assertFalse(Zend_LocaleTestHelper::isLocale(null));
 
         $value = new Zend_LocaleTestHelper(0);
         $value = $value->toString();
@@ -814,6 +814,51 @@ class Zend_LocaleTest extends PHPUnit_Framework_TestCase
 
         $locale = new Zend_LocaleTestHelper('de_Latn_DE');
         $this->assertEquals('de_DE', $locale->toString());
+
+        $this->assertEquals('fr_FR', Zend_Locale::findLocale('fr-Arab-FR'));
+    }
+
+    /**
+     * test SunLocales
+     * expected boolean
+     */
+    public function testSunLocale()
+    {
+        $this->assertTrue(Zend_LocaleTestHelper::isLocale('de_DE.utf8'));
+        $this->assertFalse(Zend_LocaleTestHelper::isLocale('de.utf8.DE'));
+    }
+
+    /**
+     * @ZF-8030
+     */
+    public function testFailedLocaleOnPreTranslations()
+    {
+        $this->assertEquals('Andorra', Zend_LocaleTestHelper::getTranslation('AD', 'country', 'gl_GL'));
+    }
+
+    /**
+     * @ZF-9488
+     */
+    public function testTerritoryToGetLocale() {
+        $value = Zend_Locale::findLocale('US');
+        $this->assertEquals('en_US', $value);
+
+        $value = new Zend_Locale('US');
+        $this->assertEquals('en_US', $value->toString());
+
+        $value = new Zend_Locale('TR');
+        $this->assertEquals('tr_TR', $value->toString());
+    }
+    /**
+     * @group ZF-11072
+     */
+    public function testTranslationReturnsZeroAsNumber()
+    {
+        $this->assertFalse(Zend_Locale::getTranslation('USD', 'CurrencyFraction'));
+        $this->assertEquals('0', Zend_Locale::getTranslation('JPY', 'CurrencyFraction'));
+		$this->assertEquals('2', Zend_Locale::getTranslation('CHF', 'CurrencyFraction'));
+		$this->assertEquals('3', Zend_Locale::getTranslation('BHD', 'CurrencyFraction'));
+		$this->assertEquals('2', Zend_Locale::getTranslation('DEFAULT', 'CurrencyFraction'));
     }
 
     /**

@@ -7,7 +7,7 @@
 		// TODO: provide a UI for prompted tests
 	-->
 	<head>
-		<title>The Dojo Unit Test Harness, $Rev: 18820 $</title>
+		<title>The Dojo Unit Test Harness, $Rev: 22331 $</title>
 
 		<script type="text/javascript">
 			// workaround for bug in Safari 3.  See #7189
@@ -41,22 +41,24 @@
 			if(qstr.length){
 				var qparts = qstr.split("&");
 				for(var x=0; x<qparts.length; x++){
-					var tp = qparts[x].split("=");
-					if(tp[0] == "dojoUrl"){
-						window.dojoUrl = tp[1];
+					var tp = qparts[x].split("="), name=tp[0], value=tp[1].replace(/[<>"':\(\)]/g, "");	// replace() to avoid XSS attack
+					//Avoid URLs that use the same protocol but on other domains, for security reasons.
+					if (value.indexOf("//") === 0 || value.indexOf("\\\\") === 0) {
+						throw "Insupported URL";
 					}
-					if(tp[0] == "testUrl"){
-						window.testUrl = tp[1];
-					}
-					if(tp[0] == "testModule"){
-						window.testModule = tp[1];
-					}
-					if(tp[0] == "registerModulePath"){
-						var modules = tp[1].split(";");
-						window.registerModulePath=[];
-						for (var i=0; i<modules.length;i++){
-							window.registerModulePath.push(modules[i].split(","));
-						}
+					switch(name){
+						case "dojoUrl":
+						case "testUrl":
+						case "testModule":
+							window[name] = value;
+							break;
+						case "registerModulePath":
+							var modules = value.split(";");
+							window.registerModulePath=[];
+							for (var i=0; i<modules.length;i++){
+								window.registerModulePath.push(modules[i].split(","));
+							}
+						break;
 					}
 				}
 			}
@@ -137,7 +139,7 @@
 			}
 
 			#progressOuter {
-				background:#e9e9e9 url("http://svn.dojotoolkit.org/src/dijit/trunk/themes/tundra/images/dojoTundraGradientBg.png") repeat-x 0 0;
+				background:#e9e9e9 url("http://o.aolcdn.com/dojo/1.3/dijit/themes/tundra/images/dojoTundraGradientBg.png") repeat-x 0 0;
 				height: 1em;
 				/*the following trick is necessary to prevent IE from wrapping the last piece of progress bar into a new line*/
 				_margin:1px;
@@ -258,6 +260,7 @@
 				<td width="*" class="header" valign="bottom">
 					<button class="tab" onclick="doh.showTestPage();">Test Page</button>
 					<button class="tab" onclick="doh.showLogPage();">Log</button>
+                    <button class="tab" onclick="doh.showPerfTestsPage();">Performance Tests Results</button>
 				</td>
 			</tr>
 			<tr valign="top" style="border: 0; padding: 0; margin: 0;">
@@ -299,10 +302,11 @@
 					<div style="position: relative; width: 99%; height: 100%; top: 0px; left: 0px;">
 						<div class="tabBody"
 							style="z-index: 1;">
-<pre id="logBody"></pre>
+							<pre id="logBody"></pre>
+							<div id="perfTestsBody" style="background-color: white;"></div>
 						</div>
 						<iframe id="testBody" class="tabBody"
-							style="z-index: 0;"></iframe>
+							style="z-index: -1;"></iframe>
 						<!--
 							src="http://redesign.dojotoolkit.org"></iframe>
 						-->

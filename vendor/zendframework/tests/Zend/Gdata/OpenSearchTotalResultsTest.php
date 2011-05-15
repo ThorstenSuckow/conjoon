@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_OpenSearch
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata_OpenSearch
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_OpenSearch
@@ -41,7 +41,7 @@ class Zend_Gdata_OpenSearchTotalResultsTest extends PHPUnit_Framework_TestCase
                 true);
         $this->openSearchTotalResults = new Zend_Gdata_Extension_OpenSearchTotalResults();
     }
-    
+
     public function testEmptyOpenSearchTotalResultsShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->openSearchTotalResults->extensionElements));
         $this->assertTrue(count($this->openSearchTotalResults->extensionElements) == 0);
@@ -63,14 +63,14 @@ class Zend_Gdata_OpenSearchTotalResultsTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->openSearchTotalResults->extensionAttributes));
         $this->assertTrue(count($this->openSearchTotalResults->extensionAttributes) == 0);
     }
-    
+
     public function testNormalOpenSearchTotalResultsShouldHaveNoExtensionElements() {
         $this->openSearchTotalResults->text = "42";
-        
+
         $this->assertEquals("42", $this->openSearchTotalResults->text);
-                
+
         $this->assertEquals(0, count($this->openSearchTotalResults->extensionElements));
-        $newOpenSearchTotalResults = new Zend_Gdata_Extension_OpenSearchTotalResults(); 
+        $newOpenSearchTotalResults = new Zend_Gdata_Extension_OpenSearchTotalResults();
         $newOpenSearchTotalResults->transferFromXML($this->openSearchTotalResults->saveXML());
         $this->assertEquals(0, count($newOpenSearchTotalResults->extensionElements));
         $newOpenSearchTotalResults->extensionElements = array(

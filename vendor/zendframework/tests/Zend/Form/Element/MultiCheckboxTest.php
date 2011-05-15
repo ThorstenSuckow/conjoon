@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MultiCheckboxTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: MultiCheckboxTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Form_Element_MultiCheckboxTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Element_MultiCheckboxTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Form/Element/MultiCheckbox.php';
 
@@ -35,7 +33,7 @@ require_once 'Zend/Form/Element/MultiCheckbox.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -159,7 +157,7 @@ class Zend_Form_Element_MultiCheckboxTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2830
+     * @group ZF-2830
      */
     public function testRenderingMulticheckboxCreatesCorrectArrayNotation()
     {
@@ -172,7 +170,7 @@ class Zend_Form_Element_MultiCheckboxTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-2828
+     * @group ZF-2828
      */
     public function testCanPopulateCheckboxOptionsFromPostedData()
     {
@@ -221,7 +219,7 @@ class Zend_Form_Element_MultiCheckboxTest extends PHPUnit_Framework_TestCase
     }
 
     /**#+
-     * @see ZF-3286
+     * @group ZF-3286
      */
     public function testShouldRegisterInArrayValidatorByDefault()
     {
@@ -263,6 +261,23 @@ class Zend_Form_Element_MultiCheckboxTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->element->isValid('test'));
     }
     /**#@-*/
+
+    /**
+     * No assertion; just making sure no error occurs
+     *
+     * @group ZF-4915
+     */
+    public function testRetrievingErrorMessagesShouldNotResultInError()
+    {
+        $this->element->addMultiOptions(array(
+                          'foo' => 'Foo',
+                          'bar' => 'Bar',
+                          'baz' => 'Baz',
+                      ))
+                      ->addErrorMessage('%value% is invalid');
+        $this->element->isValid(array('foo', 'bogus'));
+        $html = $this->element->render($this->getView());
+    }
 }
 
 // Call Zend_Form_Element_MultiCheckboxTest::main() if this source file is executed directly.

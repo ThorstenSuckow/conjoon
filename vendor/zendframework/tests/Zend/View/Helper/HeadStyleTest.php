@@ -15,19 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HeadStyleTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HeadStyleTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HeadStyleTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HeadStyleTest::main");
 }
-
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/TestHelper.php';
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 /** Zend_View_Helper_HeadStyle */
 require_once 'Zend/View/Helper/HeadStyle.php';
@@ -44,7 +40,7 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -68,7 +64,6 @@ class Zend_View_Helper_HeadStyleTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_View_Helper_HeadStyleTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -237,6 +232,16 @@ class Zend_View_Helper_HeadStyleTest extends PHPUnit_Framework_TestCase
         ));
         $value = $this->helper->toString();
         $this->assertRegexp('#<style [^>]*?media="screen"#', $value, $value);
+    }
+
+    /**
+     * @group ZF-8056
+     */
+    public function testMediaAttributeCanHaveSpaceInCommaSeparatedString()
+    {
+        $this->helper->appendStyle('a { }', array('media' => 'screen, projection'));
+        $string = $this->helper->toString();
+        $this->assertContains('media="screen,projection"', $string);
     }
 
     public function testHeadStyleProxiesProperly()
@@ -412,41 +417,45 @@ a {
     }
 
     /**
-     * @issue ZF-5435
+     * @group ZF-5435
      */
     public function testContainerMaintainsCorrectOrderOfItems()
     {
 
-        $this->helper->offsetSetStyle(10, '
-a {
-    display: none;
-}');
-        $this->helper->offsetSetStyle(5, '
-h1 {
-    font-weight: bold
-}');
+        $style1 = 'a {display: none;}';
+        $this->helper->offsetSetStyle(10, $style1);
 
+        $style2 = 'h1 {font-weight: bold}';
+        $this->helper->offsetSetStyle(5, $style2);
 
         $test = $this->helper->toString();
-
-        $expected = '<style type="text/css" media="screen">
-<!--
-
-h1 {
-    font-weight: bold
-}
--->
-</style>
-<style type="text/css" media="screen">
-<!--
-
-a {
-    display: none;
-}
--->
-</style>';
+        $expected = '<style type="text/css" media="screen">' . PHP_EOL
+                  . '<!--' . PHP_EOL
+                  . $style2 . PHP_EOL
+                  . '-->' . PHP_EOL
+                  . '</style>' . PHP_EOL
+                  . '<style type="text/css" media="screen">' . PHP_EOL
+                  . '<!--' . PHP_EOL
+                  . $style1 . PHP_EOL
+                  . '-->' . PHP_EOL
+                  . '</style>';
 
         $this->assertEquals($expected, $test);
+    }
+
+    /**
+     * @group ZF-9532
+     */
+    public function testRenderConditionalCommentsShouldNotContainHtmlEscaping()
+    {
+        $style = 'a{display:none;}';
+        $this->helper->appendStyle($style, array(
+        	'conditional' => 'IE 8'
+        ));
+        $value = $this->helper->toString();
+
+        $this->assertNotContains('<!--' . PHP_EOL, $value);
+        $this->assertNotContains(PHP_EOL . '-->', $value);
     }
 }
 

@@ -1,6 +1,8 @@
 dojo.provide("dojox.widget.Toaster");
 
 dojo.require("dojo.fx");
+dojo.require("dojo.window");
+
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 
@@ -9,7 +11,7 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 		//		Message that slides in from the corner of the screen, used for notifications
 		//		like "new email".
 
-		templateString: '<div dojoAttachPoint="clipNode"><div dojoAttachPoint="containerNode" dojoAttachEvent="onclick:onSelect"><div dojoAttachPoint="contentNode"></div></div></div>',
+		templateString: '<div class="dijitToasterClip" dojoAttachPoint="clipNode"><div class="dijitToasterContainer" dojoAttachPoint="containerNode" dojoAttachEvent="onclick:onSelect"><div class="dijitToasterContent" dojoAttachPoint="contentNode"></div></div></div>',
 
 		// messageTopic: String
 		//		Name of topic; anything published to this topic will be displayed as a message.
@@ -61,9 +63,6 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 			// place node as a child of body for positioning
 			dojo.body().appendChild(this.domNode);
 			
-			this.clipNode.className = "dijitToasterClip";
-			this.containerNode.className += " dijitToasterContainer";
-			this.contentNode.className = "dijitToasterContent";
 			if(this.messageTopic){
 				dojo.subscribe(this.messageTopic, this, "_handleMessage");
 			}
@@ -213,7 +212,7 @@ dojo.declare("dojox.widget.Toaster", [dijit._Widget, dijit._Templated], {
 		},
 		
 		_placeClip: function(){
-			var view = dijit.getViewport();
+			var view = dojo.window.getBox();
 
 			var nodeSize = dojo.marginBox(this.containerNode);
 

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -30,13 +30,14 @@ require_once 'Zend/Db/TestSetup.php';
  */
 require_once 'Zend/Loader.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
@@ -246,7 +247,7 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         $this->assertEquals(1, $result[0]['product_id'], 'Expecting product_id of 0th row to be 1');
 
         $rowsAffected = $this->_db->delete('zfproducts', "$product_id = 2");
-        $this->assertEquals(1, $rowsAffected, 'Expected rows affected to return 1', 'Expecting rows affected to be 1');
+        $this->assertEquals(1, $rowsAffected, 'Expecting rows affected to be 1');
 
         $select = $this->_db->select()->from('zfproducts')->order('product_id ASC');
         $result = $this->_db->fetchAll($select);
@@ -1781,6 +1782,46 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         $this->assertEquals(array_fill(0, 4, 'EMPTY'), $value);
     }
 
+    /**
+     * @group ZF-8597
+     * Oracle is limited to 30 characters for an identifier
+     */
+    public function testAdapterUpdateWithLongColumnIdentifier()
+    {
+        // create test table using no identifier quoting
+        $this->_util->createTable('zf_longidentifier', array(
+            'id'    => 'INTEGER NOT NULL',
+            'veryveryveryverylongidentifier' => 'INTEGER NOT NULL'
+        ));
+        $tableName = $this->_util->getTableName('zf_longidentifier');
+
+        // insert into the table
+        $this->_db->insert($tableName, array(
+            'id' => 1,
+            'veryveryveryverylongidentifier' => 2
+        ));
+
+        //try to update
+        $this->_db->update($tableName,
+                           array('veryveryveryverylongidentifier' => 3),
+                           array($this->_db->quoteIdentifier('id') . ' = 1'));
+
+        // check if the row was inserted as expected
+        $select = $this->_db->select()->from($tableName, array('id', 'veryveryveryverylongidentifier'));
+
+        $stmt = $this->_db->query($select);
+        $fetched = $stmt->fetchAll(Zend_Db::FETCH_NUM);
+        $a = array(
+            0 => array(0 => 1, 1 => 3)
+        );
+        $this->assertEquals($a, $fetched,
+            'result of query not as expected');
+
+        // clean up
+        unset($stmt);
+        $this->_util->dropTable($tableName);
+    }
+
     protected function _testAdapterAlternateStatement($stmtClass)
     {
         $ip = get_include_path();
@@ -2004,5 +2045,70 @@ abstract class Zend_Db_Adapter_TestCommon extends Zend_Db_TestSetup
         // clean up
         unset($stmt);
         $util->dropTable($tableName);
+    }
+
+    /**
+     * @group ZF-7737
+     */
+    public function testQuoteIntoReplacesPlaceholderAtFirstCharacterWhenCountIsNotNull()
+    {
+        $quotedString = $this->_db->quoteInto('? = bar', 'foo', NULL, 1);
+        $this->assertEquals("'foo' = bar", $quotedString);
+    }
+
+    /**
+     * @group ZF-8399
+     */
+    public function testLongQueryWithTextField()
+    {
+        // create test table using no identifier quoting
+        $this->_util->createTable('zf_longquery', array(
+            'id'    => 'INTEGER NOT NULL',
+            'stuff' => 'TEXT NOT NULL'
+        ));
+        $tableName = $this->_util->getTableName('zf_longquery');
+
+        // insert into the table
+        $longValue = str_repeat('x', 4000);
+        $numRows = $this->_db->insert($tableName, array(
+            'id' => 1,
+            'stuff' => $longValue
+        ));
+
+        $quotedTableName = $this->_db->quoteIdentifier('zf_longquery');
+        $sql = "INSERT INTO $quotedTableName VALUES (2, '$longValue')";
+        $this->_db->query($sql);
+
+        // check if the row was inserted as expected
+        $select = $this->_db->select()->from($tableName, array('id', 'stuff'));
+
+        $stmt = $this->_db->query($select);
+        $fetched = $stmt->fetchAll(Zend_Db::FETCH_NUM);
+        $a = array(
+            0 => array(0 => 1, 1 => $longValue),
+            1 => array(0 => 2, 1 => $longValue)
+        );
+        $this->assertEquals($a, $fetched,
+            'result of query not as expected');
+
+        // clean up
+        unset($stmt);
+        $this->_util->dropTable($tableName);
+    }
+
+    /**
+     * @group ZF-6620
+     */
+    public function testAdapterOptionFetchMode()
+    {
+        $params = $this->_util->getParams();
+
+        $params['options'] = array(
+            Zend_Db::FETCH_MODE => 'obj'
+        );
+        $db = Zend_Db::factory($this->getDriver(), $params);
+        $select = $db->select()->from('zfproducts');
+        $row = $db->fetchRow($select);
+        $this->assertType('stdClass', $row);
     }
 }

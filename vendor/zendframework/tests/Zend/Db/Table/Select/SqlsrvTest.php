@@ -15,20 +15,21 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: SqlsrvTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Db/Table/Select/TestCommon.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Table
@@ -50,7 +51,7 @@ class Zend_Db_Table_Select_SqlsrvTest extends Zend_Db_Table_Select_TestCommon
     {
         $this->markTestSkipped($this->getDriver() . ' does not support for update.');
     }
-    
+
     public function testSelectFromQualified()
     {
         $this->markTestIncomplete($this->getDriver() . ' needs more syntax for qualified table names.');

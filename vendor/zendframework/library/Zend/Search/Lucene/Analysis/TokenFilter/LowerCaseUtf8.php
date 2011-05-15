@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage Analysis
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LowerCaseUtf8.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: LowerCaseUtf8.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -31,7 +31,7 @@ require_once 'Zend/Search/Lucene/Analysis/TokenFilter.php';
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage Analysis
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -48,7 +48,7 @@ class Zend_Search_Lucene_Analysis_TokenFilter_LowerCaseUtf8 extends Zend_Search_
             throw new Zend_Search_Lucene_Exception('Utf8 compatible lower case filter needs mbstring extension to be enabled.');
         }
     }
-    
+
     /**
      * Normalize Token or remove it (if null is returned)
      *

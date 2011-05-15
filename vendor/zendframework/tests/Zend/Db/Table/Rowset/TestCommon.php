@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,14 +27,14 @@
 require_once 'Zend/Db/Table/TestSetup.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
 
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Table
@@ -95,9 +95,9 @@ abstract class Zend_Db_Table_Rowset_TestCommon extends Zend_Db_Table_TestSetup
             'Expecting object of type Zend_Db_Table_Row_Abstract, got '.get_class($row1));
         $this->assertEquals(1, $row1->$bug_id);
         $this->assertSame($row1, $row1Copy);
-        
+
         // test seeking to infinite fails
-        $rows->rewind();        
+        $rows->rewind();
         try{
             $rows->seek(99999); // this index should not exist
             $this->fail('An exception should have been thrown here');
@@ -106,44 +106,44 @@ abstract class Zend_Db_Table_Rowset_TestCommon extends Zend_Db_Table_TestSetup
             $rows->seek(-20);
             $this->fail('An exception should have been thrown here');
         }catch(Zend_Db_Table_Rowset_Exception $e){ }
-        
-        
+
+
         $rows->seek(1);
         $row = $rows->current();
         $this->assertEquals(1, $rows->key());
         $this->assertTrue($rows->valid());
         $this->assertEquals(2, $row2->$bug_id);
-        
+
         $rows->rewind();
         $row = $rows->getRow(1);
         $this->assertEquals(0, $rows->key()); // pointer should not have moved
         $this->assertEquals(1, $row1->$bug_id);
-        
+
         $rows->rewind();
         $row = $rows->getRow(1, true);
         $this->assertEquals(1, $rows->key()); // pointer should have moved
         $this->assertEquals(1, $row1->$bug_id);
-        
+
         $rows->rewind();
         $rowcopy = $rows->seek(1)->current();
         $rows->rewind();
         $row1 = $rows->getRow(1);
         $this->assertSame($rowcopy, $row1);
-        
+
         try{
             $rows->getRow(99999); // this index should not exist
             $this->fail('An exception should have been thrown here');
         }catch(Zend_Db_Table_Rowset_Exception $e){
             // has the exception correctly been overwritten by getRow() ?
             $this->assertRegExp('#No row could be found at position \d+#',$e->getMessage());
-        } 
+        }
     }
-    
+
     public function testTableRowSetArrayAccess()
     {
         $table = $this->_table['bugs'];
         $rowset = $table->fetchAll();
-        
+
         $this->assertTrue(isset($rowset[0]));
         $this->assertType('Zend_Db_Table_Row', $rowset[0]);
     }
@@ -262,6 +262,81 @@ abstract class Zend_Db_Table_Rowset_TestCommon extends Zend_Db_Table_TestSetup
             $this->assertEquals('The specified Table is of class My_ZendDbTable_TableProducts, expecting class to be instance of My_ZendDbTable_TableBugs', $e->getMessage());
         }
         $this->assertFalse($connected);
+    }
+
+    /**
+     * @group ZF-9213
+     * @group ZF-10173
+     */
+    public function testTableRowsetIndexesValid()
+    {
+        $rowset = $this->_table['bugs']->fetchAll();
+        try {
+            $rowset[-1];
+            $this->fail();
+        } catch (Exception $e) {
+            $this->assertType('Zend_Db_Table_Rowset_Exception', $e);
+            $this->assertContains('Illegal index', $e->getMessage());
+        }
+
+        $this->assertTrue($rowset[0] instanceof Zend_Db_Table_Row);
+
+        try {
+            $row = $rowset[count($rowset) + 1];
+            $this->fail();
+        } catch (Exception $e) {
+            $this->assertType('Zend_Db_Table_Rowset_Exception', $e);
+            $this->assertContains('Illegal index', $e->getMessage());
+        }
+        $this->assertEquals(0, $rowset->key());
+    }
+
+
+
+    /**
+     * @group ZF-8486
+     */
+    public function testTableRowsetIteratesAndWillReturnLastRowAfter()
+    {
+        $table = $this->_table['bugs'];
+        $rowset = $table->fetchAll('bug_id IN (1,2,3,4)', 'bug_id ASC');
+        foreach ($rowset as $row) {
+            $lastRow = $row;
+        }
+
+        $numRows = $rowset->count();
+        $this->assertEquals(4, $numRows);
+
+        $rowset->seek(3);
+        $seekLastRow = $rowset->current();
+
+        $this->assertSame($lastRow, $seekLastRow);
+    }
+
+    /**
+     * @group ZF-8486
+     */
+    public function testTableRowsetThrowsExceptionOnInvalidSeek()
+    {
+        $table = $this->_table['bugs'];
+        $rowset = $table->fetchAll('bug_id IN (1,2,3,4)', 'bug_id ASC');
+        $rowset->seek(3);
+
+        $this->setExpectedException('Zend_Db_Table_Rowset_Exception', 'Illegal index 4');
+        $rowset->seek(4);
+    }
+
+    /**
+     * @group ZF-8486
+     */
+    public function testTableRowsetThrowsExceptionOnInvalidGetRow()
+    {
+        $table = $this->_table['bugs'];
+        $rowset = $table->fetchAll('bug_id IN (1,2,3,4)', 'bug_id ASC');
+        $rowset->getRow(3);
+
+        $this->setExpectedException('Zend_Db_Table_Rowset_Exception', 'No row could be found at position 4');
+        $rowset->getRow(4);
     }
 
 }

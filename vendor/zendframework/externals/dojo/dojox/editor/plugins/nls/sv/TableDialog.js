@@ -10,7 +10,6 @@
 	backgroundColor: "Bakgrundsfärg:",
 	borderColor: "Ramfärg:",
 	borderThickness: "Ramtjocklek",
-	pixels: "bildpunkter",
 	percent: "%",
 	pixels: "bildpunkter",
 	"default": "standard",
@@ -19,6 +18,7 @@
 	right: "högerjustera",
 	buttonSet: "Ange", // translated elsewhere?
 	buttonInsert: "Infoga",
+	buttonCancel: "Avbryt",
 
 	selectTableLabel: "Välj tabell",
 	insertTableRowBeforeLabel: "Lägg till rad före",

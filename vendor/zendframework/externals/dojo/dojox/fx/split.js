@@ -15,65 +15,88 @@ dojo.mixin(dojox.fx,{
 		//		args.crop: Boolean - If true, pieces will only be visible inside node's boundries
 		//		args.rows: Integer - The number of horizontal pieces (default is 3)
 		//		args.columns: Integer - The number of vertical pieces (default is 3)
-		//		args.pieceAnimation: Function(piece, x, y, coords) - Returns either the dojo._Animation
-		//		or an array of dojo._Animation objects for the piece at location (x, y) in the node's grid;
+		//		args.pieceAnimation: Function(piece, x, y, coords) - Returns either the dojo.Animation
+		//		or an array of dojo.Animation objects for the piece at location (x, y) in the node's grid;
 		//		coords is the result of dojo.coords(args.node, true);
 
 		args.rows = args.rows || 3;
 		args.columns = args.columns || 3;
 		args.duration = args.duration || 1000;
+
 		var node = args.node = dojo.byId(args.node),
-			coords = dojo.coords(node, true),
-			pieceHeight = Math.ceil(coords.h / args.rows),
-			pieceWidth = Math.ceil(coords.w / args.columns),
-			container = dojo.create(node.tagName),
-			animations = [],
-			pieceHelper = dojo.create(node.tagName),
-			piece
+			parentNode = node.parentNode,
+			pNode = parentNode,
+			body = dojo.body(),
+			_pos = "position"
 		;
+
+		while(pNode && pNode != body && dojo.style(pNode, _pos) == "static"){
+			pNode = pNode.parentNode;
+		}
+
+		var pCoords = pNode != body ? dojo.position(pNode, true) : { x: 0, y: 0 },
+			coords = dojo.position(node, true),
+			nodeHeight = dojo.style(node, "height"),
+			nodeWidth = dojo.style(node, "width"),
+			hBorder = dojo.style(node, "borderLeftWidth") + dojo.style(node, "borderRightWidth"),
+			vBorder = dojo.style(node, "borderTopWidth") + dojo.style(node, "borderBottomWidth"),
+			pieceHeight = Math.ceil(nodeHeight / args.rows),
+			pieceWidth = Math.ceil(nodeWidth / args.columns),
+			container = dojo.create(node.tagName, {
+				style: {
+					position: "absolute",
+					padding: 0,
+					margin: 0,
+					border:"none",
+					top: coords.y - pCoords.y + "px",
+					left: coords.x - pCoords.x + "px",
+					height: nodeHeight + vBorder + "px",
+					width: nodeWidth + hBorder + "px",
+					background: "none",
+					overflow: args.crop ? "hidden" : "visible",
+					zIndex: dojo.style(node, "zIndex")
+				}
+			}, node, "after"),
+			animations = [],
+			pieceHelper = dojo.create(node.tagName, {
+				style: {
+					position: "absolute",
+					border: "none",
+					padding: 0,
+					margin: 0,
+					height: pieceHeight + hBorder + "px",
+					width: pieceWidth + vBorder + "px",
+					overflow: "hidden"
+				}
+			});
+
 		// Create the pieces and their animations
-		dojo.style(container, {
-			position: "absolute",
-			padding: "0",
-			margin: "0",
-			border:"none",
-			top: coords.y + "px",
-			left: coords.x + "px",
-			height: coords.h + "px",
-			width: coords.w + "px",
-			background: "none",
-			overflow: args.crop ? "hidden" : "visible"
-		});
-		node.parentNode.appendChild(container);
-		dojo.style(pieceHelper, {
-			position: "absolute",
-			border: "none",
-			padding: '0',
-			margin: '0',
-			height: pieceHeight + "px",
-			width: pieceWidth + "px",
-			overflow: "hidden"
-		});
-		for(var y = 0; y < args.rows; y++){
-			for(var x = 0; x < args.columns; x++){
+		for(var y = 0, ly = args.rows; y < ly; y++){
+			for(var x = 0, lx = args.columns; x < lx; x++){
 				// Create the piece
-				piece = dojo.clone(pieceHelper);
-				var pieceContents = dojo.clone(node);
+				var piece = dojo.clone(pieceHelper),
+					pieceContents = dojo.clone(node),
+					pTop = y * pieceHeight,
+					pLeft = x * pieceWidth
+				;
 
 				// IE hack
 				pieceContents.style.filter = "";
 
+				// removing the id attribute from the cloned nodes
+				dojo.removeAttr(pieceContents, "id");
+
 				dojo.style(piece, {
 					border: "none",
 					overflow: "hidden",
-					top: (pieceHeight * y) + "px",
-					left: (pieceWidth * x) + "px"
+					top: pTop + "px",
+					left: pLeft + "px"
 				});
 				dojo.style(pieceContents, {
 					position: "static",
 					opacity: "1",
-					marginTop: (-y * pieceHeight) + "px",
-					marginLeft: (-x * pieceWidth) + "px"
+					marginTop: -pTop + "px",
+					marginLeft: -pLeft + "px"
 				});
 				piece.appendChild(pieceContents);
 				container.appendChild(piece);
@@ -98,7 +121,7 @@ dojo.mixin(dojox.fx,{
 		if(args.onEnd){
 			dojo.connect(anim, "onEnd", anim, args.onEnd);
 		}
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	},
 
 	explode: function(/*Object*/ args){
@@ -214,7 +237,7 @@ dojo.mixin(dojox.fx,{
 				dojo.style(node, { opacity: "0" });
 			});
 		}
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	},
 
 	converge: function(/*Object*/ args){
@@ -250,7 +273,7 @@ dojo.mixin(dojox.fx,{
 		if(typeof args.fade == "undefined"){
 			args.fade = true;
 		}
-		
+
 		var random = Math.abs(args.random),
 			duration = args.duration - (args.rows + args.columns) * args.interval;
 
@@ -259,7 +282,7 @@ dojo.mixin(dojox.fx,{
 
 			var randomDelay = Math.random() * (args.rows + args.columns) * args.interval,
 				ps = piece.style,
-			
+
 			// If distance is negative, start from the top right instead of bottom left
 				uniformDelay = (args.reverseOrder || args.distance < 0) ?
 					((x + y) * args.interval) :
@@ -309,7 +332,7 @@ dojo.mixin(dojox.fx,{
 				dojo.style(node, { opacity: "0" });
 			});
 		}
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	},
 
 	build: function(/*Object*/ args){
@@ -428,9 +451,9 @@ dojo.mixin(dojox.fx,{
 				dojo.style(node, { opacity: "0" });
 			});
 		}
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	},
-	
+
 	unShear: function(/*Object*/ args){
 		args.unhide = true;
 		return dojox.fx.shear(args);
@@ -562,12 +585,12 @@ dojo.mixin(dojox.fx,{
 				dojo.style(node, { opacity: "0" });
 			});
 		}
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	},
 
 	unPinwheel: function(/*Object*/ args){
 		args.unhide = true;
-		return dojox.fx.pinwheel(args); // dojo._Animation
+		return dojox.fx.pinwheel(args); // dojo.Animation
 	},
 
 	blockFadeOut: function(/*Object*/ args){
@@ -628,12 +651,12 @@ dojo.mixin(dojox.fx,{
 				dojo.style(node, { opacity: "0" });
 			});
 		}
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	},
 
 	blockFadeIn: function(/*Object*/ args){
 		args.unhide = true;
-		return dojox.fx.blockFadeOut(args); // dojo._Animation
+		return dojox.fx.blockFadeOut(args); // dojo.Animation
 	}
 
 });

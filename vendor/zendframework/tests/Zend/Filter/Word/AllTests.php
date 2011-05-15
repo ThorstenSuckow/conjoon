@@ -15,24 +15,15 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 13797 2009-01-25 13:14:31Z thomas $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Filter_Word_AllTests::main');
 }
 
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
-
-/**
- * Word filter tests
- */
 require_once 'Zend/Filter/Word/CamelCaseToDashTest.php';
 require_once 'Zend/Filter/Word/CamelCaseToSeparatorTest.php';
 require_once 'Zend/Filter/Word/CamelCaseToUnderscoreTest.php';
@@ -50,7 +41,7 @@ require_once 'Zend/Filter/Word/UnderscoreToSeparatorTest.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */

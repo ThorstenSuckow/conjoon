@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CheckBoxTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: CheckBoxTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dojo_View_Helper_CheckBoxTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_View_Helper_CheckBoxTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_View_Helper_CheckBox */
 require_once 'Zend/Dojo/View/Helper/CheckBox.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
  */
-class Zend_Dojo_View_Helper_CheckBoxTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_View_Helper_CheckBoxTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -100,8 +98,8 @@ class Zend_Dojo_View_Helper_CheckBoxTest extends PHPUnit_Framework_TestCase
     public function getElement()
     {
         return $this->helper->checkBox(
-            'elementId', 
-            'foo', 
+            'elementId',
+            'foo',
             array(),
             array(),
             array(
@@ -144,7 +142,6 @@ class Zend_Dojo_View_Helper_CheckBoxTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-4006
      * @group ZF-4006
      */
     public function testElementShouldUseCheckedValueForCheckboxInput()

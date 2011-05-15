@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FileTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Form_Element_FileTest::main() if this source file is executed directly.
@@ -25,12 +25,12 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Element_FileTest::main");
 }
 
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
-
 require_once 'Zend/Form/Element/File.php';
 require_once 'Zend/File/Transfer/Adapter/Abstract.php';
 require_once 'Zend/Validate/File/Upload.php';
 require_once 'Zend/Form/SubForm.php';
+require_once 'Zend/Form.php';
+require_once 'Zend/Registry.php';
 require_once 'Zend/View.php';
 
 /**
@@ -39,7 +39,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -66,6 +66,8 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        Zend_Registry::_unsetInstance();
+        Zend_Form::setDefaultTranslator(null);
         $this->element = new Zend_Form_Element_File('foo');
     }
 
@@ -396,9 +398,9 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
         $adapter = new Zend_Form_Element_FileTest_MockAdapter();
         $element->setTransferAdapter($adapter);
 
-        $this->assertEquals('8B', $element->getFileSize('baz.text'));
+        $this->assertEquals('1.14kB', $element->getFileSize('baz.text'));
         $adapter->setOptions(array('useByteString' => false));
-        $this->assertEquals(8, $element->getFileSize('baz.text'));
+        $this->assertEquals(1172, $element->getFileSize('baz.text'));
     }
 
     public function testMimeType()
@@ -421,6 +423,16 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($element->hasErrors());
         $messages = $element->getMessages();
         $this->assertContains('TestError3', $messages);
+    }
+
+    public function testGetTranslatorRetrievesGlobalDefaultWhenAvailable()
+    {
+        $this->assertNull($this->element->getTranslator());
+        $translator = new Zend_Translate('array', array('foo' => 'bar'));
+        require_once 'Zend/Form.php';
+        Zend_Form::setDefaultTranslator($translator);
+        $received = $this->element->getTranslator();
+        $this->assertSame($translator->getAdapter(), $received);
     }
 
     public function testDefaultDecoratorsContainDescription()
@@ -466,6 +478,18 @@ class Zend_Form_Element_FileTest extends PHPUnit_Framework_TestCase
     public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
     {
         $this->_errorOccurred = true;
+    }
+
+
+    /**
+     * Prove the fluent interface on Zend_Form_Element_File::loadDefaultDecorators
+     *
+     * @link http://framework.zend.com/issues/browse/ZF-9913
+     * @return void
+     */
+    public function testFluentInterfaceOnLoadDefaultDecorators()
+    {
+        $this->assertSame($this->element, $this->element->loadDefaultDecorators());
     }
 }
 

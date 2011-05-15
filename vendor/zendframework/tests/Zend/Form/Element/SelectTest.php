@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SelectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SelectTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Form_Element_SelectTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Element_SelectTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Form/Element/Select.php';
 
@@ -35,7 +33,7 @@ require_once 'Zend/Form/Element/Select.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -76,7 +74,9 @@ class Zend_Form_Element_SelectTest extends PHPUnit_Framework_TestCase
     public function getView()
     {
         require_once 'Zend/View.php';
-        $view = new Zend_View();
+        $view = new Zend_View(array(
+            'encoding' => 'UTF-8',
+        ));
         $view->addHelperPath(dirname(__FILE__) . '/../../../../library/Zend/View/Helper');
         return $view;
     }
@@ -137,7 +137,7 @@ class Zend_Form_Element_SelectTest extends PHPUnit_Framework_TestCase
     /**
      * No explicit assertions; just checking for error conditions
      *
-     * @see ZF-2847
+     * @group ZF-2847
      */
     public function testTranslationShouldNotRaiseWarningsWithNestedGroups()
     {
@@ -162,7 +162,6 @@ class Zend_Form_Element_SelectTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see   ZF-3953
      * @group ZF-3953
      */
     public function testUsingZeroAsValueShouldSelectAppropriateOption()
@@ -202,7 +201,7 @@ class Zend_Form_Element_SelectTest extends PHPUnit_Framework_TestCase
      * Test isValid() on select elements without optgroups. This
      * ensures fixing ZF-3985 doesn't break existing functionality.
      *
-     * @see ZF-3985
+     * @group ZF-3985
      */
     public function testIsValidWithPlainOptions()
     {
@@ -239,6 +238,16 @@ class Zend_Form_Element_SelectTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->element->isValid('5'));
         $this->assertFalse($this->element->isValid('Technology'));
         $this->assertFalse($this->element->isValid('Web Developer'));
+    }
+
+    /**
+     * @group ZF-8342
+     */
+    public function testUsingPoundSymbolInOptionLabelShouldRenderCorrectly()
+    {
+        $this->element->addMultiOption('1', '£' . number_format(1));
+        $html = $this->element->render($this->getView());
+        $this->assertContains('>£', $html);
     }
 
     /**

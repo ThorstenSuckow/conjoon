@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FileTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /**
  * @see Zend_OpenId_Consumer_Storage_File
@@ -35,7 +29,7 @@ require_once 'Zend/OpenId/Consumer/Storage/File.php';
  * @category   Zend
  * @package    Zend_OpenId
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_OpenId
  */
@@ -69,9 +63,9 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $dir = opendir($dirName);
         while (($file = readdir($dir)) !== false) {
             if (is_dir($dirName . '/' . $file)) {
-            	if ($file == '.'  ||  $file == '..') {
-            		continue;
-            	}
+                if ($file == '.'  ||  $file == '..') {
+                    continue;
+                }
 
                 self::_rmDir($dirName . '/' . $file);
             } else {
@@ -171,7 +165,7 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $tmp = $this->_tmpDir;
         $dir = $tmp . '/openid_consumer';
 
-    	$expiresIn = time() + 600;
+        $expiresIn = time() + 600;
         $storage = new Zend_OpenId_Consumer_Storage_File($tmp);
         $storage->delAssociation(self::URL);
         $this->assertTrue( $storage->addAssociation(self::URL, self::HANDLE, self::MAC_FUNC, self::SECRET, $expiresIn) );
@@ -193,7 +187,7 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $tmp = $this->_tmpDir;
         $dir = $tmp . '/openid_consumer';
 
-    	$expiresIn = time() + 1;
+        $expiresIn = time() + 1;
         $storage = new Zend_OpenId_Consumer_Storage_File($tmp);
         $storage->delAssociation(self::URL);
         $this->assertTrue( $storage->addAssociation(self::URL, self::HANDLE, self::MAC_FUNC, self::SECRET, $expiresIn) );
@@ -210,7 +204,7 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $tmp = $this->_tmpDir;
         $dir = $tmp . '/openid_consumer';
 
-    	$expiresIn = time() + 1;
+        $expiresIn = time() + 1;
         $storage = new Zend_OpenId_Consumer_Storage_File($tmp);
         $storage->delAssociation(self::URL);
         $this->assertTrue( $storage->addAssociation(self::URL, self::HANDLE, self::MAC_FUNC, self::SECRET, $expiresIn) );
@@ -227,7 +221,7 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $tmp = $this->_tmpDir;
         $dir = $tmp . '/openid_consumer';
 
-    	$expiresIn = time() + 600;
+        $expiresIn = time() + 600;
         $storage = new Zend_OpenId_Consumer_Storage_File($tmp);
         $storage->delDiscoveryInfo(self::ID);
         $this->assertTrue( $storage->addDiscoveryInfo(self::ID, self::REAL_ID, self::SERVER, self::VERSION, $expiresIn) );
@@ -262,7 +256,7 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $tmp = $this->_tmpDir;
         $dir = $tmp . '/openid_consumer';
 
-    	$expiresIn = time() + 1;
+        $expiresIn = time() + 1;
         $storage = new Zend_OpenId_Consumer_Storage_File($tmp);
         $storage->delDiscoveryInfo(self::ID);
         $this->assertTrue( $storage->addDiscoveryInfo(self::ID, self::REAL_ID, self::SERVER, self::VERSION, $expiresIn) );
@@ -279,7 +273,7 @@ class Zend_OpenId_Consumer_Storage_FileTest extends PHPUnit_Framework_TestCase
         $tmp = $this->_tmpDir;
         $dir = $tmp . '/openid_consumer';
 
-    	$storage = new Zend_OpenId_Consumer_Storage_File($tmp);
+        $storage = new Zend_OpenId_Consumer_Storage_File($tmp);
         $storage->purgeNonces();
         $this->assertTrue( $storage->isUniqueNonce(self::SERVER, '1') );
         $this->assertTrue( $storage->isUniqueNonce(self::SERVER, '2') );

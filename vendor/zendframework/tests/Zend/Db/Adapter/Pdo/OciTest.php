@@ -15,20 +15,19 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
 
 require_once 'Zend/Db/Adapter/Pdo/TestCommon.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -250,6 +249,14 @@ class Zend_Db_Adapter_Pdo_OciTest extends Zend_Db_Adapter_Pdo_TestCommon
                     'this is the clob that never ends...'.
                     'this is the clob that never ends...';
         $this->assertEquals($expected, stream_get_contents($value));
+    }
+
+    /**
+     * @group ZF-8399
+     */
+    public function testLongQueryWithTextField()
+    {
+        $this->markTestSkipped($this->getDriver() . ' does not have TEXT field type');
     }
 
     public function getDriver()

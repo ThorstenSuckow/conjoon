@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OnlineTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: OnlineTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Service_Yahoo
@@ -39,7 +34,7 @@ require_once 'Zend/Http/Client/Adapter/Socket.php';
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Yahoo
@@ -326,23 +321,44 @@ class Zend_Service_Yahoo_OnlineTest extends PHPUnit_Framework_TestCase
             $this->assertContains('error occurred sending request', $e->getMessage());
         }
     }
-    
+
     /**
      * Check support for the region option and ensure that it throws an exception
      * for unsupported regions
-     * 
+     *
      * @group ZF-3222
      * @return void
      */
     public function testWebSearchRegion()
     {
-    	$this->_yahoo->webSearch('php', array('region' => 'nl'));
-    	try {
-    		$this->_yahoo->webSearch('php', array('region' => 'oops'));
-    		$this->fail('Expected Zend_Service_Exception not thrown');
-    	}catch (Zend_Service_Exception $e) {
-    		$this->assertContains("Invalid value for option 'region': oops", $e->getMessage());
-    	}
+        $this->_yahoo->webSearch('php', array('region' => 'nl'));
+        try {
+            $this->_yahoo->webSearch('php', array('region' => 'oops'));
+            $this->fail('Expected Zend_Service_Exception not thrown');
+        }catch (Zend_Service_Exception $e) {
+            $this->assertContains("Invalid value for option 'region': oops", $e->getMessage());
+        }
+    }
+
+    /**
+     * Ensures that webSearch() works as expected when searching for 'php'
+     *
+     *  @see ZF-2358
+     */
+    public function testWebSearchForSite()
+    {
+        $webResultSet = $this->_yahoo->webSearch('php', array('site' => 'www.php.net'));
+
+        $this->assertTrue($webResultSet instanceof Zend_Service_Yahoo_WebResultSet);
+
+        $this->assertTrue($webResultSet->totalResultsAvailable > 10);
+        $this->assertEquals(10, $webResultSet->totalResultsReturned);
+        $this->assertEquals(10, $webResultSet->totalResults());
+        $this->assertEquals(1, $webResultSet->firstResultPosition);
+
+        foreach ($webResultSet as $webResult) {
+            $this->assertTrue($webResult instanceof Zend_Service_Yahoo_WebResult);
+        }
     }
 }
 
@@ -350,7 +366,7 @@ class Zend_Service_Yahoo_OnlineTest extends PHPUnit_Framework_TestCase
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Yahoo

@@ -15,32 +15,31 @@
  * @category   Zend
  * @package    Zend_Service_Delicious
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Service_Delicious_AllTests::main');
 }
 
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
+if (defined('TESTS_ZEND_SERVICE_DELICIOUS_ENABLED') &&
+    constant('TESTS_ZEND_SERVICE_DELICIOUS_ENABLED')) {
+    require_once 'Zend/Service/Delicious/PublicDataTest.php';
+    require_once 'Zend/Service/Delicious/PrivateDataTest.php';
+} else {
+    require_once 'Zend/Service/Delicious/SkipTests.php';
+}
 
-/**
- * Exclude from code coverage report
- */
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
+require_once 'Zend/Service/Delicious/SimplePostTest.php';
+require_once 'Zend/Service/Delicious/PostTest.php';
 
 /**
  * @category   Zend
  * @package    Zend_Service_Delicious
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Delicious
@@ -66,40 +65,16 @@ class Zend_Service_Delicious_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Service_Delicious');
 
-        if (!defined('TESTS_ZEND_SERVICE_DELICIOUS_ENABLED') ||
-            !constant('TESTS_ZEND_SERVICE_DELICIOUS_ENABLED')) {
-
-            /**
-             * @see Zend_Service_Delicious_SkipTests
-             */
-            require_once 'Zend/Service/Delicious/SkipTests.php';
-            $suite->addTestSuite('Zend_Service_Delicious_SkipTests');
-
-        } else {
-
-            /**
-             * @see Zend_Service_Delicious_PublicDataTest
-             */
-            require_once 'Zend/Service/Delicious/PublicDataTest.php';
+        if (defined('TESTS_ZEND_SERVICE_DELICIOUS_ENABLED') &&
+            constant('TESTS_ZEND_SERVICE_DELICIOUS_ENABLED')) {
             $suite->addTestSuite('Zend_Service_Delicious_PublicDataTest');
-
-            /**
-             * @see Zend_Service_Delicious_PrivateDataTest
-             */
-            require_once 'Zend/Service/Delicious/PrivateDataTest.php';
             $suite->addTestSuite('Zend_Service_Delicious_PrivateDataTest');
+        } else {
+            $suite->addTestSuite('Zend_Service_Delicious_SkipTests');
         }
 
-        /**
-         * @see Zend_Service_Delicious_SimplePostTest
-         */
-        require_once 'Zend/Service/Delicious/SimplePostTest.php';
         $suite->addTestSuite('Zend_Service_Delicious_SimplePostTest');
 
-        /**
-         * @see Zend_Service_Delicious_PostTest
-         */
-        require_once 'Zend/Service/Delicious/PostTest.php';
         $suite->addTestSuite('Zend_Service_Delicious_PostTest');
 
         return $suite;

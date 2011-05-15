@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ControllerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ControllerTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
-
-/** Test helper */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 /** Zend_Rest_Controller */
 require_once 'Zend/Rest/Controller.php';
@@ -44,7 +38,7 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Rest_TestController extends Zend_Rest_Controller
@@ -76,13 +70,13 @@ class Zend_Rest_TestController extends Zend_Rest_Controller
     {
         $this->testValue = 'deleteAction';
     }
-    
+
 }
 /**
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Rest
  */
@@ -98,7 +92,6 @@ class Zend_Rest_ControllerTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Rest_ControllerTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);

@@ -13,21 +13,15 @@
 		"N", 
 		"D"
 	], 
-	"quarters-standAlone-narrow": [
-		"1", 
-		"2", 
-		"3", 
-		"4"
-	], 
 	"field-weekday": "ugedag", 
-	"dateFormatItem-yQQQ": "QQQ yyyy", 
-	"dateFormatItem-yMEd": "EEE. d-M-yyyy", 
+	"dateFormatItem-yQQQ": "QQQ y", 
+	"dateFormatItem-yMEd": "EEE. d/M/y", 
 	"dateFormatItem-MMMEd": "E d MMM", 
 	"eraNarrow": [
 		"f.Kr.", 
 		"e.Kr."
 	], 
-	"dateFormat-long": "d. MMM yyyy", 
+	"dateFormat-long": "d. MMM y", 
 	"months-format-wide": [
 		"januar", 
 		"februar", 
@@ -42,10 +36,11 @@
 		"november", 
 		"december"
 	], 
-	"dateFormat-full": "EEEE 'den' d. MMMM yyyy", 
+	"dayPeriods-format-wide-pm": "e.m.", 
+	"dateFormat-full": "EEEE 'den' d. MMMM y", 
 	"dateFormatItem-Md": "d/M", 
 	"field-era": "æra", 
-	"dateFormatItem-yM": "M-yyyy", 
+	"dateFormatItem-yM": "M/y", 
 	"months-standAlone-wide": [
 		"januar", 
 		"februar", 
@@ -67,32 +62,33 @@
 		"3. kvartal", 
 		"4. kvartal"
 	], 
-	"dateTimeFormat": "{1} {0}", 
-	"timeFormat-long": "HH:mm:ss z", 
+	"timeFormat-long": "HH.mm.ss z", 
 	"field-year": "år", 
-	"dateFormatItem-yMMM": "MMM yyyy", 
+	"dateFormatItem-yMMM": "MMM y", 
 	"dateFormatItem-yQ": "Q yyyy", 
 	"field-hour": "time", 
 	"dateFormatItem-MMdd": "dd/MM", 
 	"months-format-abbr": [
-		"jan", 
-		"feb", 
-		"mar", 
-		"apr", 
+		"jan.", 
+		"feb.", 
+		"mar.", 
+		"apr.", 
 		"maj", 
-		"jun", 
-		"jul", 
-		"aug", 
-		"sep", 
-		"okt", 
-		"nov", 
-		"dec"
+		"jun.", 
+		"jul.", 
+		"aug.", 
+		"sep.", 
+		"okt.", 
+		"nov.", 
+		"dec."
 	], 
 	"dateFormatItem-yyQ": "Q. 'kvartal' yy", 
-	"patternChars": "GuMtkHmsSEDFwWahKzUeygAZvcL", 
-	"timeFormat-full": "HH.mm.ss v", 
-	"am": "f.m.", 
-	"dateFormatItem-H": "H", 
+	"timeFormat-full": "HH.mm.ss zzzz", 
+	"field-day-relative+0": "i dag", 
+	"field-day-relative+1": "i morgen", 
+	"field-day-relative+2": "i overmorgen", 
+	"dateFormatItem-H": "HH", 
+	"field-day-relative+3": "i overovermorgen", 
 	"months-standAlone-abbr": [
 		"jan", 
 		"feb", 
@@ -119,7 +115,6 @@
 		"3. kvartal", 
 		"4. kvartal"
 	], 
-	"dateFormatItem-HHmmss": "HH.mm.ss", 
 	"dateFormatItem-M": "M", 
 	"days-standAlone-wide": [
 		"søndag", 
@@ -130,8 +125,7 @@
 		"fredag", 
 		"lørdag"
 	], 
-	"dateFormatItem-yyyyMMM": "MMM yyyy", 
-	"dateFormatItem-MMMMd": "d. MMMM", 
+	"dateFormatItem-yyyyMMM": "MMM y", 
 	"dateFormatItem-yyMMM": "MMM yy", 
 	"timeFormat-medium": "HH.mm.ss", 
 	"dateFormatItem-Hm": "HH.mm", 
@@ -158,9 +152,11 @@
 	], 
 	"dateFormatItem-d": "d.", 
 	"dateFormatItem-ms": "mm.ss", 
+	"field-day-relative+-1": "i går", 
+	"field-day-relative+-2": "i forgårs", 
+	"field-day-relative+-3": "i forforgårs", 
 	"dateFormatItem-MMMd": "d. MMM", 
-	"dateFormatItem-MEd": "E. d-M", 
-	"dateFormatItem-yMMMM": "MMMM yyyy", 
+	"dateFormatItem-MEd": "E. d/M", 
 	"field-day": "dag", 
 	"days-format-wide": [
 		"søndag", 
@@ -173,7 +169,7 @@
 	], 
 	"field-zone": "zone", 
 	"dateFormatItem-yyyyMM": "MM/yyyy", 
-	"dateFormatItem-y": "yyyy", 
+	"dateFormatItem-y": "y", 
 	"months-standAlone-narrow": [
 		"J", 
 		"F", 
@@ -189,6 +185,7 @@
 		"D"
 	], 
 	"dateFormatItem-yyMM": "MM/yy", 
+	"dateFormatItem-hm": "h.mm a", 
 	"days-format-abbr": [
 		"søn", 
 		"man", 
@@ -222,14 +219,14 @@
 		"L"
 	], 
 	"dateFormatItem-MMM": "MMM", 
-	"dateFormatItem-HHmm": "HH.mm", 
-	"pm": "e.m.", 
+	"dayPeriods-format-wide-am": "f.m.", 
 	"dateFormatItem-MMMMEd": "E, d. MMMM", 
 	"dateFormat-short": "dd/MM/yy", 
 	"field-second": "sekund", 
-	"dateFormatItem-yMMMEd": "EEE. d. MMM yyyy", 
+	"dateFormatItem-yMMMEd": "EEE. d. MMM y", 
 	"field-week": "uge", 
 	"dateFormat-medium": "dd/MM/yyyy", 
-	"dateFormatItem-mmss": "mm.ss", 
-	"dateFormatItem-yyyy": "yyyy"
+	"dateFormatItem-Hms": "HH.mm.ss", 
+	"dateFormatItem-hms": "h.mm.ss a", 
+	"dateFormatItem-yyyy": "y"
 })

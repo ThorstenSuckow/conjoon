@@ -1,12 +1,16 @@
 ({
 	"field-dayperiod": "napszak", 
+	"dayPeriods-format-wide-pm": "du.", 
 	"field-minute": "perc", 
 	"eraNames": [
 		"időszámításunk előtt", 
 		"időszámításunk szerint"
 	], 
+	"field-day-relative+-1": "tegnap", 
 	"dateFormatItem-MMdd": "MM.dd.", 
+	"field-day-relative+-2": "tegnapelőtt", 
 	"field-weekday": "hét napja", 
+	"field-day-relative+-3": "három nappal ezelőtt", 
 	"days-standAlone-wide": [
 		"vasárnap", 
 		"hétfő", 
@@ -17,7 +21,6 @@
 		"szombat"
 	], 
 	"dateFormatItem-MMM": "LLL", 
-	"patternChars": "GanjkHmsSEDFwWxhKzAeugXZvcL", 
 	"months-standAlone-narrow": [
 		"J", 
 		"F", 
@@ -27,11 +30,12 @@
 		"J", 
 		"J", 
 		"A", 
-		"S", 
+		"Sz", 
 		"O", 
 		"N", 
 		"D"
 	], 
+	"dayPeriods-format-wide-am": "de.", 
 	"field-era": "éra", 
 	"field-hour": "óra", 
 	"quarters-standAlone-abbr": [
@@ -40,7 +44,7 @@
 		"N3", 
 		"N4"
 	], 
-	"timeFormat-full": "H:mm:ss v", 
+	"timeFormat-full": "H:mm:ss zzzz", 
 	"months-standAlone-abbr": [
 		"jan.", 
 		"febr.", 
@@ -55,40 +59,38 @@
 		"nov.", 
 		"dec."
 	], 
+	"field-day-relative+0": "ma", 
 	"days-standAlone-narrow": [
 		"V", 
 		"H", 
 		"K", 
-		"S", 
-		"C", 
+		"Sz", 
+		"Cs", 
 		"P", 
-		"S"
+		"Sz"
 	], 
+	"field-day-relative+1": "holnap", 
 	"eraAbbr": [
 		"i. e.", 
 		"i. sz."
 	], 
+	"field-day-relative+2": "holnapután", 
+	"field-day-relative+3": "három nap múlva", 
 	"dateFormatItem-yyyyMM": "yyyy.MM", 
-	"dateFormatItem-yyyyMMMM": "yyyy. MMMM", 
-	"dateFormat-long": "yyyy. MMMM d.", 
+	"dateFormatItem-yyyyMMMM": "y. MMMM", 
+	"dateFormat-long": "y. MMMM d.", 
 	"timeFormat-medium": "H:mm:ss", 
 	"field-zone": "zóna", 
-	"dateFormatItem-Hm": "HH:mm", 
+	"dateFormatItem-Hm": "H:mm", 
 	"dateFormat-medium": "yyyy.MM.dd.", 
+	"dateFormatItem-Hms": "H:mm:ss", 
 	"quarters-standAlone-wide": [
 		"I. negyedév", 
 		"II. negyedév", 
 		"III. negyedév", 
 		"IV. negyedév"
 	], 
-	"dateTimeFormat": "{1} {0}", 
 	"field-year": "év", 
-	"quarters-standAlone-narrow": [
-		"1", 
-		"2", 
-		"3", 
-		"4"
-	], 
 	"field-week": "hét", 
 	"months-standAlone-wide": [
 		"január", 
@@ -104,8 +106,8 @@
 		"november", 
 		"december"
 	], 
-	"dateFormatItem-MMMd": "MMM d", 
-	"dateFormatItem-yyQ": "Q yy", 
+	"dateFormatItem-MMMd": "MMM d.", 
+	"dateFormatItem-yyQ": "yy/Q", 
 	"timeFormat-long": "H:mm:ss z", 
 	"months-format-abbr": [
 		"jan.", 
@@ -122,6 +124,7 @@
 		"dec."
 	], 
 	"timeFormat-short": "H:mm", 
+	"dateFormatItem-H": "H", 
 	"field-month": "hónap", 
 	"dateFormatItem-MMMMd": "MMMM d.", 
 	"quarters-format-abbr": [
@@ -139,17 +142,16 @@
 		"P", 
 		"Szo"
 	], 
-	"pm": "du.", 
 	"dateFormatItem-mmss": "mm:ss", 
 	"dateFormatItem-M": "L", 
 	"days-format-narrow": [
 		"V", 
 		"H", 
 		"K", 
-		"S", 
-		"C", 
+		"Sz", 
+		"Cs", 
 		"P", 
-		"S"
+		"Sz"
 	], 
 	"field-second": "másodperc", 
 	"field-day": "nap", 
@@ -163,12 +165,11 @@
 		"J", 
 		"J", 
 		"A", 
-		"S", 
+		"Sz", 
 		"O", 
 		"N", 
 		"D"
 	], 
-	"am": "de.", 
 	"days-standAlone-abbr": [
 		"V", 
 		"H", 
@@ -179,7 +180,7 @@
 		"Szo"
 	], 
 	"dateFormat-short": "yyyy.MM.dd.", 
-	"dateFormat-full": "yyyy. MMMM d.", 
+	"dateFormat-full": "y. MMMM d., EEEE", 
 	"dateFormatItem-Md": "M. d.", 
 	"months-format-wide": [
 		"január", 

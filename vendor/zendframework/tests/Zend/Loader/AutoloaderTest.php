@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Loader
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AutoloaderTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AutoloaderTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Loader_AutoloaderTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Loader_Autoloader
@@ -43,7 +38,7 @@ require_once 'Zend/Loader/Autoloader/Interface.php';
  * @category   Zend
  * @package    Zend_Loader
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Loader
  */
@@ -382,6 +377,48 @@ class Zend_Loader_AutoloaderTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(class_exists($class, false));
     }
 
+    /**
+     * @group ZF-10024
+     */
+    public function testClosuresRegisteredWithAutoloaderShouldBeUtilized()
+    {
+        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+            $this->markTestSkipped(__METHOD__ . ' requires PHP version 5.3.0 or greater');
+        }
+
+        $closure = require_once dirname(__FILE__) . '/_files/AutoloaderClosure.php';
+        $this->autoloader->pushAutoloader($closure);
+        $this->assertTrue(Zend_Loader_Autoloader::autoload('AutoloaderTest_AutoloaderClosure'));
+    }
+
+    /**
+     * @group ZF-11219
+     */
+    public function testRetrievesAutoloadersFromLongestMatchingNamespace()
+    {
+        $this->autoloader->pushAutoloader(array($this, 'autoloadFirstLevel'), 'Level1_')
+                         ->pushAutoloader(array($this, 'autoloadSecondLevel'), 'Level1_Level2');
+        $class = 'Level1_Level2_Foo';
+        $als   = $this->autoloader->getClassAutoloaders($class);
+        $this->assertEquals(1, count($als));
+        $al    = array_shift($als);
+        $this->assertEquals(array($this, 'autoloadSecondLevel'), $al);
+    }
+
+    /**
+     * @group ZF-10136
+     */
+    public function testMergedAutoloadersWithoutNamespace()
+    {
+        $this->autoloader
+             ->pushAutoloader('autoloadOne')
+             ->pushAutoloader('autoloadSecond');
+
+        $class = 'Zend_Autoloader_Test';
+        $autoloaders = $this->autoloader->getClassAutoloaders($class);
+        $this->assertEquals(3, count($autoloaders));
+    }
+
     public function addTestIncludePath()
     {
         set_include_path(dirname(__FILE__) . '/_files/' . PATH_SEPARATOR . $this->includePath);
@@ -393,6 +430,16 @@ class Zend_Loader_AutoloaderTest extends PHPUnit_Framework_TestCase
     }
 
     public function autoload($class)
+    {
+        return $class;
+    }
+
+    public function autoloadFirstLevel($class)
+    {
+        return $class;
+    }
+
+    public function autoloadSecondLevel($class)
     {
         return $class;
     }

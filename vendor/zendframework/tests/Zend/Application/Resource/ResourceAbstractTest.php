@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ResourceAbstractTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ResourceAbstractTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Application_Resource_ResourceAbstractTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * Zend_Loader_Autoloader
@@ -38,7 +33,7 @@ require_once 'Zend/Loader/Autoloader.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -177,6 +172,22 @@ class Zend_Application_Resource_ResourceAbstractTest extends PHPUnit_Framework_T
         $this->assertSame($this->bootstrap, $resource->getBootstrap());
         $options = $resource->getOptions();
         $this->assertNotContains('bootstrap', array_keys($options));
+    }
+
+    /**
+     * @group ZF-8520
+     */
+    public function testFirstResourceOptionShouldNotBeDropped()
+    {
+        require_once dirname(__FILE__) . '/../_files/resources/Foo.php';
+        $options = array(
+            array('someData'),
+            array('someMoreData'),
+        );
+
+        $resource = new Zend_Application_BootstrapTest_Resource_Foo($options);
+        $stored   = $resource->getOptions();
+        $this->assertSame($options, $stored);
     }
 }
 

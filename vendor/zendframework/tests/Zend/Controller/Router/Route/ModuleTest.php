@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ModuleTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ModuleTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/** Test helper */
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
-
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 /** Zend_Controller_Router_Route_Module */
 require_once 'Zend/Controller/Router/Route/Module.php';
@@ -41,7 +35,7 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Router
@@ -61,7 +55,6 @@ class Zend_Controller_Router_Route_ModuleTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_Controller_Router_Route_ModuleTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -261,7 +254,7 @@ class Zend_Controller_Router_Route_ModuleTest extends PHPUnit_Framework_TestCase
     public function testAssembleNoActionWithParams()
     {
         $params = array(
-            'foo'		 => 'bar',
+            'foo'         => 'bar',
             'module'     => 'mod',
             'controller' => 'ctrl'
         );
@@ -391,18 +384,18 @@ class Zend_Controller_Router_Route_ModuleTest extends PHPUnit_Framework_TestCase
     {
         $values = $this->route->match('con/act');
 
-    	$url = $this->route->assemble(array('controller' => 'foo', 'action' => 'bar'), true);
+        $url = $this->route->assemble(array('controller' => 'foo', 'action' => 'bar'), true);
 
-		$this->assertSame('foo/bar', $url);
+        $this->assertSame('foo/bar', $url);
     }
 
     public function testAssembleDefaultModuleZF1415()
     {
         $values = $this->route->match('con/act');
 
-    	$url = $this->route->assemble(array('controller' => 'foo', 'action' => 'bar'), false);
+        $url = $this->route->assemble(array('controller' => 'foo', 'action' => 'bar'), false);
 
-		$this->assertSame('foo/bar', $url);
+        $this->assertSame('foo/bar', $url);
     }
 
     public function testAssembleDefaultModuleZF1415_2()
@@ -459,11 +452,11 @@ class Zend_Controller_Router_Route_ModuleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $token['foo'][0]);
         $this->assertEquals('baz', $token['foo'][1]);
     }
-    
+
     public function testGetInstanceMatching()
     {
         $this->route = Zend_Controller_Router_Route_Module::getInstance(new Zend_Config(array()));
-        
+
         $this->_request->setModuleKey('m');
         $this->_request->setControllerKey('c');
         $this->_request->setActionKey('a');
@@ -474,6 +467,21 @@ class Zend_Controller_Router_Route_ModuleTest extends PHPUnit_Framework_TestCase
         $this->assertSame('mod', $values['m'], var_export(array_keys($values), 1));
         $this->assertSame('ctrl', $values['c'], var_export(array_keys($values), 1));
         $this->assertSame('index', $values['a'], var_export(array_keys($values), 1));
+    }
+
+    /**
+     * @group ZF-8029
+     */
+    public function testAssembleShouldUrlEncodeAllParameterNames()
+    {
+        $params = array(
+            'controller' => 'foo',
+            'action' => 'bar',
+            '"><script>alert(11639)<' => 'script>',
+            'module' => 'default',
+        );
+        $url = $this->route->assemble($params);
+        $this->assertNotContains('"><script>alert(11639)<', $url);
     }
 }
 

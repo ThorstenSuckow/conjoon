@@ -13,23 +13,18 @@
 		"N", 
 		"D"
 	], 
-	"quarters-standAlone-narrow": [
-		"1", 
-		"2", 
-		"3", 
-		"4"
-	], 
 	"field-weekday": "jour de la semaine", 
 	"dateFormatItem-yyQQQQ": "QQQQ yy", 
-	"dateFormatItem-yQQQ": "QQQ yyyy", 
+	"dateFormatItem-yQQQ": "QQQ y", 
 	"dateFormatItem-yMEd": "EEE d/M/yyyy", 
 	"dateFormatItem-MMMEd": "E d MMM", 
 	"eraNarrow": [
 		"av. J.-C.", 
 		"ap. J.-C."
 	], 
+	"dayPeriods-format-wide-morning": "matin", 
 	"dateFormatItem-MMMdd": "dd MMM", 
-	"dateFormat-long": "d MMMM yyyy", 
+	"dateFormat-long": "d MMMM y", 
 	"months-format-wide": [
 		"janvier", 
 		"février", 
@@ -44,8 +39,11 @@
 		"novembre", 
 		"décembre"
 	], 
-	"dateFormat-full": "EEEE d MMMM yyyy", 
+	"dateFormatItem-EEEd": "d EEE", 
+	"dayPeriods-format-wide-pm": "PM", 
+	"dateFormat-full": "EEEE d MMMM y", 
 	"dateFormatItem-Md": "d/M", 
+	"dayPeriods-format-wide-noon": "midi", 
 	"field-era": "ère", 
 	"dateFormatItem-yM": "M/yyyy", 
 	"months-standAlone-wide": [
@@ -69,12 +67,11 @@
 		"3e trimestre", 
 		"4e trimestre"
 	], 
-	"dateTimeFormat": "{1} {0}", 
 	"timeFormat-long": "HH:mm:ss z", 
 	"field-year": "année", 
-	"dateFormatItem-yMMM": "MMM yyyy", 
-	"dateFormatItem-yQ": "'T'Q yyyy", 
-	"dateFormatItem-yyyyMMMM": "MMMM yyyy", 
+	"dateFormatItem-yMMM": "MMM y", 
+	"dateFormatItem-yQ": "'T'Q y", 
+	"dateFormatItem-yyyyMMMM": "MMMM y", 
 	"field-hour": "heure", 
 	"dateFormatItem-MMdd": "dd/MM", 
 	"months-format-abbr": [
@@ -92,9 +89,11 @@
 		"déc."
 	], 
 	"dateFormatItem-yyQ": "'T'Q yy", 
-	"patternChars": "GaMjkHmsSEDFwWxhKzAeugXZvcL", 
-	"timeFormat-full": "HH:mm:ss v", 
-	"am": "AM", 
+	"timeFormat-full": "HH:mm:ss zzzz", 
+	"field-day-relative+0": "aujourd’hui", 
+	"field-day-relative+1": "demain", 
+	"field-day-relative+2": "après-demain", 
+	"field-day-relative+3": "après-après-demain", 
 	"months-standAlone-abbr": [
 		"janv.", 
 		"févr.", 
@@ -121,8 +120,6 @@
 		"3e trimestre", 
 		"4e trimestre"
 	], 
-	"dateFormatItem-HHmmss": "HH:mm:ss", 
-	"dateFormatItem-hhmmss": "HH:mm:ss", 
 	"dateFormatItem-M": "L", 
 	"days-standAlone-wide": [
 		"dimanche", 
@@ -133,11 +130,10 @@
 		"vendredi", 
 		"samedi"
 	], 
-	"dateFormatItem-MMMMd": "d MMMM", 
 	"dateFormatItem-yyMMMEEEd": "EEE d MMM yy", 
 	"dateFormatItem-yyMMM": "MMM yy", 
 	"timeFormat-medium": "HH:mm:ss", 
-	"dateFormatItem-Hm": "H:mm", 
+	"dateFormatItem-Hm": "HH:mm", 
 	"quarters-standAlone-abbr": [
 		"T1", 
 		"T2", 
@@ -150,6 +146,7 @@
 	], 
 	"field-minute": "minute", 
 	"field-dayperiod": "cadran", 
+	"dayPeriods-format-wide-night": "soir", 
 	"days-standAlone-abbr": [
 		"dim.", 
 		"lun.", 
@@ -162,9 +159,17 @@
 	"dateFormatItem-yyMMMd": "d MMM yy", 
 	"dateFormatItem-d": "d", 
 	"dateFormatItem-ms": "mm:ss", 
+	"quarters-format-narrow": [
+		"T1", 
+		"T2", 
+		"T3", 
+		"T4"
+	], 
+	"field-day-relative+-1": "hier", 
+	"field-day-relative+-2": "avant-hier", 
+	"field-day-relative+-3": "avant-avant-hier", 
 	"dateFormatItem-MMMd": "d MMM", 
 	"dateFormatItem-MEd": "EEE d/M", 
-	"dateFormatItem-yMMMM": "MMMM yyyy", 
 	"field-day": "jour", 
 	"days-format-wide": [
 		"dimanche", 
@@ -176,7 +181,7 @@
 		"samedi"
 	], 
 	"field-zone": "fuseau horaire", 
-	"dateFormatItem-y": "yyyy", 
+	"dateFormatItem-y": "y", 
 	"months-standAlone-narrow": [
 		"J", 
 		"F", 
@@ -225,15 +230,14 @@
 		"S"
 	], 
 	"dateFormatItem-MMM": "LLL", 
-	"dateFormatItem-HHmm": "HH:mm", 
-	"pm": "PM", 
+	"dayPeriods-format-wide-am": "AM", 
 	"dateFormatItem-MMMMEd": "EEE d MMMM", 
 	"dateFormat-short": "dd/MM/yy", 
 	"dateFormatItem-MMd": "d/MM", 
+	"dayPeriods-format-wide-afternoon": "après-midi", 
 	"field-second": "seconde", 
-	"dateFormatItem-yMMMEd": "EEE d MMM yyyy", 
-	"dateFormatItem-hhmm": "HH:mm", 
+	"dateFormatItem-yMMMEd": "EEE d MMM y", 
 	"field-week": "semaine", 
-	"dateFormat-medium": "d MMM yyyy", 
-	"dateFormatItem-mmss": "mm:ss"
+	"dateFormat-medium": "d MMM y", 
+	"dateFormatItem-Hms": "HH:mm:ss"
 })

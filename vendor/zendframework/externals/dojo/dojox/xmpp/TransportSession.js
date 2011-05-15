@@ -1,34 +1,22 @@
 dojo.provide("dojox.xmpp.TransportSession");
+dojo.require("dojox.xmpp.bosh");
 dojo.require("dojox.xmpp.util");
-dojo.require("dojo.io.script");
-dojo.require("dojo.io.iframe");
 dojo.require("dojox.data.dom");
 
 dojox.xmpp.TransportSession = function(props) {
+	// we have to set this here because "this" doesn't work
+	// in the dojo.extend call.
+	this.sendTimeout = (this.wait+20)*1000;
+
 	//mixin any options that we want to provide to this service
 	if (props && dojo.isObject(props)) {
 		dojo.mixin(this, props);
 		if(this.useScriptSrcTransport){
 			this.transportIframes = [];
-		
 		}
 	}
 	
 };
-
-
-dojox.xmpp.TransportSession._iframeOnload = function(index) {
-	//console.log("Loaded transport iframe slot " + index, this);
-	var doc = dojo.io.iframe.doc(dojo.byId("xmpp-transport-" + index));
-	//console.log("iframe document ", doc);
-	doc.write("<script>var isLoaded=true; var rid=0; var transmiting=false; function _BOSH_(msg) { transmiting=false; parent.dojox.xmpp.TransportSession.handleBOSH(msg, rid); } </script>");
-};
-
-
-dojox.xmpp.TransportSession.handleBOSH = function(msg, rid) {
-	//console.log("BOSH from iframe", msg, rid);
-};
-
 
 dojo.extend(dojox.xmpp.TransportSession, {
 
@@ -43,7 +31,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 		serviceUrl: '/httpbind',
 		defaultResource: "dojoIm",
 		domain: 'imserver.com',
-		sendTimeout: (this.wait+20)*1000,
+		sendTimeout: 0, //(this.wait+20)*1000
 		
 		useScriptSrcTransport:false,
 		
@@ -60,7 +48,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 		inboundQueue: [],
 		deferredRequests: {},
 		matchTypeIdAttribute: {},
-		
+
 		open: function() {
 			this.status = "notReady";
 			this.rid = Math.round(Math.random() * 1000000000);
@@ -75,20 +63,12 @@ dojo.extend(dojox.xmpp.TransportSession, {
 			this.keepAliveTimer = setTimeout(dojo.hitch(this, "_keepAlive"), 10000);
 			
 			if(this.useScriptSrcTransport){
-				dojo.connect(dojox.xmpp.TransportSession, 
-					"handleBOSH", this, "processScriptSrc");
-				
-				this.transportIframes = [];
-				
-				for(var i = 0; i <= this.hold; i++) {
-					var iframe = dojo.io.iframe.create("xmpp-transport-" + i, dojox._scopeName + ".xmpp.TransportSession._iframeOnload("+i+");" );
-					this.transportIframes.push(iframe);
-					if(i ==0) {
-						dojo.connect(iframe, "onload",  this, "_sendLogin");
-					}
-				}
-				
-			
+				dojox.xmpp.bosh.initialize({
+					iframes: this.hold+1,
+					load: dojo.hitch(this, function(){
+						this._sendLogin();
+					})
+				});
 			} else {
 				this._sendLogin();
 			}
@@ -104,17 +84,35 @@ dojo.extend(dojox.xmpp.TransportSession, {
 					secure: this.secure,
 					wait: this.wait,
 					"xml:lang": this.lang,
-					xmlns: dojox.xmpp.xmpp.BODY_NS
+					"xmpp:version": "1.0",
+					xmlns: dojox.xmpp.xmpp.BODY_NS,
+					"xmlns:xmpp": "urn:xmpp:xbosh"
 				};
 
 				var msg = dojox.xmpp.util.createElement("body", req, true);
 				this.addToOutboundQueue(msg, rid);
 		},
+
+		_sendRestart: function(){
+			var rid = this.rid++;
+			var req = {
+				rid: rid,
+				sid: this.sid,
+				to: this.domain,
+				"xmpp:restart": "true",
+				"xml:lang": this.lang,
+				xmlns: dojox.xmpp.xmpp.BODY_NS,
+				"xmlns:xmpp": "urn:xmpp:xbosh"
+			};
+
+			var msg = dojox.xmpp.util.createElement("body", req, true);
+			this.addToOutboundQueue(msg, rid);
+		},
 		
 		processScriptSrc: function(msg, rid) {
 			//console.log("processScriptSrc::", rid, msg);
 		//	var msgDom = dojox.xml.DomParser.parse(msg);
-			var msgDom = dojox.data.dom.createDocument(msg, "text/xml");
+			var msgDom = dojox.xml.parser.parse(msg, "text/xml");
 			//console.log("parsed mgs", msgDom);
 			//console.log("Queue", this.outboundQueue);
 			if(msgDom) {
@@ -219,12 +217,14 @@ dojo.extend(dojox.xmpp.TransportSession, {
 			}
 
 			var req = {
-				sid: this.sid
+				sid: this.sid,
+				xmlns: dojox.xmpp.xmpp.BODY_NS
 			}
 
+			var envelope
 			if (this.protocolPacketQueue.length > 0){
 				req.rid= this.rid++;
-				var envelope = new dojox.string.Builder(dojox.xmpp.util.createElement("body", req, false));
+				envelope = new dojox.string.Builder(dojox.xmpp.util.createElement("body", req, false));
 				envelope.append(this.processProtocolPacketQueue());
 				envelope.append("</body>");
 				delete this.lastPollTime;
@@ -241,7 +241,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				} 
 				req.rid= this.rid++;
 				this.lastPollTime = new Date().getTime();
-				var envelope = new dojox.string.Builder(dojox.xmpp.util.createElement("body", req, true));
+				envelope = new dojox.string.Builder(dojox.xmpp.util.createElement("body", req, true));
 
 			}
 
@@ -280,36 +280,26 @@ dojo.extend(dojox.xmpp.TransportSession, {
 			return packets.toString();
 		},
 
-		findOpenIframe: function() {
-			for(var i = 0; i < this.transportIframes.length; i++) {
-				var iframe = this.transportIframes[i];
-				var win = iframe.contentWindow;
-				//console.log("Open transport?", win, win.isLoaded, win.transmiting);
-				
-				if(win.isLoaded && !win.transmiting) {
-					return iframe;
-				}
-			
-			}
-		},
-		
 		sendXml: function(message, rid){
-				if(this.isTerminated()) {
-					return;
-				}
+			if(this.isTerminated()) {
+				return false;
+			}
 			//console.log("TransportSession::sendXml()"+ new Date().getTime() + " RID: ", rid, " MSG: ", message);
 			this.transmitState = "transmitting";
+			var def = null;
 			if(this.useScriptSrcTransport) { 
 				//console.log("using script src to transmit");
-			
-				var iframe = this.findOpenIframe();
-				var iframeDoc = dojo.io.iframe.doc(iframe);
-				iframe.contentWindow.rid=rid;
-				iframe.contentWindow.transmiting=true;
-				dojo.io.script.attach("rid-"+rid,this.serviceUrl+"?"+encodeURIComponent(message),iframeDoc);
-								
+				def = dojox.xmpp.bosh.get({
+					rid: rid,
+					url: this.serviceUrl+'?'+encodeURIComponent(message),
+					error: dojo.hitch(this, function(res, io){
+						this.setState("Terminate", "error");
+						return false;
+					}),
+					timeout: this.sendTimeout
+				});
 			} else {
-				var def = dojo.rawXhrPost({
+				def = dojo.rawXhrPost({
 					contentType: "text/xml",
 					url: this.serviceUrl,
 					postData: message,
@@ -317,23 +307,20 @@ dojo.extend(dojox.xmpp.TransportSession, {
 					error: dojo.hitch(this, function(res, io) {
 						////console.log("foo", res, io.xhr.responseXML, io.xhr.status);
 						return this.processError(io.xhr.responseXML, io.xhr.status , rid);
-					}
-					),
+					}),
 					timeout: this.sendTimeout
 				});
-
-				//process the result document 
-				def.addCallback(this, function(res){
-					return this.processDocument(res, rid);
-				});
-				return def;
 			}
-
+			//process the result document 
+			def.addCallback(this, function(res){
+				return this.processDocument(res, rid);
+			});
+			return def;
 		},
 
 		processDocument: function(doc, rid){
-			if(this.isTerminated()) {
-				return;
+			if(this.isTerminated() || !doc.firstChild) {
+				return false;
 			}
 			//console.log("TransportSession:processDocument() ", doc, rid);
 			this.transmitState = "idle";
@@ -343,7 +330,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 				//console.log("TransportSession::processDocument() firstChild is not <body> element ", doc, " RID: ", rid);
 			}
 
-			if (this.outboundQueue.length<1){return;}
+			if (this.outboundQueue.length<1){return false;}
 
 			var expectedId = this.outboundQueue[0]["rid"];
 			//console.log("expectedId", expectedId);
@@ -470,13 +457,22 @@ dojo.extend(dojox.xmpp.TransportSession, {
 		processError: function(err, httpStatusCode,rid){
 			//console.log("Processing server error ", err, httpStatusCode,rid);
 			if(this.isTerminated()) {
-				return;
+				return false;
 			}
 			
 			
 			if(httpStatusCode != 200) {
-				this.setState("Terminate", errorMessage);
-				return;
+				if(httpStatusCode >= 400 && httpStatusCode < 500){
+					/* Any status code between 400 and 500 should terminate
+					 * the connection */
+					this.setState("Terminate", errorMessage);
+					return false;
+				}else{
+					this.removeFromOutboundQueue(rid);	
+					setTimeout(dojo.hitch(this, function(){ this.dispatchPacket(); }), 200);	
+					return true;
+				}
+				return false;
 			}
 			
 			if (err && err.dojoType && err.dojoType=="timeout"){
@@ -495,7 +491,7 @@ dojo.extend(dojox.xmpp.TransportSession, {
 						errorMessage = "conflict"
 					}
 					this.setState("Terminate", errorMessage);
-					return;
+					return false;
 				}			
 			}
 			this.transmitState = "error";

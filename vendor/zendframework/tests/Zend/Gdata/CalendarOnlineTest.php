@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Gdata_Calendar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 require_once 'Zend/Gdata/Calendar.php';
 require_once 'Zend/Gdata/Calendar/EventEntry.php';
@@ -31,7 +29,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Calendar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Calendar
@@ -51,33 +49,34 @@ class Zend_Gdata_CalendarOnlineTest extends PHPUnit_Framework_TestCase
         $this->gdata = new Zend_Gdata_Calendar($client);
     }
 
-    public function testCalendarListFeed() 
+    public function testCalendarListFeed()
     {
         $calFeed = $this->gdata->getCalendarListFeed();
-        $this->assertTrue(strpos($calFeed->title->text, 'Calendar List') 
+        $this->assertTrue(strpos($calFeed->title->text, 'Calendar List')
                 !== false);
         $calCount = 0;
         foreach ($calFeed as $calendar) {
             $calCount++;
         }
         $this->assertTrue($calCount > 0);
-    } 
+    }
 
     /**
-     * @see ZF-1701
+     * @group ZF-1701
      */
-    /*
     public function testCalendarOnlineFeed()
     {
         $eventFeed = $this->gdata->getCalendarEventFeed();
-        foreach ($eventFeed as $event) {
-            $title = $event->title;
-            $times = $event->when;
-            $location = $event->where;
-            $recurrence = $event->recurrence;
+        $this->assertTrue(strpos($eventFeed->title->text, TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL)
+                !== false);
+        $eventCount = 0;
+        foreach ( $eventFeed as $event ) {
+            $this->assertType('Zend_Gdata_Calendar_EventEntry', $event);
+            $eventCount++;
         }
+        $this->assertTrue($eventCount > 0 );
+        $this->assertTrue(count($eventFeed) == $eventCount);
     }
-	*/
 
     function getEvent($eventId)
     {
@@ -117,18 +116,19 @@ class Zend_Gdata_CalendarOnlineTest extends PHPUnit_Framework_TestCase
 
         $createdEntry = $this->gdata->insertEvent($newEntry);
 
+        $this->assertEquals('email in 30 minutes', $reminder->__toString());
         $this->assertEquals($title, $createdEntry->title->text);
         $this->assertEquals($desc, $createdEntry->content->text);
-        $this->assertEquals(strtotime($when->startTime), 
+        $this->assertEquals(strtotime($when->startTime),
                 strtotime($createdEntry->when[0]->startTime));
-        $this->assertEquals(strtotime($when->endTime), 
+        $this->assertEquals(strtotime($when->endTime),
                 strtotime($createdEntry->when[0]->endTime));
-        $this->assertEquals($reminder->method, 
+        $this->assertEquals($reminder->method,
                 $createdEntry->when[0]->reminders[0]->method);
-        $this->assertEquals($reminder->minutes, 
+        $this->assertEquals($reminder->minutes,
                 $createdEntry->when[0]->reminders[0]->minutes);
         $this->assertEquals($where, $createdEntry->where[0]->valueString);
-        
+
         return $createdEntry;
     }
 
@@ -153,7 +153,7 @@ class Zend_Gdata_CalendarOnlineTest extends PHPUnit_Framework_TestCase
         $createdEntry = $this->createEvent();
         preg_match('#.*/([A-Za-z0-9]+)$#', $createdEntry->id->text, $matches);
         $id = $matches[1];
-        $updatedEvent = $this->updateEvent($id, $newTitle); 
+        $updatedEvent = $this->updateEvent($id, $newTitle);
         $this->assertEquals($newTitle, $updatedEvent->title->text);
     }
 
@@ -164,9 +164,9 @@ class Zend_Gdata_CalendarOnlineTest extends PHPUnit_Framework_TestCase
         $createdEntry->delete();
 
         $createdEntry2 = $this->createEvent();
-        $this->gdata->delete($createdEntry2); 
+        $this->gdata->delete($createdEntry2);
 
         $createdEntry3 = $this->createEvent();
-        $this->gdata->delete($createdEntry3->getEditLink()->href); 
+        $this->gdata->delete($createdEntry3->getEditLink()->href);
     }
 }

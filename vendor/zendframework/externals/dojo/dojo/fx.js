@@ -1,5 +1,5 @@
 dojo.provide("dojo.fx");
-dojo.require("dojo.fx.Toggler");
+dojo.require("dojo.fx.Toggler"); // FIXME: remove this back-compat require in 2.0 
 /*=====
 dojo.fx = {
 	// summary: Effects library on top of Base animations
@@ -125,15 +125,25 @@ dojo.fx = {
 	});
 	d.extend(_chain, _baseObj);
 
-	dojo.fx.chain = function(/*dojo._Animation[]*/ animations){
-		// summary: Chain a list of dojo._Animation s to run in sequence
+	dojo.fx.chain = function(/*dojo.Animation[]*/ animations){
+		// summary: 
+		//		Chain a list of `dojo.Animation`s to run in sequence
+		//
+		// description:
+		//		Return a `dojo.Animation` which will play all passed
+		//		`dojo.Animation` instances in sequence, firing its own
+		//		synthesized events simulating a single animation. (eg:
+		//		onEnd of this animation means the end of the chain, 
+		//		not the individual animations within)
+		//
 		// example:
+		//	Once `node` is faded out, fade in `otherNode`
 		//	|	dojo.fx.chain([
 		//	|		dojo.fadeIn({ node:node }),
 		//	|		dojo.fadeOut({ node:otherNode })
 		//	|	]).play();
 		//
-		return new _chain(animations) // dojo._Animation
+		return new _chain(animations) // dojo.Animation
 	};
 
 	var _combine = function(animations){
@@ -149,9 +159,9 @@ dojo.fx = {
 			this._connects.push(d.connect(a, "onEnd", this, "_onEnd"));
 		}, this);
 		
-		this._pseudoAnimation = new d._Animation({curve: [0, 1], duration: this.duration});
+		this._pseudoAnimation = new d.Animation({curve: [0, 1], duration: this.duration});
 		var self = this;
-		d.forEach(["beforeBegin", "onBegin", "onPlay", "onAnimate", "onPause", "onStop"], 
+		d.forEach(["beforeBegin", "onBegin", "onPlay", "onAnimate", "onPause", "onStop", "onEnd"], 
 			function(evt){
 				self._connects.push(d.connect(self._pseudoAnimation, evt,
 					function(){ self._fire(evt, arguments); }
@@ -167,7 +177,7 @@ dojo.fx = {
 			return this;
 		},
 		_onEnd: function(){
-			if(++this._finished == this._animations.length){
+			if(++this._finished > this._animations.length){
 				this._fire("onEnd");
 			}
 		},
@@ -208,15 +218,17 @@ dojo.fx = {
 	});
 	d.extend(_combine, _baseObj);
 
-	dojo.fx.combine = function(/*dojo._Animation[]*/ animations){
-		// summary: Combine an array of `dojo._Animation`s to run in parallel
+	dojo.fx.combine = function(/*dojo.Animation[]*/ animations){
+		// summary: 
+		//		Combine a list of `dojo.Animation`s to run in parallel
 		//
 		// description:
-		//		Combine an array of `dojo._Animation`s to run in parallel, 
-		//		providing a new `dojo._Animation` instance encompasing each
+		//		Combine an array of `dojo.Animation`s to run in parallel, 
+		//		providing a new `dojo.Animation` instance encompasing each
 		//		animation, firing standard animation events.
 		//
 		// example:
+		//	Fade out `node` while fading in `otherNode` simultaneously
 		//	|	dojo.fx.combine([
 		//	|		dojo.fadeIn({ node:node }),
 		//	|		dojo.fadeOut({ node:otherNode })
@@ -224,7 +236,7 @@ dojo.fx = {
 		//
 		// example:
 		//	When the longest animation ends, execute a function:
-		//	| 	var anim = dojo.fx.combine([
+		//	|	var anim = dojo.fx.combine([
 		//	|		dojo.fadeIn({ node: n, duration:700 }),
 		//	|		dojo.fadeOut({ node: otherNode, duration: 300 })
 		//	|	]);
@@ -233,17 +245,28 @@ dojo.fx = {
 		//	|	});
 		//	|	anim.play(); // play the animation
 		//
-		return new _combine(animations); // dojo._Animation
+		return new _combine(animations); // dojo.Animation
 	};
 
 	dojo.fx.wipeIn = function(/*Object*/ args){
 		// summary:
+		//		Expand a node to it's natural height.
+		//
+		// description:
 		//		Returns an animation that will expand the
 		//		node defined in 'args' object from it's current height to
 		//		it's natural height (with no scrollbar).
 		//		Node must have no margin/border/padding.
-		args.node = d.byId(args.node);
-		var node = args.node, s = node.style, o;
+		//
+		// args: Object
+		//		A hash-map of standard `dojo.Animation` constructor properties
+		//		(such as easing: node: duration: and so on)
+		//
+		// example:
+		//	|	dojo.fx.wipeIn({
+		//	|		node:"someId"
+		//	|	}).play()
+		var node = args.node = d.byId(args.node), s = node.style, o;
 
 		var anim = d.animateProperty(d.mixin({
 			properties: {
@@ -253,11 +276,11 @@ dojo.fx = {
 						// start at current [computed] height, but use 1px rather than 0
 						// because 0 causes IE to display the whole panel
 						o = s.overflow;
-						s.overflow="hidden";
-						if(s.visibility=="hidden"||s.display=="none"){
-							s.height="1px";
-							s.display="";
-							s.visibility="";
+						s.overflow = "hidden";
+						if(s.visibility == "hidden" || s.display == "none"){
+							s.height = "1px";
+							s.display = "";
+							s.visibility = "";
 							return 1;
 						}else{
 							var height = d.style(node, "height");
@@ -276,13 +299,24 @@ dojo.fx = {
 			s.overflow = o;
 		});
 
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	}
 
 	dojo.fx.wipeOut = function(/*Object*/ args){
 		// summary:
+		//		Shrink a node to nothing and hide it. 
+		//
+		// description:
 		//		Returns an animation that will shrink node defined in "args"
 		//		from it's current height to 1px, and then hide it.
+		//
+		// args: Object
+		//		A hash-map of standard `dojo.Animation` constructor properties
+		//		(such as easing: node: duration: and so on)
+		// 
+		// example:
+		//	|	dojo.fx.wipeOut({ node:"someId" }).play()
+		
 		var node = args.node = d.byId(args.node), s = node.style, o;
 		
 		var anim = d.animateProperty(d.mixin({
@@ -304,16 +338,25 @@ dojo.fx = {
 			s.display = "none";
 		});
 
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	}
 
-	dojo.fx.slideTo = function(/*Object?*/ args){
+	dojo.fx.slideTo = function(/*Object*/ args){
 		// summary:
+		//		Slide a node to a new top/left position
+		//
+		// description:
 		//		Returns an animation that will slide "node" 
 		//		defined in args Object from its current position to
 		//		the position defined by (args.left, args.top).
+		//
+		// args: Object
+		//		A hash-map of standard `dojo.Animation` constructor properties
+		//		(such as easing: node: duration: and so on). Special args members
+		//		are `top` and `left`, which indicate the new position to slide to.
+		//
 		// example:
-		//	|	dojo.fx.slideTo({ node: node, left:"40", top:"50", unit:"px" }).play()
+		//	|	dojo.fx.slideTo({ node: node, left:"40", top:"50", units:"px" }).play()
 
 		var node = args.node = d.byId(args.node), 
 			top = null, left = null;
@@ -325,7 +368,7 @@ dojo.fx = {
 				top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top) || 0);
 				left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left) || 0);
 				if(pos != 'absolute' && pos != 'relative'){
-					var ret = d.coords(n, true);
+					var ret = d.position(n, true);
 					top = ret.y;
 					left = ret.x;
 					n.style.position="absolute";
@@ -344,7 +387,7 @@ dojo.fx = {
 		}, args));
 		d.connect(anim, "beforeBegin", anim, init);
 
-		return anim; // dojo._Animation
+		return anim; // dojo.Animation
 	}
 
 })();

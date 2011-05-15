@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Gbase
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -28,7 +28,7 @@ require_once 'Zend/Gdata/ClientLogin.php';
  * @category   Zend
  * @package    Zend_Gdata_Gbase
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Gbase
@@ -45,7 +45,7 @@ class Zend_Gdata_GbaseOnlineTest extends PHPUnit_Framework_TestCase
         $this->gdata = new Zend_Gdata_Gbase($client);
     }
 
-    public function testGetGbaseItemFeed() 
+    public function testGetGbaseItemFeed()
     {
         $feed = $this->gdata->getGbaseItemFeed();
         $this->assertTrue($feed instanceof Zend_Gdata_Gbase_ItemFeed);
@@ -53,7 +53,7 @@ class Zend_Gdata_GbaseOnlineTest extends PHPUnit_Framework_TestCase
             $this->assertTrue($entry instanceof Zend_Gdata_Gbase_ItemEntry);
             $this->assertEquals($entry->getHttpClient(), $feed->getHttpClient());
         }
-        
+
         $query = new Zend_Gdata_Gbase_ItemQuery();
         $feed = $this->gdata->getGbaseItemFeed($query);
         $this->assertTrue($feed instanceof Zend_Gdata_Gbase_ItemFeed);
@@ -71,7 +71,7 @@ class Zend_Gdata_GbaseOnlineTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testGetGbaseItemEntry() 
+    public function testGetGbaseItemEntry()
     {
         $newEntry = $this->gdata->newItemEntry();
 
@@ -97,7 +97,7 @@ class Zend_Gdata_GbaseOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($entry instanceof Zend_Gdata_Gbase_ItemEntry);
     }
 
-    public function testInsertGbaseItem() 
+    public function testInsertGbaseItem()
     {
         $newEntry = $this->gdata->newItemEntry();
 
@@ -138,7 +138,7 @@ class Zend_Gdata_GbaseOnlineTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('int', $baseAttribute[0]->type);
     }
 
-    public function testGetGbaseSnippetFeed() 
+    public function testGetGbaseSnippetFeed()
     {
         $feed = $this->gdata->getGbaseSnippetFeed();
         $this->assertTrue($feed instanceof Zend_Gdata_Gbase_SnippetFeed);
@@ -146,7 +146,7 @@ class Zend_Gdata_GbaseOnlineTest extends PHPUnit_Framework_TestCase
             $this->assertTrue($entry instanceof Zend_Gdata_Gbase_SnippetEntry);
             $this->assertEquals($entry->getHttpClient(), $feed->getHttpClient());
         }
-        
+
         $query = new Zend_Gdata_Gbase_SnippetQuery();
         $feed = $this->gdata->getGbaseSnippetFeed($query);
         $this->assertTrue($feed instanceof Zend_Gdata_Gbase_SnippetFeed);

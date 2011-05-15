@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Gdata_App
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 require_once 'Zend/Gdata/App.php';
 require_once 'Zend/Gdata/Spreadsheets.php';
@@ -31,15 +29,15 @@ require_once 'Zend/Gdata/ClientLogin.php';
  * @category   Zend
  * @package    Zend_Gdata_App
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_App
  */
 class Zend_Gdata_App_HttpExceptionTest extends PHPUnit_Framework_TestCase
 {
- 
-    public function setUp() 
+
+    public function setUp()
     {
         $user = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_EMAIL');
         $pass = constant('TESTS_ZEND_GDATA_CLIENTLOGIN_PASSWORD');
@@ -50,15 +48,15 @@ class Zend_Gdata_App_HttpExceptionTest extends PHPUnit_Framework_TestCase
         $this->gdata = new Zend_Gdata_Spreadsheets($client);
     }
 
-    public function testGetRawResponseBody() 
+    public function testGetRawResponseBody()
     {
         try {
             $rowData = array();
             $entry = $this->gdata->insertRow($rowData, $this->sprKey);
             $this->fail('Expecting Zend_Gdata_App_HttpException');
         } catch (Zend_Gdata_App_HttpException $hExc) {
-            $this->assertThat($hExc, 
-                $this->isInstanceOf('Zend_Gdata_App_HttpException'), 
+            $this->assertThat($hExc,
+                $this->isInstanceOf('Zend_Gdata_App_HttpException'),
                 'Expecting Zend_Gdata_App_HttpException, got '
                 . get_class($hExc));
 
@@ -66,7 +64,7 @@ class Zend_Gdata_App_HttpExceptionTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($message, 'Expected response code 200, got 400');
             $body = $hExc->getRawResponseBody();
             $this->assertNotNull($body);
-            $this->assertNotEquals(stripos($body, 
+            $this->assertNotEquals(stripos($body,
                 'Blank rows cannot be written; use delete instead.'), false);
         }
     }

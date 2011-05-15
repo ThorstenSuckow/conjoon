@@ -41,7 +41,7 @@ dojo.require("dijit.Editor");
 				if(this.widget.onLoadDeferred){
 					var self = this;
 					this.widget.onLoadDeferred.addCallback(function(){
-						self.widget.attr("value",inValue==null?"":inValue); 
+						self.widget.attr("value",inValue===null?"":inValue); 
 					});
 				}else{
 					this.widget.attr("value", inValue); 
@@ -51,10 +51,17 @@ dojo.require("dijit.Editor");
 			}
 		},
 		getWidgetProps: function(inDatum){
-			return dojo.mixin({}, this.widgetProps||{}, {
-				constraints: dojo.mixin({}, this.constraint) || {}, //TODO: really just for ValidationTextBoxes
-				value: inDatum
-			});
+			return dojo.mixin(
+				{
+					dir: this.dir,
+					lang: this.lang
+				},
+				this.widgetProps||{},
+				{
+					constraints: dojo.mixin({}, this.constraint) || {}, //TODO: really just for ValidationTextBoxes
+					value: inDatum
+				}
+			);
 		},
 		createWidget: function(inNode, inDatum, inRowIndex){
 			return new this.widgetClass(this.getWidgetProps(inDatum), inNode);
@@ -75,6 +82,7 @@ dojo.require("dijit.Editor");
 			this.sizeWidget.apply(this, arguments);
 			this.grid.rowHeightChanged(inRowIndex);
 			this.focus();
+			return undefined;
 		},
 		sizeWidget: function(inNode, inDatum, inRowIndex){
 			var
@@ -92,6 +100,9 @@ dojo.require("dijit.Editor");
 		_finish: function(inRowIndex){
 			this.inherited(arguments);
 			dojox.grid.util.removeNode(this.widget.domNode);
+			if(dojo.isIE){
+				dojo.setSelectable(this.widget.domNode, true);
+			}
 		}
 	});
 	dgc._Widget.markupFactory = function(node, cell){
@@ -109,7 +120,7 @@ dojo.require("dijit.Editor");
 		if(widgetClass){
 			cell.widgetClass = d.getObject(widgetClass);
 		}
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.ComboBox", dgc._Widget, {
 		widgetClass: dijit.form.ComboBox,
@@ -141,7 +152,7 @@ dojo.require("dijit.Editor");
 				cell.options = o;
 			}
 		}
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.DateTextBox", dgc._Widget, {
 		widgetClass: dijit.form.DateTextBox,
@@ -160,7 +171,7 @@ dojo.require("dijit.Editor");
 	});
 	dgc.DateTextBox.markupFactory = function(node, cell){
 		dgc._Widget.markupFactory(node, cell);
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.CheckBox", dgc._Widget, {
 		widgetClass: dijit.form.CheckBox,
@@ -180,7 +191,7 @@ dojo.require("dijit.Editor");
 	});
 	dgc.CheckBox.markupFactory = function(node, cell){
 		dgc._Widget.markupFactory(node, cell);
-	}
+	};
 
 	dojo.declare("dojox.grid.cells.Editor", dgc._Widget, {
 		widgetClass: dijit.Editor,
@@ -218,9 +229,9 @@ dojo.require("dijit.Editor");
 		var h = dojo.trim(dojo.attr(node, "widgetHeight")||"");
 		if(h){
 			if((h != "auto")&&(h.substr(-2) != "em")){
-				h = parseInt(h)+"px";
+				h = parseInt(h, 10)+"px";
 			}
 			cell.widgetHeight = h;
 		}
-	}
+	};
 })();

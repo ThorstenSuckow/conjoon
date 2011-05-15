@@ -16,7 +16,7 @@
  * @category   ZendX
  * @package    ZendX_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id: $
  */
@@ -26,7 +26,7 @@
  * Test helper
  */
 
- 
+
 require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
@@ -57,7 +57,7 @@ PHPUnit_Util_Filter::addFileToFilter(__FILE__);
  * @category   ZendX
  * @package    ZendX_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class ZendX_Db_TestSetup extends PHPUnit_Framework_TestCase
@@ -103,7 +103,7 @@ abstract class ZendX_Db_TestSetup extends PHPUnit_Framework_TestCase
     {
         $params = $this->_util->getParams();
         $params['adapterNamespace'] = 'ZendX_Db_Adapter';
-        $this->_db = Zend_Db::($this->getDriver(), $params);
+        $this->_db = Zend_Db::factory($this->getDriver(), $params);
         try {
             $conn = $this->_db->getConnection();
         } catch (Zend_Exception $e) {

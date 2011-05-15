@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MssqlTest.php 17792 2009-08-24 16:18:02Z ralph $
+ * @version    $Id: MssqlTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -30,13 +30,12 @@ require_once 'Zend/Db/Adapter/Pdo/TestCommon.php';
  */
 require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -324,13 +323,13 @@ class Zend_Db_Adapter_Pdo_MssqlTest extends Zend_Db_Adapter_Pdo_TestCommon
      */
     public function testAdapterLimitWorksWithOrderByClause()
     {
-    	// more values
+        // more values
         $this->_db->insert('zfproducts', array('product_name' => 'Unix'));
         $this->_db->insert('zfproducts', array('product_name' => 'Windows'));
         $this->_db->insert('zfproducts', array('product_name' => 'AIX'));
         $this->_db->insert('zfproducts', array('product_name' => 'I5'));
         $this->_db->insert('zfproducts', array('product_name' => 'Linux'));
-        
+
         $select = $this->_db->select();
         $select->from('zfproducts')
            ->order(array('product_name ASC', 'product_id DESC'))
@@ -344,7 +343,7 @@ class Zend_Db_Adapter_Pdo_MssqlTest extends Zend_Db_Adapter_Pdo_TestCommon
             );
         $this->assertEquals($expectedProducts, $products);
     }
-    
+
     /**
      * @group ZF-4251
      */
@@ -355,40 +354,40 @@ class Zend_Db_Adapter_Pdo_MssqlTest extends Zend_Db_Adapter_Pdo_TestCommon
         $this->_db->insert('zfproducts', array('product_name' => 'AIX'));
         $this->_db->insert('zfproducts', array('product_name' => 'I5'));
         $this->_db->insert('zfproducts', array('product_name' => 'Linux'));
-    	
-    	$sql = 'SELECT DISTINCT product_name FROM zfproducts ORDER BY product_name DESC';
-    	$sql = $this->_db->limit($sql, 3, 3);
-    	$products = $this->_db->fetchAll($sql);
-    	$expectedProducts = array(
-    	   0 => array('product_name' => 'Linux'),
-    	   1 => array('product_name' => 'I5'),
-    	   2 => array('product_name' => 'AIX')
-    	   );
+
+        $sql = 'SELECT DISTINCT product_name FROM zfproducts ORDER BY product_name DESC';
+        $sql = $this->_db->limit($sql, 3, 3);
+        $products = $this->_db->fetchAll($sql);
+        $expectedProducts = array(
+           0 => array('product_name' => 'Linux'),
+           1 => array('product_name' => 'I5'),
+           2 => array('product_name' => 'AIX')
+           );
         $this->assertEquals($expectedProducts, $products);
     }
-    
+
     /**
      * @group ZF-5823
      */
     public function testAdapterLimitWithoutOffsetProducesConciseSql()
     {
-    	$sql = 'SELECT * FROM foo ORDER BY bar DESC';
-    	$this->assertEquals('SELECT TOP 3 * FROM foo ORDER BY bar DESC', $this->_db->limit($sql, 3));
-    	
+        $sql = 'SELECT * FROM foo ORDER BY bar DESC';
+        $this->assertEquals('SELECT TOP 3 * FROM foo ORDER BY bar DESC', $this->_db->limit($sql, 3));
+
         $sql = 'SELECT DISTINCT * FROM foo ORDER BY bar DESC';
         $this->assertEquals('SELECT DISTINCT TOP 3 * FROM foo ORDER BY bar DESC', $this->_db->limit($sql, 3));
     }
-    
+
     /**
      * @group ZF-7629
      */
     public function testAdapterDescribeTableWithSchemaName()
     {
-    	$productsTableInfo = $this->_db->describeTable('zfproducts', 'dbo');
-    	$this->assertArrayHasKey('product_id', $productsTableInfo);
-    	$this->assertArrayHasKey('product_name', $productsTableInfo);
+        $productsTableInfo = $this->_db->describeTable('zfproducts', 'dbo');
+        $this->assertArrayHasKey('product_id', $productsTableInfo);
+        $this->assertArrayHasKey('product_name', $productsTableInfo);
     }
-    
+
     public function getDriver()
     {
         return 'Pdo_Mssql';

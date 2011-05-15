@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -28,7 +28,7 @@ require_once 'Zend/Gdata/TestUtility/MockHttpClient.php';
  * @category   Zend
  * @package    Zend_Gdata_App
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_App
@@ -440,6 +440,36 @@ class Zend_Gdata_AppTest extends PHPUnit_Framework_TestCase
                 $found = true;
         }
         $this->assertTrue($found, 'If-None-Match header not found or incorrect');
+    }
+
+    /**
+     * @group ZF-8397
+     */
+    public function testIfMatchHTTPHeaderIsResetEachRequest()
+    {
+        // Update an entry
+        $etag = 'ABCD1234';
+        $this->adapter->setResponse("HTTP/1.1 201 Created");
+        $this->service->setMajorProtocolVersion(2);
+        $entry = new Zend_Gdata_App_Entry();
+        $entry->link = array(new Zend_Gdata_App_Extension_Link(
+                'http://www.example.com',
+                'edit',
+                'application/atom+xml'));
+        $entry->setEtag($etag);
+        $this->service->updateEntry($entry);
+
+        // Get another entry without ETag set,
+        // Previous value of If-Match HTTP header should not be sent
+        $this->adapter->setResponse($this->httpEntrySample);
+        $entry = $this->service->getEntry('http://www.example.com');
+        $headers = $this->adapter->popRequest()->headers;
+        $found = false;
+        foreach ($headers as $header) {
+            if ($header == 'If-Match: ' . $etag)
+                $found = true;
+        }
+        $this->assertFalse($found, 'If-Match header found');
     }
 
     public function testGenerateIfMatchHeaderDataReturnsEtagIfV2() {

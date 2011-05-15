@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: ManifestGoodTwo.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Tool/Framework/Manifest/ActionManifestable.php';
@@ -33,36 +33,36 @@ require_once 'ActionTwo.php';
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Framework_Manifest_ManifestGoodTwo 
-    implements Zend_Tool_Framework_Manifest_ActionManifestable, 
+class Zend_Tool_Framework_Manifest_ManifestGoodTwo
+    implements Zend_Tool_Framework_Manifest_ActionManifestable,
         Zend_Tool_Framework_Manifest_ProviderManifestable,
         Zend_Tool_Framework_Manifest_MetadataManifestable,
         Zend_Tool_Framework_Manifest_Indexable,
         Zend_Tool_Framework_Registry_EnabledInterface
 {
-    
+
     protected $_registry = null;
-    
+
     public function setRegistry(Zend_Tool_Framework_Registry_Interface $registry)
     {
         $this->_registry = $registry;
     }
-    
+
     public function getIndex()
     {
         return 10;
     }
-    
+
     public function getProviders()
     {
         return array(
             new Zend_Tool_Framework_Manifest_ProviderTwo()
             );
     }
-    
+
     public function getActions()
     {
         return array(
@@ -70,14 +70,14 @@ class Zend_Tool_Framework_Manifest_ManifestGoodTwo
             'Foo'
             );
     }
-    
+
     public function getMetadata()
     {
         return array(
             new Zend_Tool_Framework_Metadata_Basic(array('name' => 'FooTwo', 'value' => 'Baz1')),
             new Zend_Tool_Framework_Metadata_Basic(array('name' => 'FooThree', 'value' => 'Baz2'))
             );
-            
+
     }
-    
+
 }

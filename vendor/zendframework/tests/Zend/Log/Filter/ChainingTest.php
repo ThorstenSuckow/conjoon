@@ -15,44 +15,54 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ChainingTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ChainingTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/** PHPUnit_Framework_TestCase */
-require_once 'PHPUnit/Framework/TestCase.php';
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'Zend_Log_Filter_ChainingTest::main');
+}
 
 /** Zend_Log */
 require_once 'Zend/Log.php';
+
+/** Zend_Log_Writer_Stream */
+require_once 'Zend/Log/Writer/Stream.php';
 
 /**
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Log
  */
 class Zend_Log_Filter_ChainingTest extends PHPUnit_Framework_TestCase
 {
+    public static function main()
+    {
+        $suite  = new PHPUnit_Framework_TestSuite(__CLASS__);
+        $result = PHPUnit_TextUI_TestRunner::run($suite);
+    }
+
     public function setUp()
     {
         $this->log = fopen('php://memory', 'w');
         $this->logger = new Zend_Log();
         $this->logger->addWriter(new Zend_Log_Writer_Stream($this->log));
     }
-    
+
     public function tearDown()
     {
         fclose($this->log);
     }
-    
+
     public function testFilterAllWriters()
     {
         // filter out anything above a WARNing for all writers
         $this->logger->addFilter(Zend_Log::WARN);
-    
+
         $this->logger->info($ignored = 'info-message-ignored');
         $this->logger->warn($logged  = 'warn-message-logged');
 
@@ -62,7 +72,7 @@ class Zend_Log_Filter_ChainingTest extends PHPUnit_Framework_TestCase
         $this->assertNotContains($ignored, $logdata);
         $this->assertContains($logged, $logdata);
     }
-    
+
     public function testFilterOnSpecificWriter()
     {
         $log2 = fopen('php://memory', 'w');
@@ -70,7 +80,7 @@ class Zend_Log_Filter_ChainingTest extends PHPUnit_Framework_TestCase
         $writer2->addFilter(Zend_Log::ERR);
 
         $this->logger->addWriter($writer2);
-    
+
         $this->logger->warn($warn = 'warn-message');
         $this->logger->err($err = 'err-message');
 
@@ -78,11 +88,14 @@ class Zend_Log_Filter_ChainingTest extends PHPUnit_Framework_TestCase
         $logdata = stream_get_contents($this->log);
         $this->assertContains($warn, $logdata);
         $this->assertContains($err, $logdata);
-        
+
         rewind($log2);
         $logdata = stream_get_contents($log2);
         $this->assertContains($err, $logdata);
         $this->assertNotContains($warn, $logdata);
     }
+}
 
+if (PHPUnit_MAIN_METHOD == 'Zend_Log_Filter_ChainingTest::main') {
+    Zend_Log_Filter_ChainingTest::main();
 }

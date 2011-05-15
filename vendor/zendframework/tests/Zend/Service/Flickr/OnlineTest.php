@@ -15,21 +15,16 @@
  * @category   Zend
  * @package    Zend_Service_Flickr
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OnlineTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: OnlineTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @category   Zend
  * @package    Zend_Service_Flickr
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Flickr
@@ -73,7 +68,7 @@ class Zend_Service_Flickr_OnlineTest extends PHPUnit_Framework_TestCase
                       ->getHttpClient()
                       ->setAdapter($this->_httpClientAdapterSocket);
     }
-    
+
     /**
      * Basic testing to ensure that groupPoolGetPhotos works as expected
      *
@@ -84,16 +79,16 @@ class Zend_Service_Flickr_OnlineTest extends PHPUnit_Framework_TestCase
         $options = array('per_page' => 10,
                          'page'     => 1,
                          'extras'   => 'license, date_upload, date_taken, owner_name, icon_server');
-                         
+
         $resultSet = $this->_flickr->groupPoolGetPhotos('20083316@N00', $options);
-        
-        $this->assertEquals(21770, $resultSet->totalResultsAvailable);
+
+        $this->assertGreaterThan(20000, $resultSet->totalResultsAvailable);
         $this->assertEquals(10, $resultSet->totalResults());
         $this->assertEquals(10, $resultSet->totalResultsReturned);
         $this->assertEquals(1, $resultSet->firstResultPosition);
 
         $this->assertEquals(0, $resultSet->key());
-        
+
         try {
             $resultSet->seek(-1);
             $this->fail('Expected OutOfBoundsException not thrown');
@@ -209,13 +204,21 @@ class Zend_Service_Flickr_OnlineTest extends PHPUnit_Framework_TestCase
             $dateTakenPrevious = $result->datetaken;
         }
     }
+
+    /**
+     *  @see ZF-6397
+     */
+    function testTotalForEmptyResultSet()
+    {
+        $this->assertEquals(0, $this->_flickr->tagSearch('zendflickrtesttagnoresults')->totalResults());
+    }
 }
 
 /**
  * @category   Zend
  * @package    Zend_Service_Flickr
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Flickr

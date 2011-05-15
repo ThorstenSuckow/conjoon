@@ -15,22 +15,41 @@
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DrawingTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DrawingTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Pdf */
 require_once 'Zend/Pdf.php';
 
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
+/** Zend_Pdf_Page */
+require_once 'Zend/Pdf/Page.php';
+
+/** Zend_Pdf_Color_GrayScale */
+require_once 'Zend/Pdf/Color/GrayScale.php';
+
+/** Zend_Pdf_Color_Cmyk */
+require_once 'Zend/Pdf/Color/Cmyk.php';
+
+/** Zend_Pdf_Color_Rgb */
+require_once 'Zend/Pdf/Color/Rgb.php';
+
+/** Zend_Pdf_Color_Html */
+require_once 'Zend/Pdf/Color/Html.php';
+
+/** Zend_Pdf_Image */
+require_once 'Zend/Pdf/Image.php';
+
+/** Zend_Pdf_Font */
+require_once 'Zend/Pdf/Font.php';
+
 
 /**
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Pdf
  */
@@ -41,7 +60,7 @@ class Zend_Pdf_DrawingTest extends PHPUnit_Framework_TestCase
         date_default_timezone_set('GMT');
     }
 
-	public function testDrawing()
+    public function testDrawing()
     {
         $pdf = new Zend_Pdf();
 
@@ -74,7 +93,13 @@ class Zend_Pdf_DrawingTest extends PHPUnit_Framework_TestCase
         $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.8))
               ->setLineColor(new Zend_Pdf_Color_GrayScale(0.2))
               ->setLineDashingPattern(array(3, 2, 3, 4), 1.6)
-              ->drawRectangle(60, 400, 400, 350);
+              ->drawRectangle(60, 400, 500, 350);
+
+        // Draw rounded rectangle
+        $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.9))
+              ->setLineColor(new Zend_Pdf_Color_GrayScale(0.5))
+              ->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
+              ->drawRoundedRectangle(425, 350, 475, 400, 20);
 
         // Draw circle
         $page2->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
@@ -110,7 +135,7 @@ class Zend_Pdf_DrawingTest extends PHPUnit_Framework_TestCase
 
         // Draw line
         $page2->setLineWidth(0.5)
-              ->drawLine(60, 375, 400, 375);
+              ->drawLine(60, 375, 500, 375);
 
         // -----------------------------------------------------------------------------------
         $page3->translate(200, 10)
@@ -130,7 +155,14 @@ class Zend_Pdf_DrawingTest extends PHPUnit_Framework_TestCase
         $page3->setFillColor(new Zend_Pdf_Color_GrayScale(0.8))
               ->setLineColor(new Zend_Pdf_Color_GrayScale(0.2))
               ->setLineDashingPattern(array(3, 2, 3, 4), 1.6)
-              ->drawRectangle(60, 400, 400, 350);
+              ->drawRectangle(60, 400, 500, 350);
+
+        // Draw rounded rectangle
+        $page2->setFillColor(new Zend_Pdf_Color_GrayScale(0.9))
+              ->setLineColor(new Zend_Pdf_Color_GrayScale(0.5))
+              ->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
+              ->drawRoundedRectangle(425, 350, 475, 400, 20);
+
 
         // Draw circle
         $page3->setLineDashingPattern(Zend_Pdf_Page::LINE_DASHING_SOLID)
@@ -166,7 +198,7 @@ class Zend_Pdf_DrawingTest extends PHPUnit_Framework_TestCase
 
         // Draw line
         $page3->setLineWidth(0.5)
-              ->drawLine(60, 375, 400, 375);
+              ->drawLine(60, 375, 500, 375);
 
 
         $pdf->save(dirname(__FILE__) . '/_files/output.pdf');

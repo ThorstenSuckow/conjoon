@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BlogInfoResultTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: BlogInfoResultTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -36,7 +36,7 @@ require_once 'Zend/Service/Technorati/BlogInfoResult.php';
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Technorati
@@ -53,7 +53,7 @@ class Zend_Service_Technorati_BlogInfoResultTest extends Zend_Service_Technorati
         $this->_testConstruct('Zend_Service_Technorati_BlogInfoResult', array($this->dom));
     }
 
-    public function testConstructThrowsExceptionWithInvalidDom() 
+    public function testConstructThrowsExceptionWithInvalidDom()
     {
         $this->_testConstructThrowsExceptionWithInvalidDom('Zend_Service_Technorati_BlogInfoResult', 'DOMDocument');
     }
@@ -74,17 +74,17 @@ class Zend_Service_Technorati_BlogInfoResultTest extends Zend_Service_Technorati
         // check inboundblogs
         $this->assertType('integer', $object->getInboundBlogs());
         $this->assertEquals(86, $object->getInboundBlogs());
-    
+
         // check inboundlinks
         $this->assertType('integer', $object->getInboundLinks());
         $this->assertEquals(114, $object->getInboundLinks());
     }
-    
+
     public function testBlogInfoResultUrlWithInvalidSchemaEqualsToWeblogUrl()
     {
         $dom = self::getTestFileContentAsDom('TestBlogInfoResultUrlWithInvalidSchema.xml');
         $object = new Zend_Service_Technorati_BlogInfoResult($dom);
-        
+
         // check url
         $this->assertType('Zend_Uri_Http', $object->getUrl());
         $this->assertEquals($object->getWeblog()->getUrl(), $object->getUrl());

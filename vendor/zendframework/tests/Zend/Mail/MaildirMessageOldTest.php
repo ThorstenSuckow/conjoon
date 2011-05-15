@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MaildirMessageOldTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: MaildirMessageOldTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -31,17 +31,12 @@ require_once 'Zend/Mail/Storage/Maildir.php';
 require_once 'Zend/Config.php';
 
 /**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
  * Maildir class, which uses old message class
  *
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Mail_Storage_Maildir_OldMessage extends Zend_Mail_Storage_Maildir
@@ -57,7 +52,7 @@ class Zend_Mail_Storage_Maildir_OldMessage extends Zend_Mail_Storage_Maildir
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mail
  */
@@ -183,15 +178,15 @@ class Zend_Mail_MaildirMessageOldTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(in_array(Zend_Mail_Storage::FLAG_SEEN, $flags));
     }
 
-	public function testFetchPart()
-	{
+    public function testFetchPart()
+    {
         $mail = new Zend_Mail_Storage_Maildir_OldMessage(array('dirname' => $this->_maildir));
         $this->assertEquals($mail->getMessage(4)->getPart(2)->contentType, 'text/x-vertical');
-	}
+    }
 
-	public function testPartSize()
-	{
+    public function testPartSize()
+    {
         $mail = new Zend_Mail_Storage_Maildir_OldMessage(array('dirname' => $this->_maildir));
         $this->assertEquals($mail->getMessage(4)->getPart(2)->getSize(), 80);
-	}
+    }
 }

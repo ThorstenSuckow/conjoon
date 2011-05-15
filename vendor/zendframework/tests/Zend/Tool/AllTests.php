@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Tool_AllTests::main');
@@ -36,7 +31,7 @@ require_once 'Zend/Tool/Project/AllTests.php';
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Tool
  */
@@ -50,8 +45,10 @@ class Zend_Tool_AllTests
     public static function suite()
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Tool');
+
         $suite->addTestSuite('Zend_Tool_Framework_AllTests');
         $suite->addTestSuite('Zend_Tool_Project_AllTests');
+
         return $suite;
     }
 }
@@ -59,3 +56,4 @@ class Zend_Tool_AllTests
 if (PHPUnit_MAIN_METHOD == 'Zend_Tool_AllTests::main') {
     Zend_Tool_AllTests::main();
 }
+

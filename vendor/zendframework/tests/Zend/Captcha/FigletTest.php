@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FigletTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FigletTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Captcha_FigletTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Captcha_FigletTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 require_once 'Zend/Form/Element/Captcha.php';
 require_once 'Zend/Captcha/Adapter.php';
@@ -35,7 +33,7 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Captcha
  */
@@ -112,6 +110,21 @@ class Zend_Captcha_FigletTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp("/<input[^>]*?$expect/", $html, $html);
         $expect = sprintf('type="text" name="%s\[input\]"', $this->element->getName());
         $this->assertRegexp("/<input[^>]*?$expect/", $html, $html);
+    }
+
+    /*
+     * @group ZF-8268
+     */
+    public function testLabelIdIsCorrect()
+    {
+        require_once 'Zend/Form.php';
+        $form = new Zend_Form();
+        $form->setElementsBelongTo('comment');
+        $this->element->setLabel("My Captcha");
+        $form->addElement($this->element);
+        $html = $form->render($this->getView());
+        $expect = sprintf('for="comment-%s-input"', $this->element->getName());
+        $this->assertRegexp("/<label [^>]*?$expect/", $html, $html);
     }
 
     public function testTimeoutPopulatedByDefault()
@@ -281,6 +294,23 @@ class Zend_Captcha_FigletTest extends PHPUnit_Framework_TestCase
         $this->testCaptchaIsRendered();
         $input = array("id" => $this->captcha->getId(), "input" => $this->captcha->getWord());
         $this->assertTrue($this->element->isValid($input));
+    }
+
+    /**
+     * @group ZF-5728
+     */
+    public function testSetSessionWorks()
+    {
+        if(headers_sent($file, $line)) {
+            $this->markTestSkipped("Cannot use sessions because headers already sent");
+        }
+        require_once 'Zend/Session/Namespace.php';
+        $session = new Zend_Session_Namespace('captcha');
+        $this->captcha->setSession($session);
+        $this->testCaptchaIsRendered();
+        $input = array("id" => $this->captcha->getId(), "input" => $this->captcha->getWord());
+        $this->assertTrue($this->element->isValid($input));
+        $this->assertEquals($session->word, $this->captcha->getWord());
     }
 }
 

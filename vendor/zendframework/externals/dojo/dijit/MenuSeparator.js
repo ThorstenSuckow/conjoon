@@ -10,12 +10,12 @@ dojo.declare("dijit.MenuSeparator",
 		// summary:
 		//		A line between two menu items
 
-		templatePath: dojo.moduleUrl("dijit", "templates/MenuSeparator.html"),
+		templateString: dojo.cache("dijit", "templates/MenuSeparator.html"),
 
 		postCreate: function(){
 			dojo.setSelectable(this.domNode, false);
 		},
-		
+
 		isFocusable: function(){
 			// summary:
 			//		Override to always return false

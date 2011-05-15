@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Debug
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 /**
  * Zend_Debug
@@ -34,7 +29,7 @@ require_once 'Zend/Debug.php';
  * @category   Zend
  * @package    Zend_Debug
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Debug
  */
@@ -82,8 +77,7 @@ class Zend_DebugTest extends PHPUnit_Framework_TestCase
 
         ob_start();
         $result1 = Zend_Debug::Dump($data, null, true);
-        $result2 = ob_get_contents();
-        ob_end_clean();
+        $result2 = ob_get_clean();
 
         $this->assertContains('string(6) "string"', $result1);
         $this->assertEquals($result1, $result2);

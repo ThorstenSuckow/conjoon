@@ -2,6 +2,7 @@ dojo.provide("dijit.form.Button");
 
 dojo.require("dijit.form._FormWidget");
 dojo.require("dijit._Container");
+dojo.require("dijit._HasDropDown");
 
 dojo.declare("dijit.form.Button",
 	dijit.form._FormWidget,
@@ -14,7 +15,7 @@ dojo.declare("dijit.form.Button",
 	//		attribute.  It can be hidden via showLabel=false.
 	// example:
 	// |	<button dojoType="dijit.form.Button" onClick="...">Hello world</button>
-	// 
+	//
 	// example:
 	// |	var button1 = new dijit.form.Button({label: "hello world", onClick: foo});
 	// |	dojo.body().appendChild(button1.domNode);
@@ -28,7 +29,7 @@ dojo.declare("dijit.form.Button",
 	// showLabel: Boolean
 	//		Set this to true to hide the label text and display only the icon.
 	//		(If showLabel=false then iconClass must be specified.)
-	//		Especially useful for toolbars.  
+	//		Especially useful for toolbars.
 	//		If showLabel=true, the label will become the title (a.k.a. tooltip/hint) of the icon.
 	//
 	//		The exception case is for computers in high-contrast mode, where the label
@@ -36,7 +37,7 @@ dojo.declare("dijit.form.Button",
 	showLabel: true,
 
 	// iconClass: String
-	//		Class to apply to div in button to make it display an icon
+	//		Class to apply to DOMNode in button to make it display an icon
 	iconClass: "",
 
 	// type: String
@@ -45,18 +46,18 @@ dojo.declare("dijit.form.Button",
 
 	baseClass: "dijitButton",
 
-	templatePath: dojo.moduleUrl("dijit.form", "templates/Button.html"),
+	templateString: dojo.cache("dijit.form", "templates/Button.html"),
 
 	attributeMap: dojo.delegate(dijit.form._FormWidget.prototype.attributeMap, {
-		label: { node: "containerNode", type: "innerHTML" },
+		value: "valueNode",
 		iconClass: { node: "iconNode", type: "class" }
 	}),
-		
+
 
 	_onClick: function(/*Event*/ e){
 		// summary:
 		//		Internal function to handle click actions
-		if(this.disabled || this.readOnly){
+		if(this.disabled){
 			return false;
 		}
 		this._clicked(); // widget click actions
@@ -66,13 +67,9 @@ dojo.declare("dijit.form.Button",
 	_onButtonClick: function(/*Event*/ e){
 		// summary:
 		//		Handler when the user activates the button portion.
-		//		If is activated via a keystroke, stop the event unless is submit or reset.
-		if(e.type!='click' && !(this.type=="submit" || this.type=="reset")){
-			dojo.stopEvent(e);
-		}
 		if(this._onClick(e) === false){ // returning nothing is same as true
 			e.preventDefault(); // needed for checkbox
-		}else if(this.type=="submit" && !this.focusNode.form){ // see if a nonform widget needs to be signalled
+		}else if(this.type == "submit" && !(this.valueNode||this.focusNode).form){ // see if a nonform widget needs to be signalled
 			for(var node=this.domNode; node.parentNode/*#5935*/; node=node.parentNode){
 				var widget=dijit.byNode(node);
 				if(widget && typeof widget._onSubmit == "function"){
@@ -80,35 +77,31 @@ dojo.declare("dijit.form.Button",
 					break;
 				}
 			}
-		}
-	},
-
-	_setValueAttr: function(/*String*/ value){
-		// Verify that value cannot be set for BUTTON elements.
-		var attr = this.attributeMap.value || '';
-		if(this[attr.node||attr||'domNode'].tagName == 'BUTTON'){
-			// On IE, setting value actually overrides innerHTML, so disallow for everyone for consistency
-			if(value != this.value){
-				console.debug('Cannot change the value attribute on a Button widget.');
-			}
+		}else if(this.valueNode){
+			this.valueNode.click();
+			e.preventDefault(); // cancel BUTTON click and continue with hidden INPUT click
 		}
 	},
 
 	_fillContent: function(/*DomNode*/ source){
-		// Overrides _Templated._fillcContent().
+		// Overrides _Templated._fillContent().
 		// If button label is specified as srcNodeRef.innerHTML rather than
 		// this.params.label, handle it here.
-		if(source && !("label" in this.params)){
-			this.attr('label', source.innerHTML);
+		if(source && (!this.params || !("label" in this.params))){
+			this.set('label', source.innerHTML);
 		}
 	},
 
 	postCreate: function(){
-		if (this.showLabel == false){
-			dojo.addClass(this.containerNode,"dijitDisplayNone");
-		}
 		dojo.setSelectable(this.focusNode, false);
 		this.inherited(arguments);
+	},
+
+	_setShowLabelAttr: function(val){
+		if(this.containerNode){
+			dojo.toggleClass(this.containerNode, "dijitDisplayNone", !val);
+		}
+		this.showLabel = val;
 	},
 
 	onClick: function(/*Event*/ e){
@@ -127,25 +120,25 @@ dojo.declare("dijit.form.Button",
 
 	setLabel: function(/*String*/ content){
 		// summary:
-		//		Deprecated.  Use attr('label', ...) instead.
-		dojo.deprecated("dijit.form.Button.setLabel() is deprecated.  Use attr('label', ...) instead.", "", "2.0");
-		this.attr("label", content);
+		//		Deprecated.  Use set('label', ...) instead.
+		dojo.deprecated("dijit.form.Button.setLabel() is deprecated.  Use set('label', ...) instead.", "", "2.0");
+		this.set("label", content);
 	},
+
 	_setLabelAttr: function(/*String*/ content){
 		// summary:
 		//		Hook for attr('label', ...) to work.
 		// description:
 		//		Set the label (text) of the button; takes an HTML string.
 		this.containerNode.innerHTML = this.label = content;
-		this._layoutHack();
-		if (this.showLabel == false && !this.params.title){
+		if(this.showLabel == false && !this.params.title){
 			this.titleNode.title = dojo.trim(this.containerNode.innerText || this.containerNode.textContent || '');
 		}
-	}		
+	}
 });
 
 
-dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container], {
+dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container, dijit._HasDropDown], {
 	// summary:
 	//		A button with a drop down
 	//
@@ -157,11 +150,11 @@ dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container],
 	// example:
 	// |	var button1 = new dijit.form.DropDownButton({ label: "hi", dropDown: new dijit.Menu(...) });
 	// |	dojo.body().appendChild(button1);
-	// 	
-	
+	//
+
 	baseClass : "dijitDropDownButton",
 
-	templatePath: dojo.moduleUrl("dijit.form" , "templates/DropDownButton.html"),
+	templateString: dojo.cache("dijit.form" , "templates/DropDownButton.html"),
 
 	_fillContent: function(){
 		// Overrides Button._fillContent().
@@ -191,145 +184,37 @@ dojo.declare("dijit.form.DropDownButton", [dijit.form.Button, dijit._Container],
 			this.dropDown = dijit.byNode(dropDownNode);
 			delete this.dropDownContainer;
 		}
-		dijit.popup.prepare(this.dropDown.domNode);
+		dijit.popup.moveOffScreen(this.dropDown);
 
 		this.inherited(arguments);
 	},
 
-	destroyDescendants: function(){
-		if(this.dropDown){
-			this.dropDown.destroyRecursive();
-			delete this.dropDown;
-		}
-		this.inherited(arguments);
+	isLoaded: function(){
+		// Returns whether or not we are loaded - if our dropdown has an href,
+		// then we want to check that.
+		var dropDown = this.dropDown;
+		return (!dropDown.href || dropDown.isLoaded);
 	},
 
-	_onArrowClick: function(/*Event*/ e){
-		// summary:
-		//		Handler for when the user mouse clicks on menu popup node
-		if(this.disabled || this.readOnly){ return; }
-		this._toggleDropDown();
-	},
-
-	_onDropDownClick: function(/*Event*/ e){
-		// on Firefox 2 on the Mac it is possible to fire onclick
-		// by pressing enter down on a second element and transferring
-		// focus to the DropDownButton;
-		// we want to prevent opening our menu in this situation
-		// and only do so if we have seen a keydown on this button;
-		// e.detail != 0 means that we were fired by mouse
-		var isMacFFlessThan3 = dojo.isFF && dojo.isFF < 3
-			&& navigator.appVersion.indexOf("Macintosh") != -1;
-		if(!isMacFFlessThan3 || e.detail != 0 || this._seenKeydown){
-			this._onArrowClick(e);
-		}
-		this._seenKeydown = false;
-	},
-
-	_onDropDownKeydown: function(/*Event*/ e){
-		this._seenKeydown = true;
-	},
-
-	_onDropDownBlur: function(/*Event*/ e){
-		this._seenKeydown = false;
-	},
-
-	_onKey: function(/*Event*/ e){
-		// summary:
-		//		Handler when the user presses a key on drop down widget
-		if(this.disabled || this.readOnly){ return; }
-		if(e.charOrCode == dojo.keys.DOWN_ARROW){
-			if(!this.dropDown || this.dropDown.domNode.style.visibility=="hidden"){
-				dojo.stopEvent(e);
-				this._toggleDropDown();
-			}
-		}
-	},
-
-	_onBlur: function(){
-		// summary:
-		//		Called magically when focus has shifted away from this widget and it's dropdown
-		this._closeDropDown();
-		// don't focus on button.  the user has explicitly focused on something else.
-		this.inherited(arguments);
-	},
-
-	_toggleDropDown: function(){
-		// summary:
-		//		Toggle the drop-down widget; if it is up, close it; if not, open it.
-		if(this.disabled || this.readOnly){ return; }
-		dijit.focus(this.popupStateNode);
+	loadDropDown: function(){
+		// Loads our dropdown
 		var dropDown = this.dropDown;
 		if(!dropDown){ return; }
-		if(!this._opened){
-			// If there's an href, then load that first, so we don't get a flicker
-			if(dropDown.href && !dropDown.isLoaded){
-				var self = this;
-				var handler = dojo.connect(dropDown, "onLoad", function(){
-					dojo.disconnect(handler);
-					self._openDropDown();
-				});
-				dropDown.refresh();
-				return;
-			}else{
-				this._openDropDown();
-			}
+		if(!this.isLoaded()){
+			var handler = dojo.connect(dropDown, "onLoad", this, function(){
+				dojo.disconnect(handler);
+				this.openDropDown();
+			});
+			dropDown.refresh();
 		}else{
-			this._closeDropDown();
+			this.openDropDown();
 		}
 	},
 
-	_openDropDown: function(){
-		var dropDown = this.dropDown;
-		var oldWidth=dropDown.domNode.style.width;
-		var self = this;
-
-		dijit.popup.open({
-			parent: this,
-			popup: dropDown,
-			around: this.domNode,
-			orient:
-				// TODO: add user-defined positioning option, like in Tooltip.js
-				this.isLeftToRight() ? {'BL':'TL', 'BR':'TR', 'TL':'BL', 'TR':'BR'}
-				: {'BR':'TR', 'BL':'TL', 'TR':'BR', 'TL':'BL'},
-			onExecute: function(){
-				self._closeDropDown(true);
-			},
-			onCancel: function(){
-				self._closeDropDown(true);
-			},
-			onClose: function(){
-				dropDown.domNode.style.width = oldWidth;
-				self.popupStateNode.removeAttribute("popupActive");
-				self._opened = false;
-			}
-		});
-		if(this.domNode.offsetWidth > dropDown.domNode.offsetWidth){
-			var adjustNode = null;
-			if(!this.isLeftToRight()){
-				adjustNode = dropDown.domNode.parentNode;
-				var oldRight = adjustNode.offsetLeft + adjustNode.offsetWidth;
-			}
-			// make menu at least as wide as the button
-			dojo.marginBox(dropDown.domNode, {w: this.domNode.offsetWidth});
-			if(adjustNode){
-				adjustNode.style.left = oldRight - this.domNode.offsetWidth + "px";
-			}
-		}
-		this.popupStateNode.setAttribute("popupActive", "true");
-		this._opened=true;
-		if(dropDown.focus){
-			dropDown.focus();
-		}
-		// TODO: set this.checked and call setStateClass(), to affect button look while drop down is shown
-	},
-	
-	_closeDropDown: function(/*Boolean*/ focus){
-		if(this._opened){
-			dijit.popup.close(this.dropDown);
-			if(focus){ this.focus(); }
-			this._opened = false;			
-		}
+	isFocusable: function(){
+		// Overridden so that focus is handled by the _HasDropDown mixin, not by
+		// the _FormWidget mixin.
+		return this.inherited(arguments) && !this._mouseDown;
 	}
 });
 
@@ -348,13 +233,14 @@ dojo.declare("dijit.form.ComboButton", dijit.form.DropDownButton, {
 	// example:
 	// |	var button1 = new dijit.form.ComboButton({label: "hello world", onClick: foo, dropDown: "myMenu"});
 	// |	dojo.body().appendChild(button1.domNode);
-	// 
+	//
 
-	templatePath: dojo.moduleUrl("dijit.form", "templates/ComboButton.html"),
+	templateString: dojo.cache("dijit.form", "templates/ComboButton.html"),
 
 	attributeMap: dojo.mixin(dojo.clone(dijit.form.Button.prototype.attributeMap), {
-		id:"",
-		tabIndex: ["focusNode", "titleNode"]
+		id: "",
+		tabIndex: ["focusNode", "titleNode"],
+		title: "titleNode"
 	}),
 
 	// optionsTitle: String
@@ -363,105 +249,42 @@ dojo.declare("dijit.form.ComboButton", dijit.form.DropDownButton, {
 
 	baseClass: "dijitComboButton",
 
+	// Set classes like dijitButtonContentsHover or dijitArrowButtonActive depending on
+	// mouse action over specified node
+	cssStateNodes: {
+		"buttonNode": "dijitButtonNode",
+		"titleNode": "dijitButtonContents",
+		"_popupStateNode": "dijitDownArrowButton"
+	},
+
 	_focusedNode: null,
 
-	postCreate: function(){
-		this.inherited(arguments);
-		this._focalNodes = [this.titleNode, this.popupStateNode];
-		dojo.forEach(this._focalNodes, dojo.hitch(this, function(node){
-			if(dojo.isIE){
-				this.connect(node, "onactivate", this._onNodeFocus);
-				this.connect(node, "ondeactivate", this._onNodeBlur);
-			}else{
-				this.connect(node, "onfocus", this._onNodeFocus);
-				this.connect(node, "onblur", this._onNodeBlur);
-			}
-		}));
-	},
-
-	focusFocalNode: function(node){
+	_onButtonKeyPress: function(/*Event*/ evt){
 		// summary:
-		//		Focus the focal node node.
-		// description:
-		//		Called by _KeyNavContainer for (when example) this button is in a toolbar.
-		// tags:
-		//		protected
-		this._focusedNode = node;
-		dijit.focus(node);
+		//		Handler for right arrow key when focus is on left part of button
+		if(evt.charOrCode == dojo.keys[this.isLeftToRight() ? "RIGHT_ARROW" : "LEFT_ARROW"]){
+			dijit.focus(this._popupStateNode);
+			dojo.stopEvent(evt);
+		}
 	},
 
-	hasNextFocalNode: function(){
+	_onArrowKeyPress: function(/*Event*/ evt){
 		// summary:
-		//		Returns true if this widget has no node currently
-		//		focused or if there is a node following the focused one.
-		//		False is returned if the last node has focus.
-		// description:
-		//		Called by _KeyNavContainer for (when example) this button is in a toolbar.
-		// tags:
-		//		protected
-		return this._focusedNode !== this.getFocalNodes()[1];
+		//		Handler for left arrow key when focus is on right part of button
+		if(evt.charOrCode == dojo.keys[this.isLeftToRight() ? "LEFT_ARROW" : "RIGHT_ARROW"]){
+			dijit.focus(this.titleNode);
+			dojo.stopEvent(evt);
+		}
 	},
-
-	focusNext: function(){
+	
+	focus: function(/*String*/ position){
 		// summary:
-		//		Focus the focal node following the current node with focus,
-		//		or the first one if no node currently has focus.
-		// description:
-		//		Called by _KeyNavContainer for (when example) this button is in a toolbar.
-		// tags:
-		//		protected
-		this._focusedNode = this.getFocalNodes()[this._focusedNode ? 1 : 0];
-		dijit.focus(this._focusedNode);
-	},
-
-	hasPrevFocalNode: function(){
-		// summary:
-		//		Returns true if this widget has no node currently
-		//		focused or if there is a node before the focused one.
-		//		False is returned if the first node has focus.
-		// description:
-		//		Called by _KeyNavContainer for (when example) this button is in a toolbar.
-		// tags:
-		//		protected
-		return this._focusedNode !== this.getFocalNodes()[0];
-	},
-
-	focusPrev: function(){
-		// summary:
-		//		Focus the focal node before the current node with focus
-		//		or the last one if no node currently has focus.
-		// description:
-		//		Called by _KeyNavContainer for (when example) this button is in a toolbar.
-		// tags:
-		//		protected
-		this._focusedNode = this.getFocalNodes()[this._focusedNode ? 0 : 1];
-		dijit.focus(this._focusedNode);
-	},
-
-	getFocalNodes: function(){
-		// summary:
-		//		Returns an array of focal nodes for this widget.
-		// description:
-		//		Called by _KeyNavContainer for (when example) this button is in a toolbar.
-		// tags:
-		//		protected
-		return this._focalNodes;
-	},
-
-	_onNodeFocus: function(evt){
-		this._focusedNode = evt.currentTarget;
-		var fnc = this._focusedNode == this.focusNode ? "dijitDownArrowButtonFocused" : "dijitButtonContentsFocused";
-		dojo.addClass(this._focusedNode, fnc);
-	},
-
-	_onNodeBlur: function(evt){
-		var fnc = evt.currentTarget == this.focusNode ? "dijitDownArrowButtonFocused" : "dijitButtonContentsFocused";
-		dojo.removeClass(evt.currentTarget, fnc);
-	},
-
-	_onBlur: function(){
-		this.inherited(arguments);
-		this._focusedNode = null;
+		//		Focuses this widget to according to position, if specified,
+		//		otherwise on arrow node
+		// position:
+		//		"start" or "end"
+		
+		dijit.focus(position == "start" ? this.titleNode : this._popupStateNode);
 	}
 });
 
@@ -479,28 +302,28 @@ dojo.declare("dijit.form.ToggleButton", dijit.form.Button, {
 	//		or the radio button is selected, etc.
 	checked: false,
 
-	attributeMap: dojo.mixin(dojo.clone(dijit.form.Button.prototype.attributeMap),
-		{checked:"focusNode"}),
+	attributeMap: dojo.mixin(dojo.clone(dijit.form.Button.prototype.attributeMap), {
+		checked:"focusNode"
+	}),
 
 	_clicked: function(/*Event*/ evt){
-		this.attr('checked', !this.checked);
+		this.set('checked', !this.checked);
 	},
 
-	_setCheckedAttr: function(/*Boolean*/ value){
+	_setCheckedAttr: function(/*Boolean*/ value, /* Boolean? */ priorityChange){
 		this.checked = value;
 		dojo.attr(this.focusNode || this.domNode, "checked", value);
 		dijit.setWaiState(this.focusNode || this.domNode, "pressed", value);
-		this._setStateClass();		
-		this._handleOnChange(value, true);
+		this._handleOnChange(value, priorityChange);
 	},
 
 	setChecked: function(/*Boolean*/ checked){
 		// summary:
-		//		Deprecated.   Use attr('checked', true/false) instead.
-		dojo.deprecated("setChecked("+checked+") is deprecated. Use attr('checked',"+checked+") instead.", "", "2.0");
-		this.attr('checked', checked);
+		//		Deprecated.   Use set('checked', true/false) instead.
+		dojo.deprecated("setChecked("+checked+") is deprecated. Use set('checked',"+checked+") instead.", "", "2.0");
+		this.set('checked', checked);
 	},
-	
+
 	reset: function(){
 		// summary:
 		//		Reset the widget's value to what it was at initialization time
@@ -508,6 +331,6 @@ dojo.declare("dijit.form.ToggleButton", dijit.form.Button, {
 		this._hasBeenBlurred = false;
 
 		// set checked state to original setting
-		this.attr('checked', this.params.checked || false);
+		this.set('checked', this.params.checked || false);
 	}
 });

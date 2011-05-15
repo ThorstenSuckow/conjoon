@@ -15,8 +15,14 @@ dojo.experimental("dojox.dtl");
 
 	dd._Context = dojo.extend(function(dict){
 		// summary: Pass one of these when rendering a template to tell the template what values to use.
-		dojo._mixin(this, dict || {});
-		this._dicts = [];
+		if(dict){
+			dojo._mixin(this, dict);
+			if(dict.get){
+				// Preserve passed getter and restore prototype get
+				this._getter = dict.get;
+				delete this.get;
+			}
+		}
 	},
 	{
 		push: function(){
@@ -29,14 +35,17 @@ dojo.experimental("dojox.dtl");
 			throw new Error("pop() called on empty Context");
 		},
 		get: function(key, otherwise){
-			if(typeof this[key] != "undefined"){
-				return this._normalize(this[key]);
+			var n = this._normalize;
+
+			if(this._getter){
+				var got = this._getter(key);
+				if(typeof got != "undefined"){
+					return n(got);
+				}
 			}
 
-			for(var i = 0, dict; dict = this._dicts[i]; i++){
-				if(typeof dict[key] != "undefined"){
-					return this._normalize(dict[key]);
-				}
+			if(typeof this[key] != "undefined"){
+				return n(this[key]);
 			}
 
 			return otherwise;
@@ -522,7 +531,7 @@ dojo.experimental("dojox.dtl");
 			// description: Steps into tags are they're found. Blocks use the parse object
 			//		to find their closing tag (the stop_at array). stop_at is inclusive, it
 			//		returns the node that matched.
-			var terminators = {};
+			var terminators = {}, token;
 			stop_at = stop_at || [];
 			for(var i = 0; i < stop_at.length; i++){
 				terminators[stop_at[i]] = true;
@@ -640,7 +649,7 @@ dojo.experimental("dojox.dtl");
 							}
 							dd.register._registry.attributes.push([attr.toLowerCase(), base + "." + path + "." + attr]);
 						}
-						key = key.toLowerCase();
+						key = key.toLowerCase()
 					}
 					dd.register._registry[type].push([
 						key,

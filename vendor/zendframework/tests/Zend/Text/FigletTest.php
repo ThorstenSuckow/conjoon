@@ -15,20 +15,15 @@
  * @category   Zend
  * @package    Zend_Text
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FigletTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FigletTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Text_FigletTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Text_FigletTest::main");
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * Zend_Text_Figlet
@@ -44,7 +39,7 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Text
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Text
  */
@@ -129,7 +124,7 @@ class Zend_Text_FigletTest extends PHPUnit_Framework_TestCase
         if (PHP_OS == 'AIX') {
             $this->markTestSkipped('Test case cannot run on AIX');
         }
-        
+
         $figlet = new Zend_Text_Figlet();
 
         $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
@@ -143,13 +138,13 @@ class Zend_Text_FigletTest extends PHPUnit_Framework_TestCase
     {
         $this->markTestSkipped('Test case not reproducible on all setups');
         $figlet  = new Zend_Text_Figlet();
-        
+
         if (PHP_OS == 'AIX') {
             $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
         } else {
             $isoText = iconv('UTF-8', 'ISO-8859-15', 'Ömläüt');
         }
-        
+
         $figlet->render($isoText);
     }
 
@@ -283,10 +278,10 @@ class Zend_Text_FigletTest extends PHPUnit_Framework_TestCase
     public function testEmptyString()
     {
         $figlet = new Zend_Text_Figlet();
-        
+
         $this->assertEquals('', $figlet->render(''));
     }
-    
+
     protected function _equalAgainstFile($output, $file)
     {
         $compareString = file_get_contents(dirname(__FILE__) . '/Figlet/' . $file);

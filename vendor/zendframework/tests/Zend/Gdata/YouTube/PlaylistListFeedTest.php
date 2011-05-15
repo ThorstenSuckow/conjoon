@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 require_once 'Zend/Gdata/YouTube/PlaylistListFeed.php';
 require_once 'Zend/Gdata/YouTube.php';
@@ -32,7 +27,7 @@ require_once 'Zend/Gdata/YouTube.php';
  * @category   Zend
  * @package    Zend_Gdata_YouTube
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_YouTube
@@ -87,7 +82,7 @@ class Zend_Gdata_YouTube_PlaylistListFeedTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('application/atom+xml',
             $playlistListFeed->getLink('self')->type);
         $this->assertEquals(
-            'http://gdata.youtube.com/feeds/api/users/GoogleDevelopers/' . 
+            'http://gdata.youtube.com/feeds/api/users/GoogleDevelopers/' .
             'playlists?start-index=1&max-results=25&v=2',
             $playlistListFeed->getLink('self')->href);
         $this->assertEquals('GoogleDevelopers',

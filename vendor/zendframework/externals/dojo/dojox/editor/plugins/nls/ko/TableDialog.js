@@ -9,9 +9,8 @@
 	tableWidth: "테이블 너비:",
 	backgroundColor: "배경색:",
 	borderColor: "테두리 색:",
-	borderThickness: "글꼴 굵기",
-	pixels: "픽셀",
-	percent: "퍼센트",
+	borderThickness: "테두리 굵기",
+	percent: "백분율",
 	pixels: "픽셀",
 	"default": "기본값",
 	left: "왼쪽",
@@ -19,12 +18,13 @@
 	right: "오른쪽",
 	buttonSet: "설정", // translated elsewhere?
 	buttonInsert: "삽입",
+	buttonCancel: "취소",
 
 	selectTableLabel: "테이블 선택",
-	insertTableRowBeforeLabel: "앞에 행 추가",
-	insertTableRowAfterLabel: "뒤에 행 추가",
-	insertTableColumnBeforeLabel: "앞에 열 추가",
-	insertTableColumnAfterLabel: "뒤에 열 추가",
+	insertTableRowBeforeLabel: "사전 행 추가",
+	insertTableRowAfterLabel: "사후 행 추가",
+	insertTableColumnBeforeLabel: "사전 열 추가",
+	insertTableColumnAfterLabel: "사후 열 추가",
 	deleteTableRowLabel: "행 삭제",
 	deleteTableColumnLabel: "열 삭제"
 })

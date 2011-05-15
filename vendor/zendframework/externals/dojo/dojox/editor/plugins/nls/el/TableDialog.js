@@ -10,7 +10,6 @@
 	backgroundColor: "Χρώμα φόντου:",
 	borderColor: "Χρώμα περιγράμματος:",
 	borderThickness: "Πάχος περιγράμματος",
-	pixels: "Εικονοστοιχεία",
 	percent: "ποσοστό",
 	pixels: "εικονοστοιχεία",
 	"default": "προεπιλογή",
@@ -19,6 +18,7 @@
 	right: "δεξιά",
 	buttonSet: "Ορισμός", // translated elsewhere?
 	buttonInsert: "Εισαγωγή",
+	buttonCancel: "Ακύρωση",
 
 	selectTableLabel: "Επιλογή πίνακα",
 	insertTableRowBeforeLabel: "Προσθήκη γραμμής πριν",

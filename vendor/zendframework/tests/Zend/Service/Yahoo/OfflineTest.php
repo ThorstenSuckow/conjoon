@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: OfflineTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Service_Yahoo
@@ -55,7 +49,7 @@ require_once 'Zend/Service/Yahoo/WebResult.php';
  * @category   Zend
  * @package    Zend_Service_Yahoo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Yahoo
@@ -536,18 +530,18 @@ class Zend_Service_Yahoo_OfflineTest extends PHPUnit_Framework_TestCase
             $this->assertContains("option 'type'", $e->getMessage());
         }
     }
-    
+
     /**
      * WebResult should check if the result has a Cache section or not
-     * 
+     *
      * @group ZF-3636
      */
     public function testWebResultCache(){
-    	// create empty result eg. without cache section
-    	$domDoc = new DOMDocument();
-    	$element = $domDoc->createElement('Result'); 
-    	// this should not result in errors    	
-    	$webResult = new Zend_Service_Yahoo_WebResult($element);
+        // create empty result eg. without cache section
+        $domDoc = new DOMDocument();
+        $element = $domDoc->createElement('Result');
+        // this should not result in errors
+        $webResult = new Zend_Service_Yahoo_WebResult($element);
     }
 }
 

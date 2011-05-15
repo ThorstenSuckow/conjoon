@@ -15,19 +15,18 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: H-OnlineComAtom10Test.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Feed/Reader.php';
 
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Feed
  * @group      Zend_Feed_Reader
@@ -39,7 +38,20 @@ class Zend_Feed_Reader_Integration_HOnlineComAtom10Test extends PHPUnit_Framewor
 
     public function setup()
     {
+        Zend_Feed_Reader::reset();
         $this->_feedSamplePath = dirname(__FILE__) . '/_files/h-online.com-atom10.xml';
+        $this->_options = Zend_Date::setOptions();
+        foreach($this->_options as $k=>$v) {
+            if (is_null($v)) {
+                unset($this->_options[$k]);
+            }
+        }
+        Zend_Date::setOptions(array('format_type'=>'iso'));
+    }
+    
+    public function teardown()
+    {
+        Zend_Date::setOptions($this->_options);
     }
 
     public function testGetsTitle()
@@ -55,7 +67,7 @@ class Zend_Feed_Reader_Integration_HOnlineComAtom10Test extends PHPUnit_Framewor
         $feed = Zend_Feed_Reader::importString(
             file_get_contents($this->_feedSamplePath)
         );
-        $this->assertEquals(array('The H'), $feed->getAuthors());
+        $this->assertEquals(array(array('name'=>'The H')), (array) $feed->getAuthors());
     }
 
     public function testGetsSingleAuthor()
@@ -63,7 +75,7 @@ class Zend_Feed_Reader_Integration_HOnlineComAtom10Test extends PHPUnit_Framewor
         $feed = Zend_Feed_Reader::importString(
             file_get_contents($this->_feedSamplePath)
         );
-        $this->assertEquals('The H', $feed->getAuthor());
+        $this->assertEquals(array('name'=>'The H'), $feed->getAuthor());
     }
 
     public function testGetsCopyright()
@@ -142,7 +154,7 @@ class Zend_Feed_Reader_Integration_HOnlineComAtom10Test extends PHPUnit_Framewor
             file_get_contents($this->_feedSamplePath)
         );
         $entry = $feed->current();
-        $this->assertEquals(array('The H'), $entry->getAuthors());
+        $this->assertEquals(array(array('name'=>'The H')), (array) $entry->getAuthors());
     }
 
     public function testGetsEntrySingleAuthor()
@@ -151,7 +163,7 @@ class Zend_Feed_Reader_Integration_HOnlineComAtom10Test extends PHPUnit_Framewor
             file_get_contents($this->_feedSamplePath)
         );
         $entry = $feed->current();
-        $this->assertEquals('The H', $entry->getAuthor());
+        $this->assertEquals(array('name'=>'The H'), $entry->getAuthor());
     }
 
     public function testGetsEntryDescription()

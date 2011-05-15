@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com);
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -28,7 +28,7 @@ require_once 'Zend/Gdata/App/Util.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -143,13 +143,13 @@ class Zend_Gdata_FeedTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->openSearchNamespacev2,
             $this->feed->lookupNamespace('openSearch'));
     }
-    
+
     public function testNoExtensionElementsInV1Feed() {
         $this->feed->setMajorProtocolVersion(1);
         $this->feed->transferFromXML($this->feedTextV1);
         $this->assertEquals(0, sizeof($this->feed->extensionElements));
     }
-    
+
     public function testNoExtensionElementsInV2Feed() {
         $this->feed->setMajorProtocolVersion(2);
         $this->feed->transferFromXML($this->feedTextV2);

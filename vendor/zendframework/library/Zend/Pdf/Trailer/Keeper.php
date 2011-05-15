@@ -14,25 +14,21 @@
  *
  * @category   Zend
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Keeper.php 16541 2009-07-07 06:59:03Z bkarwin $
+ * @version    $Id: Keeper.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
 /** Zend_Pdf_Trailer */
 require_once 'Zend/Pdf/Trailer.php';
 
-/** Zend_Pdf_Element_Reference_Context */
-require_once 'Zend/Pdf/Element/Reference/Context.php';
-
-
 /**
  * PDF file trailer.
  * Stores and provides access to the trailer parced from a PDF file
  *
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Pdf_Trailer_Keeper extends Zend_Pdf_Trailer
@@ -61,7 +57,7 @@ class Zend_Pdf_Trailer_Keeper extends Zend_Pdf_Trailer
      */
     public function __construct(Zend_Pdf_Element_Dictionary $dict,
                                 Zend_Pdf_Element_Reference_Context $context,
-                                $prev = null)
+                                Zend_Pdf_Trailer $prev = null)
     {
         parent::__construct($dict);
 
@@ -141,7 +137,7 @@ class Zend_Pdf_Trailer_Keeper extends Zend_Pdf_Trailer
                 return 0;
             }
 
-            throw $e;
+            throw new Zend_Pdf_Exception($e->getMessage(), $e->getCode(), $e);
         }
     }
 }

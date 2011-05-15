@@ -3,5 +3,10 @@
 	insertImageTitle: "Propriétés de l'image",
 	url: "URL :",
 	text: "Description :",
-	set: "Définir"
+	target: "Cible :",
+	set: "Définir",
+	currentWindow: "Fenêtre actuelle",
+	parentWindow: "Fenêtre parent",
+	topWindow: "Fenêtre supérieure",
+	newWindow: "Nouvelle fenêtre"
 })

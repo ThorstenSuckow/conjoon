@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -31,11 +31,18 @@ require_once 'Zend/Db/Adapter/Abstract.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Db_MockHasResult extends Zend_Db_Adapter_Abstract
 {
+    protected $_supportsParametersValues = array('named' => true, 'positional' => true);
+    
+    public function setSupportsParametersValues(array $supportsParametersValues)
+    {
+        $this->_supportsParametersValues = $supportsParametersValues;
+    }
+    
     /**
      * Returns an array to emulate a result
      *
@@ -48,7 +55,7 @@ class Db_MockHasResult extends Zend_Db_Adapter_Abstract
     {
         return array('one' => 'one');
     }
-    
+
     /**
      * Override for the constructor
      * @param array $config
@@ -57,9 +64,9 @@ class Db_MockHasResult extends Zend_Db_Adapter_Abstract
     {
         // Do Nothing.
     }
-    
+
     /**
-     * The below methods are un-needed, but need to be implemented for this to 
+     * The below methods are un-needed, but need to be implemented for this to
      * be a concrete class
      */
     public function listTables()
@@ -112,7 +119,10 @@ class Db_MockHasResult extends Zend_Db_Adapter_Abstract
     }
     public function supportsParameters($type)
     {
-        return null;
+        if (in_array($type, $this->_supportsParametersValues)) {
+            return $this->_supportsParametersValues[$type];
+        }
+        return false;
     }
     public function getServerVersion()
     {

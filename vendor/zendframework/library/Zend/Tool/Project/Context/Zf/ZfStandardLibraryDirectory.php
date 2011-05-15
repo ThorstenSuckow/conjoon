@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ZfStandardLibraryDirectory.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: ZfStandardLibraryDirectory.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -30,20 +30,20 @@ require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
  *
  * A profile is a hierarchical set of resources that keep track of
  * items within a specific project.
- * 
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Project_Context_Zf_ZfStandardLibraryDirectory extends Zend_Tool_Project_Context_Filesystem_Directory 
+class Zend_Tool_Project_Context_Zf_ZfStandardLibraryDirectory extends Zend_Tool_Project_Context_Filesystem_Directory
 {
-    
+
     /**
      * @var string
      */
     protected $_filesystemName = 'Zend';
-    
+
     /**
      * getName()
      *
@@ -53,7 +53,7 @@ class Zend_Tool_Project_Context_Zf_ZfStandardLibraryDirectory extends Zend_Tool_
     {
         return 'ZfStandardLibraryDirectory';
     }
-    
+
     /**
      * create()
      *
@@ -69,17 +69,17 @@ class Zend_Tool_Project_Context_Zf_ZfStandardLibraryDirectory extends Zend_Tool_
                 if (strpos($relativePath, DIRECTORY_SEPARATOR . '.') !== false) {
                     continue;
                 }
-                
+
                 if ($file->isDir()) {
                     mkdir($this->getBaseDirectory() . DIRECTORY_SEPARATOR . $this->getFilesystemName() . $relativePath);
                 } else {
                     copy($file->getPathname(), $this->getBaseDirectory() . DIRECTORY_SEPARATOR . $this->getFilesystemName() . $relativePath);
                 }
-                    
+
             }
         }
     }
-    
+
     /**
      * _getZfPath()
      *
@@ -87,18 +87,18 @@ class Zend_Tool_Project_Context_Zf_ZfStandardLibraryDirectory extends Zend_Tool_
      */
     protected function _getZfPath()
     {
-        foreach (explode(PATH_SEPARATOR, get_include_path()) as $includePath) {
-            
+        require_once 'Zend/Loader.php';
+        foreach (Zend_Loader::explodeIncludePath() as $includePath) {
             if (!file_exists($includePath) || $includePath[0] == '.') {
                 continue;
             }
-            
+
             if (realpath($checkedPath = rtrim($includePath, '\\/') . '/Zend/Loader.php') !== false && file_exists($checkedPath)) {
                 return dirname($checkedPath);
             }
         }
-        
+
         return false;
     }
-    
+
 }

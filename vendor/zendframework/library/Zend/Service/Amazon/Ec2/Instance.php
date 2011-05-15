@@ -15,11 +15,14 @@
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage Ec2
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Instance.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Instance.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
+/**
+ * @see Zend_Service_Amazon_Ec2_Abstract
+ */
 require_once 'Zend/Service/Amazon/Ec2/Abstract.php';
 
 /**
@@ -29,7 +32,7 @@ require_once 'Zend/Service/Amazon/Ec2/Abstract.php';
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage Ec2
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
@@ -279,9 +282,9 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
                 $item['amiLaunchIndex'] = $xpath->evaluate('string(ec2:amiLaunchIndex/text())', $is_node);
                 $item['monitoringState'] = $xpath->evaluate('string(ec2:monitoring/ec2:state/text())', $is_node);
 
+                $return['instances'][] = $item;
                 unset($is_node);
             }
-            $return['instances'][] = $item;
             unset($item);
             unset($is);
         }

@@ -15,17 +15,10 @@
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SessionTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SessionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 
 /**
  * @see Zend_Session
@@ -39,7 +32,7 @@ require_once 'Zend/Session.php';
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Session
  */
@@ -67,7 +60,8 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->_script = 'php -c \'' . php_ini_loaded_file() . '\' '
+        $this->_script = 'php '
+            . '-c ' . escapeshellarg(php_ini_loaded_file()) . ' '
             . escapeshellarg(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SessionTestHelper.php');
 
         $this->_savePath = ini_get('session.save_path');
@@ -782,6 +776,7 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     /**
      * test expiration of namespaces and namespace variables by seconds; expect expiration of specified keys/namespace
      *
+     * @runInSeparateProcess
      * @return void
      */
     public function testSetExpirationSeconds()
@@ -841,6 +836,7 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     /**
      * test expiration of namespaces by hops; expect expiration of specified namespace in the proper number of hops
      *
+     * @runInSeparateProcess
      * @return void
      */
     public function testSetExpireSessionHops()
@@ -873,6 +869,7 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     /**
      * test expiration of namespace variables by hops; expect expiration of specified keys in the proper number of hops
      *
+     * @runInSeparateProcess
      * @return void
      */
     public function testSetExpireSessionVarsByHops1()
@@ -883,6 +880,7 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     /**
      * sanity check .. we should be able to repeat this test without problems
      *
+     * @runInSeparateProcess
      * @return void
      */
     public function testSetExpireSessionVarsByHops2()
@@ -948,6 +946,7 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     /**
      * test expiration of namespace variables by hops; expect expiration of specified keys in the proper number of hops
      *
+     * @runInSeparateProcess
      * @return void
      */
     public function testSetExpireSessionVarsByHopsOnUse()
@@ -1004,4 +1003,26 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
         }
         Zend_Session::start();
     }
+
+    /**
+     * test for method getNamespace()
+     *
+     * @group ZF-1982
+     * @return void
+     */
+    public function testGetNameSpaceMethod()
+    {
+        Zend_Session::$_unitTestEnabled = true;
+        $namespace = array(
+            'FooBar',
+            'Foo_Bar',
+            'Foo-Bar',
+            'Foo1000'
+        );
+        foreach ($namespace as $v) {
+            $s = new Zend_Session_Namespace($v);
+            $this->assertEquals($v, $s->getNamespace());
+        }
+    }
+
 }

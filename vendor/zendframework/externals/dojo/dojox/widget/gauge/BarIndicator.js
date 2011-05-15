@@ -34,7 +34,7 @@ dojo.declare("dojox.widget.gauge.BarIndicator",[dojox.widget.gauge.BarLineIndica
 	_createShapes: function(val){
 		// summary:
 		//		Creates a shallow copy of the current shapes while adjusting for the new value
-		for (var i in this.shapes) {
+		for(var i in this.shapes){
 			i = this.shapes[i];
 			var newShape = {};
 			for(var j in i){
@@ -63,7 +63,7 @@ dojo.declare("dojox.widget.gauge.BarIndicator",[dojox.widget.gauge.BarLineIndica
 			this._createShapes(v);
 		}else{
 			if(c!=v){
-				var anim = new dojo._Animation({curve: [c, v], duration: this.duration, easing: this.easing});
+				var anim = new dojo.Animation({curve: [c, v], duration: this.duration, easing: this.easing});
 				dojo.connect(anim, "onAnimate", dojo.hitch(this, this._createShapes)); 
 				anim.play();
 			}

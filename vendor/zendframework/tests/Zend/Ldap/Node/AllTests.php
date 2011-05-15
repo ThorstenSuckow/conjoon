@@ -15,25 +15,33 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Ldap_Node_AllTests::main');
+}
+
+require_once 'Zend/Ldap/Node/OfflineTest.php';
+require_once 'Zend/Ldap/Node/AttributeIterationTest.php';
+
+if (defined('TESTS_ZEND_LDAP_ONLINE_ENABLED')
+	&& constant('TESTS_ZEND_LDAP_ONLINE_ENABLED')) {
+    require_once 'Zend/Ldap/Node/OnlineTest.php';
+    require_once 'Zend/Ldap/Node/ChildrenTest.php';
+    require_once 'Zend/Ldap/Node/ChildrenIterationTest.php';
+    require_once 'Zend/Ldap/Node/UpdateTest.php';
+    require_once 'Zend/Ldap/Node/RootDseTest.php';
+    require_once 'Zend/Ldap/Node/SchemaTest.php';
 }
 
 /**
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  * @group      Zend_Ldap_Node
@@ -49,48 +57,16 @@ class Zend_Ldap_Node_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Zend Framework - Zend_Ldap_Node');
 
-        /**
-         * @see Zend_Ldap_Node_OfflineTest
-         */
-        require_once 'Zend/Ldap/Node/OfflineTest.php';
         $suite->addTestSuite('Zend_Ldap_Node_OfflineTest');
-        /**
-         * @see Zend_Ldap_Node_AttributeIterationTest
-         */
-        require_once 'Zend/Ldap/Node/AttributeIterationTest.php';
         $suite->addTestSuite('Zend_Ldap_Node_AttributeIterationTest');
 
         if (defined('TESTS_ZEND_LDAP_ONLINE_ENABLED')
                 && constant('TESTS_ZEND_LDAP_ONLINE_ENABLED')) {
-            /**
-             * @see Zend_Ldap_Node_OnlineTest
-             */
-            require_once 'Zend/Ldap/Node/OnlineTest.php';
             $suite->addTestSuite('Zend_Ldap_Node_OnlineTest');
-            /**
-             * @see Zend_Ldap_Node_ChildrenTest
-             */
-            require_once 'Zend/Ldap/Node/ChildrenTest.php';
             $suite->addTestSuite('Zend_Ldap_Node_ChildrenTest');
-            /**
-             * @see Zend_Ldap_Node_ChildrenIterationTest
-             */
-            require_once 'Zend/Ldap/Node/ChildrenIterationTest.php';
             $suite->addTestSuite('Zend_Ldap_Node_ChildrenIterationTest');
-            /**
-             * @see Zend_Ldap_Node_UpdateTest
-             */
-            require_once 'Zend/Ldap/Node/UpdateTest.php';
             $suite->addTestSuite('Zend_Ldap_Node_UpdateTest');
-            /**
-             * @see Zend_Ldap_Node_RootDseTest
-             */
-            require_once 'Zend/Ldap/Node/RootDseTest.php';
             $suite->addTestSuite('Zend_Ldap_Node_RootDseTest');
-            /**
-             * @see Zend_Ldap_Node_SchemaTest
-             */
-            require_once 'Zend/Ldap/Node/SchemaTest.php';
             $suite->addTestSuite('Zend_Ldap_Node_SchemaTest');
         } else {
             $suite->addTest(new Zend_Ldap_Node_SkipOnlineTests());

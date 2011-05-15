@@ -15,20 +15,19 @@
  * @category   Zend
  * @package    Zend_Crypt
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: RsaTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Crypt/Rsa.php';
-require_once 'PHPUnit/Framework/TestCase.php';
 
 
 /**
  * @category   Zend
  * @package    Zend_Crypt
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Crypt
  */
@@ -39,8 +38,18 @@ class Zend_Crypt_RsaTest extends PHPUnit_Framework_TestCase
 
     protected $_testPemPath = null;
 
-    public function setup()
+    public function setUp()
     {
+        try {
+            $rsaObject = new Zend_Crypt_Rsa();
+        } catch (Zend_Crypt_Rsa_Exception $e) {
+            if (strpos($e->getMessage(), 'requires openssl extention') !== false) {
+                $this->markTestSkipped($e->getMessage());
+            } else {
+                throw $e;
+            }
+        }
+
         $this->_testPemString = <<<RSAKEY
 -----BEGIN RSA PRIVATE KEY-----
 MIIBOgIBAAJBANDiE2+Xi/WnO+s120NiiJhNyIButVu6zxqlVzz0wy2j4kQVUC4Z
@@ -126,6 +135,9 @@ CERT;
 
     public function testConstructorSetsHashOption()
     {
+        if (!defined('OPENSSL_ALGO_MD2')) {
+            $this->markTestSkipped('The OPENSSL_ALGO_MD2 constant is not defined in this PHP instance.');
+        }
         $rsa = new Zend_Crypt_Rsa(array('hashAlgorithm'=>'md2'));
         $this->assertEquals(OPENSSL_ALGO_MD2, $rsa->getHashAlgorithm());
     }
@@ -313,6 +325,15 @@ CERT;
         } catch (Zend_Crypt_Exception $e) {
             $this->fail('Passphrase loading failed of a private key');
         }
+    }
+
+    /**
+     * @group ZF-8846
+     */
+    public function testLoadsPublicKeyFromPEMWithoutPrivateKeyAndThrowsNoException()
+    {
+        $rsa = new Zend_Crypt_Rsa;
+        $rsa->setPemString($this->_testPemStringPublic);
     }
 
 }

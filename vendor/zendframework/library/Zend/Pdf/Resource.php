@@ -14,27 +14,17 @@
  *
  * @category   Zend
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Resource.php 16541 2009-07-07 06:59:03Z bkarwin $
+ * @version    $Id: Resource.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/** Zend_Pdf_ElementFactory */
-require_once 'Zend/Pdf/ElementFactory.php';
-
-/** Zend_Pdf_Element_Object */
-require_once 'Zend/Pdf/Element/Object.php';
-
-/** Zend_Pdf_Element_Dictionary */
-require_once 'Zend/Pdf/Element/Dictionary.php';
 
 
 /**
  * PDF file Resource abstraction
  *
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Pdf_Resource
@@ -76,12 +66,78 @@ abstract class Zend_Pdf_Resource
      */
     public function __construct($resource)
     {
-        $this->_objectFactory     = Zend_Pdf_ElementFactory::createFactory(1);
-        if ($resource instanceof Zend_Pdf_Element) {
-            $this->_resource      = $this->_objectFactory->newObject($resource);
-        } else {
-            $this->_resource      = $this->_objectFactory->newStreamObject($resource);
+        if ($resource instanceof Zend_Pdf_Element_Object) {
+            $this->_objectFactory = $resource->getFactory();
+            $this->_resource      = $resource;
+
+            return;
         }
+
+        require_once 'Zend/Pdf/ElementFactory.php';
+
+        $this->_objectFactory = Zend_Pdf_ElementFactory::createFactory(1);
+        if ($resource instanceof Zend_Pdf_Element) {
+            $this->_resource  = $this->_objectFactory->newObject($resource);
+        } else {
+            $this->_resource  = $this->_objectFactory->newStreamObject($resource);
+        }
+    }
+
+    /**
+     * Clone page, extract it and dependent objects from the current document,
+     * so it can be used within other docs.
+     */
+    public function __clone()
+    {
+        /** @todo implementation*/
+
+//        $factory = Zend_Pdf_ElementFactory::createFactory(1);
+//        $processed = array();
+//
+//        // Clone dictionary object.
+//        // Do it explicitly to prevent sharing resource attributes between different
+//        // results of clone operation (other resources are still shared)
+//        $dictionary = new Zend_Pdf_Element_Dictionary();
+//        foreach ($this->_pageDictionary->getKeys() as $key) {
+//         $dictionary->$key = $this->_pageDictionary->$key->makeClone($factory->getFactory(),
+//                                                                     $processed,
+//                                                                     Zend_Pdf_Element::CLONE_MODE_SKIP_PAGES);
+//        }
+//
+//        $this->_pageDictionary = $factory->newObject($dictionary);
+//        $this->_objectFactory  = $factory;
+//        $this->_attached       = false;
+//        $this->_style          = null;
+//        $this->_font           = null;
+    }
+
+    /**
+     * Clone resource, extract it and dependent objects from the current document,
+     * so it can be used within other docs.
+     *
+     * @internal
+     * @param Zend_Pdf_ElementFactory_Interface $factory
+     * @param array $processed
+     * @return Zend_Pdf_Page
+     */
+    public function cloneResource($factory, &$processed)
+    {
+        /** @todo implementation*/
+
+//        // Clone dictionary object.
+//        // Do it explicitly to prevent sharing page attributes between different
+//        // results of clonePage() operation (other resources are still shared)
+//        $dictionary = new Zend_Pdf_Element_Dictionary();
+//        foreach ($this->_pageDictionary->getKeys() as $key) {
+//            $dictionary->$key = $this->_pageDictionary->$key->makeClone($factory->getFactory(),
+//                                                                        $processed,
+//                                                                        Zend_Pdf_Element::CLONE_MODE_SKIP_PAGES);
+//        }
+//
+//        $clonedPage = new Zend_Pdf_Page($factory->newObject($dictionary), $factory);
+//        $clonedPage->_attached = false;
+//
+//        return $clonedPage;
     }
 
     /**
@@ -107,4 +163,3 @@ abstract class Zend_Pdf_Resource
         return $this->_objectFactory;
     }
 }
-

@@ -3,23 +3,26 @@ dojo.provide("dijit._Templated");
 dojo.require("dijit._Widget");
 dojo.require("dojo.string");
 dojo.require("dojo.parser");
+dojo.require("dojo.cache");
 
 dojo.declare("dijit._Templated",
 	null,
 	{
-		//	summary:
+		// summary:
 		//		Mixin for widgets that are instantiated from a template
-		// 
 
 		// templateString: [protected] String
 		//		A string that represents the widget template. Pre-empts the
 		//		templatePath. In builds that have their strings "interned", the
 		//		templatePath is converted to an inline templateString, thereby
 		//		preventing a synchronous network call.
+		//
+		//		Use in conjunction with dojo.cache() to load from a file.
 		templateString: null,
 
-		// templatePath: [protected] String
-		//		Path to template (HTML file) for this widget relative to dojo.baseUrl
+		// templatePath: [protected deprecated] String
+		//		Path to template (HTML file) for this widget relative to dojo.baseUrl.
+		//		Deprecated: use templateString with dojo.cache() instead.
 		templatePath: null,
 
 		// widgetsInTemplate: [protected] Boolean
@@ -32,6 +35,26 @@ dojo.declare("dijit._Templated",
 		//		particular widget class, it can set this property to ensure
 		//		that its template is always re-built from a string
 		_skipNodeCache: false,
+
+		// _earlyTemplatedStartup: Boolean
+		//		A fallback to preserve the 1.0 - 1.3 behavior of children in
+		//		templates having their startup called before the parent widget
+		//		fires postCreate. Defaults to 'false', causing child widgets to
+		//		have their .startup() called immediately before a parent widget
+		//		.startup(), but always after the parent .postCreate(). Set to
+		//		'true' to re-enable to previous, arguably broken, behavior.
+		_earlyTemplatedStartup: false,
+
+		// _attachPoints: [private] String[]
+		//		List of widget attribute names associated with dojoAttachPoint=... in the
+		//		template, ex: ["containerNode", "labelNode"]
+/*=====
+ 		_attachPoints: [],
+ =====*/
+
+		constructor: function(){
+			this._attachPoints = [];
+		},
 
 		_stringRepl: function(tmpl){
 			// summary:
@@ -70,6 +93,10 @@ dojo.declare("dijit._Templated",
 			var node;
 			if(dojo.isString(cached)){
 				node = dojo._toDom(this._stringRepl(cached));
+				if(node.nodeType != 1){
+					// Flag common problems such as templates with multiple top level nodes (nodeType == 11)
+					throw new Error("Invalid template: " + cached);
+				}
 			}else{
 				// if it's a node, all we have to do is clone it
 				node = cached.cloneNode(true);
@@ -82,7 +109,30 @@ dojo.declare("dijit._Templated",
 			this._attachTemplateNodes(node);
 
 			if(this.widgetsInTemplate){
-				var cw = (this._supportingWidgets = dojo.parser.parse(node));
+				// Make sure dojoType is used for parsing widgets in template.
+				// The dojo.parser.query could be changed from multiversion support.
+				var parser = dojo.parser, qry, attr;
+				if(parser._query != "[dojoType]"){
+					qry = parser._query;
+					attr = parser._attrName;
+					parser._query = "[dojoType]";
+					parser._attrName = "dojoType";
+				}
+
+				// Store widgets that we need to start at a later point in time
+				var cw = (this._startupWidgets = dojo.parser.parse(node, {
+					noStart: !this._earlyTemplatedStartup,
+					inherited: {dir: this.dir, lang: this.lang}
+				}));
+
+				// Restore the query.
+				if(qry){
+					parser._query = qry;
+					parser._attrName = attr;
+				}
+
+				this._supportingWidgets = dijit.findWidgets(node);
+
 				this._attachTemplateNodes(cw, function(n,p){
 					return n[p];
 				});
@@ -107,13 +157,13 @@ dojo.declare("dijit._Templated",
 
 		_attachTemplateNodes: function(rootNode, getAttrFunc){
 			// summary:
-			//		Iterate through the template and attach functions and nodes accordingly.	
-			// description:		
+			//		Iterate through the template and attach functions and nodes accordingly.
+			// description:
 			//		Map widget properties and functions to the handlers specified in
 			//		the dom node and it's descendants. This function iterates over all
 			//		nodes and looks for these properties:
 			//			* dojoAttachPoint
-			//			* dojoAttachEvent	
+			//			* dojoAttachEvent
 			//			* waiRole
 			//			* waiState
 			// rootNode: DomNode|Array[Widgets]
@@ -143,6 +193,7 @@ dojo.declare("dijit._Templated",
 						}else{
 							this[point]=baseNode;
 						}
+						this._attachPoints.push(point);
 					}
 				}
 
@@ -187,6 +238,25 @@ dojo.declare("dijit._Templated",
 					});
 				}
 			}
+		},
+
+		startup: function(){
+			dojo.forEach(this._startupWidgets, function(w){
+				if(w && !w._started && w.startup){
+					w.startup();
+				}
+			});
+			this.inherited(arguments);
+		},
+
+		destroyRendering: function(){
+			// Delete all attach points to prevent IE6 memory leaks.
+			dojo.forEach(this._attachPoints, function(point){
+				delete this[point];
+			}, this);
+			this._attachPoints = [];
+
+			this.inherited(arguments);
 		}
 	}
 );
@@ -198,8 +268,8 @@ dijit._Templated.getCachedTemplate = function(templatePath, templateString, alwa
 	// summary:
 	//		Static method to get a template based on the templatePath or
 	//		templateString key
-	// templatePath: String
-	//		The URL to get the template from. dojo.uri.Uri is often passed as well.
+	// templatePath: String||dojo.uri.Uri
+	//		The URL to get the template from.
 	// templateString: String?
 	//		a string to use in lieu of fetching the template from a URL. Takes precedence
 	//		over templatePath
@@ -212,19 +282,20 @@ dijit._Templated.getCachedTemplate = function(templatePath, templateString, alwa
 	var key = templateString || templatePath;
 	var cached = tmplts[key];
 	if(cached){
-		if(!cached.ownerDocument || cached.ownerDocument == dojo.doc){
-			// string or node of the same document
-			return cached;
-		}
-		// destroy the old cached node of a different document
+		try{
+			// if the cached value is an innerHTML string (no ownerDocument) or a DOM tree created within the current document, then use the current cached value
+			if(!cached.ownerDocument || cached.ownerDocument == dojo.doc){
+				// string or node of the same document
+				return cached;
+			}
+		}catch(e){ /* squelch */ } // IE can throw an exception if cached.ownerDocument was reloaded
 		dojo.destroy(cached);
 	}
 
 	// If necessary, load template string from template path
 	if(!templateString){
-		templateString = dijit._Templated._sanitizeTemplateString(dojo.trim(dojo._getText(templatePath)));
+		templateString = dojo.cache(templatePath, {sanitize: true});
 	}
-
 	templateString = dojo.string.trim(templateString);
 
 	if(alwaysUseString || templateString.match(/\$\{([^\}]+)\}/g)){
@@ -232,34 +303,20 @@ dijit._Templated.getCachedTemplate = function(templatePath, templateString, alwa
 		return (tmplts[key] = templateString); //String
 	}else{
 		// there are no variables in the template so we can cache the DOM tree
-		return (tmplts[key] = dojo._toDom(templateString)); //Node
-	}
-};
-
-dijit._Templated._sanitizeTemplateString = function(/*String*/tString){
-	// summary: 
-	//		Strips <?xml ...?> declarations so that external SVG and XML
-	// 		documents can be added to a document without worry. Also, if the string
-	//		is an HTML document, only the part inside the body tag is returned.
-	if(tString){
-		tString = tString.replace(/^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im, "");
-		var matches = tString.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
-		if(matches){
-			tString = matches[1];
+		var node = dojo._toDom(templateString);
+		if(node.nodeType != 1){
+			throw new Error("Invalid template: " + templateString);
 		}
-	}else{
-		tString = "";
+		return (tmplts[key] = node); //Node
 	}
-	return tString; //String
 };
-
 
 if(dojo.isIE){
 	dojo.addOnWindowUnload(function(){
 		var cache = dijit._Templated._templateCache;
 		for(var key in cache){
 			var value = cache[key];
-			if(!isNaN(value.nodeType)){ // isNode equivalent
+			if(typeof value == "object"){ // value is either a string or a DOM node template
 				dojo.destroy(value);
 			}
 			delete cache[key];

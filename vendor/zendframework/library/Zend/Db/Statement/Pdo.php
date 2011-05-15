@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Statement
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Pdo.php 18079 2009-09-11 17:46:45Z ralph $
+ * @version    $Id: Pdo.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -34,7 +34,7 @@ require_once 'Zend/Db/Statement.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Statement
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_Statement_Pdo extends Zend_Db_Statement implements IteratorAggregate
@@ -132,9 +132,9 @@ class Zend_Db_Statement_Pdo extends Zend_Db_Statement implements IteratorAggrega
         if (is_string($parameter) && $parameter[0] != ':') {
             $parameter = ":$parameter";
         }
-        
+
         $this->_bindParam[$parameter] = $value;
-        
+
         try {
             if ($type === null) {
                 return $this->_stmt->bindValue($parameter, $value);
@@ -231,7 +231,7 @@ class Zend_Db_Statement_Pdo extends Zend_Db_Statement implements IteratorAggrega
             }
         } catch (PDOException $e) {
             require_once 'Zend/Db/Statement/Exception.php';
-            throw new Zend_Db_Statement_Exception($e->getMessage(), $e->getCode(), $e);
+            throw new Zend_Db_Statement_Exception($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 

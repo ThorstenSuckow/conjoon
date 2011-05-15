@@ -15,34 +15,34 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Interface.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Interface.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 interface Zend_Tool_Project_Profile_FileParser_Interface
 {
-    
+
     /**
      * serialize()
-     * 
+     *
      * This method should take a profile and return a string
      * representation of it.
-     * 
+     *
      * @param Zend_Tool_Project_Profile $profile
      * @return string
      */
     public function serialize(Zend_Tool_Project_Profile $profile);
-    
+
     /**
      * unserialize()
-     * 
+     *
      * This method should be able to take string data an create a
      * struture in the provided $profile
      *
@@ -50,5 +50,5 @@ interface Zend_Tool_Project_Profile_FileParser_Interface
      * @param Zend_Tool_Project_Profile $profile
      */
     public function unserialize($data, Zend_Tool_Project_Profile $profile);
-    
+
 }

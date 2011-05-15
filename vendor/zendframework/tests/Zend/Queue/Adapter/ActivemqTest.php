@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 13626 2009-01-14 18:24:57Z matthew $
+ * @version    $Id: ActivemqTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /*
@@ -28,24 +28,30 @@
  * an exception.
  */
 
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/** TestHelp.php */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
-
 require_once 'Zend/Queue/Adapter/AdapterTest.php';
 
 /**
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Queue
  */
 class Zend_Queue_Adapter_ActivemqTest extends Zend_Queue_Adapter_AdapterTest
 {
+    /**
+     * Test setup
+     */
+    public function setUp()
+    {
+        if (!TESTS_ZEND_QUEUE_ACTIVEMQ_ENABLED) {
+            $this->markTestSkipped('TESTS_ZEND_QUEUE_ACTIVEMQ_ENABLED is not enabled in TestConfiguration.php');
+        }
+        parent::setUp();
+    }
+
+
     /**
      * getAdapterName() is an method to help make AdapterTest work with any
      * new adapters
@@ -63,13 +69,13 @@ class Zend_Queue_Adapter_ActivemqTest extends Zend_Queue_Adapter_AdapterTest
     {
         $driverOptions = array();
         if (defined('TESTS_ZEND_QUEUE_ACTIVEMQ_HOST')) {
-            $driverOptions['host'] = TESTS_ZEND_QUEUE_APACHEMQ_HOST;
+            $driverOptions['host'] = TESTS_ZEND_QUEUE_ACTIVEMQ_HOST;
         }
         if (defined('TESTS_ZEND_QUEUE_ACTIVEMQ_PORT')) {
-            $driverOptions['port'] = TESTS_ZEND_QUEUE_APACHEMQ_PORT;
+            $driverOptions['port'] = TESTS_ZEND_QUEUE_ACTIVEMQ_PORT;
         }
         if (defined('TESTS_ZEND_QUEUE_ACTIVEMQ_SCHEME')) {
-            $driverOptions['scheme'] = TESTS_ZEND_QUEUE_APACHEMQ_SCHEME;
+            $driverOptions['scheme'] = TESTS_ZEND_QUEUE_ACTIVEMQ_SCHEME;
         }
         return array('driverOptions' => $driverOptions);
     }

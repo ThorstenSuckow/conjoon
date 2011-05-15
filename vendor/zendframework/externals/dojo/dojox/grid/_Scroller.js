@@ -17,7 +17,7 @@ dojo.provide("dojox.grid._Scroller");
 		}
 		var filter = function(inW){
 			return inW.domNode && dojo.isDescendant(inW.domNode, inNode, true);
-		}
+		};
 		var ws = dijit.registry.filter(filter);
 		for(var i=0, w; (w=ws[i]); i++){
 			w.destroy();
@@ -33,7 +33,8 @@ dojo.provide("dojox.grid._Scroller");
 	var nodeKids = function(inNode, inTag){
 		var result = [];
 		var i=0, n;
-		while((n = inNode.childNodes[i++])){
+		while((n = inNode.childNodes[i])){
+			i++;
 			if(getTagName(n) == inTag){
 				result.push(n);
 			}
@@ -75,6 +76,7 @@ dojo.provide("dojox.grid._Scroller");
 				case 3: this.rowsPerPage = inRowsPerPage;
 				case 2: this.keepRows = inKeepRows;
 				case 1: this.rowCount = inRowCount;
+				default: break;
 			}
 			this.defaultPageHeight = this.defaultRowHeight * this.rowsPerPage;
 			this.pageCount = this._getPageCount(this.rowCount, this.rowsPerPage);
@@ -97,7 +99,7 @@ dojo.provide("dojox.grid._Scroller");
 		},
 		setKeepInfo: function(inKeepRows){
 			this.keepRows = inKeepRows;
-			this.keepPages = !this.keepRows ? this.keepRows : Math.max(Math.ceil(this.keepRows / this.rowsPerPage), 2);
+			this.keepPages = !this.keepRows ? this.keepPages : Math.max(Math.ceil(this.keepRows / this.rowsPerPage), 2);
 		},
 		// nodes
 		setContentNodes: function(inNodes){
@@ -113,10 +115,12 @@ dojo.provide("dojox.grid._Scroller");
 		},
 		// updating
 		invalidate: function(){
+			this._invalidating = true;
 			this.invalidateNodes();
 			this.pageHeights = [];
 			this.height = (this.pageCount ? (this.pageCount - 1)* this.defaultPageHeight + this.calcLastPageHeight() : 0);
 			this.resize();
+			this._invalidating = false;
 		},
 		updateRowCount: function(inRowCount){
 			this.invalidateNodes();
@@ -132,7 +136,7 @@ dojo.provide("dojox.grid._Scroller");
 			if(this.pageCount < oldPageCount){
 				for(var i=oldPageCount-1; i>=this.pageCount; i--){
 					this.height -= this.getPageHeight(i);
-					delete this.pageHeights[i]
+					delete this.pageHeights[i];
 				}
 			}else if(this.pageCount > oldPageCount){
 				this.height += this.defaultPageHeight * (this.pageCount - oldPageCount - 1) + this.calcLastPageHeight();
@@ -144,8 +148,15 @@ dojo.provide("dojox.grid._Scroller");
 			return Boolean(this.getDefaultPageNode(inPageIndex));
 		},
 		measurePage: function(inPageIndex){
+			if(this.grid.rowHeight){
+				var height = this.grid.rowHeight + 1;
+				return ((inPageIndex + 1) * this.rowsPerPage > this.rowCount ?
+					this.rowCount - inPageIndex * this.rowsPerPage :
+					this.rowsPerPage) * height;
+					 
+			}
 			var n = this.getDefaultPageNode(inPageIndex);
-			return (n&&n.innerHTML) ? n.offsetHeight : 0;
+			return (n && n.innerHTML) ? n.offsetHeight : undefined;
 		},
 		positionPage: function(inPageIndex, inPos){
 			for(var i=0; i<this.colCount; i++){
@@ -162,16 +173,12 @@ dojo.provide("dojox.grid._Scroller");
 			//
 			var n = nodes[inPageIndex];
 			var y = (n ? this.getPageNodePosition(n) + this.getPageHeight(inPageIndex) : 0);
-			//console.log('detected height change, repositioning from #%d (%d) @ %d ', inPageIndex + 1, last, y, this.pageHeights[0]);
-			//
 			for(var p=inPageIndex+1; p<=last; p++){
 				n = nodes[p];
 				if(n){
-					//console.log('#%d @ %d', inPageIndex, y, this.getPageNodePosition(n));
 					if(this.getPageNodePosition(n) == y){
 						return;
 					}
-					//console.log('placing page %d at %d', p, y);
 					this.positionPage(p, y);
 				}
 				y += this.getPageHeight(p);
@@ -188,17 +195,17 @@ dojo.provide("dojox.grid._Scroller");
 				var nodes = this.pageNodes[i];
 				var new_p = (p === null ? this.createPageNode() : this.invalidatePageNode(p, nodes));
 				new_p.pageIndex = inPageIndex;
-				new_p.id = (this._pageIdPrefix || "") + 'page-' + inPageIndex;
 				nodes[inPageIndex] = new_p;
 			}
 		},
 		// rendering implementation
 		renderPage: function(inPageIndex){
 			var nodes = [];
-			for(var i=0; i<this.colCount; i++){
+			var i, j;
+			for(i=0; i<this.colCount; i++){
 				nodes[i] = this.pageNodes[i][inPageIndex];
 			}
-			for(var i=0, j=inPageIndex*this.rowsPerPage; (i<this.rowsPerPage)&&(j<this.rowCount); i++, j++){
+			for(i=0, j=inPageIndex*this.rowsPerPage; (i<this.rowsPerPage)&&(j<this.rowCount); i++, j++){
 				this.renderRow(j, nodes);
 			}
 		},
@@ -250,7 +257,16 @@ dojo.provide("dojox.grid._Scroller");
 			}
 			
 			// Calculate the average row height and update the defaults (row and page).
-			this.needPage(this.page, this.pageTop);
+			var needPage = (!this._invalidating);
+			if(!needPage){
+				var ah = this.grid.attr("autoHeight");
+				if(typeof ah == "number" && ah <= Math.min(this.rowsPerPage, this.rowCount)){
+					needPage = true;
+				}
+			}
+			if(needPage){
+				this.needPage(this.page, this.pageTop);
+			}
 			var rowsOnPage = (this.page < this.pageCount - 1) ? this.rowsPerPage : ((this.rowCount % this.rowsPerPage) || this.rowsPerPage);
 			var pageHeight = this.getPageHeight(this.page);
 			this.averageRowHeight = (pageHeight > 0 && rowsOnPage > 0) ? (pageHeight / rowsOnPage) : 0;
@@ -268,19 +284,29 @@ dojo.provide("dojox.grid._Scroller");
 			this.height += inDh;
 			this.resize();
 		},
-		updatePageHeight: function(inPageIndex){
+		updatePageHeight: function(inPageIndex, fromBuild){
 			if(this.pageExists(inPageIndex)){
 				var oh = this.getPageHeight(inPageIndex);
-				var h = (this.measurePage(inPageIndex))||(oh);
-				this.pageHeights[inPageIndex] = h;
-				if((h)&&(oh != h)){
-					this.updateContentHeight(h - oh)
-					this.repositionPages(inPageIndex);
+				var h = (this.measurePage(inPageIndex));
+				if(h === undefined){
+					h = oh;
 				}
+				this.pageHeights[inPageIndex] = h;
+				if(oh != h){
+					this.updateContentHeight(h - oh);
+					var ah = this.grid.attr("autoHeight");
+					if((typeof ah == "number" && ah > this.rowCount)||(ah === true && !fromBuild)){
+						this.grid.sizeChange();
+					}else{
+						this.repositionPages(inPageIndex);
+					}
+				}
+				return h;
 			}
+			return 0;
 		},
 		rowHeightChanged: function(inRowIndex){
-			this.updatePageHeight(Math.floor(inRowIndex / this.rowsPerPage));
+			this.updatePageHeight(Math.floor(inRowIndex / this.rowsPerPage), false);
 		},
 		// scroller core
 		invalidateNodes: function(){
@@ -331,11 +357,7 @@ dojo.provide("dojox.grid._Scroller");
 			var h = this.getPageHeight(inPageIndex), oh = h;
 			if(!this.pageExists(inPageIndex)){
 				this.buildPage(inPageIndex, this.keepPages&&(this.stack.length >= this.keepPages), inPos);
-				h = this.measurePage(inPageIndex) || h;
-				this.pageHeights[inPageIndex] = h;
-				if(h && (oh != h)){
-					this.updateContentHeight(h - oh)
-				}
+				h = this.updatePageHeight(inPageIndex, true);
 			}else{
 				this.positionPage(inPageIndex, inPos);
 			}
@@ -455,7 +477,8 @@ dojo.provide("dojox.grid._Scroller");
 		findScrollTop: function(inRow){
 			var rowPage = Math.floor(inRow / this.rowsPerPage);
 			var t = 0;
-			for(var i=0; i<rowPage; i++){
+			var i, l;
+			for(i=0; i<rowPage; i++){
 				t += this.getPageHeight(i);
 			}
 			this.pageTop = t;
@@ -464,7 +487,7 @@ dojo.provide("dojox.grid._Scroller");
 			var nodes = this.getDefaultNodes();
 			var rows = divkids(nodes[rowPage]);
 			var r = inRow - this.rowsPerPage * rowPage;
-			for(var i=0,l=rows.length; i<l && i<r; i++){
+			for(i=0,l=rows.length; i<l && i<r; i++){
 				t += rows[i].offsetHeight;
 			}
 			return t;

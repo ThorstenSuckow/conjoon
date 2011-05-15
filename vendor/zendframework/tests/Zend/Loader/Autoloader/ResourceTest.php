@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Loader
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ResourceTest.php 18173 2009-09-17 15:35:05Z padraic $
+ * @version    $Id: ResourceTest.php 23860 2011-04-14 17:03:28Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Loader_Autoloader_ResourceTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * @see Zend_Loader_Autoloader
@@ -51,7 +46,7 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Loader
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Loader
  */
@@ -399,6 +394,78 @@ class Zend_Loader_Autoloader_ResourceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->loader->getBasePath() . '/models', $resources['models']['path']);
     }
 
+    /**
+     * @group ZF-6727
+     */
+    public function testAutoloaderResourceGetClassPath()
+    {
+        $this->loader->addResourceTypes(array(
+            'model' => array('path' => 'models', 'namespace' => 'Model'),
+        ));
+        $path = $this->loader->getClassPath('FooBar_Model_Class_Model');
+        // if true we have // in path
+        $this->assertFalse(strpos($path, '//'));
+    }
+
+    /**
+     * @group ZF-8364
+     * @group ZF-6727
+     */
+    public function testAutoloaderResourceGetClassPathReturnFalse()
+    {
+        $this->loader->addResourceTypes(array(
+            'model' => array('path' => 'models', 'namespace' => 'Model'),
+        ));
+        $path = $this->loader->autoload('Something_Totally_Wrong');
+        $this->assertFalse($path);
+    }
+
+    /**
+     * @group ZF-10836
+     */
+    public function testConstructorAcceptsNamespaceKeyInAnyOrder()
+    {
+        // namespace is after resourceTypes - fails in ZF 1.11.1
+        $data = array(
+            'basePath'      => 'path/to/some/directory',
+            'resourceTypes' => array(
+                'acl' => array(
+                    'path'      => 'acls/',
+                    'namespace' => 'Acl',
+                )
+            ),
+            'namespace'     => 'My'
+        );
+        $loader1 = new Zend_Loader_Autoloader_Resource($data);
+
+        // namespace is defined before resourceTypes - always worked as expected
+        $data = array(
+            'basePath'      => 'path/to/some/directory',
+            'namespace'     => 'My',
+            'resourceTypes' => array(
+                'acl' => array(
+                    'path'      => 'acls/',
+                    'namespace' => 'Acl',
+                )
+            )
+        );
+        $loader2 = new Zend_Loader_Autoloader_Resource($data);
+
+        // Check that autoloaders are configured the same
+        $this->assertEquals($loader1, $loader2);
+    }
+
+    /**
+     * @group ZF-11219
+     */
+    public function testMatchesMultiLevelNamespaces()
+    {
+        $this->loader->setNamespace('Foo_Bar')
+            ->setBasePath(dirname(__FILE__) . '/_files')
+            ->addResourceType('model', 'models', 'Model');
+        $path = $this->loader->getClassPath('Foo_Bar_Model_Baz');
+        $this->assertEquals(dirname(__FILE__) . '/_files/models/Baz.php', $path, var_export($path, 1));
+    }
 }
 
 if (PHPUnit_MAIN_METHOD == 'Zend_Loader_Autoloader_ResourceTest::main') {

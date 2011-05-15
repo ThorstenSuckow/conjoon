@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MessageTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: MessageTest.php 23999 2011-05-04 15:20:53Z matthew $
  */
 
 /**
@@ -36,15 +36,10 @@ require_once 'Zend/Mail/Storage/Mbox.php';
 require_once 'Zend/Mime/Decode.php';
 
 /**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mail
  */
@@ -222,9 +217,9 @@ class Zend_Mail_MessageTest extends PHPUnit_Framework_TestCase
 
     public function testDecodeString()
     {
-        $is = Zend_Mime_Decode::decodeQuotedPrintable('=?UTF-8?Q?"Peter M=C3=BCller"?= <peter-mueller@example.com>');
-        $should = iconv('UTF-8', iconv_get_encoding('internal_encoding'),
-                        '"Peter Müller" <peter-mueller@example.com>');
+        $string = '"Peter M=C3=BCller" <peter-mueller@example.com>';
+        $is     = Zend_Mime_Decode::decodeQuotedPrintable($string);
+        $should = quoted_printable_decode($string);
         $this->assertEquals($is, $should);
     }
 
@@ -399,25 +394,25 @@ class Zend_Mail_MessageTest extends PHPUnit_Framework_TestCase
     public function testGetHeaderFieldSingle()
     {
         $message = new Zend_Mail_Message(array('file' => $this->_file));
-        $this->assertEquals($message->getHeaderField('subject'), 'multipart');        
+        $this->assertEquals($message->getHeaderField('subject'), 'multipart');
     }
 
     public function testGetHeaderFieldDefault()
     {
         $message = new Zend_Mail_Message(array('file' => $this->_file));
-        $this->assertEquals($message->getHeaderField('content-type'), 'multipart/alternative');        
+        $this->assertEquals($message->getHeaderField('content-type'), 'multipart/alternative');
     }
 
     public function testGetHeaderFieldNamed()
     {
         $message = new Zend_Mail_Message(array('file' => $this->_file));
-        $this->assertEquals($message->getHeaderField('content-type', 'boundary'), 'crazy-multipart');        
+        $this->assertEquals($message->getHeaderField('content-type', 'boundary'), 'crazy-multipart');
     }
 
     public function testGetHeaderFieldMissing()
     {
         $message = new Zend_Mail_Message(array('file' => $this->_file));
-        $this->assertNull($message->getHeaderField('content-type', 'foo'));        
+        $this->assertNull($message->getHeaderField('content-type', 'foo'));
     }
 
     public function testGetHeaderFieldInvalid()
@@ -430,7 +425,7 @@ class Zend_Mail_MessageTest extends PHPUnit_Framework_TestCase
         }
         $this->fail('No exception thrown while requesting invalid field name');
     }
-    
+
     public function testCaseInsensitiveMultipart()
     {
         $message = new Zend_Mail_Message(array('raw' => "coNTent-TYpe: muLTIpaRT/x-empty\r\n\r\n"));

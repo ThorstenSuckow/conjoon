@@ -15,12 +15,11 @@
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: AbstractTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Service/Amazon/Abstract.php';
 
 /**
@@ -29,7 +28,7 @@ require_once 'Zend/Service/Amazon/Abstract.php';
  * @category   Zend
  * @package    Zend_Service_Amazon
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Amazon
@@ -94,24 +93,6 @@ class AmamzonAbstract extends PHPUnit_Framework_TestCase
         $this->assertEquals('TestAccessKey', $class->returnAccessKey());
         $this->assertEquals('TestSecretKey', $class->returnSecretKey());
     }
-
-    public function testSetRegion()
-    {
-        TestAmamzonAbstract::setRegion('eu-west-1');
-
-        $class = new TestAmamzonAbstract('TestAccessKey', 'TestSecretKey');
-        $this->assertEquals('eu-west-1', $class->returnRegion());
-    }
-    
-    public function testSetInvalidRegionThrowsException()
-    {
-        try {
-            TestAmamzonAbstract::setRegion('eu-west-1a');
-            $this->fail('Invalid Region Set with no Exception Thrown');
-        } catch (Zend_Service_Amazon_Exception $zsae) {
-            // do nothing
-        }
-    }
 }
 
 class TestAmamzonAbstract extends Zend_Service_Amazon_Abstract
@@ -126,9 +107,5 @@ class TestAmamzonAbstract extends Zend_Service_Amazon_Abstract
         return $this->_secretKey;
     }
 
-    public function returnRegion()
-    {
-        return $this->_region;
-    }
 }
 

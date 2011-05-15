@@ -15,14 +15,12 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: FaultTest.php 17786 2009-08-23 22:26:33Z lars $
+ * @version $Id: FaultTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/XmlRpc/Fault.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'PHPUnit/Framework/IncompleteTestError.php';
 
 /**
  * Test case for Zend_XmlRpc_Fault
@@ -30,11 +28,11 @@ require_once 'PHPUnit/Framework/IncompleteTestError.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
-class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase 
+class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Zend_XmlRpc_Fault object
@@ -45,7 +43,7 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
     /**
      * Setup environment
      */
-    public function setUp() 
+    public function setUp()
     {
         $this->_fault = new Zend_XmlRpc_Fault();
     }
@@ -53,7 +51,7 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
     /**
      * Teardown environment
      */
-    public function tearDown() 
+    public function tearDown()
     {
         unset($this->_fault);
     }
@@ -104,7 +102,7 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
             $value2 = $member2->appendChild($dom->createElement('value'));
             $value2->appendChild($dom->createElement('string', 'Error string'));
 
-        return $dom->saveXML();
+        return $dom->saveXml();
     }
 
     protected function _createNonStandardXml()
@@ -124,7 +122,7 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
             $member2->appendChild($dom->createElement('name', 'faultString'));
             $value2 = $member2->appendChild($dom->createElement('value', 'Error string'));
 
-        return $dom->saveXML();
+        return $dom->saveXml();
     }
 
     /**
@@ -210,9 +208,9 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * helper for saveXML() and __toString() tests
-     * 
-     * @param string $xml 
+     * helper for saveXml() and __toString() tests
+     *
+     * @param string $xml
      * @return void
      */
     protected function _testXmlFault($xml)
@@ -245,13 +243,13 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * saveXML() test
+     * saveXml() test
      */
     public function testSaveXML()
     {
         $this->_fault->setCode(1000);
         $this->_fault->setMessage('Fault message');
-        $xml = $this->_fault->saveXML();
+        $xml = $this->_fault->saveXml();
         $this->_testXmlFault($xml);
     }
 
@@ -272,8 +270,10 @@ class Zend_XmlRpc_FaultTest extends PHPUnit_Framework_TestCase
     public function testSetGetEncoding()
     {
         $this->assertEquals('UTF-8', $this->_fault->getEncoding());
+        $this->assertEquals('UTF-8', Zend_XmlRpc_Value::getGenerator()->getEncoding());
         $this->_fault->setEncoding('ISO-8859-1');
         $this->assertEquals('ISO-8859-1', $this->_fault->getEncoding());
+        $this->assertEquals('ISO-8859-1', Zend_XmlRpc_Value::getGenerator()->getEncoding());
     }
 
     public function testUnknownErrorIsUsedIfUnknownErrorCodeEndEmptyMessageIsPassed()

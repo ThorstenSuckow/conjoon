@@ -16,9 +16,9 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage App
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: App.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: App.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -49,7 +49,7 @@ require_once 'Zend/Gdata/App/MediaSource.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage App
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_App
@@ -256,7 +256,7 @@ class Zend_Gdata_App
             )
         );
         $this->_httpClient = $client;
-        Zend_Gdata::setStaticHttpClient($client);
+        self::setStaticHttpClient($client);
         return $this;
     }
 
@@ -634,13 +634,22 @@ class Zend_Gdata_App
 
         // Make sure the HTTP client object is 'clean' before making a request
         // In addition to standard headers to reset via resetParameters(),
-        // also reset the Slug header
+        // also reset the Slug and If-Match headers
         $this->_httpClient->resetParameters();
-        $this->_httpClient->setHeaders('Slug', null);
+        $this->_httpClient->setHeaders(array('Slug', 'If-Match'));
 
         // Set the params for the new request to be performed
         $this->_httpClient->setHeaders($headers);
-        $this->_httpClient->setUri($url);
+        require_once 'Zend/Uri/Http.php';
+        $uri = Zend_Uri_Http::fromString($url);
+        preg_match("/^(.*?)(\?.*)?$/", $url, $matches);
+        $this->_httpClient->setUri($matches[1]);
+        $queryArray = $uri->getQueryAsArray();
+        foreach ($queryArray as $name => $value) {
+            $this->_httpClient->setParameterGet($name, $value);
+        }
+
+
         $this->_httpClient->setConfig(array('maxredirects' => 0));
 
         // Set the proper adapter if we are handling a streaming upload
@@ -757,7 +766,7 @@ class Zend_Gdata_App
         if (!$this->_useObjectMapping) {
             return $feedContent;
         }
-        
+
         $protocolVersionStr = $response->getHeader('GData-Version');
         $majorProtocolVersion = null;
         $minorProtocolVersion = null;
@@ -800,6 +809,11 @@ class Zend_Gdata_App
         $className='Zend_Gdata_App_Feed', $majorProtocolVersion = null,
         $minorProtocolVersion = null)
     {
+        if (!class_exists($className, false)) {
+          require_once 'Zend/Loader.php';
+          @Zend_Loader::loadClass($className);
+        }
+
         // Load the feed as an XML DOMDocument object
         @ini_set('track_errors', 1);
         $doc = new DOMDocument();
@@ -953,6 +967,11 @@ class Zend_Gdata_App
     public function insertEntry($data, $uri, $className='Zend_Gdata_App_Entry',
         $extraHeaders = array())
     {
+        if (!class_exists($className, false)) {
+          require_once 'Zend/Loader.php';
+          @Zend_Loader::loadClass($className);
+        }
+
         $response = $this->post($data, $uri, null, null, $extraHeaders);
 
         $returnEntry = new $className($response->getBody());
@@ -987,6 +1006,11 @@ class Zend_Gdata_App
             $className = get_class($data);
         } elseif ($className === null) {
             $className = 'Zend_Gdata_App_Entry';
+        }
+
+        if (!class_exists($className, false)) {
+          require_once 'Zend/Loader.php';
+          @Zend_Loader::loadClass($className);
         }
 
         $response = $this->put($data, $uri, null, null, $extraHeaders);
@@ -1063,7 +1087,7 @@ class Zend_Gdata_App
      * significant amount of time to complete. In some cases this may cause
      * execution to timeout without proper precautions in place.
      *
-     * @param $feed The feed to iterate through.
+     * @param object $feed The feed to iterate through.
      * @return mixed A new feed of the same type as the one originally
      *          passed in, containing all relevent entries.
      */
@@ -1093,7 +1117,7 @@ class Zend_Gdata_App
      * NOTE: This will not work if you have customized the adapter
      * already to use a proxy server or other interface.
      *
-     * @param $logfile The logfile to use when logging the requests
+     * @param string $logfile The logfile to use when logging the requests
      */
     public function enableRequestDebugLogging($logfile)
     {

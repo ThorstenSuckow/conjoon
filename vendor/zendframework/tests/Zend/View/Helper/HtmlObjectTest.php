@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlObjectTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HtmlObjectTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HtmlObjectTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HtmlObjectTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/View.php';
 require_once 'Zend/View/Helper/HtmlObject.php';
@@ -34,12 +32,12 @@ require_once 'Zend/View/Helper/HtmlObject.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
  */
-class Zend_View_Helper_HtmlObjectTest extends PHPUnit_Framework_TestCase 
+class Zend_View_Helper_HtmlObjectTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Zend_View_Helper_HtmlObject
@@ -54,7 +52,6 @@ class Zend_View_Helper_HtmlObjectTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_View_Helper_HtmlObjectTest");
         PHPUnit_TextUI_TestRunner::run($suite);
@@ -77,7 +74,7 @@ class Zend_View_Helper_HtmlObjectTest extends PHPUnit_Framework_TestCase
     {
         unset($this->helper);
     }
-    
+
     public function testViewObjectIsSet()
     {
         $this->assertType('Zend_View_Interface', $this->helper->view);
@@ -90,60 +87,60 @@ class Zend_View_Helper_HtmlObjectTest extends PHPUnit_Framework_TestCase
         $this->assertContains('<object data="datastring" type="typestring">', $htmlObject);
         $this->assertContains('</object>', $htmlObject);
     }
-    
+
     public function testMakeHtmlObjectWithAttribsWithoutParams()
     {
         $attribs = array('attribkey1' => 'attribvalue1',
                          'attribkey2' => 'attribvalue2');
-        
+
         $htmlObject = $this->helper->htmlObject('datastring', 'typestring', $attribs);
 
         $this->assertContains('<object data="datastring" type="typestring" attribkey1="attribvalue1" attribkey2="attribvalue2">', $htmlObject);
         $this->assertContains('</object>', $htmlObject);
     }
-    
+
     public function testMakeHtmlObjectWithoutAttribsWithParamsHtml()
     {
         $this->view->doctype(Zend_View_Helper_Doctype::HTML4_STRICT);
-        
+
         $params = array('paramname1' => 'paramvalue1',
                         'paramname2' => 'paramvalue2');
-        
+
         $htmlObject = $this->helper->htmlObject('datastring', 'typestring', array(), $params);
 
         $this->assertContains('<object data="datastring" type="typestring">', $htmlObject);
         $this->assertContains('</object>', $htmlObject);
-        
+
         foreach ($params as $key => $value) {
             $param = '<param name="' . $key . '" value="' . $value . '">';
-            
-        	$this->assertContains($param, $htmlObject);
-        }
-    }
-    
-    public function testMakeHtmlObjectWithoutAttribsWithParamsXhtml()
-    {
-        $this->view->doctype(Zend_View_Helper_Doctype::XHTML1_STRICT);
-        
-        $params = array('paramname1' => 'paramvalue1',
-                        'paramname2' => 'paramvalue2');
-        
-        $htmlObject = $this->helper->htmlObject('datastring', 'typestring', array(), $params);
 
-        $this->assertContains('<object data="datastring" type="typestring">', $htmlObject);
-        $this->assertContains('</object>', $htmlObject);
-        
-        foreach ($params as $key => $value) {
-            $param = '<param name="' . $key . '" value="' . $value . '" />';
-            
             $this->assertContains($param, $htmlObject);
         }
     }
-    
+
+    public function testMakeHtmlObjectWithoutAttribsWithParamsXhtml()
+    {
+        $this->view->doctype(Zend_View_Helper_Doctype::XHTML1_STRICT);
+
+        $params = array('paramname1' => 'paramvalue1',
+                        'paramname2' => 'paramvalue2');
+
+        $htmlObject = $this->helper->htmlObject('datastring', 'typestring', array(), $params);
+
+        $this->assertContains('<object data="datastring" type="typestring">', $htmlObject);
+        $this->assertContains('</object>', $htmlObject);
+
+        foreach ($params as $key => $value) {
+            $param = '<param name="' . $key . '" value="' . $value . '" />';
+
+            $this->assertContains($param, $htmlObject);
+        }
+    }
+
     public function testMakeHtmlObjectWithContent()
     {
         $htmlObject = $this->helper->htmlObject('datastring', 'typestring', array(), array(), 'testcontent');
-        
+
         $this->assertContains('<object data="datastring" type="typestring">', $htmlObject);
         $this->assertContains('testcontent', $htmlObject);
         $this->assertContains('</object>', $htmlObject);

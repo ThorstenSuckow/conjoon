@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 17818 2009-08-25 23:11:06Z ralph $
+ * @version    $Id: TestCommon.php 23994 2011-05-04 06:09:42Z ralph $
  */
 
 
@@ -36,14 +36,15 @@ require_once 'Zend/Registry.php';
  */
 require_once 'Zend/Db/Table.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+
 
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
@@ -212,7 +213,7 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
     public function testTableImplicitName()
     {
         include_once '_files/My/ZendDbTable/TableSpecial.php';
-        
+
         // TableSpecial.php contains class bugs_products too.
         $table = new zfbugs_products(array('db' => $this->_db));
         $info = $table->info();
@@ -638,9 +639,9 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
             'Expecting object of type Zend_Db_Table_Rowset_Abstract, got '.get_class($rowset));
         $this->assertEquals(3, count($rowset));
     }
-    
+
     /**
-     * 
+     *
      * @group ZF-5775
      */
     public function testTableFindWithEmptyArray()
@@ -651,12 +652,34 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
             'Expecting object of type Zend_Db_Table_Rowset_Abstract, got '.get_class($rowset));
         $this->assertEquals(0, count($rowset));
     }
-    
+
     public function testTableInsert()
     {
         $table = $this->_table['bugs'];
         $row = array (
             'bug_id'          => null,
+            'bug_description' => 'New bug',
+            'bug_status'      => 'NEW',
+            'created_on'      => '2007-04-02',
+            'updated_on'      => '2007-04-02',
+            'reported_by'     => 'micky',
+            'assigned_to'     => 'goofy',
+            'verified_by'     => 'dduck'
+        );
+        $insertResult = $table->insert($row);
+        $lastInsertId = $this->_db->lastInsertId();
+        $this->assertEquals($insertResult, $lastInsertId);
+        $this->assertEquals(5, $lastInsertId);
+    }
+    
+    /**
+     * @group ZF-3837
+     */
+    public function testTableInsertWhenAutoIncrementFieldIsAnEmptyStringShouldProduceNewAutoIncrementValue()
+    {
+        $table = $this->_table['bugs'];
+        $row = array (
+            'bug_id'          => '',
             'bug_description' => 'New bug',
             'bug_status'      => 'NEW',
             'created_on'      => '2007-04-02',
@@ -691,7 +714,7 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
         );
 
         $profilerEnabled = $this->_db->getProfiler()->getEnabled();
-        $this->_db->getProfiler()->setEnabled(true);
+        $this->_db->getProfiler()->setEnabled(true)->setFilterQueryType(Zend_Db_Profiler::INSERT);
         $insertResult = $table->insert($row);
         $this->_db->getProfiler()->setEnabled($profilerEnabled);
 
@@ -778,8 +801,9 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
 
     /**
      * See ZF-1739 in our issue tracker.
+     * @group ZF-1739
      */
-    public function testTableInsertMemoryUsageZf1739()
+    public function testTableInsertWithHighMemoryUsage()
     {
         $this->markTestSkipped('Very slow test inserts thousands of rows');
 
@@ -807,6 +831,50 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
         // compare new memory usage to original
         $mem_delta = $mem2-$mem1;
         $this->assertThat($mem_delta, $this->lessThan(513));
+    }
+    
+    /**
+     * @group ZF-2953
+     */
+    public function testTableInsertWithEmptyValueAsPrimaryKey()
+    {
+        $table = $this->_table['bugs'];
+        $row = array (
+            'bug_description' => 'New bug',
+            'bug_status'      => 'NEW',
+            'created_on'      => '2007-04-02',
+            'updated_on'      => '2007-04-02',
+            'reported_by'     => 'micky',
+            'assigned_to'     => 'goofy',
+            'verified_by'     => 'dduck'
+        );
+        
+        // empty string
+        $row['bug_id'] = '';
+        $insertResult = $table->insert($row);
+        $this->assertTrue(is_numeric($insertResult), 'Empty string did not return assigned primary key');
+        
+        // false (bool)
+        $row['bug_id'] = false;
+        $insertResult = $table->insert($row);
+        $this->assertTrue(is_numeric($insertResult), 'Bool false did not return assigned primary key');
+
+        // empty array
+        $row['bug_id'] = array();
+        $insertResult = $table->insert($row);
+        $this->assertTrue(is_numeric($insertResult), 'Empty array did not return assigned primary key');
+        
+        // zero '0'
+        $row['bug_id'] = '0';
+        $table->delete('bug_id > 0'); // clear table
+        $insertResult = $table->insert($row);
+        $this->assertEquals('0', $insertResult, 'Zero string did not return assigned primary key');
+        
+        // zero 0
+        $row['bug_id'] = 0;
+        $table->delete('bug_id > 0'); // clear table
+        $insertResult = $table->insert($row);
+        $this->assertEquals('0', $insertResult, 'Zero int did not return assigned primary key');
     }
 
     public function testTableUpdate()
@@ -965,6 +1033,44 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
             'Expecting object of type Zend_Db_Table_Row_Abstract, got '.get_class($row));
         $this->assertTrue(isset($row->bug_description));
         $this->assertEquals('New bug', $row->bug_description);
+    }
+
+    /**
+     * @group ZF-8944
+     * @group ZF-10598
+     * @group ZF-11253
+     */
+    public function testTableFetchRowOffset()
+    {
+        $reported_by = $this->_db->quoteIdentifier('reported_by', true);
+
+        $table = $this->_table['bugs'];
+        $row = $table->fetchRow(array("$reported_by = ?" => 'goofy'), null, 1);
+        $this->assertType('Zend_Db_Table_Row_Abstract', $row,
+            'Expecting object of type Zend_Db_Table_Row_Abstract, got '.get_class($row));
+        $bug_id = $this->_db->foldCase('bug_id');
+        $this->assertEquals(2, $row->$bug_id);
+    }
+
+    /**
+     * @group ZF-8944
+     * @group ZF-10598
+     * @group ZF-11253
+     */
+    public function testTableFetchRowOffsetSelect()
+    {
+        $reported_by = $this->_db->quoteIdentifier('reported_by', true);
+
+        $table = $this->_table['bugs'];
+        $select = $table->select()
+            ->where("$reported_by = ?", 'goofy')
+            ->limit(1, 1);
+
+        $row = $table->fetchRow($select);
+        $this->assertType('Zend_Db_Table_Row_Abstract', $row,
+            'Expecting object of type Zend_Db_Table_Row_Abstract, got '.get_class($row));
+        $bug_id = $this->_db->foldCase('bug_id');
+        $this->assertEquals(2, $row->$bug_id);
     }
 
     public function testTableFetchRow()
@@ -1226,7 +1332,7 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
     public function testTableLoadsCustomRowClass()
     {
         $this->_useMyIncludePath();
-        
+
         if (class_exists('My_ZendDbTable_Row_TestMyRow')) {
             $this->markTestSkipped("Cannot test loading the custom Row class because it is already loaded");
             return;
@@ -1245,7 +1351,7 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
             'Expected TestMyRow class not to be loaded (#2)');
         $this->assertFalse(class_exists('My_ZendDbTable_Rowset_TestMyRowset', false),
             'Expected TestMyRowset class not to be loaded (#2)');
-        
+
         // creating a rowset makes the table load the rowset class
         // and the rowset constructor loads the row class.
         $bugs = $bugsTable->fetchAll();
@@ -1304,9 +1410,9 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
         try {
             $bugsTable = $this->_getTable('My_ZendDbTable_TableBugs');
             $primary = $bugsTable->info(Zend_Db_Table_Abstract::PRIMARY);
-            $this->fail('Expected to catch Zend_Db_Table_Exception');
-        } catch (Zend_Exception $e) {
-            $this->assertType('Zend_Db_Table_Exception', $e);
+            $this->fail('Expected to catch PHPUnit_Framework_Error');
+        } catch (PHPUnit_Framework_Error $e) {
+            $this->assertEquals(E_USER_NOTICE, $e->getCode(), 'Error type not E_USER_NOTICE');
             $this->assertEquals('Failed saving metadata to metadataCache', $e->getMessage());
         }
 
@@ -1512,7 +1618,7 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
         $table = $this->_table['products'];
         $this->assertType('string', serialize($table));
     }
-    
+
     /**
      * @group ZF-1343
      */
@@ -1531,13 +1637,13 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
     public function testTableConcreteInstantiation()
     {
         Zend_Db_Table::setDefaultAdapter($this->_db);
-        
+
         $table = new Zend_Db_Table('zfbugs');
         $rowset = $table->find(1);
         $this->assertEquals(1, count($rowset));
-        
+
         Zend_Db_Table::setDefaultAdapter();
-        
+
         $table = new Zend_Db_Table(array(
             'name' => 'zfbugs',
             'db' => $this->_db
@@ -1545,10 +1651,10 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
         $rowset = $table->find(1);
         $this->assertEquals(1, count($rowset));
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Returns a clean Zend_Cache_Core with File backend
      *
@@ -1613,7 +1719,77 @@ abstract class Zend_Db_Table_TestCommon extends Zend_Db_Table_TestSetup
 
         return $cacheFrontend;
     }
-    
-    
 
+    /**
+     * @group ZF-5674
+     */
+    public function testTableAndIdentityWithVeryLongName()
+    {
+        Zend_Db_Table::setDefaultAdapter($this->_db);
+        // create test table using no identifier quoting
+        $this->_util->createTable('thisisaveryverylongtablename', array(
+            'thisisalongtablenameidentity' => 'IDENTITY',
+            'stuff' => 'VARCHAR(32)'
+        ));
+        $tableName = $this->_util->getTableName('thisisaveryverylongtablename');
+        $table = new Zend_Db_Table('thisisaveryverylongtablename');
+        $row = $table->createRow($this->_getRowForTableAndIdentityWithVeryLongName());
+        $row->save();
+        $rowset = $table->find(1);
+        $this->assertEquals(1, count($rowset));
+        $this->_util->dropTable('thisisaveryverylongtablename');
+    }
+
+    protected function _getRowForTableAndIdentityWithVeryLongName()
+    {
+        return array('stuff' => 'information');
+    }
+
+    /**
+     * @group ZF-7042
+     * @group ZF-10778
+     */
+    public function testCacheIdGeneratedToMetadata()
+    {
+        /**
+         * @see Zend_Cache
+         */
+        require_once 'Zend/Cache.php';
+
+        /**
+         * @see Zend_Cache_Backend_BlackHole
+         */
+        require_once 'Zend/Cache/Backend/BlackHole.php';
+
+        Zend_Db_Table::setDefaultAdapter($this->_db);
+        $dbConfig     = $this->_db->getConfig();
+        $cacheId = md5(
+                (isset($dbConfig['port']) ? ':'.$dbConfig['port'] : null)
+                . (isset($dbConfig['host']) ? ':'.$dbConfig['host'] : null)
+                . '/'.$dbConfig['dbname'].':.cache_metadata'
+                );
+
+        $metadata = array('id' => array('PRIMARY' => true));
+        $cacheBackend = $this->getMock('Zend_Cache_Backend_BlackHole');
+        $cacheBackend->expects($this->any())
+                     ->method('load')
+                     ->with($this->equalTo($cacheId))
+                     ->will($this->returnValue($metadata));
+
+        $cache = Zend_Cache::factory('Core', $cacheBackend, array('automatic_serialization' => false));
+        Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+
+        $this->_util->createTable('cache_metadata', array(
+            'id'   => 'IDENTITY',
+            'name' => 'VARCHAR(32)'
+        ));
+        $configTable = array(
+            'name'    => 'cache_metadata',
+            'primary' => 'id'
+        );
+        $table = new Zend_Db_Table($configTable);
+        $table->info(Zend_Db_Table::METADATA);
+        $this->_util->dropTable('cache_metadata');
+        Zend_Db_Table_Abstract::setDefaultMetadataCache(null);
+    }
 }

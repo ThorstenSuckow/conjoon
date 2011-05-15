@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Version.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Version.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Tool/Framework/Registry.php';
@@ -28,10 +28,10 @@ require_once 'Zend/Version.php';
  *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Framework_System_Provider_Version 
+class Zend_Tool_Framework_System_Provider_Version
     implements Zend_Tool_Framework_Provider_Interface, Zend_Tool_Framework_Registry_EnabledInterface
 {
 
@@ -39,7 +39,7 @@ class Zend_Tool_Framework_System_Provider_Version
      * @var Zend_Tool_Framework_Registry_Interface
      */
     protected $_registry = null;
-    
+
     const MODE_MAJOR = 'major';
     const MODE_MINOR = 'minor';
     const MODE_MINI  = 'mini';
@@ -51,12 +51,12 @@ class Zend_Tool_Framework_System_Provider_Version
         $this->_registry = $registry;
         return $this;
     }
-    
+
     /**
      * Show Action
      *
      * @param string $mode The mode switch can be one of: major, minor, or mini (default)
-     * @param bool $nameincluded
+     * @param bool $nameIncluded
      */
     public function show($mode = self::MODE_MINI, $nameIncluded = true)
     {

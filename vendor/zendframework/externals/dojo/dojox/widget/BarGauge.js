@@ -54,7 +54,7 @@ dojo.declare("dojox.widget.gauge.BarLineIndicator",[dojox.widget.gauge._Indicato
 				}
 				this.shapes = null;
 			}
-			if(this.text) {
+			if(this.text){
 				this._gauge.surface.rawNode.removeChild(this.text);
 				this.text = null;
 			}
@@ -101,7 +101,7 @@ dojo.declare("dojox.widget.gauge.BarLineIndicator",[dojox.widget.gauge._Indicato
 		if(dontAnimate){
 			this.shapes[0].applyTransform(dojox.gfx.matrix.translate(v-(this.shapes[0].matrix?this.shapes[0].matrix.dx:0),0));
 		}else{
-			var anim = new dojo._Animation({curve: [c, v], duration: this.duration, easing: this.easing});
+			var anim = new dojo.Animation({curve: [c, v], duration: this.duration, easing: this.easing});
 			dojo.connect(anim, "onAnimate", dojo.hitch(this, function(jump){
 				this.shapes[0].applyTransform(dojox.gfx.matrix.translate(jump-(this.shapes[0].matrix?this.shapes[0].matrix.dx:0),0));
 			}));
@@ -263,7 +263,7 @@ dojo.declare("dojox.widget.BarGauge",dojox.widget.gauge._Gauge,{
 		var x = event.clientX - pos.x;
 		var value = this._getValueForPosition(x);
 		if(this._rangeData){
-			for(var i=0; (i<this._rangeData.length) && !range; i++) {
+			for(var i=0; (i<this._rangeData.length) && !range; i++){
 				if((Number(this._rangeData[i].low) <= value) && (Number(this._rangeData[i].high) >= value)){
 					range = this._rangeData[i];
 				}

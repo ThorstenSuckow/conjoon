@@ -14,19 +14,22 @@
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /** Zend_Controller_Action */
 require_once 'Zend/Controller/Action.php';
 
+/** Zend_Wildfire_Plugin_FirePhp */
+require_once 'Zend/Wildfire/Plugin/FirePhp.php';
+
 /**
  * Tests for Zend_Log_Writer_Firebug
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ZendLogWriterFirebugController extends Zend_Controller_Action
@@ -58,6 +61,18 @@ class ZendLogWriterFirebugController extends Zend_Controller_Action
         $logger->table($table);
     }
 
+    public function testgroupedloggingAction()
+    {
+        $logger = Zend_Registry::get('logger');
+
+        Zend_Wildfire_Plugin_FirePhp::group("Collapsed Group", array('Collapsed' => true));
+            $logger->log('Message in collapsed group', Zend_Log::DEBUG);
+        Zend_Wildfire_Plugin_FirePhp::groupEnd();
+
+        Zend_Wildfire_Plugin_FirePhp::group("Expanded Group", array('Collapsed' => false));
+            $logger->log('Message in expanded group', Zend_Log::DEBUG);
+        Zend_Wildfire_Plugin_FirePhp::groupEnd();
+    }
 
     public function testerrorcontrollerAction()
     {

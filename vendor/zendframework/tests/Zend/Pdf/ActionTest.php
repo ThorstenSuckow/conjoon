@@ -15,15 +15,21 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: ActionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Pdf_Action */
 require_once 'Zend/Pdf/Action.php';
 
-/** Zend_Pdf_Action */
+/** Zend_Pdf_Action_GoTo */
+require_once 'Zend/Pdf/Action/GoTo.php';
+
+/** Zend_Pdf_Action_URI */
+require_once 'Zend/Pdf/Action/URI.php';
+
+/** Zend_Pdf_ElementFactory */
 require_once 'Zend/Pdf/ElementFactory.php';
 
 /** Zend_Pdf */
@@ -36,15 +42,12 @@ require_once 'Zend/Pdf/RecursivelyIteratableObjectsContainer.php';
 require_once 'Zend/Pdf/ElementFactory.php';
 
 
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 
 /**
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Pdf
  */
@@ -55,12 +58,12 @@ class Zend_Pdf_ActionTest extends PHPUnit_Framework_TestCase
         date_default_timezone_set('GMT');
     }
 
-	public function testLoad()
+    public function testLoad()
     {
-    	$dictionary = new Zend_Pdf_Element_Dictionary();
-    	$dictionary->Type = new Zend_Pdf_Element_Name('Action');
-    	$dictionary->S    = new Zend_Pdf_Element_Name('GoTo');
-    	$dictionary->D    = new Zend_Pdf_Element_String('SomeNamedDestination');
+        $dictionary = new Zend_Pdf_Element_Dictionary();
+        $dictionary->Type = new Zend_Pdf_Element_Name('Action');
+        $dictionary->S    = new Zend_Pdf_Element_Name('GoTo');
+        $dictionary->D    = new Zend_Pdf_Element_String('SomeNamedDestination');
 
         $action2Dictionary = new Zend_Pdf_Element_Dictionary();
         $action2Dictionary->Type = new Zend_Pdf_Element_Name('Action');
@@ -101,6 +104,7 @@ class Zend_Pdf_ActionTest extends PHPUnit_Framework_TestCase
         $leafAction = new Zend_Pdf_Element_Dictionary();
         $leafAction->Type = new Zend_Pdf_Element_Name('Action');
         $leafAction->S    = new Zend_Pdf_Element_Name('URI');
+        $leafAction->URI  = new Zend_Pdf_Element_Name('http://some_host/');
         $action2Dictionary->Next->items[] = $leafAction;
 
         $leafAction = new Zend_Pdf_Element_Dictionary();
@@ -169,7 +173,7 @@ class Zend_Pdf_ActionTest extends PHPUnit_Framework_TestCase
         $iterator = new RecursiveIteratorIterator(new Zend_Pdf_RecursivelyIteratableObjectsContainer(array($action)),
                                                   RecursiveIteratorIterator::SELF_FIRST);
         foreach ($iterator as $chainedAction) {
-        	$actionsCount++;
+            $actionsCount++;
         }
 
         $this->assertEquals(20, $actionsCount);
@@ -221,6 +225,7 @@ class Zend_Pdf_ActionTest extends PHPUnit_Framework_TestCase
         $leafAction = new Zend_Pdf_Element_Dictionary();
         $leafAction->Type = new Zend_Pdf_Element_Name('Action');
         $leafAction->S    = new Zend_Pdf_Element_Name('URI');
+        $leafAction->URI  = new Zend_Pdf_Element_Name('http://some_host/');
         $action2Dictionary->Next->items[] = $leafAction;
 
         $leafAction = new Zend_Pdf_Element_Dictionary();
@@ -316,23 +321,23 @@ class Zend_Pdf_ActionTest extends PHPUnit_Framework_TestCase
 
     public function testCreate()
     {
-    	$action1 = Zend_Pdf_Action_GoTo::create('SomeNamedDestination');
-    	$action1->next[] = Zend_Pdf_Action_GoTo::create('AnotherNamedDestination');
+        $action1 = Zend_Pdf_Action_GoTo::create('SomeNamedDestination');
+        $action1->next[] = Zend_Pdf_Action_GoTo::create('AnotherNamedDestination');
 
         $action1->dumpAction(new Zend_Pdf_ElementFactory(1));
 
-    	$this->assertEquals($action1->getResource()->toString(),
-    	                    '<</Type /Action /S /GoTo /D (SomeNamedDestination) /Next 1 0 R >>');
+        $this->assertEquals($action1->getResource()->toString(),
+                            '<</Type /Action /S /GoTo /D (SomeNamedDestination) /Next 1 0 R >>');
     }
 
     public function testCreate1()
     {
-    	$pdf = new Zend_Pdf();
-    	$page1 = $pdf->newPage(Zend_Pdf_Page::SIZE_A4);
-    	$page2 = $pdf->newPage(Zend_Pdf_Page::SIZE_A4);
+        $pdf = new Zend_Pdf();
+        $page1 = $pdf->newPage(Zend_Pdf_Page::SIZE_A4);
+        $page2 = $pdf->newPage(Zend_Pdf_Page::SIZE_A4);
 
-    	require_once 'Zend/Pdf/Destination/Fit.php';
-    	$destination = Zend_Pdf_Destination_Fit::create($page2);
+        require_once 'Zend/Pdf/Destination/Fit.php';
+        $destination = Zend_Pdf_Destination_Fit::create($page2);
 
         $action = Zend_Pdf_Action_GoTo::create($destination);
 
@@ -370,5 +375,81 @@ class Zend_Pdf_ActionTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($pdf->resolveDestination($action1->getDestination()) === $page2);
         $this->assertTrue($pdf->resolveDestination($action2->getDestination()) === null);
+    }
+
+    public function testActionURILoad1()
+    {
+        $dictionary = new Zend_Pdf_Element_Dictionary();
+        $dictionary->Type = new Zend_Pdf_Element_Name('Action');
+        $dictionary->S    = new Zend_Pdf_Element_Name('URI');
+        $dictionary->URI  = new Zend_Pdf_Element_String('http://somehost/');
+
+        $action = Zend_Pdf_Action::load($dictionary);
+
+        $this->assertTrue($action instanceof Zend_Pdf_Action_URI);
+    }
+
+    public function testActionURILoad2()
+    {
+        $dictionary = new Zend_Pdf_Element_Dictionary();
+        $dictionary->Type = new Zend_Pdf_Element_Name('Action');
+        $dictionary->S    = new Zend_Pdf_Element_Name('URI');
+
+
+        try {
+            $action = Zend_Pdf_Action::load($dictionary);
+            $this->fail("exception expected");
+        } catch (Zend_Pdf_Exception $e) {
+            $this->assertContains('URI action dictionary entry is required', $e->getMessage());
+        }
+    }
+
+    public function testActionURICreate()
+    {
+        $action = Zend_Pdf_Action_URI::create('http://somehost/');
+
+        $this->assertTrue($action instanceof Zend_Pdf_Action_URI);
+
+        $this->assertEquals($action->getResource()->toString(),
+                            '<</Type /Action /S /URI /URI (http://somehost/) >>');
+    }
+
+    public function testActionURIGettersSetters()
+    {
+        $action = Zend_Pdf_Action_URI::create('http://somehost/');
+
+        $this->assertEquals($action->getUri(), 'http://somehost/');
+
+        $action->setUri('http://another_host/');
+        $this->assertEquals($action->getUri(), 'http://another_host/');
+
+        $this->assertEquals($action->getIsMap(), false);
+
+        $action->setIsMap(true);
+        $this->assertEquals($action->getIsMap(), true);
+        $this->assertEquals($action->getResource()->toString(),
+                            '<</Type /Action /S /URI /URI (http://another_host/) /IsMap true >>');
+
+        $action->setIsMap(false);
+        $this->assertEquals($action->getIsMap(), false);
+        $this->assertEquals($action->getResource()->toString(),
+                            '<</Type /Action /S /URI /URI (http://another_host/) >>');
+    }
+
+    /**
+     * @group ZF-8462
+     */
+    public function testPhpVersionBug()
+    {
+        try {
+            $file = dirname(__FILE__) . '/_files/ZF-8462.pdf';
+            $pdf = Zend_Pdf::load($file);
+        } catch (Zend_Pdf_Exception $e) {
+            if (strpos($e->getMessage(), 'Cross-reference streams are not supported yet.') !== false) {
+                // Skip expected exception
+                return;
+            }
+            throw $e;
+        }
     }
 }

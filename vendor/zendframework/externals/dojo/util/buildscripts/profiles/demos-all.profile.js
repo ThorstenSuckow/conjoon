@@ -19,12 +19,6 @@ dependencies = {
 				"dijit.dijit-all"
 			]
 		},
-		{
-			name: "../dojox/off/offline.js",
-			dependencies: [
-				"dojox.off.offline"
-			]
-		},
 			
 		// Here are the various demos with promotion:
 		{
@@ -70,13 +64,6 @@ dependencies = {
 			]
 		},
 		{
-			// The Offline demos
-			name: "../demos/offline/src.js",
-			dependencies: [
-				"demos.offline.src"
-			]
-		},
-		{
 			// the Image Preview demo:
 			name: "../demos/cropper/src.js",
 			dependencies:[
@@ -101,6 +88,13 @@ dependencies = {
 			name: "../demos/faces/src.js",
 			dependencies:[
 				"demos.faces.src"
+			]
+		},
+		{
+			// the CSS3 animations demo
+			name: "../demos/css3/src.js",
+			dependencies:[
+				"demos.css3.src"
 			]
 		}
 	],

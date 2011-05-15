@@ -16,19 +16,21 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Simpy
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Simpy.php 16211 2009-06-21 19:23:55Z thomas $
+ * @version    $Id: Simpy.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-
+/**
+ * @see Zend_Http_Client
+ */
 require_once 'Zend/Http/Client.php';
 
 /**
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Simpy
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @link       http://www.simpy.com/doc/api/rest/
  */
@@ -42,9 +44,9 @@ class Zend_Service_Simpy
     protected $_baseUri = 'http://simpy.com/simpy/api/rest/';
 
     /**
-     * HTTP client for use in making web service calls 
+     * HTTP client for use in making web service calls
      *
-     * @var Zend_Http_Client 
+     * @var Zend_Http_Client
      */
     protected $_http;
 
@@ -57,16 +59,12 @@ class Zend_Service_Simpy
      */
     public function __construct($username, $password)
     {
-        /**
-         * @see Zend_Service_Rest
-         */
-        require_once 'Zend/Rest/Client.php';
         $this->_http = new Zend_Http_Client;
         $this->_http->setAuth($username, $password);
     }
 
     /**
-     * Returns the HTTP client currently in use by this class for REST API 
+     * Returns the HTTP client currently in use by this class for REST API
      * calls, intended mainly for testing.
      *
      * @return Zend_Http_Client

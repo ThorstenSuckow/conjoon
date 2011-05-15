@@ -465,9 +465,9 @@ dojo.connect(document,!dojo.isMozilla ? "onmousewheel" : 'DOMMouseScroll',onmous
 
 dojo.addOnLoad(function(){
 	// get scrollIntoView for good measure
-	// catch: dijit might not be loaded (yet?) so addonload
-	if(window["dijit"] && dijit.scrollIntoView){
-		dojo.connect(dijit,"scrollIntoView",function(node){
+	// catch: dojo.window might not be loaded (yet?) so addonload
+	if(dojo.window){
+		dojo.connect(dojo.window,"scrollIntoView",function(node){
 			addCommand("doh.robot.scrollIntoView",[getSelector(node)]);
 		});
 	}
@@ -475,7 +475,7 @@ dojo.addOnLoad(function(){
 
 // Get Dojo widget events too!
 dojo.connect(dojo, "connect", 
-	function(/*Widget*/ widget, /*String*/ event, /*Function*/ f){
+	function(/*dijit._Widget*/ widget, /*String*/ event, /*Function*/ f){
 		// kill recursion
 		// check for private variable _mine to make sure this isn't a recursive loop
 		if(widget && (!f || !f._mine)){

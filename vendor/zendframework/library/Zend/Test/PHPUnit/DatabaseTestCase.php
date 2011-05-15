@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DatabaseTestCase.php 16911 2009-07-21 11:54:03Z matthew $
+ * @version    $Id: DatabaseTestCase.php 23953 2011-05-03 05:47:39Z ralph $
  */
 
 /**
@@ -57,7 +57,7 @@ require_once "Zend/Test/PHPUnit/Db/DataSet/DbRowset.php";
  * @category   Zend
  * @package    Zend_Test
  * @subpackage PHPUnit
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Test_PHPUnit_DatabaseTestCase extends PHPUnit_Extensions_Database_TestCase
@@ -76,7 +76,7 @@ abstract class Zend_Test_PHPUnit_DatabaseTestCase extends PHPUnit_Extensions_Dat
 
     /**
      * Convenience function to get access to the database connection.
-     * 
+     *
      * @return Zend_Db_Adapter_Abstract
      */
     protected function getAdapter()

@@ -14,7 +14,7 @@
 # to license@zend.com so we can send you a copy immediately.
 #
 # Zend
-# Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+# Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
 # http://framework.zend.com/license/new-bsd     New BSD License
 #############################################################################
 
@@ -41,4 +41,5 @@ else
     PHP_DIR="$(dirname "$SELF_LINK")"
 fi
 
-"$PHP_BIN" -d safe_mode=Off -f "$PHP_DIR/zf.php" -- $@
+"$PHP_BIN" -d safe_mode=Off -f "$PHP_DIR/zf.php" -- "$@"
+

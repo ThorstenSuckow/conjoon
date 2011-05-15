@@ -15,12 +15,11 @@
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: LastmodTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Validate/Sitemap/Lastmod.php';
 
 /**
@@ -29,7 +28,7 @@ require_once 'Zend/Validate/Sitemap/Lastmod.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -69,6 +68,7 @@ class Zend_Validate_Sitemap_LastmodTest extends PHPUnit_Framework_TestCase
             '1997-05-11T18:50:09+00:00',
             '1998-06-11T01:00:09-02:00',
             '1999-11-11T22:23:52+02:00',
+            '1999-11-11T22:23+02:00',
             '2000-06-11',
             '2001-04-14',
             '2003-01-13',
@@ -93,11 +93,14 @@ class Zend_Validate_Sitemap_LastmodTest extends PHPUnit_Framework_TestCase
             '1995-05-11T18:60:09-08:45',
             '1996-05-11T18:50:09+25:00',
             '2002-13-11',
-            '2004-00-01'
+            '2004-00-01',
+            '2006-01-01\n'
         );
 
         foreach ($values as $value) {
             $this->assertSame(false, $this->_validator->isValid($value));
+            $messages = $this->_validator->getMessages();
+            $this->assertContains('is no valid', current($messages));
         }
     }
 
@@ -113,6 +116,8 @@ class Zend_Validate_Sitemap_LastmodTest extends PHPUnit_Framework_TestCase
 
         foreach ($values as $value) {
             $this->assertSame(false, $this->_validator->isValid($value));
+            $messages = $this->_validator->getMessages();
+            $this->assertContains('String expected', current($messages));
         }
     }
 }

@@ -15,19 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormLabelTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FormLabelTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_FormLabelTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_FormLabelTest::main");
 }
-
-require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/TestHelper.php';
-require_once "PHPUnit/Framework/TestCase.php";
-require_once "PHPUnit/Framework/TestSuite.php";
 
 require_once 'Zend/View.php';
 require_once 'Zend/View/Helper/FormLabel.php';
@@ -39,7 +35,7 @@ require_once 'Zend/View/Helper/FormLabel.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -54,7 +50,6 @@ class Zend_View_Helper_FormLabelTest extends PHPUnit_Framework_TestCase
      */
     public static function main()
     {
-        require_once "PHPUnit/TextUI/TestRunner.php";
 
         $suite  = new PHPUnit_Framework_TestSuite("Zend_View_Helper_FormLabelTest");
         $result = PHPUnit_TextUI_TestRunner::run($suite);
@@ -114,9 +109,9 @@ class Zend_View_Helper_FormLabelTest extends PHPUnit_Framework_TestCase
         $label = $this->helper->formLabel('name', 'value', array('id' => 'id'));
         $this->assertEquals('<label for="id">value</label>', $label);
     }
-    
+
     /**
-     * ZF-2473
+     * @group ZF-2473
      */
     public function testCanDisableEscapingLabelValue()
     {
@@ -126,6 +121,24 @@ class Zend_View_Helper_FormLabelTest extends PHPUnit_Framework_TestCase
         $this->assertContains('<b>Label This!</b>', $label);
         $label = $this->helper->formLabel(array('name' => 'foo', 'value' => '<b>Label This!</b>', 'attribs' => array('escape' => false)));
         $this->assertContains('<b>Label This!</b>', $label);
+    }
+
+    /**
+     * @group ZF-6426
+     */
+    public function testHelperShouldAllowSuppressionOfForAttribute()
+    {
+        $label = $this->helper->formLabel('foo', 'bar', array('disableFor' => true));
+        $this->assertNotContains('for="foo"', $label);
+    }
+
+    /**
+     * @group ZF-8265
+     */
+    public function testShouldNotRenderDisableForAttributeIfForIsSuppressed()
+    {
+        $label = $this->helper->formLabel('foo', 'bar', array('disableFor' => true));
+        $this->assertNotContains('disableFor=', $label, 'Output contains disableFor attribute!');
     }
 }
 

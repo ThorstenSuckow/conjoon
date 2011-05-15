@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -40,7 +40,7 @@ class Zend_Gdata_RecurrenceTest extends PHPUnit_Framework_TestCase
                 true);
         $this->recurrence = new Zend_Gdata_Extension_Recurrence();
     }
-    
+
     public function testEmptyRecurrenceShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->recurrence->extensionElements));
         $this->assertTrue(count($this->recurrence->extensionElements) == 0);
@@ -62,14 +62,14 @@ class Zend_Gdata_RecurrenceTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->recurrence->extensionAttributes));
         $this->assertTrue(count($this->recurrence->extensionAttributes) == 0);
     }
-    
+
     public function testNormalRecurrenceShouldHaveNoExtensionElements() {
         $this->recurrence->text = "Foo";
-        
+
         $this->assertEquals("Foo", $this->recurrence->text);
-                
+
         $this->assertEquals(0, count($this->recurrence->extensionElements));
-        $newRecurrence = new Zend_Gdata_Extension_Recurrence(); 
+        $newRecurrence = new Zend_Gdata_Extension_Recurrence();
         $newRecurrence->transferFromXML($this->recurrence->saveXML());
         $this->assertEquals(0, count($newRecurrence->extensionElements));
         $newRecurrence->extensionElements = array(

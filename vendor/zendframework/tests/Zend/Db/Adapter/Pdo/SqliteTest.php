@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SqliteTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: SqliteTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,14 +27,11 @@
 require_once 'Zend/Db/Adapter/Pdo/TestCommon.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
-
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Adapter
@@ -189,8 +186,7 @@ class Zend_Db_Adapter_Pdo_SqliteTest extends Zend_Db_Adapter_Pdo_TestCommon
     }
 
     /**
-     * @return void
-     * @see    http://framework.zend.com/issues/browse/ZF-2293
+     * @group ZF-2293
      */
     public function testAdapterSupportsLengthInTableMetadataForVarcharFields()
     {

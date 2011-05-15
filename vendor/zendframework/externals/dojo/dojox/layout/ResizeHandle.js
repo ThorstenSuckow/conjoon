@@ -4,6 +4,7 @@ dojo.experimental("dojox.layout.ResizeHandle");
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated"); 
 dojo.require("dojo.fx"); 
+dojo.require("dojo.window");
 
 dojo.declare("dojox.layout.ResizeHandle",
 	[dijit._Widget, dijit._Templated],
@@ -84,6 +85,14 @@ dojo.declare("dojox.layout.ResizeHandle",
 	//		operation. Animated resizing is not affected by this setting.
 	intermediateChanges: false,
 
+	// startTopic: String
+	//		The name of the topic this resizehandle publishes when resize is starting
+	startTopic: "/dojo/resize/start",
+	
+	// endTopic: String
+	//		The name of the topic this resizehandle publishes when resize is complete
+	endTopic:"/dojo/resize/stop",
+
 	templateString: '<div dojoAttachPoint="resizeHandle" class="dojoxResizeHandle"><div></div></div>',
 
 	postCreate: function(){
@@ -137,6 +146,7 @@ dojo.declare("dojox.layout.ResizeHandle",
 		
 		if(this._isSizing){ return false; }
 
+		dojo.publish(this.startTopic, [ this ]);
 		this.targetWidget = dijit.byId(this.targetId);
 
 		this.targetDomNode = this.targetWidget ? this.targetWidget.domNode : dojo.byId(this.targetId);
@@ -144,7 +154,9 @@ dojo.declare("dojox.layout.ResizeHandle",
 		if(!this.targetDomNode){ return false; }
 
 		if(!this.activeResize){
-			var c = dojo.coords(this.targetDomNode, true);
+			var c = dojo.position(this.targetDomNode, true);
+			console.log(c);
+			console.log(dojo.window.getBox());
 			this._resizeHelper.resize({l: c.x, t: c.y, w: c.w, h: c.h});
 			this._resizeHelper.show();
 		}
@@ -202,7 +214,7 @@ dojo.declare("dojox.layout.ResizeHandle",
 		}
 		this._activeResizeLastEvent = e; 
 
-		var dx = this.startPoint.x - e.clientX,
+		var dx = (this.isLeftToRight()? this.startPoint.x - e.clientX: e.clientX - this.startPoint.x),
 			dy = this.startPoint.y - e.clientY,
 			newW = this.startSize.w - (this._resizeX ? dx : 0),
 			newH = this.startSize.h - (this._resizeY ? dy : 0)
@@ -261,14 +273,14 @@ dojo.declare("dojox.layout.ResizeHandle",
 					dojo.animateProperty({
 						node: this.targetDomNode,
 						properties: { 
-							width: { start: this.startSize.w, end: tmp.w, unit:'px' } 
+							width: { start: this.startSize.w, end: tmp.w } 
 						},	
 						duration: this.animateDuration
 					}),
 					dojo.animateProperty({
 						node: this.targetDomNode,
 						properties: { 
-							height: { start: this.startSize.h, end: tmp.h, unit:'px' }
+							height: { start: this.startSize.h, end: tmp.h }
 						},
 						duration: this.animateDuration
 					})
@@ -277,7 +289,7 @@ dojo.declare("dojox.layout.ResizeHandle",
 			}else{
 				dojo.style(this.targetDomNode,{
 					width: tmp.w + "px",
-					height: tmp.h + "px"	
+					height: tmp.h + "px"
 				});
 			}
 		}
@@ -289,9 +301,13 @@ dojo.declare("dojox.layout.ResizeHandle",
 	_endSizing: function(/*Event*/ e){
 		// summary: disconnect listenrs and cleanup sizing
 		dojo.forEach(this._pconnects, dojo.disconnect);
+		var pub = dojo.partial(dojo.publish, this.endTopic, [ this ]);
 		if(!this.activeResize){
 			this._resizeHelper.hide();
 			this._changeSizing(e);
+			setTimeout(pub, this.animateDuration + 15);
+		}else{
+			pub();
 		}
 		this._isSizing = false;
 		this.onResize(e);
@@ -316,7 +332,7 @@ dojo.declare("dojox.layout._ResizeHelper",
 		dojo.fadeIn({ 
 			node: this.domNode, 
 			duration: 120, 
-			beforeBegin: dojo.partial(dojo.style, this.domNode, "display", "")
+			beforeBegin: function(n){ dojo.style(n, "display", "") }
 		}).play();
 	},
 	
@@ -325,13 +341,13 @@ dojo.declare("dojox.layout._ResizeHelper",
 		dojo.fadeOut({ 
 			node: this.domNode, 
 			duration: 250,
-			onEnd: dojo.partial(dojo.style, this.domNode, "display", "none")
+			onEnd: function(n){ dojo.style(n, "display", "none") }
 		}).play();
 	},
 	
 	resize: function(/* Object */dim){
 		// summary: size the widget and place accordingly
-		
+
 		// FIXME: this is off when padding present
 		dojo.marginBox(this.domNode, dim);
 	}

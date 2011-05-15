@@ -8,6 +8,8 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.URL;
 import java.awt.datatransfer.*;
+import javax.swing.JOptionPane;
+import javax.swing.JDialog;
 
 public final class DOHRobot extends Applet{
 	// order of execution:
@@ -52,6 +54,7 @@ public final class DOHRobot extends Applet{
 	private boolean ctrl = false;
 	private boolean alt = false;
 	private boolean meta = false;
+	private boolean numlockDisabled = false;
 	// shake hands with JavaScript the first keypess to wake up FF2/Mac
 	private boolean jsready = false;
 	private String keystring = "";
@@ -60,6 +63,9 @@ public final class DOHRobot extends Applet{
 	// setting firebugIgnore to true ensures Firebug doesn't break the applet
 	public boolean firebugIgnore = true;
 
+	private static String os=System.getProperty("os.name").toUpperCase();
+	private static Toolkit toolkit=Toolkit.getDefaultToolkit();
+	
 	private SecurityManager securitymanager;
 	private double key = -1;
 
@@ -76,6 +82,7 @@ public final class DOHRobot extends Applet{
 	// If this is different from the real one, something's up.
 	private int lastMouseX;
 	private int lastMouseY;
+	public int dir=1;
 
 	// save a pointer to doh.robot for fast access
 	JSObject dohrobot = null;
@@ -120,7 +127,11 @@ public final class DOHRobot extends Applet{
 									securitymanager.checkTopLevelWindow(null);
 									// xdomain
 									if(charMap == null){
-										if(!confirm("DOH has detected that the current Web page is attempting to access DOH, but belongs to a different domain than the one you agreed to let DOH automate. If you did not intend to start a new DOH test by visiting this Web page, press Cancel now and leave the Web page. Otherwise, press OK to trust this domain to automate DOH tests.")){
+										if(!confirm("DOH has detected that the current Web page is attempting to access DOH,\n"+
+													"but belongs to a different domain than the one you agreed to let DOH automate.\n"+
+													"If you did not intend to start a new DOH test by visiting this Web page,\n"+
+													"press Cancel now and leave the Web page.\n"+
+													"Otherwise, press OK to trust this domain to automate DOH tests.")){
 											stop();
 											return null;
 										}
@@ -289,11 +300,14 @@ public final class DOHRobot extends Applet{
 	}
 
 	private boolean confirm(final String s){
-		return ((Boolean) AccessController.doPrivileged(new PrivilegedAction(){
-			public Object run(){
-				return ((Boolean) window.eval("top.confirm(\"" + s + "\");"));
-			}
-		})).booleanValue();
+		// show a Java confirm dialog.
+		// Mac seems to lock up when showing a JS confirm from Java.
+		//return JOptionPane.showConfirmDialog(this, s, "doh.robot", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION);
+		JOptionPane pane = new JOptionPane(s, JOptionPane.DEFAULT_OPTION, JOptionPane.OK_CANCEL_OPTION);
+		JDialog dialog = pane.createDialog(this, "doh.robot");
+		dialog.setLocationRelativeTo(this);
+		dialog.show();
+		return ((Integer)pane.getValue()).intValue()==JOptionPane.OK_OPTION;
 	}
 
 	// mouse discovery code
@@ -480,9 +494,38 @@ public final class DOHRobot extends Applet{
 					return;
 				Thread.yield();
 				// calibrate the mouse wheel now that textbox is focused
-				int dir=1;
-				if(System.getProperty("os.name").toUpperCase().indexOf("MAC") != -1){
-					dir=-1;
+				dir=1;
+				// fixed in 10.6.2 update 1 and 10.5.8 update 6:
+				// http://developer.apple.com/mac/library/releasenotes/CrossPlatform/JavaSnowLeopardUpdate1LeopardUpdate6RN/ResolvedIssues/ResolvedIssues.html
+				// Radar #6193836
+				if(os.indexOf("MAC") != -1){
+					// see if the version is greater than 10.5.8
+					String[] sfixedVersion = "10.5.8".split("\\.");
+					int[] fixedVersion = new int[3];
+					String[] sthisVersion = System.getProperty("os.version").split("\\.");
+					int[] thisVersion = new int[3];
+					for(int i=0; i<3; i++){
+						fixedVersion[i]=Integer.valueOf(sfixedVersion[i]).intValue();
+						thisVersion[i]=Integer.valueOf(sthisVersion[i]).intValue();
+					};
+					// 10.5.8, the fix level, should count as fixed
+					// on the other hand, 10.6.0 and 10.6.1 should not
+					boolean isFixed = !System.getProperty("os.version").equals("10.6.0")&&!System.getProperty("os.version").equals("10.6.1");
+					for(int i=0; i<fixedVersion.length&&isFixed; i++){
+						if(thisVersion[i]>fixedVersion[i]){
+							// definitely newer at this point
+							isFixed = true;
+							break;
+						}else if(thisVersion[i]<fixedVersion[i]){
+							// definitely older
+							isFixed = false;
+							break;
+						}
+						// equal; continue to next dot
+
+					}
+					// flip dir if not fixed
+					dir=isFixed?dir:-dir;
 				}
 				robot.mouseWheel(dir);
 				try{
@@ -939,6 +982,8 @@ public final class DOHRobot extends Applet{
 				case 47:
 					keyboardCode = KeyEvent.VK_HELP;
 					break;
+				default:
+					keyboardCode = keyCode;
 
 			}
 		}
@@ -956,10 +1001,30 @@ public final class DOHRobot extends Applet{
 							|| (ctrl && alt && keyboardCode == KeyEvent.VK_DELETE)){
 			log("You are not allowed to press this key combination!");
 			return true;
+		// bugged keys cases go next
 		}else{
 			log("Safe to press.");
 			return false;
 		}
+	}
+
+	private boolean disableNumlock(int vk, boolean shift){
+		boolean result = !numlockDisabled&&shift
+			&&os.indexOf("WINDOWS")!=-1
+			&&toolkit.getLockingKeyState(KeyEvent.VK_NUM_LOCK) // only works on Windows
+			&&(
+				// any numpad buttons are suspect
+				vk==KeyEvent.VK_LEFT
+				||vk==KeyEvent.VK_UP
+				||vk==KeyEvent.VK_RIGHT
+				||vk==KeyEvent.VK_DOWN
+				||vk==KeyEvent.VK_HOME
+				||vk==KeyEvent.VK_END
+				||vk==KeyEvent.VK_PAGE_UP
+				||vk==KeyEvent.VK_PAGE_DOWN
+		);
+		log("disable numlock: "+result);
+		return result;
 	}
 
 	private void _typeKey(final int cCode, final int kCode, final boolean a,
@@ -988,6 +1053,9 @@ public final class DOHRobot extends Applet{
 						keyboardCode = event.getKeyCode();
 					}
 
+					// Java bug: on Windows, shift+arrow key unpresses shift when numlock is on.
+					// See: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4838497
+					boolean disableNumlock=disableNumlock(keyboardCode,shift||applet().shift);
 					// run through exemption list
 					if(!isUnsafe(keyboardCode)){
 						if(shift){
@@ -1009,6 +1077,16 @@ public final class DOHRobot extends Applet{
 						if(meta){
 							log("Pressing meta");
 							robot.keyPress(KeyEvent.VK_META);
+						}
+						if(disableNumlock){
+							robot.keyPress(KeyEvent.VK_NUM_LOCK);
+							robot.keyRelease(KeyEvent.VK_NUM_LOCK);
+							numlockDisabled=true;
+						}else if(numlockDisabled&&!(applet().shift||shift)){
+							// only turn it back on when the user is finished pressing shifted arrow keys
+							robot.keyPress(KeyEvent.VK_NUM_LOCK);
+							robot.keyRelease(KeyEvent.VK_NUM_LOCK);
+							numlockDisabled=false;
 						}
 						if(keyboardCode != KeyEvent.VK_SHIFT
 								&& keyboardCode != KeyEvent.VK_ALT
@@ -1164,6 +1242,10 @@ public final class DOHRobot extends Applet{
 						altgraph=true;
 					}else if(vkCode==KeyEvent.VK_META){
 						meta=true;
+					}else if(disableNumlock(vkCode,shift)){
+						robot.keyPress(KeyEvent.VK_NUM_LOCK);
+						robot.keyRelease(KeyEvent.VK_NUM_LOCK);
+						numlockDisabled=true;
 					}
 				}
 				if(!isUnsafe(vkCode)){
@@ -1222,6 +1304,11 @@ public final class DOHRobot extends Applet{
 						ctrl=false;
 					}else if(vkCode==KeyEvent.VK_SHIFT){
 						shift=false;
+						if(numlockDisabled){
+							robot.keyPress(KeyEvent.VK_NUM_LOCK);
+							robot.keyRelease(KeyEvent.VK_NUM_LOCK);
+							numlockDisabled=false;
+						}
 					}else if(vkCode==KeyEvent.VK_ALT_GRAPH){
 						altgraph=false;
 					}else if(vkCode==KeyEvent.VK_META){
@@ -1360,22 +1447,45 @@ public final class DOHRobot extends Applet{
 					}
 
 				}
-				int delay = (int)Math.ceil(Math.log(duration+1));
-				robot.setAutoDelay(delay);
-				robot.mouseMove(x1, y1);
-				int d = duration/delay-2; // - start,end
-				for (int t = 0; t <= d; t++){
+				// manual precision
+				robot.setAutoWaitForIdle(false);
+				int intermediateSteps = duration==1?0: // duration==1 -> user wants to jump the mouse
+					((((int)Math.ceil(Math.log(duration+1)))|1)); // |1 to ensure an odd # of intermediate steps for sensible interpolation
+				// assumption: intermediateSteps will always be >=0
+				int delay = duration/(intermediateSteps+1); // +1 to include last move
+				// First mouse movement fires at t=0 to official last know position of the mouse.
+				robot.mouseMove(lastMouseX, lastMouseY);
+				long date,date2;
+				date=new Date().getTime();
+				// Shift lastMouseX/Y in the direction of the movement for interpolating over the smaller interval.
+				lastMouseX=x1;
+				lastMouseY=y1;
+				// Now interpolate mouse movement from (lastMouseX=x1,lastMouseY=y1) to (x2,y2)
+				// precondition: the amount of time that has passed since the first mousemove is 0*delay.
+				// invariant: each time you end an iteration, after you increment t, the amount of time that has passed is t*delay
+				for (int t = 0; t < intermediateSteps; t++){
+					Thread.sleep(delay);
 					x1 = (int) easeInOutQuad((double) t, (double) lastMouseX,
-							(double) x2 - lastMouseX, (double) d);
+							(double) x2 - lastMouseX, (double) intermediateSteps-1);
 					y1 = (int) easeInOutQuad((double) t, (double) lastMouseY,
-							(double) y2 - lastMouseY, (double) d);
+							(double) y2 - lastMouseY, (double) intermediateSteps-1);
+					//log("("+x1+","+y1+")");
 					robot.mouseMove(x1, y1);
 				}
+				// postconditions:
+				//	t=intermediateSteps
+				// 	intermediateSteps*delay time has passed,
+				// 	time remaining = duration-intermediateSteps*delay = (steps+1)*delay-intermediateSteps*delay = delay
+				// You theoretically need 1 more delay for the whole duration to have passed.
+				// In practice, you want less than that due to roundoff errors in Java's clock granularity.
+				Thread.sleep(delay);
 				robot.mouseMove(x, y);
+				robot.setAutoWaitForIdle(true);
+				date2=new Date().getTime();
+				//log("mouseMove statistics: duration= "+duration+" steps="+intermediateSteps+" delay="+delay);
+				//log("mouseMove discrepency: "+(date2-date-duration)+"ms");
 				lastMouseX = x;
 				lastMouseY = y;
-				robot.waitForIdle();
-				robot.setAutoDelay(1);
 			}catch(Exception e){
 				log("Bad parameters passed to mouseMove");
 				e.printStackTrace();
@@ -1407,11 +1517,6 @@ public final class DOHRobot extends Applet{
 				log("> run MouseWheelThread " + amount);
 				while(!hasFocus()){
 					Thread.sleep(1000);
-				}
-				int dir = 1;
-				if(System.getProperty("os.name").toUpperCase().indexOf("MAC") != -1){
-					// yay for Apple
-					dir = -1;
 				}
 				robot.setAutoDelay(Math.max(duration/Math.abs(amount),1));
 				for(int i=0; i<Math.abs(amount); i++){
@@ -1510,7 +1615,7 @@ public final class DOHRobot extends Applet{
 		});
 	}
 	private static java.awt.datatransfer.Clipboard getSystemClipboard() {
-		return Toolkit.getDefaultToolkit().getSystemClipboard();
+		return toolkit.getSystemClipboard();
 	}
 	
 	private static class TextTransferable implements Transferable, ClipboardOwner {

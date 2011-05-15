@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Calendar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata/Calendar.php';
  * @category   Zend
  * @package    Zend_Gdata_Calendar
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Calendar
@@ -41,7 +41,7 @@ class Zend_Gdata_Calendar_TimezoneTest extends PHPUnit_Framework_TestCase
                 true);
         $this->timezone = new Zend_Gdata_Calendar_Extension_Timezone();
     }
-      
+
     public function testEmptyTimezoneShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->timezone->extensionElements));
         $this->assertTrue(count($this->timezone->extensionElements) == 0);
@@ -63,12 +63,12 @@ class Zend_Gdata_Calendar_TimezoneTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->timezone->extensionAttributes));
         $this->assertTrue(count($this->timezone->extensionAttributes) == 0);
     }
-    
+
     public function testNormalTimezoneShouldHaveNoExtensionElements() {
         $this->timezone->value = "America/Chicago";
         $this->assertEquals($this->timezone->value, "America/Chicago");
         $this->assertEquals(count($this->timezone->extensionElements), 0);
-        $newTimezone = new Zend_Gdata_Calendar_Extension_Timezone(); 
+        $newTimezone = new Zend_Gdata_Calendar_Extension_Timezone();
         $newTimezone->transferFromXML($this->timezone->saveXML());
         $this->assertEquals(count($newTimezone->extensionElements), 0);
         $newTimezone->extensionElements = array(

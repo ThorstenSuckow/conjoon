@@ -155,18 +155,19 @@ dojo.extend(dojox.gfx.Shape, {
 			if(da in dojox.gfx.silverlight.dasharray){ da = dojox.gfx.silverlight.dasharray[da]; }
 			if(da instanceof Array){
 				da = dojo.clone(da);
+				var i;
 				/*
 				for(var i = 0; i < da.length; ++i){
 					da[i] *= s.width;
 				}
 				*/
 				if(s.cap != "butt"){
-					for(var i = 0; i < da.length; i += 2){
+					for(i = 0; i < da.length; i += 2){
 						//da[i] -= s.width;
 						--da[i]
 						if(da[i] < 1){ da[i] = 1; }
 					}
-					for(var i = 1; i < da.length; i += 2){
+					for(i = 1; i < da.length; i += 2){
 						//da[i] += s.width;
 						++da[i];
 					}
@@ -341,14 +342,11 @@ dojo.declare("dojox.gfx.Polyline", dojox.gfx.shape.Polyline, {
 		}else{
 			this.shape = dojox.gfx.makeParameters(this.shape, points);
 		}
-		this.box = null;
+		this.bbox = null;
+		this._normalizePoints();
 		var p = this.shape.points, rp = [];
 		for(var i = 0; i < p.length; ++i){
-			if(typeof p[i] == "number"){
-				rp.push(p[i], p[++i]);
-			}else{
-				rp.push(p[i].x, p[i].y);
-			}
+			rp.push(p[i].x, p[i].y);
 		}
 		this.rawNode.points = rp.join(",");
 		return this;	// self
@@ -528,6 +526,18 @@ dojox.gfx.createSurface = function(parentNode, width, height){
 	// parentNode: Node: a parent node
 	// width: String: width of surface, e.g., "100px"
 	// height: String: height of surface, e.g., "100px"
+
+	if(!width && !height){
+		var pos = d.position(parentNode);
+		width  = width  || pos.w;
+		height = height || pos.h;
+	}
+	if(typeof width == "number"){
+		width = width + "px";
+	}
+	if(typeof height == "number"){
+		height = height + "px";
+	}
 
 	var s = new dojox.gfx.Surface();
 	parentNode = dojo.byId(parentNode);
@@ -721,7 +731,7 @@ dojo.extend(dojox.gfx.Surface, dojox.gfx.shape.Creator);
 				ev.y = ev.offsetY = ev.layerY = p.y;
 				// calculate clientX and clientY
 				var parent = surfaces[s.getHost().content.root.name];
-				var t = dojo._abs(parent);
+				var t = dojo.position(parent);
 				ev.clientX = t.x + p.x;
 				ev.clientY = t.y + p.y;
 			}catch(e){

@@ -15,8 +15,8 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Chain.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Chain.php 23775 2011-03-01 17:25:24Z ralph $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -28,7 +28,7 @@ require_once 'Zend/Controller/Router/Route/Abstract.php';
  *
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Abstract
@@ -46,10 +46,10 @@ class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Ab
         $defs = ($config->defaults instanceof Zend_Config) ? $config->defaults->toArray() : array();
         return new self($config->route, $defs);
     }
-    
+
     /**
      * Add a route to this chain
-     * 
+     *
      * @param  Zend_Controller_Router_Route_Abstract $route
      * @param  string                                $separator
      * @return Zend_Controller_Router_Route_Chain
@@ -77,31 +77,35 @@ class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Ab
         $values  = array();
 
         foreach ($this->_routes as $key => $route) {
-            if ($key > 0 && $matchedPath !== null) {
+            if ($key > 0
+                && $matchedPath !== null
+                && $subPath !== ''
+                && $subPath !== false
+            ) {
                 $separator = substr($subPath, 0, strlen($this->_separators[$key]));
-                
+
                 if ($separator !== $this->_separators[$key]) {
-                    return false;                
+                    return false;
                 }
-                
+
                 $subPath = substr($subPath, strlen($separator));
             }
-            
-            // TODO: Should be an interface method. Hack for 1.0 BC  
+
+            // TODO: Should be an interface method. Hack for 1.0 BC
             if (!method_exists($route, 'getVersion') || $route->getVersion() == 1) {
                 $match = $subPath;
             } else {
                 $request->setPathInfo($subPath);
-                $match = $request;                
+                $match = $request;
             }
-            
+
             $res = $route->match($match, true);
             if ($res === false) {
                 return false;
             }
-            
+
             $matchedPath = $route->getMatchedPath();
-            
+
             if ($matchedPath !== null) {
                 $subPath     = substr($subPath, strlen($matchedPath));
                 $separator   = substr($subPath, 0, strlen($this->_separators[$key]));
@@ -109,9 +113,9 @@ class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Ab
 
             $values = $res + $values;
         }
-        
+
         $request->setPathInfo($path);
-        
+
         if ($subPath !== '' && $subPath !== false) {
             return false;
         }
@@ -129,17 +133,17 @@ class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Ab
     {
         $value     = '';
         $numRoutes = count($this->_routes);
-        
+
         foreach ($this->_routes as $key => $route) {
             if ($key > 0) {
                 $value .= $this->_separators[$key];
             }
-            
+
             $value .= $route->assemble($data, $reset, $encode, (($numRoutes - 1) > $key));
-            
+
             if (method_exists($route, 'getVariables')) {
                 $variables = $route->getVariables();
-                
+
                 foreach ($variables as $variable) {
                     $data[$variable] = null;
                 }
@@ -151,7 +155,7 @@ class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Ab
 
     /**
      * Set the request object for this and the child routes
-     * 
+     *
      * @param  Zend_Controller_Request_Abstract|null $request
      * @return void
      */

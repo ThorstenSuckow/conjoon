@@ -15,52 +15,24 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Db_AllTests::main');
 }
 
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
-
-/**
- * PHPUnit_Framework_TestSuite
- */
-require_once 'PHPUnit/Framework/TestSuite.php';
-
-/**
- * PHPUnit_TextUI_TestRunner
- */
-require_once 'PHPUnit/TextUI/TestRunner.php';
-
-/**
- * @see Zend_Loader
- */
 require_once 'Zend/Loader.php';
-
-/**
- * @see Zend_Db_SkipTests
- */
 require_once 'Zend/Db/SkipTests.php';
-
-/**
- * @see Zend_Db_Profiler_AllTests
- */
 require_once 'Zend/Db/Profiler/AllTests.php';
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  */
@@ -124,7 +96,7 @@ class Zend_Db_AllTests
             'Oracle' => 'oci8',
             'Db2'    => 'ibm_db2',
             'Mysqli' => 'mysqli',
-			'Sqlsrv' => 'sqlsrv',
+            'Sqlsrv' => 'sqlsrv',
             /**
              * @todo  'Odbc'
              */

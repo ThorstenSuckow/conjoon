@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StaticTest.php 18347 2009-09-21 16:51:34Z ralph $
+ * @version    $Id: StaticTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,14 +27,11 @@
 require_once 'Zend/Db/Select/TestCommon.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
-
-
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Table
@@ -662,19 +659,19 @@ class Zend_Db_Table_Select_StaticTest extends Zend_Db_Select_TestCommon
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "bug_id" AS "id", "bug_status" AS "name" FROM "zfbugs" UNION SELECT "product_id" AS "id", "product_name" AS "name" FROM "zfproducts" ORDER BY "id" ASC', $sql);
     }
-    
+
     public function testSelectOrderByPosition()
     {
-        $select = $this->_selectOrderByPosition(); 
-        
+        $select = $this->_selectOrderByPosition();
+
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY 2 ASC', $sql);
     }
 
     public function testSelectOrderByPositionAsc()
     {
-        $select = $this->_selectOrderByPositionAsc(); 
-        
+        $select = $this->_selectOrderByPositionAsc();
+
         $sql = preg_replace('/\\s+/', ' ', $select->__toString());
         $this->assertEquals('SELECT "zfproducts".* FROM "zfproducts" ORDER BY 2 ASC', $sql);
     }

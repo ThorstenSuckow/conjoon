@@ -17,18 +17,20 @@ dojo.declare("dijit._Container",
 		//		wouldn't make sense.
 
 		// isContainer: [protected] Boolean
-		//		Just a flag indicating that this widget descends from dijit._Container
+		//		Indicates that this widget acts as a "parent" to the descendant widgets.
+		//		When the parent is started it will call startup() on the child widgets.
+		//		See also `isLayoutContainer`.
 		isContainer: true,
 
 		buildRendering: function(){
 			this.inherited(arguments);
 			if(!this.containerNode){
 				// all widgets with descendants must set containerNode
-   				this.containerNode = this.domNode;
+	 				this.containerNode = this.domNode;
 			}
 		},
 
-		addChild: function(/*Widget*/ widget, /*int?*/ insertIndex){
+		addChild: function(/*dijit._Widget*/ widget, /*int?*/ insertIndex){
 			// summary:
 			//		Makes the given widget a child of this widget.
 			// description:
@@ -59,51 +61,23 @@ dojo.declare("dijit._Container",
 			//		Removes the passed widget instance from this widget but does
 			//		not destroy it.  You can also pass in an integer indicating
 			//		the index within the container to remove
+
 			if(typeof widget == "number" && widget > 0){
 				widget = this.getChildren()[widget];
 			}
-			// If we cannot find the widget, just return
-			if(!widget || !widget.domNode){ return; }
-			
-			var node = widget.domNode;
-			node.parentNode.removeChild(node);	// detach but don't destroy
-		},
 
-		_nextElement: function(node){
-			// summary:
-			//      Find the next (non-text, non-comment etc) node
-			// tags:
-			//      private
-			do{
-				node = node.nextSibling;
-			}while(node && node.nodeType != 1);
-			return node;
-		},
-
-		_firstElement: function(node){
-			// summary:
-			//      Find the first (non-text, non-comment etc) node
-			// tags:
-			//      private
-			node = node.firstChild;
-			if(node && node.nodeType != 1){
-				node = this._nextElement(node);
+			if(widget){
+				var node = widget.domNode;
+				if(node && node.parentNode){
+					node.parentNode.removeChild(node); // detach but don't destroy
+				}
 			}
-			return node;
-		},
-
-		getChildren: function(){
-			// summary:
-			//		Returns array of children widgets.
-			// description:
-			//		Returns the widgets that are directly under this.containerNode.
-			return dojo.query("> [widgetId]", this.containerNode).map(dijit.byNode); // Widget[]
 		},
 
 		hasChildren: function(){
 			// summary:
 			//		Returns true if widget has children, i.e. if this.containerNode contains something.
-			return !!this._firstElement(this.containerNode); // Boolean
+			return this.getChildren().length > 0;	// Boolean
 		},
 
 		destroyDescendants: function(/*Boolean*/ preserveDom){
@@ -112,8 +86,8 @@ dojo.declare("dijit._Container",
 			//      but not this widget itself
 			dojo.forEach(this.getChildren(), function(child){ child.destroyRecursive(preserveDom); });
 		},
-	
-		_getSiblingOfChild: function(/*Widget*/ child, /*int*/ dir){
+
+		_getSiblingOfChild: function(/*dijit._Widget*/ child, /*int*/ dir){
 			// summary:
 			//		Get the next or previous widget sibling of child
 			// dir:
@@ -121,24 +95,38 @@ dojo.declare("dijit._Container",
 			//		if -1, get the previous sibling
 			// tags:
 			//      private
-			var node = child.domNode;
-			var which = (dir>0 ? "nextSibling" : "previousSibling");
+			var node = child.domNode,
+				which = (dir>0 ? "nextSibling" : "previousSibling");
 			do{
 				node = node[which];
 			}while(node && (node.nodeType != 1 || !dijit.byNode(node)));
-			return node ? dijit.byNode(node) : null;
+			return node && dijit.byNode(node);	// dijit._Widget
 		},
-		
-		getIndexOfChild: function(/*Widget*/ child){
+
+		getIndexOfChild: function(/*dijit._Widget*/ child){
 			// summary:
 			//		Gets the index of the child in this container or -1 if not found
-			var children = this.getChildren();
-			for(var i=0, c; c=children[i]; i++){
-				if(c == child){ 
-					return i; // int
-				}
-			}
-			return -1; // int
+			return dojo.indexOf(this.getChildren(), child);	// int
+		},
+
+		startup: function(){
+			// summary:
+			//		Called after all the widgets have been instantiated and their
+			//		dom nodes have been inserted somewhere under dojo.doc.body.
+			//
+			//		Widgets should override this method to do any initialization
+			//		dependent on other widgets existing, and then call
+			//		this superclass method to finish things off.
+			//
+			//		startup() in subclasses shouldn't do anything
+			//		size related because the size of the widget hasn't been set yet.
+
+			if(this._started){ return; }
+
+			// Startup all children of this widget
+			dojo.forEach(this.getChildren(), function(child){ child.startup(); });
+
+			this.inherited(arguments);
 		}
 	}
 );

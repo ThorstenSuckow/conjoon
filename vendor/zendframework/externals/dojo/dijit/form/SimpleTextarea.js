@@ -16,7 +16,7 @@ dojo.declare("dijit.form.SimpleTextarea",
 	// example:
 	//	|	new dijit.form.SimpleTextarea({ rows:20, cols:30 }, "foo");
 
-	baseClass: "dijitTextArea",
+	baseClass: "dijitTextBox dijitTextArea",
 
 	attributeMap: dojo.delegate(dijit.form._FormValueWidget.prototype.attributeMap, {
 		rows:"textbox", cols: "textbox"
@@ -30,8 +30,7 @@ dojo.declare("dijit.form.SimpleTextarea",
 	//		The number of characters per line.
 	cols: "20",
 
-	templatePath: null,
-	templateString: "<textarea ${nameAttrSetting} dojoAttachPoint='focusNode,containerNode,textbox' autocomplete='off'></textarea>",
+	templateString: "<textarea ${!nameAttrSetting} dojoAttachPoint='focusNode,containerNode,textbox' autocomplete='off'></textarea>",
 
 	postMixInProperties: function(){
 		// Copy value from srcNodeRef, unless user specified a value explicitly (or there is no srcNodeRef)
@@ -53,25 +52,25 @@ dojo.declare("dijit.form.SimpleTextarea",
 	postCreate: function(){
 		this.inherited(arguments);
 		if(dojo.isIE && this.cols){ // attribute selectors is not supported in IE6
-			dojo.addClass(this.domNode, "dijitTextAreaCols");
+			dojo.addClass(this.textbox, "dijitTextAreaCols");
 		}
 	},
 
 	_previousValue: "",
-	_onInput: function(e){
+	_onInput: function(/*Event?*/ e){
 		// Override TextBox._onInput() to enforce maxLength restriction
 		if(this.maxLength){
 			var maxLength = parseInt(this.maxLength);
 			var value = this.textbox.value.replace(/\r/g,'');
 			var overflow = value.length - maxLength;
 			if(overflow > 0){
-				dojo.stopEvent(e);
+				if(e){ dojo.stopEvent(e); }
 				var textarea = this.textbox;
 				if(textarea.selectionStart){
 					var pos = textarea.selectionStart;
 					var cr = 0;
 					if(dojo.isOpera){
-						cr = (this.textbox.value.substring(0,pos).match(/\r/g)||[]).length;
+						cr = (this.textbox.value.substring(0,pos).match(/\r/g) || []).length;
 					}
 					this.textbox.value = value.substring(0,pos-overflow-cr)+value.substring(pos-cr);
 					textarea.setSelectionRange(pos-overflow, pos-overflow);

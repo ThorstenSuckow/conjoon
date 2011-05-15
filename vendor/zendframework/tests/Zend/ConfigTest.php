@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConfigTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ConfigTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../TestHelper.php';
 
 /**
  * Zend_Config
@@ -34,7 +29,7 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Config
  */
@@ -201,8 +196,7 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
 
         ob_start();
         print_r($config->toArray());
-        $contents = ob_get_contents();
-        ob_end_clean();
+        $contents = ob_get_clean();
 
         $this->assertContains('Array', $contents);
         $this->assertContains('[hostname] => all', $contents);
@@ -366,7 +360,7 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertType('stdClass', $config->b->c);
         $this->assertType('stdClass', $config->b->d);
     }
-    
+
     /**
      * ensure that modification is not allowed after calling setReadOnly()
      *
@@ -378,17 +372,17 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
             );
         $config = new Zend_Config($configData, true);
         $config->b = 'b';
-        
+
         $config->setReadOnly();
         try {
             $config->c = 'c';
         } catch (Zend_Config_Exception $expected) {
             $this->assertContains('is read only', $expected->getMessage());
             return;
-        }        
+        }
         $this->fail('Expected read only exception has not been raised.');
     }
-    
+
     public function testZF3408_countNotDecreasingOnUnset()
     {
         $configData = array(
@@ -401,8 +395,8 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
         unset($config->b);
         $this->assertEquals(count($config), 2);
     }
-    
-    public function testZF4107_ensureCloneDoesNotKeepNestedReferences() 
+
+    public function testZF4107_ensureCloneDoesNotKeepNestedReferences()
     {
         $parent = new Zend_Config(array('key' => array('nested' => 'parent')), true);
         $newConfig = clone $parent;
@@ -410,9 +404,9 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('override', $newConfig->key->nested, '$newConfig is not overridden');
         $this->assertEquals('parent', $parent->key->nested, '$parent has been overridden');
-        
+
     }
-    
+
     /**
      * @group ZF-3575
      *
@@ -436,7 +430,7 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
             $this->fail('Unexpected exception on nested object has been raised: ' . $e->getMessage());
         }
         $this->assertEquals('no', $config2->key->nested);
-        
+
     }
 
     /**
@@ -530,7 +524,7 @@ class Zend_ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($config->one->readOnly(), 'First level children are writable');
         $this->assertTrue($config->one->two->readOnly(), 'Second level children are writable');
     }
-    
+
     public function testZF6995_toArrayDoesNotDisturbInternalIterator()
     {
         $config = new Zend_Config(range(1,10));

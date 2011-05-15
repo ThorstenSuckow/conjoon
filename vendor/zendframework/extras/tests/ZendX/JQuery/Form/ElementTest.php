@@ -15,7 +15,7 @@
  * @category    ZendX
  * @package     ZendX_JQuery
  * @subpackage  View
- * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
  * @version     $Id: AllTests.php 11232 2008-09-05 08:16:33Z beberlei $
  */
@@ -30,6 +30,7 @@ require_once "Zend/Registry.php";
 require_once "Zend/View.php";
 require_once "Zend/Form/Element.php";
 require_once "Zend/Form/SubForm.php";
+require_once "Zend/Form/Decorator/Description.php";
 require_once "Zend/Json.php";
 require_once "ZendX/JQuery.php";
 require_once "ZendX/JQuery/Form.php";
@@ -159,24 +160,24 @@ class ZendX_JQuery_Form_ElementTest extends PHPUnit_Framework_TestCase
         $view = new Zend_View();
         $form = new  ZendX_JQuery_Form();
 
-        $array = array(0 => 'John Doe');
+        $dataSource = array(0 => 'John Doe');
 
         $lastname = new ZendX_JQuery_Form_Element_AutoComplete("Lastname", array('label' => 'Lastname'));
         $form->addElement($lastname);
-        $form->Lastname->setJQueryParam('data', $array);
+        $form->Lastname->setJQueryParam('source', $dataSource);
 
         Zend_Json::$useBuiltinEncoderDecoder = true;
         $output = $form->render($view);
 
         $this->assertEquals(
-            array('$("#Lastname").autocomplete({"data":["John Doe"]});'),
+            array('$("#Lastname").autocomplete({"source":["John Doe"]});'),
             $view->jQuery()->getOnLoadActions()
         );
 
         Zend_Json::$useBuiltinEncoderDecoder = false;
         $output = $form->render($view);
         $this->assertEquals(
-            array('$("#Lastname").autocomplete({"data":["John Doe"]});'),
+            array('$("#Lastname").autocomplete({"source":["John Doe"]});'),
             $view->jQuery()->getOnLoadActions()
         );
     }
@@ -201,6 +202,35 @@ class ZendX_JQuery_Form_ElementTest extends PHPUnit_Framework_TestCase
         $jquery = $view->jQuery()->__toString();
         $this->assertContains('sf1[dp1]', $form);
         $this->assertNotContains('$("#sf1[dp1]")', $jquery);
+    }
+    
+    /**
+     * @group ZF-6979
+     */
+    public function testDatePickerWithDescriptionDecorator()
+    {
+        $view = new Zend_View();
+
+        $datePicker = new ZendX_JQuery_Form_Element_DatePicker("dp1");
+        $datePicker->addDecorator(new Zend_Form_Decorator_Description());
+        $datePicker->setDescription("foo");
+
+        $html = $datePicker->render($view);
+
+        $this->assertContains('<p class="description">foo</p>', $html);
+    }
+
+    public function testGetDefaultDecorators()
+    {
+        $widget = new ZendX_JQuery_Form_Element_DatePicker("dp1");;
+        $decorators = $widget->getDecorators();
+        $this->assertEquals(5, count($decorators));
+
+        $this->assertType('ZendX_JQuery_Form_Decorator_UiWidgetElement', $decorators['ZendX_JQuery_Form_Decorator_UiWidgetElement']);
+        $this->assertType('Zend_Form_Decorator_Errors',                  $decorators['Zend_Form_Decorator_Errors']);
+        $this->assertType('Zend_Form_Decorator_Description',             $decorators['Zend_Form_Decorator_Description']);
+        $this->assertType('Zend_Form_Decorator_HtmlTag',                 $decorators['Zend_Form_Decorator_HtmlTag']);
+        $this->assertType('Zend_Form_Decorator_Label',                   $decorators['Zend_Form_Decorator_Label']);
     }
 }
 

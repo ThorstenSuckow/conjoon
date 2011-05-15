@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HtmlEntitiesTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HtmlEntitiesTest.php 24011 2011-05-04 18:56:38Z matthew $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_HtmlEntities
@@ -34,7 +29,7 @@ require_once 'Zend/Filter/HtmlEntities.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -101,11 +96,12 @@ class Zend_Filter_HtmlEntitiesTest extends PHPUnit_Framework_TestCase
     /**
      * Ensures that getCharSet() returns expected default value
      *
+     * @group ZF-8715
      * @return void
      */
     public function testGetCharSet()
     {
-        $this->assertEquals('ISO-8859-1', $this->_filter->getCharSet());
+        $this->assertEquals('UTF-8', $this->_filter->getCharSet());
     }
 
     /**
@@ -149,5 +145,125 @@ class Zend_Filter_HtmlEntitiesTest extends PHPUnit_Framework_TestCase
     {
         $instance = $this->_filter->setCharSet('UTF-8')->setQuoteStyle(ENT_QUOTES)->setDoubleQuote(false);
         $this->assertTrue($instance instanceof Zend_Filter_HtmlEntities);
+    }
+
+    /**
+     * @group ZF-8995
+     */
+    public function testConfigObject()
+    {
+        require_once 'Zend/Config.php';
+        $options = array('quotestyle' => 5, 'encoding' => 'ISO-8859-1');
+        $config  = new Zend_Config($options);
+
+        $filter = new Zend_Filter_HtmlEntities(
+            $config
+        );
+
+        $this->assertEquals('ISO-8859-1', $filter->getEncoding());
+        $this->assertEquals(5, $filter->getQuoteStyle());
+    }
+
+    /**
+     * Ensures that when ENT_QUOTES is set, the filtered value has both 'single' and "double" quotes encoded
+     *
+     * @group  ZF-8962
+     * @return void
+     */
+    public function testQuoteStyleQuotesEncodeBoth()
+    {
+        $input  = "A 'single' and " . '"double"';
+        $result = 'A &#039;single&#039; and &quot;double&quot;';
+
+        $this->_filter->setQuoteStyle(ENT_QUOTES);
+        $this->assertEquals($result, $this->_filter->filter($input));
+    }
+
+    /**
+     * Ensures that when ENT_COMPAT is set, the filtered value has only "double" quotes encoded
+     *
+     * @group  ZF-8962
+     * @return void
+     */
+    public function testQuoteStyleQuotesEncodeDouble()
+    {
+        $input  = "A 'single' and " . '"double"';
+        $result = "A 'single' and &quot;double&quot;";
+
+        $this->_filter->setQuoteStyle(ENT_COMPAT);
+        $this->assertEquals($result, $this->_filter->filter($input));
+    }
+
+    /**
+     * Ensures that when ENT_NOQUOTES is set, the filtered value leaves both "double" and 'single' quotes un-altered
+     *
+     * @group  ZF-8962
+     * @return void
+     */
+    public function testQuoteStyleQuotesEncodeNone()
+    {
+        $input  = "A 'single' and " . '"double"';
+        $result = "A 'single' and " . '"double"';
+
+        $this->_filter->setQuoteStyle(ENT_NOQUOTES);
+        $this->assertEquals($result, $this->_filter->filter($input));
+    }
+
+    /**
+     * @group ZF-11344
+     */
+    public function testCorrectsForEncodingMismatch()
+    {
+        $string = file_get_contents(dirname(__FILE__) . '/_files/latin-1-text.txt');
+
+        // restore_error_handler can emit an E_WARNING; let's ignore that, as 
+        // we want to test the returned value
+        set_error_handler(array($this, 'errorHandler'), E_NOTICE | E_WARNING);
+        $result = $this->_filter->filter($string);
+        restore_error_handler();
+
+        $this->assertTrue(strlen($result) > 0);
+    }
+
+    /**
+     * @group ZF-11344
+     */
+    public function testStripsUnknownCharactersWhenEncodingMismatchDetected()
+    {
+        $string = file_get_contents(dirname(__FILE__) . '/_files/latin-1-text.txt');
+
+        // restore_error_handler can emit an E_WARNING; let's ignore that, as 
+        // we want to test the returned value
+        set_error_handler(array($this, 'errorHandler'), E_NOTICE | E_WARNING);
+        $result = $this->_filter->filter($string);
+        restore_error_handler();
+
+        $this->assertContains('&quot;&quot;', $result);
+    }
+
+    /**
+     * @group ZF-11344
+     */
+    public function testRaisesExceptionIfEncodingMismatchDetectedAndFinalStringIsEmpty()
+    {
+        $string = file_get_contents(dirname(__FILE__) . '/_files/latin-1-dash-only.txt');
+
+        // restore_error_handler can emit an E_WARNING; let's ignore that, as 
+        // we want to test the returned value
+        // Also, explicit try, so that we don't mess up PHPUnit error handlers
+        set_error_handler(array($this, 'errorHandler'), E_NOTICE | E_WARNING);
+        try {
+            $result = $this->_filter->filter($string);
+            $this->fail('Expected exception from single non-utf-8 character');
+        } catch (Zend_Filter_Exception $e) {
+            $this->assertTrue($e instanceof Zend_Filter_Exception);
+        }
+    }
+
+    /**
+     * Null error handler; used when wanting to ignore specific error types
+     */
+    public function errorHandler($errno, $errstr)
+    {
     }
 }

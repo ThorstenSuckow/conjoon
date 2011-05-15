@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Gdata.php';
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  */
@@ -40,7 +40,7 @@ class Zend_Gdata_EntryLinkTest extends PHPUnit_Framework_TestCase
                 true);
         $this->entryLink = new Zend_Gdata_Extension_EntryLink();
     }
-    
+
     public function testEmptyEntryLinkShouldHaveNoExtensionElements() {
         $this->assertTrue(is_array($this->entryLink->extensionElements));
         $this->assertTrue(count($this->entryLink->extensionElements) == 0);
@@ -62,18 +62,18 @@ class Zend_Gdata_EntryLinkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($this->entryLink->extensionAttributes));
         $this->assertTrue(count($this->entryLink->extensionAttributes) == 0);
     }
-    
+
     public function testNormalEntryLinkShouldHaveNoExtensionElements() {
         $this->entryLink->href = "http://gmail.com/jo/contacts/Bob";
         $this->entryLink->rel = "self";
         $this->entryLink->readOnly = "false";
-        
+
         $this->assertEquals("http://gmail.com/jo/contacts/Bob", $this->entryLink->href);
         $this->assertEquals("self", $this->entryLink->rel);
         $this->assertEquals("false", $this->entryLink->readOnly);
-                
+
         $this->assertEquals(0, count($this->entryLink->extensionElements));
-        $newEntryLink = new Zend_Gdata_Extension_EntryLink(); 
+        $newEntryLink = new Zend_Gdata_Extension_EntryLink();
         $newEntryLink->transferFromXML($this->entryLink->saveXML());
         $this->assertEquals(0, count($newEntryLink->extensionElements));
         $newEntryLink->extensionElements = array(
@@ -134,8 +134,8 @@ class Zend_Gdata_EntryLinkTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("http://gmail.com/jo/contacts/Jo", $this->entryLink->href);
         $this->assertEquals("via", $this->entryLink->rel);
         $this->assertEquals("true", $this->entryLink->readOnly);
-		$this->assertTrue($this->entryLink->entry instanceof Zend_Gdata_App_Entry);
-		$this->assertEquals("Jo March", $this->entryLink->entry->title->text);
+        $this->assertTrue($this->entryLink->entry instanceof Zend_Gdata_App_Entry);
+        $this->assertEquals("Jo March", $this->entryLink->entry->title->text);
     }
 
 }

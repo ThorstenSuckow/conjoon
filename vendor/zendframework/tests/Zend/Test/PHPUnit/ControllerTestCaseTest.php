@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Test
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ControllerTestCaseTest.php 18182 2009-09-17 17:58:11Z matthew $
+ * @version    $Id: ControllerTestCaseTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Test_PHPUnit_ControllerTestCaseTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Test_PHPUnit_ControllerTestCaseTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /** Zend_Test_PHPUnit_ControllerTestCase */
 require_once 'Zend/Test/PHPUnit/ControllerTestCase.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Controller/Action.php';
  * @category   Zend
  * @package    Zend_Test
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Test
  * @group      Zend_Test_PHPUnit
  */
-class Zend_Test_PHPUnit_ControllerTestCaseTest extends PHPUnit_Framework_TestCase 
+class Zend_Test_PHPUnit_ControllerTestCaseTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -305,6 +303,8 @@ class Zend_Test_PHPUnit_ControllerTestCaseTest extends PHPUnit_Framework_TestCas
         $this->testCase->assertQuery('div#foo legend.bat', $body);
         $this->testCase->assertNotQuery('div#foo legend.bogus', $body);
         $this->testCase->assertQueryContentContains('legend.bat', 'La di da', $body);
+        $this->testCase->assertQueryContentContains('legend.numeric', 42, $body);
+        $this->testCase->assertNotQueryContentContains('legend.numeric', 31, $body);
         $this->testCase->assertNotQueryContentContains('legend.bat', 'La do da', $body);
         $this->testCase->assertQueryContentRegex('legend.bat', '/d[a|i]/i', $body);
         $this->testCase->assertNotQueryContentRegex('legend.bat', '/d[o|e]/i', $body);
@@ -735,6 +735,51 @@ class Zend_Test_PHPUnit_ControllerTestCaseTest extends PHPUnit_Framework_TestCas
         $this->testCase->resetRequest();
         $this->assertTrue(empty($_POST));
         $this->assertTrue(empty($_GET));
+    }
+
+    /**
+     * @group ZF-7839
+     */
+    public function testTestCaseShouldAllowUsingApplicationObjectAsBootstrap()
+    {
+        require_once 'Zend/Application.php';
+        $application = new Zend_Application('testing', array(
+            'resources' => array(
+                'frontcontroller' => array(
+                    'controllerDirectory' => dirname(__FILE__) . '/_files/application/controllers',
+                ),
+            ),
+        ));
+        $this->testCase->bootstrap = $application;
+        $this->testCase->bootstrap();
+        $this->assertEquals(
+            $application->getBootstrap()->getResource('frontcontroller'),
+            $this->testCase->getFrontController()
+        );
+    }
+
+    /**
+     * @group ZF-8193
+     */
+    public function testWhenApplicationObjectUsedAsBootstrapTestCaseShouldExecuteBootstrapRunMethod()
+    {
+        require_once 'Zend/Application.php';
+        $application = new Zend_Application('testing', array(
+            'resources' => array(
+                'frontcontroller' => array(
+                    'controllerDirectory' => dirname(__FILE__) . '/_files/application/controllers',
+                ),
+            ),
+        ));
+        $this->testCase->bootstrap = $application;
+        $this->testCase->bootstrap();
+        $this->testCase->dispatch('/');
+        $front = $application->getBootstrap()->getResource('frontcontroller');
+        $boot  = $front->getParam('bootstrap');
+        $type  = is_object($boot)
+               ? get_class($boot)
+               : gettype($boot);
+        $this->assertTrue($boot === $this->testCase->bootstrap->getBootstrap(), $type);
     }
 }
 

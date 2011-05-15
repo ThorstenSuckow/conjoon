@@ -3,14 +3,13 @@
 	modifyTableTitle: "テーブルの変更",
 	rows: "行:",
 	columns: "列:",
-	align: "桁揃え:",
+	align: "位置合わせ:",
 	cellPadding: "セル余白:",
 	cellSpacing: "セル間隔:",
 	tableWidth: "テーブル幅:",
 	backgroundColor: "背景色:",
 	borderColor: "ボーダーの色:",
 	borderThickness: "ボーダーの太さ",
-	pixels: "ピクセル",
 	percent: "パーセント",
 	pixels: "ピクセル",
 	"default": "デフォルト",
@@ -19,6 +18,7 @@
 	right: "右",
 	buttonSet: "設定", // translated elsewhere?
 	buttonInsert: "挿入",
+	buttonCancel: "キャンセル",
 
 	selectTableLabel: "テーブルの選択",
 	insertTableRowBeforeLabel: "前に行を追加",
@@ -28,3 +28,4 @@
 	deleteTableRowLabel: "行の削除",
 	deleteTableColumnLabel: "列の削除"
 })
+	

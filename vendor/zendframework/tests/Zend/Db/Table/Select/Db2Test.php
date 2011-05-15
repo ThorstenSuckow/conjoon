@@ -15,20 +15,21 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
 
 require_once 'Zend/Db/Table/Select/TestCommon.php';
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Db
  * @group      Zend_Db_Table
@@ -49,7 +50,7 @@ class Zend_Db_Table_Select_Db2Test extends Zend_Db_Table_Select_TestCommon
                             ->where($product_name . ' = ?', "as'as:x");
         return $select;
     }
-    
+
     public function testSelectJoinCross()
     {
         $this->markTestSkipped($this->getDriver() . ' does not support CROSS JOIN');

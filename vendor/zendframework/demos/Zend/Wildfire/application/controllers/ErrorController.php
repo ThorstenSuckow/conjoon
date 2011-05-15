@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -23,7 +23,7 @@
  *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ErrorController extends Zend_Controller_Action
@@ -38,13 +38,13 @@ class ErrorController extends Zend_Controller_Action
         try {
 
             Zend_Registry::get('logger')->err($this->_getParam('error_handler')->exception);
-          
+
         } catch(Exception $e) {
-          
+
           /* TODO: You can log this exception somewhere or display it during development.
            *       DO NOT USE THE logger here as it will create an infinite loop!
            */
-          
+
         }
     }
 }

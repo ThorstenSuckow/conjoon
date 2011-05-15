@@ -2,8 +2,9 @@ console.warn("dijit-all may include much more code than your application actuall
 dojo.provide("dijit.dijit-all");
 
 /*=====
-dijit["dijit-all"] = { 
-	// summary: A rollup that includes every dijit. You probably don't need this.
+dijit["dijit-all"] = {
+	// summary:
+	//		A rollup that includes every dijit. You probably don't need this.
 };
 =====*/
 
@@ -16,7 +17,10 @@ dojo.require("dijit.Dialog");
 dojo.require("dijit.DialogUnderlay");
 dojo.require("dijit.TooltipDialog");
 
+// Editor
 dojo.require("dijit.Editor");
+dojo.require("dijit._editor.plugins.FontChoice");
+dojo.require("dijit._editor.plugins.LinkDialog");
 
 dojo.require("dijit.Menu");
 dojo.require("dijit.MenuItem");
@@ -33,16 +37,32 @@ dojo.require("dijit.Tooltip");
 dojo.require("dijit.Tree");
 dojo.require("dijit.InlineEditBox");
 
+// Form widgets
+dojo.require("dijit.form.Form");
+
+// Button widgets
 dojo.require("dijit.form.Button");
+dojo.require("dijit.form.DropDownButton");
+dojo.require("dijit.form.ComboButton");
+dojo.require("dijit.form.ToggleButton");
 dojo.require("dijit.form.CheckBox");
-dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.RadioButton");
+
+// TextBox widgets
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.form.ValidationTextBox");
 dojo.require("dijit.form.CurrencyTextBox");
 dojo.require("dijit.form.DateTextBox");
-dojo.require("dijit.form.FilteringSelect");
 dojo.require("dijit.form.NumberSpinner");
 dojo.require("dijit.form.NumberTextBox");
 
-// slider files
+// Select widgets
+dojo.require("dijit.form.ComboBox");
+dojo.require("dijit.form.FilteringSelect");
+dojo.require("dijit.form.MultiSelect");
+dojo.require("dijit.form.Select");
+
+// Slider widgets
 dojo.require("dijit.form.HorizontalSlider");
 dojo.require("dijit.form.VerticalSlider");
 dojo.require("dijit.form.HorizontalRule");
@@ -50,13 +70,11 @@ dojo.require("dijit.form.VerticalRule");
 dojo.require("dijit.form.HorizontalRuleLabels");
 dojo.require("dijit.form.VerticalRuleLabels");
 
+// Textarea widgets
 dojo.require("dijit.form.SimpleTextarea");
 dojo.require("dijit.form.Textarea");
-dojo.require("dijit.form.TextBox");
-dojo.require("dijit.form.ValidationTextBox");
-dojo.require("dijit.form._FormWidget");
-dojo.require("dijit.form._Spinner");
 
+// Layout widgets
 dojo.require("dijit.layout.AccordionContainer");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.layout.BorderContainer");
@@ -65,4 +83,3 @@ dojo.require("dijit.layout.LinkPane");
 dojo.require("dijit.layout.SplitContainer"); //deprecated
 dojo.require("dijit.layout.StackContainer");
 dojo.require("dijit.layout.TabContainer");
-dojo.require("dijit.layout._LayoutWidget");

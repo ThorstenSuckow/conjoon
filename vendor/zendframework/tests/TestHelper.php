@@ -15,41 +15,39 @@
  * @category   Zend
  * @package    Zend
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestHelper.php 18529 2009-10-12 19:13:02Z matthew $
+ * @version    $Id: TestHelper.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/*
+/**
  * Include PHPUnit dependencies
  */
-require_once 'PHPUnit/Framework.php';
-require_once 'PHPUnit/Framework/IncompleteTestError.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/Runner/Version.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
-require_once 'PHPUnit/Util/Filter.php';
+
+$phpunitVersion = PHPUnit_Runner_Version::id();
+if ($phpunitVersion == '@package_version@' || version_compare($phpunitVersion, '3.5.5', '>=')) {
+    if (version_compare($phpunitVersion, '3.6.0', '>=')) {
+        echo 'This verison of PHPUnit is not supported in Zend Framework 1.x unit tests.';
+        exit(1);
+    }
+    require_once 'PHPUnit/Autoload.php'; // >= PHPUnit 3.5.5
+} else {
+    require_once 'PHPUnit/Framework.php'; // < PHPUnit 3.5.5
+}
 
 /*
  * Set error reporting to the level to which Zend Framework code must comply.
  */
-error_reporting( E_ALL | E_STRICT );
+error_reporting(E_ALL | E_STRICT);
 
 /*
  * Determine the root, library, and tests directories of the framework
  * distribution.
  */
-$zfRoot        = dirname(__FILE__) . '/..';
+$zfRoot        = realpath(dirname(dirname(__FILE__)));
 $zfCoreLibrary = "$zfRoot/library";
 $zfCoreTests   = "$zfRoot/tests";
-
-/*
- * Omit from code coverage reports the contents of the tests directory
- */
-foreach (array('php', 'phtml', 'csv') as $suffix) {
-    PHPUnit_Util_Filter::addDirectoryToFilter($zfCoreTests, ".$suffix");
-}
 
 /*
  * Prepend the Zend Framework library/ and tests/ directories to the
@@ -79,17 +77,6 @@ if (is_readable($zfCoreTests . DIRECTORY_SEPARATOR . 'TestConfiguration.php')) {
  */
 if (defined('TESTS_ZEND_OB_ENABLED') && constant('TESTS_ZEND_OB_ENABLED')) {
     ob_start();
-}
-
-/*
- * Add Zend Framework library/ directory to the PHPUnit code coverage
- * whitelist. This has the effect that only production code source files appear
- * in the code coverage report and that all production code source files, even
- * those that are not covered by a test yet, are processed.
- */
-if (defined('TESTS_GENERATE_REPORT') && TESTS_GENERATE_REPORT === true &&
-    version_compare(PHPUnit_Runner_Version::id(), '3.1.6', '>=')) {
-    PHPUnit_Util_Filter::addDirectoryToWhitelist($zfCoreLibrary);
 }
 
 /*

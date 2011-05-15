@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ElementTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ElementTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Feed_Entry_Atom
@@ -34,7 +29,7 @@ require_once 'Zend/Feed/Entry/Atom.php';
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Feed
  */
@@ -67,16 +62,16 @@ class Zend_Feed_ElementTest extends PHPUnit_Framework_TestCase
     public function testStrings()
     {
         $xml = "<entry>
-	<title> Using C++ Intrinsic Functions for Pipelined Text Processing</title>
-	<id>http://www.oreillynet.com/pub/wlg/8356</id>
-	<link rel='alternate' href='http://www.oreillynet.com/pub/wlg/8356'/>
-	<summary type='xhtml'>
-	<div xmlns='http://www.w3.org/1999/xhtml'>
-	A good C++ programming technique that has almost no published material available on the WWW relates to using the special pipeline instructions in modern CPUs for faster text processing. Here's example code using C++ intrinsic functions to give a fourfold speed increase for a UTF-8 to UTF-16 converter compared to the original C/C++ code.
-	</div>
-	</summary>
-	<author><name>Rick Jelliffe</name></author>
-	<updated>2005-11-07T08:15:57-08:00</updated>
+    <title> Using C++ Intrinsic Functions for Pipelined Text Processing</title>
+    <id>http://www.oreillynet.com/pub/wlg/8356</id>
+    <link rel='alternate' href='http://www.oreillynet.com/pub/wlg/8356'/>
+    <summary type='xhtml'>
+    <div xmlns='http://www.w3.org/1999/xhtml'>
+    A good C++ programming technique that has almost no published material available on the WWW relates to using the special pipeline instructions in modern CPUs for faster text processing. Here's example code using C++ intrinsic functions to give a fourfold speed increase for a UTF-8 to UTF-16 converter compared to the original C/C++ code.
+    </div>
+    </summary>
+    <author><name>Rick Jelliffe</name></author>
+    <updated>2005-11-07T08:15:57-08:00</updated>
 </entry>";
 
         $entry = new Zend_Feed_Entry_Atom('uri', $xml);
@@ -85,6 +80,86 @@ class Zend_Feed_ElementTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($entry->summary() instanceof Zend_Feed_Element, 'method access should not return an Zend_Feed_Element instance');
         $this->assertTrue(is_string($entry->summary()), 'method access should return a string');
         $this->assertFalse(is_string($entry->summary), '__get access should not return a string');
+    }
+
+    public function testSetNamespacedAttributes()
+    {
+        $value = 'value';
+
+        $e = new Zend_Feed_Entry_Atom();
+        $e->test['attr']            = $value;
+        $e->test['namespace1:attr'] = $value;
+        $e->test['namespace2:attr'] = $value;
+
+        $this->assertEquals($value, $e->test['attr']);
+        $this->assertEquals($value, $e->test['namespace1:attr']);
+        $this->assertEquals($value, $e->test['namespace2:attr']);
+    }
+
+    public function testUnsetNamespacedAttributes()
+    {
+        $value = 'value';
+
+        $e = new Zend_Feed_Entry_Atom();
+        $e->test['attr']            = $value;
+        $e->test['namespace1:attr'] = $value;
+        $e->test['namespace2:attr'] = $value;
+
+        $this->assertEquals($value, $e->test['attr']);
+        $this->assertEquals($value, $e->test['namespace1:attr']);
+        $this->assertEquals($value, $e->test['namespace2:attr']);
+
+        unset($e->test['attr']);
+        unset($e->test['namespace1:attr']);
+        unset($e->test['namespace2:attr']);
+
+        $this->assertEquals('', $e->test['attr']);
+        $this->assertEquals('', $e->test['namespace1:attr']);
+        $this->assertEquals('', $e->test['namespace1:attr']);
+    }
+
+    /**
+     * @group ZF-2606
+     */
+    public function testValuesWithXmlSpecialChars()
+    {
+        $testAmp = '&';
+        $testLt  = '<';
+        $testGt  = '>';
+
+        $e = new Zend_Feed_Entry_Atom();
+        $e->testAmp           = $testAmp;
+        $e->{'namespace1:lt'} = $testLt;
+        $e->{'namespace1:gt'} = $testGt;
+
+        $this->assertEquals($testAmp, $e->testAmp());
+        $this->assertEquals($testLt, $e->{'namespace1:lt'}());
+        $this->assertEquals($testGt, $e->{'namespace1:gt'}());
+    }
+
+    /**
+     * @group ZF-2606
+     */
+    public function testAttributesWithXmlSpecialChars()
+    {
+        $testAmp   = '&';
+        $testLt    = '<';
+        $testGt    = '>';
+        $testQuot  = '"';
+        $testSquot = "'";
+
+        $e = new Zend_Feed_Entry_Atom();
+        $e->test['amp']              = $testAmp;
+        $e->test['namespace1:lt']    = $testLt;
+        $e->test['namespace1:gt']    = $testGt;
+        $e->test['namespace1:quot']  = $testQuot;
+        $e->test['namespace1:squot'] = $testSquot;
+
+        $this->assertEquals($testAmp, $e->test['amp']);
+        $this->assertEquals($testLt, $e->test['namespace1:lt']);
+        $this->assertEquals($testGt, $e->test['namespace1:gt']);
+        $this->assertEquals($testQuot, $e->test['namespace1:quot']);
+        $this->assertEquals($testSquot, $e->test['namespace1:squot']);
     }
 
 }

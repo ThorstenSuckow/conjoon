@@ -65,7 +65,7 @@ if(!doh.robot["_robotLoaded"]){
 	killRobot: function(){
 		if(doh.robot._robotLoaded){
 			doh.robot._robotLoaded = false;
-			document.documentElement.className = document.documentElement.className.replace(/ ?dohRobot/);
+			document.documentElement.className = document.documentElement.className.replace(/ ?dohRobot/, "");
 			doh.robot._killApplet();
 		}
 	},
@@ -111,7 +111,7 @@ if(!doh.robot["_robotLoaded"]){
 		doh._initRobotCalled = true;
 
 		// add dohRobot class to HTML element so tests can use that in CSS rules if desired
-		document.documentElement.className = document.documentElement.className.replace(/\S$/, "& ") + "dohRobot";
+		document.documentElement.className += " dohRobot";
 		window.scrollTo(0, 0);
 //		document.documentElement.scrollTop = document.documentElement.scrollLeft = 0;
 		_robot = r;
@@ -220,16 +220,19 @@ if(!doh.robot["_robotLoaded"]){
 		//
 		// duration:
 		//		Time, in milliseconds, to spend pressing all of the keys.
+		//		The default is (string length)*50 ms.
 		//
 
 		this._assertRobot();
 		this.sequence(function(){
-			duration=duration||0;
-			if(typeof(chars) == Number){
-				_keyPress(chars, chars, false, false, false, false, delay);
+			var isNum = typeof(chars) == Number;
+			duration=duration||(isNum?50:chars.length*50);
+			if(isNum){
+				_keyPress(chars, chars, false, false, false, false, 0);
 			}else if(chars.length){
-				for(var i = 0; i<chars.length; i++){
-					_keyPress(chars.charCodeAt(i), 0, false, false, false, false, duration/chars.length);
+				_keyPress(chars.charCodeAt(0), 0, false, false, false, false, 0);
+				for(var i = 1; i<chars.length; i++){
+					_keyPress(chars.charCodeAt(i), 0, false, false, false, false, Math.max(Math.floor(duration/chars.length)-20, 0)); // 20ms is fudge for processing time until robot handles wall clock
 				}
 			}
 		}, delay, duration);
@@ -259,6 +262,7 @@ if(!doh.robot["_robotLoaded"]){
 		//			- shift
 		//			- alt
 		//			- ctrl
+		//			- meta
 		//
 		// asynchronous:
 		//		If true, the delay happens asynchronously and immediately, outside of the browser's JavaScript thread and any previous calls.
@@ -527,9 +531,10 @@ if(!doh.robot["_robotLoaded"]){
 	}
 	// if loaded with dojo, there might not be a runner.js!
 	if(!iframesrc && window["dojo"]){
-		iframesrc = dojo.moduleUrl("util", "doh/")+"Robot.html";
+		// if user set document.domain to something else, send it to the Robot too
+		iframesrc = dojo.moduleUrl("util", "doh/")+"Robot.html?domain="+escape(document.domain);
 	}
 	document.writeln('<div id="dohrobotview" style="border:0px none; margin:0px; padding:0px; position:absolute; bottom:0px; right:0px; width:1px; height:1px; overflow:hidden; visibility:hidden; background-color:red;"></div>'+
-		'<iframe style="border:0px none; z-index:32767; padding:0px; margin:0px; position:absolute; left:0px; top:0px; height:42px; width:200px; overflow:hidden; background-color:transparent;" tabIndex="-1" src="'+iframesrc+'" ALLOWTRANSPARENCY="true"></iframe>');
+		'<iframe application="true" style="border:0px none; z-index:32767; padding:0px; margin:0px; position:absolute; left:0px; top:0px; height:42px; width:200px; overflow:hidden; background-color:transparent;" tabIndex="-1" src="'+iframesrc+'" ALLOWTRANSPARENCY="true"></iframe>');
 })();
 }

@@ -36,6 +36,15 @@ dojo.declare("dojox.form._ChildTextBox", dijit.form.ValidationTextBox, {
 		if(!this.name){
 			dojo.removeAttr(this.focusNode, "name");
 		}
+		this.connect(this.focusNode, "onkeypress", "_onChildKeyPress");
+	},
+	
+	_onChildKeyPress: function(e){
+		// Check if we pressed <enter> - if so, set our blur value so that
+		// the parent widget will be updated correctly.
+		if(e && e.keyCode == dojo.keys.ENTER){
+			this._setBlurValue();
+		}
 	}
 });
 
@@ -86,7 +95,7 @@ dojo.declare("dojox.form._OldPWBox", dojox.form._ChildTextBox, {
 	},
 
 	_setBlurValue: function(){
-		// TextBox._setBlurValue calls this._setValueAttr(this.attr('value'), ...)
+		// TextBox._setBlurValue calls this._setValueAttr(this.get('value'), ...)
 		// Because we are overridding _getValueAttr to return "" when the containerWidget
 		// is not valid, TextBox._setBlurValue will cause OldPWBox's value to be set to ""
 		//
@@ -122,7 +131,7 @@ dojo.declare("dojox.form._VerifyPWBox", dojox.form._ChildTextBox, {
 		// summary:
 		//		Validates that we match the "real" password
 		return this.inherited("isValid", arguments) &&
-			(this.attr("value") == this.containerWidget._inputWidgets[1].attr("value"));
+			(this.get("value") == this.containerWidget._inputWidgets[1].attr("value"));
 	}
 });
 
@@ -144,7 +153,7 @@ dojo.declare("dojox.form.PasswordValidator", dijit.form._FormValueWidget, {
 	//		The name to send our old password as (when form is posted)
 	oldName: "",
 	
-	templatePath: dojo.moduleUrl("dojox.form", "resources/PasswordValidator.html"),
+	templateString: dojo.cache("dojox.form", "resources/PasswordValidator.html"),
 	
 	_hasBeenBlurred: false,
 
@@ -250,13 +259,14 @@ dojo.declare("dojox.form.PasswordValidator", dijit.form._FormValueWidget, {
 		if (this.oldName && !widgets[0]){
 			throw new Error("Need to specify pwType=\"old\" if using oldName");
 		}
+		this.containerNode = this.domNode;
 		this._createSubWidgets();
 		this.connect(this._inputWidgets[1], "_setValueAttr", "_childValueAttr");
 		this.connect(this._inputWidgets[2], "_setValueAttr", "_childValueAttr");		
 	},
 	
 	_childValueAttr: function(v){
-		this.attr("value", this.isValid() ? v : "");
+		this.set("value", this.isValid() ? v : "");
 	},
 	
 	_setDisabledAttr: function(value){

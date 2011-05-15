@@ -15,16 +15,10 @@
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OfflineTest.php 17787 2009-08-24 14:41:49Z sgehrig $
+ * @version    $Id: OfflineTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /**
  * @see Zend_Auth_Adapter_Ldap
@@ -40,7 +34,7 @@ require_once 'Zend/Ldap.php';
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Auth
  */
@@ -67,6 +61,9 @@ class Zend_Auth_Adapter_Ldap_OfflineTest extends PHPUnit_Framework_TestCase
 
     public function testGetSetLdap()
     {
+        if (!extension_loaded('ldap')) {
+            $this->markTestSkipped('LDAP is not enabled');
+        }
         $this->_adapter->setLdap(new Zend_Ldap());
         $this->assertType('Zend_Ldap', $this->_adapter->getLdap());
     }

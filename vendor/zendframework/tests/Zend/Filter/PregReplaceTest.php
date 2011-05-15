@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PregReplaceTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: PregReplaceTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -25,11 +25,6 @@
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Filter_PregReplaceTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Filter_PregReplace
@@ -43,7 +38,7 @@ require_once 'Zend/Filter/PregReplace.php';
  * @category   Zend
  * @package    Zend_Filter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Filter
  */
@@ -130,6 +125,24 @@ class Zend_Filter_PregReplaceTest extends PHPUnit_Framework_TestCase
         } catch (Exception $e) {
         }
     }
+
+    /**
+      * @group ZF-9202
+      */
+    public function testExtendsPregReplace()
+    {
+        $startMatchPattern = '~(&gt;){3,}~i';
+        $filter = new XPregReplace();
+        $this->assertEquals($startMatchPattern, $filter->getMatchPattern());
+    }
+}
+
+/**
+ * @group ZF-9202
+ */
+class XPregReplace extends Zend_Filter_PregReplace
+{
+    protected $_matchPattern = '~(&gt;){3,}~i';
 }
 
 // Call Zend_Filter_PregReplaceTest::main() if this source file is executed directly.

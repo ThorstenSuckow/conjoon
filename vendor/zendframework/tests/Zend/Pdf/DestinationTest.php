@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id:$
+ * @version    $Id: DestinationTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Pdf_Destination */
@@ -30,14 +30,11 @@ require_once 'Zend/Pdf/ElementFactory.php';
 require_once 'Zend/Pdf.php';
 
 
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 /**
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Pdf
  */
@@ -48,7 +45,7 @@ class Zend_Pdf_DestinationTest extends PHPUnit_Framework_TestCase
         date_default_timezone_set('GMT');
     }
 
-	public function testLoad()
+    public function testLoad()
     {
         $pdf = new Zend_Pdf();
         $page1 = $pdf->newPage(Zend_Pdf_Page::SIZE_A4);

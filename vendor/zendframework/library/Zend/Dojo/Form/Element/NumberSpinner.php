@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage Form_Element
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -24,13 +24,13 @@ require_once 'Zend/Dojo/Form/Element/ValidationTextBox.php';
 
 /**
  * NumberSpinner dijit
- * 
+ *
  * @uses       Zend_Dojo_Form_Element_ValidationTextBox
  * @package    Zend_Dojo
  * @subpackage Form_Element
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NumberSpinner.php 16204 2009-06-21 18:58:29Z thomas $
+ * @version    $Id: NumberSpinner.php 23923 2011-05-02 19:16:09Z matthew $
  */
 class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_ValidationTextBox
 {
@@ -92,7 +92,7 @@ class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_Valida
      */
     public function setLargeDelta($delta)
     {
-        $this->setDijitParam('largeDelta', (int) $delta);
+        $this->setDijitParam('largeDelta', (float) $delta);
         return $this;
     }
 
@@ -114,7 +114,7 @@ class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_Valida
      */
     public function setSmallDelta($delta)
     {
-        $this->setDijitParam('smallDelta', (int) $delta);
+        $this->setDijitParam('smallDelta', (float) $delta);
         return $this;
     }
 
@@ -177,8 +177,8 @@ class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_Valida
 
     /**
      * Set minimum value
-     * 
-     * @param  int $value 
+     *
+     * @param  int $value
      * @return Zend_Dojo_Form_Element_NumberSpinner
      */
     public function setMin($value)
@@ -187,14 +187,14 @@ class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_Valida
         if ($this->hasDijitParam('constraints')) {
             $constraints = $this->getDijitParam('constraints');
         }
-        $constraints['min'] = (int) $value;
+        $constraints['min'] = (float) $value;
         $this->setDijitParam('constraints', $constraints);
         return $this;
     }
 
     /**
      * Get minimum value
-     * 
+     *
      * @return null|int
      */
     public function getMin()
@@ -211,8 +211,8 @@ class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_Valida
 
     /**
      * Set maximum value
-     * 
-     * @param  int $value 
+     *
+     * @param  int $value
      * @return Zend_Dojo_Form_Element_NumberSpinner
      */
     public function setMax($value)
@@ -221,14 +221,14 @@ class Zend_Dojo_Form_Element_NumberSpinner extends Zend_Dojo_Form_Element_Valida
         if ($this->hasDijitParam('constraints')) {
             $constraints = $this->getDijitParam('constraints');
         }
-        $constraints['max'] = (int) $value;
+        $constraints['max'] = (float) $value;
         $this->setDijitParam('constraints', $constraints);
         return $this;
     }
 
     /**
      * Get maximum value
-     * 
+     *
      * @return null|int
      */
     public function getMax()

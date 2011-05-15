@@ -15,14 +15,14 @@
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /**
  * This example shows how to get the language for all
  * languages written in native letters
- * 
+ *
  * So en = english de = deutsch da = dánsk and so on
  */
 

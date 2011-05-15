@@ -72,9 +72,6 @@ dojo.requireIf(dojox.data && !!dojox.data.JsonRestStore,"dojox.data.restListener
 					return result;
 				};
 			}
-			if(dojox.data && dojox.data.restListener){
-				this.receive = dojox.data.restListener;
-			}
 		},
 		absoluteUrl: function(baseUrl,relativeUrl){
 			return new dojo._Url(baseUrl,relativeUrl)+'';
@@ -178,7 +175,7 @@ dojo.requireIf(dojox.data && !!dojox.data.JsonRestStore,"dojox.data.restListener
 			// fire an XHR with appropriate modification for JSON handling
 			if(this.sendAsJson){
 				// send use JSON Messaging
-				args.postBody = dojo.toJson({
+				args.postData = dojo.toJson({
 					target:args.url,
 					method:method,
 					content: data,
@@ -190,7 +187,7 @@ dojo.requireIf(dojox.data && !!dojox.data.JsonRestStore,"dojox.data.restListener
 			}else{
 				args.postData = dojo.toJson(data);
 			}			
-			return dojo.xhr(method,args,args.postBody);
+			return dojo.xhr(method,args,args.postData);
 		}, 
 		subscribe: function(/*String*/channel, /*dojo.__XhrArgs?*/args){
 			// summary:
@@ -387,6 +384,9 @@ dojo.requireIf(dojox.data && !!dojox.data.JsonRestStore,"dojox.data.restListener
 			//		Called when a message is received from the server
 			//	message:
 			//		A cometd/XHR message
+			if(dojox.data && dojox.data.restListener){
+				dojox.data.restListener(message);
+			}
 		},
 		disconnected: function(){
 			// summary:

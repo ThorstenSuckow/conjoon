@@ -17,6 +17,6 @@ dojo.declare("dijit.form.VerticalRuleLabels", dijit.form.HorizontalRuleLabels,
 		return 100-pos;
 	},
 
-	// TODO: remove this.   Apparently it's not used.
+	// needed to prevent labels from being reversed in RTL mode
 	_isHorizontal: false
 });

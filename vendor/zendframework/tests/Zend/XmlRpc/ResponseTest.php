@@ -15,15 +15,12 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ResponseTest.php 17786 2009-08-23 22:26:33Z lars $
+ * @version $Id: ResponseTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once dirname(__FILE__)."/../../TestHelper.php";
 require_once 'Zend/XmlRpc/Response.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'PHPUnit/Framework/IncompleteTestError.php';
 
 /**
  * Test case for Zend_XmlRpc_Response
@@ -31,11 +28,11 @@ require_once 'PHPUnit/Framework/IncompleteTestError.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
-class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase 
+class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Zend_XmlRpc_Response object
@@ -44,9 +41,14 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
     protected $_response;
 
     /**
+     * @var bool
+     */
+    protected $_errorOccured = false;
+
+    /**
      * Setup environment
      */
-    public function setUp() 
+    public function setUp()
     {
         $this->_response = new Zend_XmlRpc_Response();
     }
@@ -54,7 +56,7 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
     /**
      * Teardown environment
      */
-    public function tearDown() 
+    public function tearDown()
     {
         unset($this->_response);
     }
@@ -82,9 +84,9 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
     /**
      * isFault() test
      *
-     * Call as method call 
+     * Call as method call
      *
-     * Returns: boolean 
+     * Returns: boolean
      */
     public function testIsFault()
     {
@@ -102,16 +104,16 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
         $this->_response->loadXml('foo');
         $this->assertType('Zend_XmlRpc_Fault', $this->_response->getFault());
     }
-    
+
     /**
      * loadXml() test
      *
-     * Call as method call 
+     * Call as method call
      *
      * Expects:
-     * - response: 
-     * 
-     * Returns: boolean 
+     * - response:
+     *
+     * Returns: boolean
      */
     public function testLoadXml()
     {
@@ -122,7 +124,7 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
         $value    = $param->appendChild($dom->createElement('value'));
         $value->appendChild($dom->createElement('string', 'Return value'));
 
-        $xml = $dom->saveXML();
+        $xml = $dom->saveXml();
 
         $parsed = $this->_response->loadXml($xml);
         $this->assertTrue($parsed, $xml);
@@ -134,6 +136,19 @@ class Zend_XmlRpc_ResponseTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->_response->loadXml(new stdClass()));
         $this->assertTrue($this->_response->isFault());
         $this->assertSame(650, $this->_response->getFault()->getCode());
+    }
+
+    /**
+     * @group ZF-9039
+     */
+    public function testExceptionIsThrownWhenInvalidXmlIsReturnedByServer()
+    {
+        set_error_handler(array($this, 'trackError'));
+        $invalidResponse = 'foo';
+        $response = new Zend_XmlRpc_Response();
+        $this->assertFalse($this->_errorOccured);
+        $this->assertFalse($response->loadXml($invalidResponse));
+        $this->assertFalse($this->_errorOccured);
     }
 
     /**
@@ -162,9 +177,9 @@ EOD;
     }
 
     /**
-     * helper for saveXML() and __toString() tests
-     * 
-     * @param string $xml 
+     * helper for saveXml() and __toString() tests
+     *
+     * @param string $xml
      * @return void
      */
     protected function _testXmlResponse($xml)
@@ -183,12 +198,12 @@ EOD;
     }
 
     /**
-     * saveXML() test
+     * saveXml() test
      */
     public function testSaveXML()
     {
         $this->_response->setReturnValue('return value');
-        $xml = $this->_response->saveXML();
+        $xml = $this->_response->saveXml();
         $this->_testXmlResponse($xml);
     }
 
@@ -208,8 +223,10 @@ EOD;
     public function testSetGetEncoding()
     {
         $this->assertEquals('UTF-8', $this->_response->getEncoding());
-        $this->_response->setEncoding('ISO-8859-1');
+        $this->assertEquals('UTF-8', Zend_XmlRpc_Value::getGenerator()->getEncoding());
+        $this->assertSame($this->_response, $this->_response->setEncoding('ISO-8859-1'));
         $this->assertEquals('ISO-8859-1', $this->_response->getEncoding());
+        $this->assertEquals('ISO-8859-1', Zend_XmlRpc_Value::getGenerator()->getEncoding());
     }
 
     public function testLoadXmlThrowsExceptionWithMissingNodes()
@@ -229,5 +246,10 @@ EOD;
             $this->fail('Invalid XML-RPC response should raise an exception');
         } catch (Exception $e) {
         }
+    }
+
+    public function trackError($error)
+    {
+        $this->_errorOccured = true;
     }
 }

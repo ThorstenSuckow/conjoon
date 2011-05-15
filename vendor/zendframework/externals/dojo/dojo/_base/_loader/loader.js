@@ -23,14 +23,14 @@
 
 		_moduleHasPrefix: function(/*String*/module){
 			// summary: checks to see if module has been established
-			var mp = this._modulePrefixes;
+			var mp = d._modulePrefixes;
 			return !!(mp[module] && mp[module].value); // Boolean
 		},
 
 		_getModulePrefix: function(/*String*/module){
 			// summary: gets the prefix associated with module
-			var mp = this._modulePrefixes;
-			if(this._moduleHasPrefix(module)){
+			var mp = d._modulePrefixes;
+			if(d._moduleHasPrefix(module)){
 				return mp[module].value; // String
 			}
 			return module; // String
@@ -71,9 +71,9 @@
 		// cb: 
 		//		a callback function to pass the result of evaluating the script
 
-		var uri = ((relpath.charAt(0) == '/' || relpath.match(/^\w+:/)) ? "" : this.baseUrl) + relpath;
+		var uri = ((relpath.charAt(0) == '/' || relpath.match(/^\w+:/)) ? "" : d.baseUrl) + relpath;
 		try{
-			return !module ? this._loadUri(uri, cb) : this._loadUriAndCheck(uri, module, cb); // Boolean
+			return !module ? d._loadUri(uri, cb) : d._loadUriAndCheck(uri, module, cb); // Boolean
 		}catch(e){
 			console.error(e);
 			return false; // Boolean
@@ -94,24 +94,42 @@
 		//		as an expression, typically used by the resource bundle loader to
 		//		load JSON-style resources
 
-		if(this._loadedUrls[uri]){
+		if(d._loadedUrls[uri]){
 			return true; // Boolean
 		}
-		var contents = this._getText(uri, true);
-		if(!contents){ return false; } // Boolean
-		this._loadedUrls[uri] = true;
-		this._loadedUrls.push(uri);
-		if(cb){
-			contents = '('+contents+')';
-		}else{
-			//Only do the scoping if no callback. If a callback is specified,
-			//it is most likely the i18n bundle stuff.
-			contents = this._scopePrefix + contents + this._scopeSuffix;
+		d._inFlightCount++; // block addOnLoad calls that arrive while we're busy downloading
+		var contents = d._getText(uri, true);
+		if(contents){ // not 404, et al
+			d._loadedUrls[uri] = true;
+			d._loadedUrls.push(uri);
+			if(cb){
+				contents = '('+contents+')';
+			}else{
+				//Only do the scoping if no callback. If a callback is specified,
+				//it is most likely the i18n bundle stuff.
+				contents = d._scopePrefix + contents + d._scopeSuffix;
+			}
+			if(!d.isIE){ contents += "\r\n//@ sourceURL=" + uri; } // debugging assist for Firebug
+			var value = d["eval"](contents);
+			if(cb){ cb(value); }
 		}
-		if(d.isMoz){ contents += "\r\n//@ sourceURL=" + uri; } // debugging assist for Firebug
-		var value = d["eval"](contents);
-		if(cb){ cb(value); }
-		return true; // Boolean
+		// Check to see if we need to call _callLoaded() due to an addOnLoad() that arrived while we were busy downloading
+		if(--d._inFlightCount == 0 && d._postLoad && d._loaders.length){
+			// We shouldn't be allowed to get here but Firefox allows an event 
+			// (mouse, keybd, async xhrGet) to interrupt a synchronous xhrGet. 
+			// If the current script block contains multiple require() statements, then after each
+			// require() returns, inFlightCount == 0, but we want to hold the _callLoaded() until
+			// all require()s are done since the out-of-sequence addOnLoad() presumably needs them all.
+			// setTimeout allows the next require() to start (if needed), and then we check this again.
+			setTimeout(function(){ 
+				// If inFlightCount > 0, then multiple require()s are running sequentially and 
+				// the next require() started after setTimeout() was executed but before we got here.
+				if(d._inFlightCount == 0){ 
+					d._callLoaded();
+				}
+			}, 0);
+		}
+		return !!contents; // Boolean: contents? true : false
 	}
 	//>>excludeEnd("xdomainExclude");
 
@@ -120,11 +138,11 @@
 		// summary: calls loadUri then findModule and returns true if both succeed
 		var ok = false;
 		try{
-			ok = this._loadUri(uri, cb);
+			ok = d._loadUri(uri, cb);
 		}catch(e){
 			console.error("failed loading " + uri + " with error: " + e);
 		}
-		return !!(ok && this._loadedModules[moduleName]); // Boolean
+		return !!(ok && d._loadedModules[moduleName]); // Boolean
 	}
 
 	dojo.loaded = function(){
@@ -134,20 +152,20 @@
 		//		direct dojo.connect() to this method in order to handle
 		//		initialization tasks that require the environment to be
 		//		initialized. In a browser host,	declarative widgets will 
-		//		be constructed when this function	finishes runing.
-		this._loadNotifying = true;
-		this._postLoad = true;
+		//		be constructed when this function finishes runing.
+		d._loadNotifying = true;
+		d._postLoad = true;
 		var mll = d._loaders;
 
 		//Clear listeners so new ones can be added
 		//For other xdomain package loads after the initial load.
-		this._loaders = [];
+		d._loaders = [];
 
 		for(var x = 0; x < mll.length; x++){
 			mll[x]();
 		}
 
-		this._loadNotifying = false;
+		d._loadNotifying = false;
 		
 		//Make sure nothing else got added to the onload queue
 		//after this first run. If something did, and we are not waiting for any
@@ -178,18 +196,35 @@
 		}
 	}
 
-	dojo.addOnLoad = function(/*Object?*/obj, /*String|Function*/functionName){
+	dojo.ready = dojo.addOnLoad = function(/*Object*/obj, /*String|Function?*/functionName){
 		// summary:
+		//		Registers a function to be triggered after the DOM and dojo.require() calls 
+		//		have finished loading.
+		//
+		// description:
 		//		Registers a function to be triggered after the DOM has finished
-		//		loading and widgets declared in markup have been instantiated.
+		//		loading and `dojo.require` modules have loaded. Widgets declared in markup 
+		//		have been instantiated if `djConfig.parseOnLoad` is true when this fires. 
+		//
 		//		Images and CSS files may or may not have finished downloading when
 		//		the specified function is called.  (Note that widgets' CSS and HTML
 		//		code is guaranteed to be downloaded before said widgets are
-		//		instantiated.)
+		//		instantiated, though including css resouces BEFORE any script elements
+		//		is highly recommended).
+		//
 		// example:
-		//	|	dojo.addOnLoad(functionPointer);
+		//	Register an anonymous function to run when everything is ready
+		//	|	dojo.addOnLoad(function(){ doStuff(); });
+		//
+		// example:
+		//	Register a function to run when everything is ready by pointer:
+		//	|	var init = function(){ doStuff(); }
+		//	|	dojo.addOnLoad(init);
+		//
+		// example:
+		//	Register a function to run scoped to `object`, either by name or anonymously:
 		//	|	dojo.addOnLoad(object, "functionName");
-		//	|	dojo.addOnLoad(object, function(){ /* ... */});
+		//	|	dojo.addOnLoad(object, function(){ doStuff(); });
 
 		d._onto(d._loaders, obj, functionName);
 
@@ -228,12 +263,10 @@
 		// though). This might also help the issue with FF 2.0 and freezing
 		// issues where we try to do sync xhr while background css images are
 		// being loaded (trac #2572)? Consider for 0.9.
-		if(typeof setTimeout == "object" || (dojo.config.useXDomain && d.isOpera)){
-			if(dojo.isAIR){
-				setTimeout(function(){dojo.loaded();}, 0);
-			}else{
-				setTimeout(dojo._scopeName + ".loaded();", 0);
-			}
+		if(typeof setTimeout == "object" || (d.config.useXDomain && d.isOpera)){
+			setTimeout(
+				d.isAIR ? function(){ d.loaded(); } : d._scopeName + ".loaded();",
+				0);
 		}else{
 			d.loaded();
 		}
@@ -246,11 +279,11 @@
 		var syms = modulename.split(".");
 		for(var i = syms.length; i>0; i--){
 			var parentModule = syms.slice(0, i).join(".");
-			if((i==1) && !this._moduleHasPrefix(parentModule)){		
+			if(i == 1 && !d._moduleHasPrefix(parentModule)){		
 				// Support default module directory (sibling of dojo) for top-level modules 
 				syms[0] = "../" + syms[0];
 			}else{
-				var parentModulePath = this._getModulePrefix(parentModule);
+				var parentModulePath = d._getModulePrefix(parentModule);
 				if(parentModulePath != parentModule){
 					syms.splice(0, i, parentModulePath);
 					break;
@@ -296,6 +329,47 @@
 		//		and exception will be throws whereas no exception is raised
 		//		when called as `dojo.require("a.b.c", true)`
 		//	description:
+		// 		Modules are loaded via dojo.require by using one of two loaders: the normal loader
+		// 		and the xdomain loader. The xdomain loader is used when dojo was built with a
+		// 		custom build that specified loader=xdomain and the module lives on a modulePath
+		// 		that is a whole URL, with protocol and a domain. The versions of Dojo that are on
+		// 		the Google and AOL CDNs use the xdomain loader.
+		// 
+		// 		If the module is loaded via the xdomain loader, it is an asynchronous load, since
+		// 		the module is added via a dynamically created script tag. This
+		// 		means that dojo.require() can return before the module has loaded. However, this 
+		// 		should only happen in the case where you do dojo.require calls in the top-level
+		// 		HTML page, or if you purposely avoid the loader checking for dojo.require
+		// 		dependencies in your module by using a syntax like dojo["require"] to load the module.
+		// 
+		// 		Sometimes it is useful to not have the loader detect the dojo.require calls in the
+		// 		module so that you can dynamically load the modules as a result of an action on the
+		// 		page, instead of right at module load time.
+		// 
+		// 		Also, for script blocks in an HTML page, the loader does not pre-process them, so
+		// 		it does not know to download the modules before the dojo.require calls occur.
+		// 
+		// 		So, in those two cases, when you want on-the-fly module loading or for script blocks
+		// 		in the HTML page, special care must be taken if the dojo.required code is loaded
+		// 		asynchronously. To make sure you can execute code that depends on the dojo.required
+		// 		modules, be sure to add the code that depends on the modules in a dojo.addOnLoad()
+		// 		callback. dojo.addOnLoad waits for all outstanding modules to finish loading before
+		// 		executing. Example:
+		// 
+		//	   	|	<script type="text/javascript">
+		//		|	dojo.require("foo");
+		//		|	dojo.require("bar");
+		//	   	|	dojo.addOnLoad(function(){
+		//	   	|		//you can now safely do something with foo and bar
+		//	   	|	});
+		//	   	|	</script>
+		// 
+		// 		This type of syntax works with both xdomain and normal loaders, so it is good
+		// 		practice to always use this idiom for on-the-fly code loading and in HTML script
+		// 		blocks. If at some point you change loaders and where the code is loaded from,
+		// 		it will all still work.
+		// 
+		// 		More on how dojo.require
 		//		`dojo.require("A.B")` first checks to see if symbol A.B is
 		//		defined. If it is, it is simply returned (nothing to do).
 		//	
@@ -305,7 +379,8 @@
 		//		`dojo.require` throws an excpetion if it cannot find a file
 		//		to load, or if the symbol `A.B` is not defined after loading.
 		//	
-		//		It returns the object `A.B`.
+		//		It returns the object `A.B`, but note the caveats above about on-the-fly loading and
+		// 		HTML script blocks when the xdomain loader is loading a module.
 		//	
 		//		`dojo.require()` does nothing about importing symbols into
 		//		the current namespace.  It is presumed that the caller will
@@ -321,19 +396,19 @@
 		//		|	var B = dojo.require("A.B");
 		//	   	|	...
 		//	returns: the required namespace object
-		omitModuleCheck = this._global_omit_module_check || omitModuleCheck;
+		omitModuleCheck = d._global_omit_module_check || omitModuleCheck;
 
 		//Check if it is already loaded.
-		var module = this._loadedModules[moduleName];
+		var module = d._loadedModules[moduleName];
 		if(module){
 			return module;
 		}
 
 		// convert periods to slashes
-		var relpath = this._getModuleSymbols(moduleName).join("/") + '.js';
+		var relpath = d._getModuleSymbols(moduleName).join("/") + '.js';
 
-		var modArg = (!omitModuleCheck) ? moduleName : null;
-		var ok = this._loadPath(relpath, modArg);
+		var modArg = !omitModuleCheck ? moduleName : null;
+		var ok = d._loadPath(relpath, modArg);
 
 		if(!ok && !omitModuleCheck){
 			throw new Error("Could not load '" + moduleName + "'; last tried '" + relpath + "'");
@@ -341,9 +416,9 @@
 
 		// check that the symbol was defined
 		// Don't bother if we're doing xdomain (asynchronous) loading.
-		if(!omitModuleCheck && !this._isXDomain){
+		if(!omitModuleCheck && !d._isXDomain){
 			// pass in false so we can give better error
-			module = this._loadedModules[moduleName];
+			module = d._loadedModules[moduleName];
 			if(!module){
 				throw new Error("symbol '" + moduleName + "' is not defined after loading '" + relpath + "'"); 
 			}
@@ -354,15 +429,18 @@
 
 	dojo.provide = function(/*String*/ resourceName){
 		//	summary:
+		//		Register a resource with the package system. Works in conjunction with `dojo.require`
+		//
+		//	description:
+		//		Each javascript source file is called a resource.  When a
+		//		resource is loaded by the browser, `dojo.provide()` registers
+		//		that it has been loaded.
+		//
 		//		Each javascript source file must have at least one
 		//		`dojo.provide()` call at the top of the file, corresponding to
 		//		the file name.  For example, `js/dojo/foo.js` must have
 		//		`dojo.provide("dojo.foo");` before any calls to
 		//		`dojo.require()` are made.
-		//	description:
-		//		Each javascript source file is called a resource.  When a
-		//		resource is loaded by the browser, `dojo.provide()` registers
-		//		that it has been loaded.
 		//	
 		//		For backwards compatibility reasons, in addition to registering
 		//		the resource, `dojo.provide()` also ensures that the javascript
@@ -377,6 +455,13 @@
 		//		are combined into one bigger file (similar to a .lib or .jar
 		//		file), that file may contain multiple dojo.provide() calls, to
 		//		note that it includes multiple resources.
+		//
+		// resourceName: String
+		//		A dot-sperated string identifying a resource. 
+		//
+		// example:
+		//	Safely create a `my` object, and make dojo.require("my.CustomModule") work
+		//	|	dojo.provide("my.CustomModule"); 
 
 		//Make sure we have a string.
 		resourceName = resourceName + "";
@@ -424,8 +509,12 @@
 
 	dojo.requireIf = function(/*Boolean*/ condition, /*String*/ resourceName){
 		// summary:
-		//		If the condition is true then call dojo.require() for the specified
+		//		If the condition is true then call `dojo.require()` for the specified
 		//		resource
+		//
+		// example:
+		//	|	dojo.requireIf(dojo.isBrowser, "my.special.Module");
+		
 		if(condition === true){
 			// FIXME: why do we support chained require()'s here? does the build system?
 			var args = [];
@@ -440,7 +529,7 @@
 
 	dojo.registerModulePath = function(/*String*/module, /*String*/prefix){
 		//	summary: 
-		//		maps a module name to a path
+		//		Maps a module name to a path
 		//	description: 
 		//		An unregistered module is given the default path of ../[module],
 		//		relative to Dojo root. For example, module acme is mapped to
@@ -499,7 +588,10 @@
 		//		bundle is found
 		//
 		// bundleName: 
-		//		bundle name, i.e. the filename without the '.js' suffix
+		//		bundle name, i.e. the filename without the '.js' suffix. Using "nls" as a
+		//		a bundle name is not supported, since "nls" is the name of the folder
+		//		that holds bundles. Using "nls" as the bundle name will cause problems
+		//		with the custom build.
 		//
 		// locale: 
 		//		the locale to load (optional)  By default, the browser's user
@@ -543,10 +635,10 @@
 	};
 
 
-	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$");
-	var ire = new RegExp("^((([^\\[:]+):)?([^@]+)@)?(\\[([^\\]]+)\\]|([^\\[:]*))(:([0-9]+))?$");
+	var ore = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$"),
+		ire = new RegExp("^((([^\\[:]+):)?([^@]+)@)?(\\[([^\\]]+)\\]|([^\\[:]*))(:([0-9]+))?$");
 
-	dojo._Url = function(/*dojo._Url||String...*/){
+	dojo._Url = function(/*dojo._Url|String...*/){
 		// summary: 
 		//		Constructor to create an object representing a URL.
 		//		It is marked as private, since we might consider removing
@@ -557,10 +649,9 @@
 		//		the current document use:
 		//      	new dojo._Url(document.baseURI, url)
 
-		var n = null;
-
-		var _a = arguments;
-		var uri = [_a[0]];
+		var n = null,
+			_a = arguments,
+			uri = [_a[0]];
 		// resolve uri components relative to each other
 		for(var i = 1; i<_a.length; i++){
 			if(!_a[i]){ continue; }
@@ -568,8 +659,8 @@
 			// Safari doesn't support this.constructor so we have to be explicit
 			// FIXME: Tracked (and fixed) in Webkit bug 3537.
 			//		http://bugs.webkit.org/show_bug.cgi?id=3537
-			var relobj = new d._Url(_a[i]+"");
-			var uriobj = new d._Url(uri[0]+"");
+			var relobj = new d._Url(_a[i]+""),
+				uriobj = new d._Url(uri[0]+"");
 
 			if(
 				relobj.path == "" &&
@@ -701,7 +792,7 @@
 			loc = d.baseUrl + loc;
 		}
 
-		return new d._Url(loc, url); // String
+		return new d._Url(loc, url); // dojo._Url
 	}
 //>>excludeStart("webkitMobile", kwArgs.webkitMobile);
 })();

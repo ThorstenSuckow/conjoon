@@ -23,6 +23,7 @@ dojo.declare("dojox.form._BusyButtonMixin",
 	postCreate: function(){
 		// summary:
 		//	stores initial label and timeout for reference
+		this.inherited(arguments);
 		this._label = this.containerNode.innerHTML;
 		this._initTimeout = this.timeout;
 		
@@ -36,7 +37,7 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		// summary:
 		//	sets state from idle to busy
 		this.isBusy = true;
-		this.attr("disabled", true);
+		this.set("disabled", true);
 			
 		this.setLabel(this.busyLabel, this.timeout);
 	},
@@ -45,7 +46,7 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		// summary:
 		//	if no timeout is set or for other reason the user can put the button back
 		//  to being idle
-		this.attr("disabled", false);
+		this.set("disabled", false);
 		this.isBusy = false;
 		this.setLabel(this._label);
 		if(this._timeout){	clearTimeout(this._timeout); }
@@ -84,7 +85,6 @@ dojo.declare("dojox.form._BusyButtonMixin",
 		}
 		this.containerNode.innerHTML = this.label;
 		
-		this._layoutHack();
 		if(this.showLabel == false && !(dojo.attr(this.domNode, "title"))){
 			this.titleNode.title=dojo.trim(this.containerNode.innerText || this.containerNode.textContent || '');
 		}

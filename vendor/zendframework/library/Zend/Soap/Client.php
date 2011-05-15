@@ -15,18 +15,24 @@
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Client.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Client.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-/** Zend_Soap_Server */
+/**
+ * @see Zend_Soap_Server
+ */
 require_once 'Zend/Soap/Server.php';
 
-/** Zend_Soap_Client_Local */
+/**
+ * @see Zend_Soap_Client_Local
+ */
 require_once 'Zend/Soap/Client/Local.php';
 
-/** Zend_Soap_Client_Common */
+/**
+ * @see Zend_Soap_Client_Common
+ */
 require_once 'Zend/Soap/Client/Common.php';
 
 /**
@@ -35,7 +41,7 @@ require_once 'Zend/Soap/Client/Common.php';
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Soap_Client
@@ -82,6 +88,7 @@ class Zend_Soap_Client
     protected $_stream_context      = null;
     protected $_features            = null;
     protected $_cache_wsdl          = null;
+    protected $_user_agent          = null;
 
     /**
      * WSDL used to access server
@@ -256,6 +263,11 @@ class Zend_Soap_Client
                 case 'cache_wsdl':
                     $this->setWsdlCache($value);
                     break;
+                case 'useragent':
+                case 'userAgent':
+                case 'user_agent':
+                    $this->setUserAgent($value);
+                    break;
 
                 // Not used now
                 // case 'connection_timeout':
@@ -302,10 +314,21 @@ class Zend_Soap_Client
         $options['stream_context'] = $this->getStreamContext();
         $options['cache_wsdl']     = $this->getWsdlCache();
         $options['features']       = $this->getSoapFeatures();
+        $options['user_agent']     = $this->getUserAgent();
 
         foreach ($options as $key => $value) {
-            if ($value == null) {
-                unset($options[$key]);
+            /*
+             * ugly hack as I don't know if checking for '=== null'
+             * breaks some other option
+             */
+            if (in_array($key, array('user_agent', 'cache_wsdl', 'compression'))) {
+                if ($value === null) {
+                    unset($options[$key]);
+                }
+            } else {
+                if ($value == null) {
+                    unset($options[$key]);
+                }
             }
         }
 
@@ -415,13 +438,14 @@ class Zend_Soap_Client
      */
     public function validateUrn($urn)
     {
-        $segs = parse_url($urn);
-        if (isset($segs['scheme'])) {
-            return true;
+        $scheme = parse_url($urn, PHP_URL_SCHEME);
+        if ($scheme === false || $scheme === null) {
+            require_once 'Zend/Soap/Client/Exception.php';
+            throw new Zend_Soap_Client_Exception('Invalid URN');
         }
 
-        require_once 'Zend/Soap/Client/Exception.php';
-        throw new Zend_Soap_Client_Exception('Invalid URN');
+        return true;
+
     }
 
     /**
@@ -743,15 +767,17 @@ class Zend_Soap_Client
     /**
      * Set compression options
      *
-     * @param  int $compressionOptions
+     * @param  int|null $compressionOptions
      * @return Zend_Soap_Client
      */
     public function setCompressionOptions($compressionOptions)
     {
-        $this->_compression = $compressionOptions;
-
+        if ($compressionOptions === null) {
+            $this->_compression = null;
+        } else {
+            $this->_compression = (int)$compressionOptions;
+        }
         $this->_soapClient = null;
-
         return $this;
     }
 
@@ -833,21 +859,53 @@ class Zend_Soap_Client
     /**
      * Set the SOAP Wsdl Caching Options
      *
-     * @param string|int|boolean $caching
+     * @param string|int|boolean|null $caching
      * @return Zend_Soap_Client
      */
-    public function setWsdlCache($options)
+    public function setWsdlCache($caching)
     {
-        $this->_cache_wsdl = $options;
+        if ($caching === null) {
+            $this->_cache_wsdl = null;
+        } else {
+            $this->_cache_wsdl = (int)$caching;
+        }
         return $this;
     }
 
     /**
      * Get current SOAP Wsdl Caching option
+     *
+     * @return int
      */
     public function getWsdlCache()
     {
         return $this->_cache_wsdl;
+    }
+
+    /**
+     * Set the string to use in User-Agent header
+     *
+     * @param  string|null $userAgent
+     * @return Zend_Soap_Client
+     */
+    public function setUserAgent($userAgent)
+    {
+        if ($userAgent === null) {
+            $this->_user_agent = null;
+        } else {
+            $this->_user_agent = (string)$userAgent;
+        }
+        return $this;
+    }
+
+    /**
+     * Get current string to use in User-Agent header
+     *
+     * @return string|null
+     */
+    public function getUserAgent()
+    {
+        return $this->_user_agent;
     }
 
     /**
@@ -1010,13 +1068,13 @@ class Zend_Soap_Client
      */
     public function addSoapInputHeader(SoapHeader $header, $permanent = false)
     {
-    	if ($permanent) {
-    		$this->_permanentSoapInputHeaders[] = $header;
-    	} else {
-    		$this->_soapInputHeaders[] = $header;
-    	}
+        if ($permanent) {
+            $this->_permanentSoapInputHeaders[] = $header;
+        } else {
+            $this->_soapInputHeaders[] = $header;
+        }
 
-    	return $this;
+        return $this;
     }
 
     /**
@@ -1039,7 +1097,7 @@ class Zend_Soap_Client
      */
     public function getLastSoapOutputHeaderObjects()
     {
-    	return $this->_soapOutputHeaders;
+        return $this->_soapOutputHeaders;
     }
 
     /**

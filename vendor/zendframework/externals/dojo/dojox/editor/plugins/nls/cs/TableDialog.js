@@ -10,7 +10,6 @@
 	backgroundColor: "Barva pozadí:",
 	borderColor: "Barva ohraničení:",
 	borderThickness: "TloušťkaOhraničení",
-	pixels: "Pixely",
 	percent: "procent",
 	pixels: "pixelů",
 	"default": "výchozí",
@@ -19,6 +18,7 @@
 	right: "vpravo",
 	buttonSet: "Nastavit", // translated elsewhere?
 	buttonInsert: "Vložit",
+	buttonCancel: "Storno",
 
 	selectTableLabel: "Vybrat tabulku",
 	insertTableRowBeforeLabel: "Přidat řádek před",

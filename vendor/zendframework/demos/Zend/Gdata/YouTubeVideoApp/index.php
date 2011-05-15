@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Gdata
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -37,9 +37,9 @@
 session_start();
 
 /**
- * Set your developer key here. 
+ * Set your developer key here.
  *
- * NOTE: In a production application you may want to store this information in 
+ * NOTE: In a production application you may want to store this information in
  * an external file.
  */
 $_SESSION['developerKey'] = '<YOUR DEVELOPER KEY>';

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Crypt
  * @subpackage Math
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Bcmath.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Bcmath.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -33,7 +33,7 @@ require_once 'Zend/Crypt/Math/BigInteger/Interface.php';
  *
  * @category   Zend
  * @package    Zend_Crypt
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Crypt_Math_BigInteger_Bcmath implements Zend_Crypt_Math_BigInteger_Interface
@@ -166,14 +166,14 @@ class Zend_Crypt_Math_BigInteger_Bcmath implements Zend_Crypt_Math_BigInteger_In
         $cmp = bccomp($operand, 0);
         $return = '';
         if ($cmp == 0) {
-            return (chr(0));
+            return "\0";
         }
         while (bccomp($operand, 0) > 0) {
             $return = chr(bcmod($operand, 256)) . $return;
             $operand = bcdiv($operand, 256);
         }
         if (ord($return[0]) > 127) {
-            $return = chr(0) . $return;
+            $return = "\0" . $return;
         }
         return $return;
     }

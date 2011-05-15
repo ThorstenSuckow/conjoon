@@ -23,7 +23,7 @@ buildUtil.DojoBuildOptions = {
 		helpText: "The build will be stamped with this version string."
 	},
 	"localeList": {
-		defaultValue: "ar,ca,cs,da,de-de,el,en-gb,en-us,es-es,fi-fi,fr-fr,he-il,hu,it-it,ja-jp,ko-kr,nl-nl,no,pl,pt-br,pt-pt,ru,sk,sl,sv,th,tr,zh-tw,zh-cn",
+		defaultValue: "ar,ca,cs,da,de-de,el,en-gb,en-us,es-es,fi-fi,fr-fr,he-il,hu,it-it,ja-jp,ko-kr,nl-nl,nb,pl,pt-br,pt-pt,ru,sk,sl,sv,th,tr,zh-tw,zh-cn",
 		helpText: "The set of locales to use when flattening i18n bundles."
 	},
 	
@@ -50,8 +50,18 @@ buildUtil.DojoBuildOptions = {
 			+ "then code comments are stripped. If \"shrinksafe\" is specified, then "
 			+ "Dojo Shrinksafe will be used on the files, and line returns will be removed. "
 			+ "If \"shrinksafe.keepLines\" is specified, then Dojo Shrinksafe will be used "
-			+ "on the files, and line returns will be preserved. If \"packer\" is specified, "
-			+ "Then Dean Edwards' Packer will be used."
+			+ "on the files, and line returns will be preserved.  See also \"stripConsole\". "
+			+ "Google Closure's compiler can be used by specifying \"closure\" as the value. "
+			+ "It does not use the stripConsole build option, and it REQUIRES Java 6 to run, and it may make "
+			+ "some complaints about the code and print out 'error's, but if the build completes, "
+			+ "then the code should work. Do not taunt happy Closure compiler. To use Closure compiler, "
+			+ "download it from here:\n"
+			+ "http://code.google.com/p/closure-compiler/downloads/list\n"
+			+ "And place the compiler.jar file somewhere you can easily reference. Then use the following "
+			+ "to execute the build (remember Java 6):\n"
+			+ "java -classpath ../shrinksafe/js.jar:../closurecompiler/compiler.jar org.mozilla.javascript.tools.shell.Main build.js\n"
+			+ "and place your build arguments on the same line after that text. Change the ../closurecompiler "
+			+ "path to the path where you keep Closure's compiler.jar." 
 	},
 	"layerOptimize": {
 		defaultValue: "shrinksafe",
@@ -59,8 +69,18 @@ buildUtil.DojoBuildOptions = {
 			+ "then code comments are stripped. If \"shrinksafe\" is specified, then "
 			+ "Dojo Shrinksafe will be used on the files, and line returns will be removed. "
 			+ "If \"shrinksafe.keepLines\" is specified, then Dojo Shrinksafe will be used "
-			+ "on the layer files, and line returns will be preserved. If \"packer\" is specified, "
-			+ "Then Dean Edwards' Packer will be used."
+			+ "on the layer files, and line returns will be preserved. "
+			+ "Google Closure's compiler can be used by specifying \"closure\" as the value. "
+			+ "It does not use the stripConsole build option, and it REQUIRES Java 6 to run, and it may make "
+			+ "some complaints about the code and print out 'error's, but if the build completes, "
+			+ "then the code should work. Do not taunt happy Closure compiler. To use Closure compiler, "
+			+ "download it from here:\n"
+			+ "http://code.google.com/p/closure-compiler/downloads/list\n"
+			+ "And place the compiler.jar file somewhere you can easily reference. Then use the following "
+			+ "to execute the build (remember Java 6):\n"
+			+ "java -classpath ../shrinksafe/js.jar:../closurecompiler/compiler.jar org.mozilla.javascript.tools.shell.Main build.js\n"
+			+ "and place your build arguments on the same line after that text. Change the ../closurecompiler "
+			+ "path to the path where you keep Closure's compiler.jar." 
 	},
 	"cssOptimize": {
 		defaultValue: "",
@@ -79,22 +99,20 @@ buildUtil.DojoBuildOptions = {
 	},
 	
 	"stripConsole": {
-		defaultValue: "",
+		defaultValue: undefined,
 		helpText: "Strips console method calls from JS source. Applied to layers and individual modules "
-			+ "resource files. Valid values are \"normal\" (strips all but console.warn and console.error "
-			+ "calls), \"all\" (strips all console calls), \"normal,warn\" (strips all but console.error "
-			+ "calls), \"normal,error\" (strips all but console.warn errors). WARNING: stripConsole is "
-			+ "regexp-based and could cause code side effects. Make sure to only "
-			+ "call console methods on their own line, not as part of an expression and always be sure "
-			+ "to use braces around code blocks that have console calls (like if/else)."
+			+ "resource files. Valid values are \"none\" (leaves all console calls alone, same as "
+			+ "default \"\"), \"normal\" (strips all but console.warn and console.error calls), "
+			+ "\"warn\" (strips all but console.error calls), \"all\" (strips all console calls).  "
+			+ "NOTE: only has effect if optimize includes use of shrinksafe."
 	},
 
 	"copyTests": {
-		defaultValue: true,
+		defaultValue: false,
 		helpText: "Turn on or off copying of test files."
 	},
 	"mini": {
-		defaultValue: false,
+		defaultValue: true,
 		helpText: "Removes files like tests, demos dijit/bench, unfinished themes, and interned "
 			+ "Dijit templates from the build. Overrides the value set for copyTests."
 	},
@@ -151,9 +169,10 @@ buildUtil.DojoBuildOptions = {
 	"expandProvide": {
 		defaultValue: false,
 		helpText: "Expands dojo.provide calls with faster calls at the expense of a larger file size. Only use the option "
-			+ "if your profiling reveals that dojo.provide calls are taking a noticeable amount of time. It replaces "
+			+ "if your profiling reveals that dojo.provide calls are taking a noticeable amount of time. Even then, it could "
+			+ "cause errors in the built files. If you find an error after building, turn this option off. It replaces "
 			+ "dojo.provide(\"foo.bar\") statements with the shortest valid programmatic equivalent:\n"
-			+ "if(typeof foo==\"undefined\"){foo={};};foo.bar=foo.bar||{};"
+			+ "if(typeof foo==\"undefined\"){foo={};};foo.bar=foo.bar||{};\nIgnored for xdomain builds."
 	},
 	"buildLayers": {
 		defaultValue: "",
@@ -165,6 +184,18 @@ buildUtil.DojoBuildOptions = {
 		defaultValue: "default",
 		helpText: "Select a DOM query engine. Default value is the normal dojo.query engine. Using query=sizzle will use the Sizzle engine."
 			+ "Normal Dojo tests are not run routinely with the Sizzle engine. See dojo/_base/sizzle.js for the version of Sizzle."
+	},
+	"removeDefaultNameSpaces": {
+		defaultValue: false,
+		helpText: "Removes the default 'com', 'org' and 'net' namespaces that are present in Rhino. This is hazardous to use if "
+			+ "the build system is used as part of a Rhino-based server-side solution, so use with caution. Weird build errors "
+			+ "might occur. Only use if your own code includes things in a com, org or net namespace."
+	},
+	"addGuards": {
+		defaultValue: true,
+		helpText: "Set to false to remove the code guards that protect modules from re-definition. In general you SHOULD NOT "
+			+ "set this value to false. Only do it if you want an even smaller Dojo Base build and you know the implications "
+			+ "of re-defining modules. It is bad. Do not do it."
 	}
 };
 
@@ -230,12 +261,40 @@ buildUtil.makeBuildOptions = function(/*Array*/scriptArgs){
 	//Attach the final loader type to the dependencies
 	dependencies.loader = kwArgs.loader;
 
+	//Fix args for bugs
+	if(kwArgs.expandProvide && kwArgs.loader == "xdomain"){
+		logger.info("NOTE: expandProvide not compatible with xdomain builds. Ignoring expandProvide option.");
+		kwArgs.expandProvide = false;
+	}
+	
+	//Notify on incompatible options.
+	if(kwArgs.optimize && kwArgs.optimize != "shrinksafe" && kwArgs.stripConsole){
+		logger.info("NOTE: stripConsole is only supported for an optimize=shrinksafe value.");
+	}
+	if(kwArgs.layerOptimize && kwArgs.layerOptimize != "shrinksafe" && kwArgs.stripConsole){
+		logger.info("layerOPtimize: [" + kwArgs.layerOptimize + "]");
+		logger.info("NOTE: stripConsole is only supported for an layerOptimize=shrinksafe value.");
+	}
+
+	//Validate some values.
+	if(typeof kwArgs.scopeDjConfig != "string") {
+		throw "Due to deficiencies in the build system, scopeDjConfig needs to be a string.";
+	}
+
+
+	//Do some hackery for closure compiler.
+	if(kwArgs.optimize.indexOf("closure") == 0 || kwArgs.layerOptimize.indexOf("closure") == 0){
+		//directly call JSSourceFile.fromCode will actually invoke SourceFile.fromCode,
+		//which will lead to error: "Cannot convert com.google.javascript.jscomp.SourceFile$Preloaded@26afa68a to com.google.javascript.jscomp.JSSourceFile"
+		//don't know whether it's a bug in closure or rhino - liucougar
+		var JSSourceFilefromCode=java.lang.Class.forName('com.google.javascript.jscomp.JSSourceFile').getMethod('fromCode',[java.lang.String,java.lang.String]);
+		buildUtil.closurefromCode = function(filename,content){
+			return JSSourceFilefromCode.invoke(null,[filename,content])
+		}
+	}
+
 	return kwArgs;
 }
-
-buildUtil.interningDojoUriRegExpString = "(((templatePath|templateCssPath)\\s*(=|:)\\s*)|dojo\\.uri\\.cache\\.allow\\(\\s*)dojo\\.(module)?Url\\(\\s*?[\\\"\\']([\\w\\.\\/]+)[\\\"\\'](([\\,\\s]*)[\\\"\\']([\\w\\.\\/]*)[\\\"\\'])?\\s*\\)";
-buildUtil.interningGlobalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString, "g");
-buildUtil.interningLocalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString);
 
 //Even though these are i18n-specific, they are not in i18nUtil.js since one is referenced
 //in this file. Want to avoid circular dependency loading issues.
@@ -1065,8 +1124,13 @@ buildUtil.internTemplateStringsInFile = function(resourceFile, srcRoot, prefixes
 	fileUtil.saveUtf8File(resourceFile, resourceContent);
 }
 
+buildUtil.interningDojoUriRegExpString = "(((templatePath|templateCssPath)\\s*(=|:)\\s*)dojo\\.(module)?Url\\(|dojo\\.cache\\s*\\(\\s*)\\s*?[\\\"\\']([\\w\\.\\/]+)[\\\"\\'](([\\,\\s]*)[\\\"\\']([\\w\\.\\/]*)[\\\"\\'])?(\\s*,\\s*)?([^\\)]*)?\\s*\\)";
+buildUtil.interningGlobalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString, "g");
+buildUtil.interningLocalDojoUriRegExp = new RegExp(buildUtil.interningDojoUriRegExpString);
+
 buildUtil.interningRegexpMagic = function(resourceFile, resourceContent, srcRoot, prefixes, skiplist){
 	var shownFileName = false;
+
 	return resourceContent.replace(buildUtil.interningGlobalDojoUriRegExp, function(matchString){
 		var parts = matchString.match(buildUtil.interningLocalDojoUriRegExp);
 
@@ -1089,11 +1153,20 @@ buildUtil.interningRegexpMagic = function(resourceFile, resourceContent, srcRoot
 			//buildUtil.jsEscape will add starting and ending double-quotes.
 			var jsEscapedContent = buildUtil.jsEscape(fileUtil.readFile(filePath));
 			if(jsEscapedContent){
-				if(matchString.indexOf("dojo.uri.cache.allow") != -1){
-					//Handle dojo.uri.cache-related interning.
-					var parenIndex = matchString.lastIndexOf(")");
-					matchString = matchString.substring(0, parenIndex + 1) + ", " + jsEscapedContent;
-					matchString = matchString.replace("dojo.uri.cache.allow", "dojo.uri.cache.set");
+				if(matchString.indexOf("dojo.cache") != -1){
+					//Handle dojo.cache-related interning.
+					var endContent = parts[11];
+					if(!endContent){
+						endContent = jsEscapedContent;
+					}else{
+						var braceIndex = endContent.indexOf("{");
+						if(braceIndex != -1){
+							endContent = endContent.substring(0, braceIndex + 1)
+								+ 'value: ' + jsEscapedContent + ','
+								+ endContent.substring(braceIndex + 1, endContent.length);
+						}
+					}
+					matchString = 'dojo.cache("' + parts[6] + '", "' + parts[9] + '", ' + endContent + ')';
 				}else{
 					//Handle templatePath/templateCssPath-related interning.
 					if(parts[3] == "templatePath"){
@@ -1172,44 +1245,73 @@ buildUtil.convertArrayToObject = function(/*Array*/ary){
 	return result; //Object
 }
 
-buildUtil.optimizeJs = function(/*String fileName*/fileName, /*String*/fileContents, /*String*/copyright, /*String*/optimizeType){
+buildUtil.optimizeJs = function(/*String fileName*/fileName, /*String*/fileContents, /*String*/copyright, /*String*/optimizeType, /*String*/stripConsole){
 	//summary: either strips comments from string or compresses it.
 	copyright = copyright || "";
 
+	// understand stripConsole from dojo 1.3 and before
+	if (stripConsole == "none") {
+		stripConsole = undefined;
+	} else if (stripConsole == "normal,warn") {
+		//logger.info("Converting stripConsole "normal,warn" to \"warn\"
+		logger.warn("stripConsole value \"normal,warn\" replaced with \"warn\".  Please update your build scripts.");
+		stripConsole = "warn";
+	} else if (stripConsole == "normal,error") {
+		logger.warn("stripConsole value \"normal,error\" replaced with \"all\".  Please update your build scripts.");
+		stripConsole = "all";
+	}
+
+	// sanity check stripConsole
+	if (stripConsole != undefined && !stripConsole.match(/normal|warn|all/)) {
+		throw "Invalid stripConsole provided (" + stripConsole + ")";
+	}
+	if (stripConsole == undefined) {
+		// java will receive undefined as "undefined" but null as null.
+		stripConsole = null;
+	}
+
 	//Use rhino to help do minifying/compressing.
-	//Even when using Dean Edwards' Packer, run it through the custom rhino so
-	//that the source is formatted nicely for Packer's consumption (in particular get
-	//commas after function definitions).
 	var context = Packages.org.mozilla.javascript.Context.enter();
 	try{
 		// Use the interpreter for interactive input (copied this from Main rhino class).
 		context.setOptimizationLevel(-1);
 
-		if(optimizeType.indexOf("shrinksafe") == 0){
+		if(optimizeType.indexOf("shrinksafe") == 0 || optimizeType == "packer"){
 			//Apply compression using custom compression call in Dojo-modified rhino.
-			fileContents = new String(Packages.org.dojotoolkit.shrinksafe.Compressor.compressScript(fileContents, 0, 1));
+			fileContents = new String(Packages.org.dojotoolkit.shrinksafe.Compressor.compressScript(fileContents, 0, 1, stripConsole));
 			if(optimizeType.indexOf(".keepLines") == -1){
 				fileContents = fileContents.replace(/[\r\n]/g, "");
 			}
-		}else if(optimizeType == "comments" || optimizeType == "packer"){
+		}else if(optimizeType.indexOf("closure") == 0){
+			var jscomp = com.google.javascript.jscomp;
+			var flags = com.google.common.flags;
+
+			//Fake extern
+			var externSourceFile = buildUtil.closurefromCode("fakeextern.js", " ");
+
+			//Set up source input
+			var jsSourceFile = buildUtil.closurefromCode(String(fileName), String(fileContents));
+		
+			//Set up options
+			var options = new jscomp.CompilerOptions();
+			options.prettyPrint = optimizeType.indexOf(".keepLines") !== -1;
+			var FLAG_compilation_level = flags.Flag.value(jscomp.CompilationLevel.SIMPLE_OPTIMIZATIONS);
+			FLAG_compilation_level.get().setOptionsForCompilationLevel(options);
+			var FLAG_warning_level = flags.Flag.value(jscomp.WarningLevel.DEFAULT);
+			FLAG_warning_level.get().setOptionsForWarningLevel(options);
+
+			//Run the compiler
+			var compiler = new Packages.com.google.javascript.jscomp.Compiler(Packages.java.lang.System.err);
+			result = compiler.compile(externSourceFile, jsSourceFile, options);
+			fileContents = compiler.toSource();
+		}else if(optimizeType == "comments"){
 			//Strip comments
 			var script = context.compileString(fileContents, fileName, 1, null);
 			fileContents = new String(context.decompileScript(script, 0));
 			
-			if(optimizeType == "packer"){
-				buildUtil.setupPacker();
-
-				// var base62 = false;
-				// var shrink = true;
-				var base62 = true;
-				var shrink = true;
-				var packer = new Packer();
-				fileContents = packer.pack(fileContents, base62, shrink);
-			}else{
-				//Replace the spaces with tabs.
-				//Ideally do this in the pretty printer rhino code.
-				fileContents = fileContents.replace(/    /g, "\t");
-			}
+			//Replace the spaces with tabs.
+			//Ideally do this in the pretty printer rhino code.
+			fileContents = fileContents.replace(/    /g, "\t");
 
 			//If this is an nls bundle, make sure it does not end in a ;
 			//Otherwise, bad things happen.
@@ -1227,18 +1329,12 @@ buildUtil.optimizeJs = function(/*String fileName*/fileName, /*String*/fileConte
 
 
 buildUtil.setupPacker = function(){
-	//summary: loads the files needed to run Dean Edwards' Packer.
-	if(typeof(Packer) == "undefined"){
-		load("jslib/packer/base2.js");
-		load("jslib/packer/Packer.js");
-		load("jslib/packer/Words.js");
-
-	}
+	// no-op.
 }
 
 buildUtil.optimizeJsDir = function(/*String*/startDir, /*RegeExp*/optimizeIgnoreRegExp, /*String?*/copyrightText, /*String?*/optimizeType, /*String?*/stripConsole){
 	//summary: strips the JS comments from all the files in "startDir", and all subdirectories.
-	//Also runs shrinksafe or packer minification, and console call removal.
+	//Also runs shrinksafe minification, and console call removal.
 	var copyright = (copyrightText || fileUtil.readFile("copyright.txt")) + fileUtil.getLineSeparator();
 	var fileList = fileUtil.getFilteredFileList(startDir, /\.js$/, true);
 	
@@ -1267,7 +1363,7 @@ buildUtil.optimizeJsDir = function(/*String*/startDir, /*RegeExp*/optimizeIgnore
 				//Do comment removal.
 				if(optimizeType){
 					try{
-						fileContents = buildUtil.optimizeJs(fileList[i], fileContents, copyright, optimizeType);
+						fileContents = buildUtil.optimizeJs(fileList[i], fileContents, copyright, optimizeType, stripConsole);
 					}catch(e){
 						logger.error("Could not strip comments for file: " + fileList[i] + ", error: " + e);
 					}
@@ -1276,14 +1372,6 @@ buildUtil.optimizeJsDir = function(/*String*/startDir, /*RegeExp*/optimizeIgnore
 					fileContents = copyright + fileContents;
 				}
 
-				if(stripConsole){
-					try{
-						fileContents = buildUtil.stripConsole(fileContents, stripConsole);
-					}catch(e){
-						logger.error("Could not strip console calls for file: " + fileList[i] + ", error: " + e);
-					}
-				}
-				
 				//Write out the file with appropriate copyright.
 				fileUtil.saveUtf8File(fileList[i], fileContents);
 			}
@@ -1448,7 +1536,7 @@ buildUtil.flattenCss = function(/*String*/fileName, /*String*/fileContents, /*St
 	});
 }
 
-buildUtil.guardProvideRegExpString = "dojo\\.provide\\(([\\'\\\"][^\\'\\\"]*[\\'\\\"])\\)";
+buildUtil.guardProvideRegExpString = "dojo\\s*\\.\\s*provide\\s*\\(\\s*([\\'\\\"][^\\'\\\"]*[\\'\\\"])\\s*\\)";
 buildUtil.guardProvideRegExp = new RegExp(buildUtil.guardProvideRegExpString);
 buildUtil.guardProvideRegExpGlobal = new RegExp(buildUtil.guardProvideRegExpString, "g");
 
@@ -1576,7 +1664,6 @@ buildUtil.baseMappings = {
 	"indexOf": "array",
 	"lastIndexOf": "array",
 	"forEach": "array",
-	"_everyOrSome": "array",
 	"every": "array",
 	"some": "array",
 	"map": "array",
@@ -1668,6 +1755,7 @@ buildUtil.baseMappings = {
 	
 	"_Line": "fx",
 	"_Animation": "fx",
+	"Animation":"fx",
 	"_fade": "fx",
 	"fadeIn": "fx",
 	"fadeOut": "fx",
@@ -1811,6 +1899,9 @@ buildUtil.generateSym = function(/*String*/name){
 	s = "$D" + s;
 	buildUtil.symctr++;
 	var ret;
+	
+	//Make sure name is valid JS
+	name = name.replace(/-/g, "__");
 	if(kwArgs.symbol == "long"){
 		ret = name; // + "_" + s;
 	}else if(kwArgs.symbol == "short"){
@@ -1870,30 +1961,6 @@ buildUtil.insertSymbols = function(/*String*/startDir, /*Object*/kwArgs){
 			fileUtil.saveFile(startDir + "/symboltable.txt", symbolText);
 		}
 	}
-}
-
-buildUtil.stripConsole = function(/*String*/fileContents, /*String*/stripConsole){
-	//summary: removes console.* calls from the fileContents.
-	//stripConsole can have values of "normal", "all" or "normal,warn" or "normal,error"
-	if(stripConsole){
-		var methods = "assert|count|debug|dir|dirxml|group|groupEnd|info|profile|profileEnd|time|timeEnd|trace|log";
-		if(stripConsole.indexOf("all") != -1){
-			methods += "|warn|error";
-		}else{
-			if(stripConsole.indexOf("warn") != -1){
-				methods += "|warn";
-			}
-			if(stripConsole.indexOf("error") != -1){
-				methods += "|error";
-			}
-		}
-		var regexp = new RegExp("console\\.(" + methods + ")\\s*\\(", "g");
-		
-		var results = buildUtil.extractMatchedParens(regexp, fileContents, true);
-		fileContents = results ? results[0] : fileContents;
-	}
-
-	return fileContents;
 }
 
 buildUtil.extractMatchedParens = function(/*RegExp*/ regexp, /*String*/fileContents, /*Boolean*/removeTrailingComma){

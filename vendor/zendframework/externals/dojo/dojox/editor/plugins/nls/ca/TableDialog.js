@@ -10,7 +10,6 @@
 	backgroundColor: "Color de fons:",
 	borderColor: "Color del contorn",
 	borderThickness: "Gruix del contorn",
-	pixels: "Píxels",
 	percent: "percentatge",
 	pixels: "píxels",
 	"default": "default",
@@ -19,6 +18,7 @@
 	right: "dreta",
 	buttonSet: "Defineix", // translated elsewhere?
 	buttonInsert: "Insereix",
+	buttonCancel: "Cancel·la",
 
 	selectTableLabel: "Selecciona taula",
 	insertTableRowBeforeLabel: "Afegeix fila abans",
@@ -28,4 +28,3 @@
 	deleteTableRowLabel: "Suprimeix fila",
 	deleteTableColumnLabel: "Suprimeix columna"
 })
-

@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewScriptTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ViewScriptTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Form_Decorator_ViewScriptTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Form_Decorator_ViewScriptTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 require_once 'Zend/Form/Decorator/ViewScript.php';
 
@@ -39,11 +37,11 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
-class Zend_Form_Decorator_ViewScriptTest extends PHPUnit_Framework_TestCase 
+class Zend_Form_Decorator_ViewScriptTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -129,9 +127,45 @@ class Zend_Form_Decorator_ViewScriptTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('decorator.phtml', $this->decorator->getViewScript());
     }
 
+    public function testCanSetViewModule()
+    {
+        $this->testViewScriptNullByDefault();
+        $this->decorator->setViewModule('fooModule');
+        $this->assertEquals('fooModule', $this->decorator->getViewModule());
+    }
+
+    public function testCanSetViewModuleViaOption()
+    {
+        $this->testViewScriptNullByDefault();
+        $this->decorator->setOption('viewModule', 'fooModule');
+        $this->assertEquals('fooModule', $this->decorator->getViewModule());
+    }
+
+    public function testCanSetViewModuleViaElementAttribute()
+    {
+        $this->testViewScriptNullByDefault();
+        $this->getElement()->setAttrib('viewModule', 'fooModule');
+        $this->assertEquals('fooModule', $this->decorator->getViewModule());
+    }
+
     public function testRenderingRendersViewScript()
     {
         $this->testCanSetViewScriptViaElementAttribute();
+        $test = $this->decorator->render('');
+        $this->assertContains('This is content from the view script', $test);
+    }
+
+    public function testRenderingRendersViewScriptWithModule()
+    {
+        $this->testCanSetViewScriptViaElementAttribute();
+
+        $module = 'fooModule';
+
+        // add module to front controller so partial view helper can verify it exists
+        require_once 'Zend/Controller/Front.php';
+        Zend_Controller_Front::getInstance()->addControllerDirectory('', $module);
+
+        $this->getElement()->setAttrib('viewModule', $module);
         $test = $this->decorator->render('');
         $this->assertContains('This is content from the view script', $test);
     }

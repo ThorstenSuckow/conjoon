@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EditorTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: EditorTest.php 23938 2011-05-02 20:13:50Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_EditorTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Dojo_View_Helper_EditorTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 /** Zend_Dojo_View_Helper_Editor */
 require_once 'Zend/Dojo/View/Helper/Editor.php';
@@ -45,12 +43,12 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
  */
-class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase 
+class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Runs the test methods of this class.
@@ -97,11 +95,10 @@ class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
         return $view;
     }
 
-    public function testHelperShouldRenderTextareaWithAlteredId()
+    public function testHelperShouldRenderAlteredId()
     {
         $html = $this->helper->editor('foo');
-        $this->assertRegexp('#<textarea[^>]*(id="foo-Editor")#', $html, $html);
-        $this->assertContains('</textarea>', $html);
+        $this->assertContains('id="foo-Editor"', $html, $html);
     }
 
     public function testHelperShouldRenderHiddenElementWithGivenIdentifier()
@@ -116,7 +113,7 @@ class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
     public function testHelperShouldRenderDojoTypeWhenUsedDeclaratively()
     {
         $html = $this->helper->editor('foo');
-        $this->assertRegexp('#<textarea[^>]*(dojoType="dijit.Editor")#', $html);
+        $this->assertContains('dojoType="dijit.Editor"', $html);
     }
 
     public function testHelperShouldRegisterDijitModule()
@@ -126,15 +123,13 @@ class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
         $this->assertContains('dijit.Editor', $modules);
     }
 
-    public function testHelperShouldNormalizeArrayName()
+    public function testHelperShouldNormalizeArrayId()
     {
         $html = $this->helper->editor('foo[]');
-        $this->assertRegexp('#<textarea[^>]*(name="foo\[Editor\]\[\]")#', $html, $html);
-        $this->assertRegexp('#<textarea[^>]*(id="foo-Editor")#', $html, $html);
+        $this->assertContains('id="foo-Editor"', $html, $html);
 
         $html = $this->helper->editor('foo[bar]');
-        $this->assertRegexp('#<textarea[^>]*(name="foo\[bar\]\[Editor\]")#', $html, $html);
-        $this->assertRegexp('#<textarea[^>]*(id="foo-bar-Editor")#', $html, $html);
+        $this->assertContains('id="foo-bar-Editor"', $html, $html);
     }
 
     public function testHelperShouldJsonifyPlugins()
@@ -143,16 +138,16 @@ class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
         $html = $this->helper->editor('foo', '', array('plugins' => $plugins));
         $pluginsString = Zend_Json::encode($plugins);
         $pluginsString = str_replace('"', "'", $pluginsString);
-        $this->assertRegexp('#<textarea[^>]*(plugins="' . preg_quote($pluginsString) . '")#', $html);
+        $this->assertContains('plugins="' . $pluginsString . '"', $html);
     }
 
-    public function testHelperShouldCreateJavascriptToConnectTextareaToHiddenValue()
+    public function testHelperShouldCreateJavascriptToConnectEditorToHiddenValue()
     {
         $this->helper->editor('foo');
         $onLoadActions = $this->view->dojo()->getOnLoadActions();
         $found = false;
         foreach ($onLoadActions as $action) {
-            if (strstr($action, "dojo.byId('foo').value = dijit.byId('foo-Editor').getValue(false);")) {
+            if (strstr($action, "value = dijit.byId('foo-Editor').getValue(false);")) {
                 $found = true;
                 break;
             }
@@ -178,6 +173,52 @@ class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
     {
         $this->helper->editor('foo');
         $this->assertFalse($this->view->dojo()->registerDojoStylesheet());
+    }
+
+    /**
+     * @group ZF-4461
+     */
+    public function testHelperShouldRegisterPluginModulesWithDojo()
+    {
+        $plugins = array(
+            'createLink' => 'LinkDialog',
+            'fontName' => 'FontChoice',
+        );
+        $html = $this->helper->editor('foo', '', array('plugins' => array_keys($plugins)));
+
+        $dojo = $this->view->dojo()->__toString();
+        foreach (array_values($plugins) as $plugin) {
+            $this->assertContains('dojo.require("dijit._editor.plugins.' . $plugin . '")', $dojo, $dojo);
+        }
+    }
+
+    /**
+     * @group ZF-6753
+     * @group ZF-8127
+     */
+    public function testHelperShouldUseDivByDefault()
+    {
+        $html = $this->helper->editor('foo');
+        $this->assertRegexp('#</?div[^>]*>#', $html, $html);
+    }
+
+    /**
+     * @group ZF-6753
+     * @group ZF-8127
+     */
+    public function testHelperShouldOnlyUseTextareaInNoscriptTag()
+    {
+        $html = $this->helper->editor('foo');
+        $this->assertRegexp('#<noscript><textarea[^>]*>#', $html, $html);
+    }
+
+    /**
+     * @group ZF-11315
+     */
+    public function testHiddenInputShouldBeRenderedLast()
+    {
+        $html = $this->helper->editor('foo');
+        $this->assertRegexp('#</noscript><input#', $html, $html);
     }
 }
 

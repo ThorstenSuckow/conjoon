@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_View
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: View.php 16541 2009-07-07 06:59:03Z bkarwin $
+ * @version    $Id: View.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -31,7 +31,7 @@ require_once 'Zend/View/Abstract.php';
  *
  * @category   Zend
  * @package    Zend_View
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_View extends Zend_View_Abstract
@@ -52,8 +52,8 @@ class Zend_View extends Zend_View_Abstract
      * Constructor
      *
      * Register Zend_View_Stream stream wrapper if short tags are disabled.
-     * 
-     * @param  array $config 
+     *
+     * @param  array $config
      * @return void
      */
     public function __construct($config = array())
@@ -75,8 +75,8 @@ class Zend_View extends Zend_View_Abstract
 
     /**
      * Set flag indicating if stream wrapper should be used if short_open_tag is off
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_View
      */
     public function setUseStreamWrapper($flag)
@@ -87,7 +87,7 @@ class Zend_View extends Zend_View_Abstract
 
     /**
      * Should the stream wrapper be used if short_open_tag is off?
-     * 
+     *
      * @return bool
      */
     public function useStreamWrapper()

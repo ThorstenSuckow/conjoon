@@ -10,7 +10,6 @@
 	backgroundColor: "لون الخلفية:",
 	borderColor: "لون الحدود:",
 	borderThickness: "سمك الحدود",
-	pixels: "عناصر الصورة",
 	percent: "نسبة مئوية",
 	pixels: "عنصر صورة",
 	"default": "المفترض",
@@ -19,6 +18,7 @@
 	right: "لليمين",
 	buttonSet: "تحديد", // translated elsewhere?
 	buttonInsert: "‏ادراج‏",
+	buttonCancel: "الغاء",
 
 	selectTableLabel: "تحديد جدول",
 	insertTableRowBeforeLabel: "اضافة صف قبل",

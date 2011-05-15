@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HeadMetaTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: HeadMetaTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_HeadMetaTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_View_Helper_HeadMetaTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /** Zend_View_Helper_HeadMeta */
 require_once 'Zend/View/Helper/HeadMeta.php';
@@ -45,7 +43,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -307,9 +305,9 @@ class Zend_View_Helper_HeadMetaTest extends PHPUnit_Framework_TestCase
         $this->assertNotContains('unused', $string);
         $this->assertContains('name="title" content="boo bah"', $string);
     }
-    
+
     /**
-     * @group #ZF-6637
+     * @group ZF-6637
      */
     public function testToStringWhenInvalidKeyProvidedShouldConvertThrownException()
     {
@@ -365,7 +363,62 @@ class Zend_View_Helper_HeadMetaTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-2663
+     * @group ZF-9743
+     */
+    public function testPropertyIsSupportedWithRdfaDoctype()
+    {
+        $this->view->doctype('XHTML1_RDFA');
+        $this->helper->headMeta('foo', 'og:title', 'property');
+        $this->assertEquals('<meta property="og:title" content="foo" />',
+                            $this->helper->toString()
+                           );
+    }
+
+    /**
+     * @group ZF-9743
+     */
+    public function testPropertyIsNotSupportedByDefaultDoctype()
+    {
+        try {
+            $this->helper->headMeta('foo', 'og:title', 'property');
+            $this->fail('meta property attribute should not be supported on default doctype');
+        } catch (Zend_View_Exception $e) {
+            $this->assertContains('Invalid value passed', $e->getMessage());
+        }
+    }
+
+    /**
+     * @group ZF-9743
+     * @depends testPropertyIsSupportedWithRdfaDoctype
+     */
+    public function testOverloadingAppendPropertyAppendsMetaTagToStack()
+    {
+        $this->view->doctype('XHTML1_RDFA');
+        $this->_testOverloadAppend('property');
+    }
+
+    /**
+     * @group ZF-9743
+     * @depends testPropertyIsSupportedWithRdfaDoctype
+     */
+    public function testOverloadingPrependPropertyPrependsMetaTagToStack()
+    {
+        $this->view->doctype('XHTML1_RDFA');
+        $this->_testOverloadPrepend('property');
+    }
+
+    /**
+     * @group ZF-9743
+     * @depends testPropertyIsSupportedWithRdfaDoctype
+     */
+    public function testOverloadingSetPropertyOverwritesMetaTagStack()
+    {
+        $this->view->doctype('XHTML1_RDFA');
+        $this->_testOverloadSet('property');
+    }
+
+    /**
+     * @group ZF-2663
      */
     public function testSetNameDoesntClobber()
     {
@@ -382,7 +435,7 @@ class Zend_View_Helper_HeadMetaTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-2663
+     * @group ZF-2663
      */
     public function testSetNameDoesntClobberPart2()
     {
@@ -400,7 +453,7 @@ class Zend_View_Helper_HeadMetaTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-3780
+     * @group ZF-3780
      * @link http://framework.zend.com/issues/browse/ZF-3780
      */
     public function testPlacesMetaTagsInProperOrder()
@@ -416,7 +469,7 @@ class Zend_View_Helper_HeadMetaTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @issue ZF-5435
+     * @group ZF-5435
      */
     public function testContainerMaintainsCorrectOrderOfItems()
     {
@@ -428,13 +481,46 @@ class Zend_View_Helper_HeadMetaTest extends PHPUnit_Framework_TestCase
 
         $test = $this->helper->toString();
 
-        $expected = '<meta name="keywords" content="foo" />
-<meta http-equiv="Cache-control" content="baz" />
-<meta name="description" content="foo" />
-<meta http-equiv="pragma" content="baz" />';
+        $expected = '<meta name="keywords" content="foo" />' . PHP_EOL
+                  . '<meta http-equiv="Cache-control" content="baz" />' . PHP_EOL
+                  . '<meta name="description" content="foo" />' . PHP_EOL
+                  . '<meta http-equiv="pragma" content="baz" />';
 
         $this->assertEquals($expected, $test);
     }
+
+	/**
+	 * @group ZF-7722
+	 */
+	public function testCharsetValidateFail()
+	{
+		$view = new Zend_View();
+		$view->doctype('HTML4_STRICT');
+
+		try {
+			$view->headMeta()->setCharset('utf-8');
+			$this->fail('Should not be able to set charset for a HTML4 doctype');
+		} catch (Zend_View_Exception $e) {}
+	}
+
+	/**
+	 * @group ZF-7722
+	 */
+	public function testCharset() {
+		$view = new Zend_View();
+		$view->doctype('HTML5');
+
+		$view->headMeta()->setCharset('utf-8');
+		$this->assertEquals(
+			'<meta charset="utf-8">',
+			$view->headMeta()->toString());
+
+		$view->doctype('XHTML5');
+
+		$this->assertEquals(
+			'<meta charset="utf-8"/>',
+			$view->headMeta()->toString());
+	}
 
 }
 

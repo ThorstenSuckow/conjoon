@@ -15,16 +15,14 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DisplayGroupTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: DisplayGroupTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Form_DisplayGroupTest::main');
 }
-
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 require_once 'Zend/Form/DisplayGroup.php';
 
@@ -36,6 +34,7 @@ require_once 'Zend/Form/Decorator/HtmlTag.php';
 require_once 'Zend/Form/Element.php';
 require_once 'Zend/Form/Element/Text.php';
 require_once 'Zend/Loader/PluginLoader.php';
+require_once 'Zend/Registry.php';
 require_once 'Zend/Translate.php';
 require_once 'Zend/View.php';
 
@@ -43,7 +42,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -57,6 +56,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        Zend_Registry::_unsetInstance();
         Zend_Form::setDefaultTranslator(null);
 
         if (isset($this->error)) {
@@ -312,7 +312,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3069
+     * @group ZF-3069
      */
     public function testRemovingNamedDecoratorsShouldWork()
     {
@@ -360,7 +360,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @see ZF-3494
+     * @group ZF-3494
      */
     public function testGetViewShouldNotReturnNullWhenViewRendererIsActive()
     {
@@ -399,7 +399,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
 
         $this->group->addElements(array($foo, $bar));
         $html = $this->group->render($this->getView());
-        $this->assertRegexp('#^<dt[^>]*>&nbsp;</dt><dd[^>]*><fieldset.*?</fieldset></dd>$#s', $html, $html);
+        $this->assertRegexp('#^<dt[^>]*>&\#160;</dt><dd[^>]*><fieldset.*?</fieldset></dd>$#s', $html, $html);
         $this->assertContains('<input', $html, $html);
         $this->assertContains('"foo"', $html);
         $this->assertContains('"bar"', $html);
@@ -413,7 +413,7 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         $this->group->addElements(array($foo, $bar))
                     ->setView($this->getView());
         $html = $this->group->__toString();
-        $this->assertRegexp('#^<dt[^>]*>&nbsp;</dt><dd[^>]*><fieldset.*?</fieldset></dd>$#s', $html, $html);
+        $this->assertRegexp('#^<dt[^>]*>&\#160;</dt><dd[^>]*><fieldset.*?</fieldset></dd>$#s', $html, $html);
         $this->assertContains('<input', $html);
         $this->assertContains('"foo"', $html);
         $this->assertContains('"bar"', $html);
@@ -775,6 +775,33 @@ class Zend_Form_DisplayGroupTest extends PHPUnit_Framework_TestCase
         if (strtolower(substr(PHP_OS, 0, 3)) == 'win' && version_compare(PHP_VERSION, '5.1.4', '=')) {
             $this->markTestIncomplete('Error occurs for PHP 5.1.4 on Windows');
         }
+    }
+
+    /**
+     * Prove the fluent interface on Zend_Form::loadDefaultDecorators
+     *
+     * @link http://framework.zend.com/issues/browse/ZF-9913
+     * @return void
+     */
+    public function testFluentInterfaceOnLoadDefaultDecorators()
+    {
+        $this->assertSame($this->group, $this->group->loadDefaultDecorators());
+    }
+
+    /**
+     * @group ZF-7552
+     */
+    public function testAddDecoratorsKeepsNonNumericKeyNames()
+    {
+        $this->group->addDecorators(array(array(array('td'  => 'HtmlTag'),
+                                               array('tag' => 'td')),
+                                         array(array('tr'  => 'HtmlTag'),
+                                               array('tag' => 'tr')),
+                                         array('HtmlTag', array('tag' => 'baz'))));
+        $t1 = $this->group->getDecorators();
+        $this->group->setDecorators($t1);
+        $t2 = $this->group->getDecorators();
+        $this->assertEquals($t1, $t2);
     }
 }
 

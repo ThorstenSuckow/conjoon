@@ -16,9 +16,9 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Spreadsheets
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CellQuery.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: CellQuery.php 23805 2011-03-16 00:55:40Z tjohns $
  */
 
 /**
@@ -39,13 +39,13 @@ require_once('Zend/Gdata/Query.php');
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage   Spreadsheets
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_Spreadsheets_CellQuery extends Zend_Gdata_Query
 {
 
-    const SPREADSHEETS_CELL_FEED_URI = 'http://spreadsheets.google.com/feeds/cells';
+    const SPREADSHEETS_CELL_FEED_URI = 'https://spreadsheets.google.com/feeds/cells';
 
     protected $_defaultFeedUri = self::SPREADSHEETS_CELL_FEED_URI;
     protected $_visibility = 'private';

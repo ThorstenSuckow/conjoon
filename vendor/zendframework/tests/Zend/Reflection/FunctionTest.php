@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: FunctionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * @see TestHelper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /**
  * @see Zend_Reflection_Function
@@ -34,16 +29,16 @@ require_once 'Zend/Reflection/Function.php';
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Reflection
  * @group      Zend_Reflection_Function
  */
 class Zend_Reflection_FunctionTest extends PHPUnit_Framework_TestCase
 {
-    
+
     static protected $_sampleClassFileRequired = false;
-    
+
     public function setup()
     {
         if (self::$_sampleClassFileRequired === false) {
@@ -52,7 +47,7 @@ class Zend_Reflection_FunctionTest extends PHPUnit_Framework_TestCase
             self::$_sampleClassFileRequired = true;
         }
     }
-    
+
     public function testParemeterReturn()
     {
         $function = new Zend_Reflection_Function('array_splice');
@@ -60,12 +55,12 @@ class Zend_Reflection_FunctionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(count($parameters), 4);
         $this->assertEquals(get_class(array_shift($parameters)), 'Zend_Reflection_Parameter');
     }
-    
+
     public function testFunctionDocblockReturn()
     {
         $function = new Zend_Reflection_Function('zend_reflection_test_sample_function6');
         $this->assertEquals(get_class($function->getDocblock()), 'Zend_Reflection_Docblock');
     }
-    
+
 }
 

@@ -15,12 +15,10 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ClientTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ClientTest.php 23966 2011-05-03 14:30:07Z ralph $
  */
-
-require_once dirname(__FILE__)."/../../TestHelper.php";
 
 /** Zend_Rest_Client */
 require_once 'Zend/Rest/Client.php';
@@ -28,21 +26,18 @@ require_once 'Zend/Rest/Client.php';
 /** Zend_Http_Client_Adapter_Test */
 require_once 'Zend/Http/Client/Adapter/Test.php';
 
-/** PHPUnit Test Case */
-require_once 'PHPUnit/Framework/TestCase.php';
-
 /**
  * Test cases for Zend_Rest_Client
  *
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Rest
  * @group      Zend_Rest_Client
  */
-class Zend_Rest_ClientTest extends PHPUnit_Framework_TestCase 
+class Zend_Rest_ClientTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
@@ -299,7 +294,30 @@ class Zend_Rest_ClientTest extends PHPUnit_Framework_TestCase
             $result = new Zend_Rest_Client_Result("invalidxml");
             $this->fail();
         } catch(Zend_Rest_Client_Result_Exception $e) {
-            
+
         }
     }
+    
+    /**
+     * @group ZF-11281
+     */
+    public function testCallStatusGetterOnResponseObjectWhenServerResponseHasNoStatusXmlElement()
+    {
+        $expXml   = file_get_contents($this->path . 'returnEmptyStatus.xml');
+        $response = "HTTP/1.0 200 OK\r\n"
+                  . "X-powered-by: PHP/5.2.0\r\n"
+                  . "Content-type: text/xml\r\n"
+                  . "Content-length: " . strlen($expXml) . "\r\n"
+                  . "Server: Apache/1.3.34 (Unix) PHP/5.2.0)\r\n"
+                  . "Date: Tue, 06 Feb 2007 15:01:47 GMT\r\n"
+                  . "Connection: close\r\n"
+                  . "\r\n"
+                  . $expXml;
+        $this->adapter->setResponse($response);
+
+        $response = $this->rest->get('/rest/');
+        $this->assertTrue($response instanceof Zend_Rest_Client_Result);
+        $this->assertFalse($response->getStatus());
+    }
+
 }

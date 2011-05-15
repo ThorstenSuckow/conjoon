@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Client.php 17759 2009-08-22 21:26:21Z lars $
+ * @version    $Id: Client.php 23969 2011-05-03 14:48:31Z ralph $
  */
 
 
@@ -71,7 +71,7 @@ require_once 'Zend/XmlRpc/Fault.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_XmlRpc_Client
@@ -211,7 +211,7 @@ class Zend_XmlRpc_Client
     /**
      * Returns a proxy object for more convenient method calls
      *
-     * @param $namespace  Namespace to proxy or empty string for none
+     * @param string $namespace  Namespace to proxy or empty string for none
      * @return Zend_XmlRpc_Client_ServerProxy
      */
     public function getProxy($namespace = '')
@@ -329,18 +329,39 @@ class Zend_XmlRpc_Client
                     Zend_XmlRpc_Value::XMLRPC_TYPE_STRING,
                     Zend_XmlRpc_Value::XMLRPC_TYPE_STRUCT,
                 );
-                $params = (array)$params;
-                foreach ($params as $key => $param) {
-                    $type = Zend_XmlRpc_Value::AUTO_DETECT_TYPE;
-                    foreach ($signatures as $signature) {
-                        if (!is_array($signature)) {
-                            continue;
-                        }
-                        if (isset($signature['parameters'][$key])) {
-                            $type = $signature['parameters'][$key];
-                            $type = in_array($type, $validTypes) ? $type : Zend_XmlRpc_Value::AUTO_DETECT_TYPE;
-                        }
+
+                if (!is_array($params)) {
+                    $params = array($params);
+                }
+
+                foreach ($params as $key => $param)
+                {
+                    if ($param instanceof Zend_XmlRpc_Value) {
+                        continue;
                     }
+
+                    if (count($signatures) > 1) {
+                        $type = Zend_XmlRpc_Value::getXmlRpcTypeByValue($param);
+                        foreach ($signatures as $signature) {
+                            if (!is_array($signature)) {
+                                continue;
+                            }
+                            if (isset($signature['parameters'][$key])) {
+                                if ($signature['parameters'][$key] == $type) {
+                                    break;
+                                }
+                            }
+                        }
+                    } elseif (isset($signatures[0]['parameters'][$key])) {
+                        $type = $signatures[0]['parameters'][$key];
+                    } else {
+                        $type = null;
+                    }
+
+                    if (empty($type) || !in_array($type, $validTypes)) {
+                        $type = Zend_XmlRpc_Value::AUTO_DETECT_TYPE;
+                    }
+
                     $params[$key] = Zend_XmlRpc_Value::getXmlRpcValue($param, $type);
                 }
             }

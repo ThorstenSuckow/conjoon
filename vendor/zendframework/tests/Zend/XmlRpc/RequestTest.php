@@ -15,14 +15,15 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: RequestTest.php 17786 2009-08-23 22:26:33Z lars $
+ * @version $Id: RequestTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/XmlRpc/Request.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'PHPUnit/Framework/IncompleteTestError.php';
+require_once 'Zend/XmlRpc/Value/Nil.php';
+require_once 'Zend/XmlRpc/Value/String.php';
+
 
 /**
  * Test case for Zend_XmlRpc_Request
@@ -30,11 +31,11 @@ require_once 'PHPUnit/Framework/IncompleteTestError.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
-class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase 
+class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Zend_XmlRpc_Request object
@@ -45,7 +46,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
     /**
      * Setup environment
      */
-    public function setUp() 
+    public function setUp()
     {
         $this->_request = new Zend_XmlRpc_Request();
     }
@@ -53,7 +54,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
     /**
      * Teardown environment
      */
-    public function tearDown() 
+    public function tearDown()
     {
         unset($this->_request);
     }
@@ -83,14 +84,14 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $r = new Zend_XmlRpc_Request();
         $this->assertEquals('', $r->getMethod());
         $this->assertEquals(array(), $r->getParams());
-        
+
         $method = 'foo.bar';
         $params = array('baz', 1, array('foo' => 'bar'));
         $r = new Zend_XmlRpc_Request($method, $params);
         $this->assertEquals($method, $r->getMethod());
         $this->assertEquals($params, $r->getParams());
     }
-    
+
 
     /**
      * addParam()/getParams() test
@@ -121,7 +122,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $time = time();
         $this->_request->addParam($time, Zend_XmlRpc_Value::XMLRPC_TYPE_DATETIME);
         $this->_request->setMethod('foo.bar');
-        $xml = $this->_request->saveXML();
+        $xml = $this->_request->saveXml();
         $sxl = new SimpleXMLElement($xml);
         $param = $sxl->params->param->value;
         $type  = 'dateTime.iso8601';
@@ -182,7 +183,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
             $value2->appendChild($dom->createElement('boolean', 1));
 
 
-        $xml = $dom->saveXML();
+        $xml = $dom->saveXml();
 
         try {
             $parsed = $this->_request->loadXml($xml);
@@ -272,7 +273,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * helper for saveXML() and __toString() tests
+     * helper for saveXml() and __toString() tests
      *
      * @param string $xml
      * @return void
@@ -321,7 +322,7 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
         $argv = array('string', true);
         $this->_request->setMethod('do.Something');
         $this->_request->setParams($argv);
-        $xml = $this->_request->saveXML();
+        $xml = $this->_request->saveXml();
         $this->_testXmlRequest($xml, $argv);
     }
 
@@ -343,7 +344,9 @@ class Zend_XmlRpc_RequestTest extends PHPUnit_Framework_TestCase
     public function testSetGetEncoding()
     {
         $this->assertEquals('UTF-8', $this->_request->getEncoding());
-        $this->_request->setEncoding('ISO-8859-1');
+        $this->assertEquals('UTF-8', Zend_XmlRpc_Value::getGenerator()->getEncoding());
+        $this->assertSame($this->_request, $this->_request->setEncoding('ISO-8859-1'));
         $this->assertEquals('ISO-8859-1', $this->_request->getEncoding());
+        $this->assertEquals('ISO-8859-1', Zend_XmlRpc_Value::getGenerator()->getEncoding());
     }
 }

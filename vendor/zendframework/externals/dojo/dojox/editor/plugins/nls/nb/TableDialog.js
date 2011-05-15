@@ -10,7 +10,6 @@
 	backgroundColor: "Bakgrunnsfarge:",
 	borderColor: "Kantlinjefarge:",
 	borderThickness: "Kanttykkelse",
-	pixels: "Piksler",
 	percent: "prosent",
 	pixels: "piksler",
 	"default": "standard",
@@ -19,6 +18,7 @@
 	right: "høyre",
 	buttonSet: "Definer", // translated elsewhere?
 	buttonInsert: "Sett inn",
+	buttonCancel: "Avbryt",
 
 	selectTableLabel: "Velg tabell",
 	insertTableRowBeforeLabel: "Legg til rad foran",

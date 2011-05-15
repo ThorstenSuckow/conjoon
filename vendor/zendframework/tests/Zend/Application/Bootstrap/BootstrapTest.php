@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: BootstrapTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Application_Bootstrap_BootstrapTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * Zend_Loader_Autoloader
@@ -38,7 +33,7 @@ require_once 'Zend/Loader/Autoloader.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -113,7 +108,7 @@ class Zend_Application_Bootstrap_BootstrapTest extends PHPUnit_Framework_TestCas
     {
         $this->bootstrap->setOptions(array(
             'resources' => array(
-                'frontController' => array(
+                'frontcontroller' => array(
                     'moduleDirectory' => dirname(__FILE__) . '/../_files/modules',
                 ),
             ),
@@ -127,6 +122,68 @@ class Zend_Application_Bootstrap_BootstrapTest extends PHPUnit_Framework_TestCas
         $this->bootstrap->run();
 
         $this->assertTrue($this->bootstrap->getContainer()->zfappbootstrap);
+    }
+
+    /**
+     * @group ZF-8496
+     */
+    public function testBootstrapModuleAutoloaderShouldNotBeInitializedByDefault()
+    {
+        $this->assertFalse($this->bootstrap->getResourceLoader() instanceof Zend_Application_Module_Autoloader);
+    }
+
+    /**
+     * @group ZF-8496
+     */
+    public function testBootstrapShouldInitializeModuleAutoloaderWhenNamespaceSpecified()
+    {
+        $application = new Zend_Application('testing', array(
+            'appnamespace' => 'Application',
+        ));
+        $bootstrap   = new Zend_Application_Bootstrap_Bootstrap(
+            $application
+        );
+        $this->assertTrue($bootstrap->getResourceLoader() instanceof Zend_Application_Module_Autoloader);
+        $al = $bootstrap->getResourceLoader();
+        $this->assertEquals('Application', $al->getNamespace());
+    }
+
+    /**
+     * @group ZF-8496
+     */
+    public function testBootstrapAutoloaderNamespaceShouldBeConfigurable()
+    {
+        $application = new Zend_Application('testing', array(
+            'appnamespace' => 'Default',
+        ));
+        $bootstrap   = new Zend_Application_Bootstrap_Bootstrap(
+            $application
+        );
+        $al = $bootstrap->getResourceLoader();
+        $this->assertEquals('Default', $al->getNamespace());
+    }
+
+    /**
+     * @group ZF-7367
+     */
+    public function testBootstrapRunMethodShouldReturnResponseIfFlagEnabled()
+    {
+        $this->bootstrap->setOptions(array(
+            'resources' => array(
+                'frontcontroller' => array(
+                    'moduleDirectory' => dirname(__FILE__) . '/../_files/modules',
+                    'returnresponse'  => true,
+                ),
+            ),
+        ));
+        $this->bootstrap->bootstrap();
+
+        $front   = $this->bootstrap->getResource('FrontController');
+        $request = $front->getRequest();
+        $request->setRequestUri('/zfappbootstrap');
+
+        $result = $this->bootstrap->run();
+        $this->assertTrue($result instanceof Zend_Controller_Response_Abstract);
     }
 }
 

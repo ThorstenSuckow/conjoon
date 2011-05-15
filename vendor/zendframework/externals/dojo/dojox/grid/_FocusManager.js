@@ -12,8 +12,10 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		this.cell = null;
 		this.rowIndex = -1;
 		this._connects = [];
+		this.headerMenu = this.grid.headerMenu;
 		this._connects.push(dojo.connect(this.grid.domNode, "onfocus", this, "doFocus"));
 		this._connects.push(dojo.connect(this.grid.domNode, "onblur", this, "doBlur"));
+		this._connects.push(dojo.connect(this.grid.domNode, "oncontextmenu", this, "doContextMenu"));
 		this._connects.push(dojo.connect(this.grid.lastFocusNode, "onfocus", this, "doLastNodeFocus"));
 		this._connects.push(dojo.connect(this.grid.lastFocusNode, "onblur", this, "doLastNodeBlur"));
 		this._connects.push(dojo.connect(this.grid,"_onFetchComplete", this, "_delayedCellFocus"));
@@ -26,6 +28,7 @@ dojo.declare("dojox.grid._FocusManager", null, {
 	},
 	_colHeadNode: null,
 	_colHeadFocusIdx: null,
+	_contextMenuBindNode: null,
 	tabbingOut: false,
 	focusClass: "dojoxGridCellFocus",
 	focusView: null,
@@ -52,7 +55,7 @@ dojo.declare("dojox.grid._FocusManager", null, {
 	},
 	isFirstFocusCell: function(){
 		if(this.cell){
-			return (this.rowIndex == 0) && (this.cell.index == 0);
+			return (this.rowIndex === 0) && (this.cell.index === 0);
 		}
 		return false;
 	},
@@ -93,7 +96,7 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		}
 	},
 	_delayedCellFocus: function(){
-		if(this.isNavHeader()){
+		if(this.isNavHeader()||!this.grid._focused){
 				return;
 		}
 		var n = this.cell && this.cell.getNode(this.rowIndex);
@@ -101,6 +104,7 @@ dojo.declare("dojox.grid._FocusManager", null, {
 			try{
 				if(!this.grid.edit.isEditing()){
 					dojo.toggleClass(n, this.focusClass, true);
+					this.blurHeader();
 					dojox.grid.util.fire(n, "focus");
 				}
 			} 
@@ -110,11 +114,10 @@ dojo.declare("dojox.grid._FocusManager", null, {
 	_delayedHeaderFocus: function(){
 		if(this.isNavHeader()){
 			this.focusHeader();
-			//this may need clickSelect?
+			this.grid.domNode.focus();
 		}
 	},
 	_initColumnHeaders: function(){
-		this._connects.push(dojo.connect(this.grid.viewsHeaderNode, "onblur", this, "doBlurHeader"));
 		var headers = this._findHeaderCells();
 		for(var i = 0; i < headers.length; i++){
 			this._connects.push(dojo.connect(headers[i], "onfocus", this, "doColHeaderFocus"));
@@ -129,13 +132,24 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		var headers = [];
 		for (var i = 0; i < allHeads.length; i++){
 			var aHead = allHeads[i];
-			var hasTabIdx = dojo.hasAttr(aHead, "tabindex");
-			var tabindex = dojo.attr(aHead, "tabindex");
+			var hasTabIdx = dojo.hasAttr(aHead, "tabIndex");
+			var tabindex = dojo.attr(aHead, "tabIndex");
 			if (hasTabIdx && tabindex < 0) {
 				headers.push(aHead);
 			}
 		}
 		return headers;
+	},
+	_setActiveColHeader: function(/*Node*/colHeaderNode, /*Integer*/colFocusIdx, /*Integer*/ prevColFocusIdx){
+		//console.log("setActiveColHeader() - colHeaderNode:colFocusIdx:prevColFocusIdx = " + colHeaderNode + ":" + colFocusIdx + ":" + prevColFocusIdx);
+		dojo.attr(this.grid.domNode, "aria-activedescendant",colHeaderNode.id);
+		if (prevColFocusIdx != null && prevColFocusIdx >= 0 && prevColFocusIdx != colFocusIdx){
+			dojo.toggleClass(this._findHeaderCells()[prevColFocusIdx],this.focusClass,false);
+		}
+		dojo.toggleClass(colHeaderNode,this.focusClass, true);
+		this._colHeadNode = colHeaderNode;
+		this._colHeadFocusIdx = colFocusIdx;
+		this._scrollHeader(this._colHeadFocusIdx);
 	},
 	scrollIntoView: function(){
 		var info = (this.cell ? this._scrollInfo(this.cell) : null);
@@ -202,6 +216,57 @@ dojo.declare("dojox.grid._FocusManager", null, {
 			}
 		}
 	},
+	_isHeaderHidden: function(){
+		// summary:
+		//		determine if the grid headers are hidden
+		//		relies on documented technique of setting .dojoxGridHeader { display:none; } 
+		// returns: Boolean
+		//		true if headers are hidden
+		//		false if headers are not hidden
+		
+		var curView = this.focusView;
+		if (!curView){
+			// find one so we can determine if headers are hidden
+			// there is no focusView after adding items to empty grid (test_data_grid_empty.html)
+			for (var i = 0, cView; (cView = this.grid.views.views[i]); i++) {
+				if(cView.headerNode ){
+					curView=cView;
+					break;		
+				}	
+			}
+		}
+		return (curView && dojo.getComputedStyle(curView.headerNode).display == "none");
+	},
+	colSizeAdjust: function (e, colIdx, delta){ // adjust the column specified by colIdx by the specified delta px
+		var headers = this._findHeaderCells();
+		var view = this.focusView;
+		if (!view) {
+			for (var i = 0, cView; (cView = this.grid.views.views[i]); i++) {
+				// find first view with a tableMap in order to work with empty grid
+				if(cView.header.tableMap.map ){
+					view=cView;
+					break;		
+				}
+			}
+		}
+		var curHeader = headers[colIdx];
+		if (!view || (colIdx == headers.length-1 && colIdx === 0)){
+			return; // can't adjust single col. grid
+		}	
+		view.content.baseDecorateEvent(e);
+		// need to adjust event with header cell info since focus is no longer on header cell
+		e.cellNode = curHeader; //this.findCellTarget(e.target, e.rowNode);
+		e.cellIndex = view.content.getCellNodeIndex(e.cellNode);
+		e.cell = (e.cellIndex >= 0 ? this.grid.getCell(e.cellIndex) : null);
+		if (view.header.canResize(e)){ 
+			var deltaObj = {
+				l: delta
+			};
+			var drag = view.header.colResizeSetup(e,false);
+			view.header.doResizeColumn(drag, null, deltaObj);
+			view.update();
+		}
+	},
 	styleRow: function(inRow){
 		return;
 	},
@@ -223,6 +288,9 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		//	grid row index
 		if(inCell && !this.isFocusCell(inCell, inRowIndex)){
 			this.tabbingOut = false;
+			if (this._colHeadNode){
+				this.blurHeader();
+			}
 			this._colHeadNode = this._colHeadFocusIdx = null;
 			this.focusGridView();
 			this._focusifyCellNode(false);
@@ -290,22 +358,24 @@ dojo.declare("dojox.grid._FocusManager", null, {
 	},
 	move: function(inRowDelta, inColDelta) {
 		// summary:
-		//	focus grid cell or column header based on position relative to current focus
+		//	focus grid cell or  simulate focus to column header based on position relative to current focus
 		// inRowDelta: int
 		// vertical distance from current focus
 		// inColDelta: int
 		// horizontal distance from current focus
 
+		var colDir = inColDelta < 0 ? -1 : 1;
 		// Handle column headers.
 		if(this.isNavHeader()){
 			var headers = this._findHeaderCells();
-			var currentIdx = dojo.indexOf(headers, this._colHeadNode);
+			var savedIdx = currentIdx = dojo.indexOf(headers, this._colHeadNode);
 			currentIdx += inColDelta;
+			while(currentIdx >=0 && currentIdx < headers.length && headers[currentIdx].style.display == "none"){
+				// skip over hidden column headers
+				currentIdx += colDir;
+			}
 			if((currentIdx >= 0) && (currentIdx < headers.length)){
-				this._colHeadNode = headers[currentIdx];
-				this._colHeadFocusIdx = currentIdx;
-				this._scrollHeader(currentIdx);
-				this._colHeadNode.focus();
+				this._setActiveColHeader(headers[currentIdx],currentIdx, savedIdx);
 			}
 		}else{
 			if(this.cell){
@@ -328,8 +398,18 @@ dojo.declare("dojox.grid._FocusManager", null, {
 					}
 				}
 				var cc = this.grid.layout.cellCount-1,
-					i = this.cell.index,
-					col = Math.min(cc, Math.max(0, i+inColDelta));
+				i = this.cell.index,
+				col = Math.min(cc, Math.max(0, i+inColDelta));
+				var cell = this.grid.getCell(col);
+				while(col>=0 && col < cc && cell && cell.hidden === true){
+					// skip hidden cells
+					col += colDir;
+					cell = this.grid.getCell(col);
+				}
+				if (!cell || cell.hidden === true){
+					// don't change col if would move to hidden
+					col = i;
+				}
 				this.setFocusIndex(row, col);
 				if(inRowDelta){
 					this.grid.updateRow(r);
@@ -341,33 +421,30 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		if(this.grid.edit.isEditing()){
 			dojo.stopEvent(e);
 			this.previous();
-		}else if(!this.isNavHeader()){
-			this.focusHeader();
+		}else if(!this.isNavHeader() && !this._isHeaderHidden()) {
+			this.grid.domNode.focus(); // will call doFocus and set focus into header.
 			dojo.stopEvent(e);
 		}else{
 			this.tabOut(this.grid.domNode);
+			if (this._colHeadFocusIdx != null) { // clear grid header focus
+				dojo.toggleClass(this._findHeaderCells()[this._colHeadFocusIdx], this.focusClass, false);
+				this._colHeadFocusIdx = null;
+			}
+			this._focusifyCellNode(false);
 		}
 	},
 	nextKey: function(e) {
-		var isEmpty = this.grid.rowCount == 0;
-		if(e.target === this.grid.domNode){
+		var isEmpty = (this.grid.rowCount === 0);
+		if(e.target === this.grid.domNode && this._colHeadFocusIdx == null){
 			this.focusHeader();
 			dojo.stopEvent(e);
 		}else if(this.isNavHeader()){
-			// if tabbing from col header, then go to grid proper. If grid is empty this.grid.rowCount == 0
-			this._colHeadNode = this._colHeadFocusIdx= null;
-			if(this.isNoFocusCell() && !isEmpty){
-				this.setFocusIndex(0, 0);
-			}else if(this.cell && !isEmpty){
-				if(this.focusView && !this.focusView.rowNodes[this.rowIndex]){
-				// if rowNode for current index is undefined (likely as a result of a sort and because of #7304) 
-				// scroll to that row
-					this.grid.scrollToRow(this.rowIndex);
-				}
-				this.focusGrid();
-			}else{
+			// if tabbing from col header, then go to grid proper. 
+			this.blurHeader();
+			if(!this.findAndFocusGridCell()){
 				this.tabOut(this.grid.lastFocusNode);
 			}
+			this._colHeadNode = this._colHeadFocusIdx= null;
 		}else if(this.grid.edit.isEditing()){
 			dojo.stopEvent(e);
 			this.next();
@@ -386,10 +463,46 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		this.focusGridView();
 		this._focusifyCellNode(true);
 	},
+	findAndFocusGridCell: function(){
+		// summary:
+		//		find the first focusable grid cell 
+		// returns: Boolean
+		//		true if focus was set to a cell
+		//		false if no cell found to set focus onto
+		
+		var didFocus = true;
+		var isEmpty = (this.grid.rowCount === 0); // If grid is empty this.grid.rowCount == 0
+		if (this.isNoFocusCell() && !isEmpty){
+			var cellIdx = 0;
+			var cell = this.grid.getCell(cellIdx);
+			if (cell.hidden) {
+				// if first cell isn't visible, use _colHeadFocusIdx 
+				// could also use a while loop to find first visible cell - not sure that is worth it
+				cellIdx = this.isNavHeader() ? this._colHeadFocusIdx : 0;
+			}
+			this.setFocusIndex(0, cellIdx);
+		}
+		else if (this.cell && !isEmpty){
+			if (this.focusView && !this.focusView.rowNodes[this.rowIndex]){
+				// if rowNode for current index is undefined (likely as a result of a sort and because of #7304) 
+				// scroll to that row
+				this.grid.scrollToRow(this.rowIndex);
+			}
+			this.focusGrid();
+		}else {
+			didFocus = false;
+		}
+		this._colHeadNode = this._colHeadFocusIdx= null;
+		return didFocus;
+	},
 	focusHeader: function(){
 		var headerNodes = this._findHeaderCells();
-
-		if (!this._colHeadFocusIdx) {
+		var saveColHeadFocusIdx = this._colHeadFocusIdx;
+		if (this._isHeaderHidden()){
+			// grid header is hidden, focus a cell
+			this.findAndFocusGridCell();
+		}
+		else if (!this._colHeadFocusIdx) {
 			if (this.isNoFocusCell()) {
 				this._colHeadFocusIdx = 0;
 			}
@@ -398,9 +511,39 @@ dojo.declare("dojox.grid._FocusManager", null, {
 			}
 		}
 		this._colHeadNode = headerNodes[this._colHeadFocusIdx];
-		if(this._colHeadNode){
-			dojox.grid.util.fire(this._colHeadNode, "focus");
+		while(this._colHeadNode && this._colHeadFocusIdx >=0 && this._colHeadFocusIdx < headerNodes.length &&
+				this._colHeadNode.style.display == "none"){
+			// skip over hidden column headers
+			this._colHeadFocusIdx++;
+			this._colHeadNode = headerNodes[this._colHeadFocusIdx];
+		}
+		if(this._colHeadNode && this._colHeadNode.style.display != "none"){
+			// Column header cells know longer receive actual focus.  So, for keyboard invocation of
+			// contextMenu to work, the contextMenu must be bound to the grid.domNode rather than the viewsHeaderNode.
+			// unbind the contextmenu from the viewsHeaderNode and to the grid when header cells are active.  Reset
+			// the binding back to the viewsHeaderNode when header cells are no longer acive (in blurHeader) #10483
+			if (this.headerMenu && this._contextMenuBindNode != this.grid.domNode){
+				this.headerMenu.unBindDomNode(this.grid.viewsHeaderNode);
+				this.headerMenu.bindDomNode(this.grid.domNode);
+				this._contextMenuBindNode = this.grid.domNode;
+			}
+			this._setActiveColHeader(this._colHeadNode, this._colHeadFocusIdx, saveColHeadFocusIdx);
+			this._scrollHeader(this._colHeadFocusIdx);
 			this._focusifyCellNode(false);
+		}else {
+			// all col head nodes are hidden - focus the grid
+			this.findAndFocusGridCell();
+		}
+	},
+	blurHeader: function(){
+		dojo.removeClass(this._colHeadNode, this.focusClass);
+		dojo.removeAttr(this.grid.domNode,"aria-activedescendant");
+		// reset contextMenu onto viewsHeaderNode so right mouse on header will invoke (see focusHeader)
+		if (this.headerMenu && this._contextMenuBindNode == this.grid.domNode) {
+			var viewsHeader = this.grid.viewsHeaderNode;
+			this.headerMenu.unBindDomNode(this.grid.domNode);
+			this.headerMenu.bindDomNode(viewsHeader);
+			this._contextMenuBindNode = viewsHeader;
 		}
 	},
 	doFocus: function(e){
@@ -419,8 +562,11 @@ dojo.declare("dojox.grid._FocusManager", null, {
 	doBlur: function(e){
 		dojo.stopEvent(e);	// FF2
 	},
-	doBlurHeader: function(e){
-		dojo.stopEvent(e);	// FF2
+	doContextMenu: function(e){
+	//stop contextMenu event if no header Menu to prevent default/browser contextMenu
+		if (!this.headerMenu){
+			dojo.stopEvent(e); 
+		}
 	},
 	doLastNodeFocus: function(e){
 		if (this.tabbingOut){
@@ -440,8 +586,9 @@ dojo.declare("dojox.grid._FocusManager", null, {
 		dojo.stopEvent(e);	 // FF2
 	},
 	doColHeaderFocus: function(e){
-		dojo.toggleClass(e.target, this.focusClass, true);
+		this._setActiveColHeader(e.target,dojo.attr(e.target, "idx"),this._colHeadFocusIdx);
 		this._scrollHeader(this.getHeaderIndex());
+		dojo.stopEvent(e);
 	},
 	doColHeaderBlur: function(e){
 		dojo.toggleClass(e.target, this.focusClass, false);

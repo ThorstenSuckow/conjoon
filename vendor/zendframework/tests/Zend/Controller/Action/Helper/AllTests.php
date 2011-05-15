@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../.././../TestHelper.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Controller_Action_Helper_AllTests::main');
@@ -32,6 +27,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'Zend/Controller/Action/Helper/ActionStackTest.php';
 require_once 'Zend/Controller/Action/Helper/AjaxContextTest.php';
 require_once 'Zend/Controller/Action/Helper/AutoCompleteTest.php';
+require_once 'Zend/Controller/Action/Helper/CacheTest.php';
 require_once 'Zend/Controller/Action/Helper/ContextSwitchTest.php';
 require_once 'Zend/Controller/Action/Helper/FlashMessengerTest.php';
 require_once 'Zend/Controller/Action/Helper/JsonTest.php';
@@ -43,7 +39,7 @@ require_once 'Zend/Controller/Action/Helper/ViewRendererTest.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -62,6 +58,7 @@ class Zend_Controller_Action_Helper_AllTests
 
         $suite->addTestSuite('Zend_Controller_Action_Helper_ActionStackTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_AutoCompleteTest');
+        $suite->addTestSuite('Zend_Controller_Action_Helper_CacheTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_ContextSwitchTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_AjaxContextTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_FlashMessengerTest');
@@ -69,6 +66,11 @@ class Zend_Controller_Action_Helper_AllTests
         $suite->addTestSuite('Zend_Controller_Action_Helper_RedirectorTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_UrlTest');
         $suite->addTestSuite('Zend_Controller_Action_Helper_ViewRendererTest');
+
+        if (version_compare(PHP_VERSION, '5.3', '>=')) {
+            require_once 'Zend/Controller/Action/Helper/NamespaceTest.php';
+            $suite->addTestSuite('Zend_Controller_Action_Helper_NamespaceTest');
+        }
 
         return $suite;
     }

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata_Gbase
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -27,7 +27,7 @@ require_once 'Zend/Http/Client.php';
  * @category   Zend
  * @package    Zend_Gdata_Gbase
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Gdata
  * @group      Zend_Gdata_Gbase
@@ -37,14 +37,15 @@ class Zend_Gdata_Gbase_SnippetFeedTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->snippetFeed = new Zend_Gdata_Gbase_SnippetFeed( 
+        $this->snippetFeed = new Zend_Gdata_Gbase_SnippetFeed(
                 file_get_contents(dirname(__FILE__) . '/_files/TestDataGbaseSnippetFeedSample1.xml'),
                 true);
     }
 
     public function testToAndFromString()
     {
-        $this->assertEquals(count($this->snippetFeed->entries), 1);
+        $this->assertEquals(2, count($this->snippetFeed->entries));
+        $this->assertEquals(2, $this->snippetFeed->entries->count());
         foreach($this->snippetFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Gbase_SnippetEntry);
@@ -54,8 +55,9 @@ class Zend_Gdata_Gbase_SnippetFeedTest extends PHPUnit_Framework_TestCase
         $doc = new DOMDocument();
         $doc->loadXML($this->snippetFeed->saveXML());
         $newSnippetFeed->transferFromDom($doc->documentElement);
-        
-        $this->assertEquals(count($newSnippetFeed->entries), 1);
+
+        $this->assertEquals(2, count($newSnippetFeed->entries));
+        $this->assertEquals(2, $newSnippetFeed->entries->count());
         foreach($newSnippetFeed->entries as $entry)
         {
             $this->assertTrue($entry instanceof Zend_Gdata_Gbase_SnippetEntry);

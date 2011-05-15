@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ServerTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ServerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Amf_ServerTest::main() if this source file is executed directly.
@@ -25,10 +25,6 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Amf_ServerTest::main");
 }
 
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 require_once 'Zend/Amf/Server.php';
 require_once 'Zend/Amf/Request.php';
 require_once 'Zend/Amf/Parse/TypeLoader.php';
@@ -41,7 +37,7 @@ require_once 'Zend/Session.php';
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Amf
  */
@@ -242,7 +238,7 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("bar: foo", $responseBody[0]->getData(), var_export($responseBody, 1));
     }
 
-	/**
+    /**
      * Test to make sure that AMF3 basic requests are handled for loading
      * a class.
      * This type of call is sent from NetConnection rather than RemoteObject
@@ -326,7 +322,7 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         // Check the message body is the expected data to be returned
         $this->assertEquals("String: 12345", $acknowledgeMessage->body);
     }
- 
+
 
     /**
      * Test to make sure that you can have the same method name in two different classes.
@@ -821,10 +817,10 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->_server->loadFunctions(true));
     }
-    
+
    /**
      * @group ZF-5388
-     * Issue if only one parameter of type array is passed it is nested into another array. 
+     * Issue if only one parameter of type array is passed it is nested into another array.
      */
     public function testSingleArrayParamaterAMF3()
     {
@@ -853,12 +849,12 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         // check that we have a message beening returned
         $this->assertTrue($acknowledgeMessage instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
         // Check the message body is the expected data to be returned
-        $this->assertTrue($acknowledgeMessage->body);  
+        $this->assertTrue($acknowledgeMessage->body);
     }
-    
+
      /**
      * @group ZF-5388
-     * Issue if only one parameter of type array is passed it is nested into another array. 
+     * Issue if only one parameter of type array is passed it is nested into another array.
      */
     public function testSingleArrayParamaterAMF0()
     {
@@ -876,10 +872,10 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists(0, $responseBody), var_export($responseBody, 1));
         $this->assertTrue($responseBody[0]->getData(), var_export($responseBody, 1));
     }
-    
-	/**
+
+    /**
      * @group ZF-5388
-     * Issue if only one parameter of type array is passed it is nested into another array. 
+     * Issue if only one parameter of type array is passed it is nested into another array.
      */
     public function testMutiArrayParamaterAMF3()
     {
@@ -909,12 +905,12 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         // check that we have a message beening returned
         $this->assertTrue($acknowledgeMessage instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
         // Check the message body is the expected data to be returned
-        $this->assertEquals(4, count($acknowledgeMessage->body));  
+        $this->assertEquals(4, count($acknowledgeMessage->body));
     }
-    
+
      /**
      * @group ZF-5388
-     * Issue if multipol parameters are sent and one is of type array is passed. 
+     * Issue if multipol parameters are sent and one is of type array is passed.
      */
     public function testMutiArrayParamaterAMF0()
     {
@@ -933,7 +929,7 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists(0, $responseBody), var_export($responseBody, 1));
         $this->assertEquals(4, count($responseBody[0]->getData()), var_export($responseBody, 1));
     }
-    
+
     /**
      * @group ZF-5346
      */
@@ -965,12 +961,12 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         // check that we have a message beening returned
         $this->assertTrue($acknowledgeMessage instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
         // Check the message body is the expected data to be returned
-        $this->assertEquals(4, count($acknowledgeMessage->body));  
-        
+        $this->assertEquals(4, count($acknowledgeMessage->body));
+
     }
-    
-    
-    
+
+
+
     /**
      * Check that when using server->setSession you get an amf header that has an append to gateway sessionID
      * @group ZF-5381
@@ -978,10 +974,10 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
     public function testSessionAmf3()
     {
         Zend_Session::$_unitTestEnabled = true;
-        Zend_Session::start(); 
+        Zend_Session::start();
         $this->_server->setClass('Zend_Amf_testSession');
         $this->_server->setSession();
-        
+
         // create a mock remoting message
         $message = new Zend_Amf_Value_Messaging_RemotingMessage();
         $message->operation = 'getCount';
@@ -1000,31 +996,31 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         // Now check if the return data was properly set.
         $acknowledgeMessage = $responseBody[0]->getData();
         // check that we have a message beening returned
-        $this->assertEquals(1, $acknowledgeMessage->body);  
-        // check that a header is being returned for the session id 
+        $this->assertEquals(1, $acknowledgeMessage->body);
+        // check that a header is being returned for the session id
         $headerBody = $response->getAmfHeaders();
         $this->assertEquals('AppendToGatewayUrl',$headerBody[0]->name);
-        
+
         // Do not stop session since it still can be used by other tests
         // Zend_Session::stop();
     }
-    
+
     public function testAddDirectory()
     {
-    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
-    	$this->_server->addDirectory(dirname(__FILE__)."/_files/");
-    	$dirs = $this->_server->getDirectory();
-    	$this->assertContains(dirname(__FILE__)."/_files/services/", $dirs);
-    	$this->assertContains(dirname(__FILE__)."/_files/", $dirs);
+        $this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+        $this->_server->addDirectory(dirname(__FILE__)."/_files/");
+        $dirs = $this->_server->getDirectory();
+        $this->assertContains(dirname(__FILE__)."/_files/services/", $dirs);
+        $this->assertContains(dirname(__FILE__)."/_files/", $dirs);
     }
-    
+
     public function testAddDirectoryService()
     {
-    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
-    	// should take it from the path above, not include path
+        $this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+        // should take it from the path above, not include path
         $origPath = get_include_path();
-    	set_include_path($origPath.PATH_SEPARATOR.dirname(__FILE__));
-    	// create a mock remoting message
+        set_include_path($origPath.PATH_SEPARATOR.dirname(__FILE__));
+        // create a mock remoting message
         $message = new Zend_Amf_Value_Messaging_RemotingMessage();
         $message->operation = 'getMenu';
         $message->source = 'ServiceC';
@@ -1042,11 +1038,11 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
         $this->assertEquals("Service: MenuC", $response[0]->getData()->body);
     }
-    
+
     public function testAddDirectoryService2()
     {
-    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
-    	// create a mock remoting message
+        $this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+        // create a mock remoting message
         $message = new Zend_Amf_Value_Messaging_RemotingMessage();
         $message->operation = 'getMenu';
         $message->source = 'My.ServiceA';
@@ -1063,14 +1059,14 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_AcknowledgeMessage);
         $this->assertEquals("Service: myMenuA", $response[0]->getData()->body);
     }
-    
+
     /*
      * See ZF-6625
      */
     public function testAddDirectoryServiceNotFound()
     {
-    	$this->_server->addDirectory(dirname(__FILE__)."/_files/services");
-    	// create a mock remoting message
+        $this->_server->addDirectory(dirname(__FILE__)."/_files/services");
+        // create a mock remoting message
         $message = new Zend_Amf_Value_Messaging_RemotingMessage();
         $message->operation = 'encode';
         $message->source = 'Zend_Json';
@@ -1085,18 +1081,18 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->_server->handle($request);
         $response = $this->_server->getResponse()->getAMFBodies();
         $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
-		// test the same while ensuring Zend_Json is loaded
-		require_once 'Zend/Json.php';
-		$this->_server->handle($request);
-		$response = $this->_server->getResponse()->getAMFBodies();
-		$this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
+        // test the same while ensuring Zend_Json is loaded
+        require_once 'Zend/Json.php';
+        $this->_server->handle($request);
+        $response = $this->_server->getResponse()->getAMFBodies();
+        $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
     }
 
     /* See ZF-7102 */
     public function testCtorExcection()
     {
-		$this->_server->setClass('Zend_Amf_testException');
-		$this->_server->setProduction(false);
+        $this->_server->setClass('Zend_Amf_testException');
+        $this->_server->setProduction(false);
         $message = new Zend_Amf_Value_Messaging_RemotingMessage();
         $message->operation = 'hello';
         $message->source = 'Zend_Amf_testException';
@@ -1113,7 +1109,7 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($response[0]->getData() instanceof Zend_Amf_Value_Messaging_ErrorMessage);
         $this->assertContains("Oops, exception!", $response[0]->getData()->faultString);
     }
-    
+
 }
 
 if (PHPUnit_MAIN_METHOD == "Zend_Amf_ServerTest::main") {
@@ -1234,37 +1230,37 @@ class Zend_Amf_testclass
     {
         throw new Exception('This exception should not be displayed');
     }
-    
+
     /**
-     * test if we can send an array as a paramater without it getting nested two   
+     * test if we can send an array as a paramater without it getting nested two
      * Used to test  ZF-5388
      */
     public function testSingleArrayParamater($inputArray){
-		if( $inputArray[0] == 'item1' ){
-			return true;
-		}
-		return false;
-    } 
+        if( $inputArray[0] == 'item1' ){
+            return true;
+        }
+        return false;
+    }
     /**
-     * This will crash if two arrays are not passed into the function. 
+     * This will crash if two arrays are not passed into the function.
      * Used to test  ZF-5388
      */
     public function testMultiArrayParamater($arrayOne, $arrayTwo)
     {
         return array_merge($arrayOne, $arrayTwo);
     }
-    
+
 }
 
 class Zend_Amf_testException
 {
-	public function __construct() {
-		throw new Exception("Oops, exception!");
-	}
-	
-	public function hello() {
-		return "hello";
-	}
+    public function __construct() {
+        throw new Exception("Oops, exception!");
+    }
+
+    public function hello() {
+        return "hello";
+    }
 }
 
 /**
@@ -1289,29 +1285,29 @@ class Zend_Amf_testclassPrivate
         return 'String: '. (string) $string;
     }
 
-    public function hello() 
+    public function hello()
     {
-	return "hello";
+        return "hello";
     }
 }
 
 /**
- * Example class for sending a session back to ActionScript. 
+ * Example class for sending a session back to ActionScript.
  */
 class Zend_Amf_testSession
 {
     /** Check if the session is available or create it. */
     public function __construct() {
-        if (!isset($_SESSION['count'])) { 
-			$_SESSION['count'] = 0;
-		}
-	}
-	
-	/** increment the current count session variable and return it's value */
+        if (!isset($_SESSION['count'])) {
+            $_SESSION['count'] = 0;
+        }
+    }
+
+    /** increment the current count session variable and return it's value */
     public function getCount()
     {
-    	$_SESSION['count']++;
-    	return $_SESSION['count']; 
+        $_SESSION['count']++;
+        return $_SESSION['count'];
     }
 }
 

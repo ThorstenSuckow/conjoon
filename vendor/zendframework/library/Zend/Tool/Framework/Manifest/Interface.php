@@ -14,69 +14,69 @@
  *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Interface.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Interface.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 interface Zend_Tool_Framework_Manifest_Interface
 {
-    
+
     /**
      * The following methods are completely optional, and any combination of them
      * can be used as part of a manifest.  The manifest repository will process
      * the return values of these actions as specfied in the following method docblocks.
-     * 
+     *
      * Since these actions are
-     * 
+     *
      */
-    
+
     /**
      * getMetadata()
-     * 
+     *
      * Should either return a single metadata object or an array
      * of metadata objects
-     * 
+     *
      * @return array|Zend_Tool_Framework_Manifest_Metadata
      **
 
     public function getMetadata();
 
      **/
-    
-    
-    
+
+
+
     /**
      * getActions()
-     * 
+     *
      * Should either return a single action, or an array
      * of actions
-     * 
+     *
      * @return array|Zend_Tool_Framework_Action_Interface
      **
-    
+
     public function getActions();
 
      **/
-    
-    
-    
+
+
+
     /**
      * getProviders()
-     * 
+     *
      * Should either return a single provider or an array
      * of providers
-     * 
+     *
      **
-    
+
     public function getProviders();
 
      **/
-    
+
 }

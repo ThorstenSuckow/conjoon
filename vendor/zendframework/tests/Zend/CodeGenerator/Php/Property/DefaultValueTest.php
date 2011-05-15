@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
-
-/**
- * @see TestHelper
- */
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 require_once 'Zend/CodeGenerator/Php/Property/DefaultValue.php';
 
@@ -31,21 +26,21 @@ require_once 'Zend/CodeGenerator/Php/Property/DefaultValue.php';
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * 
+ *
  * @group Zend_CodeGenerator
  * @group Zend_CodeGenerator_Php
  */
 class Zend_CodeGenerator_Php_Property_DefaultValueTest extends PHPUnit_Framework_TestCase
 {
-    
+
     public function testPropertyDefaultValueConstructor()
     {
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
         $this->isInstanceOf($propDefaultValue, 'Zend_CodeGenerator_Php_Property_DefaultValue');
     }
-    
+
     public function testPropertyDefaultValueIsSettable()
     {
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
@@ -53,28 +48,28 @@ class Zend_CodeGenerator_Php_Property_DefaultValueTest extends PHPUnit_Framework
         $this->assertEquals('foo', $propDefaultValue->getValue());
         //$this->assertEquals('\'foo\';', $propDefaultValue->generate());
     }
-    
+
     public function testPropertyDefaultValueCanHandleStrings()
     {
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
         $propDefaultValue->setValue('foo');
         $this->assertEquals('\'foo\';', $propDefaultValue->generate());
     }
-    
+
     public function testPropertyDefaultValueCanHandleArray()
     {
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
         $propDefaultValue->setValue(array('foo'));
         $this->assertEquals('array(\'foo\');', $propDefaultValue->generate());
     }
-    
+
     public function testPropertyDefaultValueCanHandleUnquotedString()
     {
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
         $propDefaultValue->setValue('PHP_EOL');
         $propDefaultValue->setType('constant');
         $this->assertEquals('PHP_EOL;', $propDefaultValue->generate());
-        
+
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
         $propDefaultValue->setValue(5);
         $this->assertEquals('5;', $propDefaultValue->generate());
@@ -83,11 +78,11 @@ class Zend_CodeGenerator_Php_Property_DefaultValueTest extends PHPUnit_Framework
         $propDefaultValue->setValue(5.25);
         $this->assertEquals('5.25;', $propDefaultValue->generate());
     }
-    
+
     public function testPropertyDefaultValueCanHandleComplexArrayOfTypes()
     {
         $targetValue = array(
-            5, 
+            5,
             'one' => 1,
             'two' => '2',
             array(
@@ -100,7 +95,7 @@ class Zend_CodeGenerator_Php_Property_DefaultValueTest extends PHPUnit_Framework
                 ),
             new Zend_CodeGenerator_Php_Property_DefaultValue(array('value' => 'PHP_EOL', 'type' => 'constant'))
             );
-        
+
         $expectedSource = <<<EOS
 array(
         5,
@@ -117,13 +112,13 @@ array(
         PHP_EOL
         );
 EOS;
-            
+
         $propDefaultValue = new Zend_CodeGenerator_Php_Property_DefaultValue();
         $propDefaultValue->setValue($targetValue);
         $generatedTargetSource = $propDefaultValue->generate();
         $this->assertEquals($expectedSource, $generatedTargetSource);
-        
+
     }
-    
-    
+
+
 }

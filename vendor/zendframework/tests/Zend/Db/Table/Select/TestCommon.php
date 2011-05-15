@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 18200 2009-09-17 21:25:37Z beberlei $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,21 +27,21 @@
 require_once 'Zend/Db/Select/TestCommon.php';
 
 
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
 
 
 /**
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
 {
 
     protected $_runtimeIncludePath = null;
-    
+
     /**
      * @var array of Zend_Db_Table_Abstract
      */
@@ -56,12 +56,13 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
         $this->_table['bugs_products'] = $this->_getTable('My_ZendDbTable_TableBugsProducts');
         $this->_table['products']      = $this->_getTable('My_ZendDbTable_TableProducts');
     }
-    
+
     public function tearDown()
     {
         if ($this->_runtimeIncludePath) {
             $this->_restoreIncludePath();
         }
+        parent::tearDown();
     }
 
     protected function _getTable($tableClass, $options = array())
@@ -83,7 +84,7 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
         $this->_runtimeIncludePath = get_include_path();
         set_include_path(dirname(__FILE__) . '/../_files/' . PATH_SEPARATOR . $this->_runtimeIncludePath);
     }
-    
+
     protected function _restoreIncludePath()
     {
         set_include_path($this->_runtimeIncludePath);
@@ -92,7 +93,7 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
 
     /**
      * Get a Zend_Db_Table to provide the base select()
-     * 
+     *
      * @return Zend_Db_Table_Abstract
      */
     protected function _getSelectTable($table)
@@ -221,7 +222,7 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
         $select = $table->select();
         $this->assertSame($table, $select->getTable());
     }
-    
+
     /**
      * @group ZF-2798
      */
@@ -231,19 +232,19 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
         $select1 = $table->select();
         $this->assertEquals(0, count($select1->getPart(Zend_Db_Table_Select::FROM)));
         $this->assertEquals(0, count($select1->getPart(Zend_Db_Table_Select::COLUMNS)));
-        
+
         $select2 = $table->select(true);
         $this->assertEquals(1, count($select2->getPart(Zend_Db_Table_Select::FROM)));
         $this->assertEquals(1, count($select2->getPart(Zend_Db_Table_Select::COLUMNS)));
-        
+
         $this->assertEquals($select1->__toString(), $select2->__toString());
-        
+
         $select3 = $table->select();
         $select3->setIntegrityCheck(false);
         $select3->joinLeft('tableB', 'tableA.id=tableB.id');
         $select3Text = $select3->__toString();
         $this->assertNotContains('zfaccounts', $select3Text);
-        
+
         $select4 = $table->select(Zend_Db_Table_Abstract::SELECT_WITH_FROM_PART);
         $select4->setIntegrityCheck(false);
         $select4->joinLeft('tableB', 'tableA.id=tableB.id');
@@ -261,6 +262,37 @@ abstract class Zend_Db_Table_Select_TestCommon extends Zend_Db_Select_TestCommon
 
         $selectUnion = $table->select()->union(array($select1, $select2));
         $selectUnionSql = $selectUnion->assemble();
+    }
+
+    /**
+     * Test the Adapter's fetchRow() method with a select with offset
+     * @group ZF-8944
+     */
+    public function testAdapterFetchRowWithOffset()
+    {
+        $table = $this->_getSelectTable('products');
+        $products = $this->_db->quoteIdentifier('zfproducts');
+        $product_id = $this->_db->quoteIdentifier('product_id');
+
+        // Grab the first two rows
+        $data[0] = $this->_db->fetchRow("SELECT * from $products WHERE $product_id = 1");
+        $data[1] = $this->_db->fetchRow("SELECT * from $products WHERE $product_id = 2");
+
+        $select = $table->select();
+        $select->order('product_id');
+        $select->limit(1, 0);
+
+        $row = $this->_db->fetchRow($select);
+
+        $this->assertEquals($data[0], $row);
+
+        $select = $table->select();
+        $select->order('product_id');
+        $select->limit(1, 1);
+
+        $row = $this->_db->fetchRow($select);
+
+        $this->assertEquals($data[1], $row);
     }
 
     // ZF-3239

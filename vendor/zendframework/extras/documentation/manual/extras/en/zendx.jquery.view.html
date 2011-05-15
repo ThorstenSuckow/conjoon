@@ -3,8 +3,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>2.2. ZendX_JQuery View Helpers</title>
 <link rel="stylesheet" href="dbstyle.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
-<link rel="start" href="index.html" title="Programmer's Reference Guide">
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="Programmer's Reference Guide">
 <link rel="up" href="zendx.jquery.html" title="Chapter 2. ZendX_JQuery">
 <link rel="prev" href="zendx.jquery.html" title="Chapter 2. ZendX_JQuery">
 <link rel="next" href="zendx.jquery.form.html" title="2.3. ZendX_JQuery Form Elements and Decorators">
@@ -25,7 +25,7 @@
 </td>
 </tr>
 </table></div>
-<div class="sect1" lang="en">
+<div class="sect1" title="2.2. ZendX_JQuery View Helpers">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="zendx.jquery.view"></a>2.2. ZendX_JQuery View Helpers</h2></div></div></div>
 <p>
@@ -34,31 +34,30 @@
     </p>
 <pre class="programlisting">
 $view-&gt;addHelperPath("ZendX/JQuery/View/Helper", "ZendX_JQuery_View_Helper");
-
-    </pre>
-<p>Or using the <code class="code">ZendX_JQuery::enableView(Zend_View_Interface $view)</code> method
+</pre>
+<p>Or using the <code class="methodname">ZendX_JQuery::enableView(Zend_View_Interface $view)</code> method
         that does the same for you.</p>
-<div class="sect2" lang="en">
+<div class="sect2" title="2.2.1. jQuery() View Helper">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="zendx.jquery.view.jquery"></a>2.2.1. jQuery() View Helper</h3></div></div></div>
 <p>
-        The <code class="code">jQuery()</code> view helper simplifies setup of your jQuery environment
+        The <code class="methodname">jQuery()</code> view helper simplifies setup of your jQuery environment
         in your application. It takes care of loading the core and ui library dependencies if necessary
         and acts as a stack for all the registered onLoad javascript statements. All jQuery view helpers
         put their javascript code onto this stack. It acts as a collector for everything jQuery in your
         application with the following responsibilities:
     </p>
-<div class="itemizedlist"><ul type="disc">
-<li><p>Handling deployment of CDN or a local path jQuery Core
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>Handling deployment of CDN or a local path jQuery Core
                 and UI libraries.</p></li>
-<li><p>Handling $(document).onLoad() events.</p></li>
-<li><p>Specifying additional stylesheet themes to use.</p></li>
+<li class="listitem"><p>Handling $(document).onLoad() events.</p></li>
+<li class="listitem"><p>Specifying additional stylesheet themes to use.</p></li>
 </ul></div>
 <p>
-        The <code class="code">jQuery()</code> view helper implementation, like its <code class="code">dojo()</code> pendant,
+        The <code class="methodname">jQuery()</code> view helper implementation, like its <code class="methodname">dojo()</code> pendant,
         follows the placeholder architecture implementation; the data set in it persists between view
         objects, and may be directly echo'd from your layout script. Since views specified in a Zend_Layout
-        script file are rendered before the layout itself, the <code class="code">jQuery()</code> helper can act as a
+        script file are rendered before the layout itself, the <code class="methodname">jQuery()</code> helper can act as a
         stack for jQuery statements and render them into the head segment of the html page.
     </p>
 <p>Contrary to Dojo, themes cannot be loaded from a CDN for the jQuery UI widgets and have to be implemented
@@ -80,8 +79,7 @@ $view-&gt;addHelperPath("ZendX/JQuery/View/Helper", "ZendX_JQuery_View_Helper");
         </p>
 <pre class="programlisting">
 $view-&gt;addHelperPath('ZendX/JQuery/View/Helper/', 'ZendX_JQuery_View_Helper');
-
-        </pre>
+</pre>
 <p>If you need them throughout your application, you can register them in your bootstrap
             file using access to the Controller Plugin ViewRenderer:
         </p>
@@ -90,53 +88,51 @@ $view = new Zend_View();
 $view-&gt;addHelperPath('ZendX/JQuery/View/Helper/', 'ZendX_JQuery_View_Helper');
 
 $viewRenderer = new Zend_Controller_Action_Helper_ViewRenderer();
-$viewRenderer-&gt;setView($view)
+$viewRenderer-&gt;setView($view);
 Zend_Controller_Action_HelperBroker::addHelper($viewRenderer);
-
-        </pre>
+</pre>
 <p>Now in the view script we want to display a Date Picker and an Ajax based Link.</p>
 <pre class="programlisting">
-&lt;?= $this-&gt;ajaxLink("Show me something",
+&lt;?php echo $this-&gt;ajaxLink("Show me something",
                     "/hello/world",
-                    array('update' =&gt; '#content')); ?&gt;
+                    array('update' =&gt; '#content'));?&gt;
 
 &lt;div id="content"&gt;&lt;/div&gt;
 
 &lt;form method="post" action="/hello/world"&gt;
-Pick your Date: &lt;?= $this-&gt;datePicker("dp1",
-                                      '',
-                                      array('defaultDate' =&gt;
-                                                date('Y/m/d', time()))); ?&gt;
+Pick your Date: &lt;?php echo $this-&gt;datePicker("dp1",
+                                             '',
+                                             array(
+                                                'defaultDate' =&gt;
+                                                    date('Y/m/d', time())));?&gt;
 &lt;input type="submit" value="Submit" /&gt;
 &lt;/form&gt;
-
-        </pre>
+</pre>
 <p>Both helpers now stacked some javascript statements on the jQuery helper and printed a link and
             a form element respectively. To access the javascript we have to utilize the jQuery()
             functionality. Both helpers already activated their dependencies that is they have called
-            <code class="code">jQuery()-&gt;enable()</code> and <code class="code">jQuery()-&gt;enableUi()</code>. We only have to print
+            <code class="methodname">jQuery()-&gt;enable()</code> and <code class="methodname">jQuery()-&gt;uiEnable()</code>. We only have to print
             the jQuery() environment, and we choose to do so in the layout script's head segment:
         </p>
 <pre class="programlisting">
 &lt;html&gt;
     &lt;head&gt;
         &lt;title&gt;A jQuery View Helper Example&lt;/title&gt;
-        &lt;?= $this-&gt;jQuery(); ?&gt;
+        &lt;?php echo $this-&gt;jQuery(); ?&gt;
     &lt;/head&gt;
 
     &lt;body&gt;
-        &lt;?= $this-&gt;layout()-&gt;content; ?&gt;
+        &lt;?php echo $this-&gt;layout()-&gt;content; ?&gt;
     &lt;/body&gt;
 &lt;/html&gt;
-
-        </pre>
+</pre>
 <p>Although <code class="code">$this-&gt;layout()-&gt;content;</code> is printed behind the <code class="code">$this-&gt;jQuery()</code> statement,
             the content of the view script is rendered before. This way all the javascript onLoad code has already been put
             on the onLoad stack and can be printed within the head segment of the html document.
         </p>
 </div>
 </div>
-<br class="example-break"><div class="sect3" lang="en">
+<br class="example-break"><div class="sect3" title="2.2.1.1. jQuery NoConflict Mode">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.jquery.noconflict"></a>2.2.1.1. jQuery NoConflict Mode</h4></div></div></div>
 <p>jQuery offers a noConflict mode that allows the library to be run side by side with other javascript libraries
@@ -148,8 +144,8 @@ Pick your Date: &lt;?= $this-&gt;datePicker("dp1",
 <a name="zend.jquery.view.jquery.noconflict"></a><p class="title"><b>Example 2.2. Building your own Helper with No Conflict Mode</b></p>
 <div class="example-contents">
 <p>To make use of the NoConflict Mode in your own jQuery helper, you only have to use the static method
-                <code class="code">ZendX_JQuery_View_Helper_JQuery::getJQueryHandler()</code> method. It returns the variable jQuery is operating
-                in at the moment, either <code class="code">$</code> or <code class="code">$j</code>
+                <code class="methodname">ZendX_JQuery_View_Helper_JQuery::getJQueryHandler()</code> method. It returns the variable jQuery is operating
+                in at the moment, either <code class="code">$</code> or <code class="varname">$j</code>
             </p>
 <pre class="programlisting">
 class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
@@ -169,13 +165,12 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
         return '';
     }
 }
-
-            </pre>
+</pre>
 </div>
 </div>
 <br class="example-break">
 </div>
-<div class="sect3" lang="en">
+<div class="sect3" title="2.2.1.2. jQuery UI Themes">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.jquery.themes"></a>2.2.1.2. jQuery UI Themes</h4></div></div></div>
 <p>Since there are no online available themes to use out of the box, the implementation of the UI library themes
@@ -186,102 +181,102 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
             merge the required stylesheet information in your main stylesheet file.
         </p>
 </div>
-<div class="sect3" lang="en">
+<div class="sect3" title="2.2.1.3. Methods Available">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.jquery.methods"></a>2.2.1.3. Methods Available</h4></div></div></div>
 <p>
-            The <code class="code">jQuery()</code> view helper always returns an instance of
+            The <code class="methodname">jQuery()</code> view helper always returns an instance of
             the jQuery placeholder container. That container object has the
             following methods available:
         </p>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.1.3.1. jQuery Core Library methods">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.jquery.methods.core"></a>2.2.1.3.1. jQuery Core Library methods</h5></div></div></div>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">enable()</code>: explicitly enable jQuery
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="methodname">enable()</code>: explicitly enable jQuery
                         integration.</p></li>
-<li><p><code class="code">disable()</code>: disable jQuery
+<li class="listitem"><p><code class="methodname">disable()</code>: disable jQuery
                         integration.</p></li>
-<li><p><code class="code">isEnabled()</code>: determine whether or not
+<li class="listitem"><p><code class="methodname">isEnabled()</code>: determine whether or not
                         jQuery integration is enabled.</p></li>
-<li><p><code class="code">setVersion()</code>: set the jQuery version
+<li class="listitem"><p><code class="methodname">setVersion()</code>: set the jQuery version
                         that is used. This also decides on the library loaded
                         from the Google Ajax Library CDN</p></li>
-<li><p><code class="code">getVersion()</code>: get the current jQuery
+<li class="listitem"><p><code class="methodname">getVersion()</code>: get the current jQuery
                         that is used. This also decides on the library loaded
                         from the Google Ajax Library CDN</p></li>
-<li><p><code class="code">useCdn()</code>: Return true, if CDN usage is
+<li class="listitem"><p><code class="methodname">useCdn()</code>: Return true, if CDN usage is
                         currently enabled</p></li>
-<li><p><code class="code">useLocalPath()</code>: Return true, if local usage
+<li class="listitem"><p><code class="methodname">useLocalPath()</code>: Return true, if local usage
                         is currently enabled</p></li>
-<li><p><code class="code">setLocalPath()</code>: Set the local path to the
+<li class="listitem"><p><code class="methodname">setLocalPath()</code>: Set the local path to the
                         jQuery Core library</p></li>
-<li><p><code class="code">getLocalPath()</code>: If set, return the local path to the
+<li class="listitem"><p><code class="methodname">getLocalPath()</code>: If set, return the local path to the
                         jQuery Core library</p></li>
 </ul></div>
 </div>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.1.3.2. jQuery UI Library methods">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.jquery.methods.ui"></a>2.2.1.3.2. jQuery UI Library methods</h5></div></div></div>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">uiEnable()</code>: explicitly enable jQuery UI
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="methodname">uiEnable()</code>: explicitly enable jQuery UI
                         integration.</p></li>
-<li><p><code class="code">uiDisable()</code>: disable jQuery UI
+<li class="listitem"><p><code class="methodname">uiDisable()</code>: disable jQuery UI
                         integration.</p></li>
-<li><p><code class="code">uiIsEnabled()</code>: determine whether or not
+<li class="listitem"><p><code class="methodname">uiIsEnabled()</code>: determine whether or not
                         jQuery UI integration is enabled.</p></li>
-<li><p><code class="code">setUiVersion()</code>: set the jQuery UI version
+<li class="listitem"><p><code class="methodname">setUiVersion()</code>: set the jQuery UI version
                         that is used. This also decides on the library loaded
                         from the Google Ajax Library CDN</p></li>
-<li><p><code class="code">getUiVersion()</code>: get the current jQuery UI
+<li class="listitem"><p><code class="methodname">getUiVersion()</code>: get the current jQuery UI
                         that is used. This also decides on the library loaded
                         from the Google Ajax Library CDN</p></li>
-<li><p><code class="code">useUiCdn()</code>: Return true, if CDN usage is
+<li class="listitem"><p><code class="methodname">useUiCdn()</code>: Return true, if CDN usage is
                         currently enabled for jQuery UI</p></li>
-<li><p><code class="code">useUiLocal()</code>: Return true, if local usage
+<li class="listitem"><p><code class="methodname">useUiLocal()</code>: Return true, if local usage
                         is currently enabled for jQuery UI</p></li>
-<li><p><code class="code">setUiLocalPath()</code>: Set the local path to the
+<li class="listitem"><p><code class="methodname">setUiLocalPath()</code>: Set the local path to the
                         jQuery UI library</p></li>
-<li><p><code class="code">getUiLocalPath()</code>: If set, get the local path
+<li class="listitem"><p><code class="methodname">getUiLocalPath()</code>: If set, get the local path
                         to the jQuery UI library</p></li>
 </ul></div>
 </div>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.1.3.3. jQuery Helper Utility methods">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.jquery.methods.other"></a>2.2.1.3.3. jQuery Helper Utility methods</h5></div></div></div>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">setView(Zend_View_Interface $view)</code>: set
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="methodname">setView(Zend_View_Interface $view)</code>: set
                         a view instance in the container.</p></li>
-<li><p><code class="code">onLoadCaptureStart()</code>: Start capturing javascript code
+<li class="listitem"><p><code class="methodname">onLoadCaptureStart()</code>: Start capturing javascript code
                         for jQuery onLoad execution.</p></li>
-<li><p><code class="code">onLoadCaptureEnd()</code>: Stop capturing</p></li>
-<li><p><code class="code">javascriptCaptureStart()</code>: Start capturing javascript code
+<li class="listitem"><p><code class="methodname">onLoadCaptureEnd()</code>: Stop capturing</p></li>
+<li class="listitem"><p><code class="methodname">javascriptCaptureStart()</code>: Start capturing javascript code
                         that has to be rendered after the inclusion of either jQuery Core or UI libraries.</p></li>
-<li><p><code class="code">javascriptCaptureEnd()</code>: Stop capturing.</p></li>
-<li><p><code class="code">addJavascriptFile($path)</code>: Add javascript file to be included after
+<li class="listitem"><p><code class="methodname">javascriptCaptureEnd()</code>: Stop capturing.</p></li>
+<li class="listitem"><p><code class="methodname">addJavascriptFile($path)</code>: Add javascript file to be included after
                                 jQuery Core or UI library.</p></li>
-<li><p><code class="code">getJavascriptFiles()</code>: Return all currently registered
+<li class="listitem"><p><code class="methodname">getJavascriptFiles()</code>: Return all currently registered
                         additional javascript files.</p></li>
-<li><p><code class="code">clearJavascriptFiles()</code>: Clear the javascript files</p></li>
-<li><p><code class="code">addJavascript($statement)</code>: Add javascript statement to be included
+<li class="listitem"><p><code class="methodname">clearJavascriptFiles()</code>: Clear the javascript files</p></li>
+<li class="listitem"><p><code class="methodname">addJavascript($statement)</code>: Add javascript statement to be included
                         after jQuery Core or UI library.</p></li>
-<li><p><code class="code">getJavascript()</code>: Return all currently registered
+<li class="listitem"><p><code class="methodname">getJavascript()</code>: Return all currently registered
                         additional javascript statements.</p></li>
-<li><p><code class="code">clearJavascript()</code>: Clear the javascript statements.</p></li>
-<li><p><code class="code">addStylesheet($path)</code>: Add a stylesheet file that is needed
+<li class="listitem"><p><code class="methodname">clearJavascript()</code>: Clear the javascript statements.</p></li>
+<li class="listitem"><p><code class="methodname">addStylesheet($path)</code>: Add a stylesheet file that is needed
                         for a jQuery view helper to display correctly.</p></li>
-<li><p><code class="code">getStylesheets()</code>: Get all currently registered
+<li class="listitem"><p><code class="methodname">getStylesheets()</code>: Get all currently registered
                         additional stylesheets.</p></li>
-<li><p><code class="code">addOnLoad($statement)</code>: Add javascript statement that should
+<li class="listitem"><p><code class="methodname">addOnLoad($statement)</code>: Add javascript statement that should
                         be executed on document loading.</p></li>
-<li><p><code class="code">getOnLoadActions()</code>: Return all currently registered
+<li class="listitem"><p><code class="methodname">getOnLoadActions()</code>: Return all currently registered
                         onLoad statements.</p></li>
-<li><p><code class="code">setRenderMode($mask)</code>: Render only a specific subset of the
+<li class="listitem"><p><code class="methodname">setRenderMode($mask)</code>: Render only a specific subset of the
                         jQuery environment via ZendX_JQuery::RENDER_ constants. Rendering all elements
                         is the default behaviour.</p></li>
-<li><p><code class="code">getRenderMode()</code>: Return the current
+<li class="listitem"><p><code class="methodname">getRenderMode()</code>: Return the current
                         jQuery environment rendering mode.</p></li>
-<li><p><code class="code">setCdnSsl($bool)</code>: Set if the CDN Google Ajax Library should be loaded
+<li class="listitem"><p><code class="methodname">setCdnSsl($bool)</code>: Set if the CDN Google Ajax Library should be loaded
                         from an SSL or a Non-SSL location.</p></li>
 </ul></div>
 <p>These are quite a number of methods, but many of them are used for internally by all the
@@ -290,7 +285,7 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
                 get in contact with a few methods of these.</p>
 </div>
 </div>
-<div class="sect3" lang="en">
+<div class="sect3" title="2.2.1.4. Refactoring jQuery environment with setRenderMode()">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.jquery.refactor"></a>2.2.1.4. Refactoring jQuery environment with setRenderMode()</h4></div></div></div>
 <p>Using the current setup that was described, each page of your website would show
@@ -301,14 +296,14 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
             rendering because you have merged all the stylesheets into a single file and include it statically
             in your layout. To allow a smooth refactoring you can enable or disable the rendering
             of certain jQuery environment blocks with help of the following constants and the
-        <code class="code">jQuery()-&gt;setRenderMode($bitmask)</code> function.</p>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">ZendX_JQuery::RENDER_LIBRARY</code>: Renders jQuery Core and UI library</p></li>
-<li><p><code class="code">ZendX_JQuery::RENDER_SOURCES</code>: Renders additional javascript files</p></li>
-<li><p><code class="code">ZendX_JQuery::RENDER_STYLESHEETS</code>: Renders jQuery related stylesheets</p></li>
-<li><p><code class="code">ZendX_JQuery::RENDER_JAVASCRIPT</code>: Render additional javascript statements</p></li>
-<li><p><code class="code">ZendX_JQuery::RENDER_JQUERY_ON_LOAD</code>: Render jQuery onLoad statements</p></li>
-<li><p><code class="code">ZendX_JQuery::RENDER_ALL</code>: Render all previously mentioned blocks, this is default behaviour.</p></li>
+        <code class="methodname">jQuery()-&gt;setRenderMode($bitmask)</code> function.</p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="code">ZendX_JQuery::RENDER_LIBRARY</code>: Renders jQuery Core and UI library</p></li>
+<li class="listitem"><p><code class="code">ZendX_JQuery::RENDER_SOURCES</code>: Renders additional javascript files</p></li>
+<li class="listitem"><p><code class="code">ZendX_JQuery::RENDER_STYLESHEETS</code>: Renders jQuery related stylesheets</p></li>
+<li class="listitem"><p><code class="code">ZendX_JQuery::RENDER_JAVASCRIPT</code>: Render additional javascript statements</p></li>
+<li class="listitem"><p><code class="code">ZendX_JQuery::RENDER_JQUERY_ON_LOAD</code>: Render jQuery onLoad statements</p></li>
+<li class="listitem"><p><code class="code">ZendX_JQuery::RENDER_ALL</code>: Render all previously mentioned blocks, this is default behaviour.</p></li>
 </ul></div>
 <p>
             For an example, if you would have merged jQuery Core and UI libraries as well as other files into a single large file
@@ -317,30 +312,29 @@ class MyHelper_SomeHelper extends Zend_View_Helper_Abstract
             with the following statement in your view:
         </p>
 <pre class="programlisting">
-$view-&gt;jQuery
+$view-&gt;jQuery()
      -&gt;setRenderMode(ZendX_JQuery::RENDER_JAVASCRIPT |
                      ZendX_JQuery::RENDER_JQUERY_ON_LOAD);
-
-        </pre>
+</pre>
 <p>This statement makes sure only the required javascript statements and onLoad blocks of the current page are rendered by the jQuery helper.</p>
 </div>
-<div class="sect3" lang="en">
+<div class="sect3" title="2.2.1.5. Migrations">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.jquery.migrations"></a>2.2.1.5. Migrations</h4></div></div></div>
-<p>Prior to 1.8 the methods <code class="code">setCdnVersion()</code>, <code class="code">setLocalPath()</code>
-            <code class="code">setUiCdnVersion()</code> and <code class="code">setUiLocalPath()</code> all enabled the view
+<p>Prior to 1.8 the methods <code class="methodname">setCdnVersion()</code>, <code class="methodname">setLocalPath()</code>
+            <code class="methodname">setUiCdnVersion()</code> and <code class="methodname">setUiLocalPath()</code> all enabled the view
             helper upon calling, which is considered a bug from the following perspective: If
             you want to use the any non-default library option, you would have to manually disable the
             jQuery helper aftwards if you only require it to be loaded in some scenarios. With version
-            1.8 the jQuery helper does only enable itsself, when <code class="code">enable()</code> is called,
+            1.8 the jQuery helper does only enable itsself, when <code class="methodname">enable()</code> is called,
             which all internal jQuery View helpers do upon being called.
         </p>
 </div>
 </div>
-<div class="sect2" lang="en">
+<div class="sect2" title="2.2.2. JQuery Helpers">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="zendx.jquery.view.helpers"></a>2.2.2. JQuery Helpers</h3></div></div></div>
-<div class="sect3" lang="en">
+<div class="sect3" title="2.2.2.1. AjaxLink Helper">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.helpers.ajaxlink"></a>2.2.2.1. AjaxLink Helper</h4></div></div></div>
 <p>The AjaxLink helper uses jQuery's ajax capabilities to offer the creation of links that do ajax requests and
@@ -349,11 +343,10 @@ $view-&gt;jQuery
 <pre class="programlisting">
 &lt;!-- Inside your View Object --&gt;
 &lt;div id="container"&gt;&lt;/div&gt;
-&lt;?= $this-&gt;view-&gt;ajaxLink("Link Name",
+&lt;?php echo $this-&gt;view-&gt;ajaxLink("Link Name",
                           "url.php",
                           array('update' =&gt; '#container')); ?&gt;
-
-        </pre>
+</pre>
 <p>This example creates a link with the label "Link Name" that fires an ajax request to url.php
             upon click and renders the response into the div container "#container". The function header
             for the ajaxLink is as follows: <code class="code">function ajaxLink($label, $url, $options, $params);</code>
@@ -452,117 +445,117 @@ $view-&gt;jQuery
         &lt;!-- list only prints a list of for links --&gt;
         &lt;ul&gt;
             &lt;li&gt;
-                &lt;?= $this-&gt;ajaxLink("Example 1",
-                                    "/ctrl/action1",
-                                    array('update' =&gt; '#content',
-                                          'noscript' =&gt; false,
-                                          'method' =&gt; 'POST')); ?&gt;
+                &lt;?php echo $this-&gt;ajaxLink("Example 1",
+                                           "/ctrl/action1",
+                                           array('update' =&gt; '#content',
+                                                 'noscript' =&gt; false,
+                                                 'method' =&gt; 'POST')); ?&gt;
             &lt;/li&gt;
             &lt;li&gt;
-                &lt;?= $this-&gt;ajaxLink("Example 2",
-                                    "/ctrl/action2",
-                                    array('update' =&gt; '#content',
-                                          'class' =&gt; 'someLink'),
-                                    array('param1' =&gt; 'value1',
-                                          'param2' =&gt; 'value2')); ?&gt;
+                &lt;?php echo $this-&gt;ajaxLink("Example 2",
+                                           "/ctrl/action2",
+                                           array('update' =&gt; '#content',
+                                                 'class' =&gt; 'someLink'),
+                                           array('param1' =&gt; 'value1',
+                                                 'param2' =&gt; 'value2')); ?&gt;
             &lt;/li&gt;
-            &lt;li&gt;&lt;?= $this-&gt;ajaxLink("Example 3",
-                                    "/ctrl/action3",
-                                    array('dataType' =&gt; 'json',
-                                          'complete' =&gt; 'alert(data)')); ?&gt;
+            &lt;li&gt;&lt;?php echo $this-&gt;ajaxLink("Example 3",
+                                           "/ctrl/action3",
+                                           array('dataType' =&gt; 'json',
+                                                 'complete' =&gt;
+                                                    'alert(data)')); ?&gt;
             &lt;/li&gt;
-            &lt;li&gt;&lt;?= $this-&gt;ajaxLink("Example 4",
-                                    "/ctrl/action4",
-                                    array('beforeSend' =&gt; 'hide',
-                                          'complete' =&gt; 'show')); ?&gt;
+            &lt;li&gt;&lt;?php echo $this-&gt;ajaxLink("Example 4",
+                                           "/ctrl/action4",
+                                           array('beforeSend' =&gt; 'hide',
+                                                 'complete' =&gt; 'show')); ?&gt;
             &lt;/li&gt;
             &lt;li&gt;
-                &lt;?= $this-&gt;ajaxLink("Example 5",
-                                    "/ctrl/action5",
-                                    array('beforeSend' =&gt;
-                                            'myBeforeSendCallbackJsFunc();',
-                                          'complete' =&gt;
-                                            'myCompleteCallbackJsFunc(data);')); ?&gt;
+                &lt;?php echo $this-&gt;ajaxLink("Example 5",
+                                           "/ctrl/action5",
+                                           array(
+                                            'beforeSend' =&gt;
+                                             'myBeforeSendCallbackJsFunc();',
+                                            'complete' =&gt;
+                                             'myCompleteCallbackJsFunc(data);')
+                                           ); ?&gt;
             &lt;/li&gt;
         &lt;/ul&gt;
 
         &lt;!-- only at this point the javascript is printed to sreen --&gt;
-        &lt;?= $this-&gt;jQuery(); ?&gt;
+        &lt;?php echo $this-&gt;jQuery(); ?&gt;
     &lt;/body&gt;
 &lt;/html&gt;
-
-          </pre>
+</pre>
 <p>You might have already seen that the 'update', 'complete', and 'beforeSend' options have to be executed in specific order and syntax so that you cannot
-              use those callbacks and override their behaviour completely when you are using <code class="code">ajaxLink()</code>. For larger use cases you will probably want to
+              use those callbacks and override their behaviour completely when you are using <code class="methodname">ajaxLink()</code>. For larger use cases you will probably want to
               write the request via jQuery on your own. The primary use case for the callbacks is effect usage, other uses may very well become hard to maintain.
               As shown in Example Link 5, you can also forward the beforeSend/complete Callbacks to your own javascript functions.</p>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.2.1.1. Shortcut Effects">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.helpers.ajaxlink.effects"></a>2.2.2.1.1. Shortcut Effects</h5></div></div></div>
 <p>You can use shortcut effect names to make your links actions more fancy. For example the Container that will contain
                 the ajax response may very well be invisible in the first place. Additionally you can use shortcut effects on the link
                 to hide it after clicking. The following effects can be used for callbacks:</p>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">complete</code> callback: 'show', 'showslow', 'shownormal', 'showfast', 'fadein', 'fadeinslow',
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="code">complete</code> callback: 'show', 'showslow', 'shownormal', 'showfast', 'fadein', 'fadeinslow',
                 'fadeinfast', 'slidedown', 'slidedownslow', 'slidedownfast'. These all correspond to the jQuery effects
                 fadeIn(), show() and slideDown() and will be executed on the container specified in <code class="code">update</code>.</p></li>
-<li><p><code class="code">beforeSend</code> callback: 'fadeout', 'fadeoutslow', 'fadeoutfast', 'hide',
+<li class="listitem"><p><code class="code">beforeSend</code> callback: 'fadeout', 'fadeoutslow', 'fadeoutfast', 'hide',
                 'hideslow', 'hidefast', 'slideup'. These correspond to the jQuery effects fadeOut(), hide(), slideUp() and
                 are executed on the clicked link.</p></li>
 </ul></div>
 <pre class="programlisting">
-&lt;?= $this-&gt;ajaxLink("Example 6", 
-                    "/ctrl/action6",
-                    array('beforeSend' =&gt; 'hide',
-                          'complete' =&gt; 'show')); ?&gt;
-
-            </pre>
+&lt;?php echo $this-&gt;ajaxLink("Example 6",
+                           "/ctrl/action6",
+                           array('beforeSend' =&gt; 'hide',
+                                 'complete' =&gt; 'show')); ?&gt;
+</pre>
 </div>
 </div>
-<div class="sect3" lang="en">
+<div class="sect3" title="2.2.2.2. jQuery UI Library Helpers">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="zendx.jquery.view.helpers.ui"></a>2.2.2.2. jQuery UI Library Helpers</h4></div></div></div>
 <p>The jQuery UI Library offers a range of layout and form specific widgets that are integrated into the
             Zend Framework via View Helpers. The form-elements are easy to handle and will be described first, whereas
             the layout specific widgets are a bit more complex to use.</p>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.2.2.1. jQuery UI Form Helpers">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.helpers.ui.form"></a>2.2.2.2.1. jQuery UI Form Helpers</h5></div></div></div>
 <p>The method signature for all form view helpers closely resembles the Dojo View helpers signature,
-                <code class="code">helper($id, $value, $params, $attribs)</code>. A description of the parameters follows:</p>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">$id</code>: Will act as the identifier name for the helper element inside a form. If in the attributes
+                <code class="methodname">helper($id, $value, $params, $attribs)</code>. A description of the parameters follows:</p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="varname">$id</code>: Will act as the identifier name for the helper element inside a form. If in the attributes
                         no id element is given, this will also become the form element id, that has to be unique across
                         the DOM.</p></li>
-<li><p><code class="code">$value</code>: Default value of the element.</p></li>
-<li><p><code class="code">$params</code>: Widget specific parameters that customize the look and feel
-                        of the widget. These options are unique to each widget and <a href="http://docs.jquery.com/UI" target="_top">
+<li class="listitem"><p><code class="varname">$value</code>: Default value of the element.</p></li>
+<li class="listitem"><p><code class="varname">$params</code>: Widget specific parameters that customize the look and feel
+                        of the widget. These options are unique to each widget and <a class="ulink" href="http://docs.jquery.com/UI" target="_top">
                         described in the jQuery UI documentation</a>. The data is casted to JSON, so make sure
-                        to use the <code class="code">Zend_Json_Expr</code> class to mark executable javascript as safe.</p></li>
-<li><p><code class="code">$attribs</code>: HTML Attributes of the Form Helper</p></li>
+                        to use the <code class="classname">Zend_Json_Expr</code> class to mark executable javascript as safe.</p></li>
+<li class="listitem"><p><code class="varname">$attribs</code>: HTML Attributes of the Form Helper</p></li>
 </ul></div>
 <p>The following UI widgets are available as form view helpers. Make sure you use the correct
-                version of jQuery UI library to be able to use them. The Google CDN only offers jQuery UI up
-                to version 1.5.2. Some other components are only available from jQuery UI SVN, since they
-                have been removed from the announced 1.6 release.</p>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">autoComplete($id, $value, $params, $attribs)</code>: The AutoComplete View helper
-                    will be included in a future jQuery UI version (currently only via jQuery SVN) and creates a text field and registeres
+                version of jQuery UI library to be able to use them. The Google CDN always offers you the latest
+                released version.</p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="methodname">autoComplete($id, $value, $params, $attribs)</code>: The AutoComplete View helper
+                    is part of jQuery UI since version 1.8 and creates a text field and registeres
                     it to have auto complete functionality. The completion data source has to be given as jQuery
                     related parameters 'url' or 'data' as described in the jQuery UI manual.
                 </p></li>
-<li><p><code class="code">colorPicker($id, $value, $params, $attribs)</code>: ColorPicker is currently available
-                    in jQuery UI only from SVN and creates a text field that opens up a color picking tool when activated.
+<li class="listitem"><p><code class="methodname">colorPicker($id, $value, $params, $attribs)</code>: ColorPicker is still
+                a ZendX_JQuery element for legacy reason, but was removed from jQuery UI completly.
                 </p></li>
-<li><p><code class="code">datePicker($id, $value, $params, $attribs)</code>: Create a DatePicker
+<li class="listitem"><p><code class="methodname">datePicker($id, $value, $params, $attribs)</code>: Create a DatePicker
                     inside a text field. This widget is available since jQuery UI 1.5 and can therefore currently be used
                     with the Google CDN. Using the 'handles' option to create multiple handles overwrites the default set value
                     and the jQuery parameter 'startValue' internally inside the view helper.</p></li>
-<li><p><code class="code">slider($id, $value, $params, $attribs)</code>: Create a Sliding element
+<li class="listitem"><p><code class="methodname">slider($id, $value, $params, $attribs)</code>: Create a Sliding element
                     that updates its value into a hidden form field. Available since jQuery UI 1.5.</p></li>
-<li><p><code class="code">spinner($id, $value, $params, $attribs)</code>: Create a Spinner element
-                    that can spin through numeric values in a specified range. This is set on top of a form text field
-                    and is available only from jQuery UI SVN</p></li>
+<li class="listitem"><p><code class="methodname">spinner($id, $value, $params, $attribs)</code>: Create a Spinner element
+                    that can spin through numeric values in a specified range. This element was removed from
+                    the 1.6 jQuery UI release and has not been re-released yet.</p></li>
 </ul></div>
 <div class="example">
 <a name="zendx.jquery.view.helpers.form.example"></a><p class="title"><b>Example 2.3. Showing jQuery Form View Helper Usage</b></p>
@@ -575,52 +568,50 @@ $view-&gt;jQuery
 <pre class="programlisting">
 &lt;form method="post" action="bid.php"&gt;
     &lt;label for="locaction"&gt;Where do you want to travel?&lt;/label&gt;
-    &lt;?= $this-&gt;autoComplete("location",
-                            "",
-                            array('data' =&gt; array('New York',
-                                                  'Mexico City',
-                                                  'Sydney',
-                                                  'Ruegen',
-                                                  'Baden Baden'),
-                                  'multiple' =&gt; true)); ?&gt;
+    &lt;?php echo $this-&gt;autoComplete("location",
+                                   "",
+                                   array('source' =&gt; array('New York',
+                                                         'Mexico City',
+                                                         'Sydney',
+                                                         'Ruegen',
+                                                         'Baden Baden'))); ?&gt;
     &lt;br /&gt;
 
     &lt;label for="startDate"&gt;Travel Start Date:&lt;/label&gt;
-    &lt;?= $this-&gt;datePicker("startDate",
-                          '',
-                          array('defaultDate' =&gt; '+7',
-                                'minDate' =&gt; '+7',
-                                'onClose' =&gt; 'myJsonFuncCechkingValidity')); ?&gt;
+    &lt;?php echo $this-&gt;datePicker("startDate", '',
+             array(
+                'defaultDate' =&gt; '+7',
+                'minDate' =&gt; '+7',
+                'onClose' =&gt; new Zend_Json_Expr('myJsonFuncCechkingValidity'))); ?&gt;
     &lt;br /&gt;
 
     &lt;label for="startDate"&gt;Travel End Date:&lt;/label&gt;
-    &lt;?= $this-&gt;datePicker("endDate",
-                          '',
-                          array('defaultDate' =&gt; '+14',
-                                'minDate' =&gt; '+7',
-                                'onClose' =&gt; 'myJsonFuncCechkingValidity')); ?&gt;
+    &lt;?php echo $this-&gt;datePicker("endDate", '',
+             array(
+                'defaultDate' =&gt; '+14',
+                'minDate' =&gt; '+7',
+                'onClose' =&gt; new Zend_Json_Expr('myJsonFuncCechkingValidity'))); ?&gt;
     &lt;br /&gt;
 
     &lt;label for="bid"&gt;Your Bid:&lt;/label&gt;
-    &lt;?= $this-&gt;spinner("bid", 
-                       "",
-                       array('min' =&gt; 1205.50,
-                             'max' =&gt; 10000,
-                             'start' =&gt; 1205.50,
-                             'currency' =&gt; '€')); ?&gt;
+    &lt;?php echo $this-&gt;spinner("bid",
+                              "",
+                              array('min' =&gt; 1205.50,
+                                    'max' =&gt; 10000,
+                                    'start' =&gt; 1205.50,
+                                    'currency' =&gt; '€')); ?&gt;
     &lt;br /&gt;
 
     &lt;input type="submit" value="Bid!" /&gt;
 &lt;/form&gt;
-
-                </pre>
+</pre>
 <p>You can see the use of jQuery UI Widget specific parameters. These all correspond to those given in the jQuery UI docs
                     and are converted to JSON and handed through to the view script.</p>
 </div>
 </div>
 <br class="example-break">
 </div>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.2.2.2. Using an Action Helper to Send Data to AutoComplete">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.helpers.ui.actionhelper"></a>2.2.2.2.2. Using an Action Helper to Send Data to AutoComplete</h5></div></div></div>
 <p>The jQuery UI Autocomplete Widget can load data from a remote location
@@ -636,8 +627,7 @@ $view-&gt;jQuery
 Zend_Controller_Action_HelperBroker::addHelper(
     new ZendX_JQuery_Controller_Action_Helper_AutoComplete()
 );
-
-            </pre>
+</pre>
 <p>You can then directly call the helper to render AutoComplete Output in
             your Controller</p>
 <pre class="programlisting">
@@ -652,33 +642,32 @@ class MyIndexController extends Zend_Controller_Action
         $this-&gt;_helper-&gt;autoComplete(array("New York", "Bonn", "Tokio"));
     }
 }
-
-            </pre>
+</pre>
 </div>
-<div class="sect4" lang="en">
+<div class="sect4" title="2.2.2.2.3. jQuery UI Layout Helpers">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="zendx.jquery.view.helpers.ui.layout"></a>2.2.2.2.3. jQuery UI Layout Helpers</h5></div></div></div>
 <p>There is a wide range of Layout helpers that the UI library offers. The ones covered by Zend Framework view helpers are
                 Accordion, Dialog, Tabs. Dialog is the most simple one, whereas Accordion and Tab extend a common abstract class and
                 offer a secondary view helper for pane generation. The following view helpers exist in the jQuery view helpers collection,
                 an example accompanies them to show their usage.</p>
-<div class="itemizedlist"><ul type="disc">
-<li><p><code class="code">dialogContainer($id, $content, $params, $attribs)</code>: Create a Dialog Box that is rendered with
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><code class="methodname">dialogContainer($id, $content, $params, $attribs)</code>: Create a Dialog Box that is rendered with
                         the given content.on startup. If the option 'autoOpen' set to false is specified the box will not be displayed
-                        on load but can be shown with the additional <code class="code">dialog("open")</code> javascript function. See UI docs
+                        on load but can be shown with the additional <code class="methodname">dialog("open")</code> javascript function. See UI docs
                         for details.</p></li>
-<li><p><code class="code">tabPane($id, $content, $options)</code>: Add a new pane to a tab container with the given <code class="code">$id</code>.
-                        The given <code class="code">$content</code> is shown in this tab pane. To set the title use <code class="code">$options['title']</code>.
-                        If <code class="code">$options['contentUrl']</code> is set, the content of the tab is requested via ajax on tab activation.
+<li class="listitem"><p><code class="methodname">tabPane($id, $content, $options)</code>: Add a new pane to a tab container with the given <code class="varname">$id</code>.
+                        The given <code class="varname">$content</code> is shown in this tab pane. To set the title use <code class="varname">$options['title']</code>.
+                        If <code class="varname">$options['contentUrl']</code> is set, the content of the tab is requested via ajax on tab activation.
                     </p></li>
-<li><p><code class="code">tabContainer($id, $params, $attribs)</code>: Render a tab container with all the currently registered
+<li class="listitem"><p><code class="methodname">tabContainer($id, $params, $attribs)</code>: Render a tab container with all the currently registered
                         panes. This view helper also offers to add panes with the following syntax:
                         <code class="code">$this-&gt;tabContainer()-&gt;addPane($id, $label, $content, $options)</code>.
                     </p></li>
-<li><p><code class="code">accordionPane($id, $content, $options)</code>: Add a new pane to the accordion container with the given <code class="code">$id</code>.
-                        The given <code class="code">$content</code> is shown in this tab pane. To set the title use <code class="code">$options['title']</code>.
+<li class="listitem"><p><code class="methodname">accordionPane($id, $content, $options)</code>: Add a new pane to the accordion container with the given <code class="varname">$id</code>.
+                        The given <code class="varname">$content</code> is shown in this tab pane. To set the title use <code class="varname">$options['title']</code>.
                     </p></li>
-<li><p><code class="code">accordionContainer($id, $params, $attribs)</code>: Render an accordion container with all the currently registered
+<li class="listitem"><p><code class="methodname">accordionContainer($id, $params, $attribs)</code>: Render an accordion container with all the currently registered
                         panes. This view helper also offers to add panes with the following syntax:
                         <code class="code">$this-&gt;accordionContainer()-&gt;addPane($id, $label, $content, $options)</code>.
                     </p></li>
@@ -692,16 +681,15 @@ class MyIndexController extends Zend_Controller_Action
 <pre class="programlisting">
 &lt;?php foreach($this-&gt;news AS $article): ?&gt;
 &lt;?php $this-&gt;tabPane("newstab",
-                  $article-&gt;body,
-                  array('title' =&gt; $article-&gt;title)); ?&gt;
+                     $article-&gt;body,
+                     array('title' =&gt; $article-&gt;title)); ?&gt;
 &lt;?php endforeach; ?&gt;
 
 &lt;h2&gt;Latest News&lt;/h2&gt;
-&lt;?= $this-&gt;tabContainer("newstab",
-                        array(),
-                        array('class' =&gt; 'flora')); ?&gt;
-
-                </pre>
+&lt;?php echo $this-&gt;tabContainer("newstab",
+                               array(),
+                               array('class' =&gt; 'flora')); ?&gt;
+</pre>
 </div>
 </div>
 <br class="example-break">

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CurlTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: CurlTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -44,7 +44,7 @@ require_once 'Zend/Http/Client/Adapter/Curl.php';
  * @category   Zend
  * @package    Zend_Http_Client
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Http
  * @group      Zend_Http_Client
@@ -91,7 +91,7 @@ class Zend_Http_Client_CurlTest extends Zend_Http_Client_CommonHttpTests
 
         $this->_adapter->setConfig($config);
 
-        $hasConfig = $this->getObjectAttribute($this->_adapter, '_config');
+        $hasConfig = $this->_adapter->getConfig();
         foreach($config as $k => $v) {
             $this->assertEquals($v, $hasConfig[$k]);
         }
@@ -115,7 +115,7 @@ class Zend_Http_Client_CurlTest extends Zend_Http_Client_CommonHttpTests
 
         $this->_adapter->setConfig($config);
 
-        $hasConfig = $this->getObjectAttribute($this->_adapter, '_config');
+        $hasConfig = $this->_adapter->getConfig();
         $this->assertEquals($config->timeout, $hasConfig['timeout']);
         $this->assertEquals($config->nested->item, $hasConfig['nested']['item']);
     }
@@ -182,7 +182,12 @@ class Zend_Http_Client_CurlTest extends Zend_Http_Client_CommonHttpTests
     {
         $adapter = new Zend_Http_Client_Adapter_Curl();
         $this->client->setAdapter($adapter);
-        $adapter->setConfig(array('timeout' => 1, 'curloptions' => array(CURLOPT_FOLLOWLOCATION => true)));
+        $adapter->setConfig(array(
+            'curloptions' => array(
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 1,
+            ))
+        );
 
         $this->client->setUri($this->baseuri . 'testRedirections.php');
 
@@ -295,6 +300,18 @@ class Zend_Http_Client_CurlTest extends Zend_Http_Client_CommonHttpTests
         $adapter->connect("http://framework.zend.com");
 
         $this->assertTrue(is_resource($adapter->getHandle()));
+    }
+    
+    /**
+     * @group ZF-9857
+     */
+    public function testHeadRequest()
+    {
+        $this->client->setUri($this->baseuri . 'testRawPostData.php');
+        $adapter = new Zend_Http_Client_Adapter_Curl;
+        $this->client->setAdapter($adapter);
+        $this->client->request('HEAD');
+        $this->assertEquals('', $this->client->getLastResponse()->getBody());
     }
 }
 

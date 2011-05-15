@@ -11,28 +11,28 @@
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
- * 
+ *
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Interface.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: Interface.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
  * @category   Zend
  * @package    Zend_Wildfire
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 interface Zend_Wildfire_Channel_Interface
 {
-  
+
     /**
      * Determine if channel is ready.
-     * 
+     *
      * @return boolean Returns TRUE if channel is ready.
      */
     public function isReady();
-    
+
 }

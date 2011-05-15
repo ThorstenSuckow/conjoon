@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TagResultSetTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: TagResultSetTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -36,7 +36,7 @@ require_once 'Zend/Service/Technorati/TagResultSet.php';
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Technorati
@@ -53,7 +53,7 @@ class Zend_Service_Technorati_TagResultSetTest extends Zend_Service_Technorati_T
         $this->_testConstruct('Zend_Service_Technorati_TagResultSet', array($this->dom));
     }
 
-    public function testConstructThrowsExceptionWithInvalidDom() 
+    public function testConstructThrowsExceptionWithInvalidDom()
     {
         $this->_testConstructThrowsExceptionWithInvalidDom('Zend_Service_Technorati_TagResultSet', 'DOMDocument');
     }
@@ -67,19 +67,19 @@ class Zend_Service_Technorati_TagResultSetTest extends Zend_Service_Technorati_T
         $this->assertEquals(3, $object->totalResults());
         $this->assertType('integer', $object->totalResultsAvailable());
         $this->assertEquals(268877, $object->totalResultsAvailable());
-        
+
         // check properties
         $this->assertType('integer', $object->getPostsMatched());
         $this->assertEquals(268877, $object->getPostsMatched());
         $this->assertType('integer', $object->getBlogsMatched());
         $this->assertEquals(1812, $object->getBlogsMatched());
     }
-    
-    public function testTagResultSetItemsInstanceOfResult() 
+
+    public function testTagResultSetItemsInstanceOfResult()
     {
         $this->_testResultSetItemsInstanceOfResult(
-                    'Zend_Service_Technorati_TagResultSet', 
-                    array($this->dom), 
+                    'Zend_Service_Technorati_TagResultSet',
+                    array($this->dom),
                     'Zend_Service_Technorati_TagResult');
     }
 

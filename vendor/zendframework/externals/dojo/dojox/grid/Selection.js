@@ -98,7 +98,7 @@ dojo.declare("dojox.grid.Selection", null, {
 	},
 
 	_beginUpdate: function(){
-		if(this.updating == 0){
+		if(this.updating === 0){
 			this.onChanging();
 		}
 		this.updating++;
@@ -106,7 +106,7 @@ dojo.declare("dojox.grid.Selection", null, {
 
 	_endUpdate: function(){
 		this.updating--;
-		if(this.updating == 0){
+		if(this.updating === 0){
 			this.onChanged();
 		}
 	},
@@ -123,12 +123,20 @@ dojo.declare("dojox.grid.Selection", null, {
 
 	addToSelection: function(inIndex){
 		if(this.mode == 'none'){ return; }
+		if(dojo.isArray(inIndex)){
+			dojo.forEach(inIndex, this.addToSelection, this);
+			return;
+		}
 		inIndex = Number(inIndex);
 		if(this.selected[inIndex]){
 			this.selectedIndex = inIndex;
 		}else{
 			if(this.onCanSelect(inIndex) !== false){
 				this.selectedIndex = inIndex;
+				var rowNode = this.grid.getRowNode(inIndex);
+				if(rowNode){
+					dojo.attr(rowNode,"aria-selected","true");
+				}
 				this._beginUpdate();
 				this.selected[inIndex] = true;
 				//this.grid.onSelected(inIndex);
@@ -141,6 +149,10 @@ dojo.declare("dojox.grid.Selection", null, {
 
 	deselect: function(inIndex){
 		if(this.mode == 'none'){ return; }
+		if(dojo.isArray(inIndex)){
+			dojo.forEach(inIndex, this.deselect, this);
+			return;
+		}
 		inIndex = Number(inIndex);
 		if(this.selectedIndex == inIndex){
 			this.selectedIndex = -1;
@@ -148,6 +160,10 @@ dojo.declare("dojox.grid.Selection", null, {
 		if(this.selected[inIndex]){
 			if(this.onCanDeselect(inIndex) === false){
 				return;
+			}
+			var rowNode = this.grid.getRowNode(inIndex);
+			if(rowNode){
+				dojo.attr(rowNode,"aria-selected","false");
 			}
 			this._beginUpdate();
 			delete this.selected[inIndex];
@@ -163,7 +179,11 @@ dojo.declare("dojox.grid.Selection", null, {
 	},
 
 	toggleSelect: function(inIndex){
-		this.setSelected(inIndex, !this.selected[inIndex])
+		if(dojo.isArray(inIndex)){
+			dojo.forEach(inIndex, this.toggleSelect, this);
+			return;
+		}
+		this.setSelected(inIndex, !this.selected[inIndex]);
 	},
 
 	_range: function(inFrom, inTo, func){
@@ -222,14 +242,14 @@ dojo.declare("dojox.grid.Selection", null, {
 			}else if(inCtrlKey){
 				this.toggleSelect(inIndex);
 			}else{
-				this.addToSelection(inIndex)
+				this.addToSelection(inIndex);
 			}
 		}
 		this._endUpdate();
 	},
 
 	clickSelectEvent: function(e){
-		this.clickSelect(e.rowIndex, dojo.dnd.getCopyKeyState(e), e.shiftKey);
+		this.clickSelect(e.rowIndex, dojo.isCopyKey(e), e.shiftKey);
 	},
 
 	clear: function(){

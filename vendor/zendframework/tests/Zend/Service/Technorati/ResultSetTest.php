@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ResultSetTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ResultSetTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -41,7 +41,7 @@ require_once 'Zend/Service/Technorati/SearchResultSet.php';
  * @category   Zend
  * @package    Zend_Service_Technorati
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Service
  * @group      Zend_Service_Technorati
@@ -52,7 +52,7 @@ class Zend_Service_Technorati_ResultSetTest extends Zend_Service_Technorati_Test
      * Even if Zend_Service_Technorati_ResultSet is an abstract class
      * it's useful to check whether it correctly implements
      * SeekableIterator interface as requested.
-     * 
+     *
      * Any *ResultSet class should be a child of ResultSet
      * thus it's safe to test basic methods on such child class.
      */
@@ -81,7 +81,7 @@ class Zend_Service_Technorati_ResultSetTest extends Zend_Service_Technorati_Test
     {
         $this->assertTrue($this->objectRef->isSubclassOf($this->ref));
     }
-    
+
 
     public function testResultSetSeek()
     {
@@ -89,7 +89,7 @@ class Zend_Service_Technorati_ResultSetTest extends Zend_Service_Technorati_Test
         $this->object->seek(2);
         $this->assertEquals(2, $this->object->key());
     }
-    
+
     public function testResultSetSeekThrowsOutOfBoundsExceptionWithInvalidIndex()
     {
         try {
@@ -115,7 +115,7 @@ class Zend_Service_Technorati_ResultSetTest extends Zend_Service_Technorati_Test
         $this->object->next();
         $this->assertEquals(1, $this->object->key());
     }
-    
+
     public function testResultSetRewind()
     {
         $this->assertEquals(0, $this->object->key());
@@ -123,7 +123,7 @@ class Zend_Service_Technorati_ResultSetTest extends Zend_Service_Technorati_Test
         $this->assertTrue($this->object->rewind());
         $this->assertEquals(0, $this->object->key());
     }
-    
+
     public function testResultSetSerialization()
     {
         $this->_testResultSetSerialization($this->object);

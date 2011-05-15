@@ -15,11 +15,11 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileBackendTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: FileBackendTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
- 
+
 /**
  * Zend_Cache
  */
@@ -38,54 +38,49 @@ require_once 'Zend/Log/Writer/Null.php';
 require_once 'CommonExtendedBackendTest.php';
 
 /**
- * PHPUnit test case
- */
-require_once 'PHPUnit/Framework/TestCase.php';
-
-/**
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
 class Zend_Cache_FileBackendTest extends Zend_Cache_CommonExtendedBackendTest {
-    
+
     protected $_instance;
     protected $_instance2;
     protected $_cache_dir;
-    
+
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
         parent::__construct('Zend_Cache_Backend_File', $data, $dataName);
     }
-    
+
     public function setUp($notag = false)
-    {        
+    {
         $this->mkdir();
         $this->_cache_dir = $this->getTmpDir() . DIRECTORY_SEPARATOR;
         $this->_instance = new Zend_Cache_Backend_File(array(
             'cache_dir' => $this->_cache_dir,
-        ));  
+        ));
 
         $logger = new Zend_Log(new Zend_Log_Writer_Null());
         $this->_instance->setDirectives(array('logger' => $logger));
 
-        parent::setUp($notag);     
+        parent::setUp($notag);
     }
-    
+
     public function tearDown()
     {
         parent::tearDown();
         unset($this->_instance);
     }
-    
+
     public function testConstructorCorrectCall()
     {
-        $test = new Zend_Cache_Backend_File(array());    
-    }    
-    
+        $test = new Zend_Cache_Backend_File(array());
+    }
+
     public function testConstructorWithABadFileNamePrefix()
     {
         try {
@@ -95,22 +90,22 @@ class Zend_Cache_FileBackendTest extends Zend_Cache_CommonExtendedBackendTest {
         } catch (Zend_Cache_Exception $e) {
             return;
         }
-        $this->fail('Zend_Cache_Exception was expected but not thrown'); 
+        $this->fail('Zend_Cache_Exception was expected but not thrown');
     }
-    
-    public function testGetWithANonExistingCacheIdAndANullLifeTime() 
+
+    public function testGetWithANonExistingCacheIdAndANullLifeTime()
     {
         $this->_instance->setDirectives(array('lifetime' => null));
-        $this->assertFalse($this->_instance->load('barbar'));         
+        $this->assertFalse($this->_instance->load('barbar'));
     }
-    
+
     public function testSaveCorrectCallWithHashedDirectoryStructure()
     {
         $this->_instance->setOption('hashed_directory_level', 2);
         $res = $this->_instance->save('data to cache', 'foo', array('tag1', 'tag2'));
         $this->assertTrue($res);
     }
-    
+
     public function testCleanModeAllWithHashedDirectoryStructure()
     {
         $this->_instance->setOption('hashed_directory_level', 2);
@@ -118,14 +113,14 @@ class Zend_Cache_FileBackendTest extends Zend_Cache_CommonExtendedBackendTest {
         $this->assertFalse($this->_instance->test('bar'));
         $this->assertFalse($this->_instance->test('bar2'));
     }
-    
+
     public function testSaveWithABadCacheDir()
     {
         $this->_instance->setOption('cache_dir', '/foo/bar/lfjlqsdjfklsqd/');
         $res = $this->_instance->save('data to cache', 'foo', array('tag1', 'tag2'));
         $this->assertFalse($res);
     }
-    
+
 }
 
 

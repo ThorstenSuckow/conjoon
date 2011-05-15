@@ -16,9 +16,9 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Spreadsheets
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ListQuery.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: ListQuery.php 23805 2011-03-16 00:55:40Z tjohns $
  */
 
 /**
@@ -39,13 +39,13 @@ require_once('Zend/Gdata/Query.php');
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Spreadsheets
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_Spreadsheets_ListQuery extends Zend_Gdata_Query
 {
 
-    const SPREADSHEETS_LIST_FEED_URI = 'http://spreadsheets.google.com/feeds/list';
+    const SPREADSHEETS_LIST_FEED_URI = 'https://spreadsheets.google.com/feeds/list';
 
     protected $_defaultFeedUri = self::SPREADSHEETS_LIST_FEED_URI;
     protected $_visibility = 'private';
@@ -260,28 +260,28 @@ class Zend_Gdata_Spreadsheets_ListQuery extends Zend_Gdata_Query
         if ($this->_spreadsheetKey != null) {
             $uri .= '/'.$this->_spreadsheetKey;
         } else {
-            require_once 'Zend/Gdata/App/Exception.php'; 
+            require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception('A spreadsheet key must be provided for list queries.');
         }
 
         if ($this->_worksheetId != null) {
             $uri .= '/'.$this->_worksheetId;
         } else {
-            require_once 'Zend/Gdata/App/Exception.php'; 
+            require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception('A worksheet id must be provided for list queries.');
         }
 
         if ($this->_visibility != null) {
             $uri .= '/'.$this->_visibility;
         } else {
-            require_once 'Zend/Gdata/App/Exception.php'; 
+            require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception('A visibility must be provided for list queries.');
         }
 
         if ($this->_projection != null) {
             $uri .= '/'.$this->_projection;
         } else {
-            require_once 'Zend/Gdata/App/Exception.php'; 
+            require_once 'Zend/Gdata/App/Exception.php';
             throw new Zend_Gdata_App_Exception('A projection must be provided for list queries.');
         }
 

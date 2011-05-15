@@ -1,16 +1,20 @@
 ({
-	"dateFormatItem-yM": "M-yyyy", 
+	"dateFormatItem-yM": "M-y", 
 	"field-dayperiod": "AM/PM", 
+	"dayPeriods-format-wide-pm": "PM", 
 	"dateFormatItem-yQ": "Q yyyy", 
 	"field-minute": "Minuut", 
 	"eraNames": [
 		"Voor Christus", 
-		"Anno Domini"
+		"na Christus"
 	], 
 	"dateFormatItem-MMMEd": "E d MMM", 
+	"field-day-relative+-1": "gisteren", 
 	"dateFormatItem-MMdd": "dd-MM", 
-	"dateFormatItem-yQQQ": "QQQ yyyy", 
+	"dateFormatItem-yQQQ": "QQQ y", 
+	"field-day-relative+-2": "eergisteren", 
 	"field-weekday": "Dag van de week", 
+	"field-day-relative+-3": "eereergisteren", 
 	"days-standAlone-wide": [
 		"zondag", 
 		"maandag", 
@@ -35,6 +39,7 @@
 		"N", 
 		"D"
 	], 
+	"dayPeriods-format-wide-am": "AM", 
 	"field-era": "Tijdperk", 
 	"field-hour": "Uur", 
 	"quarters-standAlone-abbr": [
@@ -43,23 +48,24 @@
 		"K3", 
 		"K4"
 	], 
-	"dateFormatItem-y": "yyyy", 
-	"timeFormat-full": "HH:mm:ss v", 
+	"dateFormatItem-y": "y", 
+	"timeFormat-full": "HH:mm:ss zzzz", 
 	"months-standAlone-abbr": [
-		"jan", 
-		"feb", 
-		"mrt", 
-		"apr", 
+		"jan.", 
+		"feb.", 
+		"mrt.", 
+		"apr.", 
 		"mei", 
-		"jun", 
-		"jul", 
-		"aug", 
-		"sep", 
-		"okt", 
-		"nov", 
-		"dec"
+		"jun.", 
+		"jul.", 
+		"aug.", 
+		"sep.", 
+		"okt.", 
+		"nov.", 
+		"dec."
 	], 
-	"dateFormatItem-yMMM": "MMM yyyy", 
+	"dateFormatItem-yMMM": "MMM y", 
+	"field-day-relative+0": "vandaag", 
 	"days-standAlone-narrow": [
 		"Z", 
 		"M", 
@@ -69,17 +75,20 @@
 		"V", 
 		"Z"
 	], 
+	"field-day-relative+1": "morgen", 
 	"eraAbbr": [
 		"v. Chr.", 
 		"n. Chr."
 	], 
-	"dateFormatItem-yyyyMMMM": "MMMM yyyy", 
-	"dateFormat-long": "d MMMM yyyy", 
+	"field-day-relative+2": "overmorgen", 
+	"field-day-relative+3": "overovermorgen", 
+	"dateFormatItem-yyyyMMMM": "MMMM y", 
+	"dateFormat-long": "d MMMM y", 
 	"timeFormat-medium": "HH:mm:ss", 
 	"field-zone": "Zone", 
 	"dateFormatItem-Hm": "HH:mm", 
 	"dateFormatItem-MMd": "d-MM", 
-	"dateFormat-medium": "d MMM yyyy", 
+	"dateFormat-medium": "d MMM y", 
 	"dateFormatItem-yyMM": "MM-yy", 
 	"dateFormatItem-yyMMM": "MMM yy", 
 	"dateFormatItem-yyQQQQ": "QQQQ yy", 
@@ -89,16 +98,8 @@
 		"3e kwartaal", 
 		"4e kwartaal"
 	], 
-	"dateTimeFormat": "{1} {0}", 
-	"dateFormatItem-yMMMM": "MMMM yyyy", 
 	"dateFormatItem-ms": "mm:ss", 
 	"field-year": "Jaar", 
-	"quarters-standAlone-narrow": [
-		"1", 
-		"2", 
-		"3", 
-		"4"
-	], 
 	"field-week": "Week", 
 	"months-standAlone-wide": [
 		"januari", 
@@ -114,23 +115,22 @@
 		"november", 
 		"december"
 	], 
-	"dateFormatItem-MMMMEd": "E d MMMM", 
 	"dateFormatItem-MMMd": "d-MMM", 
 	"dateFormatItem-yyQ": "Q yy", 
 	"timeFormat-long": "HH:mm:ss z", 
 	"months-format-abbr": [
-		"jan", 
-		"feb", 
-		"mrt", 
-		"apr", 
+		"jan.", 
+		"feb.", 
+		"mrt.", 
+		"apr.", 
 		"mei", 
-		"jun", 
-		"jul", 
-		"aug", 
-		"sep", 
-		"okt", 
-		"nov", 
-		"dec"
+		"jun.", 
+		"jul.", 
+		"aug.", 
+		"sep.", 
+		"okt.", 
+		"nov.", 
+		"dec."
 	], 
 	"timeFormat-short": "HH:mm", 
 	"field-month": "Maand", 
@@ -150,8 +150,6 @@
 		"vr", 
 		"za"
 	], 
-	"pm": "PM", 
-	"dateFormatItem-mmss": "mm:ss", 
 	"dateFormatItem-M": "L", 
 	"days-format-narrow": [
 		"Z", 
@@ -164,7 +162,7 @@
 	], 
 	"field-second": "Seconde", 
 	"field-day": "Dag", 
-	"dateFormatItem-MEd": "E, d-M", 
+	"dateFormatItem-MEd": "E d-M", 
 	"months-format-narrow": [
 		"J", 
 		"F", 
@@ -179,7 +177,6 @@
 		"N", 
 		"D"
 	], 
-	"am": "AM", 
 	"days-standAlone-abbr": [
 		"zo", 
 		"ma", 
@@ -190,10 +187,10 @@
 		"za"
 	], 
 	"dateFormat-short": "dd-MM-yy", 
-	"dateFormatItem-yMMMEd": "EEE, d MMM yyyy", 
-	"dateFormat-full": "EEEE d MMMM yyyy", 
+	"dateFormatItem-yMMMEd": "EEE d MMM y", 
+	"dateFormat-full": "EEEE d MMMM y", 
 	"dateFormatItem-Md": "d-M", 
-	"dateFormatItem-yMEd": "EEE, d-M-yyyy", 
+	"dateFormatItem-yMEd": "EEE d-M-y", 
 	"months-format-wide": [
 		"januari", 
 		"februari", 

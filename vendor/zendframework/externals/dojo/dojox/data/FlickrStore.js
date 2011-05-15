@@ -21,11 +21,17 @@ dojo.require("dojo.AdapterRegistry");
 			if(args && args.label){
 				this.label = args.label;
 			}
+			if(args && "urlPreventCache" in args){
+				this.urlPreventCache = args.urlPreventCache?true:false;
+			}
 		},
 
 		_storeRef: "_S",
 
 		label: "title",
+
+		//Flag to allor control of if cache prevention is enabled or not.
+		urlPreventCache: true,
 
 		_assertIsItem: function(/* item */ item){
 			//	summary:
@@ -77,7 +83,8 @@ dojo.require("dojo.AdapterRegistry");
 		hasAttribute: function(item, attribute){
 			//	summary: 
 			//      See dojo.data.api.Read.hasAttributes()
-			if(this.getValue(item,attribute)){
+			var v = this.getValue(item,attribute); 
+			if(v || v === "" || v === false){
 				return true;
 			}
 			return false;
@@ -176,7 +183,7 @@ dojo.require("dojo.AdapterRegistry");
 			//	errorHandler:
 			//		A function to call on error
 
-			var rq = request.query = request.query||{};
+			var rq = request.query = request.query || {};
 
 			//Build up the content to send the request for.
 			var content = {
@@ -191,7 +198,7 @@ dojo.require("dojo.AdapterRegistry");
 				}
 			);
 
-			content.id = rq.id||rq.userid||rq.groupid;
+			content.id = rq.id || rq.userid || rq.groupid;
 
 			if(rq.userids){
 				content.ids = rq.userids;
@@ -201,7 +208,7 @@ dojo.require("dojo.AdapterRegistry");
 			var handle = null;
 			var getArgs = {
 				url: dojox.data.FlickrStore.urlRegistry.match(request),
-				preventCache: true,
+				preventCache: this.urlPreventCache,
 				content: content
 			};
 			var myHandler = d.hitch(this, function(data){

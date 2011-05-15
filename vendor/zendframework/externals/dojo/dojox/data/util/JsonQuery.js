@@ -7,7 +7,8 @@ dojo.declare("dojox.data.util.JsonQuery", null, {
 		var first = true;
 		var self = this;
 		function buildQuery(path, query){
-			if(query.__id){
+			var isDataItem = query.__id; 
+			if(isDataItem){
 				// it is a reference to a persisted object, need to make it a query by id
 				var newQuery = {};
 				newQuery[self.idAttribute] = self.useFullIdInQueries ? query.__id : query[self.idAttribute];
@@ -21,8 +22,8 @@ dojo.declare("dojox.data.util.JsonQuery", null, {
 					buildQuery(newPath, value);
 				}else if(value!="*"){ // full wildcards can be ommitted
 					jsonQuery += (first ? "" : "&") + newPath +
-						((args.queryOptions && args.queryOptions.ignoreCase) ? "~" : "=") +
-						 dojo.toJson(value);
+						((!isDataItem && typeof value == "string" && args.queryOptions && args.queryOptions.ignoreCase) ? "~" : "=") +
+						 (self.simplifiedQuery ? encodeURIComponent(value) : dojo.toJson(value));
 					first = false;
 				}
 			}			
@@ -51,9 +52,6 @@ dojo.declare("dojox.data.util.JsonQuery", null, {
 			for(i = 0; i < sort.length; i++){
 				args.queryStr += (first ? '[' : ',') + (sort[i].descending ? '\\' : '/') + "@[" + dojo._escapeString(sort[i].attribute) + "]";
 				first = false; 
-			}
-			if(!first){
-				args.queryStr += ']';
 			}
 		}
 		// this is optional because with client side paging JSONQuery doesn't yield the total count

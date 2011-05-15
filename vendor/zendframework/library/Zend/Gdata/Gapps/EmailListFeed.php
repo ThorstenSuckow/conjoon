@@ -16,9 +16,9 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Gapps
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EmailListFeed.php 16971 2009-07-22 18:05:45Z mikaelkael $
+ * @version    $Id: EmailListFeed.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -32,22 +32,22 @@ require_once 'Zend/Gdata/Feed.php';
 require_once 'Zend/Gdata/Gapps/EmailListEntry.php';
 
 /**
- * Data model for a collection of Google Apps email list entries, usually 
+ * Data model for a collection of Google Apps email list entries, usually
  * provided by the Google Apps servers.
- * 
- * For information on requesting this feed from a server, see the Google 
+ *
+ * For information on requesting this feed from a server, see the Google
  * Apps service class, Zend_Gdata_Gapps.
  *
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Gapps
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Gdata_Gapps_EmailListFeed extends Zend_Gdata_Feed
 {
-    
+
     protected $_entryClassName = 'Zend_Gdata_Gapps_EmailListEntry';
     protected $_feedClassName = 'Zend_Gdata_Gapps_EmailListFeed';
-    
+
 }

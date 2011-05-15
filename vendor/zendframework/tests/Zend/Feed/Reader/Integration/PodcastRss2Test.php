@@ -15,20 +15,18 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: PodcastRss2Test.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: PodcastRss2Test.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Zend/Feed/Reader.php';
 
 /**
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Feed
  * @group      Zend_Feed_Reader
@@ -40,7 +38,20 @@ class Zend_Feed_Reader_Integration_PodcastRss2Test extends PHPUnit_Framework_Tes
 
     public function setup()
     {
+        Zend_Feed_Reader::reset();
         $this->_feedSamplePath = dirname(__FILE__) . '/_files/podcast.xml';
+        $this->_options = Zend_Date::setOptions();
+        foreach($this->_options as $k=>$v) {
+            if (is_null($v)) {
+                unset($this->_options[$k]);
+            }
+        }
+        Zend_Date::setOptions(array('format_type'=>'iso'));
+    }
+
+    public function teardown()
+    {
+        Zend_Date::setOptions($this->_options);
     }
 
     /**

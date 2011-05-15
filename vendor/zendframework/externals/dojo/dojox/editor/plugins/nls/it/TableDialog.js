@@ -10,7 +10,6 @@
 	backgroundColor: "Colore di sfondo:",
 	borderColor: "Colore bordi:",
 	borderThickness: "Spessore bordi",
-	pixels: "Pixel",
 	percent: "percentuale",
 	pixels: "pixel",
 	"default": "predefinito",
@@ -19,6 +18,7 @@
 	right: "destra",
 	buttonSet: "Imposta", // translated elsewhere?
 	buttonInsert: "Inserisci",
+	buttonCancel: "Annulla",
 
 	selectTableLabel: "Seleziona tabella",
 	insertTableRowBeforeLabel: "Aggiungi riga prima",
@@ -28,3 +28,5 @@
 	deleteTableRowLabel: "Elimina riga",
 	deleteTableColumnLabel: "Elimina colonna"
 })
+	
+

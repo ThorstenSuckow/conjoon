@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Memory
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ValueTest.php 17363 2009-08-03 07:40:18Z bkarwin $
+ * @version    $Id: ValueTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../TestHelper.php';
 
 /** Zend_Memory */
 require_once 'Zend/Memory.php';
@@ -32,7 +27,7 @@ require_once 'Zend/Memory.php';
  * @category   Zend
  * @package    Zend_Memory
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Memory_Container_Movable_Dummy extends Zend_Memory_Container_Movable
@@ -59,7 +54,7 @@ class Zend_Memory_Container_Movable_Dummy extends Zend_Memory_Container_Movable
  * @category   Zend
  * @package    Zend_Memory
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Memory
  */

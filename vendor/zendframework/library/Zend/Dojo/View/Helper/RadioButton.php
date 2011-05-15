@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RadioButton.php 16204 2009-06-21 18:58:29Z thomas $
+ * @version    $Id: RadioButton.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Dojo_View_Helper_Dijit */
@@ -25,11 +25,11 @@ require_once 'Zend/Dojo/View/Helper/Dijit.php';
 
 /**
  * Dojo RadioButton dijit
- * 
+ *
  * @uses       Zend_Dojo_View_Helper_Dijit
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
   */
 class Zend_Dojo_View_Helper_RadioButton extends Zend_Dojo_View_Helper_Dijit
@@ -48,9 +48,9 @@ class Zend_Dojo_View_Helper_RadioButton extends Zend_Dojo_View_Helper_Dijit
 
     /**
      * dijit.form.RadioButton
-     * 
-     * @param  string $id 
-     * @param  string $value 
+     *
+     * @param  string $id
+     * @param  string $value
      * @param  array $params  Parameters to use for dijit creation
      * @param  array $attribs HTML attributes
      * @param  array $options Array of radio options
@@ -58,11 +58,11 @@ class Zend_Dojo_View_Helper_RadioButton extends Zend_Dojo_View_Helper_Dijit
      * @return string
      */
     public function radioButton(
-        $id, 
-        $value = null, 
-        array $params = array(), 
-        array $attribs = array(), 
-        array $options = null, 
+        $id,
+        $value = null,
+        array $params = array(),
+        array $attribs = array(),
+        array $options = null,
         $listsep = "<br />\n"
     ) {
         $attribs['name'] = $id;

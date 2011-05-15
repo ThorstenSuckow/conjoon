@@ -15,17 +15,15 @@
  * @category   Zend
  * @package    Zend_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ArrayAccessTest.php 16225 2009-06-21 20:34:55Z thomas $
+ * @version    $Id: HttpTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_File_Transfer_Adapter_HttpTest::main() if this source file is executed directly.
 if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_File_Transfer_Adapter_HttpTest::main");
 }
-
-require_once dirname(__FILE__) . '/../../../../TestHelper.php';
 
 require_once 'Zend/File/Transfer/Adapter/Http.php';
 require_once 'Zend/Filter/BaseName.php';
@@ -41,7 +39,7 @@ require_once 'Zend/Validate/File/Upload.php';
  * @category   Zend
  * @package    Zend_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_File
  */
@@ -68,10 +66,10 @@ class Zend_File_Transfer_Adapter_HttpTest extends PHPUnit_Framework_TestCase
     {
         $_FILES = array(
             'txt' => array(
-                'name' => 'file.txt',
+                'name' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'test.txt',
                 'type' => 'plain/text',
                 'size' => 8,
-                'tmp_name' => 'file.txt',
+                'tmp_name' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'test.txt',
                 'error' => 0));
         $this->adapter = new Zend_File_Transfer_Adapter_HttpTest_MockAdapter();
     }
@@ -89,7 +87,7 @@ class Zend_File_Transfer_Adapter_HttpTest extends PHPUnit_Framework_TestCase
     public function testEmptyAdapter()
     {
         $files = $this->adapter->getFileName();
-        $this->assertContains('file.txt', $files);
+        $this->assertContains('test.txt', $files);
     }
 
     public function testAutoSetUploadValidator()
@@ -146,13 +144,21 @@ class Zend_File_Transfer_Adapter_HttpTest extends PHPUnit_Framework_TestCase
         try {
             $this->assertFalse($this->adapter->receive('unknownFile'));
         } catch (Zend_File_Transfer_Exception $e) {
-            $this->assertContains('not found', $e->getMessage());
+            $this->assertContains('not find', $e->getMessage());
         }
     }
 
     public function testReceiveValidatedFile()
     {
-        $this->assertFalse($this->adapter->receive());
+        $_FILES = array(
+            'txt' => array(
+                'name' => 'unknown.txt',
+                'type' => 'plain/text',
+                'size' => 8,
+                'tmp_name' => 'unknown.txt',
+                'error' => 0));
+        $adapter = new Zend_File_Transfer_Adapter_HttpTest_MockAdapter();
+        $this->assertFalse($adapter->receive());
     }
 
     public function testReceiveIgnoredFile()
@@ -180,15 +186,15 @@ class Zend_File_Transfer_Adapter_HttpTest extends PHPUnit_Framework_TestCase
     {
         $_FILES = array(
             'txt' => array(
-                'name' => 'file.txt',
+                'name' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'test.txt',
                 'type' => 'plain/text',
                 'size' => 8,
-                'tmp_name' => 'file.txt',
+                'tmp_name' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'test.txt',
                 'error' => 0),
             'exe' => array(
                 'name' => array(
-                    0 => 'file1.txt',
-                    1 => 'file2.txt'),
+                    0 => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'file1.txt',
+                    1 => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'file2.txt'),
                 'type' => array(
                     0 => 'plain/text',
                     1 => 'plain/text'),
@@ -196,8 +202,8 @@ class Zend_File_Transfer_Adapter_HttpTest extends PHPUnit_Framework_TestCase
                     0 => 8,
                     1 => 8),
                 'tmp_name' => array(
-                    0 => 'file1.txt',
-                    1 => 'file2.txt'),
+                    0 => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'file1.txt',
+                    1 => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'file2.txt'),
                 'error' => array(
                     0 => 0,
                     1 => 0)));
@@ -205,8 +211,8 @@ class Zend_File_Transfer_Adapter_HttpTest extends PHPUnit_Framework_TestCase
         $adapter->setOptions(array('ignoreNoFile' => true));
         $this->assertTrue($adapter->receive('exe'));
         $this->assertEquals(
-            array('exe_0_' => 'file1.txt',
-                  'exe_1_' => 'file2.txt'),
+            array('exe_0_' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'file1.txt',
+                  'exe_1_' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'file2.txt'),
             $adapter->getFileName('exe', false));
     }
 

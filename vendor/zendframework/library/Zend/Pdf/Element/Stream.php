@@ -14,33 +14,25 @@
  *
  * @category   Zend
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Stream.php 16541 2009-07-07 06:59:03Z bkarwin $
+ * @version    $Id: Stream.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
-/**
- * @see Zend_Pdf
- */
+/** Internally used classes */
 require_once 'Zend/Pdf.php';
 
-/**
- * @see Zend_Pdf_Element
- */
-require_once 'Zend/Pdf/Element.php';
 
-/**
- * @see Zend_Memory
- */
-require_once 'Zend/Memory.php';
+/** Zend_Pdf_Element */
+require_once 'Zend/Pdf/Element.php';
 
 /**
  * PDF file 'stream' element implementation
  *
  * @category   Zend
  * @package    Zend_Pdf
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Pdf_Element_Stream extends Zend_Pdf_Element
@@ -111,6 +103,19 @@ class Zend_Pdf_Element_Stream extends Zend_Pdf_Element
         $this->value->touch();
     }
 
+
+    /**
+     * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+     *
+     * @param Zend_Pdf_ElementFactory $factory  The factory to attach
+     * @param array &$processed  List of already processed indirect objects, used to avoid objects duplication
+     * @param integer $mode  Cloning mode (defines filter for objects cloning)
+     * @returns Zend_Pdf_Element
+     */
+    public function makeClone(Zend_Pdf_ElementFactory $factory, array &$processed, $mode)
+    {
+        return new self($this->value->getRef());
+    }
 
     /**
      * Return object as string

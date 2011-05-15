@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Cache.php 16208 2009-06-21 19:19:26Z thomas $
+ * @version    $Id: Cache.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /** Zend_Server_Cache */
@@ -29,7 +29,7 @@ require_once 'Zend/Server/Cache.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_XmlRpc_Server_Cache extends Zend_Server_Cache

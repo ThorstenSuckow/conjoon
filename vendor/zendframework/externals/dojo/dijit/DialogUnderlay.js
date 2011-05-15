@@ -1,5 +1,7 @@
 dojo.provide("dijit.DialogUnderlay");
 
+dojo.require("dojo.window");
+
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 
@@ -7,19 +9,20 @@ dojo.declare(
 	"dijit.DialogUnderlay",
 	[dijit._Widget, dijit._Templated],
 	{
-		// summary: The component that blocks the screen behind a `dijit.Dialog`
+		// summary:
+		//		The component that blocks the screen behind a `dijit.Dialog`
 		//
 		// description:
 		// 		A component used to block input behind a `dijit.Dialog`. Only a single
-		//		instance of this widget is created by `dijit.Dialog`, and saved as 
+		//		instance of this widget is created by `dijit.Dialog`, and saved as
 		//		a reference to be shared between all Dialogs as `dijit._underlay`
-		//	
+		//
 		//		The underlay itself can be styled based on and id:
 		//	|	#myDialog_underlay { background-color:red; }
 		//
 		//		In the case of `dijit.Dialog`, this id is based on the id of the Dialog,
-		//		suffixed with _underlay. 
-		
+		//		suffixed with _underlay.
+
 		// Template has two divs; outer div is used for fade-in/fade-out, and also to hold background iframe.
 		// Inner div has opacity specified in CSS file.
 		templateString: "<div class='dijitDialogUnderlayWrapper'><div class='dijitDialogUnderlay' dojoAttachPoint='node'></div></div>",
@@ -48,7 +51,6 @@ dojo.declare(
 			// summary:
 			//		Append the underlay to the body
 			dojo.body().appendChild(this.domNode);
-			this.bgIframe = new dijit.BackgroundIframe(this.domNode);
 		},
 
 		layout: function(){
@@ -71,7 +73,7 @@ dojo.declare(
 			os.display = "none";
 
 			// then resize and show
-			var viewport = dijit.getViewport();
+			var viewport = dojo.window.getBox();
 			os.top = viewport.t + "px";
 			os.left = viewport.l + "px";
 			is.width = viewport.w + "px";
@@ -84,24 +86,15 @@ dojo.declare(
 			//		Show the dialog underlay
 			this.domNode.style.display = "block";
 			this.layout();
-			if(this.bgIframe.iframe){
-				this.bgIframe.iframe.style.display = "block";
-			}
+			this.bgIframe = new dijit.BackgroundIframe(this.domNode);
 		},
 
 		hide: function(){
 			// summary:
 			//		Hides the dialog underlay
+			this.bgIframe.destroy();
+			delete this.bgIframe;
 			this.domNode.style.display = "none";
-			if(this.bgIframe.iframe){
-				this.bgIframe.iframe.style.display = "none";
-			}
-		},
-
-		uninitialize: function(){
-			if(this.bgIframe){
-				this.bgIframe.destroy();
-			}
 		}
 	}
 );

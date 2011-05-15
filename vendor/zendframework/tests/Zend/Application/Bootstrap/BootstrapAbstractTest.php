@@ -15,19 +15,14 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BootstrapAbstractTest.php 18455 2009-10-01 17:49:38Z doctorrock83 $
+ * @version    $Id: BootstrapAbstractTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Zend_Application_Bootstrap_BootstrapAbstractTest::main');
 }
-
-/**
- * Test helper
- */
-require_once dirname(__FILE__) . '/../../../TestHelper.php';
 
 /**
  * Zend_Loader_Autoloader
@@ -63,7 +58,7 @@ require_once 'Zend/Application/Bootstrap/Bootstrap.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -538,7 +533,7 @@ class Zend_Application_Bootstrap_BootstrapAbstractTest extends PHPUnit_Framework
         $resource = $bootstrap->getResource('baz');
         $this->assertEquals('Baz', $resource->baz);
     }
-    
+
     public function testMagicMethodsForPluginResources()
     {
         require_once dirname(__FILE__) . '/../_files/ZfAppBootstrap.php';
@@ -718,6 +713,71 @@ class Zend_Application_Bootstrap_BootstrapAbstractTest extends PHPUnit_Framework
         $expected = array('resources', 'pluginpaths');
         $actual   = $bootstrap->getOptionKeys();
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @group ZF-9110
+     * @expectedException Zend_Application_Bootstrap_Exception
+     */
+    public function testPassingSameBootstrapAsApplicationShouldNotCauseRecursion()
+    {
+        $bootstrap = new Zend_Application_Bootstrap_Bootstrap($this->application);
+        $bootstrap->setApplication($bootstrap);
+    }
+
+    /**
+     * @group ZF-7696
+     */
+    public function testUsingFallbackAutoloaderWithModulesShouldNotResultInFrontcontrollerNotFoundWarning()
+    {
+        require_once dirname(__FILE__) . '/../_files/Zf7696Bootstrap.php';
+        $this->autoloader->setFallbackAutoloader(true);
+        $options = array(
+            'Resources' => array(
+                'modules' => array(),
+            ),
+        );
+        $this->application->setOptions($options);
+        $bootstrap = new Zf7696Bootstrap($this->application);
+        $bootstrap->bootstrap(array('modules'));
+    }
+
+    /**
+     * @group ZF-10199
+     */
+    public function testHasOptionShouldTreatOptionKeysAsCaseInsensitive()
+    {
+        $application = $this->application;
+        $application->setOptions(array(
+            'fooBar' => 'baz',
+        ));
+        $this->assertTrue($application->getBootstrap()->hasOption('FooBar'));
+    }
+
+    /**
+     * @group ZF-10199
+     */
+    public function testGetOptionShouldTreatOptionKeysAsCaseInsensitive()
+    {
+        $application = $this->application;
+        $application->setOptions(array(
+            'fooBar' => 'baz',
+        ));
+        $this->assertEquals('baz', $application->getBootstrap()->getOption('FooBar'));
+    }
+
+    /**
+     * @group ZF-8751
+     * @group ZF-10842
+     */
+    public function testPathDefaultZendXToPluginsResources()
+    {
+        $application = $this->application
+                            ->getBootstrap()
+                            ->getPluginLoader();
+
+        $paths = $application->getPaths('ZendX_Application_Resource_');
+        $this->assertEquals('ZendX/Application/Resource/', $paths[0]);
     }
 }
 
