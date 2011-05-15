@@ -214,6 +214,11 @@ class Conjoon_Modules_Default_ApplicationCache_Facade {
             $count += $res ? count(explode("\n", $res)) : 0;
         }
 
+        // actually, we have to consider that the manifest file itself and
+        // the page where the manifest file gets delivered do also count
+        // as cache entries, so simply add them up here
+        $count += 2;
+
         return $count;
     }
 
