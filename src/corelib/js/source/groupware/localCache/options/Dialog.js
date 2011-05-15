@@ -163,6 +163,17 @@ com.conjoon.groupware.localCache.options.Dialog = Ext.extend(Ext.Window, {
     saveSettings : function()
     {
         return this.getSettingsContainer().saveSettings();
+    },
+
+    /**
+     * Shows an error dialog with the specified message.
+     *
+     * @param {String} title The title for the dialog
+     * @param {String} msg The error message to display
+     */
+    showErrorDialog : function(title, msg)
+    {
+        this.ui.buildErrorDialog(title, msg);
     }
 
 });

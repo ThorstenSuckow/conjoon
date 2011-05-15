@@ -174,6 +174,23 @@ com.conjoon.groupware.localCache.options.ui.DefaultOptionsDialogUi.prototype = {
         dialog.getApplyButton().setDisabled(applyButtonDisabled);
         dialog.getOkButton().setDisabled(disabled);
         dialog.getCancelButton().setDisabled(disabled);
+    },
+
+    /**
+     * Shows an error dialog.
+     *
+     * @param {String} title The title for the dialog
+     * @param {String} msg The msg for the dialog
+     */
+    buildErrorDialog : function(title, msg)
+    {
+        var msg = new com.conjoon.SystemMessage({
+            title : title,
+            text  : msg,
+            type  : com.conjoon.SystemMessage.TYPE_WARNING
+        });
+
+        com.conjoon.SystemMessageManager.error(msg);
     }
 
 };
