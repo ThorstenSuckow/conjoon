@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping`
 `user_id` INT UNSIGNED NOT NULL ,
 `name` VARCHAR( 255 ) NOT NULL ,
 `value` TEXT NOT NULL ,
-`type` ENUM( 'STRING', 'INTEGER', 'BOOLEAN', 'FLOAT') NOT NULL
+`type` ENUM( 'STRING', 'INTEGER', 'BOOLEAN', 'FLOAT') NOT NULL,
 INDEX ( `registry_id` , `user_id` )
 ) ENGINE = MYISAM;
 
