@@ -333,7 +333,7 @@ com.conjoon.groupware.localCache.options.ui.DefaultCachingContainerUi.prototype 
             break;
 
             case Api.DOWNLOADING:
-                msg = com.conjoon.Gettext.gettext("The cache is currently downloading files to cache.");
+                msg = com.conjoon.Gettext.gettext("The cache is currently downloading files.");
             break;
 
             case Api.UPDATEREADY:
