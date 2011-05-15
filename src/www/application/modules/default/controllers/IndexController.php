@@ -40,15 +40,14 @@ class IndexController extends Zend_Controller_Action {
 
     public function indexAction()
     {
-         $userId = $this->_helper->registryAccess()->getUserId();
-
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                             ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
     }
 
     /**
@@ -156,6 +155,5 @@ class IndexController extends Zend_Controller_Action {
 
         $httpResponse = $http->request();
     }
-
 
 }
