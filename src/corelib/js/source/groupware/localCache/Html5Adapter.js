@@ -360,7 +360,11 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                     }
                 } else {
                     this.cacheEntryCount = succ.cacheEntryCount;
-                    window.applicationCache.swapCache();
+                    try{
+                        window.applicationCache.swapCache();
+                    } catch (e) {
+                        // ignore
+                    }
                     if (type === 'build') {
                         this._buildPrepare();
                     } else {
