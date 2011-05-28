@@ -49,6 +49,26 @@ class IndexController extends Zend_Controller_Action {
 
         $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
                              ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
+
+        $this->view->softwareLabel = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                                     ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
+        $this->view->editionLabel = Conjoon_Modules_Default_Registry_Facade::getInstance()
+                                    ->getValueForKeyAndUserId('/base/conjoon/edition', $userId);
+
+        /**
+         * @see Conjoon_Version
+         */
+        require_once 'Conjoon/Version.php';
+
+        $this->view->versionLabel = Conjoon_Version::VERSION;
+
+        // check if there are any GET params available. If that is the case,
+        // we won't deliver the app cache manifest with the page
+        if (!empty($_GET)) {
+            $this->view->enableManifest = false;
+        } else {
+            $this->view->enableManifest = true;
+        }
     }
 
     /**

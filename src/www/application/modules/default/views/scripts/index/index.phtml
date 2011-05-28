@@ -16,7 +16,7 @@
 
 <!DOCTYPE html>
 
-<html manifest="./default/application.cache/get.manifest">
+<html <?php if ($this->enableManifest !== false) { ?>manifest="./default/application.cache/get.manifest" <?php } ?>>
 <head>
     <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><?php echo $this->title; ?></title>
