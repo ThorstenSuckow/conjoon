@@ -32,7 +32,7 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
      * @type {Number} id The id of the tweet, as managed by the Twitter service.
      * This should not be converted to an integer, see http://www.twitpocalypse.com/
      */
-    {name : 'id',              type : 'float'},
+    {name : 'id',              type : 'string'},
 
     /**
      * @type {String} text The actual text of the status update.
@@ -71,7 +71,7 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
      * @type {Number} userId The id of the user who posted this tweet, as managed by
      * the Twitter service.
      */
-    {name : 'userId',          type : 'float'},
+    {name : 'userId',          type : 'string'},
 
     /**
      * @type {String} name The name of the user who posted this tweet as managed by the
@@ -132,13 +132,13 @@ com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
      * by the Twitter service. May be null. This should not be converted to an integer. See
      * http://www.twitpocalypse.com/
      */
-    {name : 'inReplyToStatusId',  type : 'float'},
+    {name : 'inReplyToStatusId',  type : 'string'},
 
     /**
      * @type {Number} inReplyToUserId The id of the user of the tweet this tweet
      * referrs to, as managed by the Twitter service. May be null.
      */
-    {name : 'inReplyToUserId',  type : 'float'},
+    {name : 'inReplyToUserId',  type : 'string'},
 
     /**
      * @type {String} inReplyToScreenName The screen name of the user of the tweet
