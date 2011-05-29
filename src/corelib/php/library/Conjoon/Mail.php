@@ -25,59 +25,11 @@ require_once 'Zend/Mail.php';
  */
 class Conjoon_Mail extends Zend_Mail {
 
-    protected $_replyTo = null;
-
     protected $_references = null;
 
     protected $_inReplyTo = null;
 
     protected $_messageId = null;
-
-    /**
-     * Sets the Reply-to header for an email
-     *
-     * @param  string    $replyTo
-     * @return Zend_Mail Provides fluent interface
-     * @throws Zend_Mail_Exception if set multiple times
-     */
-    public function setReplyTo($replyTo)
-    {
-        if ($this->_replyTo === null) {
-            $this->_replyTo = $replyTo;
-            $this->addHeader('Reply-To', $replyTo);
-        } else {
-            /**
-             * @see Zend_Mail_Exception
-             */
-            require_once 'Zend/Mail/Exception.php';
-            throw new Zend_Mail_Exception('Reply-To Header set twice');
-        }
-        return $this;
-    }
-
-
-    /**
-     * Returns the reply-to header field.
-     *
-     * @param  boolean $plain true to return the value as stored in
-     * the $_replyTo-property, otherwise the encoded value
-     *
-     * @return string
-     */
-    public function getReplyTo($plain = true)
-    {
-        if ($this->_replyTo === null) {
-            return null;
-        }
-
-        if ($plain) {
-            return $this->_replyTo;
-        }
-
-        $headers = $this->getHeaders();
-
-        return $headers['Reply-To'];
-    }
 
     /**
      * Sets the references header for an email
