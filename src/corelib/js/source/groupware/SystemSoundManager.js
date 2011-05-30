@@ -38,6 +38,12 @@ com.conjoon.groupware.SystemSoundManager = function(){
     var _driver = null;
 
     /**
+     * @type {Boolean} _driverLoaded indicates whether the driver is fully
+     * loaded and ready to play sounds
+     */
+    var _driverLoaded = false;
+
+    /**
      * @type {Array} _loadListener an array of functions serving as callbacks
      * for the load-event of the sound driver
      */
@@ -139,7 +145,7 @@ com.conjoon.groupware.SystemSoundManager = function(){
             }
         });
 
-        _driver.play('startup');
+        _driverLoaded = true;
 
         for (var i = 0, len = _loadListener.length; i < len; i++) {
             _loadListener[i].fn.call((_loadListener[i].scope ? _loadListener[i].scope : window))
@@ -148,6 +154,16 @@ com.conjoon.groupware.SystemSoundManager = function(){
     };
 
     return {
+
+        /**
+         * Returns true if the driver is ready to play sounds.
+         *
+         * @return {Boolean}
+         */
+        isDriverReady : function()
+        {
+            return _driverLoaded;
+        },
 
         /**
          * Inits the driver to play any sound and calls _initEvents()
