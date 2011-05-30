@@ -107,7 +107,7 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
                     button.setDisabled(true);
                     window.open('./service/twitter.account/authorize.account');
                 }
-            },
+            }
         });
 
         this.items = [
