@@ -121,6 +121,10 @@ if (isset($_SESSION['installation_info'])) {
 
 if (isset($_POST['install_post'])) {
 
+
+    // generate logging file
+    InstallLogger::getInstance('./INSTALL_LOG-' . date("Y.m.d-H.i.s", time()). '.log');
+
     // proceed installation. First of, generate .htaccess
     $htaccess = file_get_contents('./htaccess.template');
     $htaccess = str_replace("{REWRITE_BASE}", $_SESSION['doc_path'], $htaccess);
