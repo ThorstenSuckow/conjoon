@@ -114,7 +114,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * Applies the correct table alias to the passed fieldname
      *
      */
-    private function getTableWithSortField($field)
+    private static function getTableWithSortField($field)
     {
          switch (trim(strtolower($field))) {
             case 'id':

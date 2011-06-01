@@ -373,3 +373,6 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token` 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token_secret` VARCHAR( 255 ) NOT NULL AFTER `oauth_token` ;
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `twitter_id` VARCHAR( 255 ) NOT NULL AFTER `name` ;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` DROP INDEX `user_id` ,
+ADD INDEX `user_id` ( `user_id` );

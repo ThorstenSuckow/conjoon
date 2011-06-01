@@ -429,7 +429,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
      * @param  string $EOL EOL string; defaults to {@link Zend_Mime::LINEEND}
      *
      */
-    private static function _splitMessage(&$message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
+    private static function _splitMessage($message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
     {
         // code taken from ZF Zend_Mime_Decode::splitMessage V1.5.2
         // find an empty line between headers and body
