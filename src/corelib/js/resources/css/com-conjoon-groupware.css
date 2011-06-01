@@ -16,8 +16,6 @@ body, html {
     overflow:hidden;
     cursor:default!important;
     background:#cad9ec url(../images/body-bg.png) repeat-x 0 0!important;
-    height:100%;
-    width:100%;
 }
 
 /**

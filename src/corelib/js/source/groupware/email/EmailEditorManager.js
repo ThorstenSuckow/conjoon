@@ -64,7 +64,8 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     {
         var draftId = -1;
 
-        if (emailItemRecord instanceof com.conjoon.groupware.email.EmailItemRecord) {
+        if ((emailItemRecord instanceof com.conjoon.groupware.email.EmailItemRecord)
+            || (emailItemRecord instanceof com.conjoon.groupware.email.EmailRecord)) {
             draftId = emailItemRecord.id;
         } else {
             draftId = emailItemRecord;

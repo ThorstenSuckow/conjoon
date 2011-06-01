@@ -18,7 +18,7 @@ Ext.onReady(function(){
     var groupware           = com.conjoon.groupware;
     var emailAccountStore   = groupware.email.AccountStore.getInstance();
     var feedsAccountStore   = groupware.feeds.AccountStore.getInstance();
-    var mappingStore        = groupware.email.options.folderMapping.data.Store.getInstance();
+    var registryStore       = groupware.Registry.getStore();
     var feedsFeedStore      = groupware.feeds.FeedStore.getInstance();
     var reception           = groupware.Reception;
     var twitterAccountStore = com.conjoon.service.twitter.data.AccountStore.getInstance();
@@ -29,21 +29,8 @@ Ext.onReady(function(){
 
     var loadingInd = null;
 
-    var groupedStores = {
-        emailStores : 2
-    };
     var _load = function(store) {
-        var id = store.storeId;
-
-        if (id === emailAccountStore.storeId || id === mappingStore.storeId) {
-            id = 'emailStores';
-        }
-
-        if (groupedStores[id] && (--groupedStores[id]) > 0) {
-            return;
-        }
-
-        _updateIndicator(id);
+        _updateIndicator(store.storeId);
     };
 
     var loadingFailed = false;
@@ -76,18 +63,12 @@ Ext.onReady(function(){
 
     var _loadException = function(store, response, options) {
 
-        var id = store.storeId;
-
-        if (id === emailAccountStore.storeId || id === mappingStore.storeId) {
-            id = 'emailStores';
-        }
-
         var config = preLoader.getStoreConfig(store);
         if (config && config.ignoreLoadException !== true) {
             var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
             _showErrorMessage(sm);
         }
-        _updateFailIndicator(id);
+        _updateFailIndicator(store.storeId);
     };
 
     var _updateFailIndicator = function(id) {
@@ -104,21 +85,11 @@ Ext.onReady(function(){
         if (!div) {
             return;
         }
-
-        if (id == 'emailStores') {
-            if (groupedStores[id] > 0) {
-                return;
-            }
-        }
-
         Ext.fly(div).addClass('done');
         div.innerHTML = div.innerHTML + '&nbsp;' + com.conjoon.Gettext.gettext("Done!");
     };
 
     var _appendIndicator = function(msg, id) {
-        if (document.getElementById(id)) {
-            return;
-        }
         if (!loadingInd) {
             loadingInd = document.createElement('div');
             loadingInd.className = 'loading';
@@ -133,26 +104,22 @@ Ext.onReady(function(){
     var _beforeLoad = function(store) {
 
         var msg = "";
-        var id  = (store.storeId ? store.storeId : store);
 
         switch (store) {
             case twitterAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Twitter accounts...");
             break;
 
-            case mappingStore:
             case emailAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Email accounts...");
-                id  = 'emailStores';
             break;
 
             case feedsAccountStore:
                 msg = com.conjoon.Gettext.gettext("Loading Feed accounts...");
             break;
 
-            case 'registry':
+            case registryStore:
                 msg = com.conjoon.Gettext.gettext("Loading Registry...");
-                id  = 'registry';
             break;
 
             case feedsFeedStore:
@@ -160,7 +127,7 @@ Ext.onReady(function(){
             break;
         }
 
-        _appendIndicator(msg, id);
+        _appendIndicator(msg, store.storeId);
     };
 
     // add listeners
@@ -177,8 +144,8 @@ Ext.onReady(function(){
     reception.onUserLoad(function(){
         _updateIndicator('reception-id');
     });
-    reception.onUserLoadFailure(function(response){
-        var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response);
+    reception.onUserLoadFailure(function(response, options){
+        var sm = com.conjoon.groupware.ResponseInspector.generateMessage(response, options);
         _showErrorMessage(sm);
         _updateFailIndicator('reception-id');
     });
@@ -193,8 +160,8 @@ Ext.onReady(function(){
     });
 
     preLoader.addStore(emailAccountStore);
-    preLoader.addStore(mappingStore);
     preLoader.addStore(feedsAccountStore);
+    preLoader.addStore(registryStore);
     preLoader.addStore(twitterAccountStore, {
         ignoreLoadException : true
     });
@@ -218,44 +185,73 @@ Ext.onReady(function(){
             new groupware.Workbench()
         );
 
-        if (groupware.Registry.get('/client/system/sfx/enabled')) {
-            com.conjoon.groupware.SystemSoundManager.initDriver();
-        }
+        // this part is responsible for playing the startup sound
+        // we have to check if the driver is available - we will
+        // then play the sound if the com.conjoon.groupware.ready
+        // message was already broadcasted. If, however, the
+        // startmeup function is called before this message got
+        // broadcasted, the subscriber for this message will take
+        // care of playing the sound. We have to decouple both events
+        // with starting up the workbench since starting the workbench
+        // would fail if flash is not enabled/available on the client's
+        // system. Added anon fn to refactor this code later on
+        (function(){
+            var _played         = false;
+            var _workbenchReady = false;
 
-        com.conjoon.cudgets.localCache.Api.setAdapter(
-            new com.conjoon.groupware.localCache.Html5Adapter()
-        );
+            var startmeup = function(){
+                if (_played || !_workbenchReady) {
+                    return;
+                }
+                _played = true;
+                com.conjoon.groupware.SystemSoundManager.getDriver().play('startup')
+            };
+
+            Ext.ux.util.MessageBus.subscribe('com.conjoon.groupware.ready',
+                function() {
+                    _workbenchReady = true;
+                    if (_played) {
+                        return;
+                    }
+                    var ssm = com.conjoon.groupware.SystemSoundManager;
+                    if (ssm.isDriverReady()) {
+                        _played = true;
+                        ssm.getDriver().play('startup');
+                    }
+                }
+            );
+
+            if (groupware.Registry.get('/client/system/sfx/enabled')) {
+                var ssm = com.conjoon.groupware.SystemSoundManager;
+                ssm.onLoad({fn : startmeup});
+                ssm.initDriver();
+            }
+        })();
 
         (function(){
-            Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({
-                endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
-                easing     : 'easeOut',
-                duration   : .5,
-                remove     : true,
-                useDisplay : false
+            Ext.fly(document
+                .getElementById('DOM:com.conjoon.groupware.Startup'))
+                .fadeOut({
+                    endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
+                    easing     : 'easeOut',
+                    duration   : .5,
+                    remove     : true,
+                    useDisplay : false
             });
 
-            com.conjoon.SystemMessageManager.setContext(groupware.Registry.get(
-                '/client/environment/device'
-            ));
+            com.conjoon.SystemMessageManager.setContext(
+                groupware.Registry.get(
+                    '/client/environment/device'
+                )
+            );
 
             Ext.ux.util.MessageBus.publish('com.conjoon.groupware.ready');
-
         }).defer(100);
+
     });
 
     reception.init(true);
     reception.onUserLoad(function(){
-        com.conjoon.groupware.Registry.beforeLoad({
-            fn : function() {
-                _beforeLoad('registry');
-            }
-        });
-        com.conjoon.groupware.Registry.load({
-            fn : function() {
-                _updateIndicator('registry');
-            }
-        });
         preLoader.load();
     });
 
