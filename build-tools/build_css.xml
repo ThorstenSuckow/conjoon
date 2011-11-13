@@ -55,7 +55,14 @@
 
         <append destFile="${conjoon.cssmerge.tempfile}">
           <fileset dir="./src/corelib/js/resources/css">
+            <include name="**/com-conjoon-groupware.css" />
+          </fileset>
+        </append>
+
+        <append destFile="${conjoon.cssmerge.tempfile}">
+          <fileset dir="./src/corelib/js/resources/css">
             <exclude name="**/conjoon-all.css" />
+            <exclude name="**/com-conjoon-groupware.css" />
             <exclude name="**/README.txt" />
           </fileset>
         </append>
