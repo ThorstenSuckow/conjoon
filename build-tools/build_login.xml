@@ -36,7 +36,7 @@
  @author Thorsten Suckow-Homberg <ts@siteartwork.de>
 -->
 
-<project name="conjoon-login" default="deploy" basedir="../">
+<project name="conjoon-login" default="deploy" basedir="./">
 
     <!-- load up properties file -->
     <property file="./build-tools/build.properties" />

@@ -30,7 +30,7 @@
  @author Thorsten Suckow-Homberg <ts@siteartwork.de>
 -->
 
-<project name="conjoon-css" default="deploy" basedir="../">
+<project name="conjoon-css" default="deploy" basedir="./">
 
     <!-- load up properties file -->
     <property file="./build-tools/build.properties" />
