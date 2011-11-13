@@ -152,6 +152,7 @@ if (isset($_POST['install_post'])) {
         $_SESSION['app_path'] . '/' . $_SESSION['setup_ini']['app_path']['folder'],
         $configini
     );
+
     $configini = str_replace("{BASE_URL}", $_SESSION['doc_path'], $configini);
     $configini = str_replace("{EDITION}", '"' . $_SESSION['edition']. '"', $configini);
     $configini = str_replace("{DATABASE.ADAPTER}", $_SESSION['db_adapter'], $configini);
@@ -163,67 +164,66 @@ if (isset($_POST['install_post'])) {
     $configini = str_replace("{DATABASE.DATABASE}", $_SESSION['db'], $configini);
     $configini = str_replace("{DATABASE_MAX_ALLOWED_PACKET}", $_SESSION['max_allowed_packet'], $configini);
 
-
     // caching
-    $configini = str_replace("{CACHE.DEFAULT.CACHING}", $_SESSION['cache']['default.caching'], $configini);
+    $configini = str_replace("{CACHE.DEFAULT.CACHING}", $_SESSION['cache']['default.caching'] ? '1' : '0', $configini);
 
-    $configini = str_replace("{CACHE.DB.METADATA.CACHING}", $_SESSION['cache']['db.metadata.caching'], $configini);
+    $configini = str_replace("{CACHE.DB.METADATA.CACHING}", $_SESSION['cache']['db.metadata.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.DB.METADATA.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['db.metadata.caching']
                     ? $_SESSION['cache']['db.metadata.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.EMAIL.MESSAGE.CACHING}", $_SESSION['cache']['email.message.caching'], $configini);
+    $configini = str_replace("{CACHE.EMAIL.MESSAGE.CACHING}", $_SESSION['cache']['email.message.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.EMAIL.MESSAGE.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['email.message.caching']
                     ? $_SESSION['cache']['email.message.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.CACHING}", $_SESSION['cache']['email.accounts.caching'], $configini);
+    $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.CACHING}", $_SESSION['cache']['email.accounts.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['email.accounts.caching']
                     ? $_SESSION['cache']['email.accounts.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ITEM.CACHING}", $_SESSION['cache']['feed.item.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ITEM.CACHING}", $_SESSION['cache']['feed.item.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ITEM.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.item.caching']
                     ? $_SESSION['cache']['feed.item.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ITEM_LIST.CACHING}", $_SESSION['cache']['feed.item_list.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ITEM_LIST.CACHING}", $_SESSION['cache']['feed.item_list.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ITEM_LIST.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.item_list.caching']
                     ? $_SESSION['cache']['feed.item_list.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.READER.CACHING}", $_SESSION['cache']['feed.reader.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.READER.CACHING}", $_SESSION['cache']['feed.reader.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.READER.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.reader.caching']
                     ? $_SESSION['cache']['feed.reader.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ACCOUNT.CACHING}", $_SESSION['cache']['feed.account.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ACCOUNT.CACHING}", $_SESSION['cache']['feed.account.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ACCOUNT.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.account.caching']
                     ? $_SESSION['cache']['feed.account.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.CACHING}", $_SESSION['cache']['feed.account_list.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.CACHING}", $_SESSION['cache']['feed.account_list.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.account_list.caching']
                     ? $_SESSION['cache']['feed.account_list.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.CACHING}", $_SESSION['cache']['twitter.accounts.caching'], $configini);
+    $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.CACHING}", $_SESSION['cache']['twitter.accounts.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['twitter.accounts.caching']
                     ? $_SESSION['cache']['twitter.accounts.backend.cache_dir']
@@ -263,6 +263,8 @@ if (isset($_POST['install_post'])) {
             'doc_path'           => '".$_SESSION['doc_path']."',
             ".($_SESSION['cache']['default.caching']
               ? "
+
+              'cache.default.caching' => 1,
 
               'cache.db.metadata.caching' => ".($_SESSION['cache']['db.metadata.caching'] ? "1" : "0").",
               ".($_SESSION['cache']['db.metadata.caching'] ? "'cache.db.metadata.backend.cache_dir' => '".$_SESSION['cache']['db.metadata.backend.cache_dir']."'," : "")."
@@ -358,6 +360,8 @@ if (isset($_POST['install_post'])) {
         $indexFile
     );
     file_put_contents('../index.php', $indexFile);
+
+
 
     // move application folders
     $appFolders = explode(",", $_SESSION['setup_ini']['app_path']['delete']);
