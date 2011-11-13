@@ -78,22 +78,25 @@ further updating of conjoon. Please do not remove this file.
     Step 1: Checking prerequisites
               |
               |
-    Step 2: Database setup
+    Step 2: Localization
               |
               |
-    Step 3: Installing application folder
+    Step 3: Database setup
               |
               |
-    Step 4: Cache settings
+    Step 4: Installing application folder
               |
               |
-    Step 5: Installing libraries, managing include_path
+    Step 5: Cache settings
               |
               |
-    Step 6: Specifying document path
+    Step 6: Installing libraries, managing include_path
               |
               |
-    Step 7: Specifying user credentials - this step is only available
+    Step 7: Specifying document path
+              |
+              |
+    Step 8: Specifying user credentials - this step is only available
     if there is NO root user already in the database
               |
               |

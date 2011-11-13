@@ -58,6 +58,22 @@
 </tbody>
 </table>
 
+<h4>Localization</h4>
+<table>
+    <tbody>
+<tr>
+    <td><i>Application's timezone</i>:</td>
+    <td><?php echo $_SESSION['locale_timezone_default']; ?></td>
+</tr>
+<tr>
+    <td><i>Application's fallback timezone</i>:</td>
+    <td><?php echo $_SESSION['locale_timezone_fallback']; ?></td>
+</tr>
+</tbody>
+</table>
+
+
+
 <h4>Database information</h4>
 <table>
     <tbody>

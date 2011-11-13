@@ -101,27 +101,30 @@ session_start();
         'check' => array(
             "Step 1", "./index.php?action=check", "./?action=check_verify"
         ),
+        'localization' => array(
+            "Step 2", "./index.php?action=localization", "./?action=localization_check"
+        ),
         'database' => array(
-            "Step 2", "./index.php?action=database", "./?action=database_check"
+            "Step 3", "./index.php?action=database", "./?action=database_check"
         ),
         'app_path' => array(
-            "Step 3", "./index.php?action=app_path", "./index.php?action=app_path_check"
+            "Step 4", "./index.php?action=app_path", "./index.php?action=app_path_check"
         ),
         'cache' => array(
-            "Step 4", "./index.php?action=cache", "./index.php?action=cache_check"
+            "Step 5", "./index.php?action=cache", "./index.php?action=cache_check"
         ),
         'lib_path' => array(
-            "Step 5", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
+            "Step 6", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
         ),
         'doc_path' => array(
-            "Step 6", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
+            "Step 7", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
         )
    );
 
    $changeAppCredentials = !isset($_SESSION['installation_info']['app_credentials']['user']);
    if ($changeAppCredentials) {
        $VIEW['navigation']['app_credentials'] = array(
-           "Step 6", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
+           "Step 8", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
        );
    }
 
@@ -150,8 +153,21 @@ session_start();
        break;
 
        case 'check_success':
-            header("Location: ./index.php?action=database");
+            header("Location: ./index.php?action=localization");
             die();
+       break;
+
+       // actions for localization
+       case 'localization':
+            include_once './localization.php';
+       break;
+       case 'localization_success':
+           header("Location: ./index.php?action=database");
+           die();
+       break;
+       case 'localization_check':
+           $VIEW['action'] = 'localization';
+           include_once './localization.php';
        break;
 
        // actions for setting up database
