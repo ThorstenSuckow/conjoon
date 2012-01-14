@@ -18,7 +18,8 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Conjoon/Filter/ExceptionTest.php';
-require_once 'Conjoon/Filter/DateUtcTest.php';
+require_once 'Conjoon/Filter/DateToUtcTest.php';
+require_once 'Conjoon/Filter/DateUtcToLocalTest.php';
 
 /**
  * @category   Conjoon
@@ -49,7 +50,8 @@ class Conjoon_Filter_AllTests
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon_Filter');
 
         $suite->addTestSuite('Conjoon_Filter_ExceptionTest');
-        $suite->addTestSuite('Conjoon_Filter_DateUtcTest');
+        $suite->addTestSuite('Conjoon_Filter_DateToUtcTest');
+        $suite->addTestSuite('Conjoon_Filter_DateUtcToLocalTest');
 
         return $suite;
     }

@@ -15,9 +15,9 @@
 
 
 /**
- * @see Conjoon_Filter_DateUtc
+ * @see Conjoon_Filter_DateToUtc
  */
-require_once 'Conjoon/Filter/DateUtc.php';
+require_once 'Conjoon/Filter/DateToUtc.php';
 
 
 /**
@@ -28,23 +28,23 @@ require_once 'Conjoon/Filter/DateUtc.php';
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Filter_DateUtcTest extends PHPUnit_Framework_TestCase {
+class Conjoon_Filter_DateToUtcTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * Conjoon_Filter_DateUtc object
+     * Conjoon_Filter_DateToUtc object
      *
-     * @var Conjoon_Filter_DateUtc
+     * @var Conjoon_Filter_DateToUtc
      */
     protected $_filter;
 
     /**
-     * Creates a new Conjoon_Filter_DateUtc object for each test method
+     * Creates a new Conjoon_Filter_DateToUtc object for each test method
      *
      * @return void
      */
     public function setUp()
     {
-        $this->_filter = new Conjoon_Filter_DateUtc();
+        $this->_filter = new Conjoon_Filter_DateToUtc();
     }
 
     /**
@@ -82,6 +82,18 @@ class Conjoon_Filter_DateUtcTest extends PHPUnit_Framework_TestCase {
         foreach ($asserts as $input => $output) {
             $this->assertEquals($output, $this->_filter->filter($input));
         }
+    }
+
+    /**
+     * Ensures eexception is thrown if invalid argument is passed.
+     *
+     * @expectedException Conjoon_Filter_Exception
+     *
+     * @return void
+     */
+    public function testException()
+    {
+        $this->_filter->filter("");
     }
 
 }
