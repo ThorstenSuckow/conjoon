@@ -11,6 +11,11 @@
  * $LastChangedDate$
  * $LastChangedBy$
  * $URL$
+ *
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @copyright 2012 The conjoon Open Source Project
+ * @package Conjoon\Filter\Date
+ *
  */
 
 /**
@@ -141,6 +146,8 @@ class Conjoon_Filter_DateUtcToLocal implements Zend_Filter_Interface
         date_default_timezone_set($currentTimezone);
 
         $this->_timezone = $configuredTimezone;
+
+        return true;
 
     }
 

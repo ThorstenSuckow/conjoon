@@ -280,6 +280,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             $date = $dateFilter->filter((int)$_POST['date']);
         }
 
+
         /**
          * @see Conjoon_Filter_EmailRecipients
          */

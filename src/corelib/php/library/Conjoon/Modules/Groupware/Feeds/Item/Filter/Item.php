@@ -183,11 +183,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
             'StringTrim'
          ),
         'pubDate' => array(
-            'StringTrim',
-            array(
-                'DateFormat',
-                'Y-m-d H:i:s'
-            )
+            'StringTrim'
          ),
         'link' => array(
             'StringTrim'
@@ -275,6 +271,11 @@ class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_In
         if ($this->_context == self::CONTEXT_RESPONSE
            || $this->_context == self::CONTEXT_ITEM_RESPONSE
            || $this->_context == self::CONTEXT_ITEM_RESPONSE_IMG) {
+
+            $this->_filters['pubDate'] = array(
+                'StringTrim',
+                'DateUtcToLocal'
+            );
 
             $this->_filters['title'] = array(
                 array('MyHtmlEntities'),

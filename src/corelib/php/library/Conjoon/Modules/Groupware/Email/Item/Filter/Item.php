@@ -29,9 +29,9 @@ require_once 'Conjoon/Filter/Raw.php';
 require_once 'Conjoon/Validate/Date.php';
 
 /**
- * @see Conjoon_Filter_DateIso8601
+ * @see Conjoon_Filter_DateToUtc
  */
-require_once 'Conjoon/Filter/DateIso8601.php';
+require_once 'Conjoon/Filter/DateToUtc.php';
 
 /**
  * @see Conjoon_Filter_QuotedPrintableDecode
@@ -91,7 +91,7 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_Item extends Conjoon_Filter_In
          'date' => array(
             'StringTrim',
             'SanitizeDate',
-            'DateIso8601'
+            'DateToUtc'
          ),
          'subject' => array(
             'StringTrim',

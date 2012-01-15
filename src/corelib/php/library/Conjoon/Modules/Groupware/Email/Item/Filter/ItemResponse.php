@@ -53,6 +53,14 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse extends Conjoon_F
         )
     );
 
+    protected $_filters = array(
+         'date' => array(
+            'DateUtcToLocal'
+         )
+    );
+
+
+
     protected function _init()
     {
         /**
