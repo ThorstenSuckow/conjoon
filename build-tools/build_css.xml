@@ -38,13 +38,13 @@
 
 
     <target name="clean">
-      <delete file="./build/htdocs/install/files/js/conjoon/resources/css/conjoon-all.css" />
+      <delete file="./build/build/htdocs/install/files/js/conjoon/resources/css/conjoon-all.css" />
       <delete file="./src/corelib/js/resources/css/conjoon-all.css" />
     </target>
 
     <target name="deploy" depends="clean">
         <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/install/files/js/conjoon/resources/css/conjoon-all.css"
+            tofile="./build/build/htdocs/install/files/js/conjoon/resources/css/conjoon-all.css"
             overwrite="true"
         />
 
@@ -74,7 +74,7 @@
             checkreturn="true"
         />
 
-        <append file="${conjoon.cssmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/resources/css/conjoon-all.css" />
+        <append file="${conjoon.cssmerge.tempfile}" destFile="./build/build/htdocs/install/files/js/conjoon/resources/css/conjoon-all.css" />
         <copy file="${conjoon.cssmerge.tempfile}" tofile="./src/corelib/js/resources/css/conjoon-all.css" />
 
         <delete file="${conjoon.cssmerge.tempfile}" verbose="true" failonerror="true" />
