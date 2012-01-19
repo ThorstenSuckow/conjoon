@@ -1,6 +1,17 @@
 This folder contains scripts for building deployable versions of the conjoon
 project.
 
+build.sh
+========
+This is a simple shell script that executes the buildfile build.xml with the
+following targets, in the following order:
+ o php_tests - runs the PHPUnit Tests
+ o rebuild - completely rebuilds the project (/build/build, /build/complete)
+   if, and only if the tests succeeded
+When calling the buildfile directly, tests will NOT be invoked. This is due
+to namespace clashes when both docBlox and PHPUnit are used in a phing
+buildfile
+
 csscompressor.php
 =================
 cli script for compressing all css files used by conjoon (except for vendor

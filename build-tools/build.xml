@@ -351,6 +351,23 @@
     <phingcall target="build_ext" />
    </target>
 
+   <target name="php_tests">
+    <phpunit
+        printsummary="true"
+        haltonerror="true"
+        haltonfailure="true"
+        bootstrap="./src/corelib/php/tests/TestHelper.php"
+        haltonincomplete="true"
+        haltonskipped="true"
+    >
+     <batchtest>
+      <fileset dir="./src/corelib/php/tests">
+       <include name="**/*Test.php"/>
+      </fileset>
+     </batchtest>
+    </phpunit>
+   </target>
+
    <!-- refreshes build contents except for ../build/libs/Zend -->
    <target name="refresh" depends="prepare">
     <phingcall target="build_export" />
