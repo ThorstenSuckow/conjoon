@@ -268,6 +268,16 @@ if (isset($_POST['install_post'])) {
             'lib_path'           => '".$_SESSION['lib_path']."',
             'add_include_path'   => '".$_SESSION['add_include_path']."',
             'doc_path'           => '".$_SESSION['doc_path']."',
+            'applied_patches'    => array(".(empty($_SESSION['applied_patches']) ? "" : "'").implode(
+                                                "','",
+                                                array_values($_SESSION['applied_patches'])
+                                            ).(empty($_SESSION['applied_patches']) ? "" : "'")."),
+            'ignored_patches'    => array(".(empty($_SESSION['ignored_patches']) ? "" : "'").implode(
+                                                "','",
+                                                array_values($_SESSION['ignored_patches'])
+                                            ).(empty($_SESSION['ignored_patches']) ? "" : "'")."),
+
+
             ".($_SESSION['cache']['default.caching']
               ? "
 
@@ -491,6 +501,14 @@ if (isset($_POST['install_post'])) {
         }
     }
 
+    // apply patches, if any
+    foreach ($_SESSION['patches'] as $patch => $doApply) {
+        if ($doApply) {
+            if (file_exists('./patches/'.$patch.'/run.php')) {
+                include_once './patches/'.$patch.'/run.php';
+            }
+        }
+    }
 
     // delete folders from a previous installation
     if ($INSTALL['IMREMOVING']['js']) {

@@ -30,6 +30,8 @@ include_once './functions.php';
 
 session_start();
 
+
+
 // +----------------------------------------------------------------------------
 // | Check if user is currently  running an instance of conjoon
 // +----------------------------------------------------------------------------
@@ -126,6 +128,12 @@ session_start();
        $VIEW['navigation']['app_credentials'] = array(
            "Step 8", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
        );
+   }
+
+   if (isset($_SESSION['installation_info']['previous_version'])) {
+      $VIEW['navigation']['patch'] = array(
+          "Patching", "./index.php?action=patch", "./index.php?action=patch_check"
+      );
    }
 
    $VIEW['navigation']['install'] = array(
@@ -234,6 +242,9 @@ session_start();
            if ($changeAppCredentials) {
                header("Location: ./index.php?action=app_credentials");
                die();
+           } else if (isset($_SESSION['installation_info']['previous_version'])) {
+               header("Location: ./index.php?action=patch");
+               die();
            } else {
                header("Location: ./index.php?action=install");
                die();
@@ -249,6 +260,23 @@ session_start();
            include_once './app_credentials.php';
        break;
        case 'app_credentials_success':
+           if (isset($_SESSION['installation_info']['previous_version'])) {
+               header("Location: ./index.php?action=patch");
+               die();
+           } else {
+               header("Location: ./index.php?action=install");
+               die();
+           }
+       break;
+
+       // actions for patching previous versions of conjoon
+       case 'patch':
+           include_once './patch.php';
+       break;
+       case 'patch_check':
+           include_once './patch.php';
+       break;
+       case 'patch_success':
            header("Location: ./index.php?action=install");
            die();
        break;

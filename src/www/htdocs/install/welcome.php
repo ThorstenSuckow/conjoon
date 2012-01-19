@@ -35,6 +35,7 @@ if (!isset($_SESSION['edition'])) {
 
 $WELCOME = array();
 $WELCOME['license_agree_missing'] = false;
+$WELCOME['backup_check_missing']  = false;
 
 if (isset($_POST['welcome_post'])) {
 
@@ -51,6 +52,8 @@ if (isset($_POST['welcome_post'])) {
 
     if (!isset($_POST['license_agree']) || (isset($_POST['license_agree']) && $_POST['license_agree'] != 1)) {
         $WELCOME['license_agree_missing'] = true;
+    } else if (!isset($_POST['backup_check']) || (isset($_POST['backup_check']) && $_POST['backup_check'] != 1)) {
+        $WELCOME['backup_check_missing'] = true;
     } else {
         header("Location: ./?action=welcome_success");
         die();
