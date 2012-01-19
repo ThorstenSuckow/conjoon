@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -31,7 +31,7 @@ require_once 'phing/filters/ChainableReader.php';
  *  <pre>
  *  \/**
  *    * conjoon
- *    * (c) 2002-2010 siteartwork.de/conjoon.org
+ *    * (c) 2002-2012 siteartwork.de/conjoon.org
  *    * licensing@conjoon.org
  *    *
  *    * $Author$
@@ -48,7 +48,7 @@ require_once 'phing/filters/ChainableReader.php';
  *
  *  \/**
  *    * conjoon
- *    * (c) 2002-2010 siteartwork.de/conjoon.org
+ *    * (c) 2002-2012 siteartwork.de/conjoon.org
  *    * licensing@conjoon.org
  *    *
  *    * $Id$

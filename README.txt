@@ -4,19 +4,19 @@
 |                                                                              |
 | Project home:                                                                |
 | =============                                                                |
-| http://www.conjoon.org                                                       |
+| http://conjoon.org                                                           |
 |                                                                              |
 | Wiki:                                                                        |
 | =====                                                                        |
-| http://wiki.conjoon.org                                                      |
+| http://conjoon.org/wiki                                                      |
 |                                                                              |
 | Blog:                                                                        |
 | =====                                                                        |
-| http://www.conjoon.org/blog                                                  |
+| http://conjoon.org/blog                                                      |
 |                                                                              |
 | License:                                                                     |
 | ========                                                                     |
-| http://www.conjoon.org/about/license                                         |
+| http://conjoon.org/about/license                                             |
 |                                                                              |
 +==============================================================================+
 
@@ -24,8 +24,8 @@
 
 Author:
 -------
-Thorsten Suckow-Homberg <ts@siteartwork.de> (<tsuckow@conjoon.org)
+Thorsten Suckow-Homberg <thorsten@suckow-homberg.de> (<tsuckow@conjoon.org)
 
 Blog:
 -------------------------
-http://www.siteartwork.de
+http://thorsten.suckow-homberg.de
