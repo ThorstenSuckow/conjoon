@@ -1,3 +1,4 @@
+# Code from error handling copied from http://fvue.nl/wiki/Bash:_Error_handling
 trap onexit 1 2 3 15 ERR
 
 function onexit() {
