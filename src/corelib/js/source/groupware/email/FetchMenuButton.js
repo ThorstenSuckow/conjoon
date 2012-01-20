@@ -54,8 +54,11 @@ com.conjoon.groupware.email.FetchMenuButton = Ext.extend(Ext.Toolbar.SplitButton
         this.mon(store, 'update', this._onAccountStoreUpdate, this);
 
         this.on('render', function() {
-            this.setDisabled((store.getCount() == 0));
+            // render the menu
             this._onAccountStoreAdd(store, store.getRange());
+            // render disabled if either no accounts available or if
+            // the letterman is currently querying new messages
+            this.setDisabled((store.getCount() == 0) || com.conjoon.groupware.email.Letterman.isBusy());
         }, this, {single : true});
 
         com.conjoon.groupware.email.FetchMenuButton.superclass.initComponent.call(this);
