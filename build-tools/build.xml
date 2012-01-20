@@ -20,8 +20,14 @@
  Notice:
  This build file will also call the build files
   build_login.xml
- and
   build_css.xml
+
+  build_pack.xml and build_deploy will be called for the target deploy
+
+ If you call the targets pack or deploy, make sure you read the information
+ about possible parameters which can be found in the appropriate build
+ files.
+
 
  @author Thorsten Suckow-Homberg <ts@siteartwork.de>
 -->
@@ -415,5 +421,23 @@
      <delete dir="./build" />
      <phingcall target="refresh" />
     </target>
+
+   <!-- packs the generated builds -->
+   <target name="pack" depends="rebuild">
+    <phing phingfile="./build-tools/build_pack.xml"
+        haltonfailure="true"
+        inheritRefs="false"
+        inheritAll="true"
+     />
+   </target>
+
+   <!-- deploys the packed files -->
+   <target name="deploy" depends="pack">
+     <phing phingfile="./build-tools/build_deploy.xml"
+        haltonfailure="true"
+        inheritRefs="false"
+        inheritAll="true"
+     />
+   </target>
 
 </project>
