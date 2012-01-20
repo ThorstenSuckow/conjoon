@@ -55,6 +55,7 @@
           overwrite="true">
 
        <filterchain>
+        <filterreader classname="filters.PruneFileHeader" />
         <filterreader classname="filters.ProcessDevFragments" />
       </filterchain>
       </copy>

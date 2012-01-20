@@ -48,11 +48,37 @@
     />
 
    <target name="build_export">
+    <mkdir dir="./build/tmp" />
     <svnexport
        force="true"
        nocache="true"
        repositoryurl="./"
-       todir="./build/complete"/>
+       todir="./build/tmp"/>
+
+     <copy todir="build/complete/vendor" includeemptydirs="true">
+       <fileset dir="build/tmp/vendor" />
+     </copy>
+     <copy todir="build/complete/src" includeemptydirs="true">
+       <fileset dir="build/tmp/src" />
+       <filterchain>
+          <filterreader classname="filters.PruneFileHeader" />
+       </filterchain>
+     </copy>
+     <copy todir="build/complete/build-tools" includeemptydirs="true">
+       <fileset dir="build/tmp/build-tools" />
+       <filterchain>
+          <filterreader classname="filters.PruneFileHeader" />
+       </filterchain>
+     </copy>
+     <copy todir="./build/complete">
+       <fileset dir="./build/tmp">
+        <include name="INSTALL.txt" />
+        <include name="CHANGELOG.txt" />
+        <include name="LICENSE.txt" />
+        <include name="README.txt" />
+       </fileset>
+     </copy>
+    <delete dir="./build/tmp" />
     <docblox title="conjoon PHP library" destdir="./build/complete/src/corelib/php/docs">
      <fileset dir="./src/corelib/php/library">
       <include name="**/*.php" />
@@ -102,6 +128,7 @@
          <exclude name="**/.svn" />
        </fileset>
        <filterchain>
+          <filterreader classname="filters.PruneFileHeader" />
           <filterreader classname="filters.ProcessDevFragments" />
       </filterchain>
       </copy>
@@ -125,6 +152,7 @@
          <include name="**/*.php" />
        </fileset>
        <filterchain>
+          <filterreader classname="filters.PruneFileHeader" />
           <filterreader classname="filters.ProcessDevFragments" />
           <replacetokens begintoken="@" endtoken="@">
             <token key="REV" value="${svn.lastrevision}" />
@@ -300,6 +328,7 @@
          <exclude name="**/CHANGELOG.txt" />
        </fileset>
        <filterchain>
+        <filterreader classname="filters.PruneFileHeader" />
         <filterreader classname="filters.ProcessDevFragments" />
         <filterreader classname="filters.RemoveRequire" />
        </filterchain>
@@ -341,6 +370,7 @@
          <exclude name="**/startup.iphone.js" />
        </fileset>
        <filterchain>
+        <filterreader classname="filters.PruneFileHeader" />
         <filterreader classname="filters.ProcessDevFragments" />
         <filterreader classname="filters.RemoveRequire" />
        </filterchain>
