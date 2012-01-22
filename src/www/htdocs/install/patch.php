@@ -20,11 +20,14 @@
  */
 
 $currentVersion  = $_SESSION['current_version'];
+$firstVersion    = isset($_SESSION['installation_info']['first_version'])
+                   ? $_SESSION['installation_info']['first_version']
+                   : -1;
 $previousVersion = isset($_SESSION['installation_info']['previous_version'])
                    ? $_SESSION['installation_info']['previous_version']
                    : -1;
 
-if ($previousVersion === -1) {
+if ($previousVersion === -1 || $firstVersion === -1) {
     header("Location: ./?action=patch_success");
     die();
 }
@@ -42,7 +45,7 @@ $availablePatches = array();
 
  if ($handle = opendir('./patches')) {
 
-    /* Das ist der korrekte Weg, ein Verzeichnis zu durchlaufen. */
+
     while (false !== ($file = readdir($handle))) {
 
         if (!is_dir('./patches/'.$file) || strpos($file, '.') === 0) {
@@ -52,7 +55,7 @@ $availablePatches = array();
         $patchVersion = trim($file);
 
         if (in_array($patchVersion, $appliedPatches)
-            || version_compare($patchVersion, $currentVersion, '>')) {
+            || version_compare($patchVersion, $firstVersion, '<=')) {
             continue;
         }
 

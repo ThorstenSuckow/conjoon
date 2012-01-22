@@ -18,7 +18,7 @@
  *
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
- 
+
 $PATCH_NOTES['0.1.4RC3'] = array(
     'headline'    => 'Patch introduced in 0.1.4RC3',
     'title'       => 'Patch for converting existing date time values to the UTC timezone',
@@ -29,7 +29,8 @@ $PATCH_NOTES['0.1.4RC3'] = array(
     'link'        => array(
         'http://conjoon.org/issues/browse/CN-396',
         'http://conjoon.org/issues/browse/CN-405'
-    )
-    
+    ),
+    'warning' => 'Please be aware that later applying this patch than the version '
+                 .'it was intended to might lead to data inconsistency.'
+
 );
- 

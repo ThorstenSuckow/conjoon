@@ -61,6 +61,15 @@ to the data storage by future versions of conjoon.
   </div>
  </td>
 </tr>
+<?php if (isset($info['warning'])) { ?>
+<tr>
+ <td>
+  <div class="warning_box">
+   <?php echo $info['warning']; ?>
+  </div>
+ </td>
+</tr>
+<?php } ?>
 <?php } ?>
 <tr>
  <td>

@@ -51,6 +51,7 @@ session_start();
        include_once '../installation.info.php';
        $_SESSION['installation_info'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1];
        $_SESSION['installation_info']['previous_version'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['version'];
+       $_SESSION['installation_info']['first_version']    = $INSTALLATION_INFO[0]['version'];
        $_SESSION['app_credentials'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['app_credentials'];
    }
 
