@@ -306,10 +306,10 @@
     <!-- not to be directly invoked -->
     <target name="_build_install_config_cache"
         if="global.called.build_install_helper"
-        unless="global.called._build_install_zend"
+        unless="global.called._build_install_config_cache"
     >
         <property file="${file.tmpProperties}" />
-        <property name="global.called._build_install_zend" value="1" />
+        <property name="global.called._build_install_config_cache" value="1" />
         <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
         <delete dir="./build/build/htdocs/install/files/_configCache" />
         <copy todir="./build/build/htdocs/install/files/_configCache" includeemptydirs="true">
@@ -416,7 +416,8 @@
 ..............................................................................-->
     <!-- rebuilds the htdocs folder of the install -->
     <target if="global.called.build_install_helper"
-        name="_build_install_htdocs" unless="global.called._build_install_htdocs"
+        name="_build_install_htdocs"
+        unless="global.called._build_install_htdocs"
     >
         <property file="${file.tmpProperties}" />
         <property name="global.called._build_install_htdocs" value="1" />
