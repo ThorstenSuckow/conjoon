@@ -1,4 +1,36 @@
-﻿2011-31-05 0.1.4RC2
+﻿2012-01-22 0.1.4RC3
+===================
+Release Notes - conjoon - Version 0.1.4RC3
+
+** Bug
+    * [CN-396] - MySQL's strict mode prevents overlong dates from being inserted
+    * [CN-400] - Background not properly rendered when login screen is showing
+    * [CN-401] - File SystemMessagemanager.js cannot be found during build
+                 process of login-target
+    * [CN-403] - Preset property "default.caching" not properly considered
+                 during installation process
+    * [CN-404] - Wrong doctype declaration in reception's index.html
+    * [CN-409] - "Fetch Email" button is rendered active when activating Email
+                 Tab for the first time
+    * [CN-412] - Builds do not get generated from proper version
+
+** Improvement
+    * [CN-407] - Improve build process by adding tests / removing file header
+                 parts
+    * [CN-408] - Remove CHANGELOG.txt from repository and let the build-tools
+                 auto-generate it
+
+** Task
+    * [CN-402] - Edit build files to consider BC breaks that come with phing 2.4
+    * [CN-411] - Improve build process for creating packed versions of build
+
+** Sub-task
+    * [CN-397] - The Wizard must provide a default timezone to choose from
+    * [CN-405] - Create update/patch script for migrating datetime fields prior
+                 to 0.1.4
+
+
+2011-05-31 0.1.4RC2
 ===================
 Notable changes:
 
@@ -41,7 +73,7 @@ callback so the anim element's container gets hidden, too (closes #378)
 column: changed index "user_id" to operate on column "user_id" (closes #377)
 
 
-2011-13-05 0.1.4RC1
+2011-05-13 0.1.4RC1
 ===================
 Notable changes:
 
