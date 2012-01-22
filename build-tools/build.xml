@@ -233,6 +233,12 @@
                 <include name="**/*.php" />
             </fileset>
         </docblox>
+        <phingcall target="build_install" />
+        <delete dir="./build/complete/build" />
+        <mkdir  dir="./build/complete/build" />
+        <copy todir="./build/complete/build">
+            <fileset dir="./build/build" />
+        </copy>
     </target>
 <!--.............................................................................
 //////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -289,7 +295,7 @@
 ..............................................................................-->
     <!-- completely removes the build dir -->
     <target name="rebuild">
-        <property override="true" file="${file.tmpProperties}" />
+        <property file="${file.tmpProperties}" />
         <property name="global.valid_target" value="1" />
         <property name="global.rebuild" value="1" />
         <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
@@ -300,16 +306,17 @@
 
     <!-- BUILDS the complete version and generates docs -->
     <target name="build_complete">
-        <property override="true" file="${file.tmpProperties}" />
+        <property file="${file.tmpProperties}" />
         <property name="global.valid_target" value="1" />
         <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
         <phingcall target="build_complete_source" />
     </target>
 
     <!-- build an installable version -->
-    <target name="build_install">
-        <property override="true" file="${file.tmpProperties}" />
+    <target unless="global.called.build_install" name="build_install">
+        <property file="${file.tmpProperties}" />
         <property name="global.valid_target" value="1" />
+        <property name="global.called.build_install" value="1" />
         <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
         <phingcall target="collect_infos" />
         <phingcall target="prepare_install" />
@@ -323,7 +330,7 @@
 
     <!-- packs the generated builds -->
     <target name="pack">
-        <property override="true" file="${file.tmpProperties}" />
+        <property file="${file.tmpProperties}" />
         <property name="global.valid_target" value="1" />
         <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
         <phingcall target="rebuild" />
@@ -366,6 +373,7 @@ other targets.
 <!--.............................................................................
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
 ..............................................................................-->
+
 
 
 </project>

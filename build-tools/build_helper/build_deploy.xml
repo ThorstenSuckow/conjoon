@@ -194,6 +194,7 @@
 ..............................................................................-->
     <target name="ssh_task">
         <property file="${file.tmpProperties}" />
+        <echo>Moving previous releases and indicating that we're busy...</echo>
         <ssh username="${deploy.host.user}"
             password="${deploy.host.password}"
             port="${deploy.host.port}" host="${deploy.host.address}"
@@ -201,9 +202,11 @@
                 cd ${deploy.upload.previous_dir};
                 mv ./*.* ${deploy.upload.archive_dir};
                 cd ${deploy.upload.target_dir};
+                touch ${deploy.upload.target_dir}/busy.lock;
                 mv ./*.* ${deploy.upload.previous_dir};
             "
         />
+        <echo>Uploading packed files. This could take a while...</echo>
         <scp username="${deploy.host.user}"
             password="${deploy.host.password}"
             port="${deploy.host.port}" host="${deploy.host.address}"
@@ -211,7 +214,16 @@
         >
             <fileset dir="./build/packed" />
         </scp>
-
+        <echo>Removing locks...</echo>
+        <ssh username="${deploy.host.user}"
+            password="${deploy.host.password}"
+            port="${deploy.host.port}" host="${deploy.host.address}"
+            command="
+                cd ${deploy.upload.target_dir};
+                rm ${deploy.upload.target_dir}/busy.lock;
+            "
+        />
+        <echo>Have fun!</echo>
     </target>
 <!--.............................................................................
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
