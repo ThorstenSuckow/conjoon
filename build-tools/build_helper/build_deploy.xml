@@ -202,8 +202,8 @@
                 cd ${deploy.upload.previous_dir};
                 mv ./*.* ${deploy.upload.archive_dir};
                 cd ${deploy.upload.target_dir};
-                touch ${deploy.upload.target_dir}/busy.lock;
                 mv ./*.* ${deploy.upload.previous_dir};
+                touch ${deploy.upload.target_dir}/busy.lock;
             "
         />
         <echo>Uploading packed files. This could take a while...</echo>
