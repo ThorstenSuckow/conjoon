@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -25,38 +25,6 @@ require_once 'phing/filters/ChainableReader.php';
 
 /**
  * Processes development files the following way:
- *
- * Processes development files and removes all SVN keywords - except for
- * the keyword "Id" - from the file header:
- *  <pre>
- *  \/**
- *    * conjoon
- *    * (c) 2002-2010 siteartwork.de/conjoon.org
- *    * licensing@conjoon.org
- *    *
- *    * $Author$
- *    * $Id$
- *    * $Date$
- *    * $Revision$
- *    * $LastChangedDate$
- *    * $LastChangedBy$
- *    * $URL$
- *    *\/
- *  </pre>
- *
- * becomes
- *
- *  \/**
- *    * conjoon
- *    * (c) 2002-2010 siteartwork.de/conjoon.org
- *    * licensing@conjoon.org
- *    *
- *    * $Id$
- *    *\/
- *  </pre>
- *
- * (all file headers found at <http://wiki.conjoon.de/wiki/Developers/Guide/Coding/Guidelines/Files/Header>
- * will be altered this way).
  *
  * Removes the following strings:
  *
@@ -152,15 +120,6 @@ class ProcessDevFragments extends BaseFilterReader implements ChainableReader {
 
         $output = preg_replace(
             "/;@REMOVE@;(.*?);@REMOVE@;/ims",
-            "",
-            $output
-        );
-
-        $output = preg_replace(
-            array(
-                "/^(( | \* |-- |; |; \* ).(Author|Date|Revision|LastChangedDate|LastChangedBy|URL).*)(\n|\r\n)/m",
-                "/<\?php\s*\?>/ims",
-            ),
             "",
             $output
         );

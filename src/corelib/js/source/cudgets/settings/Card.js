@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -53,7 +53,7 @@ com.conjoon.cudgets.settings.Card = Ext.extend(Ext.FormPanel, {
              * "enableKeyEvents" property activated on textfields/textareas.
              * The event listener get automatically uninstalled after the first event was detected
              * that triggers this event.
-             * The event gets installed for the first time the card is shown. Thus, in the lifetime
+             * The event gets installed for the first time the card is shown. thsu, in the lifetime
              * of this card, the event should only fire once. If you want to reuse the event later on,
              * programmatically call "installStartEditListener".
              * @param {com.conjoon.cudgets.settings.Card} card The card that fired the event.
@@ -107,7 +107,7 @@ com.conjoon.cudgets.settings.Card = Ext.extend(Ext.FormPanel, {
         this.on('hide', this.onCardHide, this);
 
         if (this.enableStartEditEvent) {
-            this.on('render', function() {
+            this.on('show', function() {
                 this.installStartEditListener();
             }, this, {single : true});
         }

@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -413,10 +413,7 @@ class Conjoon_Controller_Plugin_ExtRequest {
 
                 for ($i = count($decoded)-1; $i >= 0; $i--) {
 
-                    $controller = strtolower(preg_replace(
-                        '/([a-z])([A-Z])/', "$1.$2", $decoded[$i]['action']
-                    ));
-
+                    $controller = $decoded[$i]['action'];
                     $action     = strtolower(preg_replace(
                         '/([a-z])([A-Z])/', "$1.$2", $decoded[$i]['method']
                     ));

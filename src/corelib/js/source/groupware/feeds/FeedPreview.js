@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -523,7 +523,14 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
                 return;
             }
             if (!skipAnimation) {
-                previewPanel.el.slideOut(animConfig, {duration : .4,  callback : onHide});
+                previewPanel.el.slideOut(animConfig, {
+                    duration : .4,
+                    callback : function(){
+                        onHide();
+                        container.setDisplayed(false);
+                    }
+                });
+
             } else {
                 container.setDisplayed(false);
                 previewPanel.el.slideOut(animConfig, {useDisplay : false, duration : .1});

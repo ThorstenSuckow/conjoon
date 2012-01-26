@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -52,6 +52,14 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse extends Conjoon_F
             'groupwareEmailFoldersId'
         )
     );
+
+    protected $_filters = array(
+         'date' => array(
+            'DateUtcToLocal'
+         )
+    );
+
+
 
     protected function _init()
     {

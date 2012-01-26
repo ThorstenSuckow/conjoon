@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -60,8 +60,6 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     private $isSignatureUsed;
     private $portInbox;
     private $portOutbox;
-    private $inboxConnectionType;
-    private $outboxConnectionType;
     private $isCopyLeftOnServer;
     private $_isDeleted;
 
@@ -104,8 +102,6 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function isSignatureUsed(){return $this->isSignatureUsed;}
     public function getPortInbox(){return $this->portInbox;}
     public function getPortOutbox(){return $this->portOutbox;}
-    public function getInboxConnectionType(){return $this->inboxConnectionType;}
-    public function getOutboxConnectionType(){return $this->outboxConnectionType;}
     public function isCopyLeftOnServer(){return $this->isCopyLeftOnServer;}
     public function isDeleted(){return $this->_isDeleted;}
 
@@ -124,8 +120,6 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function setOutboxAuth($isOutboxAuth){$this->isOutboxAuth = $isOutboxAuth;}
     public function setPasswordInbox($passwordInbox){$this->passwordInbox = $passwordInbox;}
     public function setPasswordOutbox($passwordOutbox){$this->passwordOutbox = $passwordOutbox;}
-    public function setInboxConnectionType($inboxConnectionType){$this->inboxConnectionType = $inboxConnectionType;}
-    public function setOutboxConnectionType($outboxConnectionType){$this->outboxConnectionType = $outboxConnectionType;}
     public function setSignature($signature){$this->signature = $signature;}
     public function setSignatureUsed($isSignatureUsed){$this->isSignatureUsed = $isSignatureUsed;}
 
@@ -210,28 +204,26 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
     public function toArray()
     {
         return array(
-            'id'                   => $this->id,
-            'userId'               => $this->userId,
-            'name'                 => $this->name,
-            'address'              => $this->address,
-            'replyAddress'         => $this->replyAddress,
-            'isStandard'           => $this->isStandard,
-            'protocol'             => $this->protocol,
-            'serverInbox'          => $this->serverInbox,
-            'serverOutbox'         => $this->serverOutbox,
-            'usernameInbox'        => $this->usernameInbox,
-            'usernameOutbox'       => $this->usernameOutbox,
-            'userName'             => $this->userName,
-            'isOutboxAuth'         => $this->isOutboxAuth,
-            'passwordInbox'        => $this->passwordInbox,
-            'passwordOutbox'       => $this->passwordOutbox,
-            'signature'            => $this->signature,
-            'isSignatureUsed'      => $this->isSignatureUsed,
-            'portInbox'            => $this->portInbox,
-            'portOutbox'           => $this->portOutbox,
-            'inboxConnectionType'  => $this->inboxConnectionType,
-            'outboxConnectionType' => $this->outboxConnectionType,
-            'isCopyLeftOnServer'   => $this->isCopyLeftOnServer
+            'id'                 => $this->id,
+            'userId'             => $this->userId,
+            'name'               => $this->name,
+            'address'            => $this->address,
+            'replyAddress'       => $this->replyAddress,
+            'isStandard'         => $this->isStandard,
+            'protocol'           => $this->protocol,
+            'serverInbox'        => $this->serverInbox,
+            'serverOutbox'       => $this->serverOutbox,
+            'usernameInbox'      => $this->usernameInbox,
+            'usernameOutbox'     => $this->usernameOutbox,
+            'userName'           => $this->userName,
+            'isOutboxAuth'       => $this->isOutboxAuth,
+            'passwordInbox'      => $this->passwordInbox,
+            'passwordOutbox'     => $this->passwordOutbox,
+            'signature'          => $this->signature,
+            'isSignatureUsed'    => $this->isSignatureUsed,
+            'portInbox'          => $this->portInbox,
+            'portOutbox'         => $this->portOutbox,
+            'isCopyLeftOnServer' => $this->isCopyLeftOnServer
         );
     }
 
@@ -263,8 +255,6 @@ class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Se
             'isSignatureUsed: '.$data['isSignatureUsed'].', '.
             'portInbox: '.$data['portInbox'].', '.
             'portOutbox: '.$data['portOutbox'].', '.
-            'inboxConnectionType: '.$data['inboxConnectionType'].', '.
-            'outboxConnectionType: '.$data['outboxConnectionType'].', '.
             'isCopyLeftOnServer: '.$data['isCopyLeftOnServer'].';';
     }
 }

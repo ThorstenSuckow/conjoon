@@ -1,4 +1,79 @@
-﻿2011-13-05 0.1.4RC1
+﻿2012-01-22 0.1.4RC3
+===================
+Release Notes - conjoon - Version 0.1.4RC3
+
+** Bug
+    * [CN-396] - MySQL's strict mode prevents overlong dates from being inserted
+    * [CN-400] - Background not properly rendered when login screen is showing
+    * [CN-401] - File SystemMessagemanager.js cannot be found during build
+                 process of login-target
+    * [CN-403] - Preset property "default.caching" not properly considered
+                 during installation process
+    * [CN-404] - Wrong doctype declaration in reception's index.html
+    * [CN-409] - "Fetch Email" button is rendered active when activating Email
+                 Tab for the first time
+    * [CN-412] - Builds do not get generated from proper version
+
+** Improvement
+    * [CN-407] - Improve build process by adding tests / removing file header
+                 parts
+    * [CN-408] - Remove CHANGELOG.txt from repository and let the build-tools
+                 auto-generate it
+
+** Task
+    * [CN-402] - Edit build files to consider BC breaks that come with phing 2.4
+    * [CN-411] - Improve build process for creating packed versions of build
+
+** Sub-task
+    * [CN-397] - The Wizard must provide a default timezone to choose from
+    * [CN-405] - Create update/patch script for migrating datetime fields prior
+                 to 0.1.4
+
+
+2011-05-31 0.1.4RC2
+===================
+Notable changes:
+
+[Email module - client]
+ - fixed an issue where an email would not be properly referenced when
+preview window was dragged & droppped into the content panel, then any
+operation on this panel would have been invoked (reply, reply all, forward)
+due to the fact that the EditorManager would only accept a record of type
+EmailItemRecord for creating an editor instance, but not EmailRecord (closes #381)
+(thanks to larissa84)
+
+[Feeds module - backend]
+ - fixed an issue where the "author" field of a feed entry would not be
+stored properly in the database, thus, showing the value "Array" as the author
+name: adjusted backend code to inspect the return value of "getAuthor()" of the
+feed entry object and apply found values properly (closes #382)
+(reported by e-mike)
+
+[Twitter module - client]
+ - fixed an issue where replies would not be linked properly due to wrong
+data type for specific fields; changed those fields to type "string" to make
+sure that containing ids can be rendered properly (closes #376)
+
+[Workbench]
+ - fixed an issue where the "startup" sound would not play as soon as
+the workbench is in "ready" state, even if the registry tells that system
+sounds are enabled: resolved by adding a "onload" listener to the
+SystemSoundManager that would call attached listeners to tell that it's ready
+to be used; previously it was assumed that the driver is ready to be used as
+soon as the workbench is available (closes #379)
+
+[General UI]
+ - fixed an issue where some regions of a container would not be
+clickable if it was masked previously by a feed/email preview, and this
+preview would have been hidden using it's animation function: adjusted
+callback so the anim element's container gets hidden, too (closes #378)
+
+[Datastore - mysql]
+ - fixed an issue where two different indexes would target the same
+column: changed index "user_id" to operate on column "user_id" (closes #377)
+
+
+2011-05-13 0.1.4RC1
 ===================
 Notable changes:
 

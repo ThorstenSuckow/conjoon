@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -429,7 +429,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
      * @param  string $EOL EOL string; defaults to {@link Zend_Mime::LINEEND}
      *
      */
-    private static function _splitMessage(&$message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
+    private static function _splitMessage($message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
     {
         // code taken from ZF Zend_Mime_Decode::splitMessage V1.5.2
         // find an empty line between headers and body
@@ -594,20 +594,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         $isCopyLeftOnServer = $account->isCopyLeftOnServer();
 
-        $cconf = array(
+        $mail = new $transport(array(
             'host'     => $account->getServerInbox(),
             'port'     => $account->getPortInbox(),
             'user'     => $account->getUsernameInbox(),
             'password' => $account->getPasswordInbox()
-        );
-
-        $ssl = $account->getInboxConnectionType();
-
-        if ($ssl == 'SSL' || $ssl == 'TLS') {
-            $cconf['ssl'] = $ssl;
-        }
-
-        $mail = new $transport($cconf);
+        ));
 
         $hasUniqueId = $mail->hasUniqueId;
 

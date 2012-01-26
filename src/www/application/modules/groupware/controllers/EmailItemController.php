@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -38,8 +38,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
 
         $conjoonContext = $this->_helper->conjoonContext();
 
-        $conjoonContext
-                       ->addActionContext('fetch.emails',    self::CONTEXT_JSON)
+        $conjoonContext->addActionContext('fetch.emails',    self::CONTEXT_JSON)
                        ->addActionContext('move.items',      self::CONTEXT_JSON)
                        ->addActionContext('delete.items',    self::CONTEXT_JSON)
                        ->addActionContext('get.email.items', self::CONTEXT_JSON)
@@ -110,18 +109,10 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
         $response->setBody($data['content']);
     }
 
-
     /**
-     * Queries an email account for new wmails. If an account id was posted,
-     * only the specified account will be queried.
+     * Queriesan email account for new wmails. If an account id was posted, only the
+     * specified account will be queried.
      * Sends all newly fetched emails back to the client.
-     * This method will also check beforehand for any IMAP account that's about
-     * to be queried for new emails, if a default inbox folder was configured
-     * for this account. If no valid folder was found, the emthod will not query
-     * any account for new messages, and instead return an additional property
-     * named "missingInboxForAccountId", which holds the account id of the first
-     * account found for which no inbox folder was configured.
-     *
      *
      */
     public function fetchEmailsAction()
@@ -193,34 +184,8 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                 return;
             }
 
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Folder_Facade
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
-
-            //$facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
-
             for ($i = 0, $accLen = count($accounts); $i < $accLen; $i++) {
                 $currentAccount =& $accounts[$i];
-
-                // check here if we have an actual INBOX folder configured for the
-                // account. If not, break an return without fetching mails.
-                if ($currentAccount->getProtocol() == 'IMAP') {
-                    $folderId = false;/* $facade->getDefaultInboxFolderForAcountId(
-                        $currentAccount->getId()
-                    );*/
-
-                    if ($folderId === false) {
-                        $this->view->success                  = false;
-                        $this->view->totalCount               = 0;
-                        $this->view->items                    = array();
-                        $this->view->error                    = null;
-                        $this->view->missingInboxForAccountId = $currentAccount->getId();
-
-                        return;
-                    }
-                }
-
                 $tmpEmails = Conjoon_Modules_Groupware_Email_Letterman::fetchEmails($userId, $currentAccount);
 
                 $emails        = array_merge($emails, $tmpEmails['fetched']);
@@ -633,9 +598,9 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
                    );
 
         if (!$message) {
-            $this->view->success    = true;
-            $this->view->error      = null;
-            $this->view->item       = null;
+            $this->view->success = true;
+            $this->view->error   = null;
+            $this->view->item    = null;
             return;
         }
 

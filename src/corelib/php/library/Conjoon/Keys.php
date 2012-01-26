@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -34,9 +34,6 @@ interface Conjoon_Keys {
 
 // -------- session reception controller
     const SESSION_CONTROLLER_RECEPTION = 'com.conjoon.session.receptionController';
-
-// -------- session application cache helper
-    const SESSION_APPLICATION_CACHE = 'com.conjoon.session.applicationCache';
 
 // -------- session twitter oauth
     const SESSION_SERVICE_TWITTER_OAUTH = 'com.conjoon.service.twitter.oauth';

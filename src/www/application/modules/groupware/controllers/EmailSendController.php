@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -279,6 +279,7 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             $dateFilter = new Conjoon_Filter_DateIso8601();
             $date = $dateFilter->filter((int)$_POST['date']);
         }
+
 
         /**
          * @see Conjoon_Filter_EmailRecipients
