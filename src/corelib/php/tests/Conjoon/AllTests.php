@@ -17,6 +17,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'Conjoon_AllTests::main');
 }
 
+require_once 'Conjoon/MailTest.php';
 require_once 'Conjoon/Filter/AllTests.php';
 
 /**
@@ -42,6 +43,8 @@ class Conjoon_AllTests
     public static function suite()
     {
         $suite = new PHPUnit_Framework_TestSuite('conjoon - Conjoon');
+
+        $suite->addTestSuite('Conjoon_MailTest');
 
         $suite->addTest(Conjoon_Filter_AllTests::suite());
 
