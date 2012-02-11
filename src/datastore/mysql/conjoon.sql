@@ -376,3 +376,5 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `twitter_id` V
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` DROP INDEX `user_id` ,
 ADD INDEX `user_id` ( `user_id` );
+
+ALTER TABLE  `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE  `content`  `content` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
