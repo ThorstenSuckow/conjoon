@@ -770,7 +770,19 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                     } catch (Zend_Mail_Exception $e) {
                         // ignore
                     }
+
+                    // and one further down to fall back to actual
+                    // date if none was found
+                    if (!$emailItem['date']) {
+                        /**
+                         * @see Zend_Date
+                         */
+                        require_once 'Zend/Date.php';
+                        $zd = new Zend_Date();
+                        $emailItem['date'] = $zd->get(Zend_Date::RFC_2822);
+                    }
                 }
+
             }
 
             try {
