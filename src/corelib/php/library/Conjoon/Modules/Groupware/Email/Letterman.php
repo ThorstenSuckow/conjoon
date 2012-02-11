@@ -132,7 +132,6 @@ require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
-
 class Conjoon_Modules_Groupware_Email_Letterman {
 
     const ICONV_OLD   = 'old';
@@ -143,12 +142,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
     private $_filterItem       = null;
     private $_filterInbox      = null;
 
-    private $_modelAttachment   = null;
-    private $_attachmentFacadce = null;
-    private $_modelFlag         = null;
-    private $_modelItem         = null;
-    private $_modelInbox        = null;
-    private $_modelFolder       = null;
+    private $_modelAttachment  = null;
+    private $_attachmentFacade = null;
+    private $_modelFlag        = null;
+    private $_modelItem        = null;
+    private $_modelInbox       = null;
+    private $_modelFolder      = null;
 
     private $_lastIconvError = false;
 
