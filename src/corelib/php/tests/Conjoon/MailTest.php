@@ -130,4 +130,32 @@ class Conjoon_MailTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($expected, $res);
     }
 
+    public function testSetAndGetMessageId()
+    {
+        $this->assertNull($this->_mail->getMessageId());
+
+        $this->_mail->setMessageId(true);
+
+        $id = $this->_mail->getMessageId();
+
+        $this->assertNotSame(substr($id, 0, 1), "<");
+        $this->assertNotSame(substr($id, strlen($id)-1, 1), ">");
+
+        $this->assertSame(trim($id, "<>"), $id);
+
+    }
+
+    /**
+     * @link http://conjoon.org/issues/browse/CN-445
+     */
+    public function testCreateMessageId_CN445()
+    {
+        $id = $this->_mail->createMessageId();
+
+        $this->assertNotSame(substr($id, 0, 1), "<");
+        $this->assertNotSame(substr($id, strlen($id)-1, 1), ">");
+
+        $this->assertSame(trim($id, "<>"), $id);
+    }
+
 }

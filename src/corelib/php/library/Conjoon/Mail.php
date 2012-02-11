@@ -21,6 +21,11 @@ require_once 'Zend/Mail.php';
 
 
 /**
+ * Note:
+ * When querying the message id by using the accessor getMessageId(), the value
+ * is returned without being it wrapped in "<", ">"
+ *
+ *
  * @uses Zend_Mail
  */
 class Conjoon_Mail extends Zend_Mail {
@@ -163,17 +168,5 @@ class Conjoon_Mail extends Zend_Mail {
         }
     }
 
-    /**
-     * Creates the Message-ID
-     * Overriden to return the message id encasulated in two angle brackets.
-     *
-     * @return string
-     */
-    public function createMessageId()
-    {
-        $id = parent::createMessageId();
-
-        return '<' . $id . '>';
-    }
 
 }
