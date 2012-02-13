@@ -264,7 +264,12 @@ Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
                 // everything okay, cookie was set, we cannot
                 // interfere from this point on
                 this.fireEvent('success', this);
-                this.cancel(true);
+                // make sure the user sees the browsers native "download" dialog
+                // by keeping the iframe open a little bit longer, since the
+                // cookie being set doesn't necessarily mean that the download
+                // was started. A timeout of 1000 ms should be sufficent on most
+                // systems
+                this.cancel.defer(1000, this, [true]);
                 return;
             break;
 
