@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2011 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
