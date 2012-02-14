@@ -334,21 +334,20 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         this.mon(letterman, 'load', this.newEmailsAvailable, this);
 
         var gs = this.gridPanel.store;
-        this.mon(gs, 'beforeload',              this.onGridStoreBeforeLoad,  this);
-        this.mon(gs, 'clear',                   this.onGridStoreClear,       this);
-        this.mon(gs, 'beforeselectionsload',    this.onBeforeSelectionsLoad, this);
-        this.mon(gs, 'selectionsload',          this.onSelectionsLoad,       this);
-        this.mon(gs, 'load',                    this.onStoreLoad,            this);
-        this.mon(this.gridPanel.view, 'buffer', this.onStoreBuffer,          this);
-
+        this.mon(gs, 'beforeload',           this.onGridStoreBeforeLoad,  this);
+        this.mon(gs, 'clear',                this.onGridStoreClear,       this);
+        this.mon(gs, 'beforeselectionsload', this.onBeforeSelectionsLoad, this);
+        this.mon(gs, 'selectionsload',       this.onSelectionsLoad,       this);
+        this.mon(gs, 'load',                 this.onStoreLoad,            this);
 
         var gm = this.gridPanel.selModel;
         this.mon(gm, 'rowselect', this.onRowSelect,     this, {buffer : 100});
         this.mon(gm, 'rowdeselect', this.onRowDeselect, this, {buffer : 100});
 
         var gv = this.gridPanel.view;
-        this.mon(gv, 'rowremoved',   this.onRowRemoved, this);
+        this.mon(gv, 'rowremoved',   this.onRowRemoved,   this);
         this.mon(gv, 'beforebuffer', this.onBeforeBuffer, this);
+        this.mon(gv, 'buffer',       this.onStoreBuffer,  this);
 
         var tp = this.treePanel;
         this.mon(tp, 'movenode', this.onMoveNode, this);
@@ -1434,9 +1433,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         this.spamButton.setIconClass('com-conjoon-groupware-email-EmailPanel-toolbar-spamButton-icon');
         this.noSpamButton.setIconClass('com-conjoon-groupware-email-EmailPanel-toolbar-noSpamButton-icon');
 
-        var sm = this.gridPanel.selModel;
-        var c  = sm.getCount();
-        this.switchButtonState(c, sm.getSelected());
+        this.enableActionButtonsBasedOnSelections();
     },
 
     /**
@@ -1524,9 +1521,41 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
 
     onBeforeBuffer : function()
     {
+        this.disableActionButtons();
+
         this.clearPending();
     },
 
+    /**
+     * Forces all buttons related to actions depending on some sort of selection
+     * in the grid to be disabled. To enable the buttons again, a call to
+     * enableActionButtonsBasedOnSelections should be made which automatically
+     * anables the buttons based on the folder being viewed and the type of
+     * messages selected.
+     *
+     * @see enableActionButtonsBasedOnSelections
+     */
+    disableActionButtons : function()
+    {
+        this.sendNowButton.setDisabled(true);
+        this.replyButton.setDisabled(true);
+        this.replyAllButton.setDisabled(true);
+        this.forwardButton.setDisabled(true);
+        this.deleteButton.setDisabled(true);
+        this.spamButton.setDisabled(true);
+        this.noSpamButton.setDisabled(true);
+        this.editDraftButton.setDisabled(true);
+    },
+
+    /**
+     *
+     */
+    enableActionButtonsBasedOnSelections : function()
+    {
+        var sm = this.gridPanel.selModel;
+        var c  = sm.getCount();
+        this.switchButtonState(c, sm.getSelected());
+    },
 
     onGridStoreBeforeLoad : function(store, options)
     {
@@ -1539,7 +1568,7 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
         }
 
         (options.params = options.params || {}).groupwareEmailFoldersId = this.clkNodeId;
-
+        this.disableActionButtons();
     },
 
 
@@ -1677,11 +1706,24 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
     onStoreLoad : function(store, records, options)
     {
         this._updatePendingFromLoad(store, options);
+        /**
+         * @note this is not needed since reloading the grid will also refresh
+         * the grid with a call to the GridView's refresh() method, which in
+         * turn triggers the refresh event. The default implementation for the
+         * refresh listener of the RowSelectionModel in Ext 3.4 will re-select
+         * the rows and then call switchButtonState()
+         * Also note, that this event will only fire on those rows selected
+         * which are in the store once the grid is refreshed. If those
+         * selections are not in the store, the buttons' state will not be
+         * reset and instead kept disabled
+         */
+        //this.enableActionButtonsBasedOnSelections();
     },
 
     onStoreBuffer : function(view, store, rowIndex, visibleRows, totalCount, options)
     {
         this._updatePendingFromLoad(store, options);
+        this.enableActionButtonsBasedOnSelections();
     },
 
     /**
