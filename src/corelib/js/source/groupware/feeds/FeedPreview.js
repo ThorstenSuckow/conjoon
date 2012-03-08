@@ -54,13 +54,13 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
     /**
      * Initial width of the preview panel.
      * @param {Number}
-     */
+        */
     var width = 330;
 
     /**
      * Initial height of the preview panel.
      * @param {Number}
-     */
+        */
     var height = 250;
 
     /**
@@ -70,7 +70,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
     var requestId = null;
 
     /**
-     * The loadMask used to mask the previewWindow.
+     * The loadMask used to mask the dataPreview.
      * @param {Ext.LoadMask} loadMask
      */
     var loadMask =null;
@@ -104,14 +104,14 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
      * Any window that needs to be created after detaching a preview panel from
      * it's cell will be created using this window config.
      * @param {Ext.Window}
-     */
+        */
     var tmpWindow = null;
 
     /**
      * Any preview panel that needs to be created uses a cloned version of this
      * tmpPreview property.
      * @param {Ext.Window}
-     */
+        */
     var tmpPreview = null;
 
     /**
@@ -259,8 +259,8 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
 
         Ext.ux.util.MessageBus.publish(
             'com.conjoon.groupware.feeds.FeedPreview.onLoadSuccess', {
-            id : item.id
-        });
+                id : item.id
+            });
 
         previewPanel.setTitle(lastRecord.get('title'));
         previewPanel.body.update(lastRecord.get('content'));
@@ -300,7 +300,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
      * Callback.
      * Called after the panel was detached from the grid and dropped anywhere
      * on the document body.
-     * Sets <tt>previewPanel</tt> to <tt>null</tt> to notify the <tt>show</tt> method
+     * Sets <tt>previewComponent</tt> to <tt>null</tt> to notify the <tt>show</tt> method
      * to create a new preview panel.
      *
      */
@@ -429,21 +429,16 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
          * @param {Number} The column index of the cell the panel is aligned to.
          * @param {Ext.EventObject} The raw event object that triggered this method.
          */
-        show : function(grid, rowIndex, columnIndex, eventObject)
+        show : function(grid, record)
         {
-            // ignore showPreview if the eventObject tells us that
-            // shift or ctrl was pressed
-            if (eventObject.shiftKey || eventObject.ctrlKey) {
-                this.hide(false);
-                return;
-            }
-
             // get the record information of the current selected cell
             var t = grid.getSelectionModel().getSelected();
             if (!t) {
                 return;
             }
             clkRecord = t.copy();
+
+            var rowIndex = grid.getStore().indexOf(record);
 
             var pId = clkRecord.id;
             if (activeFeedId == pId) {
@@ -457,7 +452,7 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
             }
 
             clkRowIndex = rowIndex;
-            clkCell     = grid.view.getCell(rowIndex, _getColumnIndex(grid, columnIndex));
+            clkCell     = grid.view.getRow(rowIndex);
             clkCellY    = Ext.fly(clkCell).getY();
             gridEl      = grid.el;
 
@@ -472,15 +467,15 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
 
                 if (activeFeedId != null) {
                     // if the activeFeedId does not equal to zero, the
-                    // previewPanel was hidden using the animation effect.
+                    // previewComponent was hidden using the animation effect.
                     previewPanel.el.slideOut(animConfig, {
-                                        duration : .4,
-                                        callback : function(){
-                                            onHide();
-                                            decoratePreviewPanel();},
-                                        scope:this
-                                   })
-                                   .slideIn(animConfig, {callback: onShow});
+                        duration : .4,
+                        callback : function(){
+                            onHide();
+                            decoratePreviewPanel();},
+                        scope:this
+                    })
+                        .slideIn(animConfig, {callback: onShow});
                 } else {
                     // the preview panel was hidden using the hide method
                     // reshow and slide in.
@@ -505,6 +500,18 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
             }
 
             activeFeedId = pId;
+        },
+
+        isPreviewShownForRecord : function(record)
+        {
+            return record
+                   ? record.id === activeFeedId
+                   : false;
+        },
+
+        getCurrentlyShownRecordId : function()
+        {
+            return activeFeedId;
         },
 
         /**

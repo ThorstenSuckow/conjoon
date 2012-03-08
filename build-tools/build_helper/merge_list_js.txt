@@ -80,6 +80,7 @@ src/corelib/js/source/groupware/feeds/FeedPreview.js
 src/corelib/js/source/groupware/feeds/FeedGrid.js
 src/corelib/js/source/groupware/feeds/AddFeedDialog.js
 src/corelib/js/source/groupware/feeds/FeedOptionsDialog.js
+src/corelib/js/source/groupware/feeds/FeedGridPreviewListener.js
 src/corelib/js/source/groupware/email/view/GridViewMenuPlugin.js
 src/corelib/js/source/groupware/email/view/IntroductionPanel.js
 src/corelib/js/source/groupware/email/data/DefaultColumnModel.js
