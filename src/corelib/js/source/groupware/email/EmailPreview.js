@@ -380,17 +380,14 @@ com.conjoon.groupware.email.EmailPreview = function() {
          * @param {Number} The column index of the cell the panel is aligned to.
          * @param {Ext.EventObject} The raw event object that triggered this method.
          */
-        show : function(grid, rowIndex, columnIndex, eventObject)
+        show : function(grid, record)
         {
-            // ignore showPreview if the eventObject tells us that
-            // shift or ctrl was pressed
-            if (eventObject.shiftKey || eventObject.ctrlKey) {
-                this.hide(false, false);
+            if (!record) {
                 return;
             }
+            clkRecord = record.copy();
 
-            // get the record information of the current selected cell
-            clkRecord = grid.getSelectionModel().getSelected();
+            var rowIndex = grid.getStore().indexOf(record);
 
             var pId = clkRecord.id;
             if (activeEmailId == pId) {
@@ -398,14 +395,13 @@ com.conjoon.groupware.email.EmailPreview = function() {
                 return;
             }
 
-
             // lazy create needed components
             if (container == null) {
                 initComponents.call(this);
             }
 
             clkRowIndex  = rowIndex;
-            clkCell      = grid.view.getCell(rowIndex, _getColumnIndex(grid, columnIndex));
+            clkCell      = grid.view.getRow(rowIndex);
             clkCellY     = Ext.fly(clkCell).getY();
             gridEl       = grid.el;
 
@@ -453,6 +449,19 @@ com.conjoon.groupware.email.EmailPreview = function() {
 
             activeEmailId = pId;
         },
+
+        isPreviewShownForRecord : function(record)
+        {
+            return record
+                ? record.id === activeEmailId
+                : false;
+        },
+
+        getCurrentlyShownRecordId : function()
+        {
+            return activeEmailId;
+        },
+
 
         /**
          * Hides the preview panel.

@@ -431,12 +431,10 @@ com.conjoon.groupware.feeds.FeedPreview = function() {
          */
         show : function(grid, record)
         {
-            // get the record information of the current selected cell
-            var t = grid.getSelectionModel().getSelected();
-            if (!t) {
+            if (!record) {
                 return;
             }
-            clkRecord = t.copy();
+            clkRecord = record.copy();
 
             var rowIndex = grid.getStore().indexOf(record);
 
