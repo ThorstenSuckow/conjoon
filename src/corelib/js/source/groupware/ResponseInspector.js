@@ -331,7 +331,8 @@ com.conjoon.groupware.ResponseInspector = function() {
                     title : Ext.util.Format.htmlEncode(error.title) || options.title,
                     text  : options.message
                             ? options.message + "<br />" + Ext.util.Format.htmlEncode(error.message)
-                            : Ext.util.Format.htmlEncode(error.message),
+                            : Ext.util.Format.htmlEncode(error.message)
+                              .split("\n").join("<br />"),
                     type  : error.level
                 };
             }
