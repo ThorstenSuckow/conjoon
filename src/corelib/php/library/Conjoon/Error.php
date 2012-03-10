@@ -143,7 +143,7 @@ class Conjoon_Error implements Conjoon_BeanContext, Serializable {
     /**
      * Returns a Dto for an instance of this class.
      *
-     * @return Conjoon_Groupware_Email_AccountDto
+     * @return Conjoon_ErrorDto
      */
     public function getDto()
     {
