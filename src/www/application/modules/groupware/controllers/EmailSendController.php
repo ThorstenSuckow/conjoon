@@ -355,6 +355,8 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
         $sendItems              = array();
         $contextReferencedItems = array();
 
+        $errors = array();
+
         foreach ($toSend as $id) {
 
             $id = (int)$id;
@@ -426,6 +428,11 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             try {
                 $mail = Conjoon_Modules_Groupware_Email_Sender::send($message, $account);
             } catch (Exception $e) {
+                $errors[] = array(
+                    'subject'     => $message->getSubject(),
+                    'accountName' => $account->getName(),
+                    'reason'      => $e->getMessage()
+                );
                 continue;
             }
 
@@ -454,9 +461,35 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
             }
         }
 
+        if (!empty($errors)) {
+            /**
+             * @see Conjoon_Error
+             */
+            require_once 'Conjoon/Error.php';
+
+            $m = array();
+
+            $m[] = "One or more messages could not be sent:";
+
+            for ($i = 0, $len = count($errors); $i < $len; $i++) {
+                $m[] = "Message ".($i+1).":";
+                $m[] = "Subject: \""      . $errors[$i]['subject'] ."\"";
+                $m[] = "Account: "        . $errors[$i]['accountName'];
+                $m[] = "Failure reason: " . $errors[$i]['reason'];
+            }
+
+            $errorMessage = implode("\n", $m);
+
+            $error = new Conjoon_Error();
+            $error->setLevel(Conjoon_Error::LEVEL_WARNING);
+            $error->setType(Conjoon_Error::DATA);
+            $error->setMessage($errorMessage);
+
+        }
+
         $this->view->success   = true;
         $this->view->sentItems = $sendItems;
-        $this->view->error     = null;
+        $this->view->error     = $error->getDto();
         $this->view->contextReferencedItems = $contextReferencedItems;
 
     }
