@@ -14,8 +14,8 @@
 
 <h3>Specifying the document path</h3>
 <p>
- conjoon does not necessary be installed in the document root of your webserver, and can be accessed
- from any folder that is within your server's document root.<br />
+ conjoon does not necessary need to be installed in the document root of your webserver,
+ and can be accessed from any folder that is within your server's document root.<br />
  However, conjoon needs to know in which folder it was installed.
  <br />
  For example, if you set up your webserver so that conjoon is accessed over the address<br />
