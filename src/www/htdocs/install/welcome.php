@@ -42,7 +42,11 @@ if (isset($_POST['welcome_post'])) {
     $supportKey = trim((string)$_POST['support_key']);
     $_SESSION['support_key'] = $supportKey;
 
-    $edition = htmlentities(trim((string)$_POST['edition']));
+    $edition = htmlentities(
+        trim((string)$_POST['edition']),
+        ENT_COMPAT | ENT_HTML401,
+        'UTF-8'
+    );
 
     if ($edition == "") {
         $edition = $_SESSION['setup_ini']['environment']['edition'];
