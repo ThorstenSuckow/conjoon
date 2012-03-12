@@ -261,7 +261,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while fetching email(s)';
-            $error->message = implode('<br />', $errorMessages);
+            $error->message = implode("\n", $errorMessages);
             $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error = $error;
         }
