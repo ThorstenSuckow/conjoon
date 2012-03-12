@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -36,6 +36,18 @@ com.conjoon.groupware.SystemSoundManager = function(){
      * @type {SoundManager} _driver The driver to play any sound.
      */
     var _driver = null;
+
+    /**
+     * @type {Boolean} _driverLoaded indicates whether the driver is fully
+     * loaded and ready to play sounds
+     */
+    var _driverLoaded = false;
+
+    /**
+     * @type {Array} _loadListener an array of functions serving as callbacks
+     * for the load-event of the sound driver
+     */
+    _loadListener = [];
 
     /**
      * Loads the various sounds into memory,
@@ -133,15 +145,25 @@ com.conjoon.groupware.SystemSoundManager = function(){
             }
         });
 
-        mb.subscribe('com.conjoon.groupware.ready', function(){
-            _driver.play('startup');
+        _driverLoaded = true;
 
-        });
+        for (var i = 0, len = _loadListener.length; i < len; i++) {
+            _loadListener[i].fn.call((_loadListener[i].scope ? _loadListener[i].scope : window))
+        }
 
     };
 
-
     return {
+
+        /**
+         * Returns true if the driver is ready to play sounds.
+         *
+         * @return {Boolean}
+         */
+        isDriverReady : function()
+        {
+            return _driverLoaded;
+        },
 
         /**
          * Inits the driver to play any sound and calls _initEvents()
@@ -188,6 +210,32 @@ com.conjoon.groupware.SystemSoundManager = function(){
         getDriver : function()
         {
             return _driver;
+        },
+
+        /**
+         * Adds a onload listener for the driver that will be notified as soon
+         * as the driver is ready to play.
+         * Note:
+         * register your listeners before you make a call to "initDriver()",
+         * otherwise an exception is thrown.
+         *
+         * @param {Object} config A configuration object, specifying following
+         * properties:
+         *  fn - The function to call if the driver was loaded
+         *  scope - The scope to call the function in - defaults to "window"
+         *
+         * @throws {Exception} if the driver has already been initialized.
+         */
+        onLoad : function(config)
+        {
+            if (_driver != null) {
+                throw(
+                    "\"com.conjoon.groupware.SystemSoundManager\" "+
+                    "is already initialized"
+                );
+            }
+
+            _loadListener.push(config);
         },
 
         /**

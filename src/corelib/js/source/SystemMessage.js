@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -80,8 +80,3 @@ com.conjoon.SystemMessage.TYPE_PROMPT = 'prompt';
  * @const {String} TYPE_WAIT
  */
 com.conjoon.SystemMessage.TYPE_WAIT = 'wait';
-
-/**
- * @const {String} TYPE_PROGRESS
- */
-com.conjoon.SystemMessage.Type_PROGRESS = 'progress';

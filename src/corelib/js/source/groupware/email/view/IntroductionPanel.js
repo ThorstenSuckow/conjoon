@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -335,9 +335,7 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
             return;
         }
 
-        var attrType = node.attributes.type;
-
-        if (attrType != 'accounts_root' && attrType != 'root') {
+        if (node.attributes.type != 'accounts_root') {
             this.lastClkNode = null;
             return;
         }

@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -63,12 +63,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
      * <li>password_outbox: The password for the outbox-server. If <tt>outbox_auth</tt>
      * equals to <tt>false</tt>, the value will be empty</li>
      * </ul>
-     * <li>inbox_connection_type: Secure connection type for the incoming
-     * mail server. Empty for unsecure connection, or SSL or TLS</li>
-     * <li>outbox_connection_type: Secure connection type for the outgoing mail
-     * server. Empty for unsecure connection, or SSL or TLS. If <tt>outbox_auth</tt>
-     * equals to <tt>false</tt>, the value will be empty</li>
-     * </ul>
      *
      * Upon success, the following view variables will be assigned:
      * <ul>
@@ -78,8 +72,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
      * <br /><strong>NOTE:</strong> If the user submitted passwords, those will be replaced by strings
      * containing only blanks, matching the length of the originally submitted
      * passwords.</li>
-     *  <li>rootFolder: The root folder that saves the tree hierarchy for this
-     * account.</li>
      * <li>error: An object of the type <tt>Conjoon_Groupware_ErrorObject</tt>, if any error
      * occured, otherwise <tt>null</tt></li>
      * <ul>
@@ -120,7 +112,7 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
         $classToCreate = 'Conjoon_Modules_Groupware_Email_Account';
 
         $this->view->success = true;
-        $this->view->error   = null;
+        $this->view->error = null;
 
         try {
             $filter->setData($_POST);
@@ -148,18 +140,6 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
             $dto->passwordInbox  = str_pad("", strlen($dto->passwordInbox), '*');
 
             $this->view->account = $dto;
-
-            // read out root folder for account
-            require_once 'Conjoon/BeanContext/Decorator.php';
-            $decoratedFolderModel = new Conjoon_BeanContext_Decorator(
-                'Conjoon_Modules_Groupware_Email_Folder_Model_Folder',
-                null, false
-            );
-            $rootId = $decoratedFolderModel->getAccountsRootOrRootFolderId($addedId, $userId);
-
-            if ($rootId != 0) {
-                $this->view->rootFolder = $decoratedFolderModel->getFolderBaseDataAsDto($rootId);
-            }
 
         } catch (Zend_Filter_Exception $e) {
             require_once 'Conjoon/Error.php';

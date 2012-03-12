@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -38,7 +38,7 @@ class Groupware_FeedsItemController extends Zend_Controller_Action {
                        ->initContext();
 
         $this->_helper->filterRequestData()
-                      ->registerFilter('Groupware_FeedsItemController::get.feed.items', true)
+                      ->registerFilter('Groupware_FeedsItemController::get.feed.items')
                       ->registerFilter('Groupware_FeedsItemController::set.item.read')
                       ->registerFilter('Groupware_FeedsItemController::get.feed.content');
     }

@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -56,6 +56,12 @@ Ext.namespace('com.conjoon.groupware.email');
  *
  */
 com.conjoon.groupware.email.Letterman = function(config) {
+
+    /**
+     * A property to check whether the letterman is currently busy
+     * looking for new messages.
+     */
+    var _busy = false;
 
     /**
      * A shorthand for the {@see Ext.ux.util.MessageBus} which is used
@@ -134,6 +140,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
     {
         return function(o, success, response) {
             var json = com.conjoon.util.Json;
+
             if (json.isError(response.responseText)) {
                 com.conjoon.groupware.email.Letterman.onRequestFailure(this, 'response', action, o, response);
             }
@@ -270,7 +277,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             if (store.proxy.activeRequest[Ext.data.Api.actions.read]) {
                 return;
             }
-
+            _busy = true;
             store.reload({
                 params : {
                     accountId : accountId
@@ -303,6 +310,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             this.wakeup();
             store.removeAll();
             var length = records.length;
+            _busy = false;
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.load', {
                 items : records,
                 total : length
@@ -313,10 +321,6 @@ com.conjoon.groupware.email.Letterman = function(config) {
         },
 
         /**
-         * This method is called if the server did not return a valid response,
-         * or if the missingInboxForAccountId property in the response is set,
-         * which points to the first account for which no inbox account was configured.
-         *
          *
          * @param {Ext.data.Proxy} proxy The proxy that sent the request
          * @param {String} type The value of this parameter will be either 'response'
@@ -347,18 +351,21 @@ com.conjoon.groupware.email.Letterman = function(config) {
          */
         onRequestFailure : function(proxy, type, action, options, response, arg)
         {
+            _busy = false;
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.loadexception', {});
             this.wakeup();
+            com.conjoon.groupware.ResponseInspector.handleFailure(response);
+        },
 
-            if (response.raw && response.raw.missingInboxForAccountId) {
-                var accountId = parseInt(response.raw.missingInboxForAccountId);
-                com.conjoon.groupware.email.options.FolderMappingBaton.showNotice(
-                    accountId, 'INBOX'
-                );
-                return;
-            } else {
-                com.conjoon.groupware.ResponseInspector.handleFailure(response);
-            }
+        /**
+         * Tells whether the letterman is currently busy, i.e. looking
+         * for new messages
+         *
+         * @return {Boolean}
+         */
+        isBusy : function()
+        {
+            return _busy;
         }
 
 

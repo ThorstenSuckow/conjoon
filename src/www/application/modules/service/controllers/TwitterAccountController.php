@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -328,17 +328,13 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
     public function authorizeAccountAction()
     {
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance();
-
-        $userId = $this->_helper->registryAccess()->getUserId();
-
-        $port     = $registry->getValueForKeyAndUserId('/server/environment/port', $userId);
-        $protocol = $registry->getValueForKeyAndUserId('/server/environment/protocol', $userId);
-        $host     = $registry->getValueForKeyAndUserId('/server/environment/host', $userId);
+        $port     = Conjoon_Modules_Default_Registry::get('/server/environment/port');
+        $protocol = Conjoon_Modules_Default_Registry::get('/server/environment/protocol');
+        $host     = Conjoon_Modules_Default_Registry::get('/server/environment/host');
 
         /**
          * @see Zend_Session_Namespace
@@ -423,20 +419,21 @@ class Service_TwitterAccountController extends Zend_Controller_Action {
          */
         require_once 'Zend/Oauth/Consumer.php';
 
+        /**
+         * @see Conjoon_Modules_Default_Registry
+         */
+        require_once 'Conjoon/Modules/Default/Registry.php';
+
         $config = Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT);
 
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $registry = Conjoon_Modules_Default_Registry_Facade::getInstance();
-
-        $userId = $this->_helper->registryAccess()->getUserId();
-
-        $port     = $registry->getValueForKeyAndUserId('/server/environment/port', $userId);
-        $protocol = $registry->getValueForKeyAndUserId('/server/environment/protocol', $userId);
-        $host     = $registry->getValueForKeyAndUserId('/server/environment/host', $userId);
+        $port     = Conjoon_Modules_Default_Registry::get('/server/environment/port');
+        $protocol = Conjoon_Modules_Default_Registry::get('/server/environment/protocol');
+        $host     = Conjoon_Modules_Default_Registry::get('/server/environment/host');
 
         $callbackUrl = $protocol . '://' . $host . ':' . $port . '/'
                        . $config->environment->base_url . '/'

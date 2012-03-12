@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -67,15 +67,12 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'isSignatureUsed',
                 'portInbox',
                 'portOutbox',
-                'isCopyLeftOnServer',
-                'inboxConnectionType',
-                'outboxConnectionType',
+                'isCopyLeftOnServer'
 
         ),
         'create' =>
             array(
                 'name',
-                'protocol',
                 'address',
                 'serverInbox',
                 'serverOutbox',
@@ -84,9 +81,8 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'userName',
                 'isOutboxAuth',
                 'passwordInbox',
-                'passwordOutbox',
-                'inboxConnectionType',
-                'outboxConnectionType'
+                'passwordOutbox'
+
         )
     );
 
@@ -145,12 +141,6 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
         ),
         'portOutbox' => array(
             'Int'
-        ),
-        'inboxConnectionType' => array(
-            'StringTrim'
-        ),
-        'outboxConnectionType' => array(
-            'StringTrim'
         ),
         'isCopyLeftOnServer' => array(
             'FormBoolToInt'
@@ -217,14 +207,6 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
         'isSignatureUsed'    => array(
             'allowEmpty' => true,
             'default'    => 0
-         ),
-        'inboxConnectionType' => array(
-            'allowEmpty' => true,
-            'default'    => null
-         ),
-        'outboxConnectionType' => array(
-            'allowEmpty' => true,
-            'default'    => null
          ),
         'portInbox'          => array(
             'allowEmpty' => true,

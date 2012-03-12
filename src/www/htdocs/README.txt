@@ -4,28 +4,24 @@
 |                                                                              |
 | Project home:                                                                |
 | =============                                                                |
-| http://www.conjoon.org                                                       |
+| http://conjoon.org                                                           |
 |                                                                              |
 | Wiki:                                                                        |
 | =====                                                                        |
-| http://wiki.conjoon.org                                                      |
+| http://conjoon.org/wiki                                                      |
 |                                                                              |
 | Blog:                                                                        |
 | =====                                                                        |
-| http://www.conjoon.org/blog                                                  |
+| http://conjoon.org/blog                                                      |
 |                                                                              |
 | License:                                                                     |
 | ========                                                                     |
-| http://www.conjoon.org/about/license                                         |
+| http://conjoon.org/about/license                                             |
 |                                                                              |
 |                                                                              |
 | Author:                                                                      |
 | -------                                                                      |
-| Thorsten Suckow-Homberg <ts@siteartwork.de> (<tsuckow@conjoon.org)           |
-|                                                                              |
-| Blog:                                                                        |
-| -------------------------                                                    |
-| http://www.siteartwork.de                                                    |
+| Thorsten Suckow-Homberg <tsuckow@conjoon.org>                                |
 |                                                                              |
 +==============================================================================+
 
@@ -34,6 +30,6 @@ NOTE:
 =====
 Call /install/index.php when installing or updating conjoon!
 
-Please refer to the INSTALL.txt file that comes with conjoon. If that file is not
-available, please visit http://wiki.conjoon.org/wiki/Users/Guide/Installation
-for the most recent installation guide.
+Please refer to the INSTALL.txt file that comes with conjoon. If this file is
+not available, please visit http://conjoon.org/wiki/ for the most recent
+installation guide.

@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -122,9 +122,6 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
 
         com.conjoon.util.Registry.register('com.conjoon.groupware.email.QuickPanel', this);
 
-        var preview       = com.conjoon.groupware.email.EmailPreview;
-        this.emailPreview = preview;
-
         this.on('render', this.onPanelRender, this, {single : true});
 
         com.conjoon.groupware.email.LatestEmailsPanel.superclass.initComponent.call(this);
@@ -147,47 +144,15 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
 
         this.mon(com.conjoon.util.Registry, 'register', this.onRegister, this);
 
-        this.on('celldblclick',   this.onCellDblClick, this);
-        this.on('cellclick',      this.onCellClick,    this, {buffer : 200});
-
-        var preview = com.conjoon.groupware.email.EmailPreview;
-        this.on('resize',         preview.hide.createDelegate(preview, [true]));
-        this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
-        this.on('contextmenu',    preview.hide.createDelegate(preview, [true]));
+        (new com.conjoon.groupware.email.LatestEmailsGridListener).init(
+            this, com.conjoon.groupware.email.EmailPreview
+        );
 
         com.conjoon.groupware.email.LatestEmailsPanel.superclass.initEvents.call(this);
     },
 
 
 // -------- listeners
-
-
-    onCellClick : function(grid, rowIndex, columnIndex, eventObject)
-    {
-        if (this.cellClickActive) {
-            this.cellClickActive = false;
-            return;
-        }
-        this.emailPreview.show(grid, rowIndex, columnIndex, eventObject);
-    },
-
-    onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
-    {
-        this.cellClickActive = true;
-        var emailItem = grid.getStore().getAt(rowIndex);
-
-        var lr = this.emailPreview.getLastRecord();
-
-        if (lr && lr.id === emailItem.id) {
-            com.conjoon.groupware.email.EmailViewBaton.showEmail(lr, {
-                autoLoad : false
-            }, true);
-        } else {
-            com.conjoon.groupware.email.EmailViewBaton.showEmail(emailItem);
-        }
-
-        this.emailPreview.hide(true, false);
-    },
 
     queue : null,
 
@@ -207,7 +172,7 @@ com.conjoon.groupware.email.LatestEmailsPanel = Ext.extend(Ext.ux.grid.livegrid.
                 st.remove(rec);
                 prevId = prevM();
                 if (prevId && prevId.id == rec.id) {
-                    prev.hide(true, false);
+                    prev.hide(true);
                 }
             }
         }

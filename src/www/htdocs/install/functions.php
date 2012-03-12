@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -277,9 +277,21 @@ function conjoon_rmdir($path)
 
             if(is_dir($fullpath)) {
                 conjoon_rmdir($fullpath);
-                rmdir($fullpath);
+                if (!rmdir($fullpath)) {
+                    InstallLogger::getInstance()
+                        ->logMessage("ERROR: could not rmdir $fullpath");
+                } else {
+                    InstallLogger::getInstance()
+                        ->logMessage("rmdir $fullpath");
+                }
             } else {
-                unlink($fullpath);
+                if (!unlink($fullpath)) {
+                    InstallLogger::getInstance()
+                        ->logMessage("ERROR: could not unlink $fullpath");
+                } else {
+                    InstallLogger::getInstance()
+                        ->logMessage("unlink $fullpath");
+                }
             }
         }
     }
@@ -417,4 +429,32 @@ function conjoon_copy($source, $target)
 function conjoon_underscoreString($value)
 {
     return strtolower(preg_replace('/([a-z])([A-Z])/', "$1_$2", $value));
+}
+
+class InstallLogger {
+
+    private static $_logFile = "";
+
+    private static $_instance = null;
+
+    public static function getInstance($fileName = null)
+    {
+        if (!self::$_instance) {
+            self::$_instance = new InstallLogger();
+            self::$_logFile = $fileName;
+            file_put_contents($fileName, "INSTALL LOG\n==========\n\n");
+        }
+
+        return self::$_instance;
+    }
+
+    public function logMessage($message, $date = null)
+    {
+        file_put_contents(
+            self::$_logFile,
+            date("H:i:s", time()) . " - " . $message . "\n",
+            FILE_APPEND
+        );
+    }
+
 }

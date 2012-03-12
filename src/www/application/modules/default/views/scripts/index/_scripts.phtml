@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -21,20 +21,6 @@
 <script type="text/javascript" src="./js/conjoon/conjoon-all.js"></script>
 
 @BUILD_ACTIVE@*/ ?>
-
-<script type="text/javascript">
-
-    // this object's purpose is to provide some basic informations about the app
-    // in case this page was loaded over the AppCache and the data could not be
-    // retrieved using the registry.
-    var appCacheFallback = {
-            softwareLabel : "<?php echo $this->softwareLabel; ?>",
-            editionLabel  : "<?php echo $this->editionLabel; ?>",
-            versionLabel  : "<?php echo $this->versionLabel; ?>"
-    };
-
-</script>
-
 
 <?php /*@REMOVE@*/ ?>
 <!-- base -->
@@ -114,8 +100,6 @@
 <!-- ^^ EO Ext.ux.LiveGrid -->
 
 <!-- CUDGETS -->
-<script type="text/javascript" src="/js/conjoon/source/cudgets/localCache/Api.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/cudgets/localCache/Adapter.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/cudgets/data/Download.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/cudgets/data/JsonReader.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/cudgets/data/DirectProxy.js"></script>
@@ -132,27 +116,6 @@
 <script type="text/javascript" src="/js/conjoon/source/cudgets/settings/listener/DefaultDialogListener.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/cudgets/data/StoreSync.js"></script>
 <!-- ^^ EO CUDGETS -->
-
-<!-- com.conjoon.groupware -->
-<script type="text/javascript" src="/js/conjoon/source/groupware/DefaultProvider.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/Provider.js"></script>
-<!-- ^^ EO com.conjoon.groupware -->
-
-<!-- com.conjoon.groupware.localCache -->
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/Html5Adapter.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/Dialog.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/CachingContainer.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/SettingsContainer.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/IntroductionContainer.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/ui/DefaultOptionsDialogUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/ui/DefaultCachingContainerUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/ui/DefaultSettingsContainerUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/ui/DefaultIntroductionContainerUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/listener/DefaultOptionsDialogListener.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/listener/DefaultCachingContainerListener.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/listener/DefaultSettingsContainerListener.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/localCache/options/listener/DefaultIntroductionContainerListener.js"></script>
-<!-- ^^ EO com.conjoon.groupware.localCache -->
 
 <!-- com.conjoon.groupware.workbench -->
 <script type="text/javascript" src="/js/conjoon/source/groupware/workbench/AboutDialog.js"></script>
@@ -206,6 +169,7 @@
 <script type="text/javascript" src="/js/conjoon/source/groupware/util/LinkInterceptor.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/util/FormIntro.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/util/Clear.js"></script>
+<script type="text/javascript" src="/js/conjoon/source/groupware/util/PreviewListener.js"></script>
 <!-- ^^ EO com.conjoon.groupware.util -->
 
 <!-- com.conjoon.groupware.forms -->
@@ -229,23 +193,10 @@
 <script type="text/javascript" src="/js/conjoon/source/groupware/feeds/FeedGrid.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/feeds/AddFeedDialog.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/feeds/FeedOptionsDialog.js"></script>
+<script type="text/javascript" src="/js/conjoon/source/groupware/feeds/FeedGridPreviewListener.js"></script>
 <!-- ^^ EO com.conjoon.groupware.feeds -->
 
 <!-- com.conjoon.groupware.email -->
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/data/Store.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/data/Record.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/ui/DefaultDialogUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/listener/DefaultDialogListener.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/ui/DefaultSettingsContainerUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/listener/DefaultSettingsContainerListener.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/ui/DefaultOptionsContainerUi.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/listener/DefaultOptionsContainerListener.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/OptionsContainer.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/TreePanel.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/SettingsContainer.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/folderMapping/Dialog.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/options/FolderMappingBaton.js"></script>
-
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/view/GridViewMenuPlugin.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/view/IntroductionPanel.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/data/DefaultColumnModel.js"></script>
@@ -265,9 +216,6 @@
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/EmailEditorManager.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/EmailViewBaton.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/EmailAccountDialog.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/wizard/ServerTypeCard.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/wizard/ServerInboxCard.js"></script>
-<script type="text/javascript" src="/js/conjoon/source/groupware/email/wizard/ServerOutboxCard.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/EmailAccountWizard.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/view/DefaultViewRenderer.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/EmailViewPanel.js"></script>
@@ -283,6 +231,7 @@
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/PendingNodeUI.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/LatestEmailsPanel.js"></script>
 <script type="text/javascript" src="/js/conjoon/source/groupware/email/Letterman.js"></script>
+<script type="text/javascript" src="/js/conjoon/source/groupware/email/LatestEmailsGridListener.js"></script>
 <!-- ^^ EO com.conjoon.groupware.email -->
 
 <!-- com.conjoon.service -->

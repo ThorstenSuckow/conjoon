@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -38,8 +38,6 @@ class Conjoon_Modules_Groupware_Email_Account_Dto extends Conjoon_Dto {
     public $isSignatureUsed;
     public $portInbox;
     public $portOutbox;
-    public $inboxConnectionType;
-    public $outboxConnectionType;
     public $isCopyLeftOnServer;
 
 }
