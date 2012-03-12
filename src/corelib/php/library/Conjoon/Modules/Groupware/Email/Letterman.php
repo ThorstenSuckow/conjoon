@@ -831,38 +831,53 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             $contentType = $encodingInformation['contentType'];
 
             $mail->noop();
-            switch ($contentType) {
-                case 'text/plain':
-                    $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
-                break;
 
-                case 'text/html':
-                    $emailItem['contentTextHtml'] = $this->_decode($message->getContent(), $encodingInformation);
-                break;
+            try {
+                switch ($contentType) {
+                    case 'text/plain':
+                        $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
+                    break;
 
-                case 'multipart/mixed':
-                    $this->_parseMultipartMixed($message, $emailItem);
-                break;
+                    case 'text/html':
+                        $emailItem['contentTextHtml'] = $this->_decode($message->getContent(), $encodingInformation);
+                    break;
 
-                case 'multipart/alternative':
-                    $this->_parseMultipartAlternative($message, $emailItem);
-                break;
+                    case 'multipart/mixed':
+                        $this->_parseMultipartMixed($message, $emailItem);
+                    break;
 
-                case 'multipart/related':
-                    $this->_parseMultipartRelated($message, $emailItem);
-                break;
+                    case 'multipart/alternative':
+                        $this->_parseMultipartAlternative($message, $emailItem);
+                    break;
 
-                case 'multipart/signed':
-                    $this->_parseMultipartSigned($message, $emailItem);
-                break;
+                    case 'multipart/related':
+                        $this->_parseMultipartRelated($message, $emailItem);
+                    break;
 
-                case 'multipart/report':
-                    $this->_parseMultipartReport($message, $emailItem);
-                break;
+                    case 'multipart/signed':
+                        $this->_parseMultipartSigned($message, $emailItem);
+                    break;
 
-                default:
-                    $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
-                break;
+                    case 'multipart/report':
+                        $this->_parseMultipartReport($message, $emailItem);
+                    break;
+
+                    default:
+                        $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
+                    break;
+                }
+            } catch (Exception $e) {
+
+                $fetchedEmailErrors[] =
+                    "Could not save message No. "
+                    .$messageNum
+                    ." with the subject \"".$emailItem['subject']."\". "
+                    ."An unexpected error occurred: \""
+                    . $e->getMessage()
+                    . "\"";
+                $mail->noop();
+                continue;
+
             }
 
             $mail->noop();
