@@ -1,4 +1,18 @@
-﻿2012-03-12 0.1.4RC4
+﻿2012-10-24 0.1.4RC5
+===================
+Release Notes - conjoon - Version 0.1.4RC5
+
+** Bug
+    * [CN-454] - Preview Window issues when doubleclicking
+    * [CN-455] - conjoon does not tell MySQL which charset it's using in it's
+                 queries
+
+** Improvement
+    * [CN-456] - Change engine to InnoDB and collation to utf8_bin  of all
+                 existing tables
+
+
+2012-03-12 0.1.4RC4
 ===================
 Release Notes - conjoon - Version 0.1.4RC4
 
