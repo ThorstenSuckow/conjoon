@@ -41,12 +41,22 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
     multiSelections : false,
 
     /**
-     * A flag indicating whether there is a click active which helps in
-     * distinguishing between showing the preview panel when a double click or a
-     * single click/select occurs .
+     * A flag indicating whether a double click was triggered.
      * @type {Boolean}
      */
     cellClickActive : false,
+
+    /**
+     * A flag indicating whether a row selection was triggered.
+     * @type {Boolean}
+     */
+    rSel : false,
+
+    /**
+     * A flag indicating whether a single click was triggered.
+     * @type {Boolean}
+     */
+    sClick : false,
 
     /**
      * A lfag indicating that the context menu was requested, thus no preview
@@ -81,17 +91,17 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
         var selModel = grid.getSelectionModel();
 
         grid.mon(
-            selModel, 'rowselect', this.onRowSelect, this, {buffer : 200}
+            selModel, 'rowselect', this.onRowSelect, this, {buffer : 250}
         );
 
         grid.mon(
             selModel, 'beforerowselect', this.onBeforeRowSelect, this
         );
         grid.mon(
-            grid, 'cellclick', this.onCellClick, this, {buffer : 100}
+            grid, 'cellclick', this.onCellClick, this
         );
 
-        grid.mon(grid, 'celldblclick', this.onCellDblClick, this);
+        grid.mon(grid, 'celldblclick', this._onCellDblClick, this);
 
         this.preview = preview;
 
@@ -137,6 +147,7 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
         this.multiSelections = false;
     },
 
+    i : 0,
     /**
      * Listener for the grid selection model's rowselect event. Will void if
      * either one of the flags multiSelections or cellClickActive equals to
@@ -149,6 +160,13 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
      */
     onRowSelect : function(selModel, rowIndex, record)
     {
+        this.rSel = true;
+
+        if (this.sClick) {
+            this.sClick = false;
+            return;
+        }
+
         if (this.multiSelections || this.isContextMenu) {
             this.isContextMenu = false;
             this.preview.hide(false);
@@ -178,10 +196,17 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
      */
     onCellClick : function(grid, rowIndex, columnIndex, e)
     {
+        if (this.rSel) {
+            this.rSel = false;
+            return;
+        }
+
         if (this.cellClickActive) {
             this.cellClickActive = false;
             return;
         }
+
+        this.sClick = true;
 
         var selModel = grid.getSelectionModel();
         var record   = selModel.getSelected();
@@ -197,7 +222,22 @@ com.conjoon.groupware.util.PreviewListener.prototype = {
             this.preview.show(grid, record);
         }
 
+
         return;
+    },
+
+
+    /**
+     * Delegates to onCellDblClick and makes sure that any existing preview
+     * window gets hidden.
+     *
+     */
+    _onCellDblClick : function()
+    {
+        this.cellClickActive = true;
+        this.preview.hide(true);
+
+        this.onCellDblClick.apply(this, arguments);
     },
 
     /**

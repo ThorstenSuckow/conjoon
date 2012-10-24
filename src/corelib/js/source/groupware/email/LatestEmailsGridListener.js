@@ -25,7 +25,6 @@ com.conjoon.groupware.email.LatestEmailsGridListener
      */
     onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
     {
-        this.cellClickActive = true;
         var emailItem = grid.getStore().getAt(rowIndex);
 
         var lr = this.preview.getLastRecord();
@@ -38,7 +37,6 @@ com.conjoon.groupware.email.LatestEmailsGridListener
             com.conjoon.groupware.email.EmailViewBaton.showEmail(emailItem);
         }
 
-        this.preview.hide(true);
     }
 
 });

@@ -26,12 +26,8 @@ com.conjoon.groupware.feeds.FeedGridPreviewListener
      */
     onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
     {
-        this.cellClickActive = true;
-        this.preview.hide(true);
-
         var feedItem = grid.getStore().getAt(rowIndex);
         com.conjoon.groupware.feeds.FeedViewBaton.showFeed(feedItem, true);
-
     }
 
 });
