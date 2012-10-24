@@ -145,11 +145,14 @@ require_once 'Conjoon/Modules/Default/User.php';
    // set as default adapter for all db operations
    Conjoon_Db_Table::setDefaultAdapter(
        Zend_Db::factory($config->database->adapter, array(
-           'host'     => $config->database->params->host,
-           'username' => $config->database->params->username,
-           'password' => $config->database->params->password,
-           'dbname'   => $config->database->params->dbname,
-           'port'     => $config->database->params->port
+           'host'           => $config->database->params->host,
+           'username'       => $config->database->params->username,
+           'password'       => $config->database->params->password,
+           'dbname'         => $config->database->params->dbname,
+           'port'           => $config->database->params->port,
+           'driver_options' => array(
+               PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8'
+           )
    )));
 
    // set tbl prefix

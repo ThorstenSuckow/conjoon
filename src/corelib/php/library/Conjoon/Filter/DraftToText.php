@@ -48,7 +48,7 @@ class Conjoon_Filter_DraftToText implements Zend_Filter_Interface
         $value = strip_tags($value);
 
         // ...and convert all html entities back!
-        $value = htmlspecialchars_decode($value);
+       // $value = htmlspecialchars_decode($value);
 
         return $value;
     }

@@ -74,8 +74,8 @@ class Conjoon_Modules_Groupware_Email_Item_Filter_ItemResponse extends Conjoon_F
 
         $this->_defaultEscapeFilter = new Zend_Filter_HtmlEntities(
             array(
-                'quotestyle' => ENT_COMPAT,
-                'charset'    => 'UTF-8'
+                'quotestyle' => ENT_COMPAT/*,
+                'charset'    => 'UTF-8'*/
             )
         );
     }
