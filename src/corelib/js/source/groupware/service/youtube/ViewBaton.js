@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -137,7 +137,29 @@ com.conjoon.groupware.service.youtube.ViewBaton = function() {
     {
         return new com.conjoon.groupware.service.youtube.FeaturePanel({
             listeners : {
-                close : com.conjoon.groupware.service.youtube.ViewBaton.showInQuickPanel,
+                close : function() {
+                    var pl = this.getPlayer();
+
+                    var qec = com.conjoon.groupware.QuickEditPanel.getComponent();
+                    if (pl && (!qec.isVisible() || !qec.ownerCt.isVisible())) {
+                        if (pl) {
+                            switch (pl.getPlayerState()) {
+                                case 'playing':
+                                case 'buffering':
+                                    pl.pauseVideo();
+                                    break;
+                                default:
+                                    pl.on('stateChange', function(state, player){
+                                        pl.stopVideo();
+                                        pl.clearVideo();
+                                    },pl, {single : true});
+                                    break;
+                            }
+                        }
+                    }
+
+                    this.showInQuickPanel();
+                },
                 scope : com.conjoon.groupware.service.youtube.ViewBaton
             }
 

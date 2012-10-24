@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+ conjoon
+ (c) 2002-2012 siteartwork.de/conjoon.org
+ licensing@conjoon.org
+
+ $Author$
+ $Id$
+ $Date$
+ $Revision$
+ $LastChangedDate$
+ $LastChangedBy$
+ $URL$
+-->
+
+<!--
+ Invoke this build by calling: phing php_tests
+ Build file for running unit tests.
+ If you want to test uncommited, local code, make sure you pass the
+ option "export.local=1"
+
+
+ WARNING!
+ This build file is a sub-task and will not rebuild the project. In order
+ to rebuild the project, use the build.xml found in this folder which will
+ also call this build file.
+
+ @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+-->
+
+<project name="conjoon-tests" default="php_tests" basedir="./">
+
+    <target name="php_tests">
+        <phpunit
+            printsummary="true"
+            haltonerror="true"
+            haltonfailure="true"
+            bootstrap="./build/export/src/corelib/php/tests/TestHelper.php"
+            haltonincomplete="true"
+            haltonskipped="true"
+        >
+            <batchtest>
+                <fileset dir="./build/export/src/corelib/php/tests">
+                    <include name="**/*Test.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit>
+    </target>
+
+</project>

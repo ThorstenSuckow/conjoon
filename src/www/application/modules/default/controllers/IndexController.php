@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -40,35 +40,14 @@ class IndexController extends Zend_Controller_Action {
 
     public function indexAction()
     {
-         $userId = $this->_helper->registryAccess()->getUserId();
-
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                             ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
-
-        $this->view->softwareLabel = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                                     ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
-        $this->view->editionLabel = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                                    ->getValueForKeyAndUserId('/base/conjoon/edition', $userId);
-
-        /**
-         * @see Conjoon_Version
-         */
-        require_once 'Conjoon/Version.php';
-
-        $this->view->versionLabel = Conjoon_Version::VERSION;
-
-        // check if there are any GET params available. If that is the case,
-        // we won't deliver the app cache manifest with the page
-        if (!empty($_GET)) {
-            $this->view->enableManifest = false;
-        } else {
-            $this->view->enableManifest = true;
-        }
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
     }
 
     /**
@@ -176,6 +155,5 @@ class IndexController extends Zend_Controller_Action {
 
         $httpResponse = $http->request();
     }
-
 
 }

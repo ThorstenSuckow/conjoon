@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -21,11 +21,14 @@ require_once 'Zend/Mail.php';
 
 
 /**
+ * Note:
+ * When querying the message id by using the accessor getMessageId(), the value
+ * is returned without being it wrapped in "<", ">"
+ *
+ *
  * @uses Zend_Mail
  */
 class Conjoon_Mail extends Zend_Mail {
-
-    protected $_replyTo = null;
 
     protected $_references = null;
 
@@ -34,53 +37,9 @@ class Conjoon_Mail extends Zend_Mail {
     protected $_messageId = null;
 
     /**
-     * Sets the Reply-to header for an email
-     *
-     * @param  string    $replyTo
-     * @return Zend_Mail Provides fluent interface
-     * @throws Zend_Mail_Exception if set multiple times
-     */
-    public function setReplyTo($replyTo)
-    {
-        if ($this->_replyTo === null) {
-            $this->_replyTo = $replyTo;
-            $this->addHeader('Reply-To', $replyTo);
-        } else {
-            /**
-             * @see Zend_Mail_Exception
-             */
-            require_once 'Zend/Mail/Exception.php';
-            throw new Zend_Mail_Exception('Reply-To Header set twice');
-        }
-        return $this;
-    }
-
-
-    /**
-     * Returns the reply-to header field.
-     *
-     * @param  boolean $plain true to return the value as stored in
-     * the $_replyTo-property, otherwise the encoded value
-     *
-     * @return string
-     */
-    public function getReplyTo($plain = true)
-    {
-        if ($this->_replyTo === null) {
-            return null;
-        }
-
-        if ($plain) {
-            return $this->_replyTo;
-        }
-
-        $headers = $this->getHeaders();
-
-        return $headers['Reply-To'];
-    }
-
-    /**
      * Sets the references header for an email
+     * This method also provides functionality to ensure that the passed
+     * string is splitted properly if it is longer than 998 characters.
      *
      * @param  string    $references
      * @return Zend_Mail Provides fluent interface
@@ -90,7 +49,13 @@ class Conjoon_Mail extends Zend_Mail {
     {
         if ($this->_references === null) {
             $this->_references = $references;
-            $this->addHeader('References', $references, false);
+            $this->addHeader('References', $references , false);
+            // after implicit encoding from addHeader, apply wordwrap to make
+            // sure the lines for this header field are no longer than
+            // 998 characters (excl. linefeed)
+            $this->_headers['References'] = array(wordwrap(
+                $this->getReferences($references), 77, "\n\t"
+            ));
         } else {
             /**
              * @see Zend_Mail_Exception
@@ -122,7 +87,7 @@ class Conjoon_Mail extends Zend_Mail {
 
         $headers = $this->getHeaders();
 
-        return $headers['References'];
+        return $headers['References'][0];
     }
 
 
@@ -203,17 +168,5 @@ class Conjoon_Mail extends Zend_Mail {
         }
     }
 
-    /**
-     * Creates the Message-ID
-     * Overriden to return the message id encasulated in two angle brackets.
-     *
-     * @return string
-     */
-    public function createMessageId()
-    {
-        $id = parent::createMessageId();
-
-        return '<' . $id . '>';
-    }
 
 }

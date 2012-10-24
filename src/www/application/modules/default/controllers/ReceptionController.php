@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -199,16 +199,13 @@ class ReceptionController extends Zend_Controller_Action {
         $this->view->tokenFailure = true;
 
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade
-                             ::getInstance()
-                             ->getValueForKeyAndUserId(
-                                 '/base/conjoon/name',
-                                 0
-                             );
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
 
         /**
          * @see Zend_Registry
@@ -280,18 +277,16 @@ class ReceptionController extends Zend_Controller_Action {
         }
 
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                             ->getValueForKeyAndUserId(
-                                 '/base/conjoon/name',
-                                 $this->_helper->registryAccess()->getUserId()
-                             );
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
 
-        $this->view->success = false;
-        $this->view->error   = $error->getDto();
+        $this->view->success    = false;
+        $this->view->error      = $error->getDto();
 
     }
 

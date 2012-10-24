@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -26,14 +26,10 @@ com.conjoon.groupware.email.AccountStore = function() {
     {
         return new Ext.data.Store({
             storeId  : Ext.id(),
-            proxy    : new com.conjoon.cudgets.data.DirectProxy({
-                api : {
-                    read : com.conjoon.groupware.provider.emailAccount.getEmailAccounts
-                }
-            }),
-            autoLoad             : false,
+            url      : './groupware/email.account/get.email.accounts/format/json',
+            autoLoad : false,
             pruneModifiedRecords : true,
-            reader               : new com.conjoon.cudgets.data.JsonReader({
+            reader   : new Ext.data.JsonReader({
                 root : 'accounts',
                 id   : 'id'
             }, com.conjoon.groupware.email.AccountRecord)

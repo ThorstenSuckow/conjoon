@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -21,7 +21,6 @@
  * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  * @version 0.2
  */
-
 $cssPath      = "../src/corelib/js/resources/css";
 $yuiPath      = isset($argv[1]) ? $argv[1] : null;
 $dropFileName = 'conjoon-all.css';
@@ -67,20 +66,31 @@ if (!file_exists($yuiPath)) {
 
 fwrite(STDOUT, "Looking for *.css-files in \"".$cssPath."\"...\n");
 
-$files = array();
+$files   = array();
+$prepend = array();
 
 if ($handle = opendir($cssPath)) {
     while (false !== ($file = readdir($handle))) {
         if (($file != $dropFileName && $file != '.' && $file != '..' && !is_dir($file))
            && (strpos($file, '.css',1) || strpos($file, '.css',1))) {
-           fwrite(STDOUT, "Found \"".$file."\"\n");
-           $files[] = $file;
+
+            if ($file === "com-conjoon-groupware.css") {
+                fwrite(STDOUT, "Found \"".$file."\", I'm prepending this file later on.\n");
+                $prepend[] = $file;
+                continue;
+            }
+            fwrite(STDOUT, "Found \"".$file."\"\n");
+            $files[] = $file;
         }
     }
     closedir($handle);
 } else {
     fwrite(STDERR, "Could not open \"".$cssPath."\" for reading. Exiting...\n");
     exit(-1);
+}
+
+for ($i = 0, $len = count($prepend); $i < $len; $i++) {
+    array_unshift($files, $prepend[$i]);
 }
 
 fwrite(STDOUT, "Found ".count($files)." files. Merging now...\n");
@@ -107,9 +117,17 @@ if (file_exists($dropFilePath)) {
 }
 
 fwrite(STDOUT, "Calling yuicompressor...\n");
-$cmd = "java.exe -jar \"".$yuiPath."\" --type css \"".$temp."\" -o \"".$dropFilePath."\"";
+
+$java = "java.exe";
+if (strtolower(PHP_OS) === "linux") {
+    fwrite(STDOUT, "I assume I'm currently running in a *nix environment...\n");
+    $java = "java";
+}
+
+$cmd = "$java -jar \"".$yuiPath."\" --type css \"".$temp."\" -o \"".$dropFilePath."\"";
+
 shell_exec($cmd);
-fwrite(STDOUT, "yuicompressor... finished!\n");
+fwrite(STDOUT, "...yuicompressor... finished!\n");
 fwrite(STDOUT, "Cleaning up...\n");
 fwrite(STDOUT, "Removing $temp...\n");
 unlink($temp);

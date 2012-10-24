@@ -1,7 +1,7 @@
 ;<?php
 ;/**
 ; * conjoon
-; * (c) 2002-2010 siteartwork.de/conjoon.org
+; * (c) 2002-2012 siteartwork.de/conjoon.org
 ; * licensing@conjoon.org
 ; *
 ; * $Author$
@@ -81,6 +81,14 @@ edition = {EDITION}
 ;;;   APPLICATION    ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 [application]
+; Set the default timezone for all users here.
+; For a list of available timezones, see
+; http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/territory_containment_un_m_49.html
+; If this value is omitted, conjoon will use the timezone as provided by the system's
+; configuration (e.g. php.ini). Please note, that almost all generated and computed
+; dates depend on the proper setting of this value (for example: date/time for emails being send)
+locale.date.timezone = {LOCALE.DATE.TIMEZONE}
+
 ; Twitter specific parameters for the Oauth process.
 twitter.oauth.callbackUrl    = ./service/twitter.account/authorize.okay
 twitter.oauth.siteUrl        = http://twitter.com/oauth
