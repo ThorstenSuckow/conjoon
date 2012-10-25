@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -167,7 +167,20 @@ class Conjoon_Modules_Groupware_Feeds_ImportHelper {
             // workaround for rss without date
             $itemData['pubDate'] = time();
         } else {
-            $itemData['pubDate'] = $item->getDateModified()->getTimestamp();
+
+            /**
+             * @see Conjoon_Filter_DateToUtc
+             */
+            require_once 'Conjoon/Filter/DateToUtc.php';
+
+            $toUtcFilter = new Conjoon_Filter_DateToUtc();
+
+            $d = $toUtcFilter->filter(
+                     $item->getDateModified()->get(Zend_Date::ISO_8601)
+                 );
+
+
+            $itemData['pubDate'] = $d;
         }
 
         return $itemData;

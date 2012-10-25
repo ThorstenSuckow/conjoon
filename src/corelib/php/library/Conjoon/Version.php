@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -24,6 +24,6 @@ final class Conjoon_Version
     /**
      * Current version.
      */
-    const VERSION = '0.1.4RC2r@REV@';
+    const VERSION = '0.1.4RC6r@REV@';
 
 }

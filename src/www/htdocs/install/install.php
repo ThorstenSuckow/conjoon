@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -152,6 +152,7 @@ if (isset($_POST['install_post'])) {
         $_SESSION['app_path'] . '/' . $_SESSION['setup_ini']['app_path']['folder'],
         $configini
     );
+
     $configini = str_replace("{BASE_URL}", $_SESSION['doc_path'], $configini);
     $configini = str_replace("{EDITION}", '"' . $_SESSION['edition']. '"', $configini);
     $configini = str_replace("{DATABASE.ADAPTER}", $_SESSION['db_adapter'], $configini);
@@ -163,67 +164,69 @@ if (isset($_POST['install_post'])) {
     $configini = str_replace("{DATABASE.DATABASE}", $_SESSION['db'], $configini);
     $configini = str_replace("{DATABASE_MAX_ALLOWED_PACKET}", $_SESSION['max_allowed_packet'], $configini);
 
+    // localization
+    $configini = str_replace("{LOCALE.DATE.TIMEZONE}", $_SESSION['locale_timezone_default'], $configini);
 
     // caching
-    $configini = str_replace("{CACHE.DEFAULT.CACHING}", $_SESSION['cache']['default.caching'], $configini);
+    $configini = str_replace("{CACHE.DEFAULT.CACHING}", $_SESSION['cache']['default.caching'] ? '1' : '0', $configini);
 
-    $configini = str_replace("{CACHE.DB.METADATA.CACHING}", $_SESSION['cache']['db.metadata.caching'], $configini);
+    $configini = str_replace("{CACHE.DB.METADATA.CACHING}", $_SESSION['cache']['db.metadata.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.DB.METADATA.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['db.metadata.caching']
                     ? $_SESSION['cache']['db.metadata.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.EMAIL.MESSAGE.CACHING}", $_SESSION['cache']['email.message.caching'], $configini);
+    $configini = str_replace("{CACHE.EMAIL.MESSAGE.CACHING}", $_SESSION['cache']['email.message.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.EMAIL.MESSAGE.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['email.message.caching']
                     ? $_SESSION['cache']['email.message.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.CACHING}", $_SESSION['cache']['email.accounts.caching'], $configini);
+    $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.CACHING}", $_SESSION['cache']['email.accounts.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.EMAIL.ACCOUNTS.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['email.accounts.caching']
                     ? $_SESSION['cache']['email.accounts.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ITEM.CACHING}", $_SESSION['cache']['feed.item.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ITEM.CACHING}", $_SESSION['cache']['feed.item.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ITEM.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.item.caching']
                     ? $_SESSION['cache']['feed.item.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ITEM_LIST.CACHING}", $_SESSION['cache']['feed.item_list.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ITEM_LIST.CACHING}", $_SESSION['cache']['feed.item_list.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ITEM_LIST.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.item_list.caching']
                     ? $_SESSION['cache']['feed.item_list.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.READER.CACHING}", $_SESSION['cache']['feed.reader.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.READER.CACHING}", $_SESSION['cache']['feed.reader.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.READER.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.reader.caching']
                     ? $_SESSION['cache']['feed.reader.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ACCOUNT.CACHING}", $_SESSION['cache']['feed.account.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ACCOUNT.CACHING}", $_SESSION['cache']['feed.account.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ACCOUNT.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.account.caching']
                     ? $_SESSION['cache']['feed.account.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.CACHING}", $_SESSION['cache']['feed.account_list.caching'], $configini);
+    $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.CACHING}", $_SESSION['cache']['feed.account_list.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.FEED.ACCOUNT_LIST.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['feed.account_list.caching']
                     ? $_SESSION['cache']['feed.account_list.backend.cache_dir']
                     : "",
                  $configini);
 
-    $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.CACHING}", $_SESSION['cache']['twitter.accounts.caching'], $configini);
+    $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.CACHING}", $_SESSION['cache']['twitter.accounts.caching'] ? '1' : '0', $configini);
     $configini = str_replace("{CACHE.TWITTER.ACCOUNTS.BACKEND.CACHE_DIR}",
                     $_SESSION['cache']['twitter.accounts.caching']
                     ? $_SESSION['cache']['twitter.accounts.backend.cache_dir']
@@ -246,6 +249,10 @@ if (isset($_POST['install_post'])) {
         // generated by conjoon V".$_SESSION['current_version']."
         // on ".date("m-d-Y H:i:s", time())."
         \$INSTALLATION_INFO[] = array(
+            'locale_timezone_default'  => '"
+                                      .$_SESSION['locale_timezone_default']."',
+            'locale_timezone_fallback' => '"
+                                      .$_SESSION['locale_timezone_fallback']."',
             'support_key'        => '".$_SESSION['support_key']."',
             'version'            => '".$_SESSION['current_version']."',
             'date'               => '".time()."',
@@ -261,8 +268,20 @@ if (isset($_POST['install_post'])) {
             'lib_path'           => '".$_SESSION['lib_path']."',
             'add_include_path'   => '".$_SESSION['add_include_path']."',
             'doc_path'           => '".$_SESSION['doc_path']."',
+            'applied_patches'    => array(".(empty($_SESSION['applied_patches']) ? "" : "'").implode(
+                                                "','",
+                                                array_values($_SESSION['applied_patches'])
+                                            ).(empty($_SESSION['applied_patches']) ? "" : "'")."),
+            'ignored_patches'    => array(".(empty($_SESSION['ignored_patches']) ? "" : "'").implode(
+                                                "','",
+                                                array_values($_SESSION['ignored_patches'])
+                                            ).(empty($_SESSION['ignored_patches']) ? "" : "'")."),
+
+
             ".($_SESSION['cache']['default.caching']
               ? "
+
+              'cache.default.caching' => 1,
 
               'cache.db.metadata.caching' => ".($_SESSION['cache']['db.metadata.caching'] ? "1" : "0").",
               ".($_SESSION['cache']['db.metadata.caching'] ? "'cache.db.metadata.backend.cache_dir' => '".$_SESSION['cache']['db.metadata.backend.cache_dir']."'," : "")."
@@ -351,13 +370,20 @@ if (isset($_POST['install_post'])) {
     }
 
     // replace $LIBRARY_PATH_BOOTSTRAP in index.php to enable autoloader
+    // replace $LOCALE_DEFAULT_TIMEZONE in index.php for local.timezone
+    // fallback
     $indexFile = file_get_contents('../index.php');
     $indexFile = str_replace(
-        '$LIBRARY_PATH_BOOTSTRAP',
-        "'".$_SESSION['lib_path'] . '/' . $libFolder ."'",
+        array('$LIBRARY_PATH_BOOTSTRAP', '$LOCALE_DEFAULT_TIMEZONE'),
+        array(
+            "'".$_SESSION['lib_path'] . '/' . $libFolder ."'",
+            "'".$_SESSION['locale_timezone_fallback']."'"
+        ),
         $indexFile
     );
     file_put_contents('../index.php', $indexFile);
+
+
 
     // move application folders
     $appFolders = explode(",", $_SESSION['setup_ini']['app_path']['delete']);
@@ -475,6 +501,14 @@ if (isset($_POST['install_post'])) {
         }
     }
 
+    // apply patches, if any
+    foreach ($_SESSION['patches'] as $patch => $doApply) {
+        if ($doApply) {
+            if (file_exists('./patches/'.$patch.'/run.php')) {
+                include_once './patches/'.$patch.'/run.php';
+            }
+        }
+    }
 
     // delete folders from a previous installation
     if ($INSTALL['IMREMOVING']['js']) {

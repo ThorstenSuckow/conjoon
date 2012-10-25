@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -30,6 +30,8 @@ include_once './functions.php';
 
 session_start();
 
+
+
 // +----------------------------------------------------------------------------
 // | Check if user is currently  running an instance of conjoon
 // +----------------------------------------------------------------------------
@@ -49,6 +51,7 @@ session_start();
        include_once '../installation.info.php';
        $_SESSION['installation_info'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1];
        $_SESSION['installation_info']['previous_version'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['version'];
+       $_SESSION['installation_info']['first_version']    = $INSTALLATION_INFO[0]['version'];
        $_SESSION['app_credentials'] = $INSTALLATION_INFO[count($INSTALLATION_INFO)-1]['app_credentials'];
    }
 
@@ -101,28 +104,37 @@ session_start();
         'check' => array(
             "Step 1", "./index.php?action=check", "./?action=check_verify"
         ),
+        'localization' => array(
+            "Step 2", "./index.php?action=localization", "./?action=localization_check"
+        ),
         'database' => array(
-            "Step 2", "./index.php?action=database", "./?action=database_check"
+            "Step 3", "./index.php?action=database", "./?action=database_check"
         ),
         'app_path' => array(
-            "Step 3", "./index.php?action=app_path", "./index.php?action=app_path_check"
+            "Step 4", "./index.php?action=app_path", "./index.php?action=app_path_check"
         ),
         'cache' => array(
-            "Step 4", "./index.php?action=cache", "./index.php?action=cache_check"
+            "Step 5", "./index.php?action=cache", "./index.php?action=cache_check"
         ),
         'lib_path' => array(
-            "Step 5", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
+            "Step 6", "./index.php?action=lib_path", "./index.php?action=lib_path_check"
         ),
         'doc_path' => array(
-            "Step 6", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
+            "Step 7", "./index.php?action=doc_path", "./index.php?action=doc_path_check"
         )
    );
 
    $changeAppCredentials = !isset($_SESSION['installation_info']['app_credentials']['user']);
    if ($changeAppCredentials) {
        $VIEW['navigation']['app_credentials'] = array(
-           "Step 6", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
+           "Step 8", "./index.php?action=app_credentials", "./index.php?action=app_credentials_check"
        );
+   }
+
+   if (isset($_SESSION['installation_info']['previous_version'])) {
+      $VIEW['navigation']['patch'] = array(
+          "Patching", "./index.php?action=patch", "./index.php?action=patch_check"
+      );
    }
 
    $VIEW['navigation']['install'] = array(
@@ -150,8 +162,21 @@ session_start();
        break;
 
        case 'check_success':
-            header("Location: ./index.php?action=database");
+            header("Location: ./index.php?action=localization");
             die();
+       break;
+
+       // actions for localization
+       case 'localization':
+            include_once './localization.php';
+       break;
+       case 'localization_success':
+           header("Location: ./index.php?action=database");
+           die();
+       break;
+       case 'localization_check':
+           $VIEW['action'] = 'localization';
+           include_once './localization.php';
        break;
 
        // actions for setting up database
@@ -218,6 +243,9 @@ session_start();
            if ($changeAppCredentials) {
                header("Location: ./index.php?action=app_credentials");
                die();
+           } else if (isset($_SESSION['installation_info']['previous_version'])) {
+               header("Location: ./index.php?action=patch");
+               die();
            } else {
                header("Location: ./index.php?action=install");
                die();
@@ -233,6 +261,23 @@ session_start();
            include_once './app_credentials.php';
        break;
        case 'app_credentials_success':
+           if (isset($_SESSION['installation_info']['previous_version'])) {
+               header("Location: ./index.php?action=patch");
+               die();
+           } else {
+               header("Location: ./index.php?action=install");
+               die();
+           }
+       break;
+
+       // actions for patching previous versions of conjoon
+       case 'patch':
+           include_once './patch.php';
+       break;
+       case 'patch_check':
+           include_once './patch.php';
+       break;
+       case 'patch_success':
            header("Location: ./index.php?action=install");
            die();
        break;

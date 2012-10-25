@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -261,7 +261,7 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
             $error = new Conjoon_Error();
             $error = $error->getDto();;
             $error->title = 'Error while fetching email(s)';
-            $error->message = implode('<br />', $errorMessages);
+            $error->message = implode("\n", $errorMessages);
             $error->level = Conjoon_Error::LEVEL_ERROR;
             $this->view->error = $error;
         }

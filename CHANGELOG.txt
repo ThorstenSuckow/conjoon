@@ -1,4 +1,102 @@
-﻿2011-31-05 0.1.4RC2
+﻿2012-10-25 0.1.4RC6
+===================
+Release Notes - conjoon - Version 0.1.4RC6
+
+** Bug
+    * [CN-457] - Call to Twitter API gives an error
+
+
+2012-10-24 0.1.4RC5
+===================
+Release Notes - conjoon - Version 0.1.4RC5
+
+** Bug
+    * [CN-454] - Preview Window issues when doubleclicking
+    * [CN-455] - conjoon does not tell MySQL which charset it's using in it's
+                 queries
+
+** Improvement
+    * [CN-456] - Change engine to InnoDB and collation to utf8_bin  of all
+                 existing tables
+
+
+2012-03-12 0.1.4RC4
+===================
+Release Notes - conjoon - Version 0.1.4RC4
+
+** Bug
+    * [CN-351] - At least one header line is too long error
+    * [CN-413] - Marking Emails as read doesn't work properly
+    * [CN-414] - Check for base url in install wizard
+    * [CN-415] - Special chars do not get rendered properly when provided
+                 during install wizard
+    * [CN-422] - Preview Windows do not get updated when using keyboard for
+                 navigation
+    * [CN-423] - Toolbar buttons do not get disabled when email grid reloads
+    * [CN-424] - Fonts do not get rendered italic when wrapping in slashes
+    * [CN-429] - Youtube Player keeps playing video when panel/ tab is
+                 closed/hidden
+    * [CN-432] - Marking email item as unread does not work properly
+    * [CN-434] - Emails without date header cannot be received
+    * [CN-435] - Confirm dialog when closing an email editor instance is not
+                 shown when created from quickpanel
+    * [CN-436] - Wrong item count for draft folder when removing all messages
+    * [CN-437] - Sending message from outbox with erroneous server information
+                 does not show error message
+    * [CN-441] - Typo in member "attachmentFacade" in  Letterman
+    * [CN-444] - Refreshing feed items quits with error message "Data too long
+                 for column 'content'"
+    * [CN-445] - Message-Id is generated wrong
+    * [CN-451] - marking emails as "spam" does not work
+    * [CN-452] - Marking feed items as read/unread does not work
+    * [CN-453] - Invalid Mime Messages prevent other messages to be downloaded
+
+** Improvement
+    * [CN-448] - Change references column in groupware_email_items to MEDIUMTEXT
+
+** Task
+    * [CN-430] - Check if timeout for removing iframe when downloading
+                 attachment is set to a high enough value
+    * [CN-433] - Check email address validation for recipients list in email
+                 editor
+    * [CN-442] - Move build.properties to ignore list and instead provide
+                 template for this file
+    * [CN-446] - Look up "2011" strings
+
+
+2012-01-22 0.1.4RC3
+===================
+Release Notes - conjoon - Version 0.1.4RC3
+
+** Bug
+    * [CN-396] - MySQL's strict mode prevents overlong dates from being inserted
+    * [CN-400] - Background not properly rendered when login screen is showing
+    * [CN-401] - File SystemMessagemanager.js cannot be found during build
+                 process of login-target
+    * [CN-403] - Preset property "default.caching" not properly considered
+                 during installation process
+    * [CN-404] - Wrong doctype declaration in reception's index.html
+    * [CN-409] - "Fetch Email" button is rendered active when activating Email
+                 Tab for the first time
+    * [CN-412] - Builds do not get generated from proper version
+
+** Improvement
+    * [CN-407] - Improve build process by adding tests / removing file header
+                 parts
+    * [CN-408] - Remove CHANGELOG.txt from repository and let the build-tools
+                 auto-generate it
+
+** Task
+    * [CN-402] - Edit build files to consider BC breaks that come with phing 2.4
+    * [CN-411] - Improve build process for creating packed versions of build
+
+** Sub-task
+    * [CN-397] - The Wizard must provide a default timezone to choose from
+    * [CN-405] - Create update/patch script for migrating datetime fields prior
+                 to 0.1.4
+
+
+2011-05-31 0.1.4RC2
 ===================
 Notable changes:
 
@@ -41,7 +139,7 @@ callback so the anim element's container gets hidden, too (closes #378)
 column: changed index "user_id" to operate on column "user_id" (closes #377)
 
 
-2011-13-05 0.1.4RC1
+2011-05-13 0.1.4RC1
 ===================
 Notable changes:
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -557,7 +557,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
         // prepare data to insert or update
         $outboxUpdate = array(
-            'sent_timestamp'              => '',
+            'sent_timestamp'              => 0,
             'raw_header'                  => '',
             'raw_body'                    => '',
             'groupware_email_accounts_id' => $account->getId()
@@ -602,8 +602,17 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
         $bccString = implode(', ', $bccString);
 
+        /**
+         * @see Conjoon_Filter_DateToUtc
+         */
+        require_once 'Conjoon/Filter/DateToUtc.php';
+
+        $toUtcFilter = new Conjoon_Filter_DateToUtc();
+
         $itemUpdate = array(
-            'date'                       => $date->get(Zend_Date::ISO_8601),
+            'date'                       => $toUtcFilter->filter(
+                                                $date->get(Zend_Date::ISO_8601)
+                                            ),
             'subject'                    => $draft->getSubject(),
             'from'                       => $fromAddress->__toString(),
             'reply_to'                   => $account->getReplyAddress(),
@@ -727,7 +736,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
         // prepare data to insert or update
         $outboxUpdate = array(
-            'sent_timestamp'              => '',
+            'sent_timestamp'              => 0,
             'raw_header'                  => '',
             'raw_body'                    => '',
             'groupware_email_accounts_id' => $account->getId()
@@ -766,8 +775,17 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
         $bccString = implode(', ', $bccString);
 
+        /**
+         * @see Conjoon_Filter_DateToUtc
+         */
+        require_once 'Conjoon/Filter/DateToUtc.php';
+
+        $toUtcFilter = new Conjoon_Filter_DateToUtc();
+
         $itemUpdate = array(
-            'date'                       => $date->get(Zend_Date::ISO_8601),
+            'date'                       => $toUtcFilter->filter(
+                                                $date->get(Zend_Date::ISO_8601)
+                                            ),
             'subject'                    => $draft->getSubject(),
             'from'                       => $fromAddress->__toString(),
             'reply_to'                   => $account->getReplyAddress(),
@@ -965,6 +983,14 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             'raw_body'                    => $mailSent->getBody(),
             'groupware_email_accounts_id' => $message->getGroupwareEmailAccountsId()
         );
+
+        /**
+         * @see Conjoon_Filter_DateToUtc
+         */
+        require_once 'Conjoon/Filter/DateToUtc.php';
+
+        $filterToUtc = new Conjoon_Filter_DateToUtc();
+
         $itemUpdate = array(
             'reply_to'                   => $replyTo,
             'from'                       => $fromAddress->__toString(),
@@ -981,7 +1007,9 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 ))
             ),
             'groupware_email_folders_id' => $sentFolderId,
-            'date'                       => $date->get(Zend_Date::ISO_8601)
+            'date'                       => $filterToUtc->filter(
+                                                $date->get(Zend_Date::ISO_8601)
+                                            )
         );
 
         switch ($messageType) {

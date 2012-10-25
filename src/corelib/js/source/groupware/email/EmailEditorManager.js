@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -187,9 +187,22 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             Ext.apply(ajaxOptions.params, {
                 name             : recipient.name,
                 address          : recipient.address,
-                contentTextPlain : recipient.contentTextPlain ? recipient.contentTextPlain : "",
-                subject          : recipient.subject ? recipient.subject : ""
+                contentTextPlain : recipient.contentTextPlain
+                                   ? recipient.contentTextPlain : "",
+                subject          : recipient.subject
+                                   ? recipient.subject : ""
             });
+
+            // mark dirty if any of this values evakuates to true
+            // which means that there is a draft to be edited which is
+            // not saved yet, e.g. when Quickpanel's Email Tab is
+            // dragged to workbench and editor instance gets
+            // created
+            ajaxOptions.dirty = (recipient.contentTextPlain
+                                || recipient.subject
+                                || recipient.address
+                                || recipient.name)
+                                ? true : false;
         }
 
         formValues[panel.id].requestId = Ext.Ajax.request(ajaxOptions);
@@ -378,8 +391,11 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             'com-conjoon-groupware-email-EmailForm-icon'
         );
 
-        // mark form as clean, as it was just loaded from the server.
-        formValues[options.panelId].dirty = false;
+        // mark form as clean only if the "dirty" property of options
+        // does not advise the editor to mark it dirty
+        // (see createPanel).
+        formValues[options.panelId].dirty = options.dirty === true
+                                            ? true : false;
     };
 
     /**
