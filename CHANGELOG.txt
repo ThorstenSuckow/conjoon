@@ -1,4 +1,12 @@
-﻿2012-10-24 0.1.4RC5
+﻿2012-10-25 0.1.4RC6
+===================
+Release Notes - conjoon - Version 0.1.4RC6
+
+** Bug
+    * [CN-457] - Call to Twitter API gives an error
+
+
+2012-10-24 0.1.4RC5
 ===================
 Release Notes - conjoon - Version 0.1.4RC5
 
