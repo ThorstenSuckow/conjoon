@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
  conjoon
- (c) 2002-2010 siteartwork.de/conjoon.org
+ (c) 2002-2012 siteartwork.de/conjoon.org
  licensing@conjoon.org
 
  $Author$
@@ -20,8 +20,21 @@
  Notice:
  This build file will also call the build files
   build_login.xml
- and
   build_css.xml
+
+  build_pack.xml and build_deploy will be called for the target deploy
+
+ If you call the targets pack or deploy, make sure you read the information
+ about possible parameters which can be found in the appropriate build
+ files.
+
+ Notice:
+ Use the option "export.local" to create a build with all local changes!
+ If this option is omitted, the HEAD revision will be exported and used for
+ creating the builds
+
+ List of possible options:
+ export.local 1/0
 
  @author Thorsten Suckow-Homberg <ts@siteartwork.de>
 -->
@@ -31,326 +44,336 @@
 * @todo database
 */
 -->
-<project name="conjoon" default="refresh" basedir="../">
+<project name="conjoon" default="rebuild" basedir="../">
 
-   <property file="./build-tools/build.properties" />
-   <includepath classpath="./build-tools/phing" />
+    <includepath classpath="./build-tools/phing" />
+    <taskdef name="exportallowed" classname="tasks.ExportAllowedPropertiesTask" />
 
-   <property name="force.build_zend" value="0" />
+    <property file="./build-tools/build.properties" />
 
-
-    <taskdef name="headrevision" classname="tasks.HeadRevisionTask" />
-    <headrevision
-            dir="./"
-            passthru="false"
-            checkreturn="true"
-            revisionProperty="svn.lastrevision"
-    />
-
-   <target name="build_libs">
-     <phingcall target="build_zend" />
-     <phingcall target="build_conjoon_php" />
-   </target>
-
-   <target name="build_license">
-    <copy file="./LICENSE.txt"
-          tofile="./build/htdocs/install/LICENSE.txt"
-          overwrite="true"
-     />
-   </target>
-
-    <target name="build_zend">
-     <available file="./build/htdocs/install/files/conjoon_libs/Zend" property="zend.exists" value="exists" />
-     <if>
-       <or>
-        <equals arg1="${force.build_zend}" arg2="1" />
+    <property name="file.tmpProperties"
+                value="./build-tools/build_helper/_tmp/tmp.properties" />
+    <if>
         <not>
-        <equals arg1="${zend.exists}" arg2="exists" />
+            <isset property="file.tmpProperties.created" />
         </not>
-       </or>
-     <then>
-      <delete dir="./build/htdocs/install/files/conjoon_libs/Zend" />
-      <copy todir="./build/htdocs/install/files/conjoon_libs" includeemptydirs="true">
-       <fileset dir="./vendor/zendframework/library">
-         <exclude name="**/.svn" />
-       </fileset>
-       <filterchain>
-          <filterreader classname="filters.RemoveRequire" />
-      </filterchain>
-      </copy>
-      </then>
-     </if>
+        <then>
+            <delete file="${file.tmpProperties}" />
+            <touch file="${file.tmpProperties}" />
+            <property name="file.tmpProperties.created" value="1" />
+        </then>
+    </if>
+
+<!--.............................................................................
+///////////////////////////// CHECKING PASSED OPTIONS\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <target if="global.valid_target" unless="global.called.check_options"
+        name="check_options"
+    >
+        <if>
+            <not>
+                <isset property="export.local" />
+            </not>
+            <then>
+                <property name="export.local" value="0" />
+            </then>
+        </if>
+        <if>
+            <and>
+                <not>
+                    <equals arg1="${export.local}" arg2="1" />
+                </not>
+                <not>
+                    <equals arg1="${export.local}" arg2="0" />
+                </not>
+            </and>
+            <then>
+                <fail message="Wrong value for option 'export.local'" />
+            </then>
+        </if>
+        <property name="global.called.check_options" value="1" />
+        <property name="global.export.local"         value="${export.local}" />
+        <exportallowed targetfile="${file.tmpProperties}"  allowed="global" />
+    </target>
+<!--.............................................................................
+//////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+
+
+<!--.............................................................................
+///////////////////////////// GET SVN PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <target if="global.valid_target" unless="global.called.get_headrevision"
+        name="get_headrevision" depends="check_options"
+    >
+        <property file="${file.tmpProperties}" />
+        <if>
+            <equals arg1="${global.export.local}" arg2="0" />
+            <then>
+                <taskdef name="headrevision" classname="tasks.HeadRevisionTask" />
+                <headrevision
+                    dir="./"
+                    passthru="false"
+                    checkreturn="true"
+                    revisionProperty="svn.lastrevision"
+                />
+            </then>
+            <else>
+                <property name="svn.lastrevision" value="LOCAL" />
+            </else>
+        </if>
+        <echo>svn.lastrevision is set to ${svn.lastrevision}</echo>
+        <property name="global.svn.lastrevision" value="${svn.lastrevision}" />
+        <property name="global.called.get_headrevision" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}"  allowed="global" />
+    </target>
+<!--.............................................................................
+//////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////// COLLECTS ALL INFORMATIONS BEFORE BUILDING \\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+<target if="global.valid_target" unless="global.called.collect_infos"
+        name="collect_infos"
+    >
+    <property file="${file.tmpProperties}" />
+    <phingcall target="check_options" />
+    <phingcall target="get_headrevision" />
+    <property name="global.called.collect_infos" value="1" />
+    <exportallowed targetfile="${file.tmpProperties}"  allowed="global" />
+</target>
+<!--.............................................................................
+//////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+
+
+
+<!--.............................................................................
+//////////////////////////////// EXPORT SVN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- BUILDS the export based upon export.local settings -->
+    <target if="global.valid_target" unless="global.called.svn_export"
+        name="svn_export" depends="collect_infos,prepare_svn_export"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called.svn_export" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}"  allowed="global" />
+        <if>
+            <equals arg1="${global.export.local}" arg2="1" />
+            <then>
+                <echo>exporting local changes</echo>
+                <taskdef
+                    name="svnexportwithoutrevision"
+                    classname="tasks.SvnExportWithoutRevisionTask"
+                />
+                <svnexportwithoutrevision
+                    force="true"
+                    nocache="true"
+                    repositoryurl="./"
+                    todir="./build/export"
+                />
+            </then>
+            <else>
+                <echo>exporting HEAD revision</echo>
+                <svnexport
+                    force="true"
+                    nocache="true"
+                    repositoryurl="./"
+                    todir="./build/export"
+                />
+            </else>
+        </if>
+
+    </target>
+<!--.............................................................................
+//////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+
+
+<!--.............................................................................
+///////////////////////////// BUILD COMPLETE SOURCE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <target if="global.valid_target" unless="global.called.build_complete_source"
+        name="build_complete_source" depends="collect_infos,prepare_complete,svn_export"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called.build_complete_source" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="build/complete/" />
+        <mkdir  dir="build/complete/" />
+        <copy todir="build/complete/vendor" includeemptydirs="true">
+            <fileset dir="build/export/vendor" />
+        </copy>
+        <copy todir="build/complete/src" includeemptydirs="true">
+            <fileset dir="build/export/src" />
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+            </filterchain>
+        </copy>
+        <copy todir="build/complete/build-tools" includeemptydirs="true">
+            <fileset dir="build/export/build-tools" />
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+            </filterchain>
+        </copy>
+        <copy todir="./build/complete">
+            <fileset dir="./build/export">
+                <include name="INSTALL.txt" />
+                <include name="CHANGELOG.txt" />
+                <include name="LICENSE.txt" />
+                <include name="README.txt" />
+            </fileset>
+        </copy>
+        <docblox
+            title="conjoon PHP library"
+            destdir="./build/complete/src/corelib/php/docs">
+            <fileset dir="./build/complete/src/corelib/php/library">
+                <include name="**/*.php" />
+            </fileset>
+        </docblox>
+        <phingcall target="build_install" />
+        <delete dir="./build/complete/build" />
+        <mkdir  dir="./build/complete/build" />
+        <copy todir="./build/complete/build">
+            <fileset dir="./build/build" />
+        </copy>
+    </target>
+<!--.............................................................................
+//////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+
+<!--.............................................................................
+///////////////////////////// PREPARING DIRECTORIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- prepare directories -->
+
+    <target if="global.valid_target" unless="global.called.prepare_svn_export"
+        name="prepare_svn_export"
+    >
+        <property name="global.called.prepare_svn_export" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}"  allowed="global" />
+        <delete dir="./build/export" />
+        <mkdir  dir="./build/export" />
     </target>
 
-    <target name="build_datastore">
-      <delete dir="./build/htdocs/install/files/datastore" />
-      <copy todir="./build/htdocs/install/files/datastore" includeemptydirs="true">
-       <fileset dir="./src/datastore">
-         <exclude name="**/.svn" />
-       </fileset>
-       <filterchain>
-          <filterreader classname="filters.ProcessDevFragments" />
-      </filterchain>
-      </copy>
+    <target if="global.valid_target" unless="global.called.prepare"
+        name="prepare"
+    >
+        <property name="global.called.prepare" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}"  allowed="global" />
+        <delete dir="./build" />
+        <phingcall target="prepare_complete" />
+        <phingcall target="prepare_install" />
     </target>
 
-    <target name="build_config_cache">
-      <delete dir="./build/htdocs/install/files/_configCache" />
-      <copy todir="./build/htdocs/install/files/_configCache" includeemptydirs="true">
-       <fileset dir="./src/www/htdocs/_configCache">
-         <exclude name="**/.svn" />
-         <exclude name="**/CHANGELOG.txt" />
-         <exclude name="**/config.ini.php" />
-       </fileset>
-      </copy>
+    <target if="global.valid_target" unless="global.called.prepare_complete"
+        name="prepare_complete"
+    >
+        <property name="global.called.prepare_complete" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global" />
+        <delete dir="./build/complete" />
+        <mkdir  dir="./build/complete" />
     </target>
 
-    <target name="build_conjoon_php">
-      <delete dir="./build/htdocs/install/files/conjoon_libs/Conjoon" />
-      <copy todir="./build/htdocs/install/files/conjoon_libs/Conjoon" includeemptydirs="true">
-       <fileset dir="./src/corelib/php/library/Conjoon">
-         <include name="**/*.php" />
-       </fileset>
-       <filterchain>
-          <filterreader classname="filters.ProcessDevFragments" />
-          <replacetokens begintoken="@" endtoken="@">
-            <token key="REV" value="${svn.lastrevision}" />
-          </replacetokens>
-          <filterreader classname="filters.RemoveRequire" />
-      </filterchain>
-      </copy>
+    <target if="global.valid_target" unless="global.called.prepare_install"
+        name="prepare_install"
+    >
+        <property name="global.called.prepare_install" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global" />
+        <delete dir="./build/build" />
+        <mkdir  dir="./build/build" />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+///////////////////// CONCRETE TARGETS TO BE INVOKED \\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- completely removes the build dir -->
+    <target name="rebuild">
+        <property file="${file.tmpProperties}" />
+        <property name="global.valid_target" value="1" />
+        <property name="global.rebuild" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phingcall target="prepare" />
+        <phingcall target="build_complete" />
+        <phingcall target="build_install" />
     </target>
 
-   <!-- builds ext js into htdocs. -->
-   <target name="build_ext">
-     <delete dir="./build/htdocs/install/files/js/extjs" />
-     <copy file="./vendor/extjs/ext-all.js" tofile="./build/htdocs/install/files/js/extjs/ext-all.js" overwrite="true"/>
-     <copy file="./vendor/extjs/adapter/ext/ext-base.js" tofile="./build/htdocs/install/files/js/extjs/ext-base.js" overwrite="true"/>
-     <copy todir="./build/htdocs/install/files/js/extjs/resources" includeemptydirs="true">
-      <fileset dir="./vendor/extjs/resources">
-        <include name="**/ext-all.css" />
-        <include name="**/*.ico" />
-        <include name="**/*.png" />
-        <include name="**/*.gif" />
-        <include name="**/*.jpg" />
-      </fileset>
-     </copy>
-   </target>
+    <!-- BUILDS the complete version and generates docs -->
+    <target name="build_complete">
+        <property file="${file.tmpProperties}" />
+        <property name="global.valid_target" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phingcall target="build_complete_source" />
+    </target>
 
-   <!-- builds conjoon js into htdocs -->
-   <target name="build_conjoon_js">
-        <delete dir="./build/htdocs/install/files/js/conjoon" />
+    <!-- build an installable version -->
+    <target unless="global.called.build_install" name="build_install">
+        <property file="${file.tmpProperties}" />
+        <property name="global.valid_target" value="1" />
+        <property name="global.called.build_install" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phingcall target="collect_infos" />
+        <phingcall target="prepare_install" />
+        <phingcall target="svn_export" />
+        <phing phingfile="./build-tools/build_helper/build_install.xml"
+            haltonfailure="true"
+            inheritRefs="false"
+            inheritAll="true"
+         />
+    </target>
 
-        <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/install/files/js/conjoon/conjoon-all.js"
-            overwrite="true"
+    <!-- packs the generated builds -->
+    <target name="pack">
+        <property file="${file.tmpProperties}" />
+        <property name="global.valid_target" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phingcall target="rebuild" />
+        <phing phingfile="./build-tools/build_helper/build_pack.xml"
+            haltonfailure="true"
+            inheritRefs="false"
+            inheritAll="true"
         />
-        <copy file="./build-tools/header.txt"
-            tofile="./build/htdocs/install/files/js/conjoon/conjoon-all-debug.js"
-            overwrite="true"
-        />
-
-        <php function="tempnam" returnProperty="conjoon.jsmerge.tempfile">
-          <param value="/tmp" />
-          <param value="conjoon.jsmerge" />
-        </php>
-
-        <append destFile="${conjoon.jsmerge.tempfile}">
-          <filterchain>
-           <filterreader classname="filters.AddLinebreak" />
-          </filterchain>
-          <filelist dir="./" listfile="./build-tools/merge_list_js.txt" />
-        </append>
-
-        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/conjoon-all-debug.js" />
-
-        <exec
-            command='java -jar ${yuicompressor_path} -v --type js -o "${conjoon.jsmerge.tempfile}" "${conjoon.jsmerge.tempfile}"'
-            dir="./"
-            passthru="true"
-            checkreturn="true"
-        />
-        <append file="${conjoon.jsmerge.tempfile}" destFile="./build/htdocs/install/files/js/conjoon/conjoon-all.js" />
-
-        <delete file="${conjoon.jsmerge.tempfile}" verbose="true" failonerror="true" />
-   </target>
-
-   <!-- builds conjoon related css and resources -->
-   <target name="build_css">
-    <delete dir="./build/htdocs/install/files/js/conjoon/resources" />
-    <phing phingfile="./build-tools/build_css.xml" haltonfailure="true" inheritRefs="false" inheritAll="false" />
-    <copy todir="./build/htdocs/install/files/js/conjoon/resources" includeemptydirs="true">
-     <fileset dir="./src/corelib/js/resources">
-       <exclude name="**/*.css" />
-       <exclude name="**/Thumbs.db" />
-       <exclude name="**/.svn" />
-       <!--exclude name="**/README.txt" />
-       <exclude name="**/LICENSE.txt" />
-       <exclude name="**/CREDITS.txt" /-->
-       <exclude name="**/CHANGELOG.txt" />
-     </fileset>
-    </copy>
-    <!-- as follows the subproject extensions for conjoon -->
-     <delete dir="./build/htdocs/install/files/js/ext-ux-grid-gridviewmenuplugin" />
-     <delete dir="./build/htdocs/install/files/js/ext-ux-youtubeplayer" />
-     <delete dir="./build/htdocs/install/files/js/ext-ux-toastwindow" />
-     <delete dir="./build/htdocs/install/files/js/ext-ux-livegrid" />
-     <delete dir="./build/htdocs/install/files/js/ext-ux-wiz" />
-     <delete dir="./build/htdocs/install/files/js/ext-ux-flexaccord" />
-     <delete dir="./build/htdocs/install/files/js/ext-ux-flashcontrol" />
-     <copy todir="./build/htdocs/install/files/js/ext-ux-grid-gridviewmenuplugin" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-grid-gridviewmenuplugin/src">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-     <copy todir="./build/htdocs/install/files/js/ext-ux-youtubeplayer" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-youtubeplayer/src">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-     <copy todir="./build/htdocs/install/files/js/ext-ux-toastwindow" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-toastwindow">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-     <copy todir="./build/htdocs/install/files/js/ext-ux-livegrid" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-livegrid/build">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-     <copy todir="./build/htdocs/install/files/js/ext-ux-wiz" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-wiz/src">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-     <copy todir="./build/htdocs/install/files/js/ext-ux-flexaccord" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-flexaccord/build">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-     <copy todir="./build/htdocs/install/files/js/ext-ux-flashcontrol" includeemptydirs="true">
-      <fileset dir="./vendor/ext-ux-flashcontrol/build">
-        <include name="**/*.css" />
-        <include name="**/*.jpg" />
-        <include name="**/*.gif" />
-        <include name="**/*.png" />
-      </fileset>
-     </copy>
-      <copy todir="./build/htdocs/install/files/js/soundmanager/swf" includeemptydirs="true">
-      <fileset dir="./vendor/soundmanager/swf">
-        <include name="**/*.swf" />
-      </fileset>
-     </copy>
-  </target>
-
-   <!-- rebuilds scripts related to login process -->
-   <target name="build_login">
-    <phing phingfile="./build-tools/build_login.xml" haltonfailure="true" inheritRefs="false" inheritAll="false" />
-   </target>
-
-
-   <target name="prepare">
-     <mkdir dir="./build" />
-   </target>
-
-   <!-- rebuilds the application folder -->
-   <target name="build_application">
-     <delete dir="./build/htdocs/install/files/conjoon_application" />
-     <copy todir="./build/htdocs/install/files/conjoon_application" includeemptydirs="true">
-       <fileset dir="./src/www/application">
-         <exclude name="cache/**" />
-         <exclude name="**/.svn" />
-         <exclude name="**/sandbox.phtml" />
-         <!--exclude name="**/README.txt" />
-         <exclude name="**/LICENSE.txt" />
-         <exclude name="**/CREDITS.txt" /-->
-         <exclude name="**/CHANGELOG.txt" />
-       </fileset>
-       <filterchain>
-        <filterreader classname="filters.ProcessDevFragments" />
-        <filterreader classname="filters.RemoveRequire" />
-       </filterchain>
-     </copy>
-   </target>
-
-   <!-- rebuilds the htdocs folder -->
-   <target name="build_htdocs">
-     <available file="./build/htdocs" property="htdocs.exists" value="exists" />
-
-     <if>
-       <equals arg1="${htdocs.exists}" arg2="exists" />
-      <then>
-       <delete>
-         <fileset dir="./build/htdocs">
-           <exclude name="js/**" />
-           <exclude name="install/files/conjoon_libs/Zend/**" />
-         </fileset>
-       </delete>
-      </then>
-     </if>
-     <copy todir="./build/htdocs" includeemptydirs="true">
-       <fileset dir="./">
-        <include name="INSTALL.txt" />
-        <include name="CHANGELOG.txt" />
-        <include name="LICENSE.txt" />
-       </fileset>
-       <fileset dir="./src/www/htdocs">
-         <exclude name="**/.svn" />
-         <!--exclude name="**/README.txt" />
-         <exclude name="**/LICENSE.txt" />
-         <exclude name="**/CREDITS.txt" /-->
-         <exclude name="**/CHANGELOG.txt" />
-         <exclude name="_configCache/**" />
-         <exclude name="**/config.ini.php" />
-         <exclude name="**/.htaccess" />
-         <exclude name="**/ext-config.js" />
-         <exclude name="**/startup.js" />
-         <exclude name="**/startup.iphone.js" />
-       </fileset>
-       <filterchain>
-        <filterreader classname="filters.ProcessDevFragments" />
-        <filterreader classname="filters.RemoveRequire" />
-       </filterchain>
-     </copy>
-    <phingcall target="build_conjoon_js" />
-    <phingcall target="build_css" />
-    <phingcall target="build_login" />
-    <phingcall target="build_ext" />
-   </target>
-
-   <!-- refreshes build contents except for ../build/libs/Zend -->
-   <target name="refresh" depends="prepare">
-    <phingcall target="build_htdocs" />
-    <phingcall target="build_config_cache" />
-    <phingcall target="build_application" />
-    <phingcall target="build_libs" />
-    <phingcall target="build_datastore" />
-    <phingcall target="build_license" />
-   </target>
-
-   <!-- completely removes the build dir -->
-   <target name="rebuild">
-     <property name="force.build_zend" value="1" />
-     <delete dir="./build" />
-     <phingcall target="refresh" />
     </target>
+
+    <!-- deploys the packed files -->
+    <target name="deploy">
+        <property file="${file.tmpProperties}" />
+        <property name="global.valid_target" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phingcall target="pack" />
+        <phing phingfile="./build-tools/build_helper/build_deploy.xml"
+            haltonfailure="true"
+            inheritRefs="false"
+            inheritAll="true"
+        />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+/////////////////////////// STANDALONE TARGETS  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+The following targets should be called from teh command line without invoking
+other targets.
+..............................................................................-->
+    <target name="php_tests" depends="svn_export">
+        <phing phingfile="./build-tools/build_helper/build_tests.xml"
+            haltonfailure="true"
+            inheritRefs="false"
+            inheritAll="true"
+        />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
 
 </project>

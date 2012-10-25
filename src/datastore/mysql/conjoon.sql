@@ -1,5 +1,5 @@
 -- conjoon
--- (c) 2002-2010 siteartwork.de/conjoon.org
+-- (c) 2002-2012 siteartwork.de/conjoon.org
 -- licensing@conjoon.org
 --
 -- $Author$
@@ -358,33 +358,6 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` CHANGE `update_int
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
 
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ADD `inbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `port_outbox`,
-ADD `outbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `inbox_connection_type` ;
-
-CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,`groupware_email_accounts_id` INT UNSIGNED NOT NULL ,`global_name` TEXT NULL ,`type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH' ) NOT NULL ,PRIMARY KEY ( `id` )) ENGINE = MYISAM;
-
- CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry` (
-`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`key` VARCHAR( 255 ) NOT NULL ,
-`parent_id` INT UNSIGNED NOT NULL
-) ENGINE = MYISAM;
-
- CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry_values` (
-`registry_id` INT UNSIGNED NOT NULL ,
-`user_id` INT UNSIGNED NOT NULL ,
-`name` VARCHAR( 255 ) NOT NULL ,
-`value` TEXT NOT NULL ,
-`type` ENUM( 'STRING', 'INTEGER', 'BOOLEAN', 'FLOAT') NOT NULL,
-INDEX ( `registry_id` , `user_id` )
-) ENGINE = MYISAM;
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD PRIMARY KEY ( `user_id` , `name` );
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry` ADD UNIQUE (`key` ,`parent_id`);
-
-ALTER TABLE `{DATABASE.TABLE.PREFIX}registry_values` ADD `is_editable` BOOL NOT NULL DEFAULT '1';
-ALTER TABLE `{DATABASE.TABLE.PREFIX}users` CHANGE `auth_token` `auth_token` VARCHAR( 32 ) NULL;
-
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD `key` VARCHAR( 32 ) NOT NULL AFTER `id`;
 
 UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(RAND()) WHERE `key` = '';
@@ -400,3 +373,31 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token` 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token_secret` VARCHAR( 255 ) NOT NULL AFTER `oauth_token` ;
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `twitter_id` VARCHAR( 255 ) NOT NULL AFTER `name` ;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` DROP INDEX `user_id` ,
+ADD INDEX `user_id` ( `user_id` );
+
+ALTER TABLE  `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE  `content`  `content` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items` CHANGE `references` `references` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` CHANGE `guid` `guid` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items_email` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_contact_items_flags` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders_users` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_flags` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_inbox` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_outbox` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_references` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;

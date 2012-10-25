@@ -1,6 +1,6 @@
 <!--
  conjoon
- (c) 2002-2010 siteartwork.de/conjoon.org
+ (c) 2002-2012 siteartwork.de/conjoon.org
  licensing@conjoon.org
 
  $Author$
@@ -57,6 +57,57 @@
 </tr>
 </tbody>
 </table>
+
+
+<?php if (isset($_SESSION['patches']) && !empty($_SESSION['patches'])) {?>
+ <h4>Patches</h4>
+
+<?php
+     $allApply = true;
+     foreach ($_SESSION['patches'] as $patchKey => $apply) {
+        if (!$apply) {
+            $allApply = false;
+            break;
+        }
+     }
+if (!$allApply) { ?>
+    <div class="warning_box">
+     One or more patches are available, but you did not choose all of them to be applied to this
+     installation.
+    </div>
+<?php } ?>
+
+  <table>
+   <tbody>
+    <?php
+     $allApply = true;
+     foreach ($_SESSION['patches'] as $patchKey => $apply) {
+        if (!$apply) {$allApply = false;}
+    ?>
+    <tr>
+     <td><i>Patch <?php echo $patchKey; ?></i>:</td>
+     <td><?php echo $apply ? "ready to patch" : "ignored"; ?></td>
+    </tr>
+    <?php } ?>
+</tbody>
+</table>
+<?php } ?>
+
+<h4>Localization</h4>
+<table>
+    <tbody>
+<tr>
+    <td><i>Application's timezone</i>:</td>
+    <td><?php echo $_SESSION['locale_timezone_default']; ?></td>
+</tr>
+<tr>
+    <td><i>Application's fallback timezone</i>:</td>
+    <td><?php echo $_SESSION['locale_timezone_fallback']; ?></td>
+</tr>
+</tbody>
+</table>
+
+
 
 <h4>Database information</h4>
 <table>

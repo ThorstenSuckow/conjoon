@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -79,20 +79,6 @@ Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
     },
 
     /**
-     * Renders the node either selectable or not selectable.
-     *
-     * @param {Boolean} selectable
-     */
-    setSelectable : function(selectable)
-    {
-        if (selectable) {
-            Ext.fly(this.anchor).removeClass('notSelectable');
-        } else {
-            Ext.fly(this.anchor).addClass('notSelectable');
-        }
-    },
-
-    /**
      * Overwrites the derived implementation by calling the parent function and
      * then appending another <tt>span</tt>-Tag to this node for displaying
      * pending items in the folder represented by this node.
@@ -114,18 +100,8 @@ Ext.extend(com.conjoon.groupware.email.PendingNodeUI, Ext.tree.TreeNodeUI, {
 
         this.textNode.innerHTML = Ext.util.Format.htmlEncode(a.text);
         var type = a.type;
-
-        var cls = ""
-
         if (a.pendingCount > 0 && (type != 'draft' && type != 'outbox')) {
-            cls = 'com-conjoon-attr-fontWeight-bold';
-        }
-        if (!a.isSelectable) {
-            cls = 'notSelectable';
-        }
-
-        if (cls != "") {
-            Ext.fly(this.anchor).addClass(cls);
+            Ext.fly(this.anchor).addClass('com-conjoon-attr-fontWeight-bold');
         }
     },
 

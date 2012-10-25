@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -61,7 +61,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         $id = (int)$id;
 
         if ($id <= 0) {
-            return $toArray ? array() : null;
+            return array();
         }
         $db = Zend_Db_Table::getDefaultAdapter();
         $select = $db->select()
@@ -151,7 +151,7 @@ class Conjoon_Modules_Groupware_Feeds_Item_Model_Item
         $ids = implode(',', array_values($ids));
 
         return $this->update(
-            array('is_read' => (bool)$read),
+            array('is_read' => (int)((bool)$read)),
             'id IN ('.$ids.')'
         );
     }

@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -25,12 +25,6 @@ com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
     /**
      * @cfg {String} imageClass
      */
-
-    /**
-     * @cfg {Boolean} justify Whether to add "text-align:justify the text of the formIntro".
-     * Defaults to false.
-     */
-    justify : false,
 
     _textEl : null,
 
@@ -89,11 +83,6 @@ com.conjoon.groupware.util.FormIntro = Ext.extend(Ext.BoxComponent, {
         com.conjoon.groupware.util.FormIntro.superclass.onRender.call(this, ct, position);
 
         this._labelEl = new Ext.Element(this.el.dom.firstChild.firstChild);
-
-        if (this.justify) {
-            this.el.dom.lastChild.style.textAlign ="justify";
-        }
-
         this._textEl  = new Ext.Element(this.el.dom.lastChild);
 
         if (this.labelText) {

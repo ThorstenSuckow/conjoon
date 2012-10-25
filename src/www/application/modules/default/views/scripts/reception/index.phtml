@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -14,7 +14,7 @@
  */
 ?>
 
-<!DOCTYPE htmlPUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html>
  <head>
@@ -35,26 +35,26 @@
 
 Ext.onReady(function(){
 
-    com.conjoon.groupware.Registry.load({
-        fn : function() {
-            var reception = com.conjoon.groupware.Reception;
-            reception.init(false);
+    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
 
-            com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
-                '/client/environment/device'
-            ));
+    com.conjoon.util.PreLoader.on('load', function() {
+        var reception = com.conjoon.groupware.Reception;
+        reception.init(false);
 
-            <?php if ($this->locked === true) { ?>
-                reception.onUserLoad(function(){
-                    reception.showLogin(reception.TYPE_UNLOCK);
-                });
-            <?php } else { ?>
-                reception.showLogin(reception.TYPE_LOGIN);
-            <?php } ?>
-        }
+        com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
+            '/client/environment/device'
+        ));
+
+        <?php if ($this->locked === true) { ?>
+            reception.onUserLoad(function(){
+                reception.showLogin(reception.TYPE_UNLOCK);
+            });
+        <?php } else { ?>
+            reception.showLogin(reception.TYPE_LOGIN);
+        <?php } ?>
     });
 
-
+    com.conjoon.util.PreLoader.load();
 });
   </script>
  </body>

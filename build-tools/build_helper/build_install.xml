@@ -1,0 +1,485 @@
+<?xml version="1.0"?>
+<!--
+ conjoon
+ (c) 2002-2012 siteartwork.de/conjoon.org
+ licensing@conjoon.org
+
+ $Author$
+ $Id$
+ $Date$
+ $Revision$
+ $LastChangedDate$
+ $LastChangedBy$
+ $URL$
+-->
+
+<!--
+ Invoke this build by calling: phing build_install
+ Build file for building an installable version of conjoon
+ If you want to build uncommited, local code, make sure you pass the
+ option "export.local=1"
+
+
+ WARNING!
+ This build file is a sub-task and will not rebuild the project. In order
+ to rebuild the project, use the build.xml found in this folder which will
+ also call this build file.
+
+ @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+-->
+
+<project name="conjoon-build-install" default="build_install_helper" basedir="./">
+
+    <if>
+        <available file="${file.tmpProperties}" />
+        <then>
+            <echo>Loading props</echo>
+            <property file="${file.tmpProperties}" />
+        </then>
+        <else>
+            <fail message="Property file not available" />
+        </else>
+    </if>
+
+
+
+<!--.............................................................................
+//////////////////////////// rebuilds login \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- rebuilds scripts related to login process -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_login"
+        if="global.called._build_install_htdocs"
+        unless="global.called._build_install_login"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_login" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phing phingfile="./build/export/build-tools/build_helper/build_login.xml"
+            haltonfailure="true"
+            inheritRefs="false"
+            inheritAll="true"
+        />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+///////////////////////// rebuilds conjoon js \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds conjoon js into htdocs -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_conjoon_js"
+        if="global.called._build_install_htdocs"
+        unless="global.called._build_install_conjoon_js"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_conjoon_js" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/js/conjoon" />
+        <copy file="./build/export/build-tools/build_helper/header.txt"
+            tofile="./build/build/htdocs/install/files/js/conjoon/conjoon-all.js"
+            overwrite="true"
+        />
+        <copy file="./build/export/build-tools/build_helper/header.txt"
+            tofile="./build/build/htdocs/install/files/js/conjoon/conjoon-all-debug.js"
+            overwrite="true"
+        />
+        <php function="tempnam" returnProperty="conjoon.jsmerge.tempfile">
+            <param value="/tmp" />
+            <param value="conjoon.jsmerge" />
+        </php>
+        <append destFile="${conjoon.jsmerge.tempfile}">
+            <filterchain>
+                <filterreader classname="filters.AddLinebreak" />
+                </filterchain>
+            <filelist dir="./build/export"
+                listfile="./build/export/build-tools/build_helper/merge_list_js.txt"
+            />
+        </append>
+        <append file="${conjoon.jsmerge.tempfile}"
+            destFile="./build/build/htdocs/install/files/js/conjoon/conjoon-all-debug.js"
+        />
+        <exec
+            command='java -jar ${yuicompressor_path} -v --type js
+                    -o "${conjoon.jsmerge.tempfile}" "${conjoon.jsmerge.tempfile}"'
+            dir="./"
+            passthru="true"
+            checkreturn="true"
+        />
+        <append file="${conjoon.jsmerge.tempfile}"
+            destFile="./build/build/htdocs/install/files/js/conjoon/conjoon-all.js"
+        />
+        <delete file="${conjoon.jsmerge.tempfile}" verbose="true" failonerror="true" />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+///////////////////////////// rebuilds ext js\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds ext js into htdocs. -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_ext"
+        if="global.called._build_install_htdocs"
+        unless="global.called._build_install_ext"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_ext" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/js/extjs" />
+        <copy file="./build/export/vendor/extjs/ext-all.js"
+            tofile="./build/build/htdocs/install/files/js/extjs/ext-all.js"
+            overwrite="true"
+        />
+        <copy file="./build/export/vendor/extjs/adapter/ext/ext-base.js"
+            tofile="./build/build/htdocs/install/files/js/extjs/ext-base.js"
+            overwrite="true"
+        />
+        <copy todir="./build/build/htdocs/install/files/js/extjs/resources"
+            includeemptydirs="true"
+        >
+            <fileset dir="./build/export/vendor/extjs/resources">
+                <include name="**/ext-all.css" />
+                <include name="**/*.ico" />
+                <include name="**/*.png" />
+                <include name="**/*.gif" />
+                <include name="**/*.jpg" />
+            </fileset>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////////////// rebuilds conjoon php \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds conjoon php libs for build_install -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_conjoon_php"
+        if="global.called.build_install_helper"
+        unless="global.called._build_install_conjoon_php"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_conjoon_php" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/conjoon_libs/Conjoon" />
+        <copy todir="./build/build/htdocs/install/files/conjoon_libs/Conjoon"
+            includeemptydirs="true"
+        >
+            <fileset dir="./build/export/src/corelib/php/library/Conjoon">
+                <include name="**/*.php" />
+            </fileset>
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+                <filterreader classname="filters.ProcessDevFragments" />
+                <replacetokens begintoken="@" endtoken="@">
+                    <token key="REV" value="${global.svn.lastrevision}" />
+                </replacetokens>
+                <filterreader classname="filters.RemoveRequire" />
+            </filterchain>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////////////// rebuilds install css \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds conjoon related css and resources for build_install -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_css"
+        if="global.called._build_install_htdocs"
+        unless="global.called._build_install_css"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_css" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/js/conjoon/resources" />
+        <phing phingfile="./build-tools/build_helper/build_css.xml"
+            haltonfailure="true"
+            inheritRefs="false"
+            inheritAll="true" />
+        <copy todir="./build/build/htdocs/install/files/js/conjoon/resources"
+            includeemptydirs="true"
+        >
+            <fileset dir="./build/export/src/corelib/js/resources">
+                <exclude name="**/*.css" />
+                <exclude name="**/Thumbs.db" />
+                <!--exclude name="**/README.txt" />
+                <exclude name="**/LICENSE.txt" />
+                <exclude name="**/CREDITS.txt" /-->
+                <exclude name="**/CHANGELOG.txt" />
+            </fileset>
+        </copy>
+        <!-- as follows the subproject extensions for conjoon -->
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-grid-gridviewmenuplugin" />
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-youtubeplayer" />
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-toastwindow" />
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-livegrid" />
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-wiz" />
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-flexaccord" />
+        <delete dir="./build/build/htdocs/install/files/js/ext-ux-flashcontrol" />
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-grid-gridviewmenuplugin"
+            includeemptydirs="true"
+        >
+            <fileset dir="./build/export/vendor/ext-ux-grid-gridviewmenuplugin/src">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-youtubeplayer"
+            includeemptydirs="true"
+        >
+            <fileset dir="./build/export/vendor/ext-ux-youtubeplayer/src">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-toastwindow" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/ext-ux-toastwindow">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-livegrid" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/ext-ux-livegrid/build">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-wiz" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/ext-ux-wiz/src">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-flexaccord" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/ext-ux-flexaccord/build">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/ext-ux-flashcontrol" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/ext-ux-flashcontrol/build">
+                <include name="**/*.css" />
+                <include name="**/*.jpg" />
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
+        <copy todir="./build/build/htdocs/install/files/js/soundmanager/swf" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/soundmanager/swf">
+                <include name="**/*.swf" />
+            </fileset>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////////////// rebuild config cache \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds the config cache for build_install -->
+    <!-- not to be directly invoked -->
+    <target name="_build_install_config_cache"
+        if="global.called.build_install_helper"
+        unless="global.called._build_install_config_cache"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_config_cache" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/_configCache" />
+        <copy todir="./build/build/htdocs/install/files/_configCache" includeemptydirs="true">
+            <fileset dir="./build/export/src/www/htdocs/_configCache">
+                <exclude name="**/CHANGELOG.txt" />
+                <exclude name="**/config.ini.php" />
+            </fileset>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+//////////////////////////// rebuild zend \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds zend library for build_install -->
+    <!-- not to be directly invoked -->
+    <target if="global.called.build_install_helper"
+        name="_build_install_zend"
+        unless="global.called._build_install_zend"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_zend" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/conjoon_libs/Zend" />
+        <copy todir="./build/build/htdocs/install/files/conjoon_libs" includeemptydirs="true">
+            <fileset dir="./build/export/vendor/zendframework/library" />
+            <filterchain>
+                <filterreader classname="filters.RemoveRequire" />
+            </filterchain>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+//////////////////////////// rebuild datastore\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- builds the datastore files for build-install -->
+    <!-- not to be directly invoked -->
+    <target if="global.called.build_install_helper"
+        unless="global.called._build_install_datastore"
+        name="_build_install_datastore"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_datastore" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/datastore" />
+        <copy todir="./build/build/htdocs/install/files/datastore" includeemptydirs="true">
+            <fileset dir="./build/export/src/datastore" />
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+                <filterreader classname="filters.ProcessDevFragments" />
+            </filterchain>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////////////// rebuild application\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- rebuilds the application folder for the build_install -->
+    <!-- not to be directly invoked -->
+    <target if="global.called.build_install_helper"
+        unless="global.called._build_install_application"
+        name="_build_install_application"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_application" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs/install/files/conjoon_application" />
+        <copy todir="./build/build/htdocs/install/files/conjoon_application"
+            includeemptydirs="true"
+        >
+        <fileset dir="./build/export/src/www/application">
+            <exclude name="cache/**" />
+            <exclude name="**/sandbox.phtml" />
+                <!--exclude name="**/README.txt" />
+                <exclude name="**/LICENSE.txt" />
+                <exclude name="**/CREDITS.txt" /-->
+                <exclude name="**/CHANGELOG.txt" />
+            </fileset>
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+                <filterreader classname="filters.ProcessDevFragments" />
+                <filterreader classname="filters.RemoveRequire" />
+            </filterchain>
+        </copy>
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////////////////// rebuild htdocs\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <!-- rebuilds the htdocs folder of the install -->
+    <target if="global.called.build_install_helper"
+        name="_build_install_htdocs"
+        unless="global.called._build_install_htdocs"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_htdocs" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <delete dir="./build/build/htdocs" />
+        <mkdir  dir="./build/build/htdocs" />
+        <copy todir="./build/build/htdocs" includeemptydirs="true">
+            <fileset dir="./build/export">
+                <include name="INSTALL.txt" />
+                <include name="CHANGELOG.txt" />
+                <include name="LICENSE.txt" />
+            </fileset>
+            <fileset dir="./build/export/src/www/htdocs">
+                <!--exclude name="**/README.txt" />
+                <exclude name="**/LICENSE.txt" />
+                <exclude name="**/CREDITS.txt" /-->
+                <exclude name="**/CHANGELOG.txt" />
+                <exclude name="_configCache/**" />
+                <exclude name="**/config.ini.php" />
+                <exclude name="**/.htaccess" />
+                <exclude name="**/ext-config.js" />
+                <exclude name="**/startup.js" />
+                <exclude name="**/startup.iphone.js" />
+            </fileset>
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+                <filterreader classname="filters.ProcessDevFragments" />
+                <filterreader classname="filters.RemoveRequire" />
+            </filterchain>
+        </copy>
+        <phingcall target="_build_install_conjoon_js" />
+        <phingcall target="_build_install_css" />
+        <phingcall target="_build_install_login" />
+        <phingcall target="_build_install_ext" />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+
+<!--.............................................................................
+////////////////////////////// MAIN TARGET \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <target if="global.valid_target" unless="global.called.build_install_helper"
+        name="build_install_helper"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called.build_install_helper" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+        <phingcall target="_build_install_htdocs" />
+        <phingcall target="_build_install_config_cache" />
+        <phingcall target="_build_install_application" />
+        <phingcall target="_build_install_zend" />
+        <phingcall target="_build_install_conjoon_php" />
+        <phingcall target="_build_install_datastore" />
+        <copy file="./build/export/LICENSE.txt"
+          tofile="./build/build/htdocs/install/LICENSE.txt"
+          overwrite="true"
+        />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+</project>

@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -44,7 +44,7 @@ class Conjoon_Service_Twitter extends Zend_Service_Twitter {
     public function statusUpdate($status, $in_reply_to_status_id = null)
     {
         $this->_init();
-        $path = '/statuses/update.xml';
+        $path = '1/statuses/update.xml';
         $len = iconv_strlen(htmlspecialchars($status, ENT_QUOTES, 'UTF-8'), 'UTF-8');
         if ($len > self::STATUS_MAX_CHARACTERS) {
             include_once 'Zend/Service/Twitter/Exception.php';

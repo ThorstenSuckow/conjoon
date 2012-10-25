@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -57,7 +57,16 @@ com.conjoon.cudgets.ListView = Ext.extend(Ext.ListView, {
              * @param {Ext.ListView} listView
              * @param {Ext.data.Record} record The selected record
              */
-            'beforeentryselect'
+            'beforeentryselect',
+            /**
+             * @event beforeentrydeselect
+             * Gets fired when an entry is about to be deselected. Event listeners
+             * should return false to cancel this event.
+             *
+             * @param {Ext.ListView} listView
+             * @param {Ext.data.Record} record The record that is about to get deselected
+             */
+            'beforeentrydeselect'
         );
 
 
