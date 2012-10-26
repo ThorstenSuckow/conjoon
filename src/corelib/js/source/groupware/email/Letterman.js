@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -56,6 +56,12 @@ Ext.namespace('com.conjoon.groupware.email');
  *
  */
 com.conjoon.groupware.email.Letterman = function(config) {
+
+    /**
+     * A property to check whether the letterman is currently busy
+     * looking for new messages.
+     */
+    var _busy = false;
 
     /**
      * A shorthand for the {@see Ext.ux.util.MessageBus} which is used
@@ -270,7 +276,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             if (store.proxy.activeRequest[Ext.data.Api.actions.read]) {
                 return;
             }
-
+            _busy = true;
             store.reload({
                 params : {
                     accountId : accountId
@@ -303,6 +309,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             this.wakeup();
             store.removeAll();
             var length = records.length;
+            _busy = false;
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.load', {
                 items : records,
                 total : length
@@ -347,6 +354,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
          */
         onRequestFailure : function(proxy, type, action, options, response, arg)
         {
+            _busy = false;
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.loadexception', {});
             this.wakeup();
 
@@ -359,6 +367,17 @@ com.conjoon.groupware.email.Letterman = function(config) {
             } else {
                 com.conjoon.groupware.ResponseInspector.handleFailure(response);
             }
+        },
+
+        /**
+         * Tells whether the letterman is currently busy, i.e. looking
+         * for new messages
+         *
+         * @return {Boolean}
+         */
+        isBusy : function()
+        {
+            return _busy;
         }
 
 

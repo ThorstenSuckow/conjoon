@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -23,7 +23,7 @@
 
 $CACHE = array();
 
-function cacheSetup_getCacheDir($key)
+function cacheSetup_getCacheDir($key, $value = null)
 {
     if (isset($_SESSION['installation_info']['cache.' . $key])) {
         return $_SESSION['installation_info']['cache.' . $key];
@@ -31,12 +31,15 @@ function cacheSetup_getCacheDir($key)
 
     $cacheSetup =& $_SESSION['setup_ini']['cache'];
 
-    return rtrim($_SESSION['app_path'], '/')
-           . '/'
-           . rtrim($_SESSION['setup_ini']['app_path']['folder'], '/')
-           . '/'
-           . $cacheSetup[$key];
-
+    if (strpos($key, 'cache_dir') !== false) {
+        return rtrim($_SESSION['app_path'], '/')
+               . '/'
+               . rtrim($_SESSION['setup_ini']['app_path']['folder'], '/')
+               . '/'
+               . $cacheSetup[$key];
+    } else {
+        return $value;
+    }
 }
 
 
@@ -46,14 +49,12 @@ if (isset($_SESSION['cache'])) {
     $CACHE = $_SESSION['cache'];
 } else {
 
-    $CACHE['default.caching'] = $_SESSION['setup_ini']['cache']['default.caching'];
+    $CACHE['default.caching'] = isset($_SESSION['installation_info']['cache.default.caching'])
+                                ? $_SESSION['installation_info']['cache.default.caching']
+                                : $_SESSION['setup_ini']['cache']['default.caching'];
 
     foreach ($cacheSetup as $key => $value) {
-        if (strpos($key, 'cache_dir') !== false) {
-            $CACHE[$key] = cacheSetup_getCacheDir($key);
-        } else {
-            $CACHE[$key] = $value;
-        }
+        $CACHE[$key] = cacheSetup_getCacheDir($key, $value);
     }
 }
 
@@ -62,6 +63,11 @@ if (isset($_POST['cache_post']) && $_POST['cache_post'] == "1") {
     $_SESSION['cache'] = $cacheSetup;
 
     if(!$_POST['default_caching']) {
+
+        foreach($_SESSION['cache'] as $m => $r) {
+            $_SESSION['cache'][$m] = "";
+        }
+
         $_SESSION['cache']['default.caching'] = false;
         $_SESSION['cache_failed'] = false;
     } else {

@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!--
+ conjoon
+ (c) 2002-2012 siteartwork.de/conjoon.org
+ licensing@conjoon.org
+
+ $Author$
+ $Id$
+ $Date$
+ $Revision$
+ $LastChangedDate$
+ $LastChangedBy$
+ $URL$
+-->
+
+<!--
+ This build file will merge all js files related directly to the login process
+ of conjoon into the files
+  conjoon-login.js
+    and
+  conjoon-login-debug.js
+ and move them to the folder ../build/build/htdocs/install/files/js/conjoon/
+ It will also create the file
+  ../build/build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml
+ and place the logic for loading the js files
+  ../build/build/htdocs/install/files/js/ext/ext-all.js
+ and
+  ../build/build/htdocs/install/files/js/conjoon/conjoon-login.js
+ into it.
+
+ WARNING!
+ This build file is a sub-task and will not rebuild the project. In order
+ to rebuild the project, use the build.xml found in this folder which will
+ also call this build file.
+
+ @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+-->
+
+<project name="conjoon-login" default="_build_install_login_helper" basedir="./">
+
+    <if>
+        <available file="${file.tmpProperties}" />
+        <then>
+            <echo>Loading props</echo>
+            <property file="${file.tmpProperties}" />
+        </then>
+        <else>
+            <fail message="Property file not available" />
+        </else>
+    </if>
+
+<!--.............................................................................
+//////////////////////////////// Build js\\ \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+..............................................................................-->
+    <target
+        name="_build_install_login_helper"
+        if="global.called._build_install_login"
+        unless="global.called._build_install_login_helper"
+    >
+        <property file="${file.tmpProperties}" />
+        <property name="global.called._build_install_login_helper" value="1" />
+        <exportallowed targetfile="${file.tmpProperties}" allowed="global"  />
+
+        <delete file="./build/build/htdocs/install/files/js/conjoon/conjoon-login-debug.js" />
+        <delete file="./build/build/htdocs/install/files/js/conjoon/conjoon-login.js" />
+        <delete file="./build/build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml" />
+        <copy file="./build/export/src/www/application/modules/default/views/scripts/reception/_scripts.phtml"
+            tofile="./build/build/htdocs/install/files/conjoon_application/modules/default/views/scripts/reception/_scripts.phtml"
+            overwrite="true"
+        >
+            <filterchain>
+                <filterreader classname="filters.PruneFileHeader" />
+                <filterreader classname="filters.ProcessDevFragments" />
+            </filterchain>
+        </copy>
+        <copy file="./build/export/build-tools/build_helper/header.txt"
+            tofile="./build/build/htdocs/install/files/js/conjoon/conjoon-login-debug.js"
+            overwrite="true"
+        />
+        <copy file="./build/export/build-tools/build_helper/header.txt"
+            tofile="./build/build/htdocs/install/files/js/conjoon/conjoon-login.js"
+            overwrite="true"
+        />
+        <php function="tempnam" returnProperty="conjoon.login.jsmerge.tempfile">
+            <param value="/tmp" />
+            <param value="conjoon.login.jsmerge" />
+        </php>
+        <append destFile="${conjoon.login.jsmerge.tempfile}">
+            <filterchain>
+                <filterreader classname="filters.AddLinebreak" />
+                <striplinecomments>
+                    <comment value="#" />
+                    <comment value="--" />
+                    <comment value="//" />
+                </striplinecomments>
+                <stripphpcomments />
+            </filterchain>
+            <filelist dir="./build/export"
+                listfile="./build/export/build-tools/build_helper/merge_list_js_login.txt"
+            />
+        </append>
+        <append file="${conjoon.login.jsmerge.tempfile}"
+            destFile="./build/build/htdocs/install/files/js/conjoon/conjoon-login-debug.js"
+        />
+        <exec
+            command='java -jar ${yuicompressor_path} -v --type js -o
+            "${conjoon.login.jsmerge.tempfile}" "${conjoon.login.jsmerge.tempfile}"'
+            dir="./"
+            passthru="true"
+            checkreturn="true"
+        />
+        <append file="${conjoon.login.jsmerge.tempfile}"
+            destFile="./build/build/htdocs/install/files/js/conjoon/conjoon-login.js"
+        />
+        <delete file="${conjoon.login.jsmerge.tempfile}" verbose="true" failonerror="true" />
+    </target>
+<!--.............................................................................
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+..............................................................................-->
+
+</project>

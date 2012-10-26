@@ -92,6 +92,7 @@ src/corelib/js/source/groupware/NotificationManager.js
 src/corelib/js/source/groupware/util/LinkInterceptor.js
 src/corelib/js/source/groupware/util/FormIntro.js
 src/corelib/js/source/groupware/util/Clear.js
+src/corelib/js/source/groupware/util/PreviewListener.js
 src/corelib/js/source/groupware/forms/QuickContactForm.js
 src/corelib/js/source/groupware/forms/QuickEmailForm.js
 src/corelib/js/source/groupware/QuickEditPanel.js
@@ -106,6 +107,7 @@ src/corelib/js/source/groupware/feeds/FeedPreview.js
 src/corelib/js/source/groupware/feeds/FeedGrid.js
 src/corelib/js/source/groupware/feeds/AddFeedDialog.js
 src/corelib/js/source/groupware/feeds/FeedOptionsDialog.js
+src/corelib/js/source/groupware/feeds/FeedGridPreviewListener.js
 src/corelib/js/source/groupware/email/options/folderMapping/data/Store.js
 src/corelib/js/source/groupware/email/options/folderMapping/data/Record.js
 src/corelib/js/source/groupware/email/options/folderMapping/ui/DefaultOptionsContainerUi.js
@@ -155,6 +157,7 @@ src/corelib/js/source/groupware/email/PendingNodeItemRecord.js
 src/corelib/js/source/groupware/email/PendingNodeUI.js
 src/corelib/js/source/groupware/email/LatestEmailsPanel.js
 src/corelib/js/source/groupware/email/Letterman.js
+src/corelib/js/source/groupware/email/LatestEmailsGridListener.js
 src/corelib/js/source/service/Provider.js
 src/corelib/js/source/service/twitter/OptionsDialog.js
 src/corelib/js/source/service/twitter/optionsDialog/ContainerUi.js

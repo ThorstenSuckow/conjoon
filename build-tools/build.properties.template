@@ -1,0 +1,5 @@
+# set this to the path where the yuicompressor jar can be found,
+# then rename this file to build.properties
+# example: yuicompressor_path = /home/tools/yuicompressor-2.3.4.jar
+yuicompressor_path = {PATH_TO_YUICOMPRESSOR}
+

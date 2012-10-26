@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -176,11 +176,14 @@ require_once 'Zend/Loader/PluginLoader.php';
    // set as default adapter for all db operations
    Conjoon_Db_Table::setDefaultAdapter(
        Zend_Db::factory($config->database->adapter, array(
-           'host'     => $config->database->params->host,
-           'username' => $config->database->params->username,
-           'password' => $config->database->params->password,
-           'dbname'   => $config->database->params->dbname,
-           'port'     => $config->database->params->port
+           'host'           => $config->database->params->host,
+           'username'       => $config->database->params->username,
+           'password'       => $config->database->params->password,
+           'dbname'         => $config->database->params->dbname,
+           'port'           => $config->database->params->port,
+           'driver_options' => array(
+               PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8'
+           )
    )));
 
    // set tbl prefix
@@ -206,6 +209,63 @@ require_once 'Zend/Loader/PluginLoader.php';
    $storage = new Zend_Auth_Storage_Session(Conjoon_Keys::SESSION_AUTH_NAMESPACE);
    $auth->setStorage($storage);
    Zend_Registry::set(Conjoon_Keys::REGISTRY_AUTH_OBJECT, $auth);
+
+// +----------------------------------------------------------------------------
+// | Localization
+// +----------------------------------------------------------------------------
+    // set the default timezone here
+    // if the configured timezone is not valid, we will gracefully
+    // fall back to $LOCALE_DEFAULT_TIMEZONE as the default timezone,
+    // which was configured during the installation process
+    $tz = $config->application->locale->date->timezone;
+    if ($tz) {
+        $tzres = @date_default_timezone_set($tz);
+
+        if ($tzres !== true) {
+
+            /*@REMOVE@*/
+            $deftz = 'Europe/Berlin';
+            /*@REMOVE@*/
+
+            /*@BUILD_ACTIVE@
+            $deftz = $LOCALE_DEFAULT_TIMEZONE;
+            @BUILD_ACTIVE@*/
+
+            if ($config->log) {
+                /**
+                 * @see Conjoon_Log
+                 */
+                require_once 'Conjoon/Log.php';
+
+                /**
+                 * @see Zend_Log
+                 */
+                require_once 'Zend/Log.php';
+
+                Conjoon_Log::log(
+                    "\"date_default_timezone_set()\" failed to set application's "
+                    . "default timezone \""
+                    . $config->application->locale->date->timezone."\"; "
+                    ." Falling back to \"".$deftz."\" instead.",
+                    Zend_Log::NOTICE
+                );
+
+            }
+
+            // last resort
+            $lr = @date_default_timezone_set($deftz);
+            if ($lr !== true) {
+                // failed? Exit.
+                die(
+                    "I could not start up the application due to an error that "
+                    . "occurred during setting the default timezone. Sorry. I tried "
+                    . "to gracefully fall back to an alternative timezone, "
+                    . "but I failed. You should take care of this issue "
+                    . "before you continue working with conjoon."
+                );
+            }
+        }
+    }
 
 // +----------------------------------------------------------------------------
 // | Set up the controller

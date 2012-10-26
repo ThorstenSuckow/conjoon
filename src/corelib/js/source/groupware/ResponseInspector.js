@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -350,7 +350,8 @@ com.conjoon.groupware.ResponseInspector = function() {
                     title : Ext.util.Format.htmlEncode(error.title) || options.title,
                     text  : options.message
                             ? options.message + "<br />" + Ext.util.Format.htmlEncode(error.message)
-                            : Ext.util.Format.htmlEncode(error.message),
+                            : Ext.util.Format.htmlEncode(error.message)
+                              .split("\n").join("<br />"),
                     type  : error.level
                 };
             }

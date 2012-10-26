@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -148,15 +148,9 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
            this
         );
 
-        // install listeners
-        this.on('cellclick',    this.onCellClick, this, {buffer : 200});
-        this.on('celldblclick', this.onCellDblClick, this);
-
-        var preview = com.conjoon.groupware.feeds.FeedPreview;
-
-        this.on('resize',         preview.hide.createDelegate(preview, [true]));
-        this.on('beforecollapse', preview.hide.createDelegate(preview, [true, false]));
-        this.on('contextmenu',    preview.hide.createDelegate(preview, [false]));
+        (new com.conjoon.groupware.feeds.FeedGridPreviewListener).init(
+            this, com.conjoon.groupware.feeds.FeedPreview
+        );
 
         this.on('contextmenu', this.onContextClick, this);
         this.on('rowcontextmenu', this.onRowContextClick, this);
@@ -277,26 +271,6 @@ com.conjoon.groupware.feeds.FeedGrid = Ext.extend(Ext.grid.GridPanel, {
         }
 
         this.commitRecords();
-    },
-
-    onCellClick : function(grid, rowIndex, columnIndex, e)
-    {
-        if (this.cellClickActive) {
-            this.cellClickActive = false;
-            return;
-        }
-
-        this.clkRow    = this.view.getRow(rowIndex);
-        this.clkRecord = this.store.getAt(rowIndex);
-        com.conjoon.groupware.feeds.FeedPreview.show(grid, rowIndex, columnIndex, e);
-    },
-
-    onCellDblClick : function(grid, rowIndex, columnIndex, eventObject)
-    {
-        this.cellClickActive = true;
-        var feedItem = grid.getStore().getAt(rowIndex);
-        com.conjoon.groupware.feeds.FeedPreview.hide(true, false);
-        com.conjoon.groupware.feeds.FeedViewBaton.showFeed(feedItem, true);
     },
 
     // private

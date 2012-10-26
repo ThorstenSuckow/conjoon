@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -139,7 +139,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Flag extends Conjoon_Db_Table {
             return 0;
         }
 
-        $data = array('is_read' => (bool)$isRead);
+        $data = array('is_read' => (int)((bool)$isRead));
         $adapter = $this->getAdapter();
         return $this->update($data, array(
             $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),
@@ -161,7 +161,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Flag extends Conjoon_Db_Table {
             return 0;
         }
 
-        $data = array('is_spam' => (bool)$isSpam);
+        $data = array('is_spam' => (int)((bool)$isSpam));
         $adapter = $this->getAdapter();
         return $this->update($data, array(
             $adapter->quoteInto('groupware_email_items_id = ?', $groupwareEmailItemsId, 'INTEGER'),

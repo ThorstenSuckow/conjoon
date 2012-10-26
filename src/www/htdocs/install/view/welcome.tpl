@@ -1,6 +1,6 @@
 <!--
  conjoon
- (c) 2002-2010 siteartwork.de/conjoon.org
+ (c) 2002-2012 siteartwork.de/conjoon.org
  licensing@conjoon.org
 
  $Author$
@@ -19,6 +19,13 @@ Welcome to the conjoon setup process!
 This wizard will help you with installing conjoon. It will check if the environment
 matches the prerequisites for conjoon and guide you through the several set up steps.
 </p>
+<div class="info_box">
+    Before you continue with the setup of conjoon, please make sure that you
+    have read the <a href="http://www.conjoon.org/wiki/display/DOC/conjoon+Installation+and+Upgrade+Guide" target="_blank">conjoon Installation and Upgrade Guide</a>.
+    <br />
+    Once conjoon is up and running, refer to the <a href="http://www.conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide" target="_blank">conjoon User's Guide</a>
+    which provides an extended end-user documentation.
+</div>
 <p>
 If you have a support key, enter it now. If you do not have a support key, leave the field blank or
 enter your email address. This will help with identifying your installation in case you have requested
@@ -78,23 +85,31 @@ further updating of conjoon. Please do not remove this file.
     Step 1: Checking prerequisites
               |
               |
-    Step 2: Database setup
+    Step 2: Localization
               |
               |
-    Step 3: Installing application folder
+    Step 3: Database setup
               |
               |
-    Step 4: Cache settings
+    Step 4: Installing application folder
               |
               |
-    Step 5: Installing libraries, managing include_path
+    Step 5: Cache settings
               |
               |
-    Step 6: Specifying document path
+    Step 6: Installing libraries, managing include_path
               |
               |
-    Step 7: Specifying user credentials - this step is only available
+    Step 7: Specifying document path
+              |
+              |
+    Step 8: Specifying user credentials - this step is only available
     if there is NO root user already in the database
+              |
+              |
+    Patching: This involves patching previous installed
+    versions of conjoon. This step is only available if installation
+    information is available (usually found in installation.info.php)
               |
               |
     Install!: Reviewing collected data and invoke installation
@@ -119,5 +134,12 @@ If this is not the case, move the folder before you proceed!
 <?php } ?>
 <p>
 <input id="license_agree" type="checkbox" name="license_agree" value="1" /> <label for="license_agree">I have read and understood the </label><a href="#" onclick="window.open('./license.php')">license terms</a>
+<br />
+<?php if ($WELCOME['backup_check_missing']) { ?>
+<div class="error_box">
+  Hey, just curious if you gracefully ignored the hint to backing up your data before proceeding?
+</div>
+<?php } ?>
+<input id="backup_check" type="checkbox" name="backup_check" value="1" /> <label for="backup_check">I know that I should do a backup of all existing data before proceeding with the installation, and I know that I should do it right now</label>
 </p>
 <input type="hidden" name="welcome_post" value="1" />

@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -132,7 +132,6 @@ require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
  *
  * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
-
 class Conjoon_Modules_Groupware_Email_Letterman {
 
     const ICONV_OLD   = 'old';
@@ -143,12 +142,12 @@ class Conjoon_Modules_Groupware_Email_Letterman {
     private $_filterItem       = null;
     private $_filterInbox      = null;
 
-    private $_modelAttachment   = null;
-    private $_attachmentFacadce = null;
-    private $_modelFlag         = null;
-    private $_modelItem         = null;
-    private $_modelInbox        = null;
-    private $_modelFolder       = null;
+    private $_modelAttachment  = null;
+    private $_attachmentFacade = null;
+    private $_modelFlag        = null;
+    private $_modelItem        = null;
+    private $_modelInbox       = null;
+    private $_modelFolder      = null;
 
     private $_lastIconvError = false;
 
@@ -429,7 +428,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
      * @param  string $EOL EOL string; defaults to {@link Zend_Mime::LINEEND}
      *
      */
-    private static function _splitMessage(&$message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
+    private static function _splitMessage($message, &$header, &$body, $EOL = Zend_Mime::LINEEND)
     {
         // code taken from ZF Zend_Mime_Decode::splitMessage V1.5.2
         // find an empty line between headers and body
@@ -779,7 +778,19 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                     } catch (Zend_Mail_Exception $e) {
                         // ignore
                     }
+
+                    // and one further down to fall back to actual
+                    // date if none was found
+                    if (!$emailItem['date']) {
+                        /**
+                         * @see Zend_Date
+                         */
+                        require_once 'Zend/Date.php';
+                        $zd = new Zend_Date();
+                        $emailItem['date'] = $zd->get(Zend_Date::RFC_2822);
+                    }
                 }
+
             }
 
             try {
@@ -828,38 +839,53 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             $contentType = $encodingInformation['contentType'];
 
             $mail->noop();
-            switch ($contentType) {
-                case 'text/plain':
-                    $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
-                break;
 
-                case 'text/html':
-                    $emailItem['contentTextHtml'] = $this->_decode($message->getContent(), $encodingInformation);
-                break;
+            try {
+                switch ($contentType) {
+                    case 'text/plain':
+                        $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
+                    break;
 
-                case 'multipart/mixed':
-                    $this->_parseMultipartMixed($message, $emailItem);
-                break;
+                    case 'text/html':
+                        $emailItem['contentTextHtml'] = $this->_decode($message->getContent(), $encodingInformation);
+                    break;
 
-                case 'multipart/alternative':
-                    $this->_parseMultipartAlternative($message, $emailItem);
-                break;
+                    case 'multipart/mixed':
+                        $this->_parseMultipartMixed($message, $emailItem);
+                    break;
 
-                case 'multipart/related':
-                    $this->_parseMultipartRelated($message, $emailItem);
-                break;
+                    case 'multipart/alternative':
+                        $this->_parseMultipartAlternative($message, $emailItem);
+                    break;
 
-                case 'multipart/signed':
-                    $this->_parseMultipartSigned($message, $emailItem);
-                break;
+                    case 'multipart/related':
+                        $this->_parseMultipartRelated($message, $emailItem);
+                    break;
 
-                case 'multipart/report':
-                    $this->_parseMultipartReport($message, $emailItem);
-                break;
+                    case 'multipart/signed':
+                        $this->_parseMultipartSigned($message, $emailItem);
+                    break;
 
-                default:
-                    $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
-                break;
+                    case 'multipart/report':
+                        $this->_parseMultipartReport($message, $emailItem);
+                    break;
+
+                    default:
+                        $emailItem['contentTextPlain'] = $this->_decode($message->getContent(), $encodingInformation);
+                    break;
+                }
+            } catch (Exception $e) {
+
+                $fetchedEmailErrors[] =
+                    "Could not save message No. "
+                    .$messageNum
+                    ." with the subject \"".$emailItem['subject']."\". "
+                    ."An unexpected error occurred: \""
+                    . $e->getMessage()
+                    . "\"";
+                $mail->noop();
+                continue;
+
             }
 
             $mail->noop();

@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -227,26 +227,69 @@ Ext.onReady(function(){
             new groupware.Workbench()
         );
 
-        if (groupware.Registry.get('/client/system/sfx/enabled')) {
-            com.conjoon.groupware.SystemSoundManager.initDriver();
-        }
+        // this part is responsible for playing the startup sound
+        // we have to check if the driver is available - we will
+        // then play the sound if the com.conjoon.groupware.ready
+        // message was already broadcasted. If, however, the
+        // startmeup function is called before this message got
+        // broadcasted, the subscriber for this message will take
+        // care of playing the sound. We have to decouple both events
+        // with starting up the workbench since starting the workbench
+        // would fail if flash is not enabled/available on the client's
+        // system. Added anon fn to refactor this code later on
+        (function(){
+            var _played         = false;
+            var _workbenchReady = false;
+
+            var startmeup = function(){
+                if (_played || !_workbenchReady) {
+                    return;
+                }
+                _played = true;
+                com.conjoon.groupware.SystemSoundManager.getDriver().play('startup')
+            };
+
+            Ext.ux.util.MessageBus.subscribe('com.conjoon.groupware.ready',
+                function() {
+                    _workbenchReady = true;
+                    if (_played) {
+                        return;
+                    }
+                    var ssm = com.conjoon.groupware.SystemSoundManager;
+                    if (ssm.isDriverReady()) {
+                        _played = true;
+                        ssm.getDriver().play('startup');
+                    }
+                }
+            );
+
+            if (groupware.Registry.get('/client/system/sfx/enabled')) {
+                var ssm = com.conjoon.groupware.SystemSoundManager;
+                ssm.onLoad({fn : startmeup});
+                ssm.initDriver();
+            }
+        })();
 
         (function(){
-            Ext.fly(document.getElementById('DOM:com.conjoon.groupware.Startup')).fadeOut({
-                endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
-                easing     : 'easeOut',
-                duration   : .5,
-                remove     : true,
-                useDisplay : false
+            Ext.fly(document
+                .getElementById('DOM:com.conjoon.groupware.Startup'))
+                .fadeOut({
+                    endOpacity : 0, //can be any value between 0 and 1 (e.g. .5)
+                    easing     : 'easeOut',
+                    duration   : .5,
+                    remove     : true,
+                    useDisplay : false
             });
 
-            com.conjoon.SystemMessageManager.setContext(groupware.Registry.get(
-                '/client/environment/device'
-            ));
+            com.conjoon.SystemMessageManager.setContext(
+                groupware.Registry.get(
+                    '/client/environment/device'
+                )
+            );
 
             Ext.ux.util.MessageBus.publish('com.conjoon.groupware.ready');
-
         }).defer(100);
+
     });
 
     reception.init(true);

@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -289,10 +289,9 @@ com.conjoon.groupware.workbench.Menubar = function(){
                         text : com.conjoon.Gettext.gettext("Help"),
                         menu : [{
                             text     : com.conjoon.Gettext.gettext("Online User Guide"),
-                            disabled : true
-                        }, {
-                            text     : com.conjoon.Gettext.gettext("conjoon Knowledge Base"),
-                            disabled : true
+                            handler  : function() {
+                                window.open("http://conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide", 'conjoonResources');
+                            }
                         }, {
                             text     : com.conjoon.Gettext.gettext("Make a Suggestion..."),
                             handler  : function() {
@@ -308,7 +307,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
                         }, {
                             text     : com.conjoon.Gettext.gettext("Online Forums"),
                             handler  : function() {
-                                window.open("http://www.conjoon.org/forum");
+                                window.open("http://conjoon.org/forum", 'conjoonResources');
                             }
                         }, '-', {
                             text     : com.conjoon.Gettext.gettext("Check for Updates"),
