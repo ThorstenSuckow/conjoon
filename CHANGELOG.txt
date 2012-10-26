@@ -1,4 +1,18 @@
-﻿2012-10-25 0.1.4RC6
+﻿2012-10-28 0.1.4
+===================
+** Improvement
+    * [CN-406] - Make link to user guide active
+
+** Task
+    * [CN-426] - Write Administration Guide and Install/Upgrade Guide
+    * [CN-443] - Hint to proper server time in installation/upgrade guide when
+                 referring to timezones
+
+** Sub-task
+    * [CN-427] - Add link for Install/Upgrade Guide to Install Wizard
+
+
+2012-10-25 0.1.4RC6
 ===================
 Release Notes - conjoon - Version 0.1.4RC6
 
