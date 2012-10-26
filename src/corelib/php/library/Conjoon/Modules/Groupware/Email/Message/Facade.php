@@ -80,26 +80,10 @@ class Conjoon_Modules_Groupware_Email_Message_Facade {
      */
     public function getMessage($groupwareEmailItemsId, $userId, $refreshCache = false)
     {
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
-
-        /**
-         * @see Conjoon_Builder_Factory
-         */
-        require_once 'Conjoon/Builder/Factory.php';
-
-        $auth   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT);
-        $userId = $auth->getIdentity()->getId();
-
         $builder = $this->_getBuilder();
 
         if ($refreshCache === true) {
-            $builder->remove(array(
-                'groupwareEmailItemsId' => $groupwareEmailItemsId,
-                'userId'                => $userId
-            ));
+            $this->removeMessageFromCache($groupwareEmailItemsId, $userId);
         }
 
         return $builder->get(array(
@@ -109,7 +93,22 @@ class Conjoon_Modules_Groupware_Email_Message_Facade {
 
     }
 
+    /**
+     * Removes the message from the cache.
+     *
+     * @param integer $groupwareEmailItemsId
+     * @param integer $userId
+     *
+     */
+    public function removeMessageFromCache($groupwareEmailItemsId, $userId)
+    {
+        $builder = $this->_getBuilder();
 
+        $builder->remove(array(
+            'groupwareEmailItemsId' => $groupwareEmailItemsId,
+            'userId'                => $userId
+        ));
+    }
 
 // -------- api
 

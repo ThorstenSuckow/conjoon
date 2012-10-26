@@ -336,8 +336,9 @@ com.conjoon.groupware.ResponseInspector = function() {
 
             var opt = {};
 
-            if (!resp.error) {
+            if (!resp.error || (resp.error && !Ext.isObject(resp.error))) {
                 error = json.forceErrorDecode(resp, options);
+
                 opt = {
                     title : error.title,
                     text  : error.message,

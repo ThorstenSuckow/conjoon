@@ -339,6 +339,80 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Inbox
         return array();
     }
 
+    /**
+     * Adds the specified data to the inbox table. Takes care of sending
+     * large data as a stream into the table.
+     *
+     * @param array $data
+     *
+     * @return bool
+     *
+     * @throws Conjoon_Exception
+     */
+    public function addInboxData(Array $data)
+    {
+        $db = self::getDefaultAdapter();
+
+        /**
+         * @see Zend_Db_Adapter_Pdo_Mysql
+         */
+        require_once 'Zend/Db/Adapter/Pdo/Mysql.php';
+
+        if (!($db instanceof Zend_Db_Adapter_Pdo_Mysql)) {
+            /**
+             * @see Conjoon_Exception
+             */
+            require_once 'Conjoon/Exception.php';
+
+            throw new Conjoon_Exception(
+                "Cannot add inbox data - adapter not of type "
+                ."Zend_Db_Adapter_Pdo_Mysql, but ".get_class($db)
+            );
+        }
+
+        $statement = $db->prepare(
+            "INSERT INTO `".self::getTablePrefix() . "groupware_email_items_inbox`
+              (
+              `groupware_email_items_id`,
+              `raw_header`,
+              `raw_body`,
+              `hash`,
+              `message_id`,
+              `uid`,
+              `fetched_timestamp`
+              )
+              VALUES
+              (
+                :groupware_email_items_id,
+                :raw_header,
+                :raw_body,
+                :hash,
+                :message_id,
+                :uid,
+                :fetched_timestamp
+            )"
+        );
+
+        $statement->bindParam(
+            ':groupware_email_items_id',
+            $data['groupware_email_items_id'], PDO::PARAM_INT
+        );
+        $statement->bindParam(':raw_header',
+            $data['raw_header'], PDO::PARAM_LOB);
+        $statement->bindParam(':raw_body',
+            $data['raw_body'],     PDO::PARAM_LOB);
+        $statement->bindParam(':hash', $data['hash'], PDO::PARAM_STR);
+        $statement->bindParam(
+            ':message_id', $data['message_id'], PDO::PARAM_STR
+        );
+        $statement->bindParam(':uid', $data['uid'], PDO::PARAM_STR);
+        $statement->bindParam(
+            ':fetched_timestamp', $data['fetched_timestamp'], PDO::PARAM_INT
+        );
+
+        return (bool)$statement->execute();
+    }
+
 // -------- interface Conjoon_BeanContext_Decoratable
 
     public function getRepresentedEntity()

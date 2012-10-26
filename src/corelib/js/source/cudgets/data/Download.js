@@ -62,7 +62,7 @@ com.conjoon.cudgets.data.Download = function(config) {
         'request',
         /**
          * Fired when the download has been cancelled.
-         * @event request
+         * @event cancel
          * @param this
          */
         'cancel',
@@ -70,7 +70,7 @@ com.conjoon.cudgets.data.Download = function(config) {
          * Fired when the request to the server for downloading from "url" has
          * been initiated, the request has been processed and the server responded
          * with a cookie set to error_forbidden or error_notFound.
-         * @event request
+         * @event failure
          * @param this
          * @param {String} type either error_forbidden or error_notFound
          */
@@ -79,7 +79,7 @@ com.conjoon.cudgets.data.Download = function(config) {
          * Fired when the request to the server for downloading from "url" has
          * been initiated, but the request could not be processed, i.e. no
          * cookie has been set.
-         * @event request
+         * @event error
          * @param this
          * @param {String} responseString The response as returned by the
          * server, i.e. the content of the iframe's document
@@ -89,7 +89,7 @@ com.conjoon.cudgets.data.Download = function(config) {
          * Fired when the request to the server for downloading from url has
          * been initiated, and the server responded with a cookie set to
          * "downloading".
-         * @event download
+         * @event success
          * @param this
          */
         'success'
@@ -104,6 +104,12 @@ com.conjoon.cudgets.data.Download = function(config) {
 
 
 Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
+
+    /**
+     * @cfg {Object} params An additional set of params to send to the
+     * server
+     */
+    params : null,
 
     /**
      * @cfg {String} cookieName The name for the download cookie.
@@ -218,7 +224,10 @@ Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
             this.isDownloading = false;
             this.task.stop(this.taskConfig);
             this.task = null;
-            document.body.removeChild(this.iframe);
+            var ifrId = this.iframe.id;
+            document.body.removeChild.defer(
+                500, document.body, [document.getElementById(ifrId)]
+            );
             this.iframe = null;
             Ext.util.Cookies.clear(this.cookieName);
             if (suspend !== true) {
@@ -298,17 +307,28 @@ Ext.extend (com.conjoon.cudgets.data.Download, Ext.util.Observable, {
 
         var iframe = document.createElement('iframe');
         iframe.style.cssText = 'width:1px;height:1px;display:none';
+        iframe.id = Ext.id();
 
         document.body.appendChild(iframe);
 
         var doc = iframe.contentWindow.document;
         doc.open();
         doc.clear();
+
+        var paramString = '';
+        if (this.params) {
+            for (var i in this.params) {
+                paramString += '<input type="hidden" name="'+i
+                               +'" value="'+escape(this.params[i])+'" />';
+            }
+        }
+
         doc.writeln(
             '<html>'
              + '<body>'
              + '<form method="post" action="'+this.url+'">'
              + '<input type="hidden" name="downloadCookieName" value="'+this.cookieName+'" />'
+             + paramString
              + '</form>'
              + '</body>'
              + '</html>'

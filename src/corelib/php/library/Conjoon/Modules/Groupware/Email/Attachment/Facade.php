@@ -77,7 +77,7 @@ class Conjoon_Modules_Groupware_Email_Attachment_Facade {
      * @param integer $attachmentId
      * @param inter $userId
      *
-     * @return array an assoc array with the keys "fileName", "mimeType" and
+     * @return array an assoc array with the keys "name", "mimeType" and
      * "content", or null if item is not available.
      *
      * @throws InvalidArgumentException
@@ -121,12 +121,12 @@ class Conjoon_Modules_Groupware_Email_Attachment_Facade {
         }
 
         return array(
-            'fileName' => $data['file_name'],
-            'content'  => $data['encoding'] == 'quoted-printable'
-                           ? quoted_printable_decode($data['content'])
-                            : $data['encoding'] == 'base64'
+            'name'    => $data['file_name'],
+            'content' => ($data['encoding'] == 'quoted-printable'
+                          ? quoted_printable_decode($data['content'])
+                            : ($data['encoding'] == 'base64'
                              ? base64_decode($data['content'])
-                           : $data['content'],
+                           : $data['content'])),
             'mimeType' => $data['mime_type']
                           ? $data['mime_type'] : 'text/plain'
         );

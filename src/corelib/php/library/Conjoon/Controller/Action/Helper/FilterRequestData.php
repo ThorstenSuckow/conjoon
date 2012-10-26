@@ -158,15 +158,15 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
                 );
             break;
 
-            case 'Groupware_EmailItemController::download.attachment':
+            case 'Groupware_FileController::download.file':
                 /**
-                 * @see Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment
+                 * @see Conjoon_Modules_Groupware_Files_File_Filter_File
                  */
-                require_once 'Conjoon/Modules/Groupware/Email/Attachment/Filter/Attachment.php';
+                require_once 'Conjoon/Modules/Groupware/Files/File/Filter/File.php';
 
-                $this->_filters[$key] = new Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment(
+                $this->_filters[$key] = new Conjoon_Modules_Groupware_Files_File_Filter_File(
                     array(),
-                    Conjoon_Modules_Groupware_Email_Attachment_Filter_Attachment::CONTEXT_DOWNLOAD_REQUEST
+                    Conjoon_Modules_Groupware_Files_File_Filter_File::CONTEXT_DOWNLOAD_REQUEST
                 );
             break;
 
@@ -318,6 +318,7 @@ class Conjoon_Controller_Action_Helper_FilterRequestData extends Zend_Controller
              * @see Conjoon_Error
              */
             require_once 'Conjoon/Error.php';
+
 
             $error = Conjoon_Error::fromFilter($filter, $e);
 

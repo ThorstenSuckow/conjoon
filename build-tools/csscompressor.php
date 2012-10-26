@@ -106,8 +106,14 @@ if (file_exists($dropFilePath)) {
     unlink($dropFilePath);
 }
 
+$java = "java.exe";
+if (strtolower(PHP_OS) === "linux") {
+    fwrite(STDOUT, "I assume I'm currently running in a *nix environment...\n");
+    $java = "java";
+}
+
 fwrite(STDOUT, "Calling yuicompressor...\n");
-$cmd = "java.exe -jar \"".$yuiPath."\" --type css \"".$temp."\" -o \"".$dropFilePath."\"";
+$cmd = "$java -jar \"".$yuiPath."\" --type css \"".$temp."\" -o \"".$dropFilePath."\"";
 shell_exec($cmd);
 fwrite(STDOUT, "yuicompressor... finished!\n");
 fwrite(STDOUT, "Cleaning up...\n");

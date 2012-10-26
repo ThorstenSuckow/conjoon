@@ -519,7 +519,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
             $itemData = $filterInbox->getProcessedData();
 
             Conjoon_Util_Array::underscoreKeys($itemData);
-            $modelInbox->insert($itemData);
+            $modelInbox->addInboxData($itemData);
 
             // filter and insert into groupware_email_items_flag
             $currFilter = $filterFlag;
@@ -537,7 +537,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 $filterAttachment->setData($emailItem['attachments'][$i]);
                 $itemData = $filterAttachment->getProcessedData();
                 Conjoon_Util_Array::underscoreKeys($itemData);
-                $modelAttachment->insert($itemData);
+                $modelAttachment->addAttachmentForItem($itemData, $id);
             }
 
             $dbAdapter->commit();
@@ -1054,6 +1054,7 @@ class Conjoon_Modules_Groupware_Email_Letterman {
 
         try {
             $contentType = $message->contentType;
+
             if (strpos($contentType, ';') !== false) {
                 $contentType = strtok($message->contentType, ';');
 
@@ -1079,6 +1080,28 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 }
                 if ($name != "") {
                     $name = str_replace(array('name=', '"', "'"), '' , $name);
+                }
+            }
+
+            if ($name == "") {
+                try {
+                    $contentDisposition = $message->contentDisposition;
+
+                    if ($contentDisposition && strpos($contentDisposition, ';') !== false) {
+                        $p = explode(';', $contentDisposition, 2);
+                        if(isset($p[1])) {
+                            $n = trim($p[1]);
+                            if (strpos($n, "name=") === 0) {
+                                $n    = substr($n, 5);
+                                $name = trim($n, "\"'");
+                            } else if (strpos($n, "filename=") === 0) {
+                                $n    = substr($n, 9);
+                                $name = trim($n, "\"'");
+                            }
+                        }
+                    }
+                } catch (Zend_Mail_Exception $e) {
+                        //
                 }
             }
 
@@ -1118,12 +1141,16 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 case 'text/plain':
                     if (!isset($emailItem['contentTextPlain'])) {
                         $emailItem['contentTextPlain'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);;
                     }
                 break;
 
                 case 'text/html':
                     if (!isset($emailItem['contentTextHtml'])) {
                         $emailItem['contentTextHtml'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);;
                     }
                 break;
 
@@ -1198,12 +1225,16 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 case 'text/plain':
                     if (!isset($emailItem['contentTextPlain'])) {
                         $emailItem['contentTextPlain'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
                 case 'text/html':
                     if (!isset($emailItem['contentTextHtml'])) {
                         $emailItem['contentTextHtml'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
@@ -1231,12 +1262,16 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 case 'text/plain':
                     if (!isset($emailItem['contentTextPlain'])) {
                         $emailItem['contentTextPlain'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
                 case 'text/html':
                     if (!isset($emailItem['contentTextHtml'])) {
                         $emailItem['contentTextHtml'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
@@ -1270,12 +1305,16 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                     if (!isset($emailItem['contentTextPlain'])) {
                         $defCharsetForDeliveryStatus = $encodingInformation['charset'];
                         $emailItem['contentTextPlain'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
                 case 'text/html':
                     if (!isset($emailItem['contentTextHtml'])) {
                         $emailItem['contentTextHtml'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
@@ -1303,12 +1342,16 @@ class Conjoon_Modules_Groupware_Email_Letterman {
                 case 'text/plain':
                     if (!isset($emailItem['contentTextPlain'])) {
                         $emailItem['contentTextPlain'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 
                 case 'text/html':
                     if (!isset($emailItem['contentTextHtml'])) {
                         $emailItem['contentTextHtml'] = $this->_decode($part->getContent(), $encodingInformation);
+                    } else {
+                        $this->_parseAttachments($part, $emailItem);
                     }
                 break;
 

@@ -391,7 +391,6 @@ UPDATE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` SET `key`=MD5(
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` ADD UNIQUE `key` ( `key` );
 
-ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` DROP `password`;
 
@@ -400,3 +399,32 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token` 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `oauth_token_secret` VARCHAR( 255 ) NOT NULL AFTER `oauth_token` ;
 
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ADD `twitter_id` VARCHAR( 255 ) NOT NULL AFTER `name` ;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_items_attachments` CHANGE `content` `content` LONGBLOB NOT NULL;
+
+CREATE TABLE  IF NOT EXISTS  `{DATABASE.TABLE.PREFIX}groupware_files_folders` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`name` VARCHAR( 255 ) NOT NULL ,
+`is_child_allowed` BOOL NOT NULL ,
+`is_locked` BOOL NOT NULL ,
+`type` ENUM( 'temp', 'trash' ) NOT NULL ,
+`parent_id` INT NOT NULL
+) ENGINE = MYISAM;
+
+ CREATE TABLE  IF NOT EXISTS  `{DATABASE.TABLE.PREFIX}groupware_files` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`groupware_files_folders_id` INT UNSIGNED NOT NULL ,
+`key` VARCHAR( 32 ) NOT NULL ,
+`name` VARCHAR( 255 ) NOT NULL ,
+`mime_type` VARCHAR( 255 ) NOT NULL ,
+`content` LONGBLOB NULL,
+`storage_container` VARCHAR( 255 ) NULL
+) ENGINE = MYISAM;
+
+CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_files_folders_users` (
+  `groupware_files_folders_id` int(10) unsigned NOT NULL,
+  `users_id` int(10) unsigned NOT NULL,
+  `relationship` enum('owner') NOT NULL
+) ENGINE=MyISAM;
+
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_files_folders_users` ADD PRIMARY KEY ( `groupware_files_folders_id`  , `users_id` );

@@ -32,5 +32,6 @@ class Conjoon_Modules_Groupware_Email_Draft_Dto extends Conjoon_Dto {
     public $to;
     public $cc;
     public $bcc;
+    public $attachments;
 
 }

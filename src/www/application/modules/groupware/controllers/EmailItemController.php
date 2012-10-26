@@ -33,9 +33,6 @@ class Groupware_EmailItemController extends Zend_Controller_Action {
      */
     public function init()
     {
-        $this->_helper->filterRequestData()
-                      ->registerFilter('Groupware_EmailItemController::download.attachment');
-
         $conjoonContext = $this->_helper->conjoonContext();
 
         $conjoonContext
