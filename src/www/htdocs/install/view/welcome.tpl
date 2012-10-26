@@ -19,6 +19,13 @@ Welcome to the conjoon setup process!
 This wizard will help you with installing conjoon. It will check if the environment
 matches the prerequisites for conjoon and guide you through the several set up steps.
 </p>
+<div class="info_box">
+    Before you continue with the setup of conjoon, please make sure that you
+    have read the <a href="http://www.conjoon.org/wiki/display/DOC/conjoon+Installation+and+Upgrade+Guide" target="_blank">conjoon Installation and Upgrade Guide</a>.
+    <br />
+    Once conjoon is up and running, refer to the <a href="http://www.conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide" target="_blank">conjoon User's Guide</a>
+    which provides an extended end-user documentation.
+</div>
 <p>
 If you have a support key, enter it now. If you do not have a support key, leave the field blank or
 enter your email address. This will help with identifying your installation in case you have requested
