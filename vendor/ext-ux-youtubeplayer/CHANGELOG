@@ -1,3 +1,12 @@
+Version 0.5
+28-October-2012
+ - fixed: fixed an issue where the callbacks for the statechange and error
+events would not be properly registered with the YoutubePlayer since the
+Youtube API is suddenly not able to parse stringified method names
+containing "."
+ - enhancement: added "flashParams" configuration for setting proper
+background color
+
 Version 0.4
 19-March-2010
  - enhancement: Updated player features with V3 of Youtube Chromeless API

@@ -1,8 +1,7 @@
 /**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @url http://www.siteartwork.de/youtubeplayer
+ * @author Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>
  */
 
 Ext.namespace('Ext.ux.YoutubePlayer');
@@ -13,6 +12,8 @@ Ext.namespace('Ext.ux.YoutubePlayer');
  * When loading the file into your application, the function "onYouTubePlayerReady"
  * will be added automatically into the window's scope. If a function with the same
  * name within that scope already exists, an exception will be thrown.
+ * The same goes for the stateChange- and error-callbacks for the globally
+ * registered youtubeplayer.
  *
  * Flaws: Mozilla https://bugzilla.mozilla.org/show_bug.cgi?id=262354
  *
@@ -136,7 +137,11 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
             id        : this.playerId,
             swfId     : this.playerId,
             style     : this.ratioMode == 'strict' ? 'position:relative'
-                                                   : 'position:static'
+                                                   : 'position:static',
+            flashParams : {
+                bgcolor : this.bgColor || "#cccccc",
+                wmode   : 'opaque'
+            }
         });
 
         Ext.applyIf(this, {
@@ -146,11 +151,7 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
             start     : false,
             controls  : false,
             cls       : 'ext-ux-youtubeplayer '+this.ratioMode,
-            scripting : 'always',
-            params    : {
-                wmode   : 'opaque',
-                bgcolor : this.bgColor || "#cccccc"
-            }
+            scripting : 'always'
         });
 
         if (!Ext.ux.YoutubePlayer.Players) {
@@ -518,7 +519,7 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
         var state = -9999;
 
         if (!this.playerAvailable()) {
-            return;
+            return '';
         } else {
             state = this.player.getPlayerState();
         }
@@ -642,12 +643,50 @@ Ext.ux.YoutubePlayer = Ext.extend(Ext.FlashComponent, {
 
 // create a sequence if onYouTubePlayerReady is already available
 var _onYouTubePlayerReady = function(playerId) {
-    var panel = Ext.ux.YoutubePlayer.Players[playerId];
+    var panel = Ext.ux.YoutubePlayer.Players[playerId],
+        player,
+        stEvent,
+        errEvent,
+        prefix = "Ext_ux_YoutubePlayer_" + playerId.replace(/\./g, '_');
+
     if (panel) {
-        var player = document.getElementById(playerId);
+        player = document.getElementById(playerId);
         panel._initPlayer();
-        player.addEventListener('onStateChange', "Ext.ux.YoutubePlayer.Players['"+playerId+"']._delegateStateEvent");
-        player.addEventListener('onError', "Ext.ux.YoutubePlayer.Players['"+playerId+"']._delegateErrorEvent");
+
+        stEvent  = prefix + "_stateCb";
+        errEvent = prefix + "_errorCb";
+
+        if (window[stEvent]) {
+            throw("callback '" + stEvent + "' is already defined.");
+            return;
+        }
+        if (window[errEvent]) {
+            throw("callback '" + errEvent + "' is already defined.");
+            return;
+        }
+
+        window[stEvent] = function() {
+            panel._delegateStateEvent.apply(panel, arguments);
+        };
+
+        window[errEvent] = function() {
+            panel._delegateErrorEvent.apply(panel, arguments);
+        };
+
+        /**
+         * We cannot set the callback to the object directly, since Youtube
+         * API seems to have problems with "." in argument for event listeners
+         * to this time. The callbacks would not be called then.
+         * Example:
+         * player.addEventListener(
+         *     'onStateChange',
+         *     "Ext.ux.YoutubePlayer.Players['"+playerId+"']._delegateStateEvent"
+         * );
+         * does NOT work!
+         */
+        player.addEventListener('onStateChange', stEvent);
+        player.addEventListener('onError',       errEvent);
+
         panel.adjustRatio(panel.getWidth(), panel.getHeight());
         panel.fireEvent('ready', panel, player);
     }
@@ -660,8 +699,7 @@ if (!window.onYouTubePlayerReady) {
 }/**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @url http://www.siteartwork.de/youtubeplayer
+ * @author Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>
  */
 
 Ext.namespace('Ext.ux.YoutubePlayer');
@@ -671,9 +709,6 @@ Ext.namespace('Ext.ux.YoutubePlayer');
  * It provides functionality for loading videos, muting/unmuting a video,
  * setting the volume and paging between items in a playlist (though a playlist
  * is neither part of the Ext.ux.YoutubePlayer nor the Ext.ux.YoutubePlayer.Control).
- *
- * Developers Note: This version was enhanced to be used with Ext3.0RC1. You may find a few
- * workarounds in here, which should be checked against a later release of Ext3.0.
  *
  * @class {Ext.ux.YoutubePlayer.Control}
  * @extends {Ext.Toolbar}
