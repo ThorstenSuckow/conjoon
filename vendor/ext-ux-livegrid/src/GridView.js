@@ -1,12 +1,12 @@
 /**
  * Ext.ux.grid.livegrid.GridView
- * Copyright (c) 2007-2008, http://www.siteartwork.de
+ * Copyright (c) 2007-2012, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.GridView is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
+ * Commercial use is prohibited. Visit <http://ext-livegrid.com>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -36,6 +36,13 @@ Ext.namespace('Ext.ux.grid.livegrid');
 Ext.ux.grid.livegrid.GridView = function(config) {
 
     this.addEvents({
+        /**
+         * @event reset
+         * Fires when the grid resets.
+         * @param {Ext.ux.grid.livegrid.GridView} this
+         * @param {Boolean} forceReload
+         */
+        'reset' : true,
         /**
          * @event beforebuffer
          * Fires when the store is about to buffer new data.
@@ -292,11 +299,15 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
      *
      * @param {Boolean} forceReload <tt>true</tt> to reload the buffers contents,
      *                              othwerwise <tt>false</tt>
+     * @params {Object} addParams optional object of properties which get treated as
+     *                            params added to the "options" argument for the
+     *                            load() method if forceReload invokes a call
+     *                            call to this method
      *
      * @return {Boolean} Whether the store loads after reset(true); returns false
      * if any of the attached beforeload listeners cancels the load-event
      */
-    reset : function(forceReload)
+    reset : function(forceReload, addParams)
     {
         if (forceReload === false) {
             this.ds.modified = [];
@@ -311,43 +322,36 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
             var _ofn = this.processRows;
             this.processRows = Ext.emptyFn;
+            this.suspendEvents();
             this.refresh(true);
+            this.resumeEvents();
             this.processRows = _ofn;
             this.processRows(0);
 
             this.fireEvent('cursormove', this, 0,
                            Math.min(this.ds.totalLength, this.visibleRows-this.rowClipped),
                            this.ds.totalLength);
+            this.fireEvent('reset', this, forceReload);
             return false;
         } else {
-
-            var params = {};
-            var sInfo = this.ds.sortInfo;
+            var params = Ext.apply({}, addParams),
+                sInfo  = this.ds.sortInfo;
 
             if (sInfo) {
-                params = {
+                params = Ext.apply(params, {
                     dir  : sInfo.direction,
                     sort : sInfo.field
-                };
+                });
             }
 
+            this.fireEvent('reset', this, forceReload);
             return this.ds.load({params : params});
         }
-
     },
 
 // {{{ ------------adjusted methods for applying custom behavior----------------
 
-    /**
-     * Overwritten so the {@link Ext.ux.grid.livegrid.DragZone} can be used
-     * with this view implementation.
-     *
-     * Since detaching a previously created DragZone from a grid panel seems to
-     * be impossible, a little workaround will tell the parent implementation
-     * that drad/drop is not enabled for this view's grid, and right after that
-     * the custom DragZone will be created, if neccessary.
-     */
-    renderUI : function()
+    afterRenderUI : function()
     {
         var g = this.grid;
         var dEnabled = g.enableDragDrop || g.enableDrag;
@@ -355,7 +359,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         g.enableDragDrop = false;
         g.enableDrag     = false;
 
-        this._gridViewSuperclass.renderUI.call(this);
+        this._gridViewSuperclass.afterRenderUI.call(this);
 
         var g = this.grid;
 
@@ -1108,9 +1112,11 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
 
         skipStripe = skipStripe || !this.grid.stripeRows;
 
-        var cursor     = this.rowIndex;
-        var rows       = this.getRows();
-        var index      = 0;
+        var cursor      = this.rowIndex;
+        var rows        = this.getRows();
+        var index       = 0;
+        var sm          = this.grid.selModel;
+        var allSelected = sm.isAllSelected();
 
         var row = null;
         for (var idx = 0, len = rows.length; idx < len; idx++) {
@@ -1123,7 +1129,7 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
             }
 
             if (paintSelections !== false) {
-                if (this.grid.selModel.isSelected(this.ds.getAt(index)) === true) {
+                if (sm.isSelected(this.ds.getAt(index)) === true) {
                     this.addRowClass(index, this.selectedRowClass);
                 } else {
                     this.removeRowClass(index, this.selectedRowClass);
