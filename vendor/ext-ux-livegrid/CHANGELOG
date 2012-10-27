@@ -1,4 +1,23 @@
-﻿20-March-2010
+﻿Version 0.6 (GPL)
+27-October-2012
+ - enhancement: (GridView.js) brought full 3.4 support by fixing an issue where
+drag zones would not be properly instantiated. Removed renderUi() override. Added
+optional argument to reset() in case reset reloads the data, sicne changes with
+3.4 in store's load() method would not carry references for options.params
+around. It is recommended to not rely on setting the params in the
+beforeload listener as thiese params would not persist.
+
+Version 0.5RC1 (GPL)
+09-February-2011
+ - fixed: (GridView.js) fixed an issue where selections not currently in the
+buffer would get accidently removed once the grid gets reset
+ - enhancement: added CheckboxSelectionModel.js to be able to use a
+checkboxselection with Ext.ux.Livegrid
+
+06-February-2011
+ - enhancement: (GridView.js) added compatibility for use with Ext 3.3
+
+20-March-2010
  - fixed: (Store.js) fixed an issue where the "selectionsProxy" would call a
 method that was marked deprecated since Ext 3.0
  - enhancement: (GridView.js) splitted "liveScrolleInset" into 3 divs which
