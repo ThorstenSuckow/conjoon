@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ServerTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: ServerTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 // Call Zend_Amf_ServerTest::main() if this source file is executed directly.
@@ -25,10 +25,14 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
     define("PHPUnit_MAIN_METHOD", "Zend_Amf_ServerTest::main");
 }
 
+require_once 'Zend/Config.php';
 require_once 'Zend/Amf/Server.php';
 require_once 'Zend/Amf/Request.php';
 require_once 'Zend/Amf/Parse/TypeLoader.php';
 require_once 'Zend/Amf/Value/Messaging/RemotingMessage.php';
+require_once 'Zend/Amf/Adobe/Auth.php';
+require_once 'Zend/Amf/Adobe/Introspector.php';
+require_once 'Zend/Acl.php';
 require_once 'ServiceA.php';
 require_once 'ServiceB.php';
 require_once 'Zend/Session.php';
@@ -37,7 +41,7 @@ require_once 'Zend/Session.php';
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Amf
  */
@@ -1110,6 +1114,70 @@ class Zend_Amf_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertContains("Oops, exception!", $response[0]->getData()->faultString);
     }
 
+
+    /** @group ZF-11529 */
+    public function testSettingAuthAdapterWithAclSetsServerAcl()
+    {
+        $aclFile     = dirname(__FILE__) . '/_files/acl.xml';
+        $authAdapter = new Zend_Amf_Adobe_Auth($aclFile);
+        $this->_server->setAuth($authAdapter);
+        $this->assertSame($authAdapter->getAcl(), $this->_server->getAcl());
+    }
+
+    /** @group ZF-11529 */
+    public function testSettingAuthAdapterWithAclWhenServerAclAlreadyPopulatedWillNotChangeServerAcl()
+    {
+        $acl = new Zend_Acl();
+        $this->_server->setAcl($acl);
+
+        $aclFile     = dirname(__FILE__) . '/_files/acl.xml';
+        $authAdapter = new Zend_Amf_Adobe_Auth($aclFile);
+        $this->_server->setAuth($authAdapter);
+
+        $this->assertNotSame($authAdapter->getAcl(), $this->_server->getAcl());
+        $this->assertSame($acl, $this->_server->getAcl());
+    }
+
+    /**
+     * @group ZF-6130
+     */
+    public function testServerShouldCastObjectArgumentsToAppropriateType()
+    {
+        $server = new Zend_Amf_Server();
+        $server->addDirectory(dirname(__FILE__) . '/_files/zf-6130/services');
+
+        // Create a mock message
+        $message = new Zend_Amf_Value_Messaging_RemotingMessage();
+        $message->operation   = 'createEmployee';
+        $message->source      = 'EmployeeService'; // original raw request used "destination"
+        $message->body        = array(array(
+            'office'       => 322,
+            'departmentid' => 3,
+            'street'       => 32,
+            'zipcode'      => 32,
+            'state'        => 32,
+            'lastname'     => 4,
+            'firstname'    => 2,
+            'photofile'    => 322,
+            'city'         => 32,
+            'id'           => 1,
+            'title'        => 4,
+            'officephone'  => 233,
+            'email'        => 32,
+            'cellphone'    => 22,
+        ));
+        $body = new Zend_Amf_Value_MessageBody(null, "\1", $message);
+
+        $request = new Zend_Amf_Request();
+        $request->addAmfBody($body);
+        $request->setObjectEncoding(0x03);
+
+        $response = $server->handle($request);
+        $employee = EmployeeService::$employee;
+        $this->assertNotNull($employee);
+        $this->assertNotEquals(1, $employee->id);
+        $this->assertRegexp('/[a-z0-9]{3,}/', $employee->id);
+    }
 }
 
 if (PHPUnit_MAIN_METHOD == "Zend_Amf_ServerTest::main") {
@@ -1249,7 +1317,6 @@ class Zend_Amf_testclass
     {
         return array_merge($arrayOne, $arrayTwo);
     }
-
 }
 
 class Zend_Amf_testException

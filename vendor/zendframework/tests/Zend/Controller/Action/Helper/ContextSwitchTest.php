@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ContextSwitchTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: ContextSwitchTest.php 24864 2012-06-02 00:51:50Z adamlundrigan $
  */
 
 // Call Zend_Controller_Action_Helper_ContextSwitchTest::main() if this source file is executed directly.
@@ -45,7 +45,7 @@ require_once 'Zend/View/Interface.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -918,6 +918,20 @@ class Zend_Controller_Action_Helper_ContextSwitchTest extends PHPUnit_Framework_
         $suffix = $this->viewRenderer->getViewSuffix();
         $this->assertContains('foo', $suffix, $suffix);
         $this->assertNotContains('foo.foo', $suffix, $suffix);
+    }
+
+    /**
+     * @group ZF-11793
+     */
+    public function testGetActionContextsReturnsFullListWhenArgumentIsNull()
+    {
+        $expected = array(
+            'foo' => array('xml'),
+            'bar' => array('xml', 'json'),
+            'all' => array('json','xml')
+        );
+        $actual = $this->helper->getActionContexts(null);
+        $this->assertEquals($expected, $actual);
     }
 }
 

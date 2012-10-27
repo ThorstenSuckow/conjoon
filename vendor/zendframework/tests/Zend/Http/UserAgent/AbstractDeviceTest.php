@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Http_UserAgent
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -41,7 +41,7 @@ require_once 'Zend/Http/UserAgent/Validator.php';
  * @category   Zend
  * @package    Zend_Http_UserAgent
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Http_UserAgent_AbstractDeviceTest extends PHPUnit_Framework_TestCase
@@ -6517,54 +6517,6 @@ audio/vnd.qcelp, application/xhtml+xml'
         $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
             'HTTP_USER_AGENT' => $userAgent
         )));
-        $userAgent = 'Opera/5.12 (Macintosh;US;PPC) [en]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.0 (Linux 2.4.17 i686; U) [en]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.0 (Linux 2.4.8-26mdk i686; U) [en]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.0 (Windows 98; U) [fr]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.0 (Windows NT 4.0; U) [en]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.0 (Windows NT 4.0; U) [fr]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.04 (Windows 98; U) [fr]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/6.06 (Windows 98; U) [fr]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/7.03 (Windows NT 5.0; U) [en]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/7.11 (Windows NT 5.0; U) [fr]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/7.11 (Windows NT 5.1; U) [en]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
-        $userAgent = 'Opera/7.11 (Windows NT 5.1; U) [fr]';
-        $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
-            'HTTP_USER_AGENT' => $userAgent
-        )));
         $userAgent = 'PHILIPS 530 / Obigo Internet Browser 2.0';
         $this->assertTrue(Zend_Http_UserAgent_Mobile::match($userAgent, array(
             'HTTP_USER_AGENT' => $userAgent
@@ -10115,5 +10067,65 @@ audio/vnd.qcelp, application/xhtml+xml'
     {
         $userAgent = 'CSE HTML Validator Lite Online (http://online.htmlvalidator.com/php/onlinevallite.php)';
         $this->assertTrue(Zend_Http_UserAgent_Validator::match($userAgent,array('HTTP_USER_AGENT'=>$userAgent)));
+    }
+
+    /**
+     * @group ZF-11557
+     */
+    public function testMatchingIpadUserAgentShouldNotResultInNotices()
+    {
+        $userAgent = 'Mozilla/5.0 (iPad; U; CPU OS 4_3_3 like Mac OS X; de-de) AppleWebKit/533.17.9 (KHTML, like Gecko)';
+        $capabilities = Zend_Http_UserAgent_AbstractDevice::extractFromUserAgent($userAgent);
+        $this->assertEquals('AppleWebKit', $capabilities['browser_name']);
+    }
+
+    /**
+     * @group ZF-11557
+     */
+    public function testMatchingMacSafariUserAgentShouldNotResultInNotices()
+    {
+        $userAgent = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; de-de) AppleWebKit/533.18.1 (KHTML, like Gecko)';
+        $capabilities = Zend_Http_UserAgent_AbstractDevice::extractFromUserAgent($userAgent);
+        $this->assertEquals('AppleWebKit', $capabilities['browser_name']);
+    }
+    
+    /**
+     * @group ZF-11815
+     */
+    public function testUserAgentAppleCoreMediaForIphoneShouldNotResultInNotices()
+    {
+        $userAgent = 'AppleCoreMedia/1.0.0.8L1 (iPhone; U; CPU OS 4_3_5 like Mac OS X; de_de)';
+        $capabilities = Zend_Http_UserAgent_AbstractDevice::extractFromUserAgent($userAgent);
+        $this->assertEquals('AppleCoreMedia', $capabilities['browser_name']);        
+    }
+    
+    /**
+     * @group ZF-11749
+     */
+    public function testUserAgentAppleWebKit53446WithoutLanguageShouldNotResultInNotices()
+    {
+        $userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A5313e Safari/7534.48.3';
+        $capabilities = Zend_Http_UserAgent_AbstractDevice::extractFromUserAgent($userAgent);
+        $this->assertEquals('Safari Mobile', $capabilities['browser_name']);
+    }
+    
+    /**
+     * @group ZF-11693
+     */
+    public function testShortMozillaUserAgentShouldNotResultInNotices()
+    {
+        $userAgent = 'Mozilla/3.0 (compatible)';
+        $capabilities = Zend_Http_UserAgent_AbstractDevice::extractFromUserAgent($userAgent);
+        $this->assertEquals('Mozilla', $capabilities['browser_name']);
+    }
+    
+    /**
+     * @group ZF-11857
+     */
+    public function testOperaOnHtcHd2UserAgentShouldNotResultInNotices()
+    {
+        $userAgent = 'HTC_HD2_T8585 Opera/9.7 (Windows NT 5.1; U; de)';
+        $capabilities = Zend_Http_UserAgent_AbstractDevice::extractFromUserAgent($userAgent);
+        $this->assertEquals('Opera', $capabilities['browser_name']);
     }
 }

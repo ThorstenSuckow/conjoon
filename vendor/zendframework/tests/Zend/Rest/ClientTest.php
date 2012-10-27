@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ClientTest.php 23966 2011-05-03 14:30:07Z ralph $
+ * @version    $Id: ClientTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 /** Zend_Rest_Client */
@@ -32,7 +32,7 @@ require_once 'Zend/Http/Client/Adapter/Test.php';
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Rest
  * @group      Zend_Rest_Client
@@ -50,6 +50,27 @@ class Zend_Rest_ClientTest extends PHPUnit_Framework_TestCase
         Zend_Rest_Client::setHttpClient($client);
 
         $this->rest = new Zend_Rest_Client('http://framework.zend.com/');
+    }
+    
+    /**
+     * @group ZF-10664
+     * 
+     * Test that you can post a file using a preset 
+     * Zend_Http_Client that has a file to post,
+     * by calling $restClient->setNoReset() prior to issuing the
+     * restPost() call.    
+     */
+    public function testCanPostFileInPresetHttpClient()
+    {
+        $client = new Zend_Rest_Client('http://framework.zend.com');
+        $httpClient = new Zend_Http_Client();
+        $text = 'this is some plain text';
+        $httpClient->setFileUpload('some_text.txt', 'upload', $text, 'text/plain');
+        $client->setHttpClient($httpClient);
+        $client->setNoReset();
+        $client->restPost('/file');
+        $request = $httpClient->getLastRequest();
+        $this->assertTrue(strpos($request, $text) !== false, 'The file is not in the request');
     }
 
     public function testUri()
@@ -220,10 +241,13 @@ class Zend_Rest_ClientTest extends PHPUnit_Framework_TestCase
         $this->adapter->setResponse($response);
 
         $reqXml   = file_get_contents($this->path . 'returnInt.xml');
-        $response = $this->rest->restDelete('/rest/');
+        $response = $this->rest->restDelete('/rest/', $reqXml);
         $this->assertTrue($response instanceof Zend_Http_Response);
         $body = $response->getBody();
         $this->assertContains($expXml, $response->getBody());
+        
+        $request = Zend_Rest_Client::getHttpClient()->getLastRequest();
+        $this->assertContains($reqXml, $request, $request);
     }
 
     public function testCallWithHttpMethod()

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: ClientTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version $Id: ClientTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 require_once 'Zend/XmlRpc/Client.php';
@@ -34,7 +34,7 @@ require_once 'Zend/XmlRpc/Value/DateTime.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_XmlRpc
  */
@@ -716,6 +716,24 @@ class Zend_XmlRpc_ClientTest extends PHPUnit_Framework_TestCase
               $expectedResult,
               $this->xmlrpcClient->call('get', array(1))
           );
+    }
+    
+    /**
+     * @group ZF-1897
+     */
+    public function testHandlesLeadingOrTrailingWhitespaceInChunkedResponseProperly()
+    {
+        $baseUri = "http://foo:80";
+        $this->httpAdapter = new Zend_Http_Client_Adapter_Test();
+        $this->httpClient = new Zend_Http_Client(null, array('adapter' => $this->httpAdapter));
+        
+        $respBody = file_get_contents(dirname(__FILE__) . "/_files/ZF1897-response-chunked.txt");
+        $this->httpAdapter->setResponse($respBody);
+
+        $this->xmlrpcClient = new Zend_XmlRpc_Client($baseUri);
+        $this->xmlrpcClient->setHttpClient($this->httpClient);
+        
+        $this->assertEquals('FOO', $this->xmlrpcClient->call('foo'));
     }
 
     // Helpers

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -35,9 +35,9 @@ require_once 'Zend/Service/ReCaptcha.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ReCaptcha.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: ReCaptcha.php 24593 2012-01-05 20:35:02Z matthew $
  */
 class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
 {
@@ -261,6 +261,20 @@ class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
      */
     public function render(Zend_View_Interface $view = null, $element = null)
     {
-        return $this->getService()->getHTML();
+        $name = null;
+        if ($element instanceof Zend_Form_Element) {
+            $name = $element->getBelongsTo();
+        }
+        return $this->getService()->getHTML($name);
+    }
+
+    /**
+     * Get captcha decorator
+     *
+     * @return string
+     */
+    public function getDecorator()
+    {
+        return "Captcha_ReCaptcha";
     }
 }

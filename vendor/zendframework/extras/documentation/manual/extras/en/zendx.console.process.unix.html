@@ -2,8 +2,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Chapter 1. ZendX_Console_Process_Unix</title>
-<link rel="stylesheet" href="dbstyle.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="stylesheet" type="text/css" href="dbstyle.css">
+<meta name="generator" content="DocBook XSL-NS Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Programmer's Reference Guide">
 <link rel="up" href="index.html" title="Programmer's Reference Guide">
 <link rel="prev" href="index.html" title="Programmer's Reference Guide">
@@ -11,7 +11,6 @@
 <link rel="chapter" href="zendx.console.process.unix.html" title="Chapter 1. ZendX_Console_Process_Unix">
 <link rel="chapter" href="zendx.jquery.html" title="Chapter 2. ZendX_JQuery">
 <link rel="index" href="the.index.html" title="Index">
-<link rel="section" href="zendx.console.process.unix.html#zendx.console.process.unix.overview" title="1.1. ZendX_Console_Process_Unix">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <div class="navheader"><table width="100%" summary="Navigation header">
@@ -27,65 +26,57 @@
 <div class="chapter" title="Chapter 1. ZendX_Console_Process_Unix">
 <div class="titlepage"><div><div><h2 class="title">
 <a name="zendx.console.process.unix"></a>Chapter 1. ZendX_Console_Process_Unix</h2></div></div></div>
-<div class="toc">
-<p><b>Table of Contents</b></p>
-<dl>
-<dt><span class="sect1"><a href="zendx.console.process.unix.html#zendx.console.process.unix.overview">1.1. ZendX_Console_Process_Unix</a></span></dt>
-<dd><dl>
-<dt><span class="sect2"><a href="zendx.console.process.unix.html#zendx.console.process.unix.introduction">1.1.1. Introduction</a></span></dt>
-<dt><span class="sect2"><a href="zendx.console.process.unix.html#zendx.console.process.unix.basic">1.1.2. Basic usage of ZendX_Console_Process_Unix</a></span></dt>
-</dl></dd>
-</dl>
-</div>
-<div class="sect1" title="1.1. ZendX_Console_Process_Unix">
-<div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="zendx.console.process.unix.overview"></a>1.1. ZendX_Console_Process_Unix</h2></div></div></div>
-<div class="sect2" title="1.1.1. Introduction">
-<div class="titlepage"><div><div><h3 class="title">
-<a name="zendx.console.process.unix.introduction"></a>1.1.1. Introduction</h3></div></div></div>
-<p>
-            <code class="classname">ZendX_Console_Process_Unix</code> allows developers to spawn
+<span style="color: red">&lt;sect1&gt;
+    <span style="color: red">&lt;title&gt;ZendX_Console_Process_Unix&lt;/title&gt;</span>
+
+    <span style="color: red">&lt;sect2&gt;
+        <span style="color: red">&lt;title&gt;Introduction&lt;/title&gt;</span>
+        <span style="color: red">&lt;para&gt;
+            <span style="color: red">&lt;classname&gt;ZendX_Console_Process_Unix&lt;/classname&gt;</span> allows developers to spawn
             an object as a new process, and so do multiple tasks in parallel on
             console environments. Through its specific nature, it is only
             working on *nix based systems like Linux, Solaris, Mac/OSx and such.
-            Additionally, the <code class="code">shmop_*</code>, <code class="code">pcntl_*</code> and
-            <code class="code">posix_*</code> modules are required for this component to
+            Additionally, the <span style="color: red">&lt;code&gt;shmop_*&lt;/code&gt;</span>, <span style="color: red">&lt;code&gt;pcntl_*&lt;/code&gt;</span> and
+            <span style="color: red">&lt;code&gt;posix_*&lt;/code&gt;</span> modules are required for this component to
             run. If one of the requirements is not met, it will throw an
             exception after instantiating the component.
-        </p>
-</div>
-<div class="sect2" title="1.1.2. Basic usage of ZendX_Console_Process_Unix">
-<div class="titlepage"><div><div><h3 class="title">
-<a name="zendx.console.process.unix.basic"></a>1.1.2. Basic usage of ZendX_Console_Process_Unix</h3></div></div></div>
-<p>
-            <code class="classname">ZendX_Console_Process_Unix</code> is an abstract class, which
+        &lt;/para&gt;</span>
+    &lt;/sect2&gt;</span>
+
+    <span style="color: red">&lt;sect2&gt;
+        <span style="color: red">&lt;title&gt;Basic usage of ZendX_Console_Process_Unix&lt;/title&gt;</span>
+        <span style="color: red">&lt;para&gt;
+            <span style="color: red">&lt;classname&gt;ZendX_Console_Process_Unix&lt;/classname&gt;</span> is an abstract class, which
             requires the user to extend it. It has a single abstract method
-            called <code class="methodname">_run()</code> which has to be implemented to create a
+            called <span style="color: red">&lt;methodname&gt;_run()&lt;/methodname&gt;</span> which has to be implemented to create a
             working process. It also comes with multiple methods for checking
             the alive status and share variables between the parent and the
             child process.
-        </p>
-<p>
-            The <code class="methodname">_run()</code> method and every method which is called
+        &lt;/para&gt;</span>
+
+        <span style="color: red">&lt;para&gt;
+            The <span style="color: red">&lt;methodname&gt;_run()&lt;/methodname&gt;</span> method and every method which is called
             by it is executed by the child process. Every other method which is
             called directly by the parent is executed by the parent process.
-        </p>
-<p>
-            <code class="methodname">setVariable()</code> and <code class="methodname">getVariable()</code> can be
+        &lt;/para&gt;</span>
+
+        <span style="color: red">&lt;para&gt;
+            <span style="color: red">&lt;methodname&gt;setVariable()&lt;/methodname&gt;</span> and <span style="color: red">&lt;methodname&gt;getVariable()&lt;/methodname&gt;</span> can be
             used from both the parent- and the child process to share variables.
             To observe the alive status, the child process should call
-            <code class="methodname">_setAlive()</code> in a frequent interval, so that the parent
-            process can check the last alive time via <code class="methodname">getLastAlive()</code>.
+            <span style="color: red">&lt;methodname&gt;_setAlive()&lt;/methodname&gt;</span> in a frequent interval, so that the parent
+            process can check the last alive time via <span style="color: red">&lt;methodname&gt;getLastAlive()&lt;/methodname&gt;</span>.
             To get the PID of the child process, the parent can call
-            <code class="methodname">getPid()</code>.
-        </p>
-<div class="example">
-<a name="zendx.console.process.unix.example"></a><p class="title"><b>Example 1.1. Basic example for processing</b></p>
-<div class="example-contents">
-<p>
+            <span style="color: red">&lt;methodname&gt;getPid()&lt;/methodname&gt;</span>.
+        &lt;/para&gt;</span>
+
+        <span style="color: red">&lt;example&gt;
+            <span style="color: red">&lt;title&gt;Basic example for processing&lt;/title&gt;</span>
+            <span style="color: red">&lt;para&gt;
                 This example illustrates a basic child process
-            </p>
-<pre class="programlisting">
+            &lt;/para&gt;</span>
+
+            <span style="color: red">&lt;programlisting&gt;
 class MyProcess extends ZendX_Console_Process_Unix
 {
     protected function _run()
@@ -109,17 +100,17 @@ while ($process1-&gt;isRunning() || $process2-&gt;isRunning()) {
 }
 
 echo 'All processes completed';
-</pre>
-<p>
+&lt;/programlisting&gt;</span>
+
+            <span style="color: red">&lt;para&gt;
                 In this example a process is forked twice and executed. As every
                 process runs 10 seconds, the parent process will be finished after
                 10 seconds (and not 20).
-            </p>
-</div>
-</div>
-<br class="example-break">
-</div>
-</div>
+            &lt;/para&gt;</span>
+        &lt;/example&gt;</span>
+
+    &lt;/sect2&gt;</span>
+&lt;/sect1&gt;</span>
 </div>
 <div class="navfooter"><table width="100%" summary="Navigation footer">
 <tr>

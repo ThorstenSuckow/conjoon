@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ControllerTest.php 23953 2011-05-03 05:47:39Z ralph $
+ * @version    $Id: ControllerTest.php 25024 2012-07-30 15:08:15Z rob $
  */
 
 /** Zend_Rest_Controller */
@@ -38,7 +38,7 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Rest_TestController extends Zend_Rest_Controller
@@ -58,6 +58,10 @@ class Zend_Rest_TestController extends Zend_Rest_Controller
     {
         $this->testValue = 'getAction';
     }
+    public function headAction()
+    {
+        $this->testValue = 'headAction';
+    }
     public function postAction()
     {
         $this->testValue = 'postAction';
@@ -76,7 +80,7 @@ class Zend_Rest_TestController extends Zend_Rest_Controller
  * @category   Zend
  * @package    Zend_Rest
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Rest
  */
@@ -110,6 +114,8 @@ class Zend_Rest_ControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('indexAction', $this->_testController->testValue);
         $this->_testController->getAction();
         $this->assertEquals('getAction', $this->_testController->testValue);
+        $this->_testController->headAction();
+        $this->assertEquals('headAction', $this->_testController->testValue);
         $this->_testController->postAction();
         $this->assertEquals('postAction', $this->_testController->testValue);
         $this->_testController->putAction();

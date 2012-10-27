@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Date
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -49,7 +49,7 @@ require_once 'Zend/TimeSync.php';
  * @category   Zend
  * @package    Zend_Date
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Date
  */
@@ -5668,6 +5668,35 @@ class Zend_DateTest extends PHPUnit_Framework_TestCase
     {
         $date = new Zend_Date(array('year' => 2008, 'month' => 10, 'day' => 12));
         $this->assertEquals('2008年10月12日', $date->get(Zend_Date::DATE_LONG, 'zh'));
+    }
+    /** 
+     * @group ZF-10492
+     */
+    public function test_farFutureDate()
+    {
+        $t = '2041-08-01 00:00:00';
+        $date = new Zend_Date($t, 'yyyy-MM-dd HH:mm:ss');
+        $this->assertEquals($t, $date->toString('yyyy-MM-dd HH:mm:ss'));
+    }
+
+    /**
+     * @group ZF-11846
+     */
+    public function testGetTimezoneFromStringForTimezoneOffsetsGreaterThan12()
+    {
+        $date = new Zend_Date();
+        $this->assertEquals('Etc/GMT-13', $date->getTimezoneFromString('18:00:00+1300'));
+        $this->assertEquals('Etc/GMT-14', $date->getTimezoneFromString('18:00:00+1400'));
+    }
+
+    /**
+     * @group ZF-11992
+     */
+    public function testDateShouldMatchOnFirstDayOfYear()
+    {
+        $date = new Zend_Date('01.01.2012');
+        $out  = $date->toString('Y-MM-dd');
+        $this->assertEquals('2012-01-01', $out);
     }
 }
 

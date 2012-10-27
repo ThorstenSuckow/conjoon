@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -33,7 +33,7 @@ require_once 'Zend/Loader/Autoloader.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -203,13 +203,30 @@ class Zend_Application_Resource_MailTest extends PHPUnit_Framework_TestCase
     /**
      * @group ZF-9136
      */
-    public function testCustomMailTransportWithWrontCasesAsShouldBe() {
+    public function testCustomMailTransportWithWrongCasesAsShouldBe() {
         $options = array('transport' => array('type' => 'Zend_Application_Resource_mailTestCAsE'));
         $resource = new Zend_Application_Resource_Mail(array());
         $resource->setBootstrap($this->bootstrap);
         $resource->setOptions($options);
 
         $this->assertTrue($resource->init() instanceof Zend_Application_Resource_mailTestCAsE);
+    }
+    
+    /**
+     * @group ZF-11022
+     */
+    public function testOptionRegisterIsUnset()
+    {
+        $options = array('transport' => 
+                        array('register' => 1,
+                              'type' => 'Zend_Mail_Transport_Sendmail'));
+
+        $resource = new Zend_Application_Resource_Mail(array());
+        $resource->setBootstrap($this->bootstrap);
+        $resource->setOptions($options);
+
+        $parameters = $resource->getMail()->parameters;
+        $this->assertTrue(empty($parameters));
     }
 
 }

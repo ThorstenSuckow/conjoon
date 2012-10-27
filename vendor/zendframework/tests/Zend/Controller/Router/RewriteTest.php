@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: RewriteTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: RewriteTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -53,7 +53,7 @@ require_once 'Zend/Uri/Http.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Router
@@ -755,6 +755,15 @@ class Zend_Controller_Router_RewriteTest extends PHPUnit_Framework_TestCase
             '/index/index/2/foo/page/bar',
             $this->_router->assemble($params)
         );
+    }
+    
+    /**
+     * @group ZF-11393
+     * @expectedException Zend_Controller_Router_Exception
+     */
+    public function testCallingAssembleWithNullArgumentShouldThrowException()
+    {
+        $this->_router->assemble(null);
     }
 }
 

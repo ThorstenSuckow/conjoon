@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service_DeveloperGarden
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LocalSearchTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: LocalSearchTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -35,9 +35,9 @@ require_once 'Zend/Service/DeveloperGarden/LocalSearch.php';
  * @category   Zend
  * @package    Zend_Service_DeveloperGarden
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LocalSearchTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: LocalSearchTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 class Zend_Service_DeveloperGarden_LocalSearchTest extends PHPUnit_Framework_TestCase
 {

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DataTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: DataTest.php 24766 2012-05-06 02:51:42Z adamlundrigan $
  */
 
 /**
@@ -30,7 +30,7 @@ require_once 'Zend/Locale/Data.php';
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Locale
  */
@@ -744,6 +744,16 @@ class Zend_Locale_DataTest extends PHPUnit_Framework_TestCase
     {
         $value = Zend_Locale_Data::getContent('de_AT', 'decimalnumber');
         $this->assertEquals("#,##0.###", $value);
+    }
+    
+    /**
+     * test for reading defaultNumberingSystem from locale data
+     * @group ZF-10728
+     */
+    public function testDefaultNumberingSystem()
+    {
+        $value = Zend_Locale_Data::getContent('de_AT', 'defaultnumberingsystem');
+        $this->assertEquals('latn', $value);
     }
 
     /**
@@ -2722,5 +2732,35 @@ class Zend_Locale_DataTest extends PHPUnit_Framework_TestCase
 
         $value = Zend_Locale_Data::getContent('de_AT', 'unit', array('day', 'one'));
         $this->assertEquals('{0} Tag', $value);
+    }
+
+    /**
+     * @group ZF-12103
+     */
+    public function testGetListNonexistentTypeReturnsEmptyArray()
+    {
+        $result = Zend_Locale_Data::getList('de_AT', 'type', 'ddd');
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(empty($result));
+    }
+
+    /**
+     * @group ZF-12103
+     */
+    public function testGetListValidTypeReturnsNonemptyArray()
+    {
+        $result = Zend_Locale_Data::getList('de_AT', 'type', 'calendar');
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) > 0);
+    }
+
+    /**
+     * @group ZF-12103
+     */
+    public function testGetListEmptyTypeReturnsNonemptyArray()
+    {
+        $result = Zend_Locale_Data::getList('de_AT', 'type', '');
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) > 0);
     }
 }

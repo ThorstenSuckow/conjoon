@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Twitter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Twitter.php 23877 2011-04-28 20:17:01Z ralph $
+ * @version    $Id: Twitter.php 25024 2012-07-30 15:08:15Z rob $
  */
 
 /**
@@ -39,7 +39,7 @@ require_once 'Zend/Oauth/Consumer.php';
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Twitter
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Service_Twitter extends Zend_Rest_Client
@@ -369,7 +369,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
                 case 'trim_user':
                 case 'include_entities':
                     $_params[strtolower($key)] = $value ? '1' : '0';
-                    break;
+                    break;                    
                 default:
                     break;
             }
@@ -441,7 +441,6 @@ class Zend_Service_Twitter extends Zend_Rest_Client
             }
         }
         $path .= '.xml';
-
         $response = $this->_get($path, $_params);
         return new Zend_Rest_Client_Result($response->getBody());
     }
@@ -560,14 +559,15 @@ class Zend_Service_Twitter extends Zend_Rest_Client
                 case 'id':
                     $path .= '/' . $value;
                     break;
-                case 'cursor':
-                    $_params['cursor'] = (int) $value;
+                case 'page':
+                    $_params['page'] = (int) $value;
                     break;
                 default:
                     break;
             }
         }
         $path .= '.xml';
+
         $response = $this->_get($path, $_params);
         return new Zend_Rest_Client_Result($response->getBody());
     }

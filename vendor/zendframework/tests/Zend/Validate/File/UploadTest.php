@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: UploadTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: UploadTest.php 24959 2012-06-15 13:51:04Z adamlundrigan $
  */
 
 // Call Zend_Validate_File_UploadTest::main() if this source file is executed directly.
@@ -34,7 +34,7 @@ require_once 'Zend/Validate/File/Upload.php';
  * @category   Zend
  * @package    Zend_Validate_File
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Validate
  */
@@ -272,6 +272,32 @@ class Zend_Validate_File_UploadTest extends PHPUnit_Framework_TestCase
         $validator = new Zend_Validate_File_Upload();
         $validator->setFiles(NULL);
         $this->assertEquals(array(), $validator->getFiles());
+    }
+
+    /**
+     * @group ZF-12128
+     */
+    public function testErrorMessage()
+    {
+        $_FILES = array(
+            'foo' => array(
+                'name'     => 'bar',
+                'type'     => 'text',
+                'size'     => 100,
+                'tmp_name' => 'tmp_bar',
+                'error'    => 7,
+            )
+        );
+
+        $validator = new Zend_Validate_File_Upload();
+        $validator->isValid('foo');
+
+        $this->assertEquals(
+            array(
+                 'fileUploadErrorCantWrite' => "File 'bar' can't be written",
+            ),
+            $validator->getMessages()
+        );
     }
 
 }

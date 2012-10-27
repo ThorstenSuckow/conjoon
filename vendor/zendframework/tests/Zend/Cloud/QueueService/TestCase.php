@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Cloud
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -41,7 +41,7 @@ require_once 'Zend/Cloud/QueueService/Factory.php';
  * @category   Zend
  * @package    Zend_Cloud
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Cloud_QueueService_TestCase extends PHPUnit_Framework_TestCase
@@ -54,7 +54,8 @@ abstract class Zend_Cloud_QueueService_TestCase extends PHPUnit_Framework_TestCa
     protected $_commonQueue;
     protected $_dummyNamePrefix = '/TestItem';
     protected $_dummyDataPrefix = 'TestData';
-	protected $_clientType = 'stdClass';
+    protected $_clientType = 'stdClass';
+    
     /**
      * Config object
      *
@@ -79,7 +80,7 @@ abstract class Zend_Cloud_QueueService_TestCase extends PHPUnit_Framework_TestCa
 
     public function testGetClient()
     {
-    	$this->assertTrue(is_a($this->_commonQueue->getClient(), $this->_clientType));
+    	$this->assertTrue($this->_commonQueue->getClient() instanceof $this->_clientType);
     }
 
     public function testCreateQueue()

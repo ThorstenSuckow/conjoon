@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Cloud_StorageService
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -40,6 +40,11 @@ require_once 'Zend/Cloud/StorageService/Adapter/S3Test.php';
 require_once 'Zend/Cloud/StorageService/Adapter/NirvanixTest.php';
 
 /**
+ * @see Zend_Cloud_StorageService_Adapter_RackspaceTest
+ */
+require_once 'Zend/Cloud/StorageService/Adapter/RackspaceTest.php';
+
+/**
  * @see Zend_Cloud_StorageService_Adapter_FileSystemTest
  */
 require_once 'Zend/Cloud/StorageService/Adapter/FileSystemTest.php';
@@ -48,7 +53,7 @@ require_once 'Zend/Cloud/StorageService/Adapter/FileSystemTest.php';
  * @category   Zend
  * @package    Zend_Cloud_StorageService_Adapter
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Cloud_StorageService_Adapter_AllTests
@@ -74,6 +79,7 @@ class Zend_Cloud_StorageService_Adapter_AllTests
 
         $suite->addTestSuite('Zend_Cloud_StorageService_Adapter_WindowsAzureTest');
         $suite->addTestSuite('Zend_Cloud_StorageService_Adapter_NirvanixTest');
+        $suite->addTestSuite('Zend_Cloud_StorageService_Adapter_RackspaceTest');
         $suite->addTestSuite('Zend_Cloud_StorageService_Adapter_FileSystemTest');
         $suite->addTestSuite('Zend_Cloud_StorageService_Adapter_S3Test');
 

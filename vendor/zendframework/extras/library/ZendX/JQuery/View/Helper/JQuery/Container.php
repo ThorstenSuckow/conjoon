@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: Container.php 20750 2010-01-29 11:12:00Z beberlei $
+ * @version     $Id: Container.php 24188 2011-07-05 15:06:41Z matthew $
  */
 
 /**
@@ -239,8 +239,18 @@ class ZendX_JQuery_View_Helper_JQuery_Container
      */
     public function setCdnSsl($flag)
     {
-        $this->_loadSslCdnPath = $flag;
+        $this->_loadSslCdnPath = (boolean) $flag;
         return $this;
+    }
+
+    /**
+     * Get Flag of SSL on CDN
+     *
+     * @return boolean True if SSL is used on CDN
+     */
+    public function getCdnSsl()
+    {
+        return $this->_loadSslCdnPath;
     }
 
     /**

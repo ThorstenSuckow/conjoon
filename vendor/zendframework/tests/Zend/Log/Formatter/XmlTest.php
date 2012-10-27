@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: XmlTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: XmlTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -31,7 +31,7 @@ require_once 'Zend/Log/Formatter/Xml.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Log
  */
@@ -136,6 +136,56 @@ class Zend_Log_Formatter_XmlTest extends PHPUnit_Framework_TestCase
         );
         $formatter = Zend_Log_Formatter_Xml::factory($options);
         $this->assertType('Zend_Log_Formatter_Xml', $formatter);
+    }
+    
+    /**
+     * @group ZF-11161
+     */
+    public function testNonScalarValuesAreExcludedFromFormattedString()
+    {
+        $options = array(
+            'rootElement' => 'log'
+        );
+        $event = array(
+            'message' => 'tottakai',
+            'priority' => 4,
+            'context' => array('test'=>'one'),
+            'reference' => new Zend_Log_Formatter_Xml()
+        );
+        $expected = '<log><message>tottakai</message><priority>4</priority></log>';
+
+        $formatter = new Zend_Log_Formatter_Xml($options);
+        $output = $formatter->format($event);
+        $this->assertContains($expected, $output);
+    }
+    
+    /**
+     * @group ZF-11161
+     */
+    public function testObjectsWithStringSerializationAreIncludedInFormattedString()
+    {
+        $options = array(
+            'rootElement' => 'log'
+        );
+        $event = array(
+            'message' => 'tottakai',
+            'priority' => 4,
+            'context' => array('test'=>'one'),
+            'reference' => new Zend_Log_Formatter_XmlTest_SerializableObject()
+        );
+        $expected = '<log><message>tottakai</message><priority>4</priority><reference>Zend_Log_Formatter_XmlTest_SerializableObject</reference></log>';
+
+        $formatter = new Zend_Log_Formatter_Xml($options);
+        $output = $formatter->format($event);
+        $this->assertContains($expected, $output);
+    }
+}
+
+class Zend_Log_Formatter_XmlTest_SerializableObject
+{
+    public function __toString()
+    {
+        return __CLASS__;
     }
 }
 

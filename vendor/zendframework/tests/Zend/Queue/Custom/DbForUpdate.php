@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DbForUpdate.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: DbForUpdate.php 24670 2012-02-27 04:43:26Z adamlundrigan $
  */
 
 /**
@@ -35,7 +35,7 @@ require_once 'Zend/Queue/Adapter/Db.php';
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Custom_DbForUpdate extends Zend_Queue_Adapter_Db
@@ -98,13 +98,11 @@ class Custom_DbForUpdate extends Zend_Queue_Adapter_Db
                 // the rows after our select, but before our update.
                 if ($count > 0) {
                     $msgs[] = $data;
-                    $this->getLogger()->debug('Received message:' . $data['message_id'] . ' byte size=' . strlen($data['body']));
                 }
             }
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
-            $this->getLogger()->err($e->getMessage() . ' code ' . $e->getCode());
             /**
              * @see Zend_Queue_Exception
              */

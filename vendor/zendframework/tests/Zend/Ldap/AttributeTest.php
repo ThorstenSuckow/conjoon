@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AttributeTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: AttributeTest.php 24721 2012-04-28 07:44:37Z rob $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Ldap/Attribute.php';
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  */
@@ -37,7 +37,16 @@ class Zend_Ldap_AttributeTest extends PHPUnit_Framework_TestCase
 {
     protected function _assertLocalDateTimeString($timestamp, $value)
     {
-        $this->assertEquals(date('YmdHisO', $timestamp), $value);
+        $tsValue = date('YmdHisO', $timestamp);
+
+        if(date('O', strtotime('20120101'))) {
+            // Local timezone is +0000 when DST is off. Zend_Ldap converts
+            // +0000 to "Z" (see Zend_Ldap_Converter:toLdapDateTime()), so
+            // take account of that here
+            $tsValue = str_replace('+0000', 'Z', $tsValue);
+        }
+
+        $this->assertEquals($tsValue, $value);
     }
 
     protected function _assertUtcDateTimeString($localTimestamp, $value)

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TbxTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: TbxTest.php 24649 2012-02-26 03:37:54Z adamlundrigan $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Translate/Adapter/Tbx.php';
  * @category   Zend
  * @package    Zend_Translate
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Translate
  */
@@ -66,6 +66,19 @@ class Zend_Translate_Adapter_TbxTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @group ZF-12012
+     */
+    public function testErrorOnCreateIncludesFilename()
+    {
+        try {
+            $adapter = new Zend_Translate_Adapter_Tbx(dirname(__FILE__) . '/_files/nofile.tbx', 'en');
+            $this->fail("exception expected");
+        } catch (Zend_Translate_Exception $e) {
+            $this->assertContains('nofile.tbx', $e->getMessage());
+        }
+    }
+    
     public function testToString()
     {
         $adapter = new Zend_Translate_Adapter_Tbx(dirname(__FILE__) . '/_files/translation_en.tbx', 'fr');

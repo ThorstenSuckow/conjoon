@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -56,7 +56,7 @@ require_once 'Zend/Config.php';
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Mail_Transport_Mock extends Zend_Mail_Transport_Abstract
@@ -88,7 +88,7 @@ class Zend_Mail_Transport_Mock extends Zend_Mail_Transport_Abstract
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Mail_Transport_Sendmail_Mock extends Zend_Mail_Transport_Sendmail
@@ -114,7 +114,7 @@ class Zend_Mail_Transport_Sendmail_Mock extends Zend_Mail_Transport_Sendmail
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mail
  */
@@ -636,6 +636,27 @@ class Zend_Mail_MailTest extends PHPUnit_Framework_TestCase
         $mail->send($mock);
         $body = quoted_printable_decode($mock->body);
         $this->assertContains("\r\n\r\n...after", $body, $body);
+    }
+
+    public function testZf10792CommaInRecipientNameIsEncodedProperly()
+    {
+        $mail = new Zend_Mail("UTF-8");
+        $mail->setFrom('from@email.com', 'Doe, John');
+        $mail->addTo('to@email.com', 'Döe, Jöhn');
+        $mail->setBodyText('my body');
+
+        $mock = new Zend_Mail_Transport_Mock();
+        $mail->send($mock);
+
+        $this->assertContains(
+            'From: "Doe, John" <from@email.com>',
+            $mock->header
+        );
+
+        $this->assertContains(
+            'To: =?UTF-8?Q?D=C3=B6e=2C=20J=C3=B6hn?= <to@email.com>',
+            $mock->header
+        );
     }
 
     public function testGetJustBodyText()

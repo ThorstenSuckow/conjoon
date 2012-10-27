@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NavigationTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: NavigationTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -33,7 +33,7 @@ require_once 'Zend/Loader/Autoloader.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -67,6 +67,8 @@ class Zend_Application_Resource_NavigationTest extends PHPUnit_Framework_TestCas
 
     public function tearDown()
     {
+        Zend_Navigation_Page::setDefaultPageType();
+
         // Restore original autoloaders
         $loaders = spl_autoload_functions();
         foreach ($loaders as $loader) {
@@ -93,7 +95,7 @@ class Zend_Application_Resource_NavigationTest extends PHPUnit_Framework_TestCas
 
     public function testInitializationReturnsNavigationObject()
     {
-           $this->bootstrap->registerPluginResource('view');
+        $this->bootstrap->registerPluginResource('view');
         $resource = new Zend_Application_Resource_Navigation(array());
         $resource->setBootstrap($this->bootstrap);
         $test = $resource->init();
@@ -147,6 +149,32 @@ class Zend_Application_Resource_NavigationTest extends PHPUnit_Framework_TestCas
          $view = $bootstrap->bootstrap('view')->view;
 
          $this->assertEquals($view->setInMethodByTest,true);
+    }
+
+    /**
+     * @group ZF-10959
+     */
+    public function testDefaultPageTypeIsSet()
+    {
+        $this->bootstrap->registerPluginResource('view');
+        $this->bootstrap->getPluginResource('view')->getView();
+
+        $options = array('defaultPageType' => 'foobar',
+                         'pages'=> array(array(
+            			 'action'     => 'index',
+                         'controller' => 'index')));
+
+        $results = array();
+        $resource = new Zend_Application_Resource_Navigation($options);
+
+        try {
+            $resource->setBootstrap($this->bootstrap)->init();
+            $this->fail('An exception should have been thrown but wasn\'t');
+        } catch(Zend_Exception $e) {
+            $this->assertTrue(true);
+        }
+
+        $this->bootstrap->unregisterPluginResource('view');
     }
 
     /**

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormTest.php 23950 2011-05-03 03:46:42Z ralph $
+ * @version    $Id: FormTest.php 24848 2012-05-31 19:28:48Z rob $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -43,7 +43,7 @@ require_once 'Zend/View.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -4460,6 +4460,99 @@ class Zend_Form_FormTest extends PHPUnit_Framework_TestCase
     {
         $form = new Zend_Form();
         $form->addElement(NULL);
+    }
+
+    /**
+     * @group ZF-11729
+     */
+    public function testDashSeparatedElementsInDisplayGroupsShouldNotRenderOutsideDisplayGroup()
+    {
+        $form = new Zend_Form();
+        $form->addElement('text', 'random-element-name', array(
+            'label' => 'This is weird',
+            'value' => 'think its a bug',
+        ));
+        $form->addDisplayGroup(array('random-element-name'), 'foobar', array(
+            'legend' => 'foobar',
+        ));
+        $html = $form->render($this->getView());
+        $count = substr_count($html, 'randomelementname-element');
+        $this->assertEquals(1, $count, $html);
+    }
+    
+    /**
+     * @group ZF-11831
+     */
+    public function testElementsOfSubFormReceiveCorrectDefaultTranslator()
+    {
+        // Global default translator
+        $trDefault = new Zend_Translate(array(
+            'adapter' => 'array',
+            'content' => array(
+                Zend_Validate_NotEmpty::IS_EMPTY => 'Default'
+            ),
+            'locale' => 'en'
+        ));
+        Zend_Registry::set('Zend_Translate', $trDefault);
+        
+        // Translator to use for elements
+        $trElement = new Zend_Translate(array(
+            'adapter' => 'array',
+            'content' => array(
+                Zend_Validate_NotEmpty::IS_EMPTY =>'Element'
+            ),
+            'locale' => 'en'
+        ));
+        Zend_Validate_Abstract::setDefaultTranslator($trElement);
+        
+        // Change the form's translator
+        $form = new Zend_Form();
+        $form->addElement(new Zend_Form_Element_Text('foo', array(
+            'required'   => true,
+            'validators' => array('NotEmpty')
+        )));
+        
+        // Create a subform with it's own validator
+        $sf1 = new Zend_Form_SubForm();
+        $sf1->addElement(new Zend_Form_Element_Text('foosub', array(
+            'required'   => true,
+            'validators' => array('NotEmpty')
+        )));
+        $form->addSubForm($sf1, 'Test1');
+        
+        $form->isValid(array());
+
+        $messages = $form->getMessages();
+        $this->assertEquals(
+            'Element', 
+            @$messages['foo'][Zend_Validate_NotEmpty::IS_EMPTY], 
+            'Form element received wrong validator'
+        );
+        $this->assertEquals(
+            'Element', 
+            @$messages['Test1']['foosub'][Zend_Validate_NotEmpty::IS_EMPTY], 
+            'SubForm element received wrong validator'
+        );        
+    }
+
+    /**
+     * @group ZF-12173
+     */
+    public function testAddingPrefixPathsWithBackslashWillLoadNamespacedPlugins()
+    {
+        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+            $this->markTestSkipped(__CLASS__ . '::' . __METHOD__ . ' requires PHP 5.3.0 or greater');
+            return;
+        }
+        $form = new Zend_Form();
+        $form->addPrefixPath('Zf\Foo', 'Zf/Foo');
+        foreach (array('element', 'decorator') as $type) {
+            $loader = $form->getPluginLoader($type);
+            $paths = $loader->getPaths('Zf\Foo\\' . ucfirst($type));
+            $this->assertTrue(is_array($paths), "Failed for type $type: " . var_export($paths, 1));
+            $this->assertFalse(empty($paths));
+            $this->assertContains('Foo', $paths[0]);
+        }
     }
 }
 

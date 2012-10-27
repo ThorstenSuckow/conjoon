@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: NavigationTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: NavigationTest.php 24987 2012-06-19 20:30:46Z rob $
  */
 
 require_once dirname(__FILE__) . '/TestAbstract.php';
@@ -29,7 +29,7 @@ require_once 'Zend/View/Helper/Navigation.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -378,6 +378,57 @@ class Zend_View_Helper_Navigation_NavigationTest
         $actual = $this->_helper->render($container);
 
         $this->assertEquals($expected, $actual);
+    }
+    
+    /**
+     * @group ZF-10458
+     */
+    public function testFindCustomHelper()
+    {
+        $this->_helper->view->addHelperPath(
+            $this->_files . '/helpers',
+            'My_View_Helper_Navigation'
+        );                
+        
+        $this->assertTrue(
+            $this->_helper->findHelper('menu') instanceof
+                My_View_Helper_Navigation_Menu
+        );
+    }
+    
+    /**
+     * @group ZF-10458
+     */
+    public function testAddHelperPath()
+    {
+        $this->_helper->view->addHelperPath(
+            $this->_files . '/helpers',
+            'My_View_Helper_Navigation'
+        );
+        
+        $expected = array(
+            'Zend_View_Helper_' => array(
+                'Zend/View/Helper/',
+            ),
+            'My_View_Helper_Navigation_' => array(
+                $this->_files . '/helpers/',
+            ),
+        );
+        
+        $this->assertSame($expected, $this->_helper->view->getHelperPaths());
+    }
+    
+    /**
+     * @group ZF-10458
+     */
+    public function testRenderCustomHelper()
+    {
+        $this->_helper->view->addHelperPath(
+            $this->_files . '/helpers',
+            'My_View_Helper_Navigation'
+        );
+        
+        $this->assertSame('<menu/>', (string) $this->_helper->menu());
     }
 
     /**

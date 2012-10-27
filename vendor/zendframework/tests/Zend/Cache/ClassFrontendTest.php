@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ClassFrontendTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: ClassFrontendTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 /**
@@ -33,7 +33,7 @@ require_once 'Zend/Cache/Backend/Test.php';
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
@@ -66,7 +66,7 @@ class test {
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
@@ -262,6 +262,15 @@ class Zend_Cache_ClassFrontendTest extends PHPUnit_Framework_TestCase {
 
         $output = ob_get_clean();
         $this->assertEquals('startend', $output);
+    }
+
+    /**
+     * @group ZF-11337
+     */
+    public function testThrowExceptionOnInvalidCallback()
+    {
+        $this->setExpectedException('Zend_Cache_Exception');
+        $this->_instance2->unknownMethod();
     }
 
 }

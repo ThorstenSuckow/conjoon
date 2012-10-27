@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: IniTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: IniTest.php 24715 2012-04-17 13:53:52Z rob $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Config/Ini.php';
  * @category   Zend
  * @package    Zend_Config
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Config
  */
@@ -259,7 +259,7 @@ class Zend_Config_IniTest extends PHPUnit_Framework_TestCase
             $config = new Zend_Config_Ini($this->_iniFileInvalid);
             $this->fail('An expected Zend_Config_Exception has not been raised');
         } catch (Zend_Config_Exception $expected) {
-            $this->assertRegexp('/(Error parsing|syntax error, unexpected)/', $expected->getMessage());
+            $this->assertRegexp('/(Error parsing|parse error|syntax error, unexpected)/', $expected->getMessage());
         }
 
     }

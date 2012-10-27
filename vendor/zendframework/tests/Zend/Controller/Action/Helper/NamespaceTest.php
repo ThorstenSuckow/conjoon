@@ -16,7 +16,7 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id:$
  */
@@ -32,7 +32,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -56,8 +56,14 @@ class Zend_Controller_Action_Helper_NamespaceTest extends PHPUnit_Framework_Test
      */
     public function testGetNameWithNamespace()
     {
+        if (version_compare(PHP_VERSION, '5.3.0') === -1) {
+            $this->markTestSkipped('Namespaces not available in PHP < 5.3.0');
+        }
+
         require_once dirname(__FILE__) . '/../../_files/Helpers/NamespacedHelper.php';
-        $helper = new MyApp\Controller\Action\Helper\NamespacedHelper;
+        
+        $className = 'MyApp\Controller\Action\Helper\NamespacedHelper';
+        $helper = new $className;
         $this->assertEquals('NamespacedHelper', $helper->getName());
     }
 }

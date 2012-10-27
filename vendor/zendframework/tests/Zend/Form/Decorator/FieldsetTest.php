@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FieldsetTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: FieldsetTest.php 24961 2012-06-15 14:15:47Z adamlundrigan $
  */
 
 // Call Zend_Form_Decorator_FieldsetTest::main() if this source file is executed directly.
@@ -37,7 +37,7 @@ require_once 'Zend/Form/SubForm.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Form
  */
@@ -228,6 +228,34 @@ class Zend_Form_Decorator_FieldsetTest extends PHPUnit_Framework_TestCase
                                 ->setOption('id', 'fieldset-id')
                                 ->render('content');
         $this->assertContains('<fieldset id="fieldset-id"', $html);
+    }
+
+    /**
+     * @group ZF-8822
+     */
+    public function testStripAcceptCharsetAttribute()
+    {
+        $form = new Zend_Form();
+        $form->setAttrib('accept-charset', 'ISO-8859-15');
+        $form->setView($this->getView());
+
+        $html = $this->decorator->setElement($form)->render('');
+
+        $this->assertEquals('<fieldset></fieldset>', $html);
+    }
+    
+    /**
+     * @group ZF-10803
+     */
+    public function testFormIdOverridesFieldsetId()
+    {
+        $form = new Zend_Form();
+        $form->setAttrib('id', 'form-id')
+             ->setView($this->getView());
+        
+        $html = $this->decorator->setElement($form)->render('content');
+        
+        $this->assertContains('<fieldset id="fieldset-form-id"', $html);
     }
 }
 

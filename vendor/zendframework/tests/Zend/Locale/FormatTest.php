@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Format
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormatTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: FormatTest.php 24593 2012-01-05 20:35:02Z matthew $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Locale/Format.php';
  * @category   Zend
  * @package    Zend_Locale
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Locale
  */
@@ -1092,5 +1092,20 @@ class Zend_Locale_FormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('4,00', Zend_Locale_Format::toNumber(3.995, $options));
         $this->assertEquals('4,00', Zend_Locale_Format::toNumber(3.999, $options));
         $this->assertEquals('4,00', Zend_Locale_Format::toNumber(4, $options));
+    }
+    
+    /**
+     * @group ZF-11837
+     */
+    public function testCheckDateFormatDoesNotEmitNoticeWhenNoOptionsAreNotProvided()
+    {
+        try {
+            setlocale(LC_ALL, 'en_US'); // test setup
+            Zend_Locale_Format::setOptions(array('date_format' => 'yyyy-MM-dd'));
+            
+            $this->assertTrue(Zend_Locale_Format::checkDateFormat('2011-10-21', array()));
+        } catch ( PHPUnit_Framework_Error_Notice $ex ) {
+            $this->fail('Zend_Locale_Format::checkDateFormat emitted unexpected E_NOTICE');
+        }
     }
 }

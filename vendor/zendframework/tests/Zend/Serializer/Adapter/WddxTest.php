@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Serializer
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: WddxTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: WddxTest.php 25033 2012-08-17 19:50:08Z matthew $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Serializer/Adapter/Wddx.php';
  * @category   Zend
  * @package    Zend_Serializer
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Serializer_Adapter_WddxTest extends PHPUnit_Framework_TestCase
@@ -221,6 +221,28 @@ class Zend_Serializer_Adapter_WddxTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $data);
     }
 
+    public function testUnserializeInvalidXml()
+    {
+        if (!class_exists('SimpleXMLElement', false)) {
+            $this->markTestSkipped('Skipped by missing ext/simplexml');
+        }
+
+        $value = 'not a serialized string';
+        $this->setExpectedException(
+            'Zend_Serializer_Exception',
+            'DOMDocument::loadXML(): Start tag expected'
+        );
+        $this->_adapter->unserialize($value);
+    }
+
+    public function testShouldThrowExceptionIfXmlToUnserializeFromContainsADoctype()
+    {
+        $value    = '<!DOCTYPE>'
+                  . '<wddxPacket version=\'1.0\'><header/>'
+                  . '<data><string>test</string></data></wddxPacket>';
+        $this->setExpectedException("Zend_Serializer_Exception");
+        $data = $this->_adapter->unserialize($value);
+    }
 }
 
 
@@ -228,7 +250,7 @@ class Zend_Serializer_Adapter_WddxTest extends PHPUnit_Framework_TestCase
  * @category   Zend
  * @package    Zend_Serializer
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Serializer_Adapter_WddxSkipTest extends PHPUnit_Framework_TestCase

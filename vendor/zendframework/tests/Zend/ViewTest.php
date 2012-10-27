@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id $
  */
@@ -43,7 +43,7 @@ require_once 'Zend/Loader.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  */
@@ -1135,12 +1135,10 @@ class Zend_ViewTest extends PHPUnit_Framework_TestCase
 
     /**
      * @group ZF-9000
+	 * @group ZF-4622
      */
-    public function testAddingStreamSchemeAsScriptPathShouldNotReverseSlashesOnWindows()
+    public function testAddingStreamSchemeAsScriptPathShouldNotMangleThePath()
     {
-        if (false === strstr(strtolower(PHP_OS), 'windows')) {
-            $this->markTestSkipped('Windows-only test');
-        }
     	$view = new Zend_View();
         $path = rtrim('file://' . str_replace('\\', '/', realpath(dirname(__FILE__))), '/') . '/';
         $view->addScriptPath($path);
@@ -1162,7 +1160,7 @@ class Zend_ViewTest extends PHPUnit_Framework_TestCase
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_ViewTest_Extension extends Zend_View

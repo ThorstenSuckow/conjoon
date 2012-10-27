@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HeadScriptTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: HeadScriptTest.php 24960 2012-06-15 14:09:34Z adamlundrigan $
  */
 
 // Call Zend_View_Helper_HeadScriptTest::main() if this source file is executed directly.
@@ -40,7 +40,7 @@ require_once 'Zend/Registry.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -450,6 +450,76 @@ document.write(bar.strlen());');
                   . '<script type="text/javascript" src="test2.js"></script>';
 
         $this->assertEquals($expected, $test);
+    }
+    
+    /**
+     * @group ZF-12048
+     */
+    public function testSetFileStillOverwritesExistingFilesWhenItsADuplicate()
+    {
+        $this->helper->appendFile('foo.js');
+        $this->helper->appendFile('bar.js');
+        $this->helper->setFile('foo.js');
+        
+        $expected = '<script type="text/javascript" src="foo.js"></script>';
+        $test = $this->helper->toString();
+        $this->assertEquals($expected, $test);
+    }
+
+    /**
+     * @group ZF-12287
+     */
+    public function testConditionalWithAllowArbitraryAttributesDoesNotIncludeConditionalScript()
+    {
+        $this->helper->setAllowArbitraryAttributes(true);
+        $this->helper->appendFile(
+            '/js/foo.js', 'text/javascript', array('conditional' => 'lt IE 7')
+        );
+        $test = $this->helper->toString();
+
+        $this->assertNotContains('conditional', $test);
+    }
+
+    /**
+     * @group ZF-12287
+     */
+    public function testNoEscapeWithAllowArbitraryAttributesDoesNotIncludeNoEscapeScript()
+    {
+        $this->helper->setAllowArbitraryAttributes(true);
+        $this->helper->appendScript(
+            '// some script', 'text/javascript', array('noescape' => true)
+        );
+        $test = $this->helper->toString();
+
+        $this->assertNotContains('noescape', $test);
+    }
+
+    /**
+     * @group ZF-12287
+     */
+    public function testNoEscapeDefaultsToFalse()
+    {
+        $this->helper->appendScript(
+            '// some script' . PHP_EOL, 'text/javascript', array()
+        );
+        $test = $this->helper->toString();
+
+        $this->assertContains('//<!--', $test);
+        $this->assertContains('//-->', $test);
+    }
+
+    /**
+     * @group ZF-12287
+     */
+    public function testNoEscapeTrue()
+    {
+        $this->helper->appendScript(
+            '// some script' . PHP_EOL, 'text/javascript', array('noescape' => true)
+        );
+        $test = $this->helper->toString();
+
+        $this->assertNotContains('//<!--', $test);
+        $this->assertNotContains('//-->', $test);
     }
 }
 

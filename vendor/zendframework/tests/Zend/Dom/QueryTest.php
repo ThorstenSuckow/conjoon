@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: QueryTest.php 23775 2011-03-01 17:25:24Z ralph $
+ * @version    $Id: QueryTest.php 25033 2012-08-17 19:50:08Z matthew $
  */
 
 // Call Zend_Dom_QueryTest::main() if this source file is executed directly.
@@ -34,7 +34,7 @@ require_once 'Zend/Dom/Query.php';
  * @category   Zend
  * @package    Zend_Dom
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dom
  */
@@ -308,6 +308,59 @@ EOF;
         $doc  = $test->getDocument();
         $this->assertType('DOMDocument', $doc);
         $this->assertEquals('utf-8', $doc->encoding);
+    }
+    
+    /**
+     * @group ZF-11376
+     */
+    public function testXhtmlDocumentWithXmlDeclaration()
+    {
+        $xhtmlWithXmlDecl = <<<EOB
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head><title /></head>
+    <body><p>Test paragraph.</p></body>
+</html>
+EOB;
+        $this->query->setDocument($xhtmlWithXmlDecl, 'utf-8');
+        $this->assertEquals(1, $this->query->query('//p')->count());
+    }
+    
+    /**
+     * @group ZF-12106
+     */
+    public function testXhtmlDocumentWithXmlAndDoctypeDeclaration()
+    {
+        $xhtmlWithXmlDecl = <<<EOB
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Virtual Library</title>
+  </head>
+  <body>
+    <p>Moved to <a href="http://example.org/">example.org</a>.</p>
+  </body>
+</html>
+EOB;
+        $this->query->setDocument($xhtmlWithXmlDecl, 'utf-8');
+        $this->assertEquals(1, $this->query->query('//p')->count());
+    }
+
+    public function testLoadingXmlContainingDoctypeShouldFailToPreventXxeAndXeeAttacks()
+    {
+        $xml = <<<XML
+<?xml version="1.0"?>
+<!DOCTYPE results [<!ENTITY harmless "completely harmless">]>
+<results>
+    <result>This result is &harmless;</result>
+</results>
+XML;
+        $this->query->setDocumentXml($xml);
+        $this->setExpectedException("Zend_Dom_Exception");
+        $this->query->queryXpath('/');
     }
 }
 
