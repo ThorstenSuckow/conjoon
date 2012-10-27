@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Ext.ns("Ext.ux");
 
@@ -56,7 +56,7 @@ Ext.ux.FieldLabeler = (function(){
 
             this.resizeEl = (this.wrap || this.el).wrap({
                 cls: 'x-form-element',
-                style: Ext.isIE ? 'position:absolute;top:0;left:0;overflow:visible' : ''
+                style: (Ext.isIE || Ext.isOpera) ? 'position:absolute;top:0;left:0;overflow:visible' : ''
             });
             this.positionEl = this.itemCt = this.resizeEl.wrap({
                 cls: 'x-form-item '

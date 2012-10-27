@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.form.Action
@@ -114,6 +114,11 @@ Ext.form.Action.prototype = {
  */
 
 /**
+ * @cfg {Boolean} submitEmptyText If set to <tt>true</tt>, the emptyText value will be sent with the form
+ * when it is submitted.  Defaults to <tt>true</tt>.
+ */
+
+/**
  * The type of action this Action instance performs.
  * Currently only "submit" and "load" are supported.
  * @type {String}
@@ -205,6 +210,14 @@ buttons: [{
         }
         this.result = this.handleResponse(response);
         return this.result;
+    },
+    
+    decodeResponse: function(response) {
+        try {
+            return Ext.decode(response.responseText);
+        } catch(e) {
+            return false;
+        } 
     },
 
     // utility functions used internally
@@ -331,10 +344,25 @@ Ext.extend(Ext.form.Action.Submit, Ext.form.Action, {
 
     // private
     run : function(){
-        var o = this.options;
-        var method = this.getMethod();
-        var isGet = method == 'GET';
+        var o = this.options,
+            method = this.getMethod(),
+            isGet = method == 'GET';
         if(o.clientValidation === false || this.form.isValid()){
+            if (o.submitEmptyText === false) {
+                var fields = this.form.items,
+                    emptyFields = [],
+                    setupEmptyFields = function(f){
+                        if (f.el.getValue() == f.emptyText) {
+                            emptyFields.push(f);
+                            f.el.dom.value = "";
+                        }
+                        if(f.isComposite && f.rendered){
+                            f.items.each(setupEmptyFields);
+                        }
+                    };
+                    
+                fields.each(setupEmptyFields);
+            }
             Ext.Ajax.request(Ext.apply(this.createCallback(o), {
                 form:this.form.el.dom,
                 url:this.getUrl(isGet),
@@ -343,6 +371,13 @@ Ext.extend(Ext.form.Action.Submit, Ext.form.Action, {
                 params:!isGet ? this.getParams() : null,
                 isUpload: this.form.fileUpload
             }));
+            if (o.submitEmptyText === false) {
+                Ext.each(emptyFields, function(f) {
+                    if (f.applyEmptyText) {
+                        f.applyEmptyText();
+                    }
+                });
+            }
         }else if (o.clientValidation !== false){ // client validation failed
             this.failureType = Ext.form.Action.CLIENT_INVALID;
             this.form.afterAction(this, false);
@@ -382,7 +417,7 @@ Ext.extend(Ext.form.Action.Submit, Ext.form.Action, {
                 errors : errors
             };
         }
-        return Ext.decode(response.responseText);
+        return this.decodeResponse(response);
     }
 });
 
@@ -488,7 +523,7 @@ Ext.extend(Ext.form.Action.Load, Ext.form.Action, {
                 data : data
             };
         }
-        return Ext.decode(response.responseText);
+        return this.decodeResponse(response);
     }
 });
 
@@ -602,7 +637,7 @@ Ext.form.Action.DirectLoad = Ext.extend(Ext.form.Action.Load, {
         this.result = result;
         return result;
     },
-    
+
     success : function(response, trans){
         if(trans.type == Ext.Direct.exceptions.SERVER){
             response = {};
@@ -734,7 +769,7 @@ Ext.form.Action.DirectSubmit = Ext.extend(Ext.form.Action.Submit, {
         this.result = result;
         return result;
     },
-    
+
     success : function(response, trans){
         if(trans.type == Ext.Direct.exceptions.SERVER){
             response = {};

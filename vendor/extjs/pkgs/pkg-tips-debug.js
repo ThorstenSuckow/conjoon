@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Tip
@@ -288,7 +288,7 @@ myGrid.on('render', function(grid) {
     // private
     afterRender : function(){
         Ext.ToolTip.superclass.afterRender.call(this);
-        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1);
+        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1).setVisibilityMode(Ext.Element.DISPLAY);
     },
 
     /**
@@ -555,8 +555,8 @@ myGrid.on('render', function(grid) {
         this.showAt(this.getTargetXY());
 
         if(this.anchor){
-            this.syncAnchor();
             this.anchorEl.show();
+            this.syncAnchor();
             this.constrainPosition = this.origConstrainPosition;
         }else{
             this.anchorEl.hide();
@@ -574,6 +574,8 @@ myGrid.on('render', function(grid) {
         if(this.anchor && !this.anchorEl.isVisible()){
             this.syncAnchor();
             this.anchorEl.show();
+        }else{
+            this.anchorEl.hide();
         }
     },
 
@@ -662,7 +664,7 @@ myGrid.on('render', function(grid) {
 
     // private
     adjustPosition : function(x, y){
-        if(this.contstrainPosition){
+        if(this.constrainPosition){
             var ay = this.targetXY[1], h = this.getSize().height;
             if(y <= ay && (y+h) >= ay){
                 y = ay-h-5;
@@ -915,7 +917,7 @@ Ext.reg('quicktip', Ext.QuickTip);/**
  * configuration properties of Ext.QuickTip. These settings will apply to all
  * tooltips shown by the singleton.</p>
  * <p>Below is the summary of the configuration properties which can be used.
- * For detailed descriptions see {@link #getQuickTip}</p>
+ * For detailed descriptions see the config options for the {@link Ext.QuickTip QuickTip} class</p>
  * <p><b>QuickTips singleton configs (all are optional)</b></p>
  * <div class="mdetail-params"><ul><li>dismissDelay</li>
  * <li>hideDelay</li>
@@ -940,7 +942,7 @@ Ext.QuickTips.init();
 Ext.apply(Ext.QuickTips.getQuickTip(), {
     maxWidth: 200,
     minWidth: 100,
-    showDelay: 50,
+    showDelay: 50,      // Show 50ms after entering target
     trackMouse: true
 });
 
@@ -950,7 +952,7 @@ Ext.QuickTips.register({
     title: 'My Tooltip',
     text: 'This tooltip was added in code',
     width: 100,
-    dismissDelay: 20
+    dismissDelay: 10000 // Hide after 10 seconds hover
 });
 </code></pre>
  * <p>To register a quick tip in markup, you simply add one or more of the valid QuickTip attributes prefixed with
@@ -971,7 +973,9 @@ Ext.QuickTips.register({
  * @singleton
  */
 Ext.QuickTips = function(){
-    var tip, locks = [];
+    var tip,
+        disabled = false;
+        
     return {
         /**
          * Initialize the global QuickTips instance and prepare any quick tips.
@@ -985,10 +989,29 @@ Ext.QuickTips = function(){
                     });
                     return;
                 }
-                tip = new Ext.QuickTip({elements:'header,body'});
+                tip = new Ext.QuickTip({
+                    elements:'header,body', 
+                    disabled: disabled
+                });
                 if(autoRender !== false){
                     tip.render(Ext.getBody());
                 }
+            }
+        },
+        
+        // Protected method called by the dd classes
+        ddDisable : function(){
+            // don't disable it if we don't need to
+            if(tip && !disabled){
+                tip.disable();
+            }    
+        },
+        
+        // Protected method called by the dd classes
+        ddEnable : function(){
+            // only enable it if it hasn't been disabled
+            if(tip && !disabled){
+                tip.enable();
             }
         },
 
@@ -997,11 +1020,9 @@ Ext.QuickTips = function(){
          */
         enable : function(){
             if(tip){
-                locks.pop();
-                if(locks.length < 1){
-                    tip.enable();
-                }
+                tip.enable();
             }
+            disabled = false;
         },
 
         /**
@@ -1011,7 +1032,7 @@ Ext.QuickTips = function(){
             if(tip){
                 tip.disable();
             }
-            locks.push(1);
+            disabled = true;
         },
 
         /**
@@ -1023,7 +1044,8 @@ Ext.QuickTips = function(){
         },
 
         /**
-         * Gets the global QuickTips instance.
+         * Gets the single {@link Ext.QuickTip QuickTip} instance used to show tips from all registered elements.
+         * @return {Ext.QuickTip}
          */
         getQuickTip : function(){
             return tip;
@@ -1050,8 +1072,75 @@ Ext.QuickTips = function(){
          * Alias of {@link #register}.
          * @param {Object} config The config object
          */
-        tips :function(){
+        tips : function(){
             tip.register.apply(tip, arguments);
         }
+    };
+}();/**
+ * @class Ext.slider.Tip
+ * @extends Ext.Tip
+ * Simple plugin for using an Ext.Tip with a slider to show the slider value. Example usage:
+<pre>
+new Ext.Slider({
+    width: 214,
+    minValue: 0,
+    maxValue: 100,
+    plugins: new Ext.slider.Tip()
+});
+</pre>
+ * Optionally provide your own tip text by overriding getText:
+ <pre>
+ new Ext.Slider({
+     width: 214,
+     minValue: 0,
+     maxValue: 100,
+     plugins: new Ext.slider.Tip({
+         getText: function(thumb){
+             return String.format('<b>{0}% complete</b>', thumb.value);
+         }
+     })
+ });
+ </pre>
+ */
+Ext.slider.Tip = Ext.extend(Ext.Tip, {
+    minWidth: 10,
+    offsets : [0, -10],
+    
+    init: function(slider) {
+        slider.on({
+            scope    : this,
+            dragstart: this.onSlide,
+            drag     : this.onSlide,
+            dragend  : this.hide,
+            destroy  : this.destroy
+        });
+    },
+    
+    /**
+     * @private
+     * Called whenever a dragstart or drag event is received on the associated Thumb. 
+     * Aligns the Tip with the Thumb's new position.
+     * @param {Ext.slider.MultiSlider} slider The slider
+     * @param {Ext.EventObject} e The Event object
+     * @param {Ext.slider.Thumb} thumb The thumb that the Tip is attached to
+     */
+    onSlide : function(slider, e, thumb) {
+        this.show();
+        this.body.update(this.getText(thumb));
+        this.doAutoWidth();
+        this.el.alignTo(thumb.el, 'b-t?', this.offsets);
+    },
+
+    /**
+     * Used to create the text that appears in the Tip's body. By default this just returns
+     * the value of the Slider Thumb that the Tip is attached to. Override to customize.
+     * @param {Ext.slider.Thumb} thumb The Thumb that the Tip is attached to
+     * @return {String} The text to display in the tip
+     */
+    getText : function(thumb) {
+        return String(thumb.value);
     }
-}();
+});
+
+//backwards compatibility - SliderTip used to be a ux before 3.2
+Ext.ux.SliderTip = Ext.slider.Tip;

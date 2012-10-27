@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.form.FieldSet
@@ -146,15 +146,6 @@ Ext.form.FieldSet = Ext.extend(Ext.Panel, {
             this.checkbox.dom.checked = true;
         }
         Ext.form.FieldSet.superclass.onExpand.call(this, doAnim, animArg);
-        // Align errors for subFields
-        this.items.each(function(){
-            if (this.errorEl && this.alignErrorEl){
-                this.alignErrorEl();
-            }
-            if (this.errorIcon && this.alignErrorIcon){
-                this.alignErrorIcon();
-            }
-        })
     },
 
     /**

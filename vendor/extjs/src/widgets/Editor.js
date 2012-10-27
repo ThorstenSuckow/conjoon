@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Editor
@@ -32,8 +32,9 @@ Ext.extend(Ext.Editor, Ext.Component, {
     /**
      * @cfg {Boolean} allowBlur
      * True to {@link #completeEdit complete the editing process} if in edit mode when the
-     * field is blurred. Defaults to <tt>false</tt>.
+     * field is blurred. Defaults to <tt>true</tt>.
      */
+    allowBlur: true,
     /**
      * @cfg {Boolean/String} autoSize
      * True for the editor to automatically adopt the size of the underlying field, "width" to adopt the width only,
@@ -264,7 +265,8 @@ Ext.extend(Ext.Editor, Ext.Component, {
         delete this.field.lastSize;
         this.field.setSize(w, h);
         if(this.el){
-            if(Ext.isGecko2 || Ext.isOpera){
+            // IE7 in strict mode doesn't size properly.
+            if(Ext.isGecko2 || Ext.isOpera || (Ext.isIE7 && Ext.isStrict)){
                 // prevent layer scrollbars
                 this.el.setSize(w, h);
             }
@@ -290,6 +292,10 @@ Ext.extend(Ext.Editor, Ext.Component, {
     completeEdit : function(remainVisible){
         if(!this.editing){
             return;
+        }
+        // Assert combo values first
+        if (this.field.assertValue) {
+            this.field.assertValue();
         }
         var v = this.getValue();
         if(!this.field.isValid()){
@@ -348,7 +354,7 @@ Ext.extend(Ext.Editor, Ext.Component, {
     // private
     onBlur : function(){
         // selectSameEditor flag allows the same editor to be started without onBlur firing on itself
-        if(this.allowBlur !== true && this.editing && this.selectSameEditor !== true){
+        if(this.allowBlur === true && this.editing && this.selectSameEditor !== true){
             this.completeEdit();
         }
     },

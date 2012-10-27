@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.layout.AnchorLayout
@@ -91,95 +91,157 @@ anchor: '-50 75%'
      */
 
     // private
-    monitorResize:true,
-    type: 'anchor',
+    monitorResize : true,
+
+    type : 'anchor',
+
+    /**
+     * @cfg {String} defaultAnchor
+     *
+     * default anchor for all child container items applied if no anchor or specific width is set on the child item.  Defaults to '100%'.
+     *
+     */
+    defaultAnchor : '100%',
+
+    parseAnchorRE : /^(r|right|b|bottom)$/i,
+
 
     getLayoutTargetSize : function() {
-        var target = this.container.getLayoutTarget();
-        if (!target) {
-            return {};
+        var target = this.container.getLayoutTarget(), ret = {};
+        if (target) {
+            ret = target.getViewSize();
+
+            // IE in strict mode will return a width of 0 on the 1st pass of getViewSize.
+            // Use getStyleSize to verify the 0 width, the adjustment pass will then work properly
+            // with getViewSize
+            if (Ext.isIE && Ext.isStrict && ret.width == 0){
+                ret =  target.getStyleSize();
+            }
+            ret.width -= target.getPadding('lr');
+            ret.height -= target.getPadding('tb');
         }
-        // Style Sized (scrollbars not included)
-        return target.getStyleSize();
+        return ret;
     },
 
     // private
-    onLayout : function(ct, target){
-        Ext.layout.AnchorLayout.superclass.onLayout.call(this, ct, target);
-        var size = this.getLayoutTargetSize();
+    onLayout : function(container, target) {
+        Ext.layout.AnchorLayout.superclass.onLayout.call(this, container, target);
 
-        var w = size.width, h = size.height;
+        var size = this.getLayoutTargetSize(),
+            containerWidth = size.width,
+            containerHeight = size.height,
+            overflow = target.getStyle('overflow'),
+            components = this.getRenderedItems(container),
+            len = components.length,
+            boxes = [],
+            box,
+            anchorWidth,
+            anchorHeight,
+            component,
+            anchorSpec,
+            calcWidth,
+            calcHeight,
+            anchorsArray,
+            totalHeight = 0,
+            i,
+            el;
 
-        if(w < 20 && h < 20){
+        if(containerWidth < 20 && containerHeight < 20){
             return;
         }
 
         // find the container anchoring size
-        var aw, ah;
-        if(ct.anchorSize){
-            if(typeof ct.anchorSize == 'number'){
-                aw = ct.anchorSize;
-            }else{
-                aw = ct.anchorSize.width;
-                ah = ct.anchorSize.height;
+        if(container.anchorSize) {
+            if(typeof container.anchorSize == 'number') {
+                anchorWidth = container.anchorSize;
+            } else {
+                anchorWidth = container.anchorSize.width;
+                anchorHeight = container.anchorSize.height;
             }
-        }else{
-            aw = ct.initialConfig.width;
-            ah = ct.initialConfig.height;
+        } else {
+            anchorWidth = container.initialConfig.width;
+            anchorHeight = container.initialConfig.height;
         }
 
-        var cs = this.getRenderedItems(ct), len = cs.length, i, c, a, cw, ch, el, vs;
-        for(i = 0; i < len; i++){
-            c = cs[i];
-            el = c.getPositionEl();
-            if(c.anchor){
-                a = c.anchorSpec;
-                if(!a){ // cache all anchor values
-                    vs = c.anchor.split(' ');
-                    c.anchorSpec = a = {
-                        right: this.parseAnchor(vs[0], c.initialConfig.width, aw),
-                        bottom: this.parseAnchor(vs[1], c.initialConfig.height, ah)
+        for(i = 0; i < len; i++) {
+            component = components[i];
+            el = component.getPositionEl();
+
+            // If a child container item has no anchor and no specific width, set the child to the default anchor size
+            if (!component.anchor && component.items && !Ext.isNumber(component.width) && !(Ext.isIE6 && Ext.isStrict)){
+                component.anchor = this.defaultAnchor;
+            }
+
+            if(component.anchor) {
+                anchorSpec = component.anchorSpec;
+                // cache all anchor values
+                if(!anchorSpec){
+                    anchorsArray = component.anchor.split(' ');
+                    component.anchorSpec = anchorSpec = {
+                        right: this.parseAnchor(anchorsArray[0], component.initialConfig.width, anchorWidth),
+                        bottom: this.parseAnchor(anchorsArray[1], component.initialConfig.height, anchorHeight)
                     };
                 }
-                cw = a.right ? this.adjustWidthAnchor(a.right(w) - el.getMargins('lr'), c) : undefined;
-                ch = a.bottom ? this.adjustHeightAnchor(a.bottom(h) - el.getMargins('tb'), c) : undefined;
+                calcWidth = anchorSpec.right ? this.adjustWidthAnchor(anchorSpec.right(containerWidth) - el.getMargins('lr'), component) : undefined;
+                calcHeight = anchorSpec.bottom ? this.adjustHeightAnchor(anchorSpec.bottom(containerHeight) - el.getMargins('tb'), component) : undefined;
 
-                if(cw || ch){
-                    c.setSize(cw || undefined, ch || undefined);
+                if(calcWidth || calcHeight) {
+                    boxes.push({
+                        component: component,
+                        width: calcWidth || undefined,
+                        height: calcHeight || undefined
+                    });
                 }
             }
         }
+        for (i = 0, len = boxes.length; i < len; i++) {
+            box = boxes[i];
+            box.component.setSize(box.width, box.height);
+        }
+
+        if (overflow && overflow != 'hidden' && !this.adjustmentPass) {
+            var newTargetSize = this.getLayoutTargetSize();
+            if (newTargetSize.width != size.width || newTargetSize.height != size.height){
+                this.adjustmentPass = true;
+                this.onLayout(container, target);
+            }
+        }
+
+        delete this.adjustmentPass;
     },
 
     // private
-    parseAnchor : function(a, start, cstart){
-        if(a && a != 'none'){
+    parseAnchor : function(a, start, cstart) {
+        if (a && a != 'none') {
             var last;
-            if(/^(r|right|b|bottom)$/i.test(a)){   // standard anchor
+            // standard anchor
+            if (this.parseAnchorRE.test(a)) {
                 var diff = cstart - start;
                 return function(v){
                     if(v !== last){
                         last = v;
                         return v - diff;
                     }
-                }
-            }else if(a.indexOf('%') != -1){
-                var ratio = parseFloat(a.replace('%', ''))*.01;   // percentage
+                };
+            // percentage
+            } else if(a.indexOf('%') != -1) {
+                var ratio = parseFloat(a.replace('%', ''))*.01;
                 return function(v){
                     if(v !== last){
                         last = v;
                         return Math.floor(v*ratio);
                     }
-                }
-            }else{
+                };
+            // simple offset adjustment
+            } else {
                 a = parseInt(a, 10);
-                if(!isNaN(a)){                            // simple offset adjustment
-                    return function(v){
-                        if(v !== last){
+                if (!isNaN(a)) {
+                    return function(v) {
+                        if (v !== last) {
                             last = v;
                             return v + a;
                         }
-                    }
+                    };
                 }
             }
         }

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.layout.ColumnLayout
@@ -110,7 +110,12 @@ Ext.layout.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
     // private
     onLayout : function(ct, target){
-        var cs = ct.items.items, len = cs.length, c, i;
+        var cs = ct.items.items,
+            len = cs.length,
+            c,
+            i,
+            m,
+            margins = [];
 
         this.renderAll(ct, target);
 
@@ -131,8 +136,10 @@ Ext.layout.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         for(i = 0; i < len; i++){
             c = cs[i];
+            m = c.getPositionEl().getMargins('lr');
+            margins[i] = m;
             if(!c.columnWidth){
-                pw -= (c.getWidth() + c.getPositionEl().getMargins('lr'));
+                pw -= (c.getWidth() + m);
             }
         }
 
@@ -140,8 +147,9 @@ Ext.layout.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         for(i = 0; i < len; i++){
             c = cs[i];
+            m = margins[i];
             if(c.columnWidth){
-                c.setSize(Math.floor(c.columnWidth * pw) - c.getPositionEl().getMargins('lr'));
+                c.setSize(Math.floor(c.columnWidth * pw) - m);
             }
         }
 

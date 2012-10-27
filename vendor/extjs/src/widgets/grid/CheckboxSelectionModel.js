@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.grid.CheckboxSelectionModel
@@ -42,12 +42,13 @@ Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
     // private
     menuDisabled : true,
     fixed : true,
+    hideable: false,
     dataIndex : '',
     id : 'checker',
+    isColumn: true, // So that ColumnModel doesn't feed this through the Column constructor
 
     constructor : function(){
         Ext.grid.CheckboxSelectionModel.superclass.constructor.apply(this, arguments);
-
         if(this.checkOnly){
             this.handleMouseDown = Ext.emptyFn;
         }
@@ -57,11 +58,21 @@ Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
     initEvents : function(){
         Ext.grid.CheckboxSelectionModel.superclass.initEvents.call(this);
         this.grid.on('render', function(){
-            var view = this.grid.getView();
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-            Ext.fly(view.innerHd).on('mousedown', this.onHdMouseDown, this);
-
+            Ext.fly(this.grid.getView().innerHd).on('mousedown', this.onHdMouseDown, this);
         }, this);
+    },
+
+    /**
+     * @private
+     * Process and refire events routed from the GridView's processEvent method.
+     */
+    processEvent : function(name, e, grid, rowIndex, colIndex){
+        if (name == 'mousedown') {
+            this.onMouseDown(e, e.getTarget());
+            return false;
+        } else {
+            return Ext.grid.Column.prototype.processEvent.apply(this, arguments);
+        }
     },
 
     // private
@@ -75,13 +86,14 @@ Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
                     this.deselectRow(index);
                 }else{
                     this.selectRow(index, true);
+                    this.grid.getView().focusRow(index);
                 }
             }
         }
     },
 
     // private
-    onHdMouseDown : function(e, t){
+    onHdMouseDown : function(e, t) {
         if(t.className == 'x-grid3-hd-checker'){
             e.stopEvent();
             var hd = Ext.fly(t.parentNode);
@@ -99,5 +111,11 @@ Ext.grid.CheckboxSelectionModel = Ext.extend(Ext.grid.RowSelectionModel, {
     // private
     renderer : function(v, p, record){
         return '<div class="x-grid3-row-checker">&#160;</div>';
+    },
+    
+    onEditorSelect: function(row, lastRow){
+        if(lastRow != row && !this.checkOnly){
+            this.selectRow(row); // *** highlight newly-selected cell and update selection
+        }
     }
 });

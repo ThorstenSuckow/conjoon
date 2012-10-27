@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.tree.TreeLoader
@@ -159,7 +159,7 @@ paramOrder: 'param1|param2|param|node'
      * @param {Ext.tree.TreeNode} node
      * @param {Function} callback Function to call after the node has been loaded. The
      * function is passed the TreeNode which was requested to be loaded.
-     * @param (Object) scope The cope (<code>this</code> reference) in which the callback is executed.
+     * @param {Object} scope The scope (<code>this</code> reference) in which the callback is executed.
      * defaults to the loaded TreeNode.
      */
     load : function(node, callback, scope){

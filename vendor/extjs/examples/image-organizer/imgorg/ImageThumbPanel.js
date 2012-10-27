@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Imgorg.ImageThumbPanel = Ext.extend(Ext.Panel, {
     minWidth: 80,
@@ -44,7 +44,7 @@ Imgorg.ImageThumbPanel = Ext.extend(Ext.Panel, {
                 width: 200,
                 style: 'margin-right:20px;',
                 value: sliderValue,
-                plugins: new Ext.ux.SliderTip({
+                plugins: new Ext.slider.Tip({
                     getText: function(slider){
                         return String.format('<b>{0}%</b>', 100+slider.getValue()*3);
                     }

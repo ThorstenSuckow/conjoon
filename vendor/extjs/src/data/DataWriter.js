@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.DataWriter
@@ -161,7 +161,7 @@ Ext.data.DataWriter.prototype = {
      * Converts a Record to a hash, taking into account the state of the Ext.data.Record along with configuration properties
      * related to its rendering, such as {@link #writeAllFields}, {@link Ext.data.Record#phantom phantom}, {@link Ext.data.Record#getChanges getChanges} and
      * {@link Ext.data.DataReader#idProperty idProperty}
-     * @param {Ext.data.Record}
+     * @param {Ext.data.Record} rec The Record from which to create a hash.
      * @param {Object} config <b>NOT YET IMPLEMENTED</b>.  Will implement an exlude/only configuration for fine-control over which fields do/don't get rendered.
      * @return {Object}
      * @protected
@@ -185,7 +185,7 @@ Ext.data.DataWriter.prototype = {
                 delete data[this.meta.idProperty];
             }
         } else {
-            data[this.meta.idProperty] = rec.id
+            data[this.meta.idProperty] = rec.id;
         }
         return data;
     },

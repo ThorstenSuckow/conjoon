@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.DataProxy
@@ -53,7 +53,7 @@ Ext.data.DataProxy.on('write', function(proxy, action, data, res, rs) {
 });
 
 // Listen to "exception" event fired by all proxies
-Ext.data.DataProxy.on('exception', function(proxy, type, action) {
+Ext.data.DataProxy.on('exception', function(proxy, type, action, exception) {
     console.error(type + action + ' exception);
 });
  * </code></pre>
@@ -152,7 +152,7 @@ myStore.on({
          * so any Store instance may observe this event.</p>
          * <p>In addition to being fired through the DataProxy instance that raised the event, this event is also fired
          * through the Ext.data.DataProxy <i>class</i> to allow for centralized processing of exception events from <b>all</b>
-         * DataProxies by attaching a listener to the Ext.data.Proxy class itself.</p>
+         * DataProxies by attaching a listener to the Ext.data.DataProxy class itself.</p>
          * <p>This event can be fired for one of two reasons:</p>
          * <div class="mdetail-params"><ul>
          * <li>remote-request <b>failed</b> : <div class="sub-desc">
@@ -240,10 +240,10 @@ myStore.on({
          * <p>Fires before a request is generated for one of the actions Ext.data.Api.actions.create|update|destroy</p>
          * <p>In addition to being fired through the DataProxy instance that raised the event, this event is also fired
          * through the Ext.data.DataProxy <i>class</i> to allow for centralized processing of beforewrite events from <b>all</b>
-         * DataProxies by attaching a listener to the Ext.data.Proxy class itself.</p>
+         * DataProxies by attaching a listener to the Ext.data.DataProxy class itself.</p>
          * @param {DataProxy} this The proxy for the request
          * @param {String} action [Ext.data.Api.actions.create|update|destroy]
-         * @param {Record/Array[Record]} rs The Record(s) to create|update|destroy.
+         * @param {Record/Record[]} rs The Record(s) to create|update|destroy.
          * @param {Object} params The request <code>params</code> object.  Edit <code>params</code> to add parameters to the request.
          */
         'beforewrite',
@@ -252,12 +252,12 @@ myStore.on({
          * <p>Fires before the request-callback is called</p>
          * <p>In addition to being fired through the DataProxy instance that raised the event, this event is also fired
          * through the Ext.data.DataProxy <i>class</i> to allow for centralized processing of write events from <b>all</b>
-         * DataProxies by attaching a listener to the Ext.data.Proxy class itself.</p>
+         * DataProxies by attaching a listener to the Ext.data.DataProxy class itself.</p>
          * @param {DataProxy} this The proxy that sent the request
          * @param {String} action [Ext.data.Api.actions.create|upate|destroy]
          * @param {Object} data The data object extracted from the server-response
          * @param {Object} response The decoded response from server
-         * @param {Record/Record{}} rs The records from Store
+         * @param {Record/Record[]} rs The Record(s) from Store
          * @param {Object} options The callback's <tt>options</tt> property as passed to the {@link #request} function
          */
         'write'
@@ -439,7 +439,7 @@ proxy.setApi(Ext.data.Api.actions.read, '/users/new_load_url');
      * url will be built Rails-style, as in "/controller/action/32".  restful will aply iff the supplied record is an
      * instance of Ext.data.Record rather than an Array of them.
      * @param {String} action The api action being executed [read|create|update|destroy]
-     * @param {Ext.data.Record/Array[Ext.data.Record]} The record or Array of Records being acted upon.
+     * @param {Ext.data.Record/Ext.data.Record[]} record The record or Array of Records being acted upon.
      * @return {String} url
      * @private
      */
@@ -491,8 +491,8 @@ Ext.util.Observable.call(Ext.data.DataProxy);
  * @extends Ext.Error
  * DataProxy Error extension.
  * constructor
- * @param {String} name
- * @param {Record/Array[Record]/Array}
+ * @param {String} message Message describing the error.
+ * @param {Record/Record[]} arg
  */
 Ext.data.DataProxy.Error = Ext.extend(Ext.Error, {
     constructor : function(message, arg) {

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Button
@@ -185,8 +185,32 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
      * @type Menu
      * The {@link Ext.menu.Menu Menu} object associated with this Button when configured with the {@link #menu} config option.
      */
+    /**
+     * @cfg {Boolean} autoWidth
+     * By default, if a width is not specified the button will attempt to stretch horizontally to fit its content.
+     * If the button is being managed by a width sizing layout (hbox, fit, anchor), set this to false to prevent
+     * the button from doing this automatic sizing.
+     * Defaults to <tt>undefined</tt>.
+     */
 
     initComponent : function(){
+        if(this.menu){
+            // If array of items, turn it into an object config so we
+            // can set the ownerCt property in the config
+            if (Ext.isArray(this.menu)){
+                this.menu = { items: this.menu };
+            }
+            
+            // An object config will work here, but an instance of a menu
+            // will have already setup its ref's and have no effect
+            if (Ext.isObject(this.menu)){
+                this.menu.ownerCt = this;
+            }
+            
+            this.menu = Ext.menu.MenuMgr.get(this.menu);
+            this.menu.ownerCt = undefined;
+        }
+        
         Ext.Button.superclass.initComponent.call(this);
 
         this.addEvents(
@@ -249,9 +273,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
              */
             'menutriggerout'
         );
-        if(this.menu){
-            this.menu = Ext.menu.MenuMgr.get(this.menu);
-        }
+        
         if(Ext.isString(this.toggleGroup)){
             this.enableToggle = true;
         }
@@ -282,7 +304,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             if(!Ext.isEmpty(this.oldCls)){
                 this.el.removeClass([this.oldCls, 'x-btn-pressed']);
             }
-            this.oldCls = (this.iconCls || this.icon) ? (this.text ? ' x-btn-text-icon' : ' x-btn-icon') : ' x-btn-noicon';
+            this.oldCls = (this.iconCls || this.icon) ? (this.text ? 'x-btn-text-icon' : 'x-btn-icon') : 'x-btn-noicon';
             this.el.addClass([this.oldCls, this.pressed ? 'x-btn-pressed' : null]);
         }
     },
@@ -367,9 +389,10 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
 
         if(this.repeat){
             var repeater = new Ext.util.ClickRepeater(btn, Ext.isObject(this.repeat) ? this.repeat : {});
-            this.mon(repeater, 'click', this.onClick, this);
+            this.mon(repeater, 'click', this.onRepeatClick, this);
+        }else{
+            this.mon(btn, this.clickEvent, this.onClick, this);
         }
-        this.mon(btn, this.clickEvent, this.onClick, this);
     },
 
     // private
@@ -437,7 +460,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             this.clearTip();
         }
         if(this.menu && this.destroyMenu !== false) {
-            Ext.destroy(this.menu);
+            Ext.destroy(this.btnEl, this.menu);
         }
         Ext.destroy(this.repeater);
     },
@@ -456,7 +479,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
 
     // private
     doAutoWidth : function(){
-        if(this.el && this.text && this.width === undefined){
+        if(this.autoWidth !== false && this.el && this.text && this.width === undefined){
             this.el.setWidth('auto');
             if(Ext.isIE7 && Ext.isStrict){
                 var ib = this.btnEl;
@@ -547,13 +570,6 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
         return this;
     },
 
-    /**
-     * Focus the button
-     */
-    focus : function(){
-        this.btnEl.focus();
-    },
-
     // private
     onDisable : function(){
         this.onDisableChange(true);
@@ -608,6 +624,11 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
     hasVisibleMenu : function(){
         return this.menu && this.menu.ownerCt == this && this.menu.isVisible();
     },
+    
+    // private
+    onRepeatClick : function(repeat, e){
+        this.onClick(e);
+    },
 
     // private
     onClick : function(e){
@@ -618,9 +639,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             return;
         }
         if(!this.disabled){
-            if(this.enableToggle && (this.allowDepress !== false || !this.pressed)){
-                this.toggle();
-            }
+            this.doToggle();
             if(this.menu && !this.hasVisibleMenu() && !this.ignoreNextClick){
                 this.showMenu();
             }
@@ -629,6 +648,13 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
                 //this.el.removeClass('x-btn-over');
                 this.handler.call(this.scope || this, this, e);
             }
+        }
+    },
+    
+    // private
+    doToggle: function(){
+        if (this.enableToggle && (this.allowDepress !== false || !this.pressed)) {
+            this.toggle();
         }
     },
 

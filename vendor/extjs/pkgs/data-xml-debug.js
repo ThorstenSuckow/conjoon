@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.XmlWriter
@@ -101,8 +101,9 @@ Ext.extend(Ext.data.XmlWriter, Ext.data.DataWriter, {
      * <li>{Array} baseParams.  The baseParams as defined upon {@link Ext.data.Store#baseParams}.  Note that the baseParams have been converted into an array of [{name : "foo", value: "bar"}, ...] pairs in the same manner as the <b>records</b> parameter above.  See {@link #documentRoot} and {@link #forceDocumentRoot}.</li>
      * </ul>
      */
-    // Break up encoding here in case it's being included by some kind of page that will parse it (eg. PHP)
-    tpl: '<tpl for="."><' + '?xml version="{version}" encoding="{encoding}"?' + '><tpl if="documentRoot"><{documentRoot}><tpl for="baseParams"><tpl for="."><{name}>{value}</{name}</tpl></tpl></tpl><tpl if="records.length&gt;1"><{root}></tpl><tpl for="records"><{parent.record}><tpl for="."><{name}>{value}</{name}></tpl></{parent.record}></tpl><tpl if="records.length&gt;1"></{root}></tpl><tpl if="documentRoot"></{documentRoot}></tpl></tpl>',
+    // Encoding the ? here in case it's being included by some kind of page that will parse it (eg. PHP)
+    tpl: '<tpl for="."><\u003fxml version="{version}" encoding="{encoding}"\u003f><tpl if="documentRoot"><{documentRoot}><tpl for="baseParams"><tpl for="."><{name}>{value}</{name}></tpl></tpl></tpl><tpl if="records.length&gt;1"><{root}></tpl><tpl for="records"><{parent.record}><tpl for="."><{name}>{value}</{name}></tpl></{parent.record}></tpl><tpl if="records.length&gt;1"></{root}></tpl><tpl if="documentRoot"></{documentRoot}></tpl></tpl>',
+
 
     /**
      * XmlWriter implementation of the final stage of a write action.
@@ -155,7 +156,6 @@ Ext.extend(Ext.data.XmlWriter, Ext.data.DataWriter, {
         return this.toArray(data);
     }
 });
-
 /**
  * @class Ext.data.XmlReader
  * @extends Ext.data.DataReader
@@ -271,21 +271,22 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
     },
 
     /**
-     * Decode a json response from server.
+     * Decode an XML response from server.
      * @param {String} action [{@link Ext.data.Api#actions} create|read|update|destroy]
      * @param {Object} response HTTP Response object from browser.
-     * @return {Ext.data.Response} response Returns an instance of {@link Ext.data.Response}
+     * @return {Ext.data.Response} An instance of {@link Ext.data.Response}
      */
     readResponse : function(action, response) {
-        var q   = Ext.DomQuery,
-        doc     = response.responseXML;
+        var q = Ext.DomQuery,
+            doc = response.responseXML,
+            root = doc.documentElement || doc;
 
         // create general Response instance.
         var res = new Ext.data.Response({
             action: action,
-            success : this.getSuccess(doc),
-            message: this.getMessage(doc),
-            data: this.extractData(q.select(this.meta.record, doc) || q.select(this.meta.root, doc), false),
+            success : this.getSuccess(root),
+            message: this.getMessage(root),
+            data: this.extractData(q.select(this.meta.record, root) || q.select(this.meta.root, root), false),
             raw: doc
         });
 
@@ -336,7 +337,7 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
         }
         this.getRoot = function(res) {
             return (!Ext.isEmpty(res[this.meta.record])) ? res[this.meta.record] : res[this.meta.root];
-        }
+        };
         if (s.idPath || s.idProperty) {
             var g = this.createAccessor(s.idPath || s.idProperty);
             this.getId = function(rec) {
@@ -365,23 +366,26 @@ Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
     createAccessor : function(){
         var q = Ext.DomQuery;
         return function(key) {
+            if (Ext.isFunction(key)) {
+                return key;
+            }
             switch(key) {
                 case this.meta.totalProperty:
                     return function(root, def){
                         return q.selectNumber(key, root, def);
-                    }
+                    };
                     break;
                 case this.meta.successProperty:
                     return function(root, def) {
                         var sv = q.selectValue(key, root, true);
                         var success = sv !== false && sv !== 'false';
                         return success;
-                    }
+                    };
                     break;
                 default:
                     return function(root, def) {
                         return q.selectValue(key, root, def);
-                    }
+                    };
                     break;
             }
         };

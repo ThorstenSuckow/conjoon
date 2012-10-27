@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.layout.MenuLayout
@@ -11,6 +11,8 @@
  */
  Ext.layout.MenuLayout = Ext.extend(Ext.layout.ContainerLayout, {
     monitorResize : true,
+
+    type: 'menu',
 
     setContainer : function(ct){
         this.monitorResize = !ct.floating;
@@ -25,7 +27,7 @@
             this.itemTpl = Ext.layout.MenuLayout.prototype.itemTpl = new Ext.XTemplate(
                 '<li id="{itemId}" class="{itemCls}">',
                     '<tpl if="needsIcon">',
-                        '<img src="{icon}" class="{iconCls}"/>',
+                        '<img alt="{altText}" src="{icon}" class="{iconCls}"/>',
                     '</tpl>',
                 '</li>'
             );
@@ -50,7 +52,7 @@
             if (!a.isMenuItem && a.needsIcon) {
                 c.positionEl.addClass('x-menu-list-item-indent');
             }
-            this.configureItem(c, position);
+            this.configureItem(c);
         }else if(c && !this.isValidParent(c, target)){
             if(Ext.isNumber(position)){
                 position = target.dom.childNodes[position];
@@ -60,14 +62,17 @@
     },
 
     getItemArgs : function(c) {
-        var isMenuItem = c instanceof Ext.menu.Item;
+        var isMenuItem = c instanceof Ext.menu.Item,
+            canHaveIcon = !(isMenuItem || c instanceof Ext.menu.Separator);
+
         return {
             isMenuItem: isMenuItem,
-            needsIcon: !isMenuItem && (c.icon || c.iconCls),
+            needsIcon: canHaveIcon && (c.icon || c.iconCls),
             icon: c.icon || Ext.BLANK_IMAGE_URL,
             iconCls: 'x-menu-item-icon ' + (c.iconCls || ''),
             itemId: 'x-menu-el-' + c.id,
-            itemCls: 'x-menu-list-item '
+            itemCls: 'x-menu-list-item ',
+            altText: c.altText || ''
         };
     },
 
@@ -87,7 +92,7 @@
             if(w){
                 ct.setWidth(w);
             }else if(Ext.isIE){
-                ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8) ? 'auto' : ct.minWidth);
+                ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8 || Ext.isIE9) ? 'auto' : ct.minWidth);
                 var el = ct.getEl(), t = el.dom.offsetWidth; // force recalc
                 ct.setWidth(ct.getLayoutTarget().getWidth() + el.getFrameWidth('lr'));
             }

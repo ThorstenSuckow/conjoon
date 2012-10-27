@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Component
@@ -37,10 +37,11 @@ editorgrid       {@link Ext.grid.EditorGridPanel}
 flash            {@link Ext.FlashComponent}
 grid             {@link Ext.grid.GridPanel}
 listview         {@link Ext.ListView}
+multislider      {@link Ext.slider.MultiSlider}
 panel            {@link Ext.Panel}
 progress         {@link Ext.ProgressBar}
 propertygrid     {@link Ext.grid.PropertyGrid}
-slider           {@link Ext.Slider}
+slider           {@link Ext.slider.SingleSlider}
 spacer           {@link Ext.Spacer}
 splitbutton      {@link Ext.SplitButton}
 tabpanel         {@link Ext.TabPanel}
@@ -77,6 +78,7 @@ form             {@link Ext.form.FormPanel}
 checkbox         {@link Ext.form.Checkbox}
 checkboxgroup    {@link Ext.form.CheckboxGroup}
 combo            {@link Ext.form.ComboBox}
+compositefield   {@link Ext.form.CompositeField}
 datefield        {@link Ext.form.DateField}
 displayfield     {@link Ext.form.DisplayField}
 field            {@link Ext.form.Field}
@@ -836,6 +838,14 @@ new Ext.Panel({
      * The initial set of data to apply to the <code>{@link #tpl}</code> to
      * update the content area of the Component.
      */
+    
+    /**
+     * @cfg {Array} bubbleEvents
+     * <p>An array of events that, when fired, should be bubbled to any parent container.
+     * See {@link Ext.util.Observable#enableBubble}.
+     * Defaults to <tt>[]</tt>.
+     */
+    bubbleEvents: [],
 
 
     // private
@@ -890,7 +900,22 @@ Ext.Foo = Ext.extend(Ext.Bar, {
 }
 </code></pre>
      */
-    initComponent : Ext.emptyFn,
+    initComponent : function(){
+        /*
+         * this is double processing, however it allows people to be able to do
+         * Ext.apply(this, {
+         *     listeners: {
+         *         //here
+         *     }
+         * });
+         * MyClass.superclass.initComponent.call(this);
+         */
+        if(this.listeners){
+            this.on(this.listeners);
+            delete this.listeners;
+        }
+        this.enableBubble(this.bubbleEvents);
+    },
 
     /**
      * <p>Render this Component into the passed HTML element.</p>
@@ -1265,6 +1290,10 @@ var myGrid = new Ext.grid.EditorGridPanel({
                         this.container.remove();
                     }
                 }
+                // Stop any buffered tasks
+                if(this.focusTask && this.focusTask.cancel){
+                    this.focusTask.cancel();
+                }
                 this.onDestroy();
                 Ext.ComponentMgr.unregister(this);
                 this.fireEvent('destroy', this);
@@ -1347,10 +1376,11 @@ new Ext.Panel({
      */
     focus : function(selectText, delay){
         if(delay){
-            this.focus.defer(Ext.isNumber(delay) ? delay : 10, this, [selectText, false]);
-            return;
+            this.focusTask = new Ext.util.DelayedTask(this.focus, this, [selectText, false]);
+            this.focusTask.delay(Ext.isNumber(delay) ? delay : 10);
+            return this;
         }
-        if(this.rendered){
+        if(this.rendered && !this.isDestroyed){
             this.el.focus();
             if(selectText === true){
                 this.el.dom.select();
@@ -1531,7 +1561,13 @@ var isText = t.isXType('textfield');        // true
 var isBoxSubclass = t.isXType('box');       // true, descended from BoxComponent
 var isBoxInstance = t.isXType('box', true); // false, not a direct BoxComponent instance
 </code></pre>
-     * @param {String} xtype The xtype to check for this Component
+     * @param {String/Ext.Component/Class} xtype The xtype to check for this Component. Note that the the component can either be an instance
+     * or a component class:
+     * <pre><code>
+var c = new Ext.Component();
+console.log(c.isXType(c));
+console.log(c.isXType(Ext.Component)); 
+</code></pre>
      * @param {Boolean} shallow (optional) False to check whether this Component is descended from the xtype (this is
      * the default), or true to check whether this Component is directly of the specified xtype.
      * @return {Boolean} True if this component descends from the specified xtype, false otherwise.
@@ -1586,17 +1622,37 @@ alert(t.getXTypes());  // alerts 'component/box/field/textfield'
 
     /**
      * Find a container above this component at any level by xtype or class
-     * @param {String/Class} xtype The xtype string for a component, or the class of the component directly
+     * @param {String/Ext.Component/Class} xtype The xtype to check for this Component. Note that the the component can either be an instance
+     * or a component class:
+     * @param {Boolean} shallow (optional) False to check whether this Component is descended from the xtype (this is
+     * the default), or true to check whether this Component is directly of the specified xtype.
      * @return {Ext.Container} The first Container which matches the given xtype or class
      */
-    findParentByType : function(xtype) {
-        return Ext.isFunction(xtype) ?
-            this.findParentBy(function(p){
-                return p.constructor === xtype;
-            }) :
-            this.findParentBy(function(p){
-                return p.constructor.xtype === xtype;
-            });
+    findParentByType : function(xtype, shallow){
+        return this.findParentBy(function(c){
+            return c.isXType(xtype, shallow);
+        });
+    },
+    
+    /**
+     * Bubbles up the component/container heirarchy, calling the specified function with each component. The scope (<i>this</i>) of
+     * function call will be the scope provided or the current component. The arguments to the function
+     * will be the args provided or the current component. If the function returns false at any point,
+     * the bubble is stopped.
+     * @param {Function} fn The function to call
+     * @param {Object} scope (optional) The scope of the function (defaults to current node)
+     * @param {Array} args (optional) The args to call the function with (default to passing the current component)
+     * @return {Ext.Component} this
+     */
+    bubble : function(fn, scope, args){
+        var p = this;
+        while(p){
+            if(fn.apply(scope || p, args || [p]) === false){
+                break;
+            }
+            p = p.ownerCt;
+        }
+        return this;
     },
 
     // protected

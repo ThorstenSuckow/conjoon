@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 // Add the additional 'advanced' VTypes
 Ext.apply(Ext.form.VTypes, {
@@ -10,19 +10,21 @@ Ext.apply(Ext.form.VTypes, {
         var date = field.parseDate(val);
 
         if(!date){
-            return;
+            return false;
         }
-        if (field.startDateField && (!this.dateRangeMax || (date.getTime() != this.dateRangeMax.getTime()))) {
+        if (field.startDateField) {
             var start = Ext.getCmp(field.startDateField);
-            start.setMaxValue(date);
-            start.validate();
-            this.dateRangeMax = date;
-        } 
-        else if (field.endDateField && (!this.dateRangeMin || (date.getTime() != this.dateRangeMin.getTime()))) {
+            if (!start.maxValue || (date.getTime() != start.maxValue.getTime())) {
+                start.setMaxValue(date);
+                start.validate();
+            }
+        }
+        else if (field.endDateField) {
             var end = Ext.getCmp(field.endDateField);
-            end.setMinValue(date);
-            end.validate();
-            this.dateRangeMin = date;
+            if (!end.minValue || (date.getTime() != end.minValue.getTime())) {
+                end.setMinValue(date);
+                end.validate();
+            }
         }
         /*
          * Always return true since we're only using this vtype to set the
@@ -52,16 +54,16 @@ Ext.onReady(function(){
 
     var bd = Ext.getBody();
 
-		/*
-		 * ================  Date Range  =======================
-		 */
-    
+    /*
+     * ================  Date Range  =======================
+     */
+
     var dr = new Ext.FormPanel({
       labelWidth: 125,
       frame: true,
       title: 'Date Range',
-	  bodyStyle:'padding:5px 5px 0',
-	  width: 350,
+      bodyStyle:'padding:5px 5px 0',
+      width: 350,
       defaults: {width: 175},
       defaultType: 'datefield',
       items: [{
@@ -80,11 +82,11 @@ Ext.onReady(function(){
     });
 
     dr.render('dr');
-    
+
     /*
      * ================  Password Verification =======================
      */
-        
+
     var pwd = new Ext.FormPanel({
       labelWidth: 125,
       frame: true,

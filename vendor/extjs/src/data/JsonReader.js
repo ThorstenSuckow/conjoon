@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.JsonReader
@@ -23,7 +23,7 @@ var myReader = new Ext.data.JsonReader({
     // constructor that provides mapping for reading the record data objects
     {@link Ext.data.DataReader#fields fields}: [
         // map Record&#39;s 'firstname' field to data object&#39;s key of same name
-        {name: 'name'},
+        {name: 'name', mapping: 'firstname'},
         // map Record&#39;s 'job' field to data object&#39;s 'occupation' key
         {name: 'job', mapping: 'occupation'}
     ]
@@ -165,12 +165,15 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         return this.readRecords(o);
     },
 
-    /**
-     * Decode a json response from server.
-     * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
-     * @param {Object} response
+    /*
      * TODO: refactor code between JsonReader#readRecords, #readResponse into 1 method.
      * there's ugly duplication going on due to maintaining backwards compat. with 2.0.  It's time to do this.
+     */
+    /**
+     * Decode a JSON response from server.
+     * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
+     * @param {Object} response The XHR object returned through an Ajax server request.
+     * @return {Response} A {@link Ext.data.Response Response} object containing the data response, and also status information.
      */
     readResponse : function(action, response) {
         var o = (response.responseText !== undefined) ? Ext.decode(response.responseText) : response;
@@ -178,8 +181,9 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
             throw new Ext.data.JsonReader.Error('response');
         }
 
-        var root = this.getRoot(o);
-        if (action === Ext.data.Api.actions.create) {
+        var root = this.getRoot(o),
+            success = this.getSuccess(o);
+        if (success && action === Ext.data.Api.actions.create) {
             var def = Ext.isDefined(root);
             if (def && Ext.isEmpty(root)) {
                 throw new Ext.data.JsonReader.Error('root-empty', this.meta.root);
@@ -192,7 +196,7 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         // instantiate response object
         var res = new Ext.data.Response({
             action: action,
-            success: this.getSuccess(o),
+            success: success,
             data: (root) ? this.extractData(root, false) : [],
             message: this.getMessage(o),
             raw: o

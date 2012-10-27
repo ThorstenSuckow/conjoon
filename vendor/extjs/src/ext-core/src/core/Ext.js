@@ -1,10 +1,9 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
-
 // for old browsers
 window.undefined = window.undefined;
 
@@ -19,7 +18,12 @@ Ext = {
      * The version of the framework
      * @type String
      */
-    version : '3.1.1'
+    version : '3.4.0',
+    versionDetail : {
+        major : 3,
+        minor : 4,
+        patch : 0
+    }
 };
 
 /**
@@ -51,6 +55,7 @@ Ext.apply = function(o, c, defaults){
             return r.test(ua);
         },
         DOC = document,
+        docMode = DOC.documentMode,
         isStrict = DOC.compatMode == "CSS1Compat",
         isOpera = check(/opera/),
         isChrome = check(/\bchrome\b/),
@@ -60,9 +65,10 @@ Ext.apply = function(o, c, defaults){
         isSafari3 = isSafari && check(/version\/3/),
         isSafari4 = isSafari && check(/version\/4/),
         isIE = !isOpera && check(/msie/),
-        isIE7 = isIE && check(/msie 7/),
-        isIE8 = isIE && check(/msie 8/),
-        isIE6 = isIE && !isIE7 && !isIE8,
+        isIE7 = isIE && (check(/msie 7/) || docMode == 7),
+        isIE8 = isIE && (check(/msie 8/) && docMode != 7),
+        isIE9 = isIE && check(/msie 9/),
+        isIE6 = isIE && !isIE7 && !isIE8 && !isIE9,
         isGecko = !isWebKit && check(/gecko/),
         isGecko2 = isGecko && check(/rv:1\.8/),
         isGecko3 = isGecko && check(/rv:1\.9/),
@@ -108,6 +114,14 @@ Ext.apply = function(o, c, defaults){
          * @type Boolean
          * @property enableFx
          */
+
+        /**
+         * HIGHLY EXPERIMENTAL
+         * True to force css based border-box model override and turning off javascript based adjustments. This is a
+         * runtime configuration and must be set before onReady.
+         * @type Boolean
+         */
+        enableForcedBoxModel : false,
 
         /**
          * True to automatically uncache orphaned Ext.Elements periodically (defaults to true)
@@ -227,7 +241,7 @@ MyGridPanel = Ext.extend(Ext.grid.GridPanel, {
             var oc = Object.prototype.constructor;
 
             return function(sb, sp, overrides){
-                if(Ext.isObject(sp)){
+                if(typeof sp == 'object'){
                     overrides = sp;
                     sp = sb;
                     sb = overrides.constructor != oc ? overrides.constructor : function(){sp.apply(this, arguments);};
@@ -299,15 +313,29 @@ Company.data.CustomStore = function(config) { ... }
          * @method namespace
          */
         namespace : function(){
-            var o, d;
-            Ext.each(arguments, function(v) {
-                d = v.split(".");
-                o = window[d[0]] = window[d[0]] || {};
-                Ext.each(d.slice(1), function(v2){
-                    o = o[v2] = o[v2] || {};
-                });
-            });
-            return o;
+            var len1 = arguments.length,
+                i = 0,
+                len2,
+                j,
+                main,
+                ns,
+                sub,
+                current;
+                
+            for(; i < len1; ++i) {
+                main = arguments[i];
+                ns = arguments[i].split('.');
+                current = window[ns[0]];
+                if (current === undefined) {
+                    current = window[ns[0]] = {};
+                }
+                sub = ns.slice(1);
+                len2 = sub.length;
+                for(j = 0; j < len2; ++j) {
+                    current = current[sub[j]] = current[sub[j]] || {};
+                }
+            }
+            return current;
         },
 
         /**
@@ -394,7 +422,7 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
                  } :
                  function(a, i, j){
                      return Array.prototype.slice.call(a, i || 0, j || a.length);
-                 }
+                 };
          }(),
 
         isIterable : function(v){
@@ -475,7 +503,7 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
             if(Ext.isIterable(obj)){
                 Ext.each(obj, fn, scope);
                 return;
-            }else if(Ext.isObject(obj)){
+            }else if(typeof obj == 'object'){
                 for(var prop in obj){
                     if(obj.hasOwnProperty(prop)){
                         if(fn.call(scope || obj, prop, obj[prop], obj) === false){
@@ -516,7 +544,7 @@ function(el){
             if (el.dom){
                 return el.dom;
             } else {
-                if (Ext.isString(el)) {
+                if (typeof el == 'string') {
                     var e = DOC.getElementById(el);
                     // IE returns elements with the 'name' and 'id' attribute.
                     // we do a strict check to return the element with only the id attribute
@@ -541,6 +569,22 @@ function(el){
         getBody : function(){
             return Ext.get(DOC.body || DOC.documentElement);
         },
+        
+        /**
+         * Returns the current document body as an {@link Ext.Element}.
+         * @return Ext.Element The document body
+         */
+        getHead : function() {
+            var head;
+            
+            return function() {
+                if (head == undefined) {
+                    head = Ext.get(DOC.getElementsByTagName("head")[0]);
+                }
+                
+                return head;
+            };
+        }(),
 
         /**
          * Removes a DOM node from the document.
@@ -562,7 +606,7 @@ function(el){
                     d.innerHTML = '';
                     delete Ext.elCache[n.id];
                 }
-            }
+            };
         }() : function(n){
             if(n && n.parentNode && n.tagName != 'BODY'){
                 (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n, true) : Ext.EventManager.removeAll(n);
@@ -665,7 +709,7 @@ function(el){
          * @return {Boolean}
          */
         isElement : function(v) {
-            return !!v && v.tagName;
+            return v ? !!v.tagName : false;
         },
 
         /**
@@ -733,6 +777,11 @@ function(el){
          */
         isIE8 : isIE8,
         /**
+         * True if the detected browser is Internet Explorer 9.x.
+         * @type Boolean
+         */
+        isIE9 : isIE9,
+        /**
          * True if the detected browser uses the Gecko layout engine (e.g. Mozilla, Firefox).
          * @type Boolean
          */
@@ -792,7 +841,7 @@ Company.data.CustomStore = function(config) { ... }
     Ext.ns = Ext.namespace;
 })();
 
-Ext.ns("Ext.util", "Ext.lib", "Ext.data");
+Ext.ns('Ext.util', 'Ext.lib', 'Ext.data', 'Ext.supports');
 
 Ext.elCache = {};
 

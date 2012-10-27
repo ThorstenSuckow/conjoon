@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.DataView
@@ -122,6 +122,12 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * @cfg {Boolean} trackOver True to enable mouseenter and mouseleave events
      */
     trackOver: false,
+    
+    /**
+     * @cfg {Boolean} blockRefresh Set this to true to ignore datachanged events on the bound store. This is useful if
+     * you wish to provide custom transition animations via a plugin (defaults to false)
+     */
+    blockRefresh: false,
 
     //private
     last: false,
@@ -252,11 +258,12 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
     /**
      * Refreshes the view by reloading the data from the store and re-rendering the template.
      */
-    refresh : function(){
+    refresh : function() {
         this.clearSelections(false, true);
-        var el = this.getTemplateTarget();
-        el.update("");
-        var records = this.store.getRange();
+        var el = this.getTemplateTarget(),
+            records = this.store.getRange();
+            
+        el.update('');
         if(records.length < 1){
             if(!this.deferEmptyText || this.hasSkippedEmptyText){
                 el.update(this.emptyText);
@@ -300,17 +307,19 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * contain <i>named</i> properties.
      */
     collectData : function(records, startIndex){
-        var r = [];
-        for(var i = 0, len = records.length; i < len; i++){
-            r[r.length] = this.prepareData(records[i].data, startIndex+i, records[i]);
+        var r = [],
+            i = 0,
+            len = records.length;
+        for(; i < len; i++){
+            r[r.length] = this.prepareData(records[i].data, startIndex + i, records[i]);
         }
         return r;
     },
 
     // private
-    bufferRender : function(records){
+    bufferRender : function(records, index){
         var div = document.createElement('div');
-        this.tpl.overwrite(div, this.collectData(records));
+        this.tpl.overwrite(div, this.collectData(records, index));
         return Ext.query(this.itemSelector, div);
     },
 
@@ -318,9 +327,9 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
     onUpdate : function(ds, record){
         var index = this.store.indexOf(record);
         if(index > -1){
-            var sel = this.isSelected(index);
-            var original = this.all.elements[index];
-            var node = this.bufferRender([record], index)[0];
+            var sel = this.isSelected(index),
+                original = this.all.elements[index],
+                node = this.bufferRender([record], index)[0];
 
             this.all.replaceElement(index, node, true);
             if(sel){
@@ -394,7 +403,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
                 this.store.destroy();
             }else{
                 this.store.un("beforeload", this.onBeforeLoad, this);
-                this.store.un("datachanged", this.refresh, this);
+                this.store.un("datachanged", this.onDataChanged, this);
                 this.store.un("add", this.onAdd, this);
                 this.store.un("remove", this.onRemove, this);
                 this.store.un("update", this.onUpdate, this);
@@ -409,7 +418,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
             store.on({
                 scope: this,
                 beforeload: this.onBeforeLoad,
-                datachanged: this.refresh,
+                datachanged: this.onDataChanged,
                 add: this.onAdd,
                 remove: this.onRemove,
                 update: this.onUpdate,
@@ -419,6 +428,16 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
         this.store = store;
         if(store){
             this.refresh();
+        }
+    },
+    
+    /**
+     * @private
+     * Calls this.refresh if this.blockRefresh is not true
+     */
+    onDataChanged: function() {
+        if (this.blockRefresh !== true) {
+            this.refresh.apply(this, arguments);
         }
     },
 
@@ -433,9 +452,10 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     // private
     onClick : function(e){
-        var item = e.getTarget(this.itemSelector, this.getTemplateTarget());
+        var item = e.getTarget(this.itemSelector, this.getTemplateTarget()),
+            index;
         if(item){
-            var index = this.indexOf(item);
+            index = this.indexOf(item);
             if(this.onItemClick(item, index, e) !== false){
                 this.fireEvent("click", this, index, item, e);
             }
@@ -549,9 +569,13 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * @return {Array} An array of numeric indexes
      */
     getSelectedIndexes : function(){
-        var indexes = [], s = this.selected.elements;
-        for(var i = 0, len = s.length; i < len; i++){
-            indexes.push(s[i].viewIndex);
+        var indexes = [], 
+            selected = this.selected.elements,
+            i = 0,
+            len = selected.length;
+            
+        for(; i < len; i++){
+            indexes.push(selected[i].viewIndex);
         }
         return indexes;
     },
@@ -561,11 +585,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * @return {Array} An array of {@link Ext.data.Record} objects
      */
     getSelectedRecords : function(){
-        var r = [], s = this.selected.elements;
-        for(var i = 0, len = s.length; i < len; i++){
-            r[r.length] = this.store.getAt(s[i].viewIndex);
-        }
-        return r;
+        return this.getRecords(this.selected.elements);
     },
 
     /**
@@ -574,11 +594,14 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * @return {Array} records The {@link Ext.data.Record} objects
      */
     getRecords : function(nodes){
-        var r = [], s = nodes;
-        for(var i = 0, len = s.length; i < len; i++){
-            r[r.length] = this.store.getAt(s[i].viewIndex);
+        var records = [], 
+            i = 0,
+            len = nodes.length;
+            
+        for(; i < len; i++){
+            records[records.length] = this.store.getAt(nodes[i].viewIndex);
         }
-        return r;
+        return records;
     },
 
     /**
@@ -609,7 +632,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Returns true if the passed node is selected, else false.
-     * @param {HTMLElement/Number} node The node or node index to check
+     * @param {HTMLElement/Number/Ext.data.Record} node The node, node index or record to check
      * @return {Boolean} True if selected, else false
      */
     isSelected : function(node){
@@ -618,7 +641,7 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Deselects a node.
-     * @param {HTMLElement/Number} node The node to deselect
+     * @param {HTMLElement/Number/Record} node The node, node index or record to deselect
      */
     deselect : function(node){
         if(this.isSelected(node)){
@@ -634,8 +657,8 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Selects a set of nodes.
-     * @param {Array/HTMLElement/String/Number} nodeInfo An HTMLElement template node, index of a template node,
-     * id of a template node or an array of any of those to select
+     * @param {Array/HTMLElement/String/Number/Ext.data.Record} nodeInfo An HTMLElement template node, index of a template node,
+     * id of a template node, record associated with a node or an array of any of those to select
      * @param {Boolean} keepExisting (optional) true to keep existing selections
      * @param {Boolean} suppressEvent (optional) true to skip firing of the selectionchange vent
      */
@@ -683,7 +706,8 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Gets a template node.
-     * @param {HTMLElement/String/Number} nodeInfo An HTMLElement template node, index of a template node or the id of a template node
+     * @param {HTMLElement/String/Number/Ext.data.Record} nodeInfo An HTMLElement template node, index of a template node, 
+     * the id of a template node or the record associated with the node.
      * @return {HTMLElement} The node or null if it wasn't found
      */
     getNode : function(nodeInfo){
@@ -691,6 +715,9 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
             return document.getElementById(nodeInfo);
         }else if(Ext.isNumber(nodeInfo)){
             return this.all.elements[nodeInfo];
+        }else if(nodeInfo instanceof Ext.data.Record){
+            var idx = this.store.indexOf(nodeInfo);
+            return this.all.elements[idx];
         }
         return nodeInfo;
     },
@@ -702,10 +729,12 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      * @return {Array} An array of nodes
      */
     getNodes : function(start, end){
-        var ns = this.all.elements;
+        var ns = this.all.elements,
+            nodes = [],
+            i;
+            
         start = start || 0;
         end = !Ext.isDefined(end) ? Math.max(ns.length - 1, 0) : end;
-        var nodes = [], i;
         if(start <= end){
             for(i = start; i <= end && ns[i]; i++){
                 nodes.push(ns[i]);
@@ -720,7 +749,8 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Finds the index of the passed node.
-     * @param {HTMLElement/String/Number} nodeInfo An HTMLElement template node, index of a template node or the id of a template node
+     * @param {HTMLElement/String/Number/Record} nodeInfo An HTMLElement template node, index of a template node, the id of a template node
+     * or a record associated with a node.
      * @return {Number} The index of the node or -1
      */
     indexOf : function(node){
@@ -787,7 +817,7 @@ Ext.reg('dataview', Ext.DataView);
          "url":"images\/thumbs\/zack_sink.jpg"
       }
    ]
-} 
+}
 var store = new Ext.data.JsonStore({
     url: 'get-images.php',
     root: 'images',
@@ -810,7 +840,7 @@ var listView = new Ext.list.ListView({
         dataIndex: 'name'
     },{
         header: 'Last Modified',
-        width: .35, 
+        width: .35,
         dataIndex: 'lastmod',
         tpl: '{lastmod:date("m-d h:i a")}'
     },{
@@ -860,7 +890,7 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
      * @cfg {String} itemSelector
      * Defaults to <tt>'dl'</tt> to work with the preconfigured <b><tt>{@link Ext.DataView#tpl tpl}</tt></b>.
      * This setting specifies the CSS selector (e.g. <tt>div.some-class</tt> or <tt>span:first-child</tt>)
-     * that will be used to determine what nodes the ListView will be working with.   
+     * that will be used to determine what nodes the ListView will be working with.
      */
     itemSelector: 'dl',
     /**
@@ -909,7 +939,7 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
     tpl: '{size:fileSize}',
     width: .35
 }
-     * </code></pre> 
+     * </code></pre>
      * Acceptable properties for each column configuration object are:
      * <div class="mdetail-params"><ul>
      * <li><b><tt>align</tt></b> : String<div class="sub-desc">Set the CSS text-align property
@@ -943,8 +973,8 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
     /*
      * IE has issues when setting percentage based widths to 100%. Default to 99.
      */
-    maxWidth: Ext.isIE ? 99 : 100,
-    
+    maxColumnWidth: Ext.isIE ? 99 : 100,
+
     initComponent : function(){
         if(this.columnResize){
             this.colResizer = new Ext.list.ColumnResizer(this.colResizer);
@@ -983,13 +1013,13 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
                 '</tpl>'
             );
         };
-        
-        var cs = this.columns, 
-            allocatedWidth = 0, 
-            colsWithWidth = 0, 
-            len = cs.length, 
+
+        var cs = this.columns,
+            allocatedWidth = 0,
+            colsWithWidth = 0,
+            len = cs.length,
             columns = [];
-            
+
         for(var i = 0; i < len; i++){
             var c = cs[i];
             if(!c.isColumn) {
@@ -998,18 +1028,21 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
             }
             if(c.width) {
                 allocatedWidth += c.width*100;
+                if(allocatedWidth > this.maxColumnWidth){
+                    c.width -= (allocatedWidth - this.maxColumnWidth) / 100;
+                }
                 colsWithWidth++;
             }
             columns.push(c);
         }
-        
+
         cs = this.columns = columns;
-        
+
         // auto calculate missing column widths
         if(colsWithWidth < len){
             var remaining = len - colsWithWidth;
-            if(allocatedWidth < this.maxWidth){
-                var perCol = ((this.maxWidth-allocatedWidth) / remaining)/100;
+            if(allocatedWidth < this.maxColumnWidth){
+                var perCol = ((this.maxColumnWidth-allocatedWidth) / remaining)/100;
                 for(var j = 0; j < len; j++){
                     var c = cs[j];
                     if(!c.width){
@@ -1023,12 +1056,12 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
 
     onRender : function(){
         this.autoEl = {
-            cls: 'x-list-wrap'  
+            cls: 'x-list-wrap'
         };
         Ext.list.ListView.superclass.onRender.apply(this, arguments);
 
         this.internalTpl.overwrite(this.el, {columns: this.columns});
-        
+
         this.innerBody = Ext.get(this.el.dom.childNodes[1].firstChild);
         this.innerHd = Ext.get(this.el.dom.firstChild.firstChild);
 
@@ -1043,7 +1076,7 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
 
     /**
      * <p>Function which can be overridden which returns the data object passed to this
-     * view's {@link #tpl template} to render the whole ListView. The returned object 
+     * view's {@link #tpl template} to render the whole ListView. The returned object
      * shall contain the following properties:</p>
      * <div class="mdetail-params"><ul>
      * <li><b>columns</b> : String<div class="sub-desc">See <tt>{@link #columns}</tt></div></li>
@@ -1060,7 +1093,7 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
         return {
             columns: this.columns,
             rows: rs
-        }
+        };
     },
 
     verifyInternalSize : function(){
@@ -1071,30 +1104,32 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
 
     // private
     onResize : function(w, h){
-        var bd = this.innerBody.dom;
-        var hd = this.innerHd.dom
-        if(!bd){
+        var body = this.innerBody.dom,
+            header = this.innerHd.dom,
+            scrollWidth = w - Ext.num(this.scrollOffset, Ext.getScrollBarWidth()) + 'px',
+            parentNode;
+            
+        if(!body){
             return;
         }
-        var bdp = bd.parentNode;
+        parentNode = body.parentNode;
         if(Ext.isNumber(w)){
-            var sw = w - Ext.num(this.scrollOffset, Ext.getScrollBarWidth());
-            if(this.reserveScrollOffset || ((bdp.offsetWidth - bdp.clientWidth) > 10)){
-                bd.style.width = sw + 'px';
-                hd.style.width = sw + 'px';
+            if(this.reserveScrollOffset || ((parentNode.offsetWidth - parentNode.clientWidth) > 10)){
+                body.style.width = scrollWidth;
+                header.style.width = scrollWidth;
             }else{
-                bd.style.width = w + 'px';
-                hd.style.width = w + 'px';
+                body.style.width = w + 'px';
+                header.style.width = w + 'px';
                 setTimeout(function(){
-                    if((bdp.offsetWidth - bdp.clientWidth) > 10){
-                        bd.style.width = sw + 'px';
-                        hd.style.width = sw + 'px';
+                    if((parentNode.offsetWidth - parentNode.clientWidth) > 10){
+                        body.style.width = scrollWidth;
+                        header.style.width = scrollWidth;
                     }
                 }, 10);
             }
         }
         if(Ext.isNumber(h)){
-            bdp.style.height = (h - hd.parentNode.offsetHeight) + 'px';
+            parentNode.style.height = Math.max(0, h - header.parentNode.offsetHeight) + 'px';
         }
     },
 
@@ -1103,11 +1138,14 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
         this.verifyInternalSize();
     },
 
-    findHeaderIndex : function(hd){
-        hd = hd.dom || hd;
-        var pn = hd.parentNode, cs = pn.parentNode.childNodes;
-        for(var i = 0, c; c = cs[i]; i++){
-            if(c == pn){
+    findHeaderIndex : function(header){
+        header = header.dom || header;
+        var parentNode = header.parentNode, 
+            children = parentNode.parentNode.childNodes,
+            i = 0,
+            c;
+        for(; c = children[i]; i++){
+            if(c == parentNode){
                 return i;
             }
         }
@@ -1115,9 +1153,13 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
     },
 
     setHdWidths : function(){
-        var els = this.innerHd.dom.getElementsByTagName('div');
-        for(var i = 0, cs = this.columns, len = cs.length; i < len; i++){
-            els[i].style.width = (cs[i].width*100) + '%';
+        var els = this.innerHd.dom.getElementsByTagName('div'),
+            i = 0,
+            columns = this.columns,
+            len = columns.length;
+            
+        for(; i < len; i++){
+            els[i].style.width = (columns[i].width*100) + '%';
         }
     }
 });
@@ -1313,23 +1355,23 @@ Ext.list.ColumnResizer = Ext.extend(Ext.util.Observable, {
     },
 
     handleHdMove : function(e, t){
-        var hw = 5,
+        var handleWidth = 5,
             x = e.getPageX(),
-            hd = e.getTarget('em', 3, true);
-        if(hd){
-            var r = hd.getRegion(),
-                ss = hd.dom.style,
-                pn = hd.dom.parentNode;
+            header = e.getTarget('em', 3, true);
+        if(header){
+            var region = header.getRegion(),
+                style = header.dom.style,
+                parentNode = header.dom.parentNode;
 
-            if(x - r.left <= hw && pn != pn.parentNode.firstChild){
-                this.activeHd = Ext.get(pn.previousSibling.firstChild);
-                ss.cursor = Ext.isWebKit ? 'e-resize' : 'col-resize';
-            } else if(r.right - x <= hw && pn != pn.parentNode.lastChild.previousSibling){
-                this.activeHd = hd;
-                ss.cursor = Ext.isWebKit ? 'w-resize' : 'col-resize';
+            if(x - region.left <= handleWidth && parentNode != parentNode.parentNode.firstChild){
+                this.activeHd = Ext.get(parentNode.previousSibling.firstChild);
+                style.cursor = Ext.isWebKit ? 'e-resize' : 'col-resize';
+            } else if(region.right - x <= handleWidth && parentNode != parentNode.parentNode.lastChild.previousSibling){
+                this.activeHd = header;
+                style.cursor = Ext.isWebKit ? 'w-resize' : 'col-resize';
             } else{
                 delete this.activeHd;
-                ss.cursor = '';
+                style.cursor = '';
             }
         }
     },
@@ -1340,59 +1382,89 @@ Ext.list.ColumnResizer = Ext.extend(Ext.util.Observable, {
     },
 
     onStart: function(e){
-        this.view.disableHeaders = true;
-        this.proxy = this.view.el.createChild({cls:'x-list-resizer'});
-        this.proxy.setHeight(this.view.el.getHeight());
-
-        var x = this.tracker.getXY()[0],
-            w = this.view.innerHd.getWidth();
-
-        this.hdX = this.dragHd.getX();
-        this.hdIndex = this.view.findHeaderIndex(this.dragHd);
-
-        this.proxy.setX(this.hdX);
-        this.proxy.setWidth(x-this.hdX);
-
-        this.minWidth = w*this.minPct;
-        this.maxWidth = w - (this.minWidth*(this.view.columns.length-1-this.hdIndex));
+        
+        var me = this,
+            view = me.view,
+            dragHeader = me.dragHd,
+            x = me.tracker.getXY()[0];            
+        
+        me.proxy = view.el.createChild({cls:'x-list-resizer'});
+        me.dragX = dragHeader.getX();
+        me.headerIndex = view.findHeaderIndex(dragHeader);
+        
+        me.headersDisabled = view.disableHeaders;
+        view.disableHeaders = true;
+        
+        me.proxy.setHeight(view.el.getHeight());
+        me.proxy.setX(me.dragX);
+        me.proxy.setWidth(x - me.dragX);
+        
+        this.setBoundaries();
+        
+    },
+    
+    // Sets up the boundaries for the drag/drop operation
+    setBoundaries: function(relativeX){
+        var view = this.view,
+            headerIndex = this.headerIndex,
+            width = view.innerHd.getWidth(),
+            relativeX = view.innerHd.getX(),
+            minWidth = Math.ceil(width * this.minPct),
+            maxWidth = width - minWidth,
+            numColumns = view.columns.length,
+            headers = view.innerHd.select('em', true),
+            minX = minWidth + relativeX,
+            maxX = maxWidth + relativeX,
+            header;
+          
+        if (numColumns == 2) {
+            this.minX = minX;
+            this.maxX = maxX;
+        }else{
+            header = headers.item(headerIndex + 2);
+            this.minX = headers.item(headerIndex).getX() + minWidth;
+            this.maxX = header ? header.getX() - minWidth : maxX;
+            if (headerIndex == 0) {
+                // First
+                this.minX = minX;
+            } else if (headerIndex == numColumns - 2) {
+                // Last
+                this.maxX = maxX;
+            }
+        }
     },
 
     onDrag: function(e){
-        var cursorX = this.tracker.getXY()[0];
-        this.proxy.setWidth((cursorX-this.hdX).constrain(this.minWidth, this.maxWidth));
+        var me = this,
+            cursorX = me.tracker.getXY()[0].constrain(me.minX, me.maxX);
+            
+        me.proxy.setWidth(cursorX - this.dragX);
     },
 
     onEnd: function(e){
         /* calculate desired width by measuring proxy and then remove it */
-        var nw = this.proxy.getWidth();
+        var newWidth = this.proxy.getWidth(),
+            index = this.headerIndex,
+            view = this.view,
+            columns = view.columns,
+            width = view.innerHd.getWidth(),
+            newPercent = Math.ceil(newWidth * view.maxColumnWidth / width) / 100,
+            disabled = this.headersDisabled,
+            headerCol = columns[index],
+            otherCol = columns[index + 1],
+            totalPercent = headerCol.width + otherCol.width;
+
         this.proxy.remove();
 
-        var index = this.hdIndex,
-            vw = this.view,
-            cs = vw.columns,
-            len = cs.length,
-            w = this.view.innerHd.getWidth(),
-            minPct = this.minPct * 100,
-            pct = Math.ceil((nw * vw.maxWidth) / w),
-            diff = (cs[index].width * 100) - pct,
-            each = Math.floor(diff / (len-1-index)),
-            mod = diff - (each * (len-1-index));
-
-        for(var i = index+1; i < len; i++){
-            var cw = (cs[i].width * 100) + each,
-                ncw = Math.max(minPct, cw);
-            if(cw != ncw){
-                mod += cw - ncw;
-            }
-            cs[i].width = ncw / 100;
-        }
-        cs[index].width = pct / 100;
-        cs[index+1].width += (mod / 100);
+        headerCol.width = newPercent;
+        otherCol.width = totalPercent - newPercent;
+      
         delete this.dragHd;
-        vw.setHdWidths();
-        vw.refresh();
+        view.setHdWidths();
+        view.refresh();
+        
         setTimeout(function(){
-            vw.disableHeaders = false;
+            view.disableHeaders = disabled;
         }, 100);
     }
 });

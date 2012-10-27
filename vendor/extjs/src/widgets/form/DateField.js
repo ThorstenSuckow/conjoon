@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.form.DateField
@@ -24,9 +24,9 @@ Ext.form.DateField = Ext.extend(Ext.form.TriggerField,  {
      * @cfg {String} altFormats
      * Multiple date formats separated by "<tt>|</tt>" to try when parsing a user input value and it
      * does not match the defined format (defaults to
-     * <tt>'m/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d'</tt>).
+     * <tt>'m/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d|n-j|n/j'</tt>).
      */
-    altFormats : "m/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d",
+    altFormats : "m/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d|n-j|n/j",
     /**
      * @cfg {String} disabledDaysText
      * The tooltip to display when the date falls on a disabled day (defaults to <tt>'Disabled'</tt>)
@@ -68,6 +68,13 @@ Ext.form.DateField = Ext.extend(Ext.form.TriggerField,  {
      * the keyboard handler for spacebar that selects the current date (defaults to <tt>true</tt>).
      */
     showToday : true,
+    
+    /**
+     * @cfg {Number} startDay
+     * Day index at which the week should begin, 0-based (defaults to 0, which is Sunday)
+     */
+    startDay : 0,
+    
     /**
      * @cfg {Date/String} minValue
      * The minimum allowed date. Can be either a Javascript date object or a string date in a
@@ -117,6 +124,27 @@ disabledDates: ["^03"]
     // private
     defaultAutoCreate : {tag: "input", type: "text", size: "10", autocomplete: "off"},
 
+    // in the absence of a time value, a default value of 12 noon will be used
+    // (note: 12 noon was chosen because it steers well clear of all DST timezone changes)
+    initTime: '12', // 24 hour format
+
+    initTimeFormat: 'H',
+
+    // PUBLIC -- to be documented
+    safeParse : function(value, format) {
+        if (Date.formatContainsHourInfo(format)) {
+            // if parse format contains hour information, no DST adjustment is necessary
+            return Date.parseDate(value, format);
+        } else {
+            // set time to 12 noon, then clear the time
+            var parsedDate = Date.parseDate(value + ' ' + this.initTime, format + ' ' + this.initTimeFormat);
+ 
+            if (parsedDate) {
+                return parsedDate.clearTime();
+            }
+        }
+    },
+
     initComponent : function(){
         Ext.form.DateField.superclass.initComponent.call(this);
 
@@ -139,7 +167,7 @@ disabledDates: ["^03"]
         this.disabledDatesRE = null;
         this.initDisabledDays();
     },
-    
+
     initEvents: function() {
         Ext.form.DateField.superclass.initEvents.call(this);
         this.keyNav = new Ext.KeyNav(this.el, {
@@ -156,9 +184,9 @@ disabledDates: ["^03"]
     initDisabledDays : function(){
         if(this.disabledDates){
             var dd = this.disabledDates,
-                len = dd.length - 1, 
+                len = dd.length - 1,
                 re = "(?:";
-                
+
             Ext.each(dd, function(d, i){
                 re += Ext.isDate(d) ? '^' + Ext.escapeRe(d.dateFormat(this.format)) + '$' : dd[i];
                 if(i != len){
@@ -216,45 +244,57 @@ disabledDates: ["^03"]
         }
     },
 
-    // private
-    validateValue : function(value){
-        value = this.formatDate(value);
-        if(!Ext.form.DateField.superclass.validateValue.call(this, value)){
-            return false;
+    /**
+     * Runs all of NumberFields validations and returns an array of any errors. Note that this first
+     * runs TextField's validations, so the returned array is an amalgamation of all field errors.
+     * The additional validation checks are testing that the date format is valid, that the chosen
+     * date is within the min and max date constraints set, that the date chosen is not in the disabledDates
+     * regex and that the day chosed is not one of the disabledDays.
+     * @param {Mixed} value The value to get errors for (defaults to the current field value)
+     * @return {Array} All validation errors for this field
+     */
+    getErrors: function(value) {
+        var errors = Ext.form.DateField.superclass.getErrors.apply(this, arguments);
+
+        value = this.formatDate(value || this.processValue(this.getRawValue()));
+
+        if (value.length < 1) { // if it's blank and textfield didn't flag it then it's valid
+             return errors;
         }
-        if(value.length < 1){ // if it's blank and textfield didn't flag it then it's valid
-             return true;
-        }
+
         var svalue = value;
         value = this.parseDate(value);
-        if(!value){
-            this.markInvalid(String.format(this.invalidText, svalue, this.format));
-            return false;
+        if (!value) {
+            errors.push(String.format(this.invalidText, svalue, this.format));
+            return errors;
         }
+
         var time = value.getTime();
-        if(this.minValue && time < this.minValue.getTime()){
-            this.markInvalid(String.format(this.minText, this.formatDate(this.minValue)));
-            return false;
+        if (this.minValue && time < this.minValue.clearTime().getTime()) {
+            errors.push(String.format(this.minText, this.formatDate(this.minValue)));
         }
-        if(this.maxValue && time > this.maxValue.getTime()){
-            this.markInvalid(String.format(this.maxText, this.formatDate(this.maxValue)));
-            return false;
+
+        if (this.maxValue && time > this.maxValue.clearTime().getTime()) {
+            errors.push(String.format(this.maxText, this.formatDate(this.maxValue)));
         }
-        if(this.disabledDays){
+
+        if (this.disabledDays) {
             var day = value.getDay();
+
             for(var i = 0; i < this.disabledDays.length; i++) {
-                if(day === this.disabledDays[i]){
-                    this.markInvalid(this.disabledDaysText);
-                    return false;
+                if (day === this.disabledDays[i]) {
+                    errors.push(this.disabledDaysText);
+                    break;
                 }
             }
         }
+
         var fvalue = this.formatDate(value);
-        if(this.disabledDatesRE && this.disabledDatesRE.test(fvalue)){
-            this.markInvalid(String.format(this.disabledDatesText, fvalue));
-            return false;
+        if (this.disabledDatesRE && this.disabledDatesRE.test(fvalue)) {
+            errors.push(String.format(this.disabledDatesText, fvalue));
         }
-        return true;
+
+        return errors;
     },
 
     // private
@@ -298,17 +338,20 @@ dateField.setValue('2006-05-04');
     },
 
     // private
-    parseDate : function(value){
+    parseDate : function(value) {
         if(!value || Ext.isDate(value)){
             return value;
         }
-        var v = Date.parseDate(value, this.format);
-        if(!v && this.altFormats){
-            if(!this.altFormatsArray){
-                this.altFormatsArray = this.altFormats.split("|");
-            }
-            for(var i = 0, len = this.altFormatsArray.length; i < len && !v; i++){
-                v = Date.parseDate(value, this.altFormatsArray[i]);
+
+        var v = this.safeParse(value, this.format),
+            af = this.altFormats,
+            afa = this.altFormatsArray;
+
+        if (!v && af) {
+            afa = afa || af.split("|");
+
+            for (var i = 0, len = afa.length; i < len && !v; i++) {
+                v = this.safeParse(value, afa[i]);
             }
         }
         return v;
@@ -316,7 +359,7 @@ dateField.setValue('2006-05-04');
 
     // private
     onDestroy : function(){
-		Ext.destroy(this.menu, this.keyNav);
+        Ext.destroy(this.menu, this.keyNav);
         Ext.form.DateField.superclass.onDestroy.call(this);
     },
 
@@ -351,6 +394,7 @@ dateField.setValue('2006-05-04');
             disabledDaysText : this.disabledDaysText,
             format : this.format,
             showToday : this.showToday,
+            startDay: this.startDay,
             minText : String.format(this.minText, this.formatDate(this.minValue)),
             maxText : String.format(this.maxText, this.formatDate(this.maxValue))
         });
@@ -358,20 +402,20 @@ dateField.setValue('2006-05-04');
         this.menu.show(this.el, "tl-bl?");
         this.menuEvents('on');
     },
-    
+
     //private
     menuEvents: function(method){
         this.menu[method]('select', this.onSelect, this);
         this.menu[method]('hide', this.onMenuHide, this);
         this.menu[method]('show', this.onFocus, this);
     },
-    
+
     onSelect: function(m, d){
         this.setValue(d);
         this.fireEvent('select', this, d);
         this.menu.hide();
     },
-    
+
     onMenuHide: function(){
         this.focus(false, 60);
         this.menuEvents('un');

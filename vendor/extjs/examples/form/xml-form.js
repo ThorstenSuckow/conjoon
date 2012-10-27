@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Ext.onReady(function(){
 
@@ -40,10 +40,12 @@ Ext.onReady(function(){
                 defaultType: 'textfield',
                 items: [{
                         fieldLabel: 'First Name',
+                        emptyText: 'First Name',
                         name: 'first',
                         width:190
                     }, {
                         fieldLabel: 'Last Name',
+                        emptyText: 'Last Name',
                         name: 'last',
                         width:190
                     }, {
@@ -95,7 +97,7 @@ Ext.onReady(function(){
         text: 'Submit',
         disabled:true,
         handler: function(){
-            fs.getForm().submit({url:'xml-errors.xml', waitMsg:'Saving Data...'});
+            fs.getForm().submit({url:'xml-errors.xml', waitMsg:'Saving Data...', submitEmptyText: false});
         }
     });
 

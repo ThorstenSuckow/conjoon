@@ -6,7 +6,13 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js"><div id="cls-Ext.form.Hidden"></div>/**
+    <pre class="prettyprint lang-js">/*!
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+<div id="cls-Ext.form.Hidden"></div>/**
  * @class Ext.form.Hidden
  * @extends Ext.form.Field
  * A basic hidden field for storing hidden values in forms that need to be passed in the form submit.
@@ -18,6 +24,8 @@
 Ext.form.Hidden = Ext.extend(Ext.form.Field, {
     // private
     inputType : 'hidden',
+    
+    shouldLayout: false,
 
     // private
     onRender : function(){

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Element
@@ -106,7 +106,7 @@ Ext.Element.addMethods(function(){
          */
         setSize : function(width, height, animate){
             var me = this;
-            if(Ext.isObject(width)){ // in case of object from getSize()
+            if(typeof width == 'object'){ // in case of object from getSize()
                 height = width.height;
                 width = width.width;
             }
@@ -248,14 +248,14 @@ Ext.Element.addMethods(function(){
                 return {
                     width : extdom.getViewWidth(),
                     height : extdom.getViewHeight()
-                }
+                };
 
             // Else use clientHeight/clientWidth
             } else {
                 return {
                     width : d.clientWidth,
                     height : d.clientHeight
-                }
+                };
             }
         },
 
@@ -282,7 +282,7 @@ Ext.Element.addMethods(function(){
                 return {
                     width : extdom.getViewWidth(),
                     height : extdom.getViewHeight()
-                }
+                };
             }
             // Use Styles if they are set
             if(s.width && s.width != 'auto'){

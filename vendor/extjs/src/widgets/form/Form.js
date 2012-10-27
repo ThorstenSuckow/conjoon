@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.form.FormPanel
@@ -201,12 +201,7 @@ Ext.FormPanel = Ext.extend(Ext.Panel, {
     // private
     beforeDestroy : function(){
         this.stopMonitoring();
-        /*
-         * Don't move this behaviour to BasicForm because it can be used
-         * on it's own.
-         */
-        Ext.destroy(this.form);
-        this.form.items.clear();
+        this.form.destroy(true);
         Ext.FormPanel.superclass.beforeDestroy.call(this);
     },
 
@@ -275,6 +270,11 @@ Ext.FormPanel = Ext.extend(Ext.Panel, {
             // If a Container, its already destroyed by the time it gets here.  Remove any references to destroyed fields.
             }else if (c.findBy){
                 Ext.each(c.findBy(this.isField), this.form.remove, this.form);
+                /*
+                 * This isn't the most efficient way of getting rid of the items, however it's the most
+                 * correct, which in this case is most important.
+                 */
+                this.form.cleanDestroyed();
             }
         }
     },

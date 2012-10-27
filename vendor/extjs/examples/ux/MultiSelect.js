@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Ext.ns('Ext.ux.form');
 
@@ -110,6 +110,8 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
      * {@link #valueField value}, while the value at index 1 is assumed to be the combo {@link #displayField text}.
      * </div></li></ul></div></li></ul></div>
      */
+    
+    cls: 'ux-form-multiselect',
 
     // private
     defaultAutoCreate : {tag: "div"},
@@ -161,6 +163,7 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
         fs.body.addClass('ux-mselect');
 
         this.view = new Ext.ListView({
+            selectedClass: 'ux-mselect-selected',
             multiSelect: true,
             store: this.store,
             columns: [{ header: 'Value', width: 1, dataIndex: this.displayField }],
@@ -210,7 +213,9 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
 
     // private
     onViewBeforeClick: function(vw, index, node, e) {
-        if (this.disabled) {return false;}
+        if (this.disabled || this.readOnly) {
+            return false;
+        }
     },
 
     // private

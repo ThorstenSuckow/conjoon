@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Panel
@@ -95,7 +95,7 @@ new Ext.Panel({
     },
     footerCfg: {
         tag: 'h2',
-        cls: 'x-panel-footer'        // same as the Default class
+        cls: 'x-panel-footer',        // same as the Default class
         html: 'footer html'
     },
     footerCssClass: 'custom-footer', // additional css class, see {@link Ext.element#addClass addClass}
@@ -783,30 +783,30 @@ new Ext.Panel({
         if(this.tbar){
             this.elements += ',tbar';
             this.topToolbar = this.createToolbar(this.tbar);
-            delete this.tbar;
+            this.tbar = null;
 
         }
         if(this.bbar){
             this.elements += ',bbar';
             this.bottomToolbar = this.createToolbar(this.bbar);
-            delete this.bbar;
+            this.bbar = null;
         }
 
         if(this.header === true){
             this.elements += ',header';
-            delete this.header;
+            this.header = null;
         }else if(this.headerCfg || (this.title && this.header !== false)){
             this.elements += ',header';
         }
 
         if(this.footerCfg || this.footer === true){
             this.elements += ',footer';
-            delete this.footer;
+            this.footer = null;
         }
 
         if(this.buttons){
             this.fbar = this.buttons;
-            delete this.buttons;
+            this.buttons = null;
         }
         if(this.fbar){
             this.createFbar(this.fbar);
@@ -1068,9 +1068,12 @@ new Ext.Panel({
                 if(img){
                     Ext.fly(img).replaceClass(old, this.iconCls);
                 }else{
-                    Ext.DomHelper.insertBefore(hd.dom.firstChild, {
-                        tag:'img', src: Ext.BLANK_IMAGE_URL, cls:'x-panel-inline-icon '+this.iconCls
-                    });
+                    var hdspan = hd.child('span.' + this.headerTextCls);
+                    if (hdspan) {
+                        Ext.DomHelper.insertBefore(hdspan.dom, {
+                            tag:'img', alt: '', src: Ext.BLANK_IMAGE_URL, cls:'x-panel-inline-icon '+this.iconCls
+                        });
+                    }
                  }
             }
         }
@@ -1105,6 +1108,14 @@ new Ext.Panel({
     },
 
     /**
+     * Returns the {@link Ext.Toolbar toolbar} from the footer (<code>{@link #fbar}</code>) section of the panel.
+     * @return {Ext.Toolbar} The toolbar
+     */
+    getFooterToolbar : function() {
+        return this.fbar;
+    },
+
+    /**
      * Adds a button to this panel.  Note that this method must be called prior to rendering.  The preferred
      * approach is to add buttons via the {@link #buttons} config.
      * @param {String/Object} config A valid {@link Ext.Button} config.  A string will become the text for a default
@@ -1124,7 +1135,7 @@ new Ext.Panel({
             config = Ext.apply({
                 handler: handler,
                 scope: scope
-            }, config)
+            }, config);
         }
         return this.fbar.add(config);
     },
@@ -1136,7 +1147,7 @@ new Ext.Panel({
                 this.tools = [];
             }
             Ext.each(arguments, function(arg){
-                this.tools.push(arg)
+                this.tools.push(arg);
             }, this);
             return;
         }
@@ -1184,10 +1195,6 @@ new Ext.Panel({
     onLayout : function(shallow, force){
         Ext.Panel.superclass.onLayout.apply(this, arguments);
         if(this.hasLayout && this.toolbars.length > 0){
-            if(!Ext.isNumber(this.width)){
-                delete this.lastSize;
-                this.setSize(this.width, this.height);
-            }
             Ext.each(this.toolbars, function(tb){
                 tb.doLayout(undefined, force);
             });
@@ -1207,7 +1214,7 @@ new Ext.Panel({
 
 
         if(h != this.getToolbarHeight()){
-            h = Math.max(0, this.adjustBodyHeight(lsh - this.getFrameHeight()));
+            h = Math.max(0, lsh - this.getFrameHeight());
             bd.setHeight(h);
             sz = bd.getSize();
             this.toolbarHeight = this.getToolbarHeight();
@@ -1316,9 +1323,7 @@ new Ext.Panel({
     // private
     afterEffect : function(anim){
         this.syncShadow();
-        if(anim !== false){
-            this.el.removeClass('x-panel-animated');
-        }
+        this.el.removeClass('x-panel-animated');
     },
 
     // private - wraps up an animation param with internal callbacks
@@ -1365,7 +1370,7 @@ new Ext.Panel({
                     Ext.apply(this.createEffect(animArg||true, this.afterCollapse, this),
                         this.collapseDefaults));
         }else{
-            this[this.collapseEl].hide();
+            this[this.collapseEl].hide(this.hideMode);
             this.afterCollapse(false);
         }
     },
@@ -1374,7 +1379,17 @@ new Ext.Panel({
     afterCollapse : function(anim){
         this.collapsed = true;
         this.el.addClass(this.collapsedCls);
+        if(anim !== false){
+            this[this.collapseEl].hide(this.hideMode);
+        }
         this.afterEffect(anim);
+
+        // Reset lastSize of all sub-components so they KNOW they are in a collapsed container
+        this.cascade(function(c) {
+            if (c.lastSize) {
+                c.lastSize = { width: undefined, height: undefined };
+            }
+        });
         this.fireEvent('collapse', this);
     },
 
@@ -1403,7 +1418,7 @@ new Ext.Panel({
                     Ext.apply(this.createEffect(animArg||true, this.afterExpand, this),
                         this.expandDefaults));
         }else{
-            this[this.collapseEl].show();
+            this[this.collapseEl].show(this.hideMode);
             this.afterExpand(false);
         }
     },
@@ -1411,6 +1426,9 @@ new Ext.Panel({
     // private
     afterExpand : function(anim){
         this.collapsed = false;
+        if(anim !== false){
+            this[this.collapseEl].show(this.hideMode);
+        }
         this.afterEffect(anim);
         if (this.deferLayout) {
             delete this.deferLayout;
@@ -1491,7 +1509,8 @@ new Ext.Panel({
 
                 // At this point, the Toolbars must be layed out for getFrameHeight to find a result.
                 if(Ext.isNumber(h)){
-                    h = Math.max(0, this.adjustBodyHeight(h - this.getFrameHeight()));
+                    h = Math.max(0, h - this.getFrameHeight());
+                    //h = Math.max(0, h - (this.getHeight() - this.body.getHeight()));
                     this.body.setHeight(h);
                 }else if(h == 'auto'){
                     this.body.setHeight(h);
@@ -1534,7 +1553,7 @@ new Ext.Panel({
         return h;
     },
 
-    // private
+    // deprecate
     adjustBodyHeight : function(h){
         return h;
     },
@@ -1570,7 +1589,7 @@ new Ext.Panel({
      * header and footer elements, but not including the body height).  To retrieve the body height see {@link #getInnerHeight}.
      * @return {Number} The frame height
      */
-    getFrameHeight : function(){
+    getFrameHeight : function() {
         var h  = this.el.getFrameWidth('tb') + this.bwrap.getFrameWidth('tb');
         h += (this.tbar ? this.tbar.getHeight() : 0) +
              (this.bbar ? this.bbar.getHeight() : 0);
@@ -1599,7 +1618,10 @@ new Ext.Panel({
      * @return {Number} The body height
      */
     getInnerHeight : function(){
-        return this.getSize().height - this.getFrameHeight();
+        return this.body.getHeight();
+        /* Deprecate
+            return this.getSize().height - this.getFrameHeight();
+        */
     },
 
     // private
@@ -1701,12 +1723,12 @@ panel.load({
                 this.ft,
                 this.header,
                 this.footer,
-                this.toolbars,
                 this.tbar,
                 this.bbar,
                 this.body,
                 this.mc,
-                this.bwrap
+                this.bwrap,
+                this.dd
             );
             if (this.fbar) {
                 Ext.destroy(
@@ -1714,12 +1736,8 @@ panel.load({
                     this.fbar.el
                 );
             }
-        }else{
-            Ext.destroy(
-                this.topToolbar,
-                this.bottomToolbar
-            );
         }
+        Ext.destroy(this.toolbars);
     },
 
     // private

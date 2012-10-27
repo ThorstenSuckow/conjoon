@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.Tree
@@ -12,94 +12,94 @@
  * @constructor
  * @param {Node} root (optional) The root node
  */
-Ext.data.Tree = function(root){
-   this.nodeHash = {};
-   /**
-    * The root node for this tree
-    * @type Node
-    */
-   this.root = null;
-   if(root){
-       this.setRootNode(root);
-   }
-   this.addEvents(
-       /**
-        * @event append
-        * Fires when a new child node is appended to a node in this tree.
-        * @param {Tree} tree The owner tree
-        * @param {Node} parent The parent node
-        * @param {Node} node The newly appended node
-        * @param {Number} index The index of the newly appended node
-        */
-       "append",
-       /**
-        * @event remove
-        * Fires when a child node is removed from a node in this tree.
-        * @param {Tree} tree The owner tree
-        * @param {Node} parent The parent node
-        * @param {Node} node The child node removed
-        */
-       "remove",
-       /**
-        * @event move
-        * Fires when a node is moved to a new location in the tree
-        * @param {Tree} tree The owner tree
-        * @param {Node} node The node moved
-        * @param {Node} oldParent The old parent of this node
-        * @param {Node} newParent The new parent of this node
-        * @param {Number} index The index it was moved to
-        */
-       "move",
-       /**
-        * @event insert
-        * Fires when a new child node is inserted in a node in this tree.
-        * @param {Tree} tree The owner tree
-        * @param {Node} parent The parent node
-        * @param {Node} node The child node inserted
-        * @param {Node} refNode The child node the node was inserted before
-        */
-       "insert",
-       /**
-        * @event beforeappend
-        * Fires before a new child is appended to a node in this tree, return false to cancel the append.
-        * @param {Tree} tree The owner tree
-        * @param {Node} parent The parent node
-        * @param {Node} node The child node to be appended
-        */
-       "beforeappend",
-       /**
-        * @event beforeremove
-        * Fires before a child is removed from a node in this tree, return false to cancel the remove.
-        * @param {Tree} tree The owner tree
-        * @param {Node} parent The parent node
-        * @param {Node} node The child node to be removed
-        */
-       "beforeremove",
-       /**
-        * @event beforemove
-        * Fires before a node is moved to a new location in the tree. Return false to cancel the move.
-        * @param {Tree} tree The owner tree
-        * @param {Node} node The node being moved
-        * @param {Node} oldParent The parent of the node
-        * @param {Node} newParent The new parent the node is moving to
-        * @param {Number} index The index it is being moved to
-        */
-       "beforemove",
-       /**
-        * @event beforeinsert
-        * Fires before a new child is inserted in a node in this tree, return false to cancel the insert.
-        * @param {Tree} tree The owner tree
-        * @param {Node} parent The parent node
-        * @param {Node} node The child node to be inserted
-        * @param {Node} refNode The child node the node is being inserted before
-        */
-       "beforeinsert"
-   );
-
-    Ext.data.Tree.superclass.constructor.call(this);
-};
-
-Ext.extend(Ext.data.Tree, Ext.util.Observable, {
+Ext.data.Tree = Ext.extend(Ext.util.Observable, {
+    
+    constructor: function(root){
+        this.nodeHash = {};
+        /**
+         * The root node for this tree
+         * @type Node
+         */
+        this.root = null;
+        if(root){
+            this.setRootNode(root);
+        }
+        this.addEvents(
+            /**
+             * @event append
+             * Fires when a new child node is appended to a node in this tree.
+             * @param {Tree} tree The owner tree
+             * @param {Node} parent The parent node
+             * @param {Node} node The newly appended node
+             * @param {Number} index The index of the newly appended node
+             */
+            "append",
+            /**
+             * @event remove
+             * Fires when a child node is removed from a node in this tree.
+             * @param {Tree} tree The owner tree
+             * @param {Node} parent The parent node
+             * @param {Node} node The child node removed
+             */
+            "remove",
+            /**
+             * @event move
+             * Fires when a node is moved to a new location in the tree
+             * @param {Tree} tree The owner tree
+             * @param {Node} node The node moved
+             * @param {Node} oldParent The old parent of this node
+             * @param {Node} newParent The new parent of this node
+             * @param {Number} index The index it was moved to
+             */
+            "move",
+            /**
+             * @event insert
+             * Fires when a new child node is inserted in a node in this tree.
+             * @param {Tree} tree The owner tree
+             * @param {Node} parent The parent node
+             * @param {Node} node The child node inserted
+             * @param {Node} refNode The child node the node was inserted before
+             */
+            "insert",
+            /**
+             * @event beforeappend
+             * Fires before a new child is appended to a node in this tree, return false to cancel the append.
+             * @param {Tree} tree The owner tree
+             * @param {Node} parent The parent node
+             * @param {Node} node The child node to be appended
+             */
+            "beforeappend",
+            /**
+             * @event beforeremove
+             * Fires before a child is removed from a node in this tree, return false to cancel the remove.
+             * @param {Tree} tree The owner tree
+             * @param {Node} parent The parent node
+             * @param {Node} node The child node to be removed
+             */
+            "beforeremove",
+            /**
+             * @event beforemove
+             * Fires before a node is moved to a new location in the tree. Return false to cancel the move.
+             * @param {Tree} tree The owner tree
+             * @param {Node} node The node being moved
+             * @param {Node} oldParent The parent of the node
+             * @param {Node} newParent The new parent the node is moving to
+             * @param {Number} index The index it is being moved to
+             */
+            "beforemove",
+            /**
+             * @event beforeinsert
+             * Fires before a new child is inserted in a node in this tree, return false to cancel the insert.
+             * @param {Tree} tree The owner tree
+             * @param {Node} parent The parent node
+             * @param {Node} node The child node to be inserted
+             * @param {Node} refNode The child node the node is being inserted before
+             */
+            "beforeinsert"
+        );
+        Ext.data.Tree.superclass.constructor.call(this);        
+    },
+    
     /**
      * @cfg {String} pathSeparator
      * The token used to separate paths in node ids (defaults to '/').
@@ -164,134 +164,125 @@ Ext.extend(Ext.data.Tree, Ext.util.Observable, {
  * @constructor
  * @param {Object} attributes The attributes/config for the node
  */
-Ext.data.Node = function(attributes){
-    /**
-     * The attributes supplied for the node. You can use this property to access any custom attributes you supplied.
-     * @type {Object}
-     */
-    this.attributes = attributes || {};
-    this.leaf = this.attributes.leaf;
-    /**
-     * The node id. @type String
-     */
-    this.id = this.attributes.id;
-    if(!this.id){
-        this.id = Ext.id(null, "xnode-");
-        this.attributes.id = this.id;
-    }
-    /**
-     * All child nodes of this node. @type Array
-     */
-    this.childNodes = [];
-    if(!this.childNodes.indexOf){ // indexOf is a must
-        this.childNodes.indexOf = function(o){
-            for(var i = 0, len = this.length; i < len; i++){
-                if(this[i] == o){
-                    return i;
-                }
-            }
-            return -1;
-        };
-    }
-    /**
-     * The parent node for this node. @type Node
-     */
-    this.parentNode = null;
-    /**
-     * The first direct child node of this node, or null if this node has no child nodes. @type Node
-     */
-    this.firstChild = null;
-    /**
-     * The last direct child node of this node, or null if this node has no child nodes. @type Node
-     */
-    this.lastChild = null;
-    /**
-     * The node immediately preceding this node in the tree, or null if there is no sibling node. @type Node
-     */
-    this.previousSibling = null;
-    /**
-     * The node immediately following this node in the tree, or null if there is no sibling node. @type Node
-     */
-    this.nextSibling = null;
+Ext.data.Node = Ext.extend(Ext.util.Observable, {
+    
+    constructor: function(attributes){
+        /**
+         * The attributes supplied for the node. You can use this property to access any custom attributes you supplied.
+         * @type {Object}
+         */
+        this.attributes = attributes || {};
+        this.leaf = this.attributes.leaf;
+        /**
+         * The node id. @type String
+         */
+        this.id = this.attributes.id;
+        if(!this.id){
+            this.id = Ext.id(null, "xnode-");
+            this.attributes.id = this.id;
+        }
+        /**
+         * All child nodes of this node. @type Array
+         */
+        this.childNodes = [];
+        /**
+         * The parent node for this node. @type Node
+         */
+        this.parentNode = null;
+        /**
+         * The first direct child node of this node, or null if this node has no child nodes. @type Node
+         */
+        this.firstChild = null;
+        /**
+         * The last direct child node of this node, or null if this node has no child nodes. @type Node
+         */
+        this.lastChild = null;
+        /**
+         * The node immediately preceding this node in the tree, or null if there is no sibling node. @type Node
+         */
+        this.previousSibling = null;
+        /**
+         * The node immediately following this node in the tree, or null if there is no sibling node. @type Node
+         */
+        this.nextSibling = null;
 
-    this.addEvents({
-       /**
-        * @event append
-        * Fires when a new child node is appended
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} node The newly appended node
-        * @param {Number} index The index of the newly appended node
-        */
-       "append" : true,
-       /**
-        * @event remove
-        * Fires when a child node is removed
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} node The removed node
-        */
-       "remove" : true,
-       /**
-        * @event move
-        * Fires when this node is moved to a new location in the tree
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} oldParent The old parent of this node
-        * @param {Node} newParent The new parent of this node
-        * @param {Number} index The index it was moved to
-        */
-       "move" : true,
-       /**
-        * @event insert
-        * Fires when a new child node is inserted.
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} node The child node inserted
-        * @param {Node} refNode The child node the node was inserted before
-        */
-       "insert" : true,
-       /**
-        * @event beforeappend
-        * Fires before a new child is appended, return false to cancel the append.
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} node The child node to be appended
-        */
-       "beforeappend" : true,
-       /**
-        * @event beforeremove
-        * Fires before a child is removed, return false to cancel the remove.
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} node The child node to be removed
-        */
-       "beforeremove" : true,
-       /**
-        * @event beforemove
-        * Fires before this node is moved to a new location in the tree. Return false to cancel the move.
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} oldParent The parent of this node
-        * @param {Node} newParent The new parent this node is moving to
-        * @param {Number} index The index it is being moved to
-        */
-       "beforemove" : true,
-       /**
-        * @event beforeinsert
-        * Fires before a new child is inserted, return false to cancel the insert.
-        * @param {Tree} tree The owner tree
-        * @param {Node} this This node
-        * @param {Node} node The child node to be inserted
-        * @param {Node} refNode The child node the node is being inserted before
-        */
-       "beforeinsert" : true
-   });
-    this.listeners = this.attributes.listeners;
-    Ext.data.Node.superclass.constructor.call(this);
-};
-
-Ext.extend(Ext.data.Node, Ext.util.Observable, {
+        this.addEvents({
+            /**
+             * @event append
+             * Fires when a new child node is appended
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} node The newly appended node
+             * @param {Number} index The index of the newly appended node
+             */
+            "append" : true,
+            /**
+             * @event remove
+             * Fires when a child node is removed
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} node The removed node
+             */
+            "remove" : true,
+            /**
+             * @event move
+             * Fires when this node is moved to a new location in the tree
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} oldParent The old parent of this node
+             * @param {Node} newParent The new parent of this node
+             * @param {Number} index The index it was moved to
+             */
+            "move" : true,
+            /**
+             * @event insert
+             * Fires when a new child node is inserted.
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} node The child node inserted
+             * @param {Node} refNode The child node the node was inserted before
+             */
+            "insert" : true,
+            /**
+             * @event beforeappend
+             * Fires before a new child is appended, return false to cancel the append.
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} node The child node to be appended
+             */
+            "beforeappend" : true,
+            /**
+             * @event beforeremove
+             * Fires before a child is removed, return false to cancel the remove.
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} node The child node to be removed
+             */
+            "beforeremove" : true,
+            /**
+             * @event beforemove
+             * Fires before this node is moved to a new location in the tree. Return false to cancel the move.
+             * @param {Tree} tree The owner tree
+             * @param {Node} this This node
+             * @param {Node} oldParent The parent of this node
+             * @param {Node} newParent The new parent this node is moving to
+             * @param {Number} index The index it is being moved to
+             */
+            "beforemove" : true,
+             /**
+              * @event beforeinsert
+              * Fires before a new child is inserted, return false to cancel the insert.
+              * @param {Tree} tree The owner tree
+              * @param {Node} this This node
+              * @param {Node} node The child node to be inserted
+              * @param {Node} refNode The child node the node is being inserted before
+              */
+            "beforeinsert" : true
+        });
+        this.listeners = this.attributes.listeners;
+        Ext.data.Node.superclass.constructor.call(this);    
+    },
+    
     // private
     fireEvent : function(evtName){
         // first do standard event for this node
@@ -350,7 +341,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
     hasChildNodes : function(){
         return !this.isLeaf() && this.childNodes.length > 0;
     },
-    
+
     /**
      * Returns true if this node has one or more child nodes, or if the <tt>expandable</tt>
      * node attribute is explicitly specified as true (see {@link #attributes}), otherwise returns false.
@@ -375,7 +366,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         // if passed an array or multiple args do them one by one
         if(multi){
             for(var i = 0, len = multi.length; i < len; i++) {
-            	this.appendChild(multi[i]);
+                this.appendChild(multi[i]);
             }
         }else{
             if(this.fireEvent("beforeappend", this.ownerTree, this, node) === false){
@@ -456,17 +447,17 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         }
         return node;
     },
-    
+
     // private
     clear : function(destroy){
         // clear any references from the node
         this.setOwnerTree(null, destroy);
-        this.parentNode = this.previousSibling = this.nextSibling = null
+        this.parentNode = this.previousSibling = this.nextSibling = null;
         if(destroy){
-            this.firstChild = this.lastChild = null; 
+            this.firstChild = this.lastChild = null;
         }
     },
-    
+
     /**
      * Destroys the node.
      */
@@ -551,10 +542,12 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
      * @return {Node} this
      */
     remove : function(destroy){
-        this.parentNode.removeChild(this, destroy);
+        if (this.parentNode) {
+            this.parentNode.removeChild(this, destroy);
+        }
         return this;
     },
-    
+
     /**
      * Removes all child nodes from this node.
      * @param {Boolean} destroy <tt>true</tt> to destroy the node upon removal. Defaults to <tt>false</tt>.
@@ -652,7 +645,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             }
         }
     },
-    
+
     /**
      * Changes the id of this node.
      * @param {String} id The new id for the node.
@@ -670,7 +663,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             this.onIdChange(id);
         }
     },
-    
+
     // private
     onIdChange: Ext.emptyFn,
 
@@ -721,7 +714,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         if(fn.apply(scope || this, args || [this]) !== false){
             var cs = this.childNodes;
             for(var i = 0, len = cs.length; i < len; i++) {
-            	cs[i].cascade(fn, scope, args);
+                cs[i].cascade(fn, scope, args);
             }
         }
     },
@@ -737,9 +730,9 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
     eachChild : function(fn, scope, args){
         var cs = this.childNodes;
         for(var i = 0, len = cs.length; i < len; i++) {
-        	if(fn.apply(scope || this, args || [cs[i]]) === false){
-        	    break;
-        	}
+            if(fn.apply(scope || cs[i], args || [cs[i]]) === false){
+                break;
+            }
         }
     },
 
@@ -747,30 +740,39 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
      * Finds the first child that has the attribute with the specified value.
      * @param {String} attribute The attribute name
      * @param {Mixed} value The value to search for
+     * @param {Boolean} deep (Optional) True to search through nodes deeper than the immediate children
      * @return {Node} The found child or null if none was found
      */
-    findChild : function(attribute, value){
-        var cs = this.childNodes;
-        for(var i = 0, len = cs.length; i < len; i++) {
-        	if(cs[i].attributes[attribute] == value){
-        	    return cs[i];
-        	}
-        }
-        return null;
+    findChild : function(attribute, value, deep){
+        return this.findChildBy(function(){
+            return this.attributes[attribute] == value;
+        }, null, deep);
     },
 
     /**
      * Finds the first child by a custom function. The child matches if the function passed returns <code>true</code>.
      * @param {Function} fn A function which must return <code>true</code> if the passed Node is the required Node.
      * @param {Object} scope (optional) The scope (<code>this</code> reference) in which the function is executed. Defaults to the Node being tested.
+     * @param {Boolean} deep (Optional) True to search through nodes deeper than the immediate children
      * @return {Node} The found child or null if none was found
      */
-    findChildBy : function(fn, scope){
-        var cs = this.childNodes;
-        for(var i = 0, len = cs.length; i < len; i++) {
-        	if(fn.call(scope||cs[i], cs[i]) === true){
-        	    return cs[i];
-        	}
+    findChildBy : function(fn, scope, deep){
+        var cs = this.childNodes,
+            len = cs.length,
+            i = 0,
+            n,
+            res;
+        for(; i < len; i++){
+            n = cs[i];
+            if(fn.call(scope || n, n) === true){
+                return n;
+            }else if (deep){
+                res = n.findChildBy(fn, scope, deep);
+                if(res != null){
+                    return res;
+                }
+            }
+            
         }
         return null;
     },

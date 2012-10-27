@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Ext.debug = {};
 
@@ -92,7 +92,7 @@ function createConsole(){
 //     handleResize();
 
     function handleResize(){
-        var b = Ext.getBody()
+        var b = Ext.getBody();
         var size = b.getViewSize();
         if(size.height < b.dom.scrollHeight) {
             size.width -= 18;
@@ -464,7 +464,7 @@ Ext.debug.ComponentInspector = Ext.extend(Ext.tree.TreePanel, {
                 if (c.id != this.id && c.id != this.bottomToolbar.id) {
                     var newNode = this.createNode(n,c);
                     if (!newNode.leaf) {
-                        this.parseChildItems(newNode)
+                        this.parseChildItems(newNode);
                     }
                 }
             }
@@ -499,7 +499,7 @@ Ext.debug.ComponentInspector = Ext.extend(Ext.tree.TreePanel, {
         this.parseRootNode();
         var ci = Ext.getCmp('x-debug-compinfo');
         if (ci) {
-            ci.message('refreshed component tree - '+Ext.ComponentMgr.all.length)
+            ci.message('refreshed component tree - '+Ext.ComponentMgr.all.length);
         }
     }
 });
@@ -642,7 +642,7 @@ Ext.debug.ObjectInspector = Ext.extend(Ext.tree.TreePanel, {
         this.toggleFunc = function() {
             this.showFunc = !this.showFunc;
             this.refreshNodes(this.currentObject);
-        }
+        };
         this.bbar = new Ext.Toolbar([{
             text: 'Show Functions',
             enableToggle: true,

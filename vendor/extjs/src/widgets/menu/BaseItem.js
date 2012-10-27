@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.menu.BaseItem
@@ -45,7 +45,7 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
      */
     hideOnClick : true,
     /**
-     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 100)
+     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 1)
      */
     clickHideDelay : 1,
 
@@ -54,33 +54,33 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
 
     // private
     actionMode : "container",
-    
+
     initComponent : function(){
         Ext.menu.BaseItem.superclass.initComponent.call(this);
         this.addEvents(
-	        /**
-	         * @event click
-	         * Fires when this item is clicked
-	         * @param {Ext.menu.BaseItem} this
-	         * @param {Ext.EventObject} e
-	         */
-	        'click',
-	        /**
-	         * @event activate
-	         * Fires when this item is activated
-	         * @param {Ext.menu.BaseItem} this
-	         */
-	        'activate',
-	        /**
-	         * @event deactivate
-	         * Fires when this item is deactivated
-	         * @param {Ext.menu.BaseItem} this
-	         */
-	        'deactivate'
-	    );
-	    if(this.handler){
-	        this.on("click", this.handler, this.scope);
-	    }
+            /**
+             * @event click
+             * Fires when this item is clicked
+             * @param {Ext.menu.BaseItem} this
+             * @param {Ext.EventObject} e
+             */
+            'click',
+            /**
+             * @event activate
+             * Fires when this item is activated
+             * @param {Ext.menu.BaseItem} this
+             */
+            'activate',
+            /**
+             * @event deactivate
+             * Fires when this item is deactivated
+             * @param {Ext.menu.BaseItem} this
+             */
+            'deactivate'
+        );
+        if(this.handler){
+            this.on("click", this.handler, this.scope);
+        }
     },
 
     // private
@@ -150,11 +150,16 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
         var pm = this.parentMenu;
         if(this.hideOnClick){
             if(pm.floating){
-                pm.hide.defer(this.clickHideDelay, pm, [true]);
+                this.clickHideDelayTimer = pm.hide.defer(this.clickHideDelay, pm, [true]);
             }else{
                 pm.deactivateActive();
             }
         }
+    },
+    
+    beforeDestroy: function(){
+        clearTimeout(this.clickHideDelayTimer);
+        Ext.menu.BaseItem.superclass.beforeDestroy.call(this);    
     },
 
     // private. Do nothing

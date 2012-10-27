@@ -6,7 +6,13 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js"><div id="cls-Ext.grid.PropertyRecord"></div>/**
+    <pre class="prettyprint lang-js">/*!
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+<div id="cls-Ext.grid.PropertyRecord"></div>/**
  * @class Ext.grid.PropertyRecord
  * A specific {@link Ext.data.Record} type that represents a name/value pair and is made to work with the
  * {@link Ext.grid.PropertyGrid}.  Typically, PropertyRecords do not need to be created directly as they can be
@@ -244,8 +250,13 @@ Ext.grid.PropertyColumnModel = Ext.extend(Ext.grid.ColumnModel, {
     // inherit docs
     destroy : function(){
         Ext.grid.PropertyColumnModel.superclass.destroy.call(this);
-        for(var ed in this.editors){
-            Ext.destroy(this.editors[ed]);
+        this.destroyEditors(this.editors);
+        this.destroyEditors(this.grid.customEditors);
+    },
+    
+    destroyEditors: function(editors){
+        for(var ed in editors){
+            Ext.destroy(editors[ed]);
         }
     }
 });

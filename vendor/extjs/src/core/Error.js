@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * Framework-wide error-handler.  Developers can override this method to provide
@@ -49,7 +49,8 @@ function generateError(data) {
 Ext.Error = function(message) {
     // Try to read the message from Ext.Error.lang
     this.message = (this.lang[message]) ? this.lang[message] : message;
-}
+};
+
 Ext.Error.prototype = new Error();
 Ext.apply(Ext.Error.prototype, {
     // protected.  Extensions place their error-strings here.
@@ -78,4 +79,3 @@ Ext.apply(Ext.Error.prototype, {
         return Ext.encode(this);
     }
 });
-

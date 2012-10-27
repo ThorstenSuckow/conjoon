@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.1
- * Copyright(c) 2006-2010 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Ext.ns('Ext.ux.grid');
 
@@ -128,8 +128,14 @@ summaryRenderer: function(v, params, data){
     },
 
     doWidth : function(col, w, tw){
-        var gs = this.view.getGroups(), s;
-        for(var i = 0, len = gs.length; i < len; i++){
+        if(!this.isGrouped()){
+            return;
+        }
+        var gs = this.view.getGroups(),
+            len = gs.length,
+            i = 0,
+            s;
+        for(; i < len; ++i){
             s = gs[i].childNodes[2];
             s.style.width = tw;
             s.firstChild.style.width = tw;
@@ -138,26 +144,47 @@ summaryRenderer: function(v, params, data){
     },
 
     doAllWidths : function(ws, tw){
-        var gs = this.view.getGroups(), s, cells, wlen = ws.length;
-        for(var i = 0, len = gs.length; i < len; i++){
+        if(!this.isGrouped()){
+            return;
+        }
+        var gs = this.view.getGroups(),
+            len = gs.length,
+            i = 0,
+            j, 
+            s, 
+            cells, 
+            wlen = ws.length;
+            
+        for(; i < len; i++){
             s = gs[i].childNodes[2];
             s.style.width = tw;
             s.firstChild.style.width = tw;
             cells = s.firstChild.rows[0].childNodes;
-            for(var j = 0; j < wlen; j++){
+            for(j = 0; j < wlen; j++){
                 cells[j].style.width = ws[j];
             }
         }
     },
 
     doHidden : function(col, hidden, tw){
-        var gs = this.view.getGroups(), s, display = hidden ? 'none' : '';
-        for(var i = 0, len = gs.length; i < len; i++){
+        if(!this.isGrouped()){
+            return;
+        }
+        var gs = this.view.getGroups(),
+            len = gs.length,
+            i = 0,
+            s, 
+            display = hidden ? 'none' : '';
+        for(; i < len; i++){
             s = gs[i].childNodes[2];
             s.style.width = tw;
             s.firstChild.style.width = tw;
             s.firstChild.rows[0].childNodes[col].style.display = display;
         }
+    },
+    
+    isGrouped : function(){
+        return !Ext.isEmpty(this.grid.getStore().groupField);
     },
 
     // Note: requires that all (or the first) record in the
