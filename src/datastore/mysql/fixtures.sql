@@ -15,6 +15,10 @@
 -- {DATABASE.TABLE.PREFIX}.
 
 
+-- --
+-- registry
+-- --
+
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (1, 'service', 0);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
@@ -41,3 +45,25 @@ INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (12, 'environment', 4);
 INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
 (19, 'environment', 9);
+
+
+-- --
+-- registry_values
+-- --
+
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'cache-flash', '0', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'cache-html', '0', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'cache-images', '0', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'cache-javascript', '0', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'cache-sounds', '0', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'cache-stylesheets', '0', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(6, 0, 'enabled', '1', 'BOOLEAN', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry_values` (`registry_id`, `user_id`, `name`, `value`, `type`, `is_editable`) VALUES
+(18, 0, 'last-changed', '0', 'FLOAT', 0);
