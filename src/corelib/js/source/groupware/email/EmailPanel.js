@@ -1569,7 +1569,6 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
             return false;
         }
 
-        (options.params = options.params || {}).groupwareEmailFoldersId = this.clkNodeId;
         this.disableActionButtons();
     },
 
@@ -1599,7 +1598,10 @@ com.conjoon.groupware.email.EmailPanel = Ext.extend(Ext.Panel, {
                 if (!attr.isSelectable && ar) {
                     this.gridPanel.loadMask.hide();
                 }
-                this.gridPanel.view.reset((attr.isSelectable ? true : false));
+
+                this.gridPanel.view.reset((attr.isSelectable ? true : false), {
+                    groupwareEmailFoldersId : this.clkNodeId
+                });
 
                 this.lastClkNodeId = this.clkNodeId;
             }
