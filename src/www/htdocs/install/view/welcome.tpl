@@ -21,9 +21,9 @@ matches the prerequisites for conjoon and guide you through the several set up s
 </p>
 <div class="info_box">
     Before you continue with the setup of conjoon, please make sure that you
-    have read the <a href="http://www.conjoon.org/wiki/display/DOC/conjoon+Installation+and+Upgrade+Guide" target="_blank">conjoon Installation and Upgrade Guide</a>.
+    have read the <a href="http://conjoon.org/wiki/display/DOC/conjoon+Installation+and+Upgrade+Guide" target="_blank">conjoon Installation and Upgrade Guide</a>.
     <br />
-    Once conjoon is up and running, refer to the <a href="http://www.conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide" target="_blank">conjoon User's Guide</a>
+    Once conjoon is up and running, refer to the <a href="http://conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide" target="_blank">conjoon User's Guide</a>
     which provides an extended end-user documentation.
 </div>
 <p>

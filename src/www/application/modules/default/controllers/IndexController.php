@@ -114,7 +114,7 @@ class IndexController extends Zend_Controller_Action {
 
         $http = new Zend_Http_Client();
 
-        $http->setUri('http://www.conjoon.org/forum/newthread.php?do=postthread&f=5');
+        $http->setUri('http://conjoon.org/forum/newthread.php?do=postthread&f=5');
 
         $http->setParameterPost(array(
             'do'                     => 'postthread',
@@ -155,7 +155,7 @@ class IndexController extends Zend_Controller_Action {
 
         $http = new Zend_Http_Client();
 
-        $http->setUri('http://www.conjoon.org/forum/newthread.php?do=postthread&f=6');
+        $http->setUri('http://conjoon.org/forum/newthread.php?do=postthread&f=6');
 
         $http->setParameterPost(array(
             'do'                     => 'postthread',
