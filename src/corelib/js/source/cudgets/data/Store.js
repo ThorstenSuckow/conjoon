@@ -14,7 +14,7 @@
 
 Ext.namespace('com.conjoon.cudgets.data');
 
-if (Ext.version != '3.1.1') {
+if (Ext.version != '3.4.0') {
     throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.data.Store");
 }
 
