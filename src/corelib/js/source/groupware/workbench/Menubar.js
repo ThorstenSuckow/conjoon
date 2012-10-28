@@ -107,7 +107,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
         var eastPanel = workbench.getEastPanel();
 
         var showWestPanelItem = new Ext.menu.CheckItem({
-            text    : com.conjoon.Gettext.gettext("Left Quick Panel"),
+            text    : com.conjoon.Gettext.gettext("Left Dock"),
             checked : !westPanel.hidden,
             listeners : {
                 checkchange : function(item, checked) {
@@ -118,7 +118,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
         });
 
         var showEastPanelItem = new Ext.menu.CheckItem({
-            text    : com.conjoon.Gettext.gettext("Right Quick Panel"),
+            text    : com.conjoon.Gettext.gettext("Right Dock"),
             checked : !eastPanel.hidden,
             listeners : {
                 checkchange : function(item, checked) {
@@ -173,7 +173,7 @@ com.conjoon.groupware.workbench.Menubar = function(){
         _viewMenu = new Ext.Toolbar.Button({
             text : com.conjoon.Gettext.gettext("View"),
             menu : [{
-                text : com.conjoon.Gettext.gettext("Quick Panels"),
+                text : com.conjoon.Gettext.gettext("Widgets &amp; Docks"),
                 menu : itemMenu
             }, '-', {
                 text    : com.conjoon.Gettext.gettext("Statusbar"),
