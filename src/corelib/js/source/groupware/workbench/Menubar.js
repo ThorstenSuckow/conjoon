@@ -310,9 +310,6 @@ com.conjoon.groupware.workbench.Menubar = function(){
                                 window.open("http://conjoon.org/forum", 'conjoonResources');
                             }
                         }, '-', {
-                            text     : com.conjoon.Gettext.gettext("Check for Updates"),
-                            disabled : true
-                        }, '-', {
                             text : com.conjoon.Gettext.gettext("About conjoon"),
                             handler : function() {
                                 com.conjoon.groupware.workbench.AboutDialog.show();
