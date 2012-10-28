@@ -29,6 +29,11 @@ require_once 'Conjoon/Filter/FormBoolToInt.php';
 require_once 'Zend/Validate/Hostname.php';
 
 /**
+ * @see Zend_Filter_Null
+ */
+require_once 'Zend/Filter/Null.php';
+
+/**
  * An input-filter class defining all validators and filters needed when
  * processing input data for mutating or creating Email-Accounts.
  *
@@ -147,10 +152,10 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             'Int'
         ),
         'inboxConnectionType' => array(
-            'StringTrim'
+            array('Null', Zend_Filter_Null::STRING)
         ),
         'outboxConnectionType' => array(
-            'StringTrim'
+            array('Null', Zend_Filter_Null::STRING)
         ),
         'isCopyLeftOnServer' => array(
             'FormBoolToInt'
