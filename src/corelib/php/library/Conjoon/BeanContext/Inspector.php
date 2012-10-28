@@ -30,7 +30,7 @@ require_once 'Conjoon/BeanContext/Exception.php';
  * @category   Conjoon
  * @package    Conjoon_BeanContext
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_BeanContext_Inspector {
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -27,7 +27,7 @@ require_once 'Conjoon/BeanContext.php';
  * @package    Conjoon_Groupware
  * @subpackage Email
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 class Conjoon_Modules_Groupware_Email_FolderMapping implements Conjoon_BeanContext, Serializable {

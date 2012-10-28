@@ -32,7 +32,7 @@ require_once 'Conjoon/Modules/Groupware/Feeds/Account/Dto.php';
  * @package    Conjoon_Groupware
  * @subpackage Feeds
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 class Conjoon_Modules_Groupware_Feeds_Account implements Conjoon_BeanContext, Serializable {

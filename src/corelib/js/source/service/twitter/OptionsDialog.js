@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.service.twitter');
 
 /**
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  * @class com.conjoon.service.twitter.OptionsDialog
  * @extends com.conjoon.cudgets.settings.Dialog
  */

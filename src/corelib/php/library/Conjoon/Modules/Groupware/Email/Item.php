@@ -47,7 +47,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Item/Dto.php';
  * @package    Conjoon_Groupware
  * @subpackage Email
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 class Conjoon_Modules_Groupware_Email_Item implements Conjoon_BeanContext, Serializable {

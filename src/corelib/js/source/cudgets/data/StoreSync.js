@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.cudgets.data');
  * to a temporarily created store that mirrors the entries. Changes will be merged
  * once syncData() has been called.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.cudgets.dialog.settings.SyncStore
  *

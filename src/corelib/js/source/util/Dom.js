@@ -17,7 +17,7 @@ Ext.namespace('com.conjoon.util');
 /**
  * Utility functions for DOM operations not provided by the ExtJs-framework.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.util.Dom = function() {
 

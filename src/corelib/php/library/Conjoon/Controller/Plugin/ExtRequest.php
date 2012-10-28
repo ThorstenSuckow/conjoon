@@ -140,7 +140,7 @@ require_once 'Zend/Controller/Request/Http.php';
  * @subpackage Plugin
  * @category Plugins
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Controller_Plugin_ExtRequest {
 

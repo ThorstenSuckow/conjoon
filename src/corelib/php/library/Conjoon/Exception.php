@@ -19,7 +19,7 @@
  * @uses Exception
  * @package Conjoon
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Exception extends Exception {
 

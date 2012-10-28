@@ -27,7 +27,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Keys.php';
  * @category   Filter
  * @package    Conjoon_Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftFormatFilter implements Zend_Filter_Interface
 {

@@ -17,7 +17,7 @@
  * @category   Email
  * @package    Conjoon_Modules_Groupware_Email
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 interface Conjoon_Modules_Groupware_Email_Keys
 {

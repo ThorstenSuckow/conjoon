@@ -23,7 +23,7 @@ require_once 'Zend/Filter/Interface.php';
  * @category   Filter
  * @package    Conjoon_Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Filter_EmailRecipients implements Zend_Filter_Interface
 {
@@ -48,13 +48,13 @@ class Conjoon_Filter_EmailRecipients implements Zend_Filter_Interface
      *
      * Input:
      * [
-     *  "\"Thorsten Suckow-Homberg\" <ts@siteartwork.de>, yo@mtv.com",
+     *  "\"Thorsten Suckow-Homberg\" <tsuckow@conjoon.org>, yo@mtv.com",
      *  "\"Pit Bull\" <pit@doggydog.com>",
      * ]
      *
      * Returns:
      * [
-     *  ["ts@siteartwork.de", "Thorsten Suckow-Homberg"],
+     *  ["tsuckow@conjoon.org", "Thorsten Suckow-Homberg"],
      *  ["yo@mtv.com"],
      *  ["pit@doggydog.com", "Pit Bull"],
      * ]

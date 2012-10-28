@@ -21,7 +21,7 @@ require_once 'phing/Task.php';
  * number of the specified working copy the task is used in.
  *
  *
- * @author    Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author    Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  * @see       Task
  */
 class HeadRevisionTask extends Task {

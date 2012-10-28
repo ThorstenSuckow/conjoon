@@ -16,7 +16,7 @@
 /**
  * Asks for database connection information.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 $DATABASE = array(

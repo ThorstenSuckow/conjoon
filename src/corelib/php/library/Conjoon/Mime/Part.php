@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -19,7 +19,7 @@
  * denotes the encoding that should happen, not the encoding the content is
  * already available.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Mime_Part extends Zend_Mime_Part {
 

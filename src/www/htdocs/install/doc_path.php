@@ -16,7 +16,7 @@
 /**
  * Tests the path where the application folder was moved to.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 $DOCPATH = array();

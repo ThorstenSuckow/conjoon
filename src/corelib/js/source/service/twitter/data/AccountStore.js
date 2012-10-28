@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.service.twitter.data');
  * @class com.conjoon.service.twitter.data.AccountStore
  * @singleton
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.service.twitter.data.AccountStore = function() {
 

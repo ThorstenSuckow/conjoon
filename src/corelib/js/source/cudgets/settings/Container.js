@@ -41,7 +41,7 @@ Ext.namespace('com.conjoon.cudgets.settings');
  * 3: Card panel for showing options based on the selection in 1
  * 4: OK/Cancel/Apply button
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.cudgets.settings.Container
  * @extends Ext.Container

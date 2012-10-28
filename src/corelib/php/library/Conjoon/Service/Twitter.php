@@ -22,7 +22,7 @@ require_once 'Zend/Service/Twitter.php';
  * This class main purpose is to send a source id "conjoon" with any status update,
  * thus notifying the Twitter service that the update was done using conjoon.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  * @author The Zend Framework Team
  */
 class Conjoon_Service_Twitter extends Zend_Service_Twitter {

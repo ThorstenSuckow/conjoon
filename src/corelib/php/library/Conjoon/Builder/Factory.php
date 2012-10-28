@@ -20,7 +20,7 @@
  * @package    Conjoon
  * @subpackage Builder
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Builder_Factory {
 

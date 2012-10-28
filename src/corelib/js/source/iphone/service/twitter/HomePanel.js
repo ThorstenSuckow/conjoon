@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.iphone.service.twitter');
  * @class com.conjoon.service.twitter.HomePanel
  * @extends Ext.BoxComponent
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.iphone.service.twitter.HomePanel = Ext.extend(Ext.BoxComponent, {
 

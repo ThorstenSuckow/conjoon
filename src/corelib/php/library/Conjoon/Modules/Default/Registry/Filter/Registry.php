@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -31,7 +31,7 @@ require_once 'Conjoon/Filter/Raw.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Default_Registry_Filter_Registry extends Conjoon_Filter_Input {
 

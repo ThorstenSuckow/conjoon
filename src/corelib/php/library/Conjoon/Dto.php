@@ -29,7 +29,7 @@ require_once 'Conjoon/Util/Array.php';
  * @category   Dto
  * @package    Conjoon_Dto
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 abstract class Conjoon_Dto implements ArrayAccess {
 

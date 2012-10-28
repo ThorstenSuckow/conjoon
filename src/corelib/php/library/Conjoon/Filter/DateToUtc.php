@@ -36,7 +36,7 @@ require_once 'Zend/Date.php';
  * @category   Filter
  * @package    Conjoon\Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Filter_DateToUtc implements Zend_Filter_Interface
 {

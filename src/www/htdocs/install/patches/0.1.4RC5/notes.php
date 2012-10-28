@@ -16,7 +16,7 @@
 /**
  * Patch notes to display in wizard
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 $PATCH_NOTES['0.1.4RC5'] = array(

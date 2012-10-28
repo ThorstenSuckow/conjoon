@@ -32,7 +32,7 @@ require_once 'Zend/Filter/HtmlEntities.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Email_Attachment_Filter_AttachmentResponse extends Conjoon_Filter_Input {
 

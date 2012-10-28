@@ -23,7 +23,7 @@ require_once 'Zend/Controller/Action.php';
  * The errorAction will be called whenever an exception was throwsn
  * in any action and not trapped.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class ErrorController extends Zend_Controller_Action {
 

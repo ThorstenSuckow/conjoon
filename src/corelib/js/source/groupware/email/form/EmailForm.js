@@ -18,7 +18,7 @@ Ext.namespace('com.conjoon.groupware.email.form');
  *
  *
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.groupware.email.form.EmailForm
  * @extends Ext.Panel

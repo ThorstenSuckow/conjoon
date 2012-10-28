@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -41,7 +41,7 @@ require_once 'Conjoon/Argument/Check.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Files_File_Model_File extends Conjoon_Db_Table
     implements Conjoon_Db_LobAccess {

@@ -24,7 +24,7 @@ require_once 'Zend/Mail/Message.php';
  *
  * @uses Zend_Mail_Message
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Mail_Message extends Zend_Mail_Message {
 

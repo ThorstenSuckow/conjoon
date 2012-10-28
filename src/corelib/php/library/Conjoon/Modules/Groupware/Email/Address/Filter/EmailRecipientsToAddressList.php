@@ -32,7 +32,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Address/List.php';
  * @category   Filter
  * @package    Conjoon_Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Email_Address_Filter_EmailRecipientsToAddressList implements Zend_Filter_Interface
 {

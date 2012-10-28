@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.service.twitter.wizard');
  * to methods in this class. The browser window is unaware of instances of this
  * class and needs to communicate with the baton to get things working right.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.service.twitter.wizard.AccountWizard
  * @extends Ext.ux.Wiz

@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -30,7 +30,7 @@ Ext.namespace('com.conjoon.cudgets.grid');
  * The component represents data of the type
  * com.conjoon.cudgets.data.FileRecord.
  *
- * @author <Thorsten Suckow-Homberg> ts@siteartwork.de
+ * @author <Thorsten Suckow-Homberg> tsuckow@conjoon.org
  *
  * @class com.conjoon.cudgets.grid.FilePanel
  * @extends Ext.grid.EditorGridPanel

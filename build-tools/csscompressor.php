@@ -18,7 +18,7 @@
  * directly to the conjoon project, except for css files loaded from vendor libraries,
  * such as Ext JS or Ext user extensions.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  * @version 0.2
  */
 $cssPath      = "../src/corelib/js/resources/css";

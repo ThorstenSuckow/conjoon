@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -33,7 +33,7 @@ Ext.namespace('com.conjoon.groupware.localCache');
  * without the leading "on"
  *
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.groupware.localCache.Html5Adapter
  * @extends com.conjoon.cudgets.localCache.Adapter

@@ -25,7 +25,7 @@ Ext.namespace('com.conjoon.iphone.groupware.workbench');
  * @class com.conjoon.iphone.groupware.workbench.HomePanel
  * @extends Ext.Viewport
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.iphone.groupware.workbench.HomePanel = Ext.extend(Ext.Panel, {
 

@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.service.twitter');
  * @class com.conjoon.service.twitter.InputBox
  * @extends Ext.BoxComponent
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.service.twitter.InputBox = Ext.extend(Ext.BoxComponent, {
 

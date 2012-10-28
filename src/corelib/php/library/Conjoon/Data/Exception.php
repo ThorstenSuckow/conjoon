@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -21,7 +21,7 @@ require_once 'Conjoon/Exception.php';
 /**
  *
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Data_Exception extends Conjoon_Exception {
 

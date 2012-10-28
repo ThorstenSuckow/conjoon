@@ -1,7 +1,7 @@
 <?php
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -26,7 +26,7 @@ require_once 'Conjoon/Db/Table.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Files_Folder_Model_FoldersUsers extends Conjoon_Db_Table {
 

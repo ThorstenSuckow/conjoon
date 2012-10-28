@@ -16,7 +16,7 @@
  /**
  * A collection of constants defining keys for registry- and session-entries.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 interface Conjoon_Keys {
 

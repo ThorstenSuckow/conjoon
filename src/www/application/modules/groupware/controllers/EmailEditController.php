@@ -20,7 +20,7 @@ require_once 'Zend/Controller/Action.php';
 
 /**
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Groupware_EmailEditController extends Zend_Controller_Action {
 

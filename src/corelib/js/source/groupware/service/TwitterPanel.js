@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.groupware.service');
  * @class com.conjoon.groupware.service.TwitterPanel
  * @extends com.conjoon.service.twitter.TwitterPanel
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.groupware.service.TwitterPanel = Ext.extend(com.conjoon.service.twitter.TwitterPanel, {
 

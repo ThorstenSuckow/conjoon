@@ -27,7 +27,7 @@ require_once 'Conjoon/BeanContext.php';
  * @package    Conjoon
  * @subpackage User
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 class Conjoon_Modules_Default_User implements Conjoon_BeanContext, Serializable {

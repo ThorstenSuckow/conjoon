@@ -24,7 +24,7 @@ require_once 'Conjoon/Exception.php';
  * @uses Conjoon_Exception
  * @package Conjoon
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Config_Exception extends Conjoon_Exception {
 

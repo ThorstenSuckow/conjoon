@@ -23,7 +23,7 @@ require_once 'Zend/Controller/Action.php';
  * Action controller for login/logout.
  *
  * @uses Zend_Controller_Action
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class ReceptionController extends Zend_Controller_Action {
 

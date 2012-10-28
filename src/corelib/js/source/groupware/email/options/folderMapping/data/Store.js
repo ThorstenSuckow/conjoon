@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.groupware.email.options.folderMapping.data');
  * @class com.conjoon.groupware.email.options.folderMapping.data.Store
  * @singleton
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.groupware.email.options.folderMapping.data.Store = function() {
 

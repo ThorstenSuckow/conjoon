@@ -29,7 +29,7 @@ require_once 'Conjoon/BeanContext.php';
  * @package    Conjoon_Groupware
  * @subpackage Email
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 class Conjoon_Modules_Groupware_Email_Account implements Conjoon_BeanContext, Serializable {

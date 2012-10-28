@@ -130,7 +130,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Attachment/Facade.php';
  * @package    Conjoon_Modules_Groupware
  * @subpackage Conjoon_Modules_Groupware_Email
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Email_Letterman {
 

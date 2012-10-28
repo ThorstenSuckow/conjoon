@@ -21,7 +21,7 @@
  * @package    Conjoon
  * @subpackage Cache
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Cache_Factory {
 

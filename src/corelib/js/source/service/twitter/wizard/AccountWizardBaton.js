@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.service.twitter.wizard');
  * Information from Twitter's oauth process can be passed to this baton which
  * will then get delegated to the according wizard's methods.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.service.twitter.wizard.AccountWizard
  * @extends Ext.ux.Wiz

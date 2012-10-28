@@ -1628,13 +1628,13 @@ Ext.extend(Ext.ux.grid.livegrid.GridView, Ext.grid.GridView, {
         var maskMsg = data(dom, 'maskMsg');
 
         if (show) {
-            mask.setDisplayed(true);
+            (function(){mask.setDisplayed(true);
             maskMsg.setDisplayed(true);
             maskMsg.center(this._loadMaskAnchor);
             // this lines will help IE8 to re-calculate the height of the loadmask
             if(Ext.isIE && !(Ext.isIE7 && Ext.isStrict) && this._loadMaskAnchor.getStyle('height') == 'auto'){
 	            mask.setSize(undefined, this._loadMaskAnchor.getHeight());
-	        }
+	        }}).defer(1000, this);
         } else {
             mask.setDisplayed(false);
             maskMsg.setDisplayed(false);

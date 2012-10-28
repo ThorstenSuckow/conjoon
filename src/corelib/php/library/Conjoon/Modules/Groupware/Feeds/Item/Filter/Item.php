@@ -46,7 +46,7 @@ require_once 'Conjoon/Filter/HtmlEntityDecode.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Modules_Groupware_Feeds_Item_Filter_Item extends Conjoon_Filter_Input {
 

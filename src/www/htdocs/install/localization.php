@@ -16,7 +16,7 @@
 /**
  * Asks for localization information.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 $LOCALIZATION = array(

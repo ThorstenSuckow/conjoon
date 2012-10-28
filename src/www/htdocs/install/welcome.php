@@ -16,7 +16,7 @@
 /**
  * processes the data supplied by the welcome screen.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 if (!isset($_SESSION['support_key'])) {

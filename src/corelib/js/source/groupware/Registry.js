@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.groupware');
  * which also invokes server action by sending only those values to the server
  * which actually have changed.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.groupware.Registry
  * @singleton

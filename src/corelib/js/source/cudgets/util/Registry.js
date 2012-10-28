@@ -1,6 +1,6 @@
 /**
  * conjoon
- * (c) 2002-2010 siteartwork.de/conjoon.org
+ * (c) 2002-2012 siteartwork.de/conjoon.org
  * licensing@conjoon.org
  *
  * $Author$
@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.cudgets.util');
  * The singleton allows for adding listeners for "register"/"unregister" events,
  * so components may be aware of the state of the Registry.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.cudgets.util.Registry
  */

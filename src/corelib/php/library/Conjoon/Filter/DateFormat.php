@@ -32,7 +32,7 @@ require_once 'Zend/Locale/Format.php';
  * @category   Filter
  * @package    Conjoon_Filter
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Filter_DateFormat implements Zend_Filter_Interface
 {

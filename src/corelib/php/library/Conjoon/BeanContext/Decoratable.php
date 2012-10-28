@@ -19,7 +19,7 @@
  * @subpackage BeanContext
  * @category BeanContext
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 interface Conjoon_BeanContext_Decoratable {
 

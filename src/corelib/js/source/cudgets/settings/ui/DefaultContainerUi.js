@@ -18,7 +18,7 @@ Ext.namespace('com.conjoon.cudgets.settings.ui');
  * Builds and layouts the SettingsContainer's layout and its components.
  *
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.cudgets.settings.ui.DefaultContainerUi
  */

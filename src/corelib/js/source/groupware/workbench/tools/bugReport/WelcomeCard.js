@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.groupware.workbench.tools.bugReport');
 
 /**
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.groupware.workbench.tools.bugReport.WelcomeCard
  * @extends Ext.ux.Wiz.Card

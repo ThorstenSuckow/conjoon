@@ -69,7 +69,7 @@ require_once 'phing/filters/ChainableReader.php';
  * (The remaining "<?php?>" will be cleaned up later, though)
  *
  *
- * @author    Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author    Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  * @see       FilterReader
  */
 class ProcessDevFragments extends BaseFilterReader implements ChainableReader {

@@ -40,7 +40,7 @@ require_once 'Conjoon/Filter/Input.php';
  * @subpackage BeanContext
  * @category BeanContext
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 final class Conjoon_BeanContext_Decorator {
 

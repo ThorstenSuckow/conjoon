@@ -17,7 +17,7 @@
  * Lets the user chose login credentials for conjoon. This will be only shown if the user
  * is installing conjoon from scratch.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 $APPCREDENTIALS = array();

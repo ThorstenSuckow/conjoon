@@ -20,7 +20,7 @@
  * Functionality in this file depends on the autoloader as defined by the conjoon
  * project.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
     /**

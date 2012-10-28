@@ -16,7 +16,7 @@
 /**
  * Patch notes view
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 ?>
 <div id="0_1_4RC3_container">

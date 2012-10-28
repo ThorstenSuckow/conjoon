@@ -24,7 +24,7 @@ Ext.namespace('com.conjoon.service.twitter.data');
  *
  * @class com.conjoon.service.twitter.data.TweetRecord
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.service.twitter.data.TweetRecord = Ext.data.Record.create([
 

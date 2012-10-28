@@ -26,7 +26,7 @@ Ext.namespace('com.conjoon.service.twitter');
  * @class com.conjoon.service.twitter.data.TwitterUserStore
  * @extends Ext.data.Store
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.service.twitter.AccountButton = Ext.extend(Ext.Toolbar.Button, {
 

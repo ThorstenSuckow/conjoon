@@ -23,7 +23,7 @@ Ext.namespace('com.conjoon.service.twitter');
  * @class com.conjoon.service.twitter.RecentTweetsContainer
  * @extends Ext.BoxComponent
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 com.conjoon.service.twitter.RecentTweetsContainer = Ext.extend(Ext.BoxComponent, {
 

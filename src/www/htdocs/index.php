@@ -19,7 +19,7 @@
  * application flow.
  * It is important that each request runs over this file.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 
 // +----------------------------------------------------------------------------

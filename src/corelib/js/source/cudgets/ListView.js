@@ -17,7 +17,7 @@ Ext.namespace('com.conjoon.cudgets');
 /**
  * An override for Ext.ListView to use in com.conjoon.cudgets.SettingsContainer.
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
  * @class com.conjoon.cudgets.ListView
  * @extends Ext.ListView

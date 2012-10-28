@@ -54,7 +54,7 @@
  * @package    Conjoon
  * @subpackage Builder
  *
- * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
  */
 abstract class Conjoon_Builder {
 

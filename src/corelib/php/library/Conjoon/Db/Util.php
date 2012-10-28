@@ -30,7 +30,7 @@ require_once 'Conjoon/Db/Exception.php';
  * @subpackage Db
  * @category Db
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
+ * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
 class Conjoon_Db_Util {
 
