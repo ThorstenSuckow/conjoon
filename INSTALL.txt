@@ -1,3 +1,15 @@
++------------------------------------------------------------------------------+
+|                                                                              |
+|                           PLEASE NOTE!                                       |
+| This documentation is not maintained anymore and outdated. For an up-to-date |
+|               installation guide and user documentation,                     |
+|                           please visit                                       |
+|                                                                              |
+|                      http://conjoon.org/wiki                                 |
+|                                                                              |
++------------------------------------------------------------------------------+
+
+
 = Installing conjoon =
 
    '''Table of contents'''
