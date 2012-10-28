@@ -1,8 +1,13 @@
-﻿Version 0.6 (GPL)
+﻿Version 0.6.1 (GPL)
+28-October-2012
+ - fixed: (Store.js) fixed an issue where sortData() would not
+be working with ExtJS 3.4
+
+Version 0.6 (GPL)
 27-October-2012
  - enhancement: (GridView.js) brought full 3.4 support by fixing an issue where
 drag zones would not be properly instantiated. Removed renderUi() override. Added
-optional argument to reset() in case reset reloads the data, sicne changes with
+optional argument to reset() in case reset reloads the data, since changes with
 3.4 in store's load() method would not carry references for options.params
 around. It is recommended to not rely on setting the params in the
 beforeload listener as thiese params would not persist.
