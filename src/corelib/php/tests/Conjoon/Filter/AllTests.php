@@ -20,6 +20,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'Conjoon/Filter/ExceptionTest.php';
 require_once 'Conjoon/Filter/DateToUtcTest.php';
 require_once 'Conjoon/Filter/DateUtcToLocalTest.php';
+require_once 'Conjoon/Filter/ShortenStringTest.php';
 
 /**
  * @category   Conjoon
@@ -52,6 +53,7 @@ class Conjoon_Filter_AllTests
         $suite->addTestSuite('Conjoon_Filter_ExceptionTest');
         $suite->addTestSuite('Conjoon_Filter_DateToUtcTest');
         $suite->addTestSuite('Conjoon_Filter_DateUtcToLocalTest');
+        $suite->addTestSuite('Conjoon_Filter_ShortenStringTest');
 
         return $suite;
     }

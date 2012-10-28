@@ -29,6 +29,7 @@ class Conjoon_Filter_ShortenString implements Zend_Filter_Interface
 {
     protected $_strLen;
     protected $_delimiter;
+    protected $_delimiterLength;
 
     /**
      * Constructor.
@@ -36,11 +37,25 @@ class Conjoon_Filter_ShortenString implements Zend_Filter_Interface
      * @param integer $strLen
      * @param integer $delimiter
      *
+     * @throws Conjoon_Filter_Exception
      */
     public function __construct($strLen = 128, $delimiter = '...')
     {
-        $this->_strLen    = $strLen;
-        $this->_delimiter = $delimiter;
+        if (!$strLen || !$delimiter) {
+            /**
+             * @see Conjoon_Filter_Exception
+             */
+            require_once 'Conjoon/Filter/Exception.php';
+
+            throw new Conjoon_Filter_Exception(
+                "invalid arguments: \"$strLen\", \"$delimiter\""
+            );
+        }
+
+
+        $this->_strLen          = $strLen;
+        $this->_delimiter       = $delimiter;
+        $this->_delimiterLength = strlen($delimiter);
     }
 
     /**
@@ -56,17 +71,19 @@ class Conjoon_Filter_ShortenString implements Zend_Filter_Interface
     {
         $strLen = $this->_strLen;
         $del    = $this->_delimiter;
+        $delLen = $this->_delimiterLength;
+
+        $firstDel = str_split($del);
+        $firstDel = $firstDel[0];
 
         if (strlen($value) <= $strLen) {
             return $value;
         }
 
-        $val = substr($value, 0, $strLen);
+        $value = rtrim($value, $firstDel);
 
-        if ($del == '...' && substr($val, -1) == '.') {
-            return $val . '..';
-        } else {
-            return $val . $del;
-        }
+        $val = substr($value, 0, $strLen - $delLen);
+
+        return $val . $del;
     }
 }
