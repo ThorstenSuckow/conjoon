@@ -1,0 +1,43 @@
+-- conjoon
+-- (c) 2002-2012 siteartwork.de/conjoon.org
+-- licensing@conjoon.org
+--
+-- $Author$
+-- $Id$
+-- $Date$
+-- $Revision$
+-- $LastChangedDate$
+-- $LastChangedBy$
+-- $URL$
+
+-- This file will be parsed by the conjoon install wizard. If you wish to execute the
+-- sql queries found herin by hand, make sure you remove/ replace the tokens
+-- {DATABASE.TABLE.PREFIX}.
+
+
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(1, 'service', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(2, 'youtube', 1);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(3, 'chromeless', 2);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(4, 'client', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(5, 'system', 4);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(6, 'sfx', 5);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(7, 'base', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(8, 'conjoon', 7);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(9, 'server', 0);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(10, 'php', 9);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(18, 'applicationCache', 4);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(12, 'environment', 4);
+INSERT INTO `{DATABASE.TABLE.PREFIX}registry` (`id`, `key`, `parent_id`) VALUES
+(19, 'environment', 9);
