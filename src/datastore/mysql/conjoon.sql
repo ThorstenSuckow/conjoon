@@ -362,7 +362,7 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_accounts` ADD `inbox_connect
 ADD `outbox_connection_type` ENUM( 'SSL', 'TLS' ) NULL AFTER `inbox_connection_type` ;
 
 CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}groupware_email_imap_mapping` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-`groupware_email_accounts_id` INT UNSIGNED NOT NULL ,`global_name` TEXT NULL ,`type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH' ) 
+`groupware_email_accounts_id` INT UNSIGNED NOT NULL ,`global_name` TEXT NULL ,`type` ENUM( 'INBOX', 'OUTBOX', 'SENT', 'DRAFT', 'TRASH' )
 NOT NULL ,PRIMARY KEY ( `id` )) ENGINE = MYISAM;
 
  CREATE TABLE IF NOT EXISTS `{DATABASE.TABLE.PREFIX}registry` (
@@ -455,3 +455,6 @@ ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` ENGINE = InnoDB DEFAU
 ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items_flags` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}service_twitter_accounts` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 ALTER TABLE `{DATABASE.TABLE.PREFIX}users` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+-- CN-474
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_feeds_items` CHANGE `title` `title` TEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
