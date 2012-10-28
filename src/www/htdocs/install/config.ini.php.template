@@ -363,7 +363,7 @@ upload.max_size = {FILES.UPLOAD.MAX_SIZE}
 ; However, if this was previously set to "1", data which was stored in the
 ; database will be flagged as stored in the file system. So before changing the dirs
 ; make sure you move all content to the new location (according to the following
-: *.dir config options) - once data was flagged as stored in the filesystem,
+; *.dir config options) - once data was flagged as stored in the filesystem,
 ; conjoon will try to retrieve this data based on the available information.
 storage.use_filesystem = {FILES.STORAGE.USE_FILESYSTEM}
 
