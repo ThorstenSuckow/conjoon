@@ -33,10 +33,6 @@ require_once 'Zend/Filter/HtmlEntities.php';
  */
 require_once 'Conjoon/Filter/StringPrependIf.php';
 
-/**
- * @see Conjoon_Filter_StringWrap
- */
-require_once 'Conjoon/Filter/StringWrap.php';
 
 /**
  * An input-filter class defining all validators and filters needed when
@@ -270,6 +266,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
             )
         );
 
+
         $context = "";
 
         switch ($this->_context) {
@@ -280,9 +277,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
                 ), 'Re: ');
             break;
 
-            case self::CONTEXT_FORWARD:
-                $this->_filters['subject'][] = new Conjoon_Filter_StringWrap('[Fwd: ', ']');
-            break;
+
 
         }
 
@@ -375,16 +370,15 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
 
             case self::CONTEXT_FORWARD:
                 $data['inReplyTo'] = "";
-                $data['to']  = array();
-                $data['cc']  = array();
-                $data['bcc'] = array();
+                $data['bcc']       = array();
             break;
 
         }
 
-        unset($data['userEmailAddresses']);
-        unset($data['from']);
-        unset($data['replyTo']);
+        // unsetting is now donw in the controller
+        //unset($data['userEmailAddresses']);
+        //unset($data['from']);
+        //unset($data['replyTo']);
 
         /**
          * @see Conjoon_Filter_QuoteToBlockquote
@@ -430,7 +424,6 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftResponse extends Conjoon
         switch ($this->_context) {
             case self::CONTEXT_REPLY:
             case self::CONTEXT_REPLY_ALL:
-            case self::CONTEXT_FORWARD:
                 $startTag = "<blockquote>";
                 $endTag   = "</blockquote>";
             break;

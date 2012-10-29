@@ -1,0 +1,116 @@
+<?php
+/**
+ * conjoon
+ * (c) 2002-2012 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+?>
+<br />
+<br />
+------ Original Message ------
+<table>
+    <tbody>
+
+    <tr>
+        <td style='text-align:right'>
+            <strong>Subject:</strong>
+        </td>
+        <td><?php echo $this->subject; ?></td>
+    </tr>
+    <tr>
+        <td style='text-align:right'>
+            <strong>Date:</strong>
+        </td>
+        <td><?php echo $this->date; ?></td>
+    </tr>
+    <tr>
+        <td style='text-align:right'>
+            <strong>From:</strong>
+        </td>
+        <td>
+            <?php
+                echo isset($this->from[0][1])
+                     ? $this->from[0][1] .
+                      ' &lt;' . $this->from[0][0] . '&gt;'
+                     : $this->from[0][0];
+            ?>
+
+        </td>
+    </tr>
+
+    <?php if (isset($this->replyTo) && count($this->replyTo)) { ?>
+    <tr>
+        <td style='text-align:right'>
+            <strong>Reply-To:</strong>
+        </td>
+        <td>
+           <?php
+            $arr = array();
+            for ($i = 0, $len = count($this->replyTo); $i < $len; $i++) {
+                $arr[] = isset($this->replyTo[$i][1])
+                         ? $this->replyTo[$i][1] .
+                           ' &lt;' . $this->replyTo[$i][0] . '&gt;'
+                         : $this->replyTo[$i][0];
+            }
+            echo implode(', ', $arr);
+           ?>
+        </td>
+    </tr>
+    <?php } ?>
+
+    <?php if (isset($this->to) && count($this->to)) { ?>
+    <tr>
+        <td style='text-align:right'>
+            <strong>To:</strong>
+        </td>
+        <td>
+            <?php
+            $arr = array();
+            for ($i = 0, $len = count($this->to); $i < $len; $i++) {
+                $arr[] = isset($this->to[$i][1])
+                    ? $this->to[$i][1] .
+                        ' &lt;' . $this->to[$i][0] . '&gt;'
+                    : $this->to[$i][0];
+            }
+            echo implode(', ', $arr);
+            ?>
+        </td>
+    </tr>
+        <?php } ?>
+
+    <?php if (isset($this->cc) && count($this->cc)) { ?>
+    <tr>
+        <td style='text-align:right'>
+            <strong>Cc:</strong>
+        </td>
+        <td>
+            <?php
+            $arr = array();
+            for ($i = 0, $len = count($this->cc); $i < $len; $i++) {
+                $arr[] = isset($this->cc[$i][1])
+                    ? $this->cc[$i][1] .
+                        ' &lt;' . $this->cc[$i][0] . '&gt;'
+                    : $this->cc[$i][0];
+            }
+            echo implode(', ', $arr);
+            ?>
+        </td>
+    </tr>
+        <?php } ?>
+
+    </tbody>
+</table>
+
+<blockquote>
+    <?php echo $this->contentTextPlain; ?>
+</blockquote>
+
+

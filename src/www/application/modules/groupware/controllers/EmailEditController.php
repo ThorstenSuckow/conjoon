@@ -265,7 +265,18 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             $context
         );
 
-        $data = $draftFilter->getProcessedData();
+        $data         = $draftFilter->getProcessedData();
+        $templateData = $data;
+
+        // needed for draft forward because of Bean_Inspector
+        unset($data['userEmailAddresses']);
+        unset($data['from']);
+        unset($data['replyTo']);
+
+        if ($type == 'forward') {
+            $data['to']  = array();
+            $data['cc']  = array();
+        }
 
         // convert email addresses
         /**
@@ -293,6 +304,46 @@ class Groupware_EmailEditController extends Zend_Controller_Action {
             'Conjoon_Modules_Groupware_Email_Draft',
             $data
         )->getDto();
+
+        if ($type == 'forward') {
+
+            $applicationPath = $this->_helper->registryAccess()->getApplicationPath();
+
+            /**
+             * @see Conjoon_Text_PhpTemplate
+             */
+            require_once 'Conjoon/Text/PhpTemplate.php';
+
+            /**
+             * @see Conjoon_Filter_StringWrap
+             */
+            require_once 'Conjoon/Filter/StringWrap.php';
+
+            /**
+             * @see Zend_Filter_HtmlEntities
+             */
+            require_once 'Zend/Filter/HtmlEntities.php';
+
+            $cfsw = new Conjoon_Filter_StringWrap('[Fwd: ', ']');
+            $zfhe = new Zend_Filter_HtmlEntities(array(
+                'quotestyle' => ENT_COMPAT,
+                'charset'    => 'UTF-8'
+            ));
+
+            $draft->subject = $cfsw->filter($templateData['subject']);
+
+            $templateData['subject']
+                = $zfhe->filter($templateData['subject']);
+
+            $phpTemplate = new Conjoon_Text_PhpTemplate(array(
+                Conjoon_Text_PhpTemplate::PATH =>
+                    $applicationPath .
+                    '/templates/groupware/email/message.forward.phtml',
+                Conjoon_Text_PhpTemplate::VARS => $templateData
+            ));
+
+            $draft->contentTextPlain = $phpTemplate->getParsedTemplate();
+        }
 
         $this->view->success = true;
         $this->view->error   = null;

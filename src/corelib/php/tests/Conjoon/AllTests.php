@@ -19,6 +19,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once 'Conjoon/MailTest.php';
 require_once 'Conjoon/Filter/AllTests.php';
+require_once 'Conjoon/Text/AllTests.php';
 
 /**
  * @category   Conjoon
@@ -47,6 +48,7 @@ class Conjoon_AllTests
         $suite->addTestSuite('Conjoon_MailTest');
 
         $suite->addTest(Conjoon_Filter_AllTests::suite());
+        $suite->addTest(Conjoon_Text_AllTests::suite());
 
         return $suite;
     }
