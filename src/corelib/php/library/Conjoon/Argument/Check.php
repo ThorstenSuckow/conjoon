@@ -38,13 +38,60 @@ class Conjoon_Argument_Check {
     public static function check(Array $config, Array &$data)
     {
 
-        foreach ($config as $argumentName => $config) {
+        foreach ($config as $argumentName => $entityConfig) {
 
-            $allowEmpty = isset($config['allowEmpty'])
-                          ? $config['allowEmpty']
+            $allowEmpty = isset($entityConfig['allowEmpty'])
+                          ? $entityConfig['allowEmpty']
                           : false;
 
-            switch ($config['type']) {
+            switch ($entityConfig['type']) {
+
+                case 'instanceof':
+
+                    if (!$allowEmpty && !isset($data[$argumentName])) {
+                        throw new Conjoon_Argument_Exception(
+                            "\"$argumentName\" not set"
+                        );
+                    }
+
+                    $className = $entityConfig['class'];
+
+                    if (!($data[$argumentName] instanceof $className)) {
+                        throw new Conjoon_Argument_Exception(
+                            "\"$argumentName\" not instanceof " .
+                            $entityConfig['class']
+                        );
+                    }
+
+
+                    break;
+
+                case 'inArray':
+                    $values = &$entityConfig['values'];
+
+                    if (!isset($data[$argumentName])) {
+                        throw new Conjoon_Argument_Exception(
+                            "\"$argumentName\" not set"
+                        );
+                    }
+
+                    if (!in_array($data[$argumentName], $values)) {
+                        throw new Conjoon_Argument_Exception(
+                            "\"".$data[$argumentName]."\" not in list of [".
+                                implode(', ', $values)."]"
+                        );
+                    }
+
+                    break;
+
+                case 'isset':
+                    if (!isset($data[$argumentName])) {
+                        throw new Conjoon_Argument_Exception(
+                            "\"$argumentName\" not set"
+                        );
+                    }
+                    break;
+
 
                 case 'bool':
                     if (isset($data[$argumentName])) {
