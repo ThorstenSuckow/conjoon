@@ -1,5 +1,18 @@
-﻿2012-10-28 0.1.4
-===================
+﻿2012-10-30 0.1.4.1
+==================
+Release Notes - conjoon - Version 0.1.4.1
+
+** Bug
+    * [CN-458] - Youtube Api does not fire onStateChange events anymore
+    * [CN-490] - Saving a draft and moving a message to the outbox does not work
+    * [CN-491] - EmailSendController triggers error when sending message from outbox
+    * [CN-492] - Quoting does not work properly for email messages being saved as drafts
+
+
+2012-10-28 0.1.4
+================
+Release Notes - conjoon - Version 0.1.4
+
 ** Improvement
     * [CN-406] - Make link to user guide active
 
