@@ -1,8 +1,7 @@
 /**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @url http://www.siteartwork.de/youtubeplayer
+ * @author Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>
  */
 
 Ext.namespace('Ext.ux.YoutubePlayer');
@@ -12,9 +11,6 @@ Ext.namespace('Ext.ux.YoutubePlayer');
  * It provides functionality for loading videos, muting/unmuting a video,
  * setting the volume and paging between items in a playlist (though a playlist
  * is neither part of the Ext.ux.YoutubePlayer nor the Ext.ux.YoutubePlayer.Control).
- *
- * Developers Note: This version was enhanced to be used with Ext3.0RC1. You may find a few
- * workarounds in here, which should be checked against a later release of Ext3.0.
  *
  * @class {Ext.ux.YoutubePlayer.Control}
  * @extends {Ext.Toolbar}
