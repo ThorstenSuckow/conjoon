@@ -1,12 +1,12 @@
 /**
  * Ext.ux.grid.livegrid.Store
- * Copyright (c) 2007-2012, http://www.siteartwork.de
+ * Copyright (c) 2007-2008, http://www.siteartwork.de
  *
  * Ext.ux.grid.livegrid.Store is licensed under the terms of the
  *                  GNU Open Source GPL 3.0
  * license.
  *
- * Commercial use is prohibited. Visit <http://ext-livegrid.com>
+ * Commercial use is prohibited. Visit <http://www.siteartwork.de/livegrid>
  * if you need to obtain a commercial license.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -507,13 +507,13 @@ Ext.extend(Ext.ux.grid.livegrid.Store, Ext.data.Store, {
     // private
     sortData : function(f, direction)
     {
-        var snap = this.snapshot;
-
-        this.snapshot = false;
-
-        Ext.ux.grid.livegrid.Store.superclass.sortData.apply(this, arguments);
-
-        this.snapshot = snap;
+        direction = direction || 'ASC';
+        var st = this.fields.get(f).sortType;
+        var fn = function(r1, r2){
+            var v1 = st(r1.data[f]), v2 = st(r2.data[f]);
+            return v1 > v2 ? 1 : (v1 < v2 ? -1 : 0);
+        };
+        this.data.sort(direction, fn);
     },
 
 

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /*
 * Portions of this file are based on pieces of Yahoo User Interface Library
@@ -10,33 +10,37 @@
 * YUI licensed under the BSD License:
 * http://developer.yahoo.net/yui/license.txt
 */
-Ext.lib.Ajax = function() {
-    var activeX = ['Msxml2.XMLHTTP.6.0',
-                   'Msxml2.XMLHTTP.3.0',
-                   'Msxml2.XMLHTTP'],
+Ext.lib.Ajax = function() {     
+    var activeX = ['MSXML2.XMLHTTP.3.0',
+                   'MSXML2.XMLHTTP',
+                   'Microsoft.XMLHTTP'],
         CONTENTTYPE = 'Content-Type';
-
+                   
     // private
     function setHeader(o) {
         var conn = o.conn,
-            prop,
-            headers = {};
-
+            prop;
+        
         function setTheHeaders(conn, headers){
             for (prop in headers) {
                 if (headers.hasOwnProperty(prop)) {
                     conn.setRequestHeader(prop, headers[prop]);
                 }
-            }
+            }   
+        }       
+        
+        if (pub.defaultHeaders) {
+            setTheHeaders(conn, pub.defaultHeaders);
         }
 
-        Ext.apply(headers, pub.headers, pub.defaultHeaders);
-        setTheHeaders(conn, headers);
-        delete pub.headers;
-    }
-
+        if (pub.headers) {
+            setTheHeaders(conn, pub.headers);
+            delete pub.headers;                
+        }
+    }    
+    
     // private
-    function createExceptionObject(tId, callbackArg, isAbort, isTimeout) {
+    function createExceptionObject(tId, callbackArg, isAbort, isTimeout) {          
         return {
             tId : tId,
             status : isAbort ? -1 : 0,
@@ -45,25 +49,23 @@ Ext.lib.Ajax = function() {
             isTimeout: isTimeout,
             argument : callbackArg
         };
+    }  
+    
+    // private 
+    function initHeader(label, value) {         
+        (pub.headers = pub.headers || {})[label] = value;                       
     }
-
-    // private
-    function initHeader(label, value) {
-        (pub.headers = pub.headers || {})[label] = value;
-    }
-
+    
     // private
     function createResponseObject(o, callbackArg) {
         var headerObj = {},
-            headerStr,
+            headerStr,              
             conn = o.conn,
             t,
-            s,
-            // see: https://prototype.lighthouseapp.com/projects/8886/tickets/129-ie-mangles-http-response-status-code-204-to-1223
-            isBrokenStatus = conn.status == 1223;
+            s;
 
         try {
-            headerStr = o.conn.getAllResponseHeaders();
+            headerStr = o.conn.getAllResponseHeaders();   
             Ext.each(headerStr.replace(/\r\n/g, '\n').split('\n'), function(v){
                 t = v.indexOf(':');
                 if(t >= 0){
@@ -75,29 +77,25 @@ Ext.lib.Ajax = function() {
                 }
             });
         } catch(e) {}
-
+                    
         return {
             tId : o.tId,
-            // Normalize the status and statusText when IE returns 1223, see the above link.
-            status : isBrokenStatus ? 204 : conn.status,
-            statusText : isBrokenStatus ? 'No Content' : conn.statusText,
+            status : conn.status,
+            statusText : conn.statusText,
             getResponseHeader : function(header){return headerObj[header.toLowerCase()];},
-            getAllResponseHeaders : function(){return headerStr;},
+            getAllResponseHeaders : function(){return headerStr},
             responseText : conn.responseText,
             responseXML : conn.responseXML,
             argument : callbackArg
         };
     }
-
+    
     // private
     function releaseObject(o) {
-        if (o.tId) {
-            pub.conn[o.tId] = null;
-        }
         o.conn = null;
         o = null;
-    }
-
+    }        
+    
     // private
     function handleTransactionResponse(o, callback, isAbort, isTimeout) {
         if (!callback) {
@@ -163,41 +161,39 @@ Ext.lib.Ajax = function() {
 
         releaseObject(o);
         responseObject = null;
-    }
+    }  
     
-    function checkResponse(o, callback, conn, tId, poll, cbTimeout){
-        if (conn && conn.readyState == 4) {
-            clearInterval(poll[tId]);
-            poll[tId] = null;
-
-            if (cbTimeout) {
-                clearTimeout(pub.timeout[tId]);
-                pub.timeout[tId] = null;
-            }
-            handleTransactionResponse(o, callback);
-        }
-    }
-    
-    function checkTimeout(o, callback){
-        pub.abort(o, callback, true);
-    }
-    
-
     // private
     function handleReadyState(o, callback){
-        callback = callback || {};
+    callback = callback || {};
         var conn = o.conn,
             tId = o.tId,
             poll = pub.poll,
             cbTimeout = callback.timeout || null;
 
         if (cbTimeout) {
-            pub.conn[tId] = conn;
-            pub.timeout[tId] = setTimeout(checkTimeout.createCallback(o, callback), cbTimeout);
+            pub.timeout[tId] = setTimeout(function() {
+                pub.abort(o, callback, true);
+            }, cbTimeout);
         }
-        poll[tId] = setInterval(checkResponse.createCallback(o, callback, conn, tId, poll, cbTimeout), pub.pollInterval);
-    }
 
+        poll[tId] = setInterval(
+            function() {
+                if (conn && conn.readyState == 4) {
+                    clearInterval(poll[tId]);
+                    poll[tId] = null;
+
+                    if (cbTimeout) {
+                        clearTimeout(pub.timeout[tId]);
+                        pub.timeout[tId] = null;
+                    }
+
+                    handleTransactionResponse(o, callback);
+                }
+            },
+            pub.pollInterval);
+    }
+    
     // private
     function asyncRequest(method, uri, callback, postData) {
         var o = getConnectionObject() || null;
@@ -205,7 +201,7 @@ Ext.lib.Ajax = function() {
         if (o) {
             o.conn.open(method, uri, true);
 
-            if (pub.useDefaultXhrHeader) {
+            if (pub.useDefaultXhrHeader) {                    
                 initHeader('X-Requested-With', pub.defaultXhrHeader);
             }
 
@@ -222,10 +218,10 @@ Ext.lib.Ajax = function() {
         }
         return o;
     }
-
+    
     // private
     function getConnectionObject() {
-        var o;
+        var o;          
 
         try {
             if (o = createXhrObject(pub.transactionId)) {
@@ -236,17 +232,17 @@ Ext.lib.Ajax = function() {
             return o;
         }
     }
-
+       
     // private
     function createXhrObject(transactionId) {
         var http;
-
+            
         try {
-            http = new XMLHttpRequest();
+            http = new XMLHttpRequest();                
         } catch(e) {
-            for (var i = Ext.isIE6 ? 1 : 0; i < activeX.length; ++i) {
+            for (var i = 0; i < activeX.length; ++i) {              
                 try {
-                    http = new ActiveXObject(activeX[i]);
+                    http = new ActiveXObject(activeX[i]);                        
                     break;
                 } catch(e) {}
             }
@@ -254,17 +250,17 @@ Ext.lib.Ajax = function() {
             return {conn : http, tId : transactionId};
         }
     }
-
+         
     var pub = {
         request : function(method, uri, cb, data, options) {
             if(options){
-                var me = this,
+                var me = this,              
                     xmlData = options.xmlData,
                     jsonData = options.jsonData,
                     hs;
-
-                Ext.applyIf(me, options);
-
+                    
+                Ext.applyIf(me, options);           
+                
                 if(xmlData || jsonData){
                     hs = me.headers;
                     if(!hs || !hs[CONTENTTYPE]){
@@ -272,100 +268,101 @@ Ext.lib.Ajax = function() {
                     }
                     data = xmlData || (!Ext.isPrimitive(jsonData) ? Ext.encode(jsonData) : jsonData);
                 }
-            }
+            }                       
             return asyncRequest(method || options.method || "POST", uri, cb, data);
         },
 
         serializeForm : function(form) {
-            var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements, 
-                hasSubmit = false, 
-                encoder = encodeURIComponent, 
+            var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements,
+                hasSubmit = false,
+                encoder = encodeURIComponent,
+                element,
+                options, 
                 name, 
-                data = '', 
-                type, 
-                hasValue;
-    
-            Ext.each(fElements, function(element){
-                name = element.name;
+                val,                
+                data = '',
+                type;
+                
+            Ext.each(fElements, function(element) {                 
+                name = element.name;                 
                 type = element.type;
-        
-                if (!element.disabled && name) {
-                    if (/select-(one|multiple)/i.test(type)) {
-                        Ext.each(element.options, function(opt){
+                
+                if (!element.disabled && name){
+                    if(/select-(one|multiple)/i.test(type)) {
+                        Ext.each(element.options, function(opt) {
                             if (opt.selected) {
-                                hasValue = opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttributeNode('value').specified;
-                                data += String.format("{0}={1}&", encoder(name), encoder(hasValue ? opt.value : opt.text));
-                            }
+                                data += String.format("{0}={1}&", encoder(name), encoder((opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttribute('value') !== null) ? opt.value : opt.text));
+                            }                               
                         });
-                    } else if (!(/file|undefined|reset|button/i.test(type))) {
-                        if (!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)) {
-                            data += encoder(name) + '=' + encoder(element.value) + '&';
-                            hasSubmit = /submit/i.test(type);
-                        }
-                    }
+                    } else if(!/file|undefined|reset|button/i.test(type)) {
+                            if(!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)){
+                                
+                                data += encoder(name) + '=' + encoder(element.value) + '&';                     
+                                hasSubmit = /submit/i.test(type);    
+                            }                       
+                    } 
                 }
-            });
+            });            
             return data.substr(0, data.length - 1);
         },
-
+        
         useDefaultHeader : true,
         defaultPostHeader : 'application/x-www-form-urlencoded; charset=UTF-8',
         useDefaultXhrHeader : true,
-        defaultXhrHeader : 'XMLHttpRequest',
+        defaultXhrHeader : 'XMLHttpRequest',        
         poll : {},
         timeout : {},
-        conn: {},
         pollInterval : 50,
         transactionId : 0,
-
-//  This is never called - Is it worth exposing this?
+        
+//  This is never called - Is it worth exposing this?               
 //          setProgId : function(id) {
 //              activeX.unshift(id);
 //          },
 
-//  This is never called - Is it worth exposing this?
+//  This is never called - Is it worth exposing this?   
 //          setDefaultPostHeader : function(b) {
 //              this.useDefaultHeader = b;
 //          },
-
-//  This is never called - Is it worth exposing this?
+        
+//  This is never called - Is it worth exposing this?   
 //          setDefaultXhrHeader : function(b) {
 //              this.useDefaultXhrHeader = b;
 //          },
 
-//  This is never called - Is it worth exposing this?
+//  This is never called - Is it worth exposing this?           
 //          setPollingInterval : function(i) {
 //              if (typeof i == 'number' && isFinite(i)) {
 //                  this.pollInterval = i;
 //              }
 //          },
-
+        
 //  This is never called - Is it worth exposing this?
 //          resetDefaultHeaders : function() {
 //              this.defaultHeaders = null;
 //          },
-
-        abort : function(o, callback, isTimeout) {
-            var me = this,
-                tId = o.tId,
-                isAbort = false;
-
-            if (me.isCallInProgress(o)) {
-                o.conn.abort();
-                clearInterval(me.poll[tId]);
-                me.poll[tId] = null;
-                clearTimeout(pub.timeout[tId]);
-                me.timeout[tId] = null;
-
-                handleTransactionResponse(o, callback, (isAbort = true), isTimeout);
+    
+            abort : function(o, callback, isTimeout) {
+                var me = this,
+                    tId = o.tId,
+                    isAbort = false;
+                
+                if (me.isCallInProgress(o)) {
+                    o.conn.abort();
+                    clearInterval(me.poll[tId]);
+                    me.poll[tId] = null;
+                    clearTimeout(pub.timeout[tId]);
+                    me.timeout[tId] = null;
+                    
+                    handleTransactionResponse(o, callback, (isAbort = true), isTimeout);                
+                }
+                return isAbort;
+            },
+    
+            isCallInProgress : function(o) {
+                // if there is a connection and readyState is not 0 or 4
+                return o.conn && !{0:true,4:true}[o.conn.readyState];           
             }
-            return isAbort;
-        },
-
-        isCallInProgress : function(o) {
-            // if there is a connection and readyState is not 0 or 4
-            return o.conn && !{0:true,4:true}[o.conn.readyState];
-        }
-    };
-    return pub;
-}();
+        };
+        return pub;
+    }();

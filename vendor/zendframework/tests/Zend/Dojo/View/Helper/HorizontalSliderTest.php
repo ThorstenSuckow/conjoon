@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HorizontalSliderTest.php 24719 2012-04-28 06:19:07Z rob $
+ * @version    $Id: HorizontalSliderTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Dojo_View_Helper_HorizontalSliderTest::main() if this source file is executed directly.
@@ -49,7 +49,7 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
@@ -195,8 +195,7 @@ class Zend_Dojo_View_Helper_HorizontalSliderTest extends PHPUnit_Framework_TestC
     public function testShouldCreateOnChangeAttributeByDefault()
     {
         $html = $this->getElement();
-        // Note that ' is converted to &#39; in Zend_View_Helper_HtmlElement::_htmlAttribs() (line 116)
-        $this->assertContains('onChange="dojo.byId(&#39;elementId&#39;).value = arguments[0];"', $html, $html);
+        $this->assertContains('onChange="dojo.byId(\'elementId\').value = arguments[0];"', $html, $html);
     }
 
     public function testShouldCreateHiddenElementWithValue()

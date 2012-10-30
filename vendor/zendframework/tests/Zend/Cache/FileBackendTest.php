@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileBackendTest.php 24677 2012-03-12 21:27:13Z mabe $
+ * @version    $Id: FileBackendTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -41,7 +41,7 @@ require_once 'CommonExtendedBackendTest.php';
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
@@ -74,40 +74,6 @@ class Zend_Cache_FileBackendTest extends Zend_Cache_CommonExtendedBackendTest {
     {
         parent::tearDown();
         unset($this->_instance);
-    }
-
-    public function testSetDeprecatedHashedDirectoryUmask()
-    {
-        try {
-            $cache = new Zend_Cache_Backend_File(array(
-                'cache_dir'              => $this->_cache_dir,
-                'hashed_directory_umask' => 0700,
-            ));
-            $this->fail("Missing expected E_USER_NOTICE error");
-        } catch (PHPUnit_Framework_Error $e) {
-            if ($e->getCode() != E_USER_NOTICE) {
-                throw $e;
-            }
-
-            $this->assertContains('hashed_directory_umask', $e->getMessage());
-        }
-    }
-
-    public function testSetDeprecatedCacheFileUmask()
-    {
-        try {
-            $cache = new Zend_Cache_Backend_File(array(
-                    'cache_dir'        => $this->_cache_dir,
-                    'cache_file_umask' => 0700,
-            ));
-            $this->fail("Missing expected E_USER_NOTICE error");
-        } catch (PHPUnit_Framework_Error $e) {
-            if ($e->getCode() != E_USER_NOTICE) {
-                throw $e;
-            }
-
-            $this->assertContains('cache_file_umask', $e->getMessage());
-        }
     }
 
     public function testConstructorCorrectCall()
@@ -156,3 +122,5 @@ class Zend_Cache_FileBackendTest extends Zend_Cache_CommonExtendedBackendTest {
     }
 
 }
+
+

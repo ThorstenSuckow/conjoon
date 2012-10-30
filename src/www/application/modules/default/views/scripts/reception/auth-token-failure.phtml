@@ -36,19 +36,18 @@
 
 Ext.onReady(function(){
 
+    com.conjoon.util.PreLoader.addStore(com.conjoon.groupware.Registry.getStore());
 
-    com.conjoon.groupware.Registry.load({
-        fn : function() {
-            com.conjoon.groupware.Reception.init(false);
+    com.conjoon.util.PreLoader.on('load', function() {
+        var reception = com.conjoon.groupware.Reception;
+        reception.init(false);
 
-            com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
-                '/client/environment/device'
-            ));
-        }
+        com.conjoon.SystemMessageManager.setContext(com.conjoon.groupware.Registry.get(
+            '/client/environment/device'
+        ));
     });
 
-
-
+    com.conjoon.util.PreLoader.load();
 });
   </script>
  </body>

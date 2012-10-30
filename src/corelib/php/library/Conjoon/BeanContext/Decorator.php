@@ -40,7 +40,7 @@ require_once 'Conjoon/Filter/Input.php';
  * @subpackage BeanContext
  * @category BeanContext
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 final class Conjoon_BeanContext_Decorator {
 
@@ -65,7 +65,7 @@ final class Conjoon_BeanContext_Decorator {
     protected $_decoratedMethods = array();
 
     /**
-     * @var mixed
+     * @var Zend_Db_Table
      */
     protected $_decoratedModel = null;
 
@@ -174,8 +174,8 @@ final class Conjoon_BeanContext_Decorator {
      */
     final protected function _cast($values, $type)
     {
-        if (($values instanceof Zend_Db_Table_Rowset_Abstract) ||
-            ($values instanceof Zend_Db_Table_Row_Abstract) ||
+        if (is_a($values, 'Zend_Db_Table_Rowset_Abstract') ||
+            is_a($values, 'Zend_Db_Table_Row_Abstract') ||
             (is_object($values) && method_exists($values, 'toArray'))) {
             $values = $values->toArray();
         }

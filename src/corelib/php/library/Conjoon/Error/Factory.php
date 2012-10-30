@@ -26,7 +26,7 @@ require_once 'Conjoon/Error.php';
  * @subpackage Error
  * @category   Error
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Error_Factory {
 

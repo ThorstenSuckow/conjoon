@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.service.twitter.wizard');
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.service.twitter.wizard.FinishCard
  * @extends Ext.ux.Wiz.Card

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * Hebrew Translations
@@ -160,8 +160,7 @@ if(Ext.form.DateField){
     maxText           : "{0} ������ ���� �� ���� ����� ����",
     invalidText       : "{1} ��� �� ����� ���� - ���� ����� ������ {0}",
     format            : "m/d/y",
-    altFormats        : "m/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d",
-    startDay          : 0
+    altFormats        : "m/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d|Y-m-d"
   });
 }
 

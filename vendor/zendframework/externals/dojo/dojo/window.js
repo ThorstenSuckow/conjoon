@@ -53,9 +53,7 @@ dojo.window.scrollIntoView = function(/*DomNode*/ node, /*Object?*/ pos){
 			return;
 		}
 		var backCompat = doc.compatMode == 'BackCompat',
-			clientAreaRoot = (isIE >= 9 && node.ownerDocument.parentWindow.frameElement)
-				? ((html.clientHeight > 0 && html.clientWidth > 0 && (body.clientHeight == 0 || body.clientWidth == 0 || body.clientHeight > html.clientHeight || body.clientWidth > html.clientWidth)) ? html : body)
-				: (backCompat ? body : html),
+			clientAreaRoot = backCompat? body : html,
 			scrollRoot = isWK ? body : clientAreaRoot,
 			rootWidth = clientAreaRoot.clientWidth,
 			rootHeight = clientAreaRoot.clientHeight,
@@ -80,11 +78,14 @@ dojo.window.scrollIntoView = function(/*DomNode*/ node, /*Object?*/ pos){
 			}else{
 				var pb = dojo._getPadBorderExtents(el);
 				elPos.w -= pb.w; elPos.h -= pb.h; elPos.x += pb.l; elPos.y += pb.t;
+			}
+	
+			if(el != scrollRoot){ // body, html sizes already have the scrollbar removed
 				var clientSize = el.clientWidth,
 					scrollBarSize = elPos.w - clientSize;
 				if(clientSize > 0 && scrollBarSize > 0){
 					elPos.w = clientSize;
-					elPos.x += (rtl && (isIE || el.clientLeft > pb.l/*Chrome*/)) ? scrollBarSize : 0;
+					if(isIE && rtl){ elPos.x += scrollBarSize; }
 				}
 				clientSize = el.clientHeight;
 				scrollBarSize = elPos.h - clientSize;
@@ -113,9 +114,8 @@ dojo.window.scrollIntoView = function(/*DomNode*/ node, /*Object?*/ pos){
 				bot = t + nodePos.h - elPos.h; // beyond bottom: > 0
 			if(r * l > 0){
 				var s = Math[l < 0? "max" : "min"](l, r);
-				if(rtl && ((isIE == 8 && !backCompat) || isIE >= 9)){ s = -s; }
 				nodePos.x += el.scrollLeft;
-				el.scrollLeft += s;
+				el.scrollLeft += (isIE >= 8 && !backCompat && rtl)? -s : s;
 				nodePos.x -= el.scrollLeft;
 			}
 			if(bot * t > 0){

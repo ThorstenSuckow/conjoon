@@ -15,8 +15,8 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Module.php 24593 2012-01-05 20:35:02Z matthew $
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Module.php 23775 2011-03-01 17:25:24Z ralph $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -30,12 +30,17 @@ require_once 'Zend/Controller/Router/Route/Abstract.php';
  *
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @see        http://manuals.rubyonrails.com/read/chapter/65
  */
 class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_Abstract
 {
+    /**
+     * URI delimiter
+     */
+    const URI_DELIMITER = '/';
+
     /**
      * Default values for the route (ie. module, controller, action, params)
      * @var array
@@ -232,29 +237,29 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
             if (is_array($value)) {
                 foreach ($value as $arrayValue) {
                     $arrayValue = ($encode) ? urlencode($arrayValue) : $arrayValue;
-                    $url .= self::URI_DELIMITER . $key;
-                    $url .= self::URI_DELIMITER . $arrayValue;
+                    $url .= '/' . $key;
+                    $url .= '/' . $arrayValue;
                 }
             } else {
                 if ($encode) $value = urlencode($value);
-                $url .= self::URI_DELIMITER . $key;
-                $url .= self::URI_DELIMITER . $value;
+                $url .= '/' . $key;
+                $url .= '/' . $value;
             }
         }
 
         if (!empty($url) || $action !== $this->_defaults[$this->_actionKey]) {
             if ($encode) $action = urlencode($action);
-            $url = self::URI_DELIMITER . $action . $url;
+            $url = '/' . $action . $url;
         }
 
         if (!empty($url) || $controller !== $this->_defaults[$this->_controllerKey]) {
             if ($encode) $controller = urlencode($controller);
-            $url = self::URI_DELIMITER . $controller . $url;
+            $url = '/' . $controller . $url;
         }
 
         if (isset($module)) {
             if ($encode) $module = urlencode($module);
-            $url = self::URI_DELIMITER . $module . $url;
+            $url = '/' . $module . $url;
         }
 
         return ltrim($url, self::URI_DELIMITER);

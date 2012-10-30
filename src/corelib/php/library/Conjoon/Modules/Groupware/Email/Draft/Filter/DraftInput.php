@@ -42,7 +42,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Draft/Filter/DraftFormatFilter.php
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Filter_Input {
 
@@ -67,9 +67,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'to',
             'cc',
             'bcc',
-            'type',
-            'attachments',
-            'removedAttachments'
+            'type'
         ),
         self::CONTEXT_DRAFT => array(
             'format',
@@ -85,9 +83,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
             'to',
             'cc',
             'bcc',
-            'type',
-            'attachments',
-            'removedAttachments'
+            'type'
         )
 
     );
@@ -133,14 +129,6 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
         'bcc' => array(
             'JsonDecode',
             'EmailRecipients'
-        ),
-        'attachments' => array(
-            'JsonDecode'
-        ),
-        'removedAttachments' => array(
-            'JsonDecode',
-            'PositiveArrayValues'
-
         )
     );
 
@@ -195,13 +183,6 @@ class Conjoon_Modules_Groupware_Email_Draft_Filter_DraftInput extends Conjoon_Fi
          ),
          'bcc' => array(
             'allowEmpty' => true
-         ),
-         'attachments' => array(
-            'Array'
-         ),
-         'removedAttachments' => array(
-            'allowEmpty' => true,
-            array('GreaterThan', 0)
          )
     );
 

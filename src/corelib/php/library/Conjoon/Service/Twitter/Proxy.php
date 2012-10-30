@@ -28,7 +28,7 @@ require_once 'Zend/Oauth/Token/Access.php';
  * of returning appropriate and easy to use objects depending on the
  * requested actions.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Service_Twitter_Proxy  {
 

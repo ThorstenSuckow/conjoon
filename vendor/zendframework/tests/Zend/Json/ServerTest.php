@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Json_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ServerTest.php 24709 2012-04-10 19:54:42Z rob $
+ * @version    $Id: ServerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Json_ServerTest::main() if this source file is executed directly.
@@ -36,7 +36,7 @@ require_once 'Zend/Json.php';
  * @category   Zend
  * @package    Zend_Json_Server
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Json
  * @group      Zend_Json_Server
@@ -83,18 +83,11 @@ class Zend_Json_ServerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($methods->hasMethod('strtolower'));
     }
 
-    public function testShouldBeAbleToBindCallback1ToServer()
+    public function testShouldBeAbleToBindCallbackToServer()
     {
-        $this->server->addFunction(array('Zend_Json_ServerTest_Foo', 'staticBar'));
+        $this->server->addFunction(array($this, 'setUp'));
         $methods = $this->server->getFunctions();
-        $this->assertTrue($methods->hasMethod('staticBar'));
-    }
-
-    public function testShouldBeAbleToBindCallback2ToServer()
-    {
-        $this->server->addFunction(array(new Zend_Json_ServerTest_Foo, 'bar'));
-        $methods = $this->server->getFunctions();
-        $this->assertTrue($methods->hasMethod('bar'));
+        $this->assertTrue($methods->hasMethod('setUp'));
     }
 
     public function testShouldBeAbleToBindClassToServer()
@@ -462,23 +455,10 @@ class Zend_Json_ServerTest_Foo
      * @param  mixed $three
      * @return array
      */
-    static public function staticBar($one, $two = 'two', $three = null)
-    {
-        return array($one, $two, $three);
-    }
-
-    /**
-     * Bar
-     *
-     * @param  bool $one
-     * @param  string $two
-     * @param  mixed $three
-     * @return array
-     */
     public function bar($one, $two = 'two', $three = null)
     {
         return array($one, $two, $three);
-    }    
+    }
 
     /**
      * Baz

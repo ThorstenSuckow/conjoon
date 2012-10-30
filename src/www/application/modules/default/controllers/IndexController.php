@@ -40,35 +40,14 @@ class IndexController extends Zend_Controller_Action {
 
     public function indexAction()
     {
-         $userId = $this->_helper->registryAccess()->getUserId();
-
         /**
-         * @see Conjoon_Modules_Default_Registry_Facade
+         * @see Conjoon_Modules_Default_Registry
          */
-        require_once 'Conjoon/Modules/Default/Registry/Facade.php';
+        require_once 'Conjoon/Modules/Default/Registry.php';
 
-        $this->view->title = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                             ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
-
-        $this->view->softwareLabel = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                                     ->getValueForKeyAndUserId('/base/conjoon/name', $userId);
-        $this->view->editionLabel = Conjoon_Modules_Default_Registry_Facade::getInstance()
-                                    ->getValueForKeyAndUserId('/base/conjoon/edition', $userId);
-
-        /**
-         * @see Conjoon_Version
-         */
-        require_once 'Conjoon/Version.php';
-
-        $this->view->versionLabel = Conjoon_Version::VERSION;
-
-        // check if there are any GET params available. If that is the case,
-        // we won't deliver the app cache manifest with the page
-        if (!empty($_GET)) {
-            $this->view->enableManifest = false;
-        } else {
-            $this->view->enableManifest = true;
-        }
+        $this->view->title = Conjoon_Modules_Default_Registry::get(
+            '/base/conjoon/name'
+        );
     }
 
     /**
@@ -114,7 +93,7 @@ class IndexController extends Zend_Controller_Action {
 
         $http = new Zend_Http_Client();
 
-        $http->setUri('http://conjoon.org/forum/newthread.php?do=postthread&f=5');
+        $http->setUri('http://www.conjoon.org/forum/newthread.php?do=postthread&f=5');
 
         $http->setParameterPost(array(
             'do'                     => 'postthread',
@@ -155,7 +134,7 @@ class IndexController extends Zend_Controller_Action {
 
         $http = new Zend_Http_Client();
 
-        $http->setUri('http://conjoon.org/forum/newthread.php?do=postthread&f=6');
+        $http->setUri('http://www.conjoon.org/forum/newthread.php?do=postthread&f=6');
 
         $http->setParameterPost(array(
             'do'                     => 'postthread',
@@ -176,6 +155,5 @@ class IndexController extends Zend_Controller_Action {
 
         $httpResponse = $http->request();
     }
-
 
 }

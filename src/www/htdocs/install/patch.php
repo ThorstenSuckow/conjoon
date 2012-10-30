@@ -16,7 +16,7 @@
 /**
  * Lists available patches for the current version when updating
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 $currentVersion  = $_SESSION['current_version'];

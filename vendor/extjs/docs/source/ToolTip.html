@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-<div id="cls-Ext.ToolTip"></div>/**
+    <pre class="prettyprint lang-js"><div id="cls-Ext.ToolTip"></div>/**
  * @class Ext.ToolTip
  * @extends Ext.Tip
  * A standard tooltip implementation for providing additional information when hovering over a target element.
@@ -142,7 +136,7 @@ myGrid.on('render', function(grid) {
     // private
     afterRender : function(){
         Ext.ToolTip.superclass.afterRender.call(this);
-        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1).setVisibilityMode(Ext.Element.DISPLAY);
+        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1);
     },
 
     <div id="method-Ext.ToolTip-initTarget"></div>/**
@@ -409,8 +403,8 @@ myGrid.on('render', function(grid) {
         this.showAt(this.getTargetXY());
 
         if(this.anchor){
-            this.anchorEl.show();
             this.syncAnchor();
+            this.anchorEl.show();
             this.constrainPosition = this.origConstrainPosition;
         }else{
             this.anchorEl.hide();
@@ -428,8 +422,6 @@ myGrid.on('render', function(grid) {
         if(this.anchor && !this.anchorEl.isVisible()){
             this.syncAnchor();
             this.anchorEl.show();
-        }else{
-            this.anchorEl.hide();
         }
     },
 
@@ -499,14 +491,7 @@ myGrid.on('render', function(grid) {
     onDocMouseDown : function(e){
         if(this.autoHide !== true && !this.closable && !e.within(this.el.dom)){
             this.disable();
-            this.doEnable.defer(100, this);
-        }
-    },
-    
-    // private
-    doEnable : function(){
-        if(!this.isDestroyed){
-            this.enable();
+            this.enable.defer(100, this);
         }
     },
 
@@ -518,7 +503,7 @@ myGrid.on('render', function(grid) {
 
     // private
     adjustPosition : function(x, y){
-        if(this.constrainPosition){
+        if(this.contstrainPosition){
             var ay = this.targetXY[1], h = this.getSize().height;
             if(y <= ay && (y+h) >= ay){
                 y = ay-h-5;

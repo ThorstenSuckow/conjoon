@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.grid.PropertyRecord
@@ -242,13 +242,8 @@ Ext.grid.PropertyColumnModel = Ext.extend(Ext.grid.ColumnModel, {
     // inherit docs
     destroy : function(){
         Ext.grid.PropertyColumnModel.superclass.destroy.call(this);
-        this.destroyEditors(this.editors);
-        this.destroyEditors(this.grid.customEditors);
-    },
-    
-    destroyEditors: function(editors){
-        for(var ed in editors){
-            Ext.destroy(editors[ed]);
+        for(var ed in this.editors){
+            Ext.destroy(this.editors[ed]);
         }
     }
 });

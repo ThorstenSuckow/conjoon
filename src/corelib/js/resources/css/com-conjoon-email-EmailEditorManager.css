@@ -1,0 +1,129 @@
+/**
+ * conjoon
+ * (c) 2002-2012 siteartwork.de/conjoon.org
+ * licensing@conjoon.org
+ *
+ * $Author$
+ * $Id$
+ * $Date$
+ * $Revision$
+ * $LastChangedDate$
+ * $LastChangedBy$
+ * $URL$
+ */
+
+.com-conjoon-groupware-email-EmailForm-icon {
+    background-image:url(../images/16x16/apps/groupware-email-emailform.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailForm-gridrow .x-grid3-row-table .x-grid3-cell-selected {
+    background:none !important;
+}
+.com-conjoon-groupware-email-EmailForm-gridrow .x-grid3-row-table td {
+    border-right:1px solid #EDEDED !important;
+}
+
+.com-conjoon-groupware-email-EmailForm-gridrow .x-grid3-row-table .x-grid3-cell-last div {
+    background-image:url(../images/16x16/apps/groupware-email-emailform-recepientrow.png) !important;
+    background-repeat:no-repeat;
+    padding-left:22px;
+    background-position:2px 0;
+}
+
+.com-conjoon-groupware-email-EmailForm-toolbar-buttonSend-icon {
+    background-image:url(../images/16x16/actions/groupware-email-send.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailForm-toolbar-buttonOutbox-icon {
+    background-image:url(../images/16x16/actions/groupware-email-addtooutbox.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailForm-toolbar-buttonDraft-icon {
+    background-image:url(../images/16x16/actions/groupware-email-savedraft.png) !important;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body {
+    border:0;
+    margin:0;
+    padding:8px;
+    cursor:text;
+    height:98%;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body pre {
+    white-space:pre-wrap;
+    white-space:-moz-pre-wrap !important;
+    white-space:-pre-wrap;
+    white-space:-o-pre-wrap;
+    word-wrap:break-word;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body a {
+    white-space:nowrap!important;
+    word-wrap:normal!important;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.signature {
+    font-family:Courier New,Tahoma,Times New Roman,Verdana;
+    color:#808080;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.editorBodyWrap {
+    white-space:pre-wrap;
+    white-space:-moz-pre-wrap !important;
+    white-space:-pre-wrap;
+    white-space:-o-pre-wrap;
+    word-wrap:break-word;
+    padding:0px!important;
+    margin:0px!important;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body div.text {
+    margin:10px 0 10px 0;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote {
+    margin:4px 0px 4px 0px;
+    padding-left:16px;
+    position:relative;
+    padding-top:10px;
+    padding-bottom:4px;
+    border-left:2px solid #15428B;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote  blockquote {
+    border-left:2px solid #990099;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote {
+    border-left:2px solid #99CCCC;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote {
+    border-left:2px solid #99CC00;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #99FF00;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #990033;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #993333;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #996633;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #999933;
+}
+
+.com-conjoon-groupware-email-EmailForm-htmlEditor-body blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote blockquote {
+    border-left:2px solid #99CC33;
+}
+

@@ -16,7 +16,7 @@
 /**
  * processes the data supplied by the welcome screen.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 if (!isset($_SESSION['support_key'])) {
@@ -42,12 +42,10 @@ if (isset($_POST['welcome_post'])) {
     $supportKey = trim((string)$_POST['support_key']);
     $_SESSION['support_key'] = $supportKey;
 
-    $htmlEntFlags = defined('ENT_HTML401')
-                    ? ENT_COMPAT | ENT_HTML401
-                    : ENT_COMPAT;
-
     $edition = htmlentities(
-        trim((string)$_POST['edition']), $htmlEntFlags, 'UTF-8'
+        trim((string)$_POST['edition']),
+        ENT_COMPAT | ENT_HTML401,
+        'UTF-8'
     );
 
     if ($edition == "") {

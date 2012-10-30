@@ -31,7 +31,7 @@ require_once 'Conjoon/Modules/Service/Twitter/Tweet/Dto.php';
  * @package    Conjoon_Service
  * @subpackage Twitter
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 
 class Conjoon_Modules_Service_Twitter_Tweet implements Conjoon_BeanContext, Serializable {

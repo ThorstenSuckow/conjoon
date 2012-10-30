@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.data.DirectProxy
@@ -107,25 +107,23 @@ paramOrder: 'param1|param2|param'
 
     // private
     createCallback : function(action, rs, trans) {
-        var me = this;
         return function(result, res) {
             if (!res.status) {
                 // @deprecated fire loadexception
                 if (action === Ext.data.Api.actions.read) {
-                    me.fireEvent("loadexception", me, trans, res, null);
+                    this.fireEvent("loadexception", this, trans, res, null);
                 }
-                me.fireEvent('exception', me, 'remote', action, trans, res, null);
+                this.fireEvent('exception', this, 'remote', action, trans, res, null);
                 trans.request.callback.call(trans.request.scope, null, trans.request.arg, false);
                 return;
             }
             if (action === Ext.data.Api.actions.read) {
-                me.onRead(action, trans, result, res);
+                this.onRead(action, trans, result, res);
             } else {
-                me.onWrite(action, trans, result, res, rs);
+                this.onWrite(action, trans, result, res, rs);
             }
         };
     },
-
     /**
      * Callback for read actions
      * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
@@ -160,8 +158,8 @@ paramOrder: 'param1|param2|param'
      * @protected
      */
     onWrite : function(action, trans, result, res, rs) {
-        var data = trans.reader.extractData(trans.reader.getRoot(result), false);
-        var success = trans.reader.getSuccess(result);
+        var data = trans.reader.extractData(result[trans.reader.meta.root], false);
+        var success = result[trans.reader.meta.successProperty];
         success = (success !== false);
         if (success){
             this.fireEvent("write", this, action, data, res, rs, trans.request.arg);

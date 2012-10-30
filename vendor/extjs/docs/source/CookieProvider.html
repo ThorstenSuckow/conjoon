@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-
+    <pre class="prettyprint lang-js">
 <div id="cls-Ext.state.CookieProvider"></div>/**
  * @class Ext.state.CookieProvider
  * @extends Ext.state.Provider
@@ -37,18 +31,17 @@
  * Create a new CookieProvider
  * @param {Object} config The configuration object
  */
-Ext.state.CookieProvider = Ext.extend(Ext.state.Provider, {
-    
-    constructor : function(config){
-        Ext.state.CookieProvider.superclass.constructor.call(this);
-        this.path = "/";
-        this.expires = new Date(new Date().getTime()+(1000*60*60*24*7)); //7 days
-        this.domain = null;
-        this.secure = false;
-        Ext.apply(this, config);
-        this.state = this.readCookies();
-    },
-    
+Ext.state.CookieProvider = function(config){
+    Ext.state.CookieProvider.superclass.constructor.call(this);
+    this.path = "/";
+    this.expires = new Date(new Date().getTime()+(1000*60*60*24*7)); //7 days
+    this.domain = null;
+    this.secure = false;
+    Ext.apply(this, config);
+    this.state = this.readCookies();
+};
+
+Ext.extend(Ext.state.CookieProvider, Ext.state.Provider, {
     // private
     set : function(name, value){
         if(typeof value == "undefined" || value === null){
@@ -67,15 +60,13 @@ Ext.state.CookieProvider = Ext.extend(Ext.state.Provider, {
 
     // private
     readCookies : function(){
-        var cookies = {},
-            c = document.cookie + ";",
-            re = /\s?(.*?)=(.*?);/g,
-    	    matches,
-            name,
-            value;
+        var cookies = {};
+        var c = document.cookie + ";";
+        var re = /\s?(.*?)=(.*?);/g;
+    	var matches;
     	while((matches = re.exec(c)) != null){
-            name = matches[1];
-            value = matches[2];
+            var name = matches[1];
+            var value = matches[2];
             if(name && name.substring(0,3) == "ys-"){
                 cookies[name.substr(3)] = this.decodeValue(value);
             }

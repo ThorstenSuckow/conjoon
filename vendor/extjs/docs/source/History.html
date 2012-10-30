@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-<div id="cls-Ext.History"></div>/**
+    <pre class="prettyprint lang-js"><div id="cls-Ext.History"></div>/**
  * @class Ext.History
  * @extends Ext.util.Observable
  * History management component that allows you to register arbitrary tokens that signify application
@@ -27,13 +21,8 @@ Ext.History = (function () {
     var currentToken;
 
     function getHash() {
-        var href = location.href, i = href.indexOf("#"),
-            hash = i >= 0 ? href.substr(i + 1) : null;
-             
-        if (Ext.isGecko) {
-            hash = decodeURIComponent(hash);
-        }
-        return hash;
+        var href = top.location.href, i = href.indexOf("#");
+        return i >= 0 ? href.substr(i + 1) : null;
     }
 
     function doSave() {
@@ -82,7 +71,7 @@ Ext.History = (function () {
             if (newtoken !== token) {
                 token = newtoken;
                 handleStateChange(token);
-                location.hash = token;
+                top.location.hash = token;
                 hash = token;
                 doSave();
             } else if (newHash !== hash) {
@@ -198,7 +187,7 @@ tabPanel.on('tabchange', function(tabPanel, tab){
             if (Ext.isIE) {
                 return updateIFrame(token);
             } else {
-                location.hash = token;
+                top.location.hash = token;
                 return true;
             }
         },

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 Ext.ns('Ext.ux.grid');
 
@@ -219,8 +219,6 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             });
             r.endEdit();
             this.fireEvent('afteredit', this, changes, r, this.rowIndex);
-        } else {
-            this.fireEvent('canceledit', this, false);
         }
         this.hide();
     },
@@ -267,12 +265,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             } else if(i == len - 1){
                 ed.margins = pm('0 0 2 1');
             } else{
-                if (Ext.isIE) {
-                    ed.margins = pm('0 0 2 0');
-                }
-                else {
-                    ed.margins = pm('0 1 2 0');
-                }
+                ed.margins = pm('0 1 2');
             }
             ed.setWidth(cm.getColumnWidth(i));
             ed.column = c;
@@ -475,17 +468,6 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         this.fireEvent('validation', this, valid);
     },
 
-    lastVisibleColumn : function() {
-        var i = this.items.getCount() - 1,
-            c;
-        for(; i >= 0; i--) {
-            c = this.items.items[i];
-            if (!c.hidden) {
-                return c;
-            }
-        }
-    },
-
     showTooltip: function(msg){
         var t = this.tooltip;
         if(!t){
@@ -506,7 +488,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             h = this.el.getHeight();
 
         if(top + h >= scroll){
-            t.initTarget(this.lastVisibleColumn().getEl());
+            t.initTarget(this.items.last().getEl());
             if(!t.rendered){
                 t.show();
                 t.hide();

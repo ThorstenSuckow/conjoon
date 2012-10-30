@@ -17,7 +17,7 @@
  * Make sure to load this file after the ExtJS files and the default Overrides.js
  * file were loaded.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 

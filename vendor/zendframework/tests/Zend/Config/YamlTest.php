@@ -47,10 +47,6 @@ class Zend_Config_YamlTest extends PHPUnit_Framework_TestCase
         $this->_booleansConfig            = dirname(__FILE__) . '/_files/booleans.yaml';
         $this->_constantsConfig           = dirname(__FILE__) . '/_files/constants.yaml';
         $this->_yamlInlineCommentsConfig  = dirname(__FILE__) . '/_files/inlinecomments.yaml';
-        $this->_yamlIndentedCommentsConfig  = dirname(__FILE__) . '/_files/indentedcomments.yaml';
-        $this->_yamlListConstantsConfig     = dirname(__FILE__) . '/_files/listconstants.yaml';
-        $this->_listBooleansConfig          = dirname(__FILE__) . '/_files/listbooleans.yaml';
-        $this->_yamlSingleQuotedString    = dirname(__FILE__) . '/_files/zf11934.yaml';
     }
 
     public function testLoadSingleSection()
@@ -337,93 +333,5 @@ class Zend_Config_YamlTest extends PHPUnit_Framework_TestCase
             'APPLICATION_PATH/controllers',
             $config->resources->frontController->controllerDirectory
         );
-    }
-    
-    /**
-     * @group ZF-11384
-     */
-    public function testAllowsIndentedCommentsUsingHash()
-    {
-        $config = new Zend_Config_Yaml($this->_yamlIndentedCommentsConfig, null);
-        $this->assertType('Zend_Config', $config->resources);
-        $this->assertType('Zend_Config', $config->resources->frontController);
-        $this->assertType(
-            'string', 
-            $config->resources->frontController->controllerDirectory
-        );
-        $this->assertSame(
-            'APPLICATION_PATH/controllers',
-            $config->resources->frontController->controllerDirectory
-        );
-    }
-    
-    /**
-     * @group ZF-11702
-     */
-    public function testAllowsConstantsInLists()
-    {
-        if (!defined('ZEND_CONFIG_YAML_TEST_PATH')) {
-            define('ZEND_CONFIG_YAML_TEST_PATH', 'testing');
-        }        
-        $config = new Zend_Config_Yaml($this->_yamlListConstantsConfig, 'production');
-
-        $this->assertEquals(ZEND_CONFIG_YAML_TEST_PATH, $config->paths->{0});
-        $this->assertEquals(ZEND_CONFIG_YAML_TEST_PATH . '/library/test', $config->paths->{1});
-    }
-    
-    /**
-     * @group ZF-11702
-     */
-    public function testAllowsBooleansInLists()
-    {
-        $config = new Zend_Config_Yaml($this->_listBooleansConfig, 'production');
-
-        $this->assertTrue($config->usingLowerCasedYes->{0});
-        $this->assertTrue($config->usingTitleCasedYes->{0});
-        $this->assertTrue($config->usingCapitalYes->{0});
-        $this->assertTrue($config->usingLowerY->{0});
-        $this->assertTrue($config->usingUpperY->{0});
-
-        $this->assertFalse($config->usingLowerCasedNo->{0});
-        $this->assertFalse($config->usingTitleCasedNo->{0});
-        $this->assertFalse($config->usingCapitalNo->{0});
-        $this->assertFalse($config->usingLowerN->{0});
-        $this->assertFalse($config->usingUpperN->{0});
-
-        $this->assertTrue($config->usingLowerCasedTrue->{0});
-        $this->assertTrue($config->usingTitleCasedTrue->{0});
-        $this->assertTrue($config->usingCapitalTrue->{0});
-
-        $this->assertFalse($config->usingLowerCasedFalse->{0});
-        $this->assertFalse($config->usingTitleCasedFalse->{0});
-        $this->assertFalse($config->usingCapitalFalse->{0});
-
-        $this->assertTrue($config->usingLowerCasedOn->{0});
-        $this->assertTrue($config->usingTitleCasedOn->{0});
-        $this->assertTrue($config->usingCapitalOn->{0});
-
-        $this->assertFalse($config->usingLowerCasedOff->{0});
-        $this->assertFalse($config->usingTitleCasedOff->{0});
-        $this->assertFalse($config->usingCapitalOff->{0});
-    }
-    
-    /**
-     * @group ZF-11934
-     */
-    public function testAllowsSingleQuotedStringValues()
-    {
-        $config = new Zend_Config_Yaml($this->_yamlSingleQuotedString);
-        $this->assertEquals('two', $config->one);
-    }
-
-    /**
-    * @group ZF-11363
-    */
-    public function testAllowsDashesInLists()
-    {
-        $config = new Zend_Config_Yaml($this->_iniFileSameNameKeysConfig, null);
-        $this->assertEquals('101112', $config->{'te-n'}->{'ele-ven'}->{0}->{'twel-ve'});
-        $this->assertEquals('101112', $config->{'te-n'}->{'ele-ven'}->{0}->twelve);
-        $this->assertEquals('thir-teen', $config->{'te-n'}->{'ele-ven'}->{1});
     }
 }

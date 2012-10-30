@@ -21,7 +21,7 @@ require_once 'Conjoon/Log.php';
 /**
  *
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Feeds_Account_Facade {
 

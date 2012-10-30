@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FrontcontrollerTest.php 24798 2012-05-12 19:17:41Z adamlundrigan $
+ * @version    $Id: FrontcontrollerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -38,7 +38,7 @@ require_once 'Zend/Controller/Front.php';
  * @category   Zend
  * @package    Zend_Application
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Application
  */
@@ -388,30 +388,7 @@ class Zend_Application_Resource_FrontcontrollerTest extends PHPUnit_Framework_Te
         $front = $resource->getFrontController();
         $this->assertTrue($front->returnResponse());
     }
-    
-    /**
-     * @group ZF-9724
-     */
-    public function testShouldSetDispatcherFromConfiguration()
-    {
-        require_once 'Zend/Application/Resource/Frontcontroller.php';
-        $resource = new Zend_Application_Resource_Frontcontroller(array(
-            'dispatcher' => array(
-                'class' => 'ZF9724_Dispatcher',
-                'params' => array(
-                    'bar' => 'baz'
-                )
-            )
-        ));
-        $resource->init();
-        $front = $resource->getFrontController();
-        $this->assertEquals('ZF9724_Dispatcher', get_class($front->getDispatcher()));
-        $this->assertEquals('baz', $front->getDispatcher()->getParam('bar'));
-    }
 }
-
-require_once 'Zend/Controller/Dispatcher/Standard.php';
-class ZF9724_Dispatcher extends Zend_Controller_Dispatcher_Standard {}
 
 if (PHPUnit_MAIN_METHOD == 'Zend_Application_Resource_FrontcontrollerTest::main') {
     Zend_Application_Resource_FrontcontrollerTest::main();

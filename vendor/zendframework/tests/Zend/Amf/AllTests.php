@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -27,7 +27,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'Zend/Amf/Adobe/IntrospectorTest.php';
 require_once 'Zend/Amf/RequestTest.php';
 require_once 'Zend/Amf/ResponseTest.php';
-require_once 'Zend/Amf/Response/HttpTest.php';
 require_once 'Zend/Amf/ServerTest.php';
 require_once 'Zend/Amf/TypeLoaderTest.php';
 require_once 'Zend/Amf/Util/BinaryStreamTest.php';
@@ -40,7 +39,7 @@ require_once 'Zend/Amf/ResourceTest.php';
  * @category   Zend
  * @package    Zend_Amf
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Amf
  */
@@ -58,7 +57,6 @@ class Zend_Amf_AllTests
         $suite->addTestSuite('Zend_Amf_Adobe_IntrospectorTest');
         $suite->addTestSuite('Zend_Amf_RequestTest');
         $suite->addTestSuite('Zend_Amf_ResponseTest');
-        $suite->addTestSuite('Zend_Amf_Response_HttpTest');
         $suite->addTestSuite('Zend_Amf_ServerTest');
         $suite->addTestSuite('Zend_Amf_TypeLoaderTest');
         $suite->addTestSuite('Zend_Amf_Util_BinaryStreamTest');

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.ColorPalette
@@ -132,7 +132,7 @@ cp.colors = ['000000', '993300', '333300'];
         if(this.value){
             var s = this.value;
             this.value = null;
-            this.select(s, true);
+            this.select(s);
         }
     },
 
@@ -148,9 +148,8 @@ cp.colors = ['000000', '993300', '333300'];
     /**
      * Selects the specified color in the palette (fires the {@link #select} event)
      * @param {String} color A valid 6-digit color hex code (# will be stripped if included)
-     * @param {Boolean} suppressEvent (optional) True to stop the select event from firing. Defaults to <tt>false</tt>.
      */
-    select : function(color, suppressEvent){
+    select : function(color){
         color = color.replace('#', '');
         if(color != this.value || this.allowReselect){
             var el = this.el;
@@ -159,9 +158,7 @@ cp.colors = ['000000', '993300', '333300'];
             }
             el.child('a.color-'+color).addClass('x-color-palette-sel');
             this.value = color;
-            if(suppressEvent !== true){
-                this.fireEvent('select', this, color);
-            }
+            this.fireEvent('select', this, color);
         }
     }
 

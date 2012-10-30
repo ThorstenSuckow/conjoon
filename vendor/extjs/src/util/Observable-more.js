@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.util.Observable
@@ -23,13 +23,9 @@ Ext.apply(Ext.util.Observable.prototype, function(){
             e.after = [];
 
             var makeCall = function(fn, scope, args){
-                if((v = fn.apply(scope || obj, args)) !== undefined){
-                    if (typeof v == 'object') {
-                        if(v.returnValue !== undefined){
-                            returnValue = v.returnValue;
-                        }else{
-                            returnValue = v;
-                        }
+                if (!Ext.isEmpty(v = fn.apply(scope || obj, args))) {
+                    if (Ext.isObject(v)) {
+                        returnValue = !Ext.isEmpty(v.returnValue) ? v.returnValue : v;
                         cancel = !!v.cancel;
                     }
                     else
@@ -43,30 +39,26 @@ Ext.apply(Ext.util.Observable.prototype, function(){
             };
 
             this[method] = function(){
-                var args = Array.prototype.slice.call(arguments, 0),
-                    b;
+                var args = Ext.toArray(arguments);
                 returnValue = v = undefined;
                 cancel = false;
 
-                for(var i = 0, len = e.before.length; i < len; i++){
-                    b = e.before[i];
+                Ext.each(e.before, function(b){
                     makeCall(b.fn, b.scope, args);
                     if (cancel) {
                         return returnValue;
                     }
-                }
+                });
 
-                if((v = e.originalFn.apply(obj, args)) !== undefined){
+                if (!Ext.isEmpty(v = e.originalFn.apply(obj, args))) {
                     returnValue = v;
                 }
-
-                for(var i = 0, len = e.after.length; i < len; i++){
-                    b = e.after[i];
-                    makeCall(b.fn, b.scope, args);
+                Ext.each(e.after, function(a){
+                    makeCall(a.fn, a.scope, args);
                     if (cancel) {
                         return returnValue;
                     }
-                }
+                });
                 return returnValue;
             };
         }
@@ -93,18 +85,21 @@ Ext.apply(Ext.util.Observable.prototype, function(){
         },
 
         removeMethodListener: function(method, fn, scope){
-            var e = this.getMethodEvent(method);
-            for(var i = 0, len = e.before.length; i < len; i++){
-                if(e.before[i].fn == fn && e.before[i].scope == scope){
-                    e.before.splice(i, 1);
-                    return;
+            var e = getMethodEvent.call(this, method), found = false;
+            Ext.each(e.before, function(b, i, arr){
+                if (b.fn == fn && b.scope == scope) {
+                    arr.splice(i, 1);
+                    found = true;
+                    return false;
                 }
-            }
-            for(var i = 0, len = e.after.length; i < len; i++){
-                if(e.after[i].fn == fn && e.after[i].scope == scope){
-                    e.after.splice(i, 1);
-                    return;
-                }
+            });
+            if (!found) {
+                Ext.each(e.after, function(a, i, arr){
+                    if (a.fn == fn && a.scope == scope) {
+                        arr.splice(i, 1);
+                        return false;
+                    }
+                });
             }
         },
 
@@ -117,14 +112,13 @@ Ext.apply(Ext.util.Observable.prototype, function(){
             var me = this;
             function createHandler(ename){
                 return function(){
-                    return me.fireEvent.apply(me, [ename].concat(Array.prototype.slice.call(arguments, 0)));
+                    return me.fireEvent.apply(me, [ename].concat(Ext.toArray(arguments)));
                 };
             }
-            for(var i = 0, len = events.length; i < len; i++){
-                var ename = events[i];
+            Ext.each(events, function(ename){
                 me.events[ename] = me.events[ename] || true;
                 o.on(ename, createHandler(ename), me);
-            }
+            });
         },
 
         /**
@@ -167,17 +161,16 @@ var myForm = new Ext.formPanel({
         enableBubble : function(events){
             var me = this;
             if(!Ext.isEmpty(events)){
-                events = Ext.isArray(events) ? events : Array.prototype.slice.call(arguments, 0);
-                for(var i = 0, len = events.length; i < len; i++){
-                    var ename = events[i];
+                events = Ext.isArray(events) ? events : Ext.toArray(arguments);
+                Ext.each(events, function(ename){
                     ename = ename.toLowerCase();
                     var ce = me.events[ename] || true;
-                    if (typeof ce == 'boolean') {
+                    if (Ext.isBoolean(ce)) {
                         ce = new Ext.util.Event(me, ename);
                         me.events[ename] = ce;
                     }
                     ce.bubble = true;
-                }
+                });
             }
         }
     };
@@ -209,7 +202,7 @@ Ext.data.Connection.on('beforerequest', function(con, options) {
     console.log('Ajax request made to ' + options.url);
 });</code></pre>
  * @param {Function} c The class constructor to make observable.
- * @param {Object} listeners An object containing a series of listeners to add. See {@link #addListener}.
+ * @param {Object} listeners An object containing a series of listeners to add. See {@link #addListener}. 
  * @static
  */
 Ext.util.Observable.observeClass = function(c, listeners){
@@ -218,7 +211,7 @@ Ext.util.Observable.observeClass = function(c, listeners){
           Ext.apply(c, new Ext.util.Observable());
           Ext.util.Observable.capture(c.prototype, c.fireEvent, c);
       }
-      if(typeof listeners == 'object'){
+      if(Ext.isObject(listeners)){
           c.on(listeners);
       }
       return c;

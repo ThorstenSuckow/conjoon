@@ -91,7 +91,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Item_Model_Item
     extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable {
@@ -360,34 +360,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
         }
 
         return $select;
-    }
 
-    /**
-     * Returns the total number of email items in this folder.
-     *
-     * @param integer $folderId
-     *
-     * @return integer
-     */
-    public function getEmailItemCountForFolder($folderId)
-    {
-        $folderId = (int)$folderId;
-
-        if ($folderId <= 0) {
-            return 0;
-        }
-
-        $select = $this->select()
-                  ->from($this, array('count' => 'count(id)'))
-                  ->where('`groupware_email_folders_id` = ?', $folderId);
-
-        $result = $this->fetchRow($select);
-
-        if (!$result || empty($result)) {
-            return 0;
-        }
-
-        return (int)$result->count;
     }
 
     /**
@@ -496,10 +469,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * The items will only be deleted if all rows in groupware_email_items_flags
      * for the corresponding item have been set to is_deleted=1. Otherwise,
      * only the is_deleted field for the specified user will be set to 1.
-     * If that is the case and the item gets entirely deleted, the method will
-     * use the accounts-model to check whether there are any accounts flagged
-     * as "is_deleted = 1" and also remove this accounts if no more items
-     * are exiting in the data storage.
      *
      * @param array $itemIds A numeric array with all id's of the items that are
      * about to be deleted
@@ -550,19 +519,11 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             $outboxModel     = new Conjoon_Modules_Groupware_Email_Item_Model_Outbox();
             $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
 
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Account_Model_Account
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Account/Model/Account.php';
-
-            $accountModel    = new Conjoon_Modules_Groupware_Email_Account_Model_Account();
-
             $referencesModel->delete('is_pending=1 AND user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $flagModel->delete('user_id = '.$userId.' AND groupware_email_items_id IN ('.$idString.')');
             $attachmentModel->delete('groupware_email_items_id IN ('.$idString.')');
             $inboxModel->delete('groupware_email_items_id IN ('.$idString.')');
             $outboxModel->delete('groupware_email_items_id IN ('.$idString.')');
-            $accountModel->removeAsDeletedFlaggedAccounts($userId);
         }
 
         return $deleted;
@@ -580,22 +541,13 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * @param string $type The context the draft was created in. If this is reply or reply_all,
      * the id stored in referencesId will be stored in the references-table
      * @param integer $referencesId The id of the message that was referenced creating the draft
-     * @param array $postedAttachments A list of attachments, key/value pairs according to
-     * com.conjoon.cudgets.data.FileRecord
-     * @param array a list of attachment ids to remove from a list of existing attachments
-     * belonging to the draft
-     * @param array $attachmentMap An reference to an array which will map all attachments
-     * that have beens stored
      *
      * @return array the data from groupware_email_item associated with
      * the newly saved entry
      */
     public function saveDraft(Conjoon_Modules_Groupware_Email_Draft $draft,
                               Conjoon_Modules_Groupware_Email_Account $account,
-                              $userId, $type = '', $referencesId = -1,
-                              $postedAttachments = array(),
-                              $removeAttachmentIds = array(),
-                              &$attachmentMap = array())
+                              $userId, $type = '', $referencesId = -1)
     {
         $emailRecipientsToStringFilter = new Conjoon_Filter_EmailRecipientsToString();
         $emailRecipientsFilter         = new Conjoon_Filter_EmailRecipients();
@@ -698,26 +650,11 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 $itemWhere = $this->getAdapter()->quoteInto('id = ?', $id);
                 $this->update($itemUpdate, $itemWhere);
 
-                $this->saveAttachmentsForDraft(
-                    $draft, $postedAttachments, $removeAttachmentIds, $attachmentMap
-                );
-
                 $outboxWhere = $outboxModel->getAdapter()->quoteInto('groupware_email_items_id = ?', $id);
                 $outboxModel->update($outboxUpdate, $outboxWhere);
             } else {
                 // insert!
                 $id = $this->insert($itemUpdate);
-
-                if ($id <= 0) {
-                    return null;
-                }
-
-                $draft->setId($id);
-
-                $this->saveAttachmentsForDraft(
-                    $draft, $postedAttachments, $removeAttachmentIds, $attachmentMap
-                );
-
                 Conjoon_Util_Array::apply($outboxUpdate, array(
                     'groupware_email_items_id' => $id
                 ));
@@ -754,13 +691,13 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                     break;
                 }
 
-
             }
+
+            $adapter->commit();
         } catch (Exception $e) {
             $adapter->rollBack();
             return null;
         }
-
 
         return $this->getItemForUser($id, $userId);
     }
@@ -780,18 +717,13 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * @param integer $userId The id of the user for whom the draft gets saved.
      * @param string $type The context in which the draft was moved to the outbox,
      * either 'reply', 'reply_all', 'forward' or 'new' (or empty string)
-     * @param array $postedAttachments A list of attachments, key/value pairs according to
-     * com.conjoon.cudgets.data.FileRecord
-     * @param array a list of attachment ids to remove from a list of existing attachments
-     * belonging to the draft
      *
      * @return array the data from groupware_email_item associated with
      * the newly saved entry
      */
     public function moveDraftToOutbox(Conjoon_Modules_Groupware_Email_Draft $draft,
                               Conjoon_Modules_Groupware_Email_Account $account,
-                              $userId, $type = '', $referencesId = -1,
-                              $postedAttachments, $removeAttachmentIds)
+                              $userId, $type = '', $referencesId = -1)
     {
 
         $emailRecipientsToStringFilter = new Conjoon_Filter_EmailRecipientsToString();
@@ -899,9 +831,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             } else {
                 // insert!
                 $id = $this->insert($itemUpdate);
-
-                $draft->setId($id);
-
                 Conjoon_Util_Array::apply($outboxUpdate, array(
                     'groupware_email_items_id' => $id
                 ));
@@ -917,10 +846,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 $flagModel = new Conjoon_Modules_Groupware_Email_Item_Model_Flag();
                 $flagModel->insert($flagUpdate);
             }
-
-            $this->saveAttachmentsForDraft(
-                $draft, $postedAttachments, $removeAttachmentIds
-            );
 
             switch ($type) {
                 case Conjoon_Modules_Groupware_Email_Keys::REFERENCE_TYPE_REPLY:
@@ -940,15 +865,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                 break;
             }
 
+            $adapter->commit();
         } catch (Exception $e) {
-
-            /**
-             * @see Conjoon_Log
-             */
-            require_once 'Conjoon/Log.php';
-
-            Conjoon_Log::log($e, Zend_Log::ERROR);
-
             $adapter->rollBack();
             return null;
         }
@@ -968,8 +886,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
      * @param integer $referencesId The id of the email that was refernced sending this
      * message. This argument will only be taken into account if $type euqals to
      * reply or reply_all
-     * @param array $postedAttachments
-     * @param array $removeAttachmentIds
      *
      * @return array the data from groupware_email_item associated with
      * the newly saved entry
@@ -977,8 +893,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
     public function saveSentEmail(Conjoon_Modules_Groupware_Email_Draft $message,
                                   Conjoon_Modules_Groupware_Email_Account $account,
                                   $userId, Conjoon_Mail_Sent $mailSent, $type = "",
-                                  $referencesId = -1, $postedAttachments = array(),
-                                  $removeAttachmentIds = array())
+                                  $referencesId = -1)
     {
         $mail = $mailSent->getMailObject();
 
@@ -1099,7 +1014,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                                             )
         );
 
-
         switch ($messageType) {
             // if the message was sent from an opened draft or from the outbox,
             // we simply can create a new entry in the tables,
@@ -1116,8 +1030,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
                     'content_text_plain' => $message->getContentTextPlain(),
                     'content_text_html'  => $message->getContentTextHtml(),
                 ));
-
-                $this->saveAttachmentsForDraft($message, $postedAttachments, $removeAttachmentIds);
 
             // most simple: mesageType is outbox which means we have simply to update a few fields
             case 'outbox':
@@ -1144,8 +1056,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
                 $itemWhere = $this->getAdapter()->quoteInto('id = ?', $messageId);
                 $this->update($itemUpdate, $itemWhere);
-
-
 
                 return $this->getItemForUser($messageId, $userId);
             break;
@@ -1208,11 +1118,6 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
                     $outboxModel->insert($outboxUpdate);
 
-                    $message->setId($messageId);
-                    $this->saveAttachmentsForDraft(
-                        $message, $postedAttachments, $removeAttachmentIds
-                    );
-
                     return $this->getItemForUser($messageId, $userId);
             break;
         }
@@ -1221,146 +1126,7 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
 
     }
 
-    /**
-     * Will save attachments for a draft.
-     * When requested to save/send a message by a client, all existing
-     * attachments/files will be available in the postedAttachments property,
-     * data according to the structure of com.conjoon.cudgets.data.FileRecord.
-     * Important keys are 'orgId', 'metaType', 'key', 'name'
-     *
-     * Warning! since its notguaranteed that the ids in removeAttachments are
-     * ids for attachments that indeed belong to the draft, it's needed
-     * to check whether the current list of attachments holds this id.
-     *
-     * @param Conjoon_Modules_Groupware_Email_Draft $message
-     * @param array $postedAttachments
-     * @param array $removeAttachmentIds
-     * @param array $attachmentMap
-     *
-     * @throws InvalidArgumentException
-     */
-    public function saveAttachmentsForDraft(
-        Conjoon_Modules_Groupware_Email_Draft $draft,
-        $postedAttachments = array(), $removeAttachmentIds = array(), &$attachmentMap = array())
-    {
-        if ($draft->getId() <= 0) {
-            throw new InvalidArgumentException(
-                "Invalid draft supplied - id was ".$draft->getId()
-            );
-        }
 
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Attachment/Model/Attachment.php';
-
-        $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
-
-        // first off, get all the attachments from the draft
-        $draftAttachments = $draft->getAttachments();
-
-        $postedEmailAttachmentIds   = array();
-        $existingEmailAttachmentIds = array();
-        $postedFilesIds             = array();
-
-        $finalPostedFiles         = array();
-        $finalPostedAttachments   = array();
-        $finalExistingAttachments = array();
-
-        //get ids for emailAttachments
-        for ($i = 0, $len = count($postedAttachments); $i < $len; $i++) {
-            if ($postedAttachments[$i]['metaType'] == 'emailAttachment') {
-                $postedEmailAttachmentIds[] = $postedAttachments[$i]['orgId'];
-                $finalPostedAttachments[$postedAttachments[$i]['orgId']] =
-                    $postedAttachments[$i];
-            } else {
-                $postedFilesIds[] = $postedAttachments[$i]['orgId'];
-                $finalPostedFiles[$postedAttachments[$i]['orgId']] =
-                    $postedAttachments[$i];
-            }
-        }
-        for ($i = 0, $len = count($draftAttachments); $i < $len; $i++) {
-
-            // intersect will be created later
-            $existingEmailAttachmentIds[] = $draftAttachments[$i]->getId();
-
-            if (in_array($draftAttachments[$i]->getId(), $removeAttachmentIds)) {
-                continue;
-            }
-
-
-            $finalExistingAttachments[$draftAttachments[$i]->getId()] =
-                $draftAttachments[$i];
-        }
-
-        // finally create the intersection of all ids that are in the
-        // lists of items to remove and in the list of existing items
-        $removeAttachmentIds = array_values(array_intersect($removeAttachmentIds,
-            $existingEmailAttachmentIds
-        ));
-
-        // get the ids from the attachments that need to get changed
-        $changeNameIds = array_values(array_intersect(
-            $postedEmailAttachmentIds, $existingEmailAttachmentIds
-        ));
-
-        // get the ids from the attachments that need to get saved, i.e.
-        // when a draft was created with email attachments which currently
-        // beong to another email
-        $copyAttachmentIds = array_values(array_diff(
-            $postedEmailAttachmentIds, $existingEmailAttachmentIds
-        ));
-
-        // take care of copying attachments
-        for ($i = 0, $len = count($copyAttachmentIds); $i < $len; $i++) {
-            $id = $copyAttachmentIds[$i];
-            $newAttachmentId = $attachmentModel->copyAttachmentForNewItemId(
-                $id, $draft->getId(), $finalPostedAttachments[$id]['name']
-            );
-            if ($newAttachmentId > 0) {
-                $attachmentMap[$finalPostedAttachments[$id]['id']] = $newAttachmentId;
-            }
-        }
-
-        // take care of deleting attachments
-        for ($i = 0, $len = count($removeAttachmentIds); $i < $len; $i++) {
-            $attachmentModel->deleteAttachmentForId($removeAttachmentIds[$i]);
-        }
-
-        // take care of renaming attachments
-        for ($i = 0, $len = count($changeNameIds); $i < $len; $i++) {
-            $id = $changeNameIds[$i];
-
-            if ($finalExistingAttachments[$id]->getFileName()
-                != $finalPostedAttachments[$id]['name']) {
-                $updated = $attachmentModel->updateNameForAttachment(
-                    $id, $finalPostedAttachments[$id]['name']
-                );
-
-                if ($updated) {
-                    $finalExistingAttachments[$id]->setFileName(
-                        $finalPostedAttachments[$id]['name']
-                    );
-                    $attachmentMap[$finalPostedAttachments[$id]['id']] = $id;
-                }
-            }
-        }
-
-        // copy files to attachments
-        foreach ($finalPostedFiles as $id => $file) {
-
-            $newAttachmentId = $attachmentModel->copyFromFilesForItemId(
-                $file['key'], $file['orgId'], $draft->getId(), $file['name']
-
-            );
-
-            if ($newAttachmentId > 0) {
-                $attachmentMap[$finalPostedFiles[$id]['id']] =
-                $newAttachmentId;
-            }
-        }
-
-    }
 
 // -------- interface Conjoon_BeanContext_Decoratable
 
@@ -1377,7 +1143,8 @@ class Conjoon_Modules_Groupware_Email_Item_Model_Item
             'getItemForUser',
             'getItemsForUser',
             'moveDraftToOutbox',
-            'saveSentEmail'
+            'saveSentEmail',
+            'saveDraft'
         );
     }
 

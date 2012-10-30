@@ -20,7 +20,7 @@
  * @subpackage Util
  * @category Util
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Util_Format  {
 

@@ -6,13 +6,7 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
- */
-/**
+    <pre class="prettyprint lang-js">/**
  * @class Ext.Element
  */
 Ext.Element.addMethods({
@@ -26,7 +20,7 @@ Ext.Element.addMethods({
      */
     addKeyListener : function(key, fn, scope){
         var config;
-        if(typeof key != 'object' || Ext.isArray(key)){
+        if(!Ext.isObject(key) || Ext.isArray(key)){
             config = {
                 key: key,
                 fn: fn,
@@ -53,10 +47,6 @@ Ext.Element.addMethods({
     addKeyMap : function(config){
         return new Ext.KeyMap(this, config);
     }
-});
-
-//Import the newly-added Ext.Element functions into CompositeElementLite. We call this here because
-//Element.keys.js is the last extra Ext.Element include in the ext-all.js build
-Ext.CompositeElementLite.importElementMethods();</pre>    
+});</pre>    
 </body>
 </html>

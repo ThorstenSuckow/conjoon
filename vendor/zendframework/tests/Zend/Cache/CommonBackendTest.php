@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CommonBackendTest.php 24989 2012-06-21 07:24:13Z mabe $
+ * @version    $Id: CommonBackendTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -27,7 +27,7 @@
  * @category   Zend
  * @package    Zend_Cache
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Cache
  */
@@ -280,11 +280,6 @@ abstract class Zend_Cache_CommonBackendTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->_instance->test('bar3'));
     }
 
-    public function testGetOption()
-    {
-        $this->assertTrue(is_numeric($this->_instance->getOption('LifeTime')));
-
-        $this->setExpectedException('Zend_Cache_Exception');
-        $this->_instance->getOption('unknown');
-    }
 }
+
+

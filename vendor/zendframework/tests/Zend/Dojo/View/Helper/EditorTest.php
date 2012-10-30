@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: EditorTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: EditorTest.php 23938 2011-05-02 20:13:50Z matthew $
  */
 
 // Call Zend_Dojo_View_Helper_EditorTest::main() if this source file is executed directly.
@@ -43,7 +43,7 @@ require_once 'Zend/Dojo/View/Helper/Dojo.php';
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Dojo
  * @group      Zend_Dojo_View
@@ -219,16 +219,6 @@ class Zend_Dojo_View_Helper_EditorTest extends PHPUnit_Framework_TestCase
     {
         $html = $this->helper->editor('foo');
         $this->assertRegexp('#</noscript><input#', $html, $html);
-    }
-
-    /** @group ZF-5711 */
-    public function testHelperShouldJsonifyExtraPlugins()
-    {
-        $extraPlugins = array('copy', 'cut', 'paste');
-        $html = $this->helper->editor('foo', '', array('extraPlugins' => $extraPlugins));
-        $pluginsString = Zend_Json::encode($extraPlugins);
-        $pluginsString = str_replace('"', "'", $pluginsString);
-        $this->assertContains('extraPlugins="' . $pluginsString . '"', $html);
     }
 }
 

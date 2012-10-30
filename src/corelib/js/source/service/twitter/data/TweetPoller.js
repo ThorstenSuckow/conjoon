@@ -22,7 +22,7 @@ Ext.namespace('com.conjoon.service.twitter.data');
  * @class com.conjoon.service.twitter.data.TweetPoller
  * @extends Ext.data.Store
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.service.twitter.data.TweetPoller = function(config){
 

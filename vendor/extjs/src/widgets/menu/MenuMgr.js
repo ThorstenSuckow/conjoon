@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.menu.MenuMgr
@@ -10,20 +10,17 @@
  * @singleton
  */
 Ext.menu.MenuMgr = function(){
-   var menus, 
-       active, 
-       map,
-       groups = {}, 
-       attached = false, 
-       lastShow = new Date();
-   
+   var menus, active, groups = {}, attached = false, lastShow = new Date();
 
    // private - called when first menu is created
    function init(){
        menus = {};
        active = new Ext.util.MixedCollection();
-       map = Ext.getDoc().addKeyListener(27, hideAll);
-       map.disable();
+       Ext.getDoc().addKeyListener(27, function(){
+           if(active.length > 0){
+               hideAll();
+           }
+       });
    }
 
    // private
@@ -42,7 +39,6 @@ Ext.menu.MenuMgr = function(){
    function onHide(m){
        active.remove(m);
        if(active.length < 1){
-           map.disable();
            Ext.getDoc().un("mousedown", onMouseDown);
            attached = false;
        }
@@ -54,7 +50,6 @@ Ext.menu.MenuMgr = function(){
        lastShow = new Date();
        active.add(m);
        if(!attached){
-           map.enable();
            Ext.getDoc().on("mousedown", onMouseDown);
            attached = true;
        }
@@ -91,6 +86,18 @@ Ext.menu.MenuMgr = function(){
    function onMouseDown(e){
        if(lastShow.getElapsed() > 50 && active.length > 0 && !e.getTarget(".x-menu")){
            hideAll();
+       }
+   }
+
+   // private
+   function onBeforeCheck(mi, state){
+       if(state){
+           var g = groups[mi.group];
+           for(var i = 0, l = g.length; i < l; i++){
+               if(g[i] != mi){
+                   g[i].setChecked(false);
+               }
+           }
        }
    }
 
@@ -156,6 +163,7 @@ Ext.menu.MenuMgr = function(){
                    groups[g] = [];
                }
                groups[g].push(menuItem);
+               menuItem.on("beforecheckchange", onBeforeCheck);
            }
        },
 
@@ -164,23 +172,7 @@ Ext.menu.MenuMgr = function(){
            var g = menuItem.group;
            if(g){
                groups[g].remove(menuItem);
-           }
-       },
-       
-       // private
-       onCheckChange: function(item, state){
-           if(item.group && state){
-               var group = groups[item.group],
-                   i = 0,
-                   len = group.length,
-                   current;
-                   
-               for(; i < len; i++){
-                   current = group[i];
-                   if(current != item){
-                       current.setChecked(false);
-                   }
-               }
+               menuItem.un("beforecheckchange", onBeforeCheck);
            }
        },
 

@@ -15,19 +15,18 @@
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ParamTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: ParamTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Reflection/File.php';
-require_once 'Zend/Reflection/Docblock/Tag/Param.php';
 
 /**
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Reflection
  * @group      Zend_Reflection_Docblock
@@ -87,18 +86,6 @@ class Zend_Reflection_Docblock_Tag_ParamTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Zend\Foo\Bar', $paramTag->getType());
         $this->assertEquals('$var', $paramTag->getVariableName());
         $this->assertEquals('desc', $paramTag->getDescription());
-    }
-
-    /**
-     * @group ZF-8373
-     */
-    public function testArrayNotationInParam()
-    {
-        $targetLine = '@param string[] $foo An array of strings';
-        $param = new Zend_Reflection_Docblock_Tag_Param($targetLine);
-        $this->assertEquals('string[]', $param->getType());
-        $this->assertEquals('$foo', $param->getVariableName());
-        $this->assertEquals('An array of strings', $param->getDescription());
     }
 }
 

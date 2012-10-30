@@ -27,7 +27,7 @@ require_once 'Conjoon/Exception.php';
  * @subpackage Db
  * @category Db
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Db_Exception extends Conjoon_Exception {
 

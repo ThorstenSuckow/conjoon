@@ -13,20 +13,18 @@
  * $URL$
  */
 
+
 /**
  * @see Conjoon_Exception
  */
 require_once 'Conjoon/Exception.php';
 
+
 /**
- * Exception for Conjoon_Filter namespace.
- *
- * @uses Exception
- * @package Conjoon_Filter
+ * @category   Conjoon
+ * @package    Conjoon_Filter
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  */
-class Conjoon_Filter_Exception extends Conjoon_Exception {
-
-
-}
+class Conjoon_Filter_Exception extends Conjoon_Exception
+{}

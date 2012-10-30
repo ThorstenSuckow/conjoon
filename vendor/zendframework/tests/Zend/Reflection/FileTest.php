@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FileTest.php 24870 2012-06-02 02:15:12Z adamlundrigan $
+ * @version    $Id: FileTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Reflection/File.php';
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Reflection
  * @group      Zend_Reflection_File
@@ -60,7 +60,7 @@ class Zend_Reflection_FileTest extends PHPUnit_Framework_TestCase
         require_once $fileToRequire;
         $reflectionFile = new Zend_Reflection_File($fileToRequire);
         $this->assertEquals(get_class($reflectionFile), 'Zend_Reflection_File');
-        $this->assertEquals(count($reflectionFile->getClasses()), 9);
+        $this->assertEquals(count($reflectionFile->getClasses()), 8);
         $this->assertEquals(get_class($reflectionFile->getClass('Zend_Reflection_TestSampleClass2')), 'Zend_Reflection_Class');
     }
 
@@ -110,7 +110,7 @@ class Zend_Reflection_FileTest extends PHPUnit_Framework_TestCase
         require_once $fileToRequire;
         $reflectionFile = new Zend_Reflection_File($fileToRequire);
         $this->assertEquals(9, $reflectionFile->getStartLine());
-        $this->assertEquals(196, $reflectionFile->getEndLine());
+        $this->assertEquals(185, $reflectionFile->getEndLine());
     }
 
     public function testFileGetDocblockReturnsFileDocblock()
@@ -138,21 +138,6 @@ class Zend_Reflection_FileTest extends PHPUnit_Framework_TestCase
         $class = $reflectionFile->getClass();
         $this->assertEquals('Zend_Reflection_TestSampleInterface', $class->getName());
         $this->assertTrue($class->isInterface());
-    }
-
-    /**
-     * @group ZF-12155
-     */
-    public function testFileCanReflectFunctionsContainingVariablesEmbeddedInStringWithCurlyBraces()
-    {
-        $fileToRequire = dirname(__FILE__) . '/_files/FunctionWithEmbeddedVariableInString.php';
-        require_once $fileToRequire;
-        $reflectionFile = new Zend_Reflection_File($fileToRequire);
-        $functions = $reflectionFile->getFunctions();
-        $this->assertEquals(2, count($functions));
-        $this->assertContainsOnly('Zend_Reflection_Function', $functions);
-        $this->assertEquals('firstOne', $functions[0]->getName());
-        $this->assertEquals('secondOne', $functions[1]->getName());
     }
 }
 

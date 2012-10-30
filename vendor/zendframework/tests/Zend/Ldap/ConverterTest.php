@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ConverterTest.php 24725 2012-04-28 13:47:58Z rob $
+ * @version    $Id: ConverterTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Ldap/Converter.php';
  * @category   Zend
  * @package    Zend_Ldap
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Ldap
  */
@@ -112,21 +112,12 @@ class Zend_Ldap_ConverterTest extends PHPUnit_Framework_TestCase
     }
 
     public function toLdapSerializeProvider(){
-        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-            return array(
-                array('N;', null),
-                array('i:1;', 1),
-                array('O:8:"DateTime":0:{}', new DateTime('@0')),
-                array('a:3:{i:0;s:4:"test";i:1;i:1;s:3:"foo";s:3:"bar";}', array('test',1,'foo'=>'bar')),
-            );
-        } else {
-            return array(
-                array('N;', null),
-                array('i:1;', 1),
-                array('O:8:"DateTime":3:{s:4:"date";s:19:"1970-01-01 00:00:00";s:13:"timezone_type";i:1;s:8:"timezone";s:6:"+00:00";}', new DateTime('@0')),
-                array('a:3:{i:0;s:4:"test";i:1;i:1;s:3:"foo";s:3:"bar";}', array('test',1,'foo'=>'bar')),
-            );
-        }
+        return array(
+            array('N;', null),
+            array('i:1;', 1),
+            array('O:8:"DateTime":3:{s:4:"date";s:19:"1970-01-01 00:00:00";s:13:"timezone_type";i:1;s:8:"timezone";s:6:"+00:00";}', new DateTime('@0')),
+            array('a:3:{i:0;s:4:"test";i:1;i:1;s:3:"foo";s:3:"bar";}', array('test',1,'foo'=>'bar')),
+        );
     }
 
     /**
@@ -190,6 +181,8 @@ class Zend_Ldap_ConverterTest extends PHPUnit_Framework_TestCase
 
     public function fromLdapDateTimeProvider ()
     {
+        $tz = new DateTimeZone('UTC');
+        $tz = null;
         return array (
                 array(new DateTime('2010-12-24 08:00:23+0300'),'20101224080023+0300', false),
                 array(new DateTime('2010-12-24 08:00:23+0300'),'20101224080023+03\'00\'', false),
@@ -225,25 +218,6 @@ class Zend_Ldap_ConverterTest extends PHPUnit_Framework_TestCase
                 array('20101231235959+13'),
                 array('20101231235959+1160'),
             );
-    }
-
-	/**
-     * @dataProvider fromLdapProvider
-     */
-    public function testFromLdap($expect, $value, $type, $dateTimeAsUtc){
-        $this->assertSame($expect, Zend_Ldap_Converter::fromLdap($value, $type, $dateTimeAsUtc));
-    }
-
-    public function fromLdapProvider(){
-        return array(
-           array('1', '1', 0, true),
-           array('0', '0', 0, true),
-           array(true, 'TRUE', 0, true),
-           array(false, 'FALSE', 0, true),
-           array('123456789', '123456789', 0, true),
-           // ZF-11639
-           array('+123456789', '+123456789', 0, true),
-        );
     }
 }
 

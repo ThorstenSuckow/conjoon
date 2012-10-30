@@ -26,7 +26,7 @@ require_once 'phing/filters/ChainableReader.php';
 /**
  * Adds an additional linebreak to the read in files.
  *
- * @author    Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author    Thorsten Suckow-Homberg <ts@siteartwork.de>
  * @see       FilterReader
  */
 class AddLinebreak extends BaseFilterReader implements ChainableReader {

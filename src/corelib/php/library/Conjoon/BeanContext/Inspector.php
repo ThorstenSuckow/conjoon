@@ -30,7 +30,7 @@ require_once 'Conjoon/BeanContext/Exception.php';
  * @category   Conjoon
  * @package    Conjoon_BeanContext
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_BeanContext_Inspector {
 
@@ -270,15 +270,7 @@ class Conjoon_BeanContext_Inspector {
             if (strpos($propertyName, 'is') === 0) {
                 $method = 'set'.substr($propertyName, 2);
             } else {
-
-                if (strpos($propertyName, 's') === strlen($propertyName)-1) {
-                    $method = 'add'.ucfirst(rtrim($propertyName, 's'));
-                    if (!method_exists($object, $method)) {
-                        $method = 'set'.ucfirst($propertyName);
-                    }
-                } else {
-                    $method = 'set'.ucfirst($propertyName);
-                }
+                $method = 'set'.ucfirst($propertyName);
             }
         } else if ($accessorType === self::GETTER) {
             if (strpos($propertyName, 'is') === 0) {
@@ -324,22 +316,7 @@ class Conjoon_BeanContext_Inspector {
             return;
         }
 
-        if (is_array($value) && strpos($method, 'add') === 0) {
-            $reflM = new ReflectionMethod($object, $method);
-            $params = $reflM->getParameters();
-            $cls = $params[0]->getClass()->getName();
-            /**
-             * @see Conjoon_Util_Array
-             */
-            require_once 'Conjoon/Util/Array.php';
-            for ($i = 0, $len = count($value); $i < $len; $i++) {
-                Conjoon_Util_Array::camelizeKeys($value[$i]);
-                $val = Conjoon_BeanContext_Inspector::create($cls, $value[$i], true);
-                $object->$method($val);
-            }
-        } else {
-            $object->$method($value);
-        }
+        $object->$method($value);
     }
 
     /**

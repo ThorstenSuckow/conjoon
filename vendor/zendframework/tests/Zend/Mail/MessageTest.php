@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MessageTest.php 24759 2012-05-05 02:58:55Z adamlundrigan $
+ * @version    $Id: MessageTest.php 23999 2011-05-04 15:20:53Z matthew $
  */
 
 /**
@@ -39,7 +39,7 @@ require_once 'Zend/Mime/Decode.php';
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Mail
  */
@@ -445,82 +445,4 @@ class Zend_Mail_MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Zend_Mime_Decode::splitHeaderField($header, 'foo'), 'bar');
         $this->assertEquals(Zend_Mime_Decode::splitHeaderField($header, 'baz'), 42);
     }
-    
-    /**
-     * @group ZF-11514
-     */
-    public function testConstructorMergesConstructorFlagsIntoDefaultFlags()
-    {
-        $message = new ZF11514_Mail_Message(array(
-            'file'  => $this->_file,
-            'flags' => array('constructor')
-        ));
-        $flags = $message->getFlags();
-        $this->assertArrayHasKey('default', $flags);
-        $this->assertEquals('yes!', $flags['default']);
-        $this->assertArrayHasKey('constructor', $flags);
-        $this->assertEquals('constructor', $flags['constructor']);
-    }
-    
-    /**
-     * @group ZF-3745
-     */
-    public function testBackwardsCompatibilityMaintainedWhenPartClassNotSpecified()
-    {
-        $message = new Zend_Mail_Message(array('file' => $this->_file));
-        $this->assertGreaterThan(0, count($message));
-        foreach ( $message as $part ) {
-            $this->assertEquals('Zend_Mail_Part', get_class($part));
-        }
-    }
-    
-    /**
-     * @group ZF-3745
-     */
-    public function testMessageAcceptsPartClassOverrideViaConstructor()
-    {
-        $message = new Zend_Mail_Message(array(
-            'file'      => $this->_file,
-            'partclass' => 'ZF3745_Mail_Part'
-        ));
-        $this->assertEquals('ZF3745_Mail_Part', $message->getPartClass());
-        
-        // Ensure message parts use the specified part class
-        $this->assertGreaterThan(0, count($message));
-        foreach ( $message as $part ) {
-            $this->assertEquals('ZF3745_Mail_Part', get_class($part));
-        }
-    }
-    
-    /**
-     * @group ZF-3745
-     */
-    public function testMessageAcceptsPartClassOverrideViaSetter()
-    {
-        $message = new Zend_Mail_Message(array('file' => $this->_file));
-        $message->setPartClass('ZF3745_Mail_Part');
-        $this->assertEquals('ZF3745_Mail_Part', $message->getPartClass());
-        
-        // Ensure message parts use the specified part class
-        $this->assertGreaterThan(0, count($message));
-        foreach ( $message as $part ) {
-            $this->assertEquals('ZF3745_Mail_Part', get_class($part));
-        }
-    }
-    
-}
-
-/**
- * Message class which sets a pre-defined default flag set
- * @see ZF-11514
- */
-class ZF11514_Mail_Message extends Zend_Mail_Message
-{
-    protected $_flags = array(
-        'default'=>'yes!'
-    );
-}
-
-class ZF3745_Mail_Part extends Zend_Mail_Part
-{
 }

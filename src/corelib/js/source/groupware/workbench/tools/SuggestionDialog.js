@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.groupware.workbench.tools');
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.groupware.workbench.tools.SuggestionDialog
  * @extends Ext.ux.Wiz

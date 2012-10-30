@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.layout.CardLayout
@@ -93,6 +93,10 @@ Ext.layout.CardLayout = Ext.extend(Ext.layout.FitLayout, {
 
     type: 'card',
 
+    constructor: function(config){
+        Ext.layout.CardLayout.superclass.constructor.call(this, config);
+    },
+
     /**
      * Sets the active (visible) item in the layout.
      * @param {String/Number} item The string component id or numeric index of the item to activate
@@ -113,9 +117,6 @@ Ext.layout.CardLayout = Ext.extend(Ext.layout.FitLayout, {
                 }
                 ai.fireEvent('deactivate', ai);
             }
-
-            var layout = item.doLayout && (this.layoutOnCardChange || !item.rendered);
-
             // Change activeItem reference
             this.activeItem = item;
 
@@ -128,7 +129,7 @@ Ext.layout.CardLayout = Ext.extend(Ext.layout.FitLayout, {
 
             this.layout();
 
-            if(layout){
+            if(item.doLayout){
                 item.doLayout();
             }
             item.fireEvent('activate', item);

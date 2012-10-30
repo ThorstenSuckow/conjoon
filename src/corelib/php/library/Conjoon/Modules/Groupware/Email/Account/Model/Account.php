@@ -31,7 +31,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Account_Model_Account
     extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable{
@@ -93,88 +93,8 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
     }
 
     /**
-     * Removes any account which is flagged as "is_deleted=1" along with its
-     * informations, if there are no items for this account in the related folders
-     * anymore.
-     *
-     * @param integer $userId
-     *
-     * @return array An array with the deleted account ids
-     */
-    public function removeAsDeletedFlaggedAccounts($userId)
-    {
-        $id = (int)$id;
-
-        if ($id <= 0) {
-            return array();
-        }
-
-        $rows = $this->fetchAll(
-            $this->select()
-                ->where('user_id=?', $id)
-                ->where('is_deleted=1')
-        );
-
-        $deletedIds = array();
-
-        foreach ($rows as $row) {
-            $res = $this->_removeInformationForAccountIf($row->id, $userId);
-            if ($res) {
-                $deletedIds[] = $res;
-            }
-        }
-
-        return $deletedIds;
-    }
-
-    private function _removeInformationForAccountIf($accountId, $userId)
-    {
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
-
-        $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
-
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Item_Model_Item
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Item/Model/Item.php';
-
-        $itemModel = new Conjoon_Modules_Groupware_Email_Item_Model_Item();
-
-        $folders = $foldersAccounts->getFolderIdsForAccountId($accountId);
-        $del = true;
-        for ($i = 0, $len = count($folders); $i < $len; $i++) {
-            $count = $itemModel->getEmailItemCountForFolder($folders[$i]);
-            if ($count > 0) {
-                $del = false;
-                break;
-            }
-        }
-
-        if ($del) {
-            // remove account-data entirely - as for accounts_root data specified
-            $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
-            $deleted = $this->delete($where);
-
-            if ($deleted) {
-                // delete account-mappings
-                $foldersAccounts->deleteForAccountId($accountId);
-
-                return $accountId;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Sets the is_deleted flag of the account to "0", which basically means that
-     * this account is not active anymore. However, in order for older email items
-     * to still work properly, folder mappings have to remain, until no
-     * item for this account is found in the database. After that, the account may
-     * be removed entirely.
+     * Completely removes the account and all associated data - that means
+     * that all information in folders_accounts will be removed, too.
      *
      * @param integer $accountId
      * @param integer $userId
@@ -191,50 +111,20 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         }
 
         /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Model_Folder
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
-
-        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
-
-        $rootId = $folderModel->getRootFolderId($accountId, $userId);
-
-        /**
          * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
          */
         require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
 
         $foldersAccounts = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
 
-        $folders = $foldersAccounts->getFolderIdsForAccountId($accountId);
+        // delete the account/folder map here
+        $foldersAccounts->deleteForAccountId($accountId);
 
-        // rootID found - delete all!
-        if ($rootId) {
-            // no folders or root - we can remove the account entirely
-            $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
-            $deleted = $this->delete($where);
-            if ($deleted) {
-                for ($i = 0, $len = count($folders); $i < $len; $i++) {
-                    $folderModel->deleteFolder($folders[$i], $userId, false);
-                }
-            }
+        $where   = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
+        $deleted = $this->delete($where);
 
-            return $deleted;
-        } else {
-            // no root id. Check if there are any items still in folders
-            // belonging to the account. If that is the case, DO NOT remove the
-            // account from the data storage
-            $res = $this->_removeInformationForAccountIf($accountId, $userId);
 
-            if ($res) {
-                return 1;
-            } else {
-                // update account to is_deleted = 1
-                $where = $this->getAdapter()->quoteInto('id = ?', $accountId, 'INTEGER');
-                return $this->update(array('is_deleted' => 1), $where);
-            }
-        }
-
+        return $deleted;
     }
 
     /**
@@ -261,7 +151,6 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
         $whiteList = array(
             'name',
             'address',
-            'protocol',
             'server_inbox',
             'server_outbox',
             'username_inbox',
@@ -269,11 +158,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             'user_name',
             'is_outbox_auth',
             'password_inbox',
-            'password_outbox',
-            'port_inbox',
-            'port_outbox',
-            'inbox_connection_type',
-            'outbox_connection_type'
+            'password_outbox'
         );
 
         $addData = array();
@@ -312,12 +197,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
 
         $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
 
-        if ($addData['protocol'] == 'IMAP') {
-            $folderModel->createFolderHierarchyForImapAccount($id, $userId, $addData['name']);
-        } else {
-            $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
-        }
-
+        $folderModel->createFolderBaseHierarchyAndMapAccountIdForUserId($id, $userId);
 
         return $id;
     }
@@ -362,9 +242,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             'is_signature_used',
             'port_inbox',
             'port_outbox',
-            'is_copy_left_on_server',
-            'inbox_connection_type',
-            'outbox_connection_type'
+            'is_copy_left_on_server'
         );
 
         foreach ($data as $key => $value) {

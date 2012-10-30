@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.menu.Menu
@@ -294,7 +294,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         var items = this.items;
         for(var i = start, len = items.length; i >= 0 && i < len; i+= step){
             var item = items.get(i);
-            if(item.isVisible() && !item.disabled && (item.canActivate || item.isFormField)){
+            if(!item.disabled && (item.canActivate || item.isFormField)){
                 this.setActiveItem(item, false);
                 return item;
             }
@@ -549,8 +549,8 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
          return c;
     },
 
-    applyDefaults : function(c) {
-        if (!Ext.isString(c)) {
+    applyDefaults : function(c){
+        if(!Ext.isString(c)){
             c = Ext.menu.Menu.superclass.applyDefaults.call(this, c);
             var d = this.internalDefaults;
             if(d){
@@ -566,12 +566,10 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     },
 
     // private
-    getMenuItem : function(config) {
-        config.ownerCt = this;
-        
-        if (!config.isXType) {
-            if (!config.xtype && Ext.isBoolean(config.checked)) {
-                return new Ext.menu.CheckItem(config);
+    getMenuItem : function(config){
+       if(!config.isXType){
+            if(!config.xtype && Ext.isBoolean(config.checked)){
+                return new Ext.menu.CheckItem(config)
             }
             return Ext.create(config, this.defaultType);
         }
@@ -582,7 +580,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * Adds a separator bar to the menu
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addSeparator : function() {
+    addSeparator : function(){
         return this.add(new Ext.menu.Separator());
     },
 
@@ -591,7 +589,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Mixed} el The element or DOM node to add, or its id
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addElement : function(el) {
+    addElement : function(el){
         return this.add(new Ext.menu.BaseItem({
             el: el
         }));
@@ -602,7 +600,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Ext.menu.Item} item The menu item to add
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addItem : function(item) {
+    addItem : function(item){
         return this.add(item);
     },
 
@@ -611,7 +609,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Object} config A MenuItem config object
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addMenuItem : function(config) {
+    addMenuItem : function(config){
         return this.add(this.getMenuItem(config));
     },
 
@@ -724,20 +722,17 @@ Ext.menu.MenuNav = Ext.extend(Ext.KeyNav, function(){
  * @singleton
  */
 Ext.menu.MenuMgr = function(){
-   var menus, 
-       active, 
-       map,
-       groups = {}, 
-       attached = false, 
-       lastShow = new Date();
-   
+   var menus, active, groups = {}, attached = false, lastShow = new Date();
 
    // private - called when first menu is created
    function init(){
        menus = {};
        active = new Ext.util.MixedCollection();
-       map = Ext.getDoc().addKeyListener(27, hideAll);
-       map.disable();
+       Ext.getDoc().addKeyListener(27, function(){
+           if(active.length > 0){
+               hideAll();
+           }
+       });
    }
 
    // private
@@ -756,7 +751,6 @@ Ext.menu.MenuMgr = function(){
    function onHide(m){
        active.remove(m);
        if(active.length < 1){
-           map.disable();
            Ext.getDoc().un("mousedown", onMouseDown);
            attached = false;
        }
@@ -768,7 +762,6 @@ Ext.menu.MenuMgr = function(){
        lastShow = new Date();
        active.add(m);
        if(!attached){
-           map.enable();
            Ext.getDoc().on("mousedown", onMouseDown);
            attached = true;
        }
@@ -805,6 +798,18 @@ Ext.menu.MenuMgr = function(){
    function onMouseDown(e){
        if(lastShow.getElapsed() > 50 && active.length > 0 && !e.getTarget(".x-menu")){
            hideAll();
+       }
+   }
+
+   // private
+   function onBeforeCheck(mi, state){
+       if(state){
+           var g = groups[mi.group];
+           for(var i = 0, l = g.length; i < l; i++){
+               if(g[i] != mi){
+                   g[i].setChecked(false);
+               }
+           }
        }
    }
 
@@ -870,6 +875,7 @@ Ext.menu.MenuMgr = function(){
                    groups[g] = [];
                }
                groups[g].push(menuItem);
+               menuItem.on("beforecheckchange", onBeforeCheck);
            }
        },
 
@@ -878,23 +884,7 @@ Ext.menu.MenuMgr = function(){
            var g = menuItem.group;
            if(g){
                groups[g].remove(menuItem);
-           }
-       },
-       
-       // private
-       onCheckChange: function(item, state){
-           if(item.group && state){
-               var group = groups[item.group],
-                   i = 0,
-                   len = group.length,
-                   current;
-                   
-               for(; i < len; i++){
-                   current = group[i];
-                   if(current != item){
-                       current.setChecked(false);
-                   }
-               }
+               menuItem.un("beforecheckchange", onBeforeCheck);
            }
        },
 
@@ -964,7 +954,7 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
      */
     hideOnClick : true,
     /**
-     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 1)
+     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 100)
      */
     clickHideDelay : 1,
 
@@ -973,33 +963,33 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
 
     // private
     actionMode : "container",
-
+    
     initComponent : function(){
         Ext.menu.BaseItem.superclass.initComponent.call(this);
         this.addEvents(
-            /**
-             * @event click
-             * Fires when this item is clicked
-             * @param {Ext.menu.BaseItem} this
-             * @param {Ext.EventObject} e
-             */
-            'click',
-            /**
-             * @event activate
-             * Fires when this item is activated
-             * @param {Ext.menu.BaseItem} this
-             */
-            'activate',
-            /**
-             * @event deactivate
-             * Fires when this item is deactivated
-             * @param {Ext.menu.BaseItem} this
-             */
-            'deactivate'
-        );
-        if(this.handler){
-            this.on("click", this.handler, this.scope);
-        }
+	        /**
+	         * @event click
+	         * Fires when this item is clicked
+	         * @param {Ext.menu.BaseItem} this
+	         * @param {Ext.EventObject} e
+	         */
+	        'click',
+	        /**
+	         * @event activate
+	         * Fires when this item is activated
+	         * @param {Ext.menu.BaseItem} this
+	         */
+	        'activate',
+	        /**
+	         * @event deactivate
+	         * Fires when this item is deactivated
+	         * @param {Ext.menu.BaseItem} this
+	         */
+	        'deactivate'
+	    );
+	    if(this.handler){
+	        this.on("click", this.handler, this.scope);
+	    }
     },
 
     // private
@@ -1069,16 +1059,11 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
         var pm = this.parentMenu;
         if(this.hideOnClick){
             if(pm.floating){
-                this.clickHideDelayTimer = pm.hide.defer(this.clickHideDelay, pm, [true]);
+                pm.hide.defer(this.clickHideDelay, pm, [true]);
             }else{
                 pm.deactivateActive();
             }
         }
-    },
-    
-    beforeDestroy: function(){
-        clearTimeout(this.clickHideDelayTimer);
-        Ext.menu.BaseItem.superclass.beforeDestroy.call(this);    
     },
 
     // private. Do nothing
@@ -1110,17 +1095,15 @@ Ext.menu.TextItem = Ext.extend(Ext.menu.BaseItem, {
      */
     itemCls : "x-menu-text",
     
-    constructor : function(config) {
-        if (typeof config == 'string') {
-            config = {
-                text: config
-            };
+    constructor : function(config){
+        if(typeof config == 'string'){
+            config = {text: config}
         }
         Ext.menu.TextItem.superclass.constructor.call(this, config);
     },
 
     // private
-    onRender : function() {
+    onRender : function(){
         var s = document.createElement("span");
         s.className = this.itemCls;
         s.innerHTML = this.text;
@@ -1213,12 +1196,6 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
      * @cfg {Number} showDelay Length of time in milliseconds to wait before showing this item (defaults to 200)
      */
     showDelay: 200,
-    
-    /**
-     * @cfg {String} altText The altText to use for the icon, if it exists. Defaults to <tt>''</tt>.
-     */
-    altText: '',
-    
     // doc'd in BaseItem
     hideDelay: 200,
 
@@ -1228,20 +1205,8 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
     initComponent : function(){
         Ext.menu.Item.superclass.initComponent.call(this);
         if(this.menu){
-            // If array of items, turn it into an object config so we
-            // can set the ownerCt property in the config
-            if (Ext.isArray(this.menu)){
-                this.menu = { items: this.menu };
-            }
-            
-            // An object config will work here, but an instance of a menu
-            // will have already setup its ref's and have no effect
-            if (Ext.isObject(this.menu)){
-                this.menu.ownerCt = this;
-            }
-            
             this.menu = Ext.menu.MenuMgr.get(this.menu);
-            this.menu.ownerCt = undefined;
+            this.menu.ownerCt = this;
         }
     },
 
@@ -1254,7 +1219,7 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
                         ' target="{hrefTarget}"',
                     '</tpl>',
                  '>',
-                     '<img alt="{altText}" src="{icon}" class="x-menu-item-icon {iconCls}"/>',
+                     '<img src="{icon}" class="x-menu-item-icon {iconCls}"/>',
                      '<span class="x-menu-item-text">{text}</span>',
                  '</a>'
              );
@@ -1277,8 +1242,7 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
             hrefTarget: this.hrefTarget,
             icon: this.icon || Ext.BLANK_IMAGE_URL,
             iconCls: this.iconCls || '',
-            text: this.itemText||this.text||'&#160;',
-            altText: this.altText || ''
+            text: this.itemText||this.text||'&#160;'
         };
     },
 
@@ -1308,8 +1272,6 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
 
     //private
     beforeDestroy: function(){
-        clearTimeout(this.showTimer);
-        clearTimeout(this.hideTimer);
         if (this.menu){
             delete this.menu.ownerCt;
             this.menu.destroy();
@@ -1420,7 +1382,7 @@ Ext.menu.CheckItem = Ext.extend(Ext.menu.Item, {
 
     /**
      * @cfg {Boolean} checked True to initialize this checkbox as checked (defaults to false).  Note that
-     * if this checkbox is part of a radio group (group = true) only the first item in the group that is
+     * if this checkbox is part of a radio group (group = true) only the last item in the group that is
      * initialized with checked = true will be rendered as checked.
      */
     checked: false,
@@ -1485,7 +1447,6 @@ Ext.menu.CheckItem = Ext.extend(Ext.menu.Item, {
     setChecked : function(state, suppressEvent){
         var suppress = suppressEvent === true;
         if(this.checked != state && (suppress || this.fireEvent("beforecheckchange", this, state) !== false)){
-            Ext.menu.MenuMgr.onCheckChange(this, state);
             if(this.container){
                 this.container[state ? "addClass" : "removeClass"]("x-menu-item-checked");
             }

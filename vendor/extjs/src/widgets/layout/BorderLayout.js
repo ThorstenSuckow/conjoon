@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.layout.BorderLayout
@@ -491,7 +491,7 @@ Ext.layout.BorderLayout.Region.prototype = {
                 this.collapsedEl.on('click', this.onExpandClick, this, {stopEvent:true});
             }else {
                 if(this.collapsible !== false && !this.hideCollapseTool) {
-                    var t = this.expandToolEl = this.toolTemplate.append(
+                    var t = this.toolTemplate.append(
                             this.collapsedEl.dom,
                             {id:'expand-'+this.position}, true);
                     t.addClassOnOver('x-tool-expand-'+this.position+'-over');
@@ -688,15 +688,15 @@ Ext.layout.BorderLayout.Region.prototype = {
     initAutoHide : function(){
         if(this.autoHide !== false){
             if(!this.autoHideHd){
-                this.autoHideSlideTask = new Ext.util.DelayedTask(this.slideIn, this);
+                var st = new Ext.util.DelayedTask(this.slideIn, this);
                 this.autoHideHd = {
                     "mouseout": function(e){
                         if(!e.within(this.el, true)){
-                            this.autoHideSlideTask.delay(500);
+                            st.delay(500);
                         }
                     },
                     "mouseover" : function(e){
-                        this.autoHideSlideTask.cancel();
+                        st.cancel();
                     },
                     scope : this
                 };
@@ -907,10 +907,7 @@ Ext.layout.BorderLayout.Region.prototype = {
     },
 
     destroy : function(){
-        if (this.autoHideSlideTask && this.autoHideSlideTask.cancel){
-            this.autoHideSlideTask.cancel();
-        }
-        Ext.destroyMembers(this, 'miniCollapsedEl', 'collapsedEl', 'expandToolEl');
+        Ext.destroy(this.miniCollapsedEl, this.collapsedEl);
     }
 };
 

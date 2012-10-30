@@ -36,7 +36,7 @@ require_once 'Conjoon/Filter/Raw.php';
  * @package    Conjoon_Modules_Groupware_Email
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Conjoon_Filter_Input {
 

@@ -16,7 +16,7 @@
 /**
  * Will sum up all the installation data and install conjoon upon a post request.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
 $INSTALL = array();

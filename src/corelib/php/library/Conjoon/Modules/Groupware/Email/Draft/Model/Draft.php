@@ -54,7 +54,7 @@ require_once 'Conjoon/Modules/Groupware/Email/Keys.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Draft_Model_Draft {
 
@@ -105,8 +105,7 @@ class Conjoon_Modules_Groupware_Email_Draft_Model_Draft {
             'references'                 => $row->references,
             'content_text_plain'         => $row->content_text_plain,
             'content_text_html'          => $row->content_text_html,
-            'groupware_email_folders_id' => $row->groupware_email_folders_id,
-            'attachments'                => array()
+            'groupware_email_folders_id' => $row->groupware_email_folders_id
         );
 
         // clear memory
@@ -133,19 +132,6 @@ class Conjoon_Modules_Groupware_Email_Draft_Model_Draft {
             case Conjoon_Modules_Groupware_Email_Keys::REFERENCE_TYPE_FORWARD:
                 $draft['in_reply_to'] = '';
                 $draft['references']  = '';
-
-            case '':
-            case Conjoon_Modules_Groupware_Email_Keys::REFERENCE_TYPE_EDIT:
-                /**
-                 * @see Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment
-                 */
-                require_once 'Conjoon/Modules/Groupware/Email/Attachment/Model/Attachment.php';
-
-                $attachmentModel = new Conjoon_Modules_Groupware_Email_Attachment_Model_Attachment();
-
-                $draft['attachments'] = $attachmentModel
-                                        ->getAttachmentsForItem($draft['id'])->toArray();
-
             break;
         }
 

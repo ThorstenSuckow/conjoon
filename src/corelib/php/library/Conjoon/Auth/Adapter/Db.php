@@ -37,7 +37,7 @@ require_once 'Zend/Auth/Result.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Auth_Adapter_Db implements Zend_Auth_Adapter_Interface {
 

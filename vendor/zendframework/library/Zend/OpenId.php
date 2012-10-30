@@ -15,9 +15,9 @@
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: OpenId.php 24842 2012-05-31 18:31:28Z rob $
+ * @version    $Id: OpenId.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -35,7 +35,7 @@ require_once "Zend/Controller/Response/Abstract.php";
  *
  * @category   Zend
  * @package    Zend_OpenId
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_OpenId
@@ -124,11 +124,7 @@ class Zend_OpenId
         }
 
         $url .= $port;
-        if (isset($_SERVER['HTTP_X_ORIGINAL_URL'])) { 
-            // IIS with Microsoft Rewrite Module
-            $url .= $_SERVER['HTTP_X_ORIGINAL_URL'];
-        } elseif (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-            // IIS with ISAPI_Rewrite 
+        if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
             $url .= $_SERVER['HTTP_X_REWRITE_URL'];
         } elseif (isset($_SERVER['REQUEST_URI'])) {
             $query = strpos($_SERVER['REQUEST_URI'], '?');
@@ -289,7 +285,7 @@ class Zend_OpenId
         $port = $reg[4];
         $path = $reg[5];
         $query = $reg[6];
-        $fragment = $reg[7]; /* strip it */ /* ZF-4358 Fragment retained under OpenID 2.0 */
+        $fragment = $reg[7]; /* strip it */
 
         if (empty($scheme) || empty($host)) {
             return false;
@@ -354,8 +350,7 @@ class Zend_OpenId
             . $host
             . (empty($port) ? '' : (':' . $port))
             . $path
-            . $query
-            . $fragment;
+            . $query;
         return true;
     }
 

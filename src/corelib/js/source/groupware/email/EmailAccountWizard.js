@@ -40,11 +40,9 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
                                 +'</div>'
                 }]
             }),
-
-            //new com.conjoon.groupware.email.wizard.ServerTypeCard(),
             new com.conjoon.groupware.email.EmailAccountWizardNameCard(),
-            new com.conjoon.groupware.email.wizard.ServerInboxCard(),
-            new com.conjoon.groupware.email.wizard.ServerOutboxCard(),
+            new com.conjoon.groupware.email.EmailAccountWizardserverInboxCard(),
+            new com.conjoon.groupware.email.EmailAccountWizardServerOutboxCard(),
             new com.conjoon.groupware.email.EmailAccountWizardAccountNameCard(),
             new com.conjoon.groupware.email.EmailAccountWizardFinishCard()
         ];
@@ -72,22 +70,11 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
             }
         }
 
-        // remove me
-        values['protocol'] = 'POP3';
-
         values['isOutboxAuth'] = values['isOutboxAuth'] == 'on' ? true : false;
 
         if (!values['isOutboxAuth']) {
             values['usernameOutbox'] = '';
             values['passwordOutbox'] = '';
-        }
-
-        if (values['inboxConnectionType'] != 'SSL' && values['inboxConnectionType'] != 'TLS') {
-            values['inboxConnectionType'] = null;
-        }
-
-        if (values['outboxConnectionType'] != 'SSL' && values['outboxConnectionType'] != 'TLS') {
-            values['outboxConnectionType'] = null;
         }
 
         this.switchDialogState(false);
@@ -127,7 +114,6 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         // fetch the response values
         var responseValues = json.getResponseValues(response.responseText);
         var account        = responseValues.account;
-        var rootFolder     = responseValues.rootFolder;
         var accountStore   = com.conjoon.groupware.email.AccountStore.getInstance();
 
         var rec = com.conjoon.util.Record.convertTo(
@@ -136,13 +122,6 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         );
 
         accountStore.addSorted(rec);
-
-        if (rootFolder && rootFolder.id) {
-            Ext.ux.util.MessageBus.publish(
-                'com.conjoon.groupware.email.account.added',
-                {account : rec, rootFolder : rootFolder}
-            );
-        }
 
         this.switchDialogState(true);
         this.requestId = null;
@@ -216,6 +195,175 @@ com.conjoon.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz.C
     }
 });
 
+com.conjoon.groupware.email.EmailAccountWizardserverInboxCard = Ext.extend(Ext.ux.Wiz.Card, {
+
+    hostField     : null,
+    usernameField : null,
+    passwordField : null,
+    accountStore  : null,
+
+    initComponent : function()
+    {
+        this.monitorValid = true;
+        this.accountStore = com.conjoon.groupware.email.AccountStore.getInstance();
+
+
+        this.baseCls    = 'x-small-editor';
+        this.labelWidth = 100;
+
+        this.defaultType = 'textfield';
+        this.title = com.conjoon.Gettext.gettext("Inbox server");
+        this.defaults = {
+            labelStyle : 'width:100px;font-size:11px',
+            anchor: '100%'
+         };
+
+
+        this.hostField = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Host"),
+            allowBlank : false,
+            validator  : this.validateInbox.createDelegate(this),
+            name       : 'serverInbox'
+        });
+
+        this.usernameField = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("User name"),
+            allowBlank : false,
+            name       : 'usernameInbox'
+        });
+
+        this.passwordField = new Ext.form.TextField({
+            inputType  : 'password',
+            fieldLabel : com.conjoon.Gettext.gettext("Password"),
+            allowBlank : false,
+            name       : 'passwordInbox'
+        });
+
+        this.items = [
+            new com.conjoon.groupware.util.FormIntro({
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Inbox server"),
+                text      : com.conjoon.Gettext.gettext("Specify the host address of the inbox server here (e.g. pop3.provider.de) and your user credentials for authentication.")
+            }),
+            this.hostField,
+            this.usernameField,
+            this.passwordField
+        ];
+
+        com.conjoon.groupware.email.EmailAccountWizardNameCard.superclass.initComponent.call(this);
+    },
+
+    validateInbox : function(value)
+    {
+        value = value.trim();
+
+        if (value === "") {
+            return false;
+        } else {
+            /**
+             * @ext-bug 2.0.2 seems to look for any match
+             */
+            //var index = this.accountStore.find('name', value, 0, false, false);
+            /*var recs = this.accountStore.getRange();
+            for (var i = 0, len = recs.length; i < len; i++) {
+                if (recs[i].get('serverInbox').toLowerCase() === value) {
+                    return false;
+                }
+            }
+
+            return true;*/
+        }
+
+
+        return true;
+    }
+
+});
+
+com.conjoon.groupware.email.EmailAccountWizardServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card, {
+
+    hostField     : null,
+    useAuthField  : null,
+    usernameField : null,
+    passwordField : null,
+
+    initComponent : function()
+    {
+        this.monitorValid = true;
+
+        this.baseCls    = 'x-small-editor';
+
+        this.defaultType = 'textfield';
+        this.title = com.conjoon.Gettext.gettext("Outbox server");
+
+
+        this.hostField = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("Host"),
+            allowBlank : false,
+            labelStyle : 'width:85px;font-size:11px',
+            width      : 200,
+            name       : 'serverOutbox'
+        });
+
+        this.useAuthField = new Ext.form.Checkbox({
+            fieldLabel : com.conjoon.Gettext.gettext("Server requires authentication"),
+            labelStyle : 'margin-top:12px;width:140px;font-size:11px',
+            style      : 'margin-top:14px;',
+            name       : 'isOutboxAuth'
+        });
+
+        this.mon(this.useAuthField, 'check', this.onAuthCheck, this);
+
+        this.usernameField = new Ext.form.TextField({
+            fieldLabel : com.conjoon.Gettext.gettext("User name"),
+            disabled   : true,
+            labelStyle : 'width:85px;font-size:11px',
+            width      : 200,
+            name       : 'usernameOutbox'
+        });
+
+        this.passwordField = new Ext.form.TextField({
+            inputType  : 'password',
+            fieldLabel : com.conjoon.Gettext.gettext("Password"),
+            disabled   : true,
+            labelStyle : 'width:85px;font-size:11px',
+            width      : 200,
+            name       : 'passwordOutbox'
+        });
+
+        this.items = [
+            new com.conjoon.groupware.util.FormIntro({
+                style     : 'margin:10px 0 5px 0;',
+                labelText : com.conjoon.Gettext.gettext("Outbox server"),
+                text      : com.conjoon.Gettext.gettext("Specify the host address of the outbox server here (e.g. smtp.provider.de) and your user credentials, if the server requires authentication.")
+            }),
+            this.hostField,
+            this.useAuthField,
+            this.usernameField,
+            this.passwordField
+        ];
+
+
+
+        com.conjoon.groupware.email.EmailAccountWizardNameCard.superclass.initComponent.call(this);
+    },
+
+
+    onAuthCheck : function(checkbox, checked)
+    {
+        this.passwordField.allowBlank = !checked;
+        this.usernameField.allowBlank = !checked;
+
+        if (!checked) {
+            this.passwordField.reset();
+            this.usernameField.reset();
+        }
+
+        this.passwordField.setDisabled(!checked);
+        this.usernameField.setDisabled(!checked);
+    }
+
+});
 
 com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.ux.Wiz.Card, {
 
@@ -297,15 +445,13 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
             master : new Ext.Template(
                 '<table style="margin-top:15px;" border="0", cellspacing="2" cellpadding="2">'+
                     '<tbody>'+
-                    '<tr><td>'+com.conjoon.Gettext.gettext("Server type")+':</td><td>{protocol}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Account name")+':</td><td>{name:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Your name")+':</td><td>{userName:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Email address")+':</td><td>{address:htmlEncode}</td></tr>'+
-                    '<tr><td>'+com.conjoon.Gettext.gettext("Inbox host")+':</td><td>{serverInbox:htmlEncode}:{portInbox}</td></tr>'+
+                    '<tr><td>'+com.conjoon.Gettext.gettext("Inbox host")+':</td><td>{serverInbox:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Inbox user name")+':</td><td>{usernameInbox:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Inbox password")+':</td><td>{passwordInbox}</td></tr>'+
-                    '<tr><td>'+com.conjoon.Gettext.gettext("Secure connection for inbox")+':</td><td>{inboxConnectionType}</td></tr>'+
-                    '<tr><td>'+com.conjoon.Gettext.gettext("Outbox host")+':</td><td>{serverOutbox:htmlEncode}:{portOutbox}</td></tr>'+
+                    '<tr><td>'+com.conjoon.Gettext.gettext("Outbox host")+':</td><td>{serverOutbox:htmlEncode}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Outbox authentication")+':</td><td>{isOutboxAuth}</td></tr>'+
                     '{auth_template}'+
                     '</tbody>'+
@@ -313,8 +459,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
             ),
             auth : new Ext.Template(
                 '<tr><td>'+com.conjoon.Gettext.gettext("Outbox user name")+':</td><td>{usernameOutbox:htmlEncode}</td></tr>'+
-                '<tr><td>'+com.conjoon.Gettext.gettext("Outbox password")+':</td><td>{passwordOutbox}</td></tr>'+
-                '<tr><td>'+com.conjoon.Gettext.gettext("Secure connection for outbox")+':</td><td>{outboxConnectionType}</td></tr>'
+                '<tr><td>'+com.conjoon.Gettext.gettext("Outbox password")+':</td><td>{passwordOutbox}</td></tr>'
             )
         };
 
@@ -366,22 +511,12 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
 
         if (values.isOutboxAuth == 'on') {
             authTemplate = ts.auth.apply({
-                usernameOutbox       : values.usernameOutbox,
-                passwordOutbox       : "****",
-                outboxConnectionType : values.outboxConnectionType == 'SSL'
-                                        || values.outboxConnectionType == 'TLS'
-                                      ? String.format(
-                                            com.conjoon.Gettext.gettext("Uses {0}"),
-                                            values.outboxConnectionType
-                                        )
-                                      : com.conjoon.Gettext.gettext("No")
+                usernameOutbox : values.usernameOutbox,
+                passwordOutbox : "****"
             });
         }
 
         var html = ts.master.apply({
-            portInbox     : values.portInbox,
-            portOutbox    : values.portOutbox,
-            protocol      : 'POP',//values.protocol,
             name          : values.name,
             userName      : values.userName,
             address       : values.address,
@@ -392,13 +527,6 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
             isOutboxAuth  : values.isOutboxAuth == 'on'
                             ? com.conjoon.Gettext.gettext("Yes")
                             : com.conjoon.Gettext.gettext("No"),
-            inboxConnectionType :  values.inboxConnectionType == 'SSL'
-                                   || values.inboxConnectionType == 'TLS'
-                                   ? String.format(
-                                         com.conjoon.Gettext.gettext("Uses {0}"),
-                                         values.inboxConnectionType
-                                     )
-                                   : com.conjoon.Gettext.gettext("No"),
             auth_template : authTemplate
         });
 

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * Portuguese/Brazil Translation by Weber Souza
@@ -178,8 +178,7 @@ if(Ext.form.DateField){
       minText           : "A data deste campo deve ser posterior a {0}",
       maxText           : "A data deste campo deve ser anterior a {0}",
       invalidText       : "{0} n&atilde;o &eacute; uma data v&aacute;lida - deve ser informado no formato {1}",
-      format            : "d/m/Y",
-      startDay          : 0
+      format            : "d/m/Y"
    });
 }
 
@@ -201,7 +200,7 @@ if(Ext.form.VTypes){
 
 if(Ext.form.HtmlEditor){
    Ext.apply(Ext.form.HtmlEditor.prototype, {
-        createLinkText : 'Por favor, entre com a URL do link:',
+        createLinkText : 'Porfavor, entre com a URL do link:',
         buttonTips : {
             bold : {
                title: 'Negrito (Ctrl+B)',
@@ -209,8 +208,8 @@ if(Ext.form.HtmlEditor){
                cls: 'x-html-editor-tip'
             },
             italic : {
-               title: 'It&aacute;lico (Ctrl+I)',
-               text: 'Deixa o texto selecionado em it&aacute;lico.',
+               title: 'Italico (Ctrl+I)',
+               text: 'Deixa o texto selecionado em italico.',
                cls: 'x-html-editor-tip'
             },
             underline : {
@@ -264,8 +263,8 @@ if(Ext.form.HtmlEditor){
                cls: 'x-html-editor-tip'
            },
            createlink : {
-               title: 'Link',
-               text: 'Transforma o texto selecionado em um link.',
+               title: 'Hyperliga&ccedil;&atilde;o',
+               text: 'Transforma o texto selecionado em um hyperlink.',
                cls: 'x-html-editor-tip'
            },
            sourceedit : {

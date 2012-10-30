@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HelperBrokerTest.php 24686 2012-03-20 14:04:39Z spabby $
+ * @version    $Id: HelperBrokerTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_Controller_Action_HelperBrokerTest::main() if this source file is executed directly.
@@ -37,7 +37,7 @@ require_once 'Zend/Controller/Action/Helper/Redirector.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Action
@@ -324,9 +324,6 @@ class Zend_Controller_Action_HelperBrokerTest extends PHPUnit_Framework_TestCase
 
     public function testCanLoadNamespacedHelper()
     {
-        if (version_compare(PHP_VERSION, '5.3.0') === -1) {
-            $this->markTestSkipped('Namespaces not available in PHP < 5.3.0');
-        }
         $this->front->setControllerDirectory(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '_files')
             ->setResponse(new Zend_Controller_Response_Cli())
             ->returnResponse(true);

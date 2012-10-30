@@ -18,7 +18,7 @@ Ext.namespace('com.conjoon.cudgets.settings.listener');
  * An  base class that provides the interface for listeners for
  * {com.conjoon.cudgets.settings.Container}
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.cudgets.settings.listener.DefaultContainerListener
  *

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 
 Ext.onReady(function(){
@@ -74,7 +74,7 @@ Ext.onReady(function(){
             }]
         },{
             xtype: 'buttongroup',
-            title: 'Other Bogus Actions',
+            title: 'Other Bugus Actions',
             columns: 2,
             defaults: {
                 scale: 'small'

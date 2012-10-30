@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: SessionTest.php 24819 2012-05-28 19:25:03Z rob $
+ * @version    $Id: SessionTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -32,7 +32,7 @@ require_once 'Zend/Session.php';
  * @category   Zend
  * @package    Zend_Session
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Session
  */
@@ -62,7 +62,6 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
         parent::__construct($name, $data, $dataName);
         $this->_script = 'php '
             . '-c ' . escapeshellarg(php_ini_loaded_file()) . ' '
-            . '-d include_path=' . get_include_path() . ' '
             . escapeshellarg(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'SessionTestHelper.php');
 
         $this->_savePath = ini_get('session.save_path');
@@ -890,29 +889,6 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @group ZF-7196
-     * @runInSeparateProcess
-     */
-    public function testUnsettingNamespaceKeyWithoutUnsettingCompleteExpirationData()
-    {
-        $namespace = new Zend_Session_Namespace('DummyNamespace');
-
-        $namespace->foo = 23;
-        $namespace->bar = 42;
-
-        $namespace->setExpirationHops(1);
-
-        $sessionId = session_id();
-
-        session_write_close();
-        exec($this->_script . ' expireAll ' . $sessionId . ' DummyNamespace ZF-7196', $result, $returnValue);
-        session_start();
-
-        $result = $this->sortResult($result);
-        $this->assertSame(';bar === 42', $result);
-    }
-
-    /**
      * test expiration of namespace variables by hops; expect expiration of specified keys in the proper number of hops
      *
      * @return void
@@ -1049,65 +1025,4 @@ class Zend_SessionTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * @group ZF-11186
-     */
-    public function testNoNoticesIfNoValidatorDataInSession()
-    {
-        try {
-            Zend_Session::start();
-            require_once dirname(__FILE__) . '/Validator/NoticeValidator.php';
-            Zend_Session::registerValidator(new Zend_Session_Validator_NoticeValidator);
-        } catch (PHPUnit_Framework_Error_Notice $exception) {
-            $this->fail($exception->getMessage());
-        }
-    }
-
-    /**
-     * @group ZF-3378
-     */
-    public function testInvalidPreexistingSessionIdDoesNotPreventRegenerationOfSid()
-    {
-        // Pattern: [0-9a-v]*
-        ini_set('session.hash_bits_per_character', 5);
-
-        // Session store
-        $sessionCharSet = array_merge(range(0,9), range('a','v'));
-        $sessionStore = dirname(__FILE__)
-                      . DIRECTORY_SEPARATOR . "_files"
-                      . DIRECTORY_SEPARATOR . "ZF-3378";
-        if ( !is_dir($sessionStore) ) @mkdir($sessionStore, 0755, true);
-        ini_set('session.save_path', "1;666;" . $sessionStore);
-
-        // When using subdirs for session.save_path, the directory structure
-        // is your own responsibility...set it up, or else bad things happen
-        foreach ( $sessionCharSet as $subdir ) {
-            @mkdir($sessionStore . DIRECTORY_SEPARATOR . $subdir);
-        }
-
-        // Set session ID to invalid value
-        session_id('xxx');
-
-        // Attempt to start the session
-        try {
-            /** @see Zend_Session */
-            require_once "Zend/Session.php";
-            Zend_Session::start();
-        } catch (Zend_Session_Exception $e) {
-            Zend_Session::regenerateId();
-        }
-        // Get the current SID
-        $sid = Zend_Session::getId();
-
-        // We don't need the session any more, clean it up
-        Zend_Session::destroy();
-        foreach ( $sessionCharSet as $subdir ) {
-            @rmdir($sessionStore . DIRECTORY_SEPARATOR . $subdir);
-        }
-        @rmdir($sessionStore);
-
-        // Check the result
-        $this->assertRegExp('/^[0-9a-v]+$/', $sid);
-        $this->assertNotEquals('xxx', $sid);
-    }
 }

@@ -504,7 +504,7 @@ Ext.lib.Ajax = function() {
  * Adds focus/blur events to Ext.Viewport which generally translate to
  * browser window focus/blur.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 Ext.Viewport.prototype.initComponent = Ext.Viewport.prototype.initComponent.createInterceptor(
     function() {

@@ -20,7 +20,7 @@ Ext.namespace('com.conjoon.service.twitter.data');
  * @class com.conjoon.service.twitter.data.TweetStore
  * @extends Ext.data.Store
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.service.twitter.data.TweetStore = function(c){
 

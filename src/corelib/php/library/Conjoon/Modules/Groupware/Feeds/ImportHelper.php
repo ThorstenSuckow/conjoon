@@ -17,7 +17,7 @@
  * Utility class for access to functionaly related to importing
  * feed items.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Feeds_ImportHelper {
 

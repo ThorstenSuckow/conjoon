@@ -28,8 +28,6 @@ require_once 'Conjoon/Modules/Groupware/Email/Folder/Dto.php';
  * an object with the following properties:
  *
  *  id  : The id of the folder
- *  idForPath  : As special id from which a path can be build, needed for
- *  imap protocol.
  *  name : the name of the folder
  *  isChildAllowed : wether or not this folder may have child folders
  *  isLocked : wether or not this folder is locked for editing
@@ -45,20 +43,18 @@ require_once 'Conjoon/Modules/Groupware/Email/Folder/Dto.php';
  * @package    Conjoon_Groupware
  * @subpackage Email
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 
 class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Serializable {
 
     private $id;
-    private $idForPath;
     private $name;
     private $isChildAllowed;
     private $isLocked;
     private $type;
     private $childCount;
     private $pendingCount;
-    private $isSelectable;
 
     /**
      * Constructor.
@@ -70,25 +66,21 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
 // -------- accessors
 
     public function getId(){return $this->id;}
-    public function getIdForPath(){return $this->idForPath;}
     public function getName(){return $this->name;}
     public function isChildAllowed(){return $this->isChildAllowed;}
     public function isLocked(){return $this->isLocked;}
     public function getType(){return $this->type;}
     public function getChildCount(){return $this->childCount;}
     public function getPendingCount(){return $this->pendingCount;}
-    public function isSelectable(){return $this->isSelectable;}
 
 
     public function setId($id){$this->id = $id;}
-    public function setIdForPath($idForPath){$this->idForPath = $idForPath;}
     public function setName($name){$this->name = $name;}
     public function setChildAllowed($isChildAllowed){$this->isChildAllowed = $isChildAllowed;}
     public function setLocked($isLocked){$this->isLocked = $isLocked;}
     public function setType($type){$this->type = $type;}
     public function setChildCount($childCount){$this->childCount = $childCount;}
     public function setPendingCount($pendingCount){$this->pendingCount = $pendingCount;}
-    public function setSelectable($isSelectable){$this->isSelectable = $isSelectable;}
 
 
 
@@ -153,14 +145,12 @@ class Conjoon_Modules_Groupware_Email_Folder implements Conjoon_BeanContext, Ser
     {
         return array(
             'id'             => $this->id,
-            'idForPath'      => $this->idForPath,
             'name'           => $this->name,
             'isChildAllowed' => $this->isChildAllowed,
             'isLocked'       => $this->isLocked,
             'type'           => $this->type,
             'childCount'     => $this->childCount,
-            'pendingCount'   => $this->pendingCount,
-            'isSelectable'   => $this->isSelectable
+            'pendingCount'   => $this->pendingCount
         );
     }
 

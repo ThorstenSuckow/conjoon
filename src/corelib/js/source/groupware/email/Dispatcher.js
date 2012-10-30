@@ -222,15 +222,13 @@ com.conjoon.groupware.email.Dispatcher = function() {
             }
         }
 
-        var subject = '';
-        var url     = '';
-        var timeout = undefined;
+        var subject     = '';
+        var url         = '';
 
         switch (type) {
             case 'send':
                 subject     = 'com.conjoon.groupware.email.Smtp.beforeEmailSent';
                 url         = './groupware/email.send/send/format/json';
-                timeout     = 1200000;
             break;
 
             case 'outbox':
@@ -255,7 +253,6 @@ com.conjoon.groupware.email.Dispatcher = function() {
             draft             : draft,
             referencedItem    : referencedItem,
             url               : url,
-            timeout           : timeout,
             params            : draft.data,
             success           : function(response, options) {
                 _onManageDraftSuccess(response, options, type);
@@ -308,7 +305,6 @@ com.conjoon.groupware.email.Dispatcher = function() {
                 emailItems     : emailItems,
                 url            : './groupware/email.send/bulk.send/format/json',
                 params         : params,
-                timeout        : 1200000,
                 success        : _onBulkSendSuccess,
                 failure        : _onBulkSendFailure,
                 disableCaching : true

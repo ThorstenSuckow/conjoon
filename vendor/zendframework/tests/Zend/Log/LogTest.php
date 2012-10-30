@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: LogTest.php 24703 2012-03-29 09:52:39Z andries $
+ * @version    $Id: LogTest.php 23783 2011-03-01 21:47:35Z intiilapa $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -40,7 +40,7 @@ require_once 'Zend/Log/FactoryInterface.php';
  * @category   Zend
  * @package    Zend_Log
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Log
  */
@@ -522,31 +522,6 @@ class Zend_Log_LogTest extends PHPUnit_Framework_TestCase
         $logger = Zend_Log::factory($config);
 
         $this->assertEquals('c', $logger->getTimestampFormat());
-    }
-
-    public function testFactorySupportsPHP53Namespaces()
-    {
-        if (version_compare(PHP_VERSION, '5.3.0') < 0) {
-            $this->markTestSkipped('PHP < 5.3.0 does not support namespaces');
-        }
-
-        // preload namespaced class from custom path
-        Zend_Loader::loadClass('\Zfns\Writer', array(dirname(__FILE__) . '/_files'));
-
-        try {
-            $config = array(
-                'mine' => array(
-                    'writerName'      => 'Writer',
-                    'writerNamespace' => '\Zfns\\',
-                )
-            );
-
-            $logger = Zend_log::factory($config);
-            $logger->info('this is a test');
-
-        } catch (Zend_Log_Exception $e) {
-            $this->fail('Unable to load namespaced class');
-        }
     }
 }
 

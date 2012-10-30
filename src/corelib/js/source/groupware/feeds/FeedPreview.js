@@ -32,7 +32,7 @@ Ext.namespace('com.conjoon.groupware.feeds');
  *  <li>pubDate - the publication date of the feed</li>
  * </ul>
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.groupware.feeds.FeedPreview = function() {
 

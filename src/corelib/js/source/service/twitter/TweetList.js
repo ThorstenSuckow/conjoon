@@ -21,7 +21,7 @@ Ext.namespace('com.conjoon.service.twitter');
  * @class com.conjoon.service.twitter.TweetList
  * @extends com.conjoon.service.twitter.DataView
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.service.twitter.TweetList = Ext.extend(com.conjoon.service.twitter.DataView, {
 

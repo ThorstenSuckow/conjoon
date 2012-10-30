@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FormImageTest.php 24750 2012-05-05 01:24:21Z adamlundrigan $
+ * @version    $Id: FormImageTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 // Call Zend_View_Helper_FormImageTest::main() if this source file is executed directly.
@@ -34,7 +34,7 @@ require_once 'Zend/View/Helper/FormImage.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_View
  * @group      Zend_View_Helper
@@ -62,8 +62,6 @@ class Zend_View_Helper_FormImageTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->view = new Zend_View();
-        $this->view->doctype('HTML4_LOOSE');  // Reset doctype to default
-        
         $this->helper = new Zend_View_Helper_FormImage();
         $this->helper->setView($this->view);
     }
@@ -93,29 +91,6 @@ class Zend_View_Helper_FormImageTest extends PHPUnit_Framework_TestCase
         $this->assertRegexp('/<input[^>]*?src="bar"/', $button);
         $this->assertRegexp('/<input[^>]*?name="foo"/', $button);
         $this->assertRegexp('/<input[^>]*?type="image"/', $button);
-    }
-    
-    /**
-     * @group ZF-11477
-     */
-    public function testRendersAsHtmlByDefault()
-    {
-        $test = $this->helper->formImage(array(
-            'name' => 'foo',
-        ));
-        $this->assertNotContains(' />', $test);
-    }
-
-    /**
-     * @group ZF-11477
-     */
-    public function testCanRendersAsXHtml()
-    {
-        $this->view->doctype('XHTML1_STRICT');
-        $test = $this->helper->formImage(array(
-            'name' => 'foo',
-        ));
-        $this->assertContains(' />', $test);
     }
 }
 

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 //
 // Note that these are all defined as panel configs, rather than instantiated
@@ -188,7 +188,7 @@ var cardTabs = {
 var cardNav = function(incr){
     var l = Ext.getCmp('card-wizard-panel').getLayout();
     var i = l.activeItem.id.split('card-')[1];
-    var next = parseInt(i, 10) + incr;
+    var next = parseInt(i) + incr;
     l.setActiveItem(next);
     Ext.getCmp('card-prev').setDisabled(next==0);
     Ext.getCmp('card-next').setDisabled(next==2);

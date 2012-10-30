@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AllTests.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: AllTests.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
@@ -35,7 +35,6 @@ require_once 'Zend/Queue/MessageTest.php';
 require_once 'Zend/Queue/Message/IteratorTest.php';
 
 // Adapter testing
-require_once 'Zend/Queue/Adapter/AdapterTest.php';
 require_once 'Zend/Queue/Adapter/ArrayTest.php';
 require_once 'Zend/Queue/Adapter/MemcacheqTest.php';
 require_once 'Zend/Queue/Adapter/NullTest.php';
@@ -54,7 +53,7 @@ require_once 'Zend/Queue/Adapter/ActivemqOfflineTest.php';
  * @category   Zend
  * @package    Zend_Queue
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Queue
  */
@@ -81,7 +80,9 @@ class Zend_Queue_AllTests
 
         // Adapter testing
         $suite->addTestSuite('Zend_Queue_Adapter_ArrayTest');
-        $suite->addTestSuite('Zend_Queue_Adapter_MemcacheqTest');
+        if (extension_loaded('memcache')) {
+            $suite->addTestSuite('Zend_Queue_Adapter_MemcacheqTest');
+        }
         $suite->addTestSuite('Zend_Queue_Adapter_DbTest');
         $suite->addTestSuite('Zend_Queue_Adapter_NullTest');
         $suite->addTestSuite('Zend_Queue_Adapter_PlatformJobQueueTest');

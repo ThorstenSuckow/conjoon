@@ -31,7 +31,7 @@ require_once 'Conjoon/Filter/Raw.php';
  * @package    Conjoon_Filter_Input
  * @category   Filter
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Service_Twitter_Account_Filter_Account extends Conjoon_Filter_Input {
 

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Uri
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HttpTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: HttpTest.php 23970 2011-05-03 15:46:57Z ralph $
  */
 
 /**
@@ -35,7 +35,7 @@ require_once 'Zend/Uri/Http.php';
  * @category   Zend
  * @package    Zend_Uri
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Uri
  */
@@ -380,7 +380,7 @@ class Zend_Uri_HttpTest extends PHPUnit_Framework_TestCase
     public function testSetInvalidHost()
     {
         $uri = Zend_Uri::factory('http://example.com');
-        $host = 'example§com';
+        $host = 'example,com';
         $this->setExpectedException('Zend_Uri_Exception');
         $uri->setHost($host);
     }
@@ -430,7 +430,7 @@ class Zend_Uri_HttpTest extends PHPUnit_Framework_TestCase
         ), $uri->getQueryAsArray());
         $this->assertEquals('a=1&c=3', $uri->getQuery());
     }
-
+    
     /**
      * @group ZF-11188
      * @see http://www.ietf.org/rfc/rfc2732.txt

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Barcode
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: FactoryTest.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: FactoryTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 require_once 'Zend/Barcode.php';
@@ -28,7 +28,7 @@ require_once 'Zend/Config.php';
  * @package    Zend_Barcode
  * @subpackage UnitTests
  * @group      Zend_Barcode
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Barcode_FactoryTest extends PHPUnit_Framework_TestCase

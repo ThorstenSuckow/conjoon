@@ -31,7 +31,7 @@ require_once 'Conjoon/Modules/Groupware/Feeds/Item/Dto.php';
  * @package    Conjoon_Groupware
  * @subpackage Feeds
  *
- * @author Thorsten-Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten-Suckow-Homberg <ts@siteartwork.de>
  */
 
 class Conjoon_Modules_Groupware_Feeds_Item implements Conjoon_BeanContext, Serializable {

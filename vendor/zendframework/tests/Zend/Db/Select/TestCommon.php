@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TestCommon.php 24833 2012-05-30 13:29:41Z adamlundrigan $
+ * @version    $Id: TestCommon.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 
@@ -34,7 +34,7 @@ require_once 'Zend/Db/TestSetup.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
@@ -1697,64 +1697,5 @@ abstract class Zend_Db_Select_TestCommon extends Zend_Db_TestSetup
         $serialize = serialize($this->_select());
         $this->assertType('string',$serialize);
     }
-    
-    /**
-     * @group ZF-3792
-     */
-    public function testJoinUsingActuallyGeneratesAnInnerJoinOnForCompatibilityReasons()
-    {
-        $table_A = $this->_db->quoteTableAs('A');
-        $table_B = $this->_db->quoteTableAs('B');
-        $colname = $this->_db->quoteIdentifier('colname');
-        
-        $s = $this->_db->select()->from('A')->joinUsing('B', $colname);
-        $this->assertContains("JOIN {$table_B} ON {$table_B}.{$colname} = {$table_A}.{$colname}", $s->assemble());
-    }
 
-    /**
-     * @group ZF-5953
-     */
-    public function testJoinUsingAllowsSpecifyingMultipleColumnsViaAnArray()
-    {
-        $table_A = $this->_db->quoteTableAs('A');
-        $table_B = $this->_db->quoteTableAs('B');
-        $colOne  = $this->_db->quoteIdentifier('colOne');
-        $colTwo  = $this->_db->quoteIdentifier('colTwo');
-        
-        $s = $this->_db->select()->from('A')->joinUsing('B', array($colOne,$colTwo));
-        $this->assertContains(
-            "JOIN {$table_B} ON {$table_B}.{$colOne} = {$table_A}.{$colOne}"
-            . " AND {$table_B}.{$colTwo} = {$table_A}.{$colTwo}",
-            $s->assemble()
-        );
-    }
-
-    /**
-     * @group ZF-3309
-     */
-    public function testJoinUsingUsesTableNameOfTableBeingJoinedWhenAliasNotDefined()
-    {
-        $table1 = $this->_db->quoteTableAs('table1');
-        $table2 = $this->_db->quoteTableAs('table2');
-        $colname = $this->_db->quoteIdentifier('column1');
-        
-        $select = $this->_db->select();
-        $select->from('table1')->joinUsing('table2', $colname);
-        $this->assertRegexp("/ON {$table2}.{$colname}/s", $select->assemble());
-    }
-    
-    /**
-     * @group ZF-3309
-     */
-    public function testJoinUsingUsesAliasOfTableBeingJoinedWhenAliasIsDefined()
-    {
-        $table1 = $this->_db->quoteTableAs('table1');
-        $table2_alias = $this->_db->quoteTableAs('t2');
-        $colname = $this->_db->quoteIdentifier('column1');
-        
-        $select = $this->_db->select();
-        $select->from('table1')->joinUsing(array('t2'=>'table2'), $colname);
-        $this->assertRegexp("/ON {$table2_alias}.{$colname}/s", $select->assemble());
-    }    
-    
 }

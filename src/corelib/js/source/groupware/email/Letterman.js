@@ -140,6 +140,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
     {
         return function(o, success, response) {
             var json = com.conjoon.util.Json;
+
             if (json.isError(response.responseText)) {
                 com.conjoon.groupware.email.Letterman.onRequestFailure(this, 'response', action, o, response);
             }
@@ -320,10 +321,6 @@ com.conjoon.groupware.email.Letterman = function(config) {
         },
 
         /**
-         * This method is called if the server did not return a valid response,
-         * or if the missingInboxForAccountId property in the response is set,
-         * which points to the first account for which no inbox account was configured.
-         *
          *
          * @param {Ext.data.Proxy} proxy The proxy that sent the request
          * @param {String} type The value of this parameter will be either 'response'
@@ -357,16 +354,7 @@ com.conjoon.groupware.email.Letterman = function(config) {
             _busy = false;
             _messageBroadcaster.publish('com.conjoon.groupware.email.Letterman.loadexception', {});
             this.wakeup();
-
-            if (response.raw && response.raw.missingInboxForAccountId) {
-                var accountId = parseInt(response.raw.missingInboxForAccountId);
-                com.conjoon.groupware.email.options.FolderMappingBaton.showNotice(
-                    accountId, 'INBOX'
-                );
-                return;
-            } else {
-                com.conjoon.groupware.ResponseInspector.handleFailure(response);
-            }
+            com.conjoon.groupware.ResponseInspector.handleFailure(response);
         },
 
         /**

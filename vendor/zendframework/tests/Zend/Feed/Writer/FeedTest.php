@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Feed
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -28,7 +28,7 @@ require_once 'Zend/Feed/Writer/Feed.php';
  * @subpackage UnitTests
  * @group      Zend_Feed
  * @group      Zend_Feed_Writer
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Feed_Writer_FeedTest extends PHPUnit_Framework_TestCase
@@ -195,28 +195,6 @@ class Zend_Feed_Writer_FeedTest extends PHPUnit_Framework_TestCase
         $myDate = new Zend_Date('1234567890', Zend_Date::TIMESTAMP);
         $this->assertTrue($myDate->equals($writer->getDateCreated()));
     }
-    
-    /**
-     * @group ZF-12023
-     */
-    public function testSetDateCreatedUsesGivenUnixTimestampThatIsLessThanTenDigits()
-    {
-        $writer = new Zend_Feed_Writer_Feed;
-        $writer->setDateCreated(123456789);
-        $myDate = new Zend_Date('123456789', Zend_Date::TIMESTAMP);
-        $this->assertTrue($myDate->equals($writer->getDateCreated()));
-    }
-    
-    /**
-     * @group ZF-11610
-     */
-    public function testSetDateCreatedUsesGivenUnixTimestampThatIsAVerySmallInteger()
-    {
-        $writer = new Zend_Feed_Writer_Feed;
-        $writer->setDateCreated(123);
-        $myDate = new Zend_Date('123', Zend_Date::TIMESTAMP);
-        $this->assertTrue($myDate->equals($writer->getDateCreated()));
-    }
 
     public function testSetDateCreatedUsesZendDateObject()
     {
@@ -239,28 +217,6 @@ class Zend_Feed_Writer_FeedTest extends PHPUnit_Framework_TestCase
         $writer = new Zend_Feed_Writer_Feed;
         $writer->setDateModified(1234567890);
         $myDate = new Zend_Date('1234567890', Zend_Date::TIMESTAMP);
-        $this->assertTrue($myDate->equals($writer->getDateModified()));
-    }
-
-    /**
-     * @group ZF-12023
-     */
-    public function testSetDateModifiedUsesGivenUnixTimestampThatIsLessThanTenDigits()
-    {
-        $writer = new Zend_Feed_Writer_Feed;
-        $writer->setDateModified(123456789);
-        $myDate = new Zend_Date('123456789', Zend_Date::TIMESTAMP);
-        $this->assertTrue($myDate->equals($writer->getDateModified()));
-    }
-
-    /**
-     * @group ZF-11610
-     */
-    public function testSetDateModifiedUsesGivenUnixTimestampThatIsAVerySmallInteger()
-    {
-        $writer = new Zend_Feed_Writer_Feed;
-        $writer->setDateModified(123);
-        $myDate = new Zend_Date('123', Zend_Date::TIMESTAMP);
         $this->assertTrue($myDate->equals($writer->getDateModified()));
     }
 
@@ -317,28 +273,6 @@ class Zend_Feed_Writer_FeedTest extends PHPUnit_Framework_TestCase
         $writer = new Zend_Feed_Writer_Feed;
         $writer->setLastBuildDate(1234567890);
         $myDate = new Zend_Date('1234567890', Zend_Date::TIMESTAMP);
-        $this->assertTrue($myDate->equals($writer->getLastBuildDate()));
-    }
-
-    /**
-     * @group ZF-12023
-     */
-    public function testSetLastBuildDateUsesGivenUnixTimestampThatIsLessThanTenDigits()
-    {
-        $writer = new Zend_Feed_Writer_Feed;
-        $writer->setLastBuildDate(123456789);
-        $myDate = new Zend_Date('123456789', Zend_Date::TIMESTAMP);
-        $this->assertTrue($myDate->equals($writer->getLastBuildDate()));
-    }
-
-    /**
-     * @group ZF-11610
-     */
-    public function testSetLastBuildDateUsesGivenUnixTimestampThatIsAVerySmallInteger()
-    {
-        $writer = new Zend_Feed_Writer_Feed;
-        $writer->setLastBuildDate(123);
-        $myDate = new Zend_Date('123', Zend_Date::TIMESTAMP);
         $this->assertTrue($myDate->equals($writer->getLastBuildDate()));
     }
 

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Currency
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: CurrencyTest.php 24855 2012-06-01 00:12:25Z adamlundrigan $
+ * @version    $Id: CurrencyTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Currency.php';
  * @category   Zend
  * @package    Zend_Currency
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Currency
  */
@@ -825,29 +825,5 @@ class Zend_CurrencyTest extends PHPUnit_Framework_TestCase
         $currency = new Zend_Currency();
         $currency->setService('Zend_Currency_Service');
         $this->assertTrue($currency->getService() instanceof Zend_Currency_Service);
-    }
-
-    /**
-     * @group ZF-11798
-     * @dataProvider providerConstructorAllowsOverridingCurrencyDisplayFormat
-     */
-    public function testConstructorAllowsOverridingCurrencyDisplayFormat($display, $expected)
-    {
-        $currency = new Zend_Currency(array('value' => 100, 'display' => $display), 'en_US');
-        $this->assertEquals($expected, $currency->toString());
-    }
-
-    /**
-     * Data Provider for testConstructorAllowsOverridingCurrencyDisplayFormat
-     * @see ZF-11798
-     */
-    public function providerConstructorAllowsOverridingCurrencyDisplayFormat()
-    {
-        return array(
-            array(Zend_Currency::NO_SYMBOL, '100.00'),
-            array(Zend_Currency::USE_SYMBOL, '$100.00'),
-            array(Zend_Currency::USE_SHORTNAME, 'USD100.00'),
-            array(Zend_Currency::USE_NAME, 'US Dollar100.00')
-        );
     }
 }

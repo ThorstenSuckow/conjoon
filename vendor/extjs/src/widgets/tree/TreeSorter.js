@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /**
  * @class Ext.tree.TreeSorter
@@ -23,10 +23,8 @@ new Ext.tree.TreeSorter(myTree, {
  * @param {TreePanel} tree
  * @param {Object} config
  */
-Ext.tree.TreeSorter = Ext.extend(Object, {
-    
-    constructor: function(tree, config){
-        /**
+Ext.tree.TreeSorter = function(tree, config){
+    /**
      * @cfg {Boolean} folderSort True to sort leaf nodes under non-leaf nodes (defaults to false)
      */
     /**
@@ -51,52 +49,46 @@ Ext.tree.TreeSorter = Ext.extend(Object, {
      */
 
     Ext.apply(this, config);
-    tree.on({
-        scope: this,
-        beforechildrenrendered: this.doSort,
-        append: this.updateSort,
-        insert: this.updateSort,
-        textchange: this.updateSortParent
-    });
+    tree.on("beforechildrenrendered", this.doSort, this);
+    tree.on("append", this.updateSort, this);
+    tree.on("insert", this.updateSort, this);
+    tree.on("textchange", this.updateSortParent, this);
 
-    var desc = this.dir && this.dir.toLowerCase() == 'desc',
-        prop = this.property || 'text',
-        sortType = this.sortType,
-        folderSort = this.folderSort,
-        caseSensitive = this.caseSensitive === true,
-        leafAttr = this.leafAttr || 'leaf';
+    var dsc = this.dir && this.dir.toLowerCase() == "desc";
+    var p = this.property || "text";
+    var sortType = this.sortType;
+    var fs = this.folderSort;
+    var cs = this.caseSensitive === true;
+    var leafAttr = this.leafAttr || 'leaf';
 
-    if(Ext.isString(sortType)){
-        sortType = Ext.data.SortTypes[sortType];
-    }
     this.sortFn = function(n1, n2){
-        var attr1 = n1.attributes,
-            attr2 = n2.attributes;
-            
-        if(folderSort){
-            if(attr1[leafAttr] && !attr2[leafAttr]){
+        if(fs){
+            if(n1.attributes[leafAttr] && !n2.attributes[leafAttr]){
                 return 1;
             }
-            if(!attr1[leafAttr] && attr2[leafAttr]){
+            if(!n1.attributes[leafAttr] && n2.attributes[leafAttr]){
                 return -1;
             }
         }
-        var prop1 = attr1[prop],
-            prop2 = attr2[prop],
-            v1 = sortType ? sortType(prop1) : (caseSensitive ? prop1 : prop1.toUpperCase()),
-            v2 = sortType ? sortType(prop2) : (caseSensitive ? prop2 : prop2.toUpperCase());
-            
+        var v1 = sortType ? sortType(n1) : (cs ? n1.attributes[p] : n1.attributes[p].toUpperCase());
+        var v2 = sortType ? sortType(n2) : (cs ? n2.attributes[p] : n2.attributes[p].toUpperCase());
         if(v1 < v2){
-            return desc ? 1 : -1;
+            return dsc ? +1 : -1;
         }else if(v1 > v2){
-            return desc ? -1 : 1;
+            return dsc ? -1 : +1;
+        }else{
+            return 0;
         }
-        return 0;
     };
-    },
-    
+};
+
+Ext.tree.TreeSorter.prototype = {
     doSort : function(node){
         node.sort(this.sortFn);
+    },
+
+    compareNodes : function(n1, n2){
+        return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
     },
 
     updateSort : function(tree, node){
@@ -110,5 +102,5 @@ Ext.tree.TreeSorter = Ext.extend(Object, {
         if(p && p.childrenRendered){
             this.doSort.defer(1, this, [p]);
         }
-    }    
-});
+    }
+};

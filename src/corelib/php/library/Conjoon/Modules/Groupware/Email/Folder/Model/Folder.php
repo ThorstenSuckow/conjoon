@@ -31,7 +31,7 @@ require_once 'Conjoon/BeanContext/Decoratable.php';
  * @subpackage Model
  * @category Model
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     extends Conjoon_Db_Table implements Conjoon_BeanContext_Decoratable{
@@ -70,61 +70,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     public function getSentFolder($accountId, $userId)
     {
         return $this->_getDefaultFolderIdForType($accountId, $userId, 'sent');
-    }
-
-    /**
-     * Returns the base root/ folder id for the specified account
-     * and the specified user, i.e. the folder with type "root".
-     * Returns 0 if the folder could not be found
-     *
-     * @param integer $accountId
-     * @param integer $userId
-     *
-     * @return integer
-     *
-     */
-    public function getRootFolderId($accountId, $userId)
-    {
-        return $this->_getDefaultFolderIdForType($accountId, $userId, 'root');
-    }
-
-    /**
-     * Returns the base accounts_root folder id for the specified account
-     * and the specified user, i.e. the folder with type "accounts_root".
-     * Returns 0 if the folder could not be found
-     *
-     * @param integer $accountId
-     * @param integer $userId
-     *
-     * @return integer
-     *
-     */
-    public function getAccountsRootFolderId($accountId, $userId)
-    {
-        return $this->_getDefaultFolderIdForType($accountId, $userId, 'accounts_root');
-    }
-
-    /**
-     * Returns the root/accounts_root folder id for the specified account
-     * and the specified user, i.e. the folder with type "root" or "accounts_root".
-     * Returns 0 if the folder could not be found
-     * If no accounts_root could be found, the method will look up a "root" marked folder.
-     *
-     * @param integer $accountId
-     * @param integer $userId
-     *
-     * @return integer
-     *
-     */
-    public function getAccountsRootOrRootFolderId($accountId, $userId)
-    {
-        $root = $this->_getDefaultFolderIdForType($accountId, $userId, 'accounts_root');
-
-        if ($root == 0) {
-            return $this->_getDefaultFolderIdForType($accountId, $userId, 'root');
-        }
-
-        return $root;
     }
 
     /**
@@ -606,12 +551,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      *
      * @param integer $id The id of the folder to delete
      * @param integer $userId The id of the user to delete the data for
-     * @param boolean $checkForDeletable Check whether the folder may get deleted
      *
      * @return integer 0 if the folder was not deleted, otherwise 1 (equals to
      * the number of deleted folders)
      */
-    public function deleteFolder($id, $userId, $checkForDeletable = true)
+    public function deleteFolder($id, $userId)
     {
         $id     = (int)$id;
         $userId = (int)$userId;
@@ -620,7 +564,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         }
 
         // check first if the folder may get deleted
-        if ($checkForDeletable && !$this->isFolderDeletable($id)) {
+        if (!$this->isFolderDeletable($id)) {
             return 0;
         }
 
@@ -857,8 +801,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                ->from(array('folders' => self::getTablePrefix() . 'groupware_email_folders'), array(
                  'name',
                  'id',
-                 'id AS id_for_path',
-                 '(1) AS is_selectable',
                  'is_child_allowed',
                  'is_locked',
                  'type'
@@ -885,7 +827,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
-     * Returns all root folders for the user. A root folder is either a
+     * Retruns all root folders for the user. A root folder is either a
      * folder that was created when an account was created, or a folder
      * that was put into public that contains only folders of the type
      * 'folder'.
@@ -934,49 +876,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
             return $this->getRootFolders($userId);
         }
 
-        return $this->_getFolders($parentId, $userId, true);
-    }
-
-    /**
-     * Returns a single folder with all nedded information, including
-     * pending count.
-     *
-     * @param integer $id The id of the folder to fetch.
-     * @param integer $userId The id of the user to fetch this folder for.
-     *
-     * @return Zend_Db_Table_Row
-     */
-    public function getFolderForId($id, $userId)
-    {
-        $userId = (int)$userId;
-        $id     = (int)$id;
-
-        if ($userId <= 0 || $id < 0) {
-            return array();
-        }
-
-        if ($id == 0) {
-            return $this->getRootFolders($userId);
-        }
-
-        return $this->_getFolders($id, $userId, false);
-    }
-
-    /**
-     * Helper for fetching a single folder or child folders froma given
-     * parentId.
-     *
-     * @param integer $id eitehr the id of the folder to fetch, or the parent
-     * id of the folder to fetch the children for. if $isParentId is set to true,
-     * child folders for this id will be returned.
-     * @param integer $userId
-     * @param boolean $isParentId Whether the specified id is the id of a folder
-     * to fetch child folders for
-     *
-     * @return mixed
-     */
-    private function _getFolders($id, $userId, $isParentId = false)
-    {
         $adapter = $this->getAdapter();
         $select  = self::getFolderBaseQuery($userId)
                    ->joinLeft(array(
@@ -996,21 +895,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                     ' AND ' .
                     $adapter->quoteInto('flag.user_id=?', $userId, 'INTEGER'),
                     array('pending_count' => "IF (folders.meta_info !='draft' AND folders.meta_info !='outbox' ,COUNT(DISTINCT flag.groupware_email_items_id), COUNT(DISTINCT items.id))")
-                   );
+                   )
+                   ->where('folders.parent_id = ?', $parentId);
 
-        if ($isParentId === false) {
-            $select = $select->where(
-                'folders.id = ?', $id
-            );
-            return $adapter->fetchRow($select);
+        $rows = $adapter->fetchAll($select);
 
-            return $row;
-        } else {
-            $select = $select->where(
-                'folders.parent_id = ?', $id
-            );
-            return $adapter->fetchAll($select);
-        }
+        return $rows;
     }
 
     /**
@@ -1034,7 +924,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
         // check first if the folder may get deleted
         $select = $this->select()
-                  ->from($this, array('*', 'id AS id_for_path', '(1) as is_selectable'))
+                  ->from($this)
                   ->where($where);
 
         $row = $this->fetchRow($select);
@@ -1062,13 +952,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                         array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
                         $adapter->quoteInto('accounts.id=?', $accountId, 'INTEGER') .
                         ' AND ' .
-                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER')/* .
-                        // REMOVED since information about a mapping might still be needed
-                        // in case the account was flagged as deleted, but an item mapped to this
-                        // account still exists in the database and is shown in the frontend
-                        // in a specific folder
+                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER') .
                         ' AND '.
-                        'accounts.is_deleted=0'*/,
+                        'accounts.is_deleted=0',
                         array())
                   ->join(
                         array('folders_accounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
@@ -1087,130 +973,6 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         return $row['folder_id'];
     }
 
-    /**
-     * Returns the standard mapping for folders. A standard mapping consists of
-     * a group of folders where each one is mapped to a specific type, i.e.
-     * of the type inbox, sent, draft, trash or outbox. This method does also
-     * consider "is_deleted" flagged accounts, since this information may still be
-     * needed for items which show up in "accounts_root" folder hierarchies.
-     *
-     * @param integer $userId The id of the user to fetch informations about
-     * his standard mappings for
-     *
-     * @return array an associative array with the following key/value pairs:
-     *     - parent_id: The id of the parent - folder (i.e. the folder with the
-     *       type "root" or "accounts_root" for the queried folder
-     *     - id: The id of the folder
-     *     - groupware_email_accounts_id: The id of teh account for which the folder
-     *       was created
-     *     - type: the type of the folder, i.e. inbox, outbox, sent, trash, draft
-     *
-     */
-    public function getLocalMappingsForUser($userId)
-    {
-        $userId = (int)$userId;
-
-        if ($userId <= 0) {
-            return array();
-        }
-
-        $adapter = self::getDefaultAdapter();
-
-        $select = $adapter->select()
-                  ->from(self::getTablePrefix() . 'groupware_email_folders', array(
-                      'id', 'parent_id', 'type'
-                  ))
-                  ->join(
-                        array('accounts' => self::getTablePrefix() . 'groupware_email_accounts'),
-                        $adapter->quoteInto('accounts.user_id=?', $userId, 'INTEGER'),
-                        array('groupware_email_accounts_id' => 'id'))
-                  ->join(
-                        array('folders_accounts' => self::getTablePrefix() . 'groupware_email_folders_accounts'),
-                        'folders_accounts.groupware_email_folders_id=' . self::getTablePrefix() . 'groupware_email_folders.id '.
-                        ' AND ' .
-                        'folders_accounts.groupware_email_accounts_id=accounts.id',
-                        array())
-                  ->where('type = "inbox"')
-                  ->orWhere('type = "outbox"')
-                  ->orWhere('type = "draft"')
-                  ->orWhere('type = "sent"')
-                  ->orWhere('type = "trash"');
-
-        $rows = $adapter->fetchAll($select);
-
-        if (!$rows || empty($rows)) {
-            return array();
-        }
-
-        return $rows;
-    }
-
-
-    /**
-     * Adds an individual folder hierarchy for an imap account.
-     *
-     * @param integer $accountId
-     * @param integer $userId
-     * @param string  $name The name of the account to use as the folders name
-     *
-     * @return integer The total number of data inserted
-     */
-    public function createFolderHierarchyForImapAccount($accountId, $userId, $name)
-    {
-        $accountId = (int)$accountId;
-        $userId    = (int)$userId;
-        $name      = trim((string)$name);
-
-        if ($accountId == 0 || $userId == 0 || $name == "") {
-            return 0;
-        }
-
-        $adapter = $this->getAdapter();
-
-        $adapter->beginTransaction();
-
-        $ids = array();
-
-        try {
-
-            // root folder
-            $parentId = $this->insert(array(
-                'name'             => $name,
-                'is_child_allowed' => 0,
-                'is_locked'        => 1,
-                'type'             => 'root',
-                'meta_info'        => 'inbox',
-                'parent_id'        => 0
-            ));
-            $ids[] = $parentId;
-
-            /**
-             * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers
-             */
-            require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersUsers.php';
-
-            $foldersUsers = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers();
-            $foldersUsers->addRelationship(
-                $ids, $userId, Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers::OWNER
-            );
-
-            $adapter->commit();
-
-        } catch (Exception $e) {
-            $adapter->rollBack();
-            return array();
-        }
-
-        // map all existing folders from the root hierarchy to the new account
-        /**
-         * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts
-         */
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersAccounts.php';
-
-        $foldersAccountsModel = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersAccounts();
-
-        return $foldersAccountsModel->mapFolderIdsToAccountId($ids, $accountId);
-    }
 
     /**
      * Maps the account id for the user to the users list of folders.
@@ -1263,9 +1025,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     public function getDecoratableMethods()
     {
         return array(
-            'getFolderForId',
-            'getFolders',
-            'getFolderBaseData'
+            'getFolders'
         );
     }
 }

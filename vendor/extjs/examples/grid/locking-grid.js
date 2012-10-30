@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 Ext.onReady(function(){
 
@@ -82,11 +82,11 @@ Ext.onReady(function(){
     var grid = new Ext.grid.GridPanel({
         store: store,
         colModel: new Ext.ux.grid.LockingColumnModel([
-            {header: 'Company',      width: 160, sortable: true, dataIndex: 'company', locked: true, id:'company'},
-            {header: 'Price',        width: 85,  sortable: true, renderer: 'usMoney',  dataIndex: 'price'},
-            {header: 'Change',       width: 85,  sortable: true, renderer: change,     dataIndex: 'change'},
-            {header: '% Change',     width: 85,  sortable: true, renderer: pctChange,  dataIndex: 'pctChange'},
-            {header: 'Last Updated', width: 95,  sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
+            {id:'company',header: 'Company', width: 160, sortable: true, dataIndex: 'company', locked: true},
+            {header: 'Price', width: 85, sortable: true, renderer: 'usMoney', dataIndex: 'price'},
+            {header: 'Change', width: 85, sortable: true, renderer: change, dataIndex: 'change'},
+            {header: '% Change', width: 85, sortable: true, renderer: pctChange, dataIndex: 'pctChange'},
+            {header: 'Last Updated', width: 95, sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
         ]),
         stripeRows: true,
         height: 350,

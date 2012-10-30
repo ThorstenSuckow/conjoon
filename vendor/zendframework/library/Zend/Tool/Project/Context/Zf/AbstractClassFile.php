@@ -15,15 +15,10 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: AbstractClassFile.php 24593 2012-01-05 20:35:02Z matthew $
+ * @version    $Id: AbstractClassFile.php 23775 2011-03-01 17:25:24Z ralph $
  */
-
-/**
- * Zend_Tool_Project_Context_Filesystem_File
- */
-require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project
@@ -33,7 +28,7 @@ require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
  *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Tool_Project_Context_Zf_AbstractClassFile extends Zend_Tool_Project_Context_Filesystem_File
@@ -67,8 +62,7 @@ abstract class Zend_Tool_Project_Context_Zf_AbstractClassFile extends Zend_Tool_
                 $prefix = $containingResource->getAttribute('classNamePrefix');
                 $fullClassName = $prefix;
             } elseif ($containingResource->getName() == 'ModuleDirectory') {
-                $filter = new Zend_Filter_Word_DashToCamelCase();
-                $prefix = $filter->filter(ucfirst($containingResource->getAttribute('moduleName'))) . '_';
+                $prefix = ucfirst($containingResource->getAttribute('moduleName')) . '_';
                 $fullClassName = $prefix;
             }
         }

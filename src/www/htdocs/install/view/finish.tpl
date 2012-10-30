@@ -20,5 +20,5 @@
 </p>
 <br />
 <p>
- In case you have any problems running conjoon, please visit the forums at <a href="http://conjoon.org" target="_blank">http://conjoon.org</a>!
+ In case you have any problems running conjoon, please visit the forums at <a href="http://conjoon.org" target="_blank">http://www.conjoon.org</a>!
 </p>

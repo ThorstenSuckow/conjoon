@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Gdata
  * @subpackage Demos
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -70,7 +70,7 @@ function findFlashUrl($entry)
  */
 function getTopRatedVideosByUser($user)
 {
-    $userVideosUrl = 'https://gdata.youtube.com/feeds/users/' .
+    $userVideosUrl = 'http://gdata.youtube.com/feeds/users/' .
                      $user . '/uploads';
     $yt = new Zend_Gdata_YouTube();
     $ytQuery = $yt->newVideoQuery($userVideosUrl);

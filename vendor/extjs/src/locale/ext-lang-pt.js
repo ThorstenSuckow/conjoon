@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 /*
  * Portuguese/Brazil Translation by Weber Souza
@@ -136,8 +136,7 @@ if(Ext.form.DateField){
       minText           : "A data deste campo deve ser posterior a {0}",
       maxText           : "A data deste campo deve ser anterior a {0}",
       invalidText       : "{0} n&atilde;o &eacute; uma data v&aacute;lida - deve ser usado o formato {1}",
-      format            : "d/m/Y",
-      startDay          : 0
+      format            : "d/m/Y"
    });
 }
 

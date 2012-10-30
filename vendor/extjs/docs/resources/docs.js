@@ -7,7 +7,6 @@ ApiPanel = function() {
         id:'api-tree',
         region:'west',
         split:true,
-        header: false,
         width: 280,
         minSize: 175,
         maxSize: 500,
@@ -96,11 +95,10 @@ Ext.extend(ApiPanel, Ext.tree.TreePanel, {
 		
 		// hide empty packages that weren't filtered
 		this.hiddenPkgs = [];
-                var me = this;
 		this.root.cascade(function(n){
 			if(!n.attributes.isClass && n.ui.ctNode.offsetHeight < 3){
 				n.ui.hide();
-				me.hiddenPkgs.push(n);
+				this.hiddenPkgs.push(n);
 			}
 		});
 	},
@@ -336,7 +334,7 @@ Ext.extend(MainPanel, Ext.TabPanel, {
 	        '<tpl for=".">',
 	        '<div class="search-item">',
 	            '<a class="member" ext:cls="{cls}" ext:member="{member}" href="output/{cls}.html">',
-				'<img src="../resources/images/default/s.gif" class="item-icon icon-{type}"/>{member}',
+				'<img src="resources/images/default/s.gif" class="item-icon icon-{type}"/>{member}',
 				'</a> ',
 				'<a class="cls" ext:cls="{cls}" href="output/{cls}.html">{cls}</a>',
 	            '<p>{doc}</p>',
@@ -391,7 +389,7 @@ Ext.onReady(function(){
         layout:'border',
         items:[ {
             cls: 'docs-header',
-            height: 44,
+            height: 36,
             region:'north',
             xtype:'box',
             el:'header',

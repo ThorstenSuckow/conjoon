@@ -98,8 +98,6 @@
 				,
                 {"href":"output/Ext.data.Tree.html","text":"Tree","id":"Ext.data.Tree","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
-                {"href":"output/Ext.data.Types.html","text":"Types","id":"Ext.data.Types","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
-				,
                 {"href":"output/Ext.data.XmlReader.html","text":"XmlReader","id":"Ext.data.XmlReader","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.data.XmlStore.html","text":"XmlStore","id":"Ext.data.XmlStore","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -166,8 +164,6 @@
 				,
                 {"href":"output/Ext.form.ComboBox.html","text":"ComboBox","id":"Ext.form.ComboBox","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
-                {"href":"output/Ext.form.CompositeField.html","text":"CompositeField","id":"Ext.form.CompositeField","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				,
                 {"href":"output/Ext.form.DateField.html","text":"DateField","id":"Ext.form.DateField","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.form.DisplayField.html","text":"DisplayField","id":"Ext.form.DisplayField","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
@@ -190,8 +186,6 @@
 				,
                 {"href":"output/Ext.form.RadioGroup.html","text":"RadioGroup","id":"Ext.form.RadioGroup","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
-                {"href":"output/Ext.form.SliderField.html","text":"SliderField","id":"Ext.form.SliderField","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				,
                 {"href":"output/Ext.form.TextArea.html","text":"TextArea","id":"Ext.form.TextArea","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.form.TextField.html","text":"TextField","id":"Ext.form.TextField","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
@@ -207,8 +201,6 @@
 				,
                 {"id":"pkg-Ext.grid","text":"grid","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
                 {"href":"output/Ext.grid.AbstractSelectionModel.html","text":"AbstractSelectionModel","id":"Ext.grid.AbstractSelectionModel","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.grid.ActionColumn.html","text":"ActionColumn","id":"Ext.grid.ActionColumn","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.grid.BooleanColumn.html","text":"BooleanColumn","id":"Ext.grid.BooleanColumn","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -234,12 +226,6 @@
 				,
                 {"href":"output/Ext.grid.NumberColumn.html","text":"NumberColumn","id":"Ext.grid.NumberColumn","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
-                {"href":"output/Ext.grid.PivotAxis.html","text":"PivotAxis","id":"Ext.grid.PivotAxis","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.grid.PivotGrid.html","text":"PivotGrid","id":"Ext.grid.PivotGrid","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.grid.PivotGridView.html","text":"PivotGridView","id":"Ext.grid.PivotGridView","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
                 {"href":"output/Ext.grid.PropertyColumnModel.html","text":"PropertyColumnModel","id":"Ext.grid.PropertyColumnModel","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.grid.PropertyGrid.html","text":"PropertyGrid","id":"Ext.grid.PropertyGrid","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
@@ -256,20 +242,6 @@
 				]}
 				,
                 {"id":"pkg-Ext.layout","text":"layout","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
-                {"id":"pkg-Ext.layout.boxOverflow","text":"boxOverflow","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
-                {"href":"output/Ext.layout.boxOverflow.HorizontalMenu.html","text":"HorizontalMenu","id":"Ext.layout.boxOverflow.HorizontalMenu","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.layout.boxOverflow.HorizontalScroller.html","text":"HorizontalScroller","id":"Ext.layout.boxOverflow.HorizontalScroller","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.layout.boxOverflow.Menu.html","text":"Menu","id":"Ext.layout.boxOverflow.Menu","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.layout.boxOverflow.None.html","text":"None","id":"Ext.layout.boxOverflow.None","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.layout.boxOverflow.Scroller.html","text":"Scroller","id":"Ext.layout.boxOverflow.Scroller","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.layout.boxOverflow.VerticalScroller.html","text":"VerticalScroller","id":"Ext.layout.boxOverflow.VerticalScroller","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				]}
-				,
                 {"href":"output/Ext.layout.AbsoluteLayout.html","text":"AbsoluteLayout","id":"Ext.layout.AbsoluteLayout","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.layout.AccordionLayout.html","text":"AccordionLayout","id":"Ext.layout.AccordionLayout","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -343,16 +315,6 @@
                 {"href":"output/Ext.menu.TextItem.html","text":"TextItem","id":"Ext.menu.TextItem","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				]}
 				,
-                {"id":"pkg-Ext.slider","text":"slider","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
-                {"href":"output/Ext.slider.MultiSlider.html","text":"MultiSlider","id":"Ext.slider.MultiSlider","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.slider.SingleSlider.html","text":"SingleSlider","id":"Ext.slider.SingleSlider","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.slider.Thumb.html","text":"Thumb","id":"Ext.slider.Thumb","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
-				,
-                {"href":"output/Ext.slider.Tip.html","text":"Tip","id":"Ext.slider.Tip","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
-				]}
-				,
                 {"id":"pkg-Ext.state","text":"state","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[
                 {"href":"output/Ext.state.CookieProvider.html","text":"CookieProvider","id":"Ext.state.CookieProvider","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -400,8 +362,6 @@
 				,
                 {"href":"output/Ext.util.Format.html","text":"Format","id":"Ext.util.Format","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
 				,
-                {"href":"output/Ext.util.Functions.html","text":"Functions","id":"Ext.util.Functions","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
-				,
                 {"href":"output/Ext.util.JSON.html","text":"JSON","id":"Ext.util.JSON","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.util.MixedCollection.html","text":"MixedCollection","id":"Ext.util.MixedCollection","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -412,8 +372,6 @@
 				,
                 {"href":"output/Ext.util.TextMetrics.html","text":"TextMetrics","id":"Ext.util.TextMetrics","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
 				]}
-				,
-                {"href":"output/Ext.AbstractManager.html","text":"AbstractManager","id":"Ext.AbstractManager","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.Action.html","text":"Action","id":"Ext.Action","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -477,8 +435,6 @@
 				,
                 {"href":"output/Ext.LoadMask.html","text":"LoadMask","id":"Ext.LoadMask","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
-                {"href":"output/Ext.Loader.html","text":"Loader","id":"Ext.Loader","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
-				,
                 {"href":"output/Ext.MessageBox.html","text":"MessageBox","id":"Ext.MessageBox","isClass":true,"iconCls":"icon-static","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.PagingToolbar.html","text":"PagingToolbar","id":"Ext.PagingToolbar","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
@@ -494,6 +450,8 @@
                 {"href":"output/Ext.Resizable.html","text":"Resizable","id":"Ext.Resizable","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.Shadow.html","text":"Shadow","id":"Ext.Shadow","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Ext.Slider.html","text":"Slider","id":"Ext.Slider","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
                 {"href":"output/Ext.Spacer.html","text":"Spacer","id":"Ext.Spacer","isClass":true,"iconCls":"icon-cmp","cls":"cls","leaf":true}
 				,
@@ -654,8 +612,6 @@
 			,
 			"Ext.data.Tree":"icon-cls"
 			,
-			"Ext.data.Types":"icon-static"
-			,
 			"Ext.data.XmlReader":"icon-cls"
 			,
 			"Ext.data.XmlStore":"icon-cls"
@@ -716,8 +672,6 @@
 			,
 			"Ext.form.ComboBox":"icon-cmp"
 			,
-			"Ext.form.CompositeField":"icon-cmp"
-			,
 			"Ext.form.DateField":"icon-cmp"
 			,
 			"Ext.form.DisplayField":"icon-cmp"
@@ -740,8 +694,6 @@
 			,
 			"Ext.form.RadioGroup":"icon-cmp"
 			,
-			"Ext.form.SliderField":"icon-cmp"
-			,
 			"Ext.form.TextArea":"icon-cmp"
 			,
 			"Ext.form.TextField":"icon-cmp"
@@ -755,8 +707,6 @@
 			"Ext.form.VTypes":"icon-static"
 			,
 			"Ext.grid.AbstractSelectionModel":"icon-cls"
-			,
-			"Ext.grid.ActionColumn":"icon-cls"
 			,
 			"Ext.grid.BooleanColumn":"icon-cls"
 			,
@@ -782,12 +732,6 @@
 			,
 			"Ext.grid.NumberColumn":"icon-cls"
 			,
-			"Ext.grid.PivotAxis":"icon-cmp"
-			,
-			"Ext.grid.PivotGrid":"icon-cmp"
-			,
-			"Ext.grid.PivotGridView":"icon-cls"
-			,
 			"Ext.grid.PropertyColumnModel":"icon-cls"
 			,
 			"Ext.grid.PropertyGrid":"icon-cmp"
@@ -801,18 +745,6 @@
 			"Ext.grid.RowSelectionModel":"icon-cls"
 			,
 			"Ext.grid.TemplateColumn":"icon-cls"
-			,
-			"Ext.layout.boxOverflow.HorizontalMenu":"icon-cls"
-			,
-			"Ext.layout.boxOverflow.HorizontalScroller":"icon-cls"
-			,
-			"Ext.layout.boxOverflow.Menu":"icon-cls"
-			,
-			"Ext.layout.boxOverflow.None":"icon-cls"
-			,
-			"Ext.layout.boxOverflow.Scroller":"icon-cls"
-			,
-			"Ext.layout.boxOverflow.VerticalScroller":"icon-cls"
 			,
 			"Ext.layout.AbsoluteLayout":"icon-cls"
 			,
@@ -882,14 +814,6 @@
 			,
 			"Ext.menu.TextItem":"icon-cmp"
 			,
-			"Ext.slider.MultiSlider":"icon-cmp"
-			,
-			"Ext.slider.SingleSlider":"icon-cmp"
-			,
-			"Ext.slider.Thumb":"icon-cls"
-			,
-			"Ext.slider.Tip":"icon-cmp"
-			,
 			"Ext.state.CookieProvider":"icon-cls"
 			,
 			"Ext.state.Manager":"icon-static"
@@ -932,8 +856,6 @@
 			,
 			"Ext.util.Format":"icon-static"
 			,
-			"Ext.util.Functions":"icon-static"
-			,
 			"Ext.util.JSON":"icon-static"
 			,
 			"Ext.util.MixedCollection":"icon-cls"
@@ -943,8 +865,6 @@
 			"Ext.util.TaskRunner":"icon-cls"
 			,
 			"Ext.util.TextMetrics":"icon-static"
-			,
-			"Ext.AbstractManager":"icon-cls"
 			,
 			"Ext.Action":"icon-cls"
 			,
@@ -1008,8 +928,6 @@
 			,
 			"Ext.LoadMask":"icon-cls"
 			,
-			"Ext.Loader":"icon-static"
-			,
 			"Ext.MessageBox":"icon-static"
 			,
 			"Ext.PagingToolbar":"icon-cmp"
@@ -1025,6 +943,8 @@
 			"Ext.Resizable":"icon-cls"
 			,
 			"Ext.Shadow":"icon-cls"
+			,
+			"Ext.Slider":"icon-cmp"
 			,
 			"Ext.Spacer":"icon-cmp"
 			,

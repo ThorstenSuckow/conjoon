@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Http_UserAgent
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id: JsonTest.php 12081 2008-10-22 19:07:55Z norm2782 $
  */
@@ -34,7 +34,7 @@ require_once dirname(__FILE__) . '/TestAsset/PopulatedStorage.php';
  * @category   Zend
  * @package    Zend_Http_UserAgent
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Http
  * @group      Zend_Http_UserAgent
@@ -65,6 +65,10 @@ class Zend_Http_UserAgentTest extends PHPUnit_Framework_TestCase
             'server' => &$this->server,
             'storage'               => array(
                 'adapter'           => 'NonPersistent',
+            ),
+            'wurflapi'              => array(
+                'wurfl_lib_dir'     => constant('TESTS_ZEND_HTTP_USERAGENT_WURFL_LIB_DIR'),
+                'wurfl_config_file' => constant('TESTS_ZEND_HTTP_USERAGENT_WURFL_CONFIG_FILE'),
             ),
         );
     }
@@ -111,19 +115,23 @@ class Zend_Http_UserAgentTest extends PHPUnit_Framework_TestCase
 
     public function testUserAgentDefineIdentificationSequence()
     {
-        $browscap = ini_get('browscap');
-        if (empty($browscap)) {
-            $this->markTestSkipped('Depends on browscap support');
+        if (!constant('TESTS_ZEND_HTTP_USERAGENT_WURFL_LIB_DIR')) {
+            $this->markTestSkipped('Depends on WURFL support');
         }
         $config = $this->config;
-        $config['user_agent'] = 'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4A102 Safari/419.3';
+        $config['user_agent'] = 'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleW1ebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4A102 Safari/419.3';
 
         $userAgent = new Zend_Http_UserAgent($config);
         $device    = $userAgent->getDevice();
         $this->assertType('Zend_Http_UserAgent_Mobile', $device);
         $this->assertEquals('mobile', $userAgent->getBrowserType());
-        $this->assertEquals('iPhone', $device->getFeature('mobile_browser'));
-        $this->assertRegexp('/iPhone/', $device->getFeature('device_os'));
+        $this->assertEquals('Safari', $userAgent->getDevice()->getFeature('mobile_browser'));
+        $this->assertEquals('iPhone OS', $userAgent->getDevice()->getFeature('device_os'));
+        $this->assertEquals('true', $userAgent->getDevice()->getFeature('has_qwerty_keyboard'));
+        $this->assertEquals('touchscreen', $userAgent->getDevice()->getFeature('pointing_method'));
+        $this->assertEquals('false', $userAgent->getDevice()->getFeature('is_tablet'));
+        $this->assertEquals('iPhone', $userAgent->getDevice()->getFeature('model_name'));
+        $this->assertEquals('Apple', $userAgent->getDevice()->getFeature('brand_name'));
     }
 
     public function testUserAgentDefineStorage()
@@ -183,9 +191,8 @@ class Zend_Http_UserAgentTest extends PHPUnit_Framework_TestCase
 
     public function testDeviceClassNameMatchesBrowserTypeIfUserAgentMatches()
     {
-        $browscap = ini_get('browscap');
-        if (empty($browscap)) {
-            $this->markTestSkipped('Depends on browscap support');
+        if (!constant('TESTS_ZEND_HTTP_USERAGENT_WURFL_LIB_DIR')) {
+            $this->markTestSkipped('Depends on WURFL support');
         }
         $this->config['browser_type'] = 'MoBiLe';
         $this->config['user_agent']   = 'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleW1ebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4A102 Safari/419.3';

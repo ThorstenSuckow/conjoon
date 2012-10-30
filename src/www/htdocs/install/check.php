@@ -16,7 +16,7 @@
 /**
  * Checks if the environment matches the conjoon pre-requisites.
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 
  $CHECK = array();

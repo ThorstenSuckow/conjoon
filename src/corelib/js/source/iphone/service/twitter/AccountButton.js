@@ -22,7 +22,7 @@ Ext.namespace('com.conjoon.iphone.service.twitter');
  * @class com.conjoon.iphone.service.twitter.AccountButton
  * @extends com.conjoon.service.twitter.AccountButton
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 com.conjoon.iphone.service.twitter.AccountButton = Ext.extend(com.conjoon.service.twitter.AccountButton, {
 

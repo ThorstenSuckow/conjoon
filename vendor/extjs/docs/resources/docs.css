@@ -1,5 +1,5 @@
 body {
-    font: normal 12px helvetica,arial,verdana,tahoma,sans-serif;
+    font: normal 12px verdana,arial,tahoma;
 }
 html, body {
     margin:0;
@@ -27,27 +27,28 @@ html, body {
     border: 0 none;
 }
 #header{
-/*
    border:0 none;
    background:#1E4176 url(hd-bg.gif) repeat-x 0 0;
    padding-top:3px;
    padding-left:3px;
-*/
-    height: 44px;
 }
 .docs-header .x-panel-body {
     background:transparent;
 }
 
+#header {
+
+}
+
 #header .api-title {
-    font:normal 16px helvetica, arial, tahoma, sans-serif;
-    color:black;
+    font:normal 16px tahoma, arial, sans-serif;
+    color:white;
     margin:5px;
 }
 
 .loading-indicator {
     font-size:11px;
-    background-image:url(images/default/grid/loading.gif);
+    background-image:url('../resources/images/default/grid/loading.gif');
     background-repeat: no-repeat;
     background-position:top left;
     padding-left:20px;
@@ -56,12 +57,12 @@ html, body {
 }
 
 #doc-body .loading-indicator {
-    font:bold 13px Helvetica, Arial, Tahoma, Verdana, sans-serif;
+    font:bold 13px  Tahoma, Verdana, Arial, Helvetica, sans-serif;
     position:absolute;
     top:35%;
     left:43%;
     color:#444;
-    background-image:url(images/default/shared/large-loading.gif);
+    background-image:url(../resources/images/default/shared/large-loading.gif);
     background-repeat: no-repeat;
     background-position:left 5px;
     padding:10px 10px 10px 38px;
@@ -99,14 +100,14 @@ a#help-forums{
 #loading .loading-indicator{
 	background:white;
 	color:#555;
-	font:bold 13px helvetica,arial,tahoma,sans-serif;
+	font:bold 13px tahoma,arial,helvetica;
 	padding:10px;
 	margin:0;
     text-align:center;
     height:auto;
 }
 #api-tree a span {
-    font-family:helvetica,arial,verdana,tahoma,sans-serif;
+    font-family:verdana,arial,tahoma,sans-serif;
     font-size:11px;
 }
 #api-tree .cls a:hover span {
@@ -173,7 +174,7 @@ a:hover {
 }
 .block-title{
 	color: #1E4176;
-	font:normal 18px helvetica,arial,tahoma,verdana,sans-serif;
+	font:normal 18px tahoma,verdana,sans-serif;
     letter-spacing:-1px;
     padding: 4px;
 	padding-left: 8px;
@@ -211,7 +212,7 @@ a:hover {
 }
 
 .res-block h3 {
-/*     font: bold 12px tahoma,arial,sans-serif; */
+    font: bold 12px tahoma,arial,sans-serif;
     color:#555;
     margin-bottom:8px;
 }
@@ -219,7 +220,7 @@ a:hover {
 .res-block ul {
     list-style-type: disc;
     margin-left:15px;
-/*     font: normal 12px tahoma,arial,sans-serif; */
+    font: normal 12px tahoma,arial,sans-serif;
     color:#555;
 }
 
@@ -232,7 +233,7 @@ a:hover {
 }
 
 #doc-body .x-tab-panel-body {
-    background:#fff url(images/default/form/text-bg.gif) repeat-x 0 0;
+    background:#fff url(../resources/images/default/form/text-bg.gif) repeat-x 0 0;
 }
 #doc-body .x-panel-body, #doc-body .body-wrap {
     background:transparent !important;
@@ -294,7 +295,7 @@ a:hover {
 }
 h3.home-title {
 	margin:5px 0;
-	font:bold 13px helvetica,arial,tahoma,sans-serif;
+	font:bold 13px tahoma,arial,sans-serif;
 	color:#444;
 }
 
@@ -304,7 +305,7 @@ h3.home-title {
 }
 
 .search-item .member {
-	font:bold 12px helvetica,arial,tahoma,sans-serif;
+	font:bold 12px tahoma,arial,sans-serif;
 	color:#444;
 	margin:5px;
 	overflow:hidden;
@@ -313,7 +314,7 @@ h3.home-title {
 }
 
 .search-item .cls {
-	font:normal 12px helvetica,arial,tahoma,sans-serif;
+	font:normal 12px tahoma,arial,sans-serif;
 	color:#444;
 	margin:5px;
 	overflow:hidden;
@@ -322,7 +323,7 @@ h3.home-title {
 	zoom:1;
 }
 .search-item p {
-	font:normal 11px helvetica,arial,tahoma,sans-serif;
+	font:normal 11px tahoma,arial,sans-serif;
 	clear:both;
 	margin: 0 5px 5px 28px;
 	color:#444;
@@ -332,7 +333,7 @@ h3.home-title {
 	position:static !important;
 }
 #search h3 {
-	font:normal 12px helvetica,arial,tahoma,sans-serif;
+	font:normal 12px tahoma,arial,sans-serif;
 	color:#444;
 	margin:10px;
 }
@@ -347,14 +348,3 @@ h3.home-title {
     background-image: url(brick.png) !important;
 }
 
-.x-viewport body {
-  background: #ededed url(hd-bg.png) repeat-x !important;
-}
-
-.x-border-layout-ct {
-  background:none;
-}
-
-.abstract{
-    margin-bottom: 10px;
-}

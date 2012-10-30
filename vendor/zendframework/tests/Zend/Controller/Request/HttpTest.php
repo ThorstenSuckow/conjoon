@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: HttpTest.php 24842 2012-05-31 18:31:28Z rob $
+ * @version    $Id: HttpTest.php 24003 2011-05-04 17:49:06Z ralph $
  */
 
 // Call Zend_Controller_Request_HttpTest::main() if this source file is executed directly.
@@ -31,7 +31,7 @@ require_once 'Zend/Controller/Request/Http.php';
  * @category   Zend
  * @package    Zend_Controller
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Controller
  * @group      Zend_Controller_Request
@@ -538,21 +538,6 @@ class Zend_Controller_Request_HttpTest extends PHPUnit_Framework_TestCase
     {
         unset($_SERVER['REQUEST_URI']);
         $_SERVER['HTTP_X_REWRITE_URL'] = '/index.php/news/3?var1=val1&var2=val2';
-        $_SERVER['PHP_SELF']           = '/index.php/news/3';
-        $_SERVER['SCRIPT_FILENAME']    = '/var/web/html/index.php';
-        $_GET = array(
-            'var1' => 'val1',
-            'var2' => 'val2'
-        );
-        $request = new Zend_Controller_Request_Http();
-
-        $this->assertEquals('/index.php', $request->getBaseUrl());
-    }
-
-    public function testSetBaseUrlAutoDiscoveryUsingXOriginalUrl()
-    {
-        unset($_SERVER['REQUEST_URI']);
-        $_SERVER['HTTP_X_ORIGINAL_URL'] = '/index.php/news/3?var1=val1&var2=val2';
         $_SERVER['PHP_SELF']           = '/index.php/news/3';
         $_SERVER['SCRIPT_FILENAME']    = '/var/web/html/index.php';
         $_GET = array(

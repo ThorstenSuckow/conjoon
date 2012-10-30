@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: MethodTest.php 24870 2012-06-02 02:15:12Z adamlundrigan $
+ * @version    $Id: MethodTest.php 23775 2011-03-01 17:25:24Z ralph $
  */
 
 /**
@@ -26,15 +26,10 @@
 require_once 'Zend/Reflection/Method.php';
 
 /**
- * @see ZF-9018
- */
-require_once dirname(__FILE__) . '/_files/ZF9018TestClass.php';
-
-/**
  * @category   Zend
  * @package    Zend_Reflection
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Reflection
  * @group      Zend_Reflection_Method
@@ -85,60 +80,10 @@ class Zend_Reflection_MethodTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($body, $reflectionMethod->getBody());
     }
 
-    /**
-     * @group ZF-9018
-     * @group ZF-9501
-     */
-    public function testGetBodyReturnsCorrectBodyWhenContentEndsWithClosingCurlyBrace()
-    {
-        $body = '        if ( true ) {
-            echo "True";
-        } else {
-            echo "False";
-        }';
-        $reflectionMethod = new Zend_Reflection_Method('ZF9018TestClass', 'doSomething');
-        $this->assertEquals($body, $reflectionMethod->getBody());
-    }
-
-    /**
-     * @group ZF-9018
-     * @group ZF-9501
-     */
-    public function testGetBodyReturnsCorrectBodyWhenMethodWithInlineOpenBraceHasBodyWhichEndsWithClosingCurlyBrace()
-    {
-        $body = '        if ( true ) {
-            echo "True";
-        } else {
-            echo "False";
-        }';
-        $reflectionMethod = new Zend_Reflection_Method('ZF9018TestClass', 'doSomethingOpenBraceInline');
-        $this->assertEquals($body, $reflectionMethod->getBody());
-    }
-
     public function testGetContentsReturnsCorrectContent()
     {
         $reflectionMethod = new Zend_Reflection_Method('Zend_Reflection_TestSampleClass5', 'doSomething');
         $this->assertEquals("    {\n\n        return 'mixedValue';\n\n    }\n", $reflectionMethod->getContents(false));
-    }
-
-    /**
-     * @group ZF-10870
-     */
-    public function testGetBodyReturnsCorrectBodyWhenMethodSignatureIsMultiline()
-    {
-        $body = '        // FUNKY SIGNATURE';
-        $reflectionMethod = new Zend_Reflection_Method('Zend_Reflection_TestSampleClass7', 'bigMethodSignature');
-        $this->assertEquals($body, $reflectionMethod->getBody());
-    }
-
-    /**
-     * @group ZF-10870
-     */
-    public function testGetBodyReturnsCorrectBodyWhenMethodSignatureAndBodyAreOnSameLine()
-    {
-        $body = 'return true;';
-        $reflectionMethod = new Zend_Reflection_Method('Zend_Reflection_TestSampleClass7', 'testInlineMethod');
-        $this->assertEquals($body, $reflectionMethod->getBody());
     }
 
 }

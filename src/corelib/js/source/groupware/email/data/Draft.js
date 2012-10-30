@@ -90,11 +90,6 @@ com.conjoon.groupware.email.data.Draft = Ext.data.Record.create([
     /**
      * int
      */
-    {name : 'groupwareEmailAccountsId', type : 'int'},
-
-    /**
-     * int
-     */
-    {name : 'attachments'},
+    {name : 'groupwareEmailAccountsId', type : 'int'}
 
 ]);

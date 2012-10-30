@@ -20,7 +20,7 @@ require_once 'Zend/Controller/Action.php';
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  */
 class Service_TwitterController extends Zend_Controller_Action {
 

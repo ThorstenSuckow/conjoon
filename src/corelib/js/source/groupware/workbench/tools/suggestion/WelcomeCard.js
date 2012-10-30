@@ -16,7 +16,7 @@ Ext.namespace('com.conjoon.groupware.workbench.tools.suggestion');
 
 /**
  *
- * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
+ * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
  *
  * @class com.conjoon.groupware.workbench.tools.suggestion.WelcomeCard
  * @extends Ext.ux.Wiz.Card
@@ -50,7 +50,7 @@ com.conjoon.groupware.workbench.tools.suggestion.WelcomeCard = Ext.extend(Ext.ux
                 new com.conjoon.groupware.util.FormIntro({
                     style     : 'margin:10px 0 15px 0',
                     labelText : com.conjoon.Gettext.gettext("Privacy Information"),
-                    text      : com.conjoon.Gettext.gettext("The data you are about to send will be submitted to the Feature Request forum at <a href=\"http://conjoon.org/forum\" target=\"_blank\">http://conjoon.org/forum</a>.<br /> No personal data of you will be collected other than the suggestion you are about to send. Once the suggestion has been sent, it has to be approved by the moderators first before it will be made public. However, you can choose if you would like to keep this suggestion private, i.e. whether it will be made public or not.")
+                    text      : com.conjoon.Gettext.gettext("The data you are about to send will be submitted to the Feature Request forum at <a href=\"http://www.conjoon.org/forum\" target=\"_blank\">http://www.conjoon.org/forum</a>.<br /> No personal data of you will be collected other than the suggestion you are about to send. Once the suggestion has been sent, it has to be approved by the moderators first before it will be made public. However, you can choose if you would like to keep this suggestion private, i.e. whether it will be made public or not.")
                 }),
                 this.publicCheckbox
             ]

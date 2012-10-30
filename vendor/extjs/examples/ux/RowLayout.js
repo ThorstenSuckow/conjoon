@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.4.0
- * Copyright(c) 2006-2011 Sencha Inc.
- * licensing@sencha.com
- * http://www.sencha.com/license
+ * Ext JS Library 3.1.1
+ * Copyright(c) 2006-2010 Ext JS, LLC
+ * licensing@extjs.com
+ * http://www.extjs.com/license
  */
 // We are adding these custom layouts to a namespace that does not
 // exist by default in Ext, so we have to add the namespace first:
@@ -113,12 +113,7 @@ Ext.ux.layout.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
     // private
     onLayout : function(ct, target){
-        var rs = ct.items.items,
-            len = rs.length,
-            r,
-            m,
-            i,
-            margins = [];
+        var rs = ct.items.items, len = rs.length, r, i;
 
         this.renderAll(ct, target);
 
@@ -138,10 +133,8 @@ Ext.ux.layout.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         for(i = 0; i < len; i++){
             r = rs[i];
-            m = r.getPositionEl().getMargins('tb');
-            margins[i] = m;
             if(!r.rowHeight){
-                ph -= (r.getHeight() + m);
+                ph -= (r.getHeight() + r.getEl().getMargins('tb'));
             }
         }
 
@@ -149,9 +142,8 @@ Ext.ux.layout.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         for(i = 0; i < len; i++){
             r = rs[i];
-            m = margins[i];
             if(r.rowHeight){
-                r.setSize({height: Math.floor(r.rowHeight*ph) - m});
+                r.setSize({height: Math.floor(r.rowHeight*ph) - r.getEl().getMargins('tb')});
             }
         }
 
@@ -162,6 +154,7 @@ Ext.ux.layout.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
                 var ts = this.getLayoutTargetSize();
                 if (ts.width != size.width){
                     this.adjustmentPass = true;
+                    this.layoutTargetSize = ts;
                     this.onLayout(ct, target);
                 }
             }

@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Text
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: TableTest.php 25024 2012-07-30 15:08:15Z rob $
+ * @version    $Id: TableTest.php 23953 2011-05-03 05:47:39Z ralph $
  */
 
 // Call Zend_Text_FigletTest::main() if this source file is executed directly.
@@ -35,7 +35,7 @@ require_once 'Zend/Text/Table/Decorator/Ascii.php';
  * @category   Zend
  * @package    Zend_Text
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @group      Zend_Text
  */
@@ -265,17 +265,6 @@ class Zend_Text_TableTest extends PHPUnit_Framework_TestCase
         $row->appendColumn(new Zend_Text_Table_Column("foobar"));
 
         $this->assertEquals($row->render(array(10, 10), $decorator), "│foo       │foobar    │\n│bar       │          │\n");
-    }
-
-    public function testUnicodeRowMultiLine()
-    {
-        $decorator = new Zend_Text_Table_Decorator_Unicode();
-
-        $row = new Zend_Text_Table_Row();
-        $row->appendColumn(new Zend_Text_Table_Column("föö\nbär"));
-        $row->appendColumn(new Zend_Text_Table_Column("fööbär"));
-
-        $this->assertEquals($row->render(array(3, 10), $decorator), "│föö│fööbär    │\n│bär│          │\n");
     }
 
     public function testTableConstructInvalidColumnWidths()

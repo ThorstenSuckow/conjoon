@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -26,9 +26,9 @@ require_once 'Zend/Validate/Interface.php';
  *
  * @category   Zend
  * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Form.php 24848 2012-05-31 19:28:48Z rob $
+ * @version    $Id: Form.php 23950 2011-05-03 03:46:42Z ralph $
  */
 class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
 {
@@ -495,13 +495,12 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
                 $loader->addPrefixPath($prefix, $path);
                 return $this;
             case null:
-                $nsSeparator = (false !== strpos($prefix, '\\'))?'\\':'_';
-                $prefix = rtrim($prefix, $nsSeparator);
+                $prefix = rtrim($prefix, '_');
                 $path   = rtrim($path, DIRECTORY_SEPARATOR);
                 foreach (array(self::DECORATOR, self::ELEMENT) as $type) {
                     $cType        = ucfirst(strtolower($type));
                     $pluginPath   = $path . DIRECTORY_SEPARATOR . $cType . DIRECTORY_SEPARATOR;
-                    $pluginPrefix = $prefix . $nsSeparator . $cType;
+                    $pluginPrefix = $prefix . '_' . $cType;
                     $loader       = $this->getPluginLoader($type);
                     $loader->addPrefixPath($pluginPrefix, $pluginPath);
                 }
@@ -1642,8 +1641,12 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
      */
     public function addSubForms(array $subForms)
     {
-        foreach ($subForms as $key => $spec) {          
-            $name= (string) $key;
+        foreach ($subForms as $key => $spec) {
+            $name = null;
+            if (!is_numeric($key)) {
+                $name = $key;
+            }
+
             if ($spec instanceof Zend_Form) {
                 $this->addSubForm($spec, $name);
                 continue;
@@ -2255,8 +2258,7 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
             }
         }
         foreach ($this->getSubForms() as $key => $form) {
-            if (null !== $translator && $this->hasTranslator()
-                    && !$form->hasTranslator()) {
+            if (null !== $translator && !$form->hasTranslator()) {
                 $form->setTranslator($translator);
             }
             if (isset($data[$key]) && !$form->isArray()) {
