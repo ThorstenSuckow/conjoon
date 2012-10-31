@@ -91,7 +91,9 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
         'bcc' => array(
             array('EmailRecipients', false, false)
         ),
-
+        'date' => array(
+            'DateUtcToLocal'
+        )
     );
 
     protected function _init()
