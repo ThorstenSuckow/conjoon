@@ -562,7 +562,9 @@ class Groupware_EmailSendController extends Zend_Controller_Action {
 
         $this->view->success   = true;
         $this->view->sentItems = $sendItems;
-        $this->view->error     = $error->getDto();
+        $this->view->error     = isset($error)
+                                 ? $error->getDto()
+                                 : null;
         $this->view->contextReferencedItems = $contextReferencedItems;
 
     }
