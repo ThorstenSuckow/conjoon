@@ -36,10 +36,19 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
 
     initEditor : function()
     {
+        this.on('initialize', this._onEditorInitialized, this);
+
         com.conjoon.groupware.email.form.EmailEditor.superclass.initEditor.call(this);
+    },
+
+
+
+    _onEditorInitialized : function()
+    {
+        var doc = this.getDoc();
 
         if (Ext.isSafari) {
-            Ext.EventManager.on(this.doc, 'keydown', function(e){
+            Ext.EventManager.on(doc, 'keydown', function(e){
                 if (e.getKey() == e.ENTER) {
                     // adjust behavior of webkit based browsers.
                     // we need a simple br tag inserted for linebreaks
@@ -47,7 +56,7 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
                     // div elements
                     e.stopEvent();
                     var r = this.win.getSelection().getRangeAt(0);
-                    var br = this.doc.createElement('br');
+                    var br = this.getDoc().createElement('br');
                     r.insertNode(br);
                     this.win.getSelection().collapse(br, 2);
                     this.deferFocus();
@@ -58,25 +67,29 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
         // unbind the Ext default fixKeeys implementation and use custom one so that
         // blockqouotes will be quoted properly
         if (Ext.isIE) {
-            Ext.EventManager.un(this.doc, 'keydown', this.fixKeys, this);
 
-            Ext.EventManager.on(this.doc, 'keydown', function(e){
+            Ext.EventManager.un(doc, 'keydown', this.fixKeys, this);
+
+            Ext.EventManager.on(doc, 'keydown', function(e){
                 var k = e.getKey(), r;
                 if(k == e.TAB){
                     e.stopEvent();
-                    r = this.doc.selection.createRange();
+                    r = this.getDoc().selection.createRange();
                     if(r){
                         r.collapse(true);
                         r.pasteHTML('&nbsp;&nbsp;&nbsp;&nbsp;');
                         this.deferFocus();
                     }
                 }else if(k == e.ENTER){
-                    r = this.doc.selection.createRange();
-                    if(r){
-                        var target = r.parentElement();
-                        var targetName = target
+
+                    r = this.getDoc().selection.createRange();
+
+                    if(r) {
+                        var target     = r.parentElement(),
+                            targetName = target
                                          ? target.tagName.toLowerCase()
                                          : '';
+
                         if(!target || (targetName != 'li' && targetName != 'blockquote')){
                             e.stopEvent();
                             r.pasteHTML('<br />');
@@ -85,9 +98,11 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
                         }
                     }
                 }
-            }, this);
 
+            }, this);
         }
+
+
     },
 
     getDocMarkup : function()

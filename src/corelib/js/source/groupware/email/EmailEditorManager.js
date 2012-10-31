@@ -399,26 +399,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
     };
 
     /**
-     * Helps IE to stay in sync with midas. If not used when changes in the dom
-     * occur (inital setting value of editor, quoting) the html gets rendered
-     * wrong.
-     *
-     */
-    var _layoutEditor = function()
-    {
-        if (Ext.isIE) {
-            var els = htmlEditor.getDoc().body.getElementsByTagName('blockquote');
-
-            for (var i = 0; i < els.length; i++) {
-
-                var m = els[i].innerHTML;
-                els[i].innerHTML = "";
-                els[i].innerHTML = m;
-            }
-        }
-    }
-
-    /**
      * Wraps the message text after loading with a tag if needed.
      * While wrapping a pre tag around the text works in mozilla and safari,
      * IE won't, thus all whitespace-pairs get replaced with " &nbsp;" if
@@ -483,8 +463,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
             accountField.setValue(formValues[panelId].accountId);
             _attachSignature(panelId, formValues[panelId].accountId);
         }
-
-        _layoutEditor();
 
         recipientStore.removeAll();
         recipientStore.add(formValues[panelId].recipients);
@@ -860,7 +838,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
         }
 
         var splitter = doc.getElementById(id);
-        splitter.id = "";
+        splitter.id  = "";
         var parent = splitter.parentNode;
         var quoteEl = null;
         var tagName = "";
@@ -883,7 +861,7 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
 
             var div = doc.createElement('div');
             div.className = 'text';
-            div.innerHTML="&nbsp;";
+            div.innerHTML = "&nbsp;";
 
             if(!quoteEl.nextSibling){
                 quoteEl.parentNode.appendChild(div);
@@ -925,9 +903,6 @@ com.conjoon.groupware.email.EmailEditorManager = function(){
                                     /<blockquote><\/blockquote>/ig,
                                     ""
                                 );
-
-            _layoutEditor();
-
 
             var cq = quoteEl.innerHTML.replace(/<blockquote>|<\/blockquote>|<br>|\s|&nbsp;/ig, "").trim();
             if (cq == "") {
