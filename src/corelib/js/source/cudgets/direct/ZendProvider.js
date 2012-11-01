@@ -14,10 +14,11 @@
 
 Ext.namespace('com.conjoon.cudgets.direct');
 
+/*@REMOVE@*/
 if (Ext.version != '3.4.0') {
     throw("Using Ext "+Ext.version+" - please check overrides in com.conjoon.cudgets.direct.ZendProvider");
 }
-
+/*@REMOVE@*/
 
 /**
  * This is a special implementation for the Zend Framework router that allows
