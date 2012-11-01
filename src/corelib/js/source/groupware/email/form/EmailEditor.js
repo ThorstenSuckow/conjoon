@@ -47,23 +47,6 @@ com.conjoon.groupware.email.form.EmailEditor = Ext.extend(Ext.form.HtmlEditor, {
     {
         var doc = this.getDoc();
 
-        if (Ext.isSafari) {
-            Ext.EventManager.on(doc, 'keydown', function(e){
-                if (e.getKey() == e.ENTER) {
-                    // adjust behavior of webkit based browsers.
-                    // we need a simple br tag inserted for linebreaks
-                    // overrides the standard behavior of inserting
-                    // div elements
-                    e.stopEvent();
-                    var r = this.win.getSelection().getRangeAt(0);
-                    var br = this.getDoc().createElement('br');
-                    r.insertNode(br);
-                    this.win.getSelection().collapse(br, 2);
-                    this.deferFocus();
-                }
-            }, this);
-        }
-
         // unbind the Ext default fixKeeys implementation and use custom one so that
         // blockqouotes will be quoted properly
         if (Ext.isIE) {
