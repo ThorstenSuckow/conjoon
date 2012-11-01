@@ -296,7 +296,9 @@ com.conjoon.groupware.email.view.IntroductionPanel = Ext.extend(Ext.BoxComponent
      */
     onDestroy : function()
     {
-        Ext.fly(this.readEmailLink).un('click', this._onReadEmailClick, this);
+        if (this.readEmailLink) {
+            Ext.fly(this.readEmailLink).un('click', this._onReadEmailClick, this);
+        }
     },
 
     /**
