@@ -18,7 +18,6 @@ if (Ext.version != '3.1.1') {
 }
 /*@REMOVE@*/
 
-
 /**
  * Provides common overwrite functionality for Ext components to match
  * behavior as wished.
@@ -563,20 +562,3 @@ Ext.Viewport.prototype.initComponent = Ext.Viewport.prototype.initComponent.crea
         this._activeElement = document.activeElement;
     }
 );
-
-/**
- * @see CN-503
- * @link http://www.sencha.com/forum/showthread.php?125869-Menu-shadow-probolem-in-IE9&p=579336
- * Support for IE9 in Ext 3.1.1
- */
-if ((typeof Range !== "undefined")
-    && !Range.prototype.createContextualFragment) {
-    Range.prototype.createContextualFragment = function(html)
-    {
-        var frag = document.createDocumentFragment(),
-            div = document.createElement("div");
-        frag.appendChild(div);
-        div.outerHTML = html;
-        return frag;
-    };
-}
