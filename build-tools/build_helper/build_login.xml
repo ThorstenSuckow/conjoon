@@ -87,6 +87,7 @@
         </php>
         <append destFile="${conjoon.login.jsmerge.tempfile}">
             <filterchain>
+                <filterreader classname="filters.ProcessDevFragments" />
                 <filterreader classname="filters.AddLinebreak" />
                 <striplinecomments>
                     <comment value="#" />

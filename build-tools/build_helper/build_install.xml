@@ -93,8 +93,9 @@
         </php>
         <append destFile="${conjoon.jsmerge.tempfile}">
             <filterchain>
+                <filterreader classname="filters.ProcessDevFragments" />
                 <filterreader classname="filters.AddLinebreak" />
-                </filterchain>
+            </filterchain>
             <filelist dir="./build/export"
                 listfile="./build/export/build-tools/build_helper/merge_list_js.txt"
             />
