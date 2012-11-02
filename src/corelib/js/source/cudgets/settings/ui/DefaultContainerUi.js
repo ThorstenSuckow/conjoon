@@ -86,6 +86,12 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
     destroyMsg : com.conjoon.Gettext.gettext("Removing..."),
 
     /**
+     * @sfg {String} emptyText The default text to show in the entries list
+     * if there is no data available. Defaults to "no data".
+     */
+    emptyText : 'no data',
+
+    /**
      * @cfg {String} updateAndDestroyMsg The default title to show in a load mask when
      * a batched request is invoked, i.e. a request that updates and destroys records.
      * destroy request is invoked.
@@ -220,7 +226,7 @@ com.conjoon.cudgets.settings.ui.DefaultContainerUi.prototype = {
             singleSelect : true,
             cls          : 'listView',
             height       : this.entryContainerHeight,
-            emptyText    : com.conjoon.Gettext.gettext("No data"),
+            emptyText    : this.emptyText,
             hideHeaders  : true,
             columns: [{
                 dataIndex : this.container.storeSync.dataIndex
