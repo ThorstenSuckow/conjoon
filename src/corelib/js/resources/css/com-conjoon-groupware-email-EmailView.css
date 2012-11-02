@@ -171,6 +171,10 @@ div.com-conjoon-groupware-email-EmailView-attachmentItem:focus {
     color:#808080;
 }
 
+.com-conjoon-groupware-email-EmailView-body div.signature a {
+    color:#729fcf;
+}
+
 .com-conjoon-groupware-email-EmailView-body blockquote {
     margin:4px 0px 4px 0px;
     padding-left:16px;

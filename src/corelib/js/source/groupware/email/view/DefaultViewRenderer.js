@@ -230,6 +230,10 @@ com.conjoon.groupware.email.view.DefaultViewRenderer.prototype = {
                     '.com-conjoon-groupware-email-EmailView-body div.signature'
                 )
                + ' '
+               + getCssTextFromStyleSheet(
+                    '.com-conjoon-groupware-email-EmailView-body div.signature a'
+                )
+               + ' '
                + emoticons
                + '</style></head>'
                + '<body class="com-conjoon-groupware-email-EmailView-body">'
