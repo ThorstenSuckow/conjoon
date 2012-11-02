@@ -18,10 +18,10 @@ Ext.namespace('com.conjoon.groupware.workbench.tools');
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
- * @class com.conjoon.groupware.workbench.tools.BugReportDialog
+ * @class com.conjoon.groupware.workbench.tools.FeedbackDialog
  * @extends Ext.ux.Wiz
  */
-com.conjoon.groupware.workbench.tools.BugReportDialog = Ext.extend(Ext.ux.Wiz, {
+com.conjoon.groupware.workbench.tools.FeedbackDialog = Ext.extend(Ext.ux.Wiz, {
 
     /**
      * Inits this component.
@@ -29,21 +29,21 @@ com.conjoon.groupware.workbench.tools.BugReportDialog = Ext.extend(Ext.ux.Wiz, {
     initComponent : function()
     {
         Ext.apply(this, {
-            finishButtonText : 'Send Report',
+            finishButtonText : 'Send Feedback',
             height           : 475,
             width            : 480,
-            cls              : 'com-conjoon-groupware-workbench-tools-BugReportDialog',
-            title            : com.conjoon.Gettext.gettext("Report a Bug"),
+            cls              : 'com-conjoon-groupware-workbench-tools-FeedbackDialog',
+            title            : com.conjoon.Gettext.gettext("Provide Feedback"),
             headerConfig     : {
-                title : com.conjoon.Gettext.gettext("File an Issue")
+                title : com.conjoon.Gettext.gettext("Your feedback helps us improve conjoon!")
             },
             cards  : [
-                new com.conjoon.groupware.workbench.tools.bugReport.WelcomeCard(),
-                new com.conjoon.groupware.workbench.tools.bugReport.DataCard()
+                new com.conjoon.groupware.workbench.tools.feedback.WelcomeCard(),
+                new com.conjoon.groupware.workbench.tools.feedback.DataCard()
             ]
         });
 
-        com.conjoon.groupware.workbench.tools.BugReportDialog.superclass.initComponent.call(this);
+        com.conjoon.groupware.workbench.tools.FeedbackDialog.superclass.initComponent.call(this);
     },
 
     /**
@@ -55,12 +55,12 @@ com.conjoon.groupware.workbench.tools.BugReportDialog = Ext.extend(Ext.ux.Wiz, {
         var values = {};
         var formValues = {};
         for (var i = 0, len = this.cards.length; i < len; i++) {
-            formValues = this.cards[i].form.getValues(false);
+            formValues = this.cards[i].form.getFieldValues(false);
             for (var a in formValues) {
                 values[a] = formValues[a];
             }
         }
-
+        
         if (values['public']) {
             values['public'] = 1;
         } else {
@@ -68,7 +68,7 @@ com.conjoon.groupware.workbench.tools.BugReportDialog = Ext.extend(Ext.ux.Wiz, {
         }
 
         Ext.Ajax.request({
-            url    : './default/index/post.bug.report/format/json',
+            url    : './default/index/post.feedback/format/json',
             params : values
         });
 

@@ -12,26 +12,26 @@
  * $URL$
  */
 
-Ext.namespace('com.conjoon.groupware.workbench.tools.bugReport');
+Ext.namespace('com.conjoon.groupware.workbench.tools.feedback');
 
 /**
  *
  * @author Thorsten Suckow-Homberg <tsuckow@conjoon.org>
  *
- * @class com.conjoon.groupware.workbench.tools.bugReport.DataCard
+ * @class com.conjoon.groupware.workbench.tools.feedback.DataCard
  * @extends Ext.ux.Wiz.Card
  */
-com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz.Card, {
+com.conjoon.groupware.workbench.tools.feedback.DataCard = Ext.extend(Ext.ux.Wiz.Card, {
 
     /**
-     * @type {Ext.form.ComboBox} problemTypeComboBox
+     * @type {Ext.form.ComboBox} suggestionTypeComboBox
      */
-    problemTypeComboBox : null,
+    suggestionTypeComboBox : null,
 
     /**
-     * @type {Ext.form.TextArea} problemDescriptionTextArea
+     * @type {Ext.form.TextArea} suggestionDescriptionTextArea
      */
-    problemDescriptionTextArea : null,
+    suggestionDescriptionTextArea : null,
 
     /**
      * @type {Ext.form.TextField} emailField
@@ -45,10 +45,9 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
 
     initComponent : function()
     {
-
         var user = com.conjoon.groupware.Reception.getUser();
 
-        this.problemTypeComboBox = new Ext.form.ComboBox({
+        this.componentComboBox = new Ext.form.ComboBox({
             fieldLabel     : com.conjoon.Gettext.gettext("Component"),
             allowBlank     : false,
             editable       : false,
@@ -57,8 +56,8 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
             store          :  [
                 'Email', 'Feeds', 'Twitter', 'Youtube', 'Other'
             ],
-            emptyText : com.conjoon.Gettext.gettext("Which functionality is affected by the issue?"),
-            name      : 'problemType'
+            emptyText : com.conjoon.Gettext.gettext("Which component is subject of your feedback?"),
+            name      : 'component'
         });
 
         this.emailField = new Ext.form.TextField({
@@ -75,17 +74,17 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
             value      : user.firstname+" "+user.lastname
         });
 
-        this.problemDescriptionTextArea = new Ext.form.TextArea({
-            fieldLabel : com.conjoon.Gettext.gettext("Problem Description"),
+        this.feedbackTextArea = new Ext.form.TextArea({
+            fieldLabel : com.conjoon.Gettext.gettext("Feedback"),
             allowBlank : false,
             height     : 200,
-            emptyText  : com.conjoon.Gettext.gettext("How is this problem affecting the functionality?"),
-            name       : 'problemDescription'
+            emptyText  : com.conjoon.Gettext.gettext("Please be as specific as you can in the allotted space"),
+            name       : 'feedbackDescription'
         });
 
         Ext.apply(this, {
             monitorValid : true,
-            title        : com.conjoon.Gettext.gettext("File an Issue"),
+            title        : com.conjoon.Gettext.gettext("Provide feedback"),
             cls          : 'dataCard',
             border       : false,
             baseCls      : 'x-small-editor',
@@ -97,16 +96,16 @@ com.conjoon.groupware.workbench.tools.bugReport.DataCard = Ext.extend(Ext.ux.Wiz
             items : [
                 new com.conjoon.groupware.util.FormIntro({
                     style     : 'margin:10px 0 15px 0',
-                    labelText : com.conjoon.Gettext.gettext("Bug Report")
+                    labelText : com.conjoon.Gettext.gettext("Feedback")
                 }),
-                this.problemTypeComboBox,
-                this.problemDescriptionTextArea,
+                this.componentComboBox,
+                this.feedbackTextArea,
                 this.nameField,
                 this.emailField
             ]
         });
 
-        com.conjoon.groupware.workbench.tools.bugReport.DataCard.superclass.initComponent.call(this);
+        com.conjoon.groupware.workbench.tools.feedback.DataCard.superclass.initComponent.call(this);
     }
 
 });

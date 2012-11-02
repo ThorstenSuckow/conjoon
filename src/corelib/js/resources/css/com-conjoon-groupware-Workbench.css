@@ -85,8 +85,7 @@ div.com-conjoon-groupware-workbench-tabProxy {
     color:#15428B;
 }
 
-.com-conjoon-groupware-workbench-tools-BugReportDialog .x-panel-body,
-.com-conjoon-groupware-workbench-tools-SuggestionDialog .x-panel-body {
+.com-conjoon-groupware-workbench-tools-FeedbackDialog .x-panel-body {
     padding: 10px 30px 0px 60px;
     background-color:#F6F6F6;
 }

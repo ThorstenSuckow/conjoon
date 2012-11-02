@@ -293,21 +293,15 @@ com.conjoon.groupware.workbench.Menubar = function(){
                                 window.open("http://conjoon.org/wiki/display/DOC/conjoon+User%27s+Guide", 'conjoonResources');
                             }
                         }, {
-                            text     : com.conjoon.Gettext.gettext("Make a Suggestion..."),
-                            handler  : function() {
-                                var sd = new com.conjoon.groupware.workbench.tools.SuggestionDialog();
-                                sd.show();
-                            }
-                        }, {
-                            text     : com.conjoon.Gettext.gettext("Report a Bug..."),
-                            handler  : function() {
-                                var brd = new com.conjoon.groupware.workbench.tools.BugReportDialog();
-                                brd.show();
-                            }
-                        }, {
                             text     : com.conjoon.Gettext.gettext("Online Forums"),
                             handler  : function() {
                                 window.open("http://conjoon.org/forum", 'conjoonResources');
+                            }
+                        }, {
+                            text     : com.conjoon.Gettext.gettext("Provide Feedback..."),
+                            handler  : function() {
+                                var sd = new com.conjoon.groupware.workbench.tools.FeedbackDialog();
+                                sd.show();
                             }
                         }, '-', {
                             text : com.conjoon.Gettext.gettext("About conjoon"),
