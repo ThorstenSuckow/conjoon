@@ -188,13 +188,13 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
     {
         var store = com.conjoon.service.twitter.data.AccountStore.getInstance();
 
-        if (store.find('twitterId', twitterId) > -1) {
+        if (store.findBy(function(rec){
+            return rec.get('twitterId') == twitterId;
+        }) > -1) {
             return true;
         }
 
         return false;
     }
-
-
 
 });
