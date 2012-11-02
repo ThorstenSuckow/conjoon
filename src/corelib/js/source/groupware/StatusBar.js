@@ -109,11 +109,22 @@ com.conjoon.groupware.StatusBar = function(){
     var _onBeforeRequest = function()
     {
         if (_activeRequestCount == 0) {
-            _progressBar.show();
-            _progressBar.wait({interval : 250});
-            //_progressBar.updateText(_activeRequestCount);
+            _showProgressBar.defer(500);
         }
         _activeRequestCount++;
+    };
+
+    var _showProgressBar = function() {
+        if (_activeRequestCount > 0) {
+            _progressBar.show();
+            _progressBar.wait({interval : 50, increment : 50});
+        }
+    };
+
+    var _resetProgressBar = function() {
+        if (_activeRequestCount <= 0) {
+            _progressBar.reset(true);
+        }
     };
 
     var _onRequestException = function()
@@ -129,10 +140,11 @@ com.conjoon.groupware.StatusBar = function(){
     var _onRequestComplete = function()
     {
         _activeRequestCount = Math.max(0, --_activeRequestCount);
-        //_progressBar.updateText(_activeRequestCount);
-
+        
         if (_activeRequestCount <= 0) {
-            _progressBar.reset(true);
+            _progressBar.clearTimer();
+            _progressBar.updateProgress(1, "", true);
+            _resetProgressBar.defer(500);
         }
     };
 
