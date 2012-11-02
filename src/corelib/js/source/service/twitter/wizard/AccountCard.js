@@ -33,19 +33,30 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
 
     template : null,
 
+    accountExistsTemplate : null,
+
     templateContainer : null,
 
     twitterButton : null,
 
     initComponent : function()
     {
-        this.template= new Ext.Template(
+        this.template = new Ext.Template(
             '<div style="margin-top:15px;">'+
                 String.format(
-                    com.conjoon.Gettext.gettext("Click \"next\" to add \"@{0}\" to the list of your Twitter accounts."),
+                    com.conjoon.Gettext.gettext("Click \"next\" to add \"@{0}\" to the list of your Twitter accounts, or select another one."),
                     "{name:htmlEncode}"
                 )+
             '</div>'
+        );
+
+        this.accountExistsTemplate = new Ext.Template(
+            '<div style="margin-top:15px;">'+
+                String.format(
+                    com.conjoon.Gettext.gettext("The account \"@{0}\" is already available and cannot be added a second time. Please choose another account."),
+                    "{name:htmlEncode}"
+                )+
+                '</div>'
         );
 
         var ts = this.templates;
@@ -131,6 +142,26 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
     {
         this.twitterButton.setDisabled(false);
 
+        if (this._isAccountAlreadyAdded(accountData.twitterId)) {
+
+            // RESET fields in case the user cycles through his list
+            // of accounts right now. If there is one account that was
+            // successfully added, but he decides to select another account
+            // which cannot be added, the "next" button has to be invalidated
+            // again
+            this.nameField.setValue(null);
+            this.twitterIdField.setValue(null);
+            this.oauthTokenField.setValue(null);
+            this.oauthTokenSecretField.setValue(null);
+
+            var html = this.accountExistsTemplate.apply({
+                name : accountData.name
+            });
+
+            this.templateContainer.el.update(html);
+            return;
+        }
+
         var html = this.template.apply({
             name : accountData.name
         });
@@ -141,6 +172,27 @@ com.conjoon.service.twitter.wizard.AccountCard = Ext.extend(Ext.ux.Wiz.Card, {
         this.twitterIdField.setValue(accountData.twitterId);
         this.oauthTokenField.setValue(accountData.oauthToken);
         this.oauthTokenSecretField.setValue(accountData.oauthTokenSecret);
+    },
+
+    /**
+     * Checks if an account is already added in the global Twitter Account Store.
+     *
+     * @param {String} twitterId The id of the Twitter Account to look up.
+     *
+     * @return {Boolean} true if this account is already existing, otherwise
+     * false
+     *
+     * @protected
+     */
+    _isAccountAlreadyAdded : function(twitterId)
+    {
+        var store = com.conjoon.service.twitter.data.AccountStore.getInstance();
+
+        if (store.find('twitterId', twitterId) > -1) {
+            return true;
+        }
+
+        return false;
     }
 
 
