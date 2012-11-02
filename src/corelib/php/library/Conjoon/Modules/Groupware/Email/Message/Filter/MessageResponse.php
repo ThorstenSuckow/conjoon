@@ -188,13 +188,22 @@ class Conjoon_Modules_Groupware_Email_Message_Filter_MessageResponse extends Con
                     ':-X'     => '<span class="emoticon sealed"></span>'
             ));
 
-            $data['body'] = $plainToHtmlFilter->filter(
-                $signatureFilter->filter(
-                    $quoteFilter->filter(
-                        $urlFilter->filter(
-                            $emoticonFilter->filter(
-                                $lineFeedFilter->filter(
-                                    $data['body']
+            /**
+             * @see Conjoon_Text_Transformer_EmailAddressToHtml
+             */
+            require_once 'Conjoon/Text/Transformer/EmailAddressToHtml.php';
+
+            $transformer = new Conjoon_Text_Transformer_EmailAddressToHtml();
+
+            $data['body'] = $transformer->transform(
+                $plainToHtmlFilter->filter(
+                    $signatureFilter->filter(
+                        $quoteFilter->filter(
+                            $urlFilter->filter(
+                                $emoticonFilter->filter(
+                                    $lineFeedFilter->filter(
+                                        $data['body']
+                                    )
                                 )
                             )
                         )
