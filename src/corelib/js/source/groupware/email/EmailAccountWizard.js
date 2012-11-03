@@ -37,10 +37,31 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
     height : 420,
 
     /**
+     * @type com.conjoon.groupware.email.wizard.ServerInboxCard
+     */
+    serverInboxCard : null,
+
+    /**
+     * @type com.conjoon.groupware.email.wizard.ServerOutboxCard
+     */
+    serverOutboxCard : null,
+
+    /**
+     * @type new com.conjoon.groupware.email.wizard.ServerTypeCard
+     */
+    serverTypeCard : null,
+
+    /**
      * Inits this component.
      */
     initComponent : function()
     {
+
+        this.serverInboxCard = new com.conjoon.groupware.email.wizard.ServerInboxCard();
+
+        //this.serverTypeCard = new new com.conjoon.groupware.email.wizard.ServerTypeCard();
+
+        this.serverOutboxCard = new com.conjoon.groupware.email.wizard.ServerOutboxCard();
 
         this.cards = [
             new Ext.ux.Wiz.Card({
@@ -59,8 +80,8 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
 
             //new com.conjoon.groupware.email.wizard.ServerTypeCard(),
             new com.conjoon.groupware.email.EmailAccountWizardNameCard(),
-            new com.conjoon.groupware.email.wizard.ServerInboxCard(),
-            new com.conjoon.groupware.email.wizard.ServerOutboxCard(),
+            this.serverInboxCard,
+            this.serverOutboxCard,
             new com.conjoon.groupware.email.EmailAccountWizardAccountNameCard({
                 pendingRemovedRecords : this.pendingRemovedRecords
             }),
@@ -73,6 +94,28 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
         };
 
         com.conjoon.groupware.email.EmailAccountWizard.superclass.initComponent.call(this);
+    },
+
+    onCardShow : function(card)
+    {
+        com.conjoon.groupware.email.EmailAccountWizard.superclass.onCardShow
+            .call(this, card);
+
+        if (card === this.serverInboxCard || card === this.serverOutboxCard) {
+            var prot = 'POP3', values;
+            if (this.serverTypeCard) {
+                values = this.serverTypeCard.form.getFieldValues();
+                prot   = values['protocol'];
+            }
+
+            if (!prot) {
+                throw("Cannot find protocol");
+            }
+
+            card.setProtocol(prot);
+        }
+
+
     },
 
     /**
@@ -377,13 +420,13 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
                     '<tr><td>'+com.conjoon.Gettext.gettext("Outbox host")+':</td><td>{serverOutbox:htmlEncode}:{portOutbox}</td></tr>'+
                     '<tr><td>'+com.conjoon.Gettext.gettext("Outbox authentication")+':</td><td>{isOutboxAuth}</td></tr>'+
                     '{auth_template}'+
+                    '<tr><td>'+com.conjoon.Gettext.gettext("Secure connection for outbox")+':</td><td>{outboxConnectionType}</td></tr>'+
                     '</tbody>'+
                 '</table>'
             ),
             auth : new Ext.Template(
                 '<tr><td>'+com.conjoon.Gettext.gettext("Outbox user name")+':</td><td>{usernameOutbox:htmlEncode}</td></tr>'+
-                '<tr><td>'+com.conjoon.Gettext.gettext("Outbox password")+':</td><td>{passwordOutbox}</td></tr>'+
-                '<tr><td>'+com.conjoon.Gettext.gettext("Secure connection for outbox")+':</td><td>{outboxConnectionType}</td></tr>'
+                '<tr><td>'+com.conjoon.Gettext.gettext("Outbox password")+':</td><td>{passwordOutbox}</td></tr>'
             )
         };
 
@@ -436,14 +479,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
         if (values.isOutboxAuth == 'on') {
             authTemplate = ts.auth.apply({
                 usernameOutbox       : values.usernameOutbox,
-                passwordOutbox       : "****",
-                outboxConnectionType : values.outboxConnectionType == 'SSL'
-                                        || values.outboxConnectionType == 'TLS'
-                                      ? String.format(
-                                            com.conjoon.Gettext.gettext("Uses {0}"),
-                                            values.outboxConnectionType
-                                        )
-                                      : com.conjoon.Gettext.gettext("No")
+                passwordOutbox       : "****"
             });
         }
 
@@ -468,7 +504,15 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
                                          values.inboxConnectionType
                                      )
                                    : com.conjoon.Gettext.gettext("No"),
-            auth_template : authTemplate
+            auth_template : authTemplate,
+
+            outboxConnectionType : values.outboxConnectionType == 'SSL'
+                || values.outboxConnectionType == 'TLS'
+                ? String.format(
+                com.conjoon.Gettext.gettext("Uses {0}"),
+                values.outboxConnectionType
+            )
+                : com.conjoon.Gettext.gettext("No")
         });
 
         this.contentPanel.el.update(html);

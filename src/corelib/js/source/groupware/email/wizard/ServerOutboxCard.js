@@ -55,8 +55,8 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
 
         this.useAuthField = new Ext.form.Checkbox({
             fieldLabel : com.conjoon.Gettext.gettext("Server requires authentication"),
-            labelStyle : 'margin-top:12px;width:180px;font-size:11px',
-            style      : 'margin-top:14px;',
+            labelStyle : 'margin-top:16px;width:170px;font-size:11px',
+            style      : 'margin-top:20px;',
             name       : 'isOutboxAuth'
         });
 
@@ -82,7 +82,6 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
         this.portField = new Ext.form.TextField({
             fieldLabel      : com.conjoon.Gettext.gettext("Port"),
             width           : 50,
-            value           : 25,
             anchor          : '40%',
             name            : 'portOutbox',
             labelStyle      : 'width:55px;font-size:11px',
@@ -96,26 +95,41 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
             itemCls    : 'com-conjoon-float-left',
             checked    : true,
             hideLabel  : true,
-            disabled   : true,
-            name       : 'outboxConnectionType'
+            name       : 'outboxConnectionType',
+            listeners  : {
+                check  : {
+                    fn    : this.updatePortFieldBasedOnProtocolAndConnection,
+                    scope : this
+                }
+            }
         });
 
         this.connectionSslRadio = new Ext.form.Radio({
             boxLabel   : 'SSL',
             inputValue : 'SSL',
             hideLabel  : true,
-            disabled   : true,
             itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-            name       : 'outboxConnectionType'
+            name       : 'outboxConnectionType',
+            listeners  : {
+                check  : {
+                    fn    : this.updatePortFieldBasedOnProtocolAndConnection,
+                    scope : this
+                }
+            }
         });
 
         this.connectionTlsRadio = new Ext.form.Radio({
             boxLabel   : 'TLS',
             inputValue : 'TLS',
             hideLabel  : true,
-            disabled   : true,
             itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-            name       : 'outboxConnectionType'
+            name       : 'outboxConnectionType',
+            listeners  : {
+                check  : {
+                    fn    : this.updatePortFieldBasedOnProtocolAndConnection,
+                    scope : this
+                }
+            }
         });
 
         this.items = [
@@ -125,24 +139,73 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
                 text      : com.conjoon.Gettext.gettext("Specify the host address of the outbox server here (e.g. smtp.provider.de) and your user credentials, if the server requires authentication.")
             }),
             this.hostField,
-            this.portField,
-            this.useAuthField,
-            this.usernameField,
-            this.passwordField,
             new Ext.BoxComponent({
                 autoEl : {
                     tag   : 'div',
-                    html  : 'Use secure connection:',
-                    cls   : 'com-conjoon-margin-t-15 com-conjoon-margin-b-5'
+                    cls   : 'com-conjoon-margin-b-15'
+            }}),
+            new Ext.BoxComponent({
+                autoEl : {
+                    tag   : 'div',
+                    html  : 'Secure connection:',
+                    style : 'line-height:18px;margin-right:15px;padding-top:2px',
+                    cls   : 'com-conjoon-float-left'
             }}),
             this.connectionUnsecureRadio,
             this.connectionSslRadio,
-            this.connectionTlsRadio
+            this.connectionTlsRadio,
+            new Ext.BoxComponent({
+                autoEl : {
+                    tag   : 'div',
+                    cls   : 'com-conjoon-clear com-conjoon-margin-b-5'
+            }}),
+            this.portField,
+            this.useAuthField,
+            this.usernameField,
+            this.passwordField
         ];
 
 
 
         com.conjoon.groupware.email.EmailAccountWizardNameCard.superclass.initComponent.call(this);
+    },
+
+    setProtocol : function(protocol)
+    {
+        if (protocol !== 'POP3' && protocol !== 'IMAP') {
+            throw("Unknown Protocol \""+protocol+"\"");
+        }
+
+        this.protocol = protocol;
+
+        if (!this.portField.getValue()) {
+            this.updatePortFieldBasedOnProtocolAndConnection();
+        }
+    },
+
+    /**
+     * @note using check event for individual radiofields triggers
+     * this method two times, one time for check and one time for uncheck
+     */
+    updatePortFieldBasedOnProtocolAndConnection : function()
+    {
+        var prot       = this.protocol,
+            conn       = this.form.getValues()['outboxConnectionType'],
+            portCombos = {
+                IMAP : {
+                    never : 25,
+                    SSL   : 465,
+                    TLS   : 465
+                },
+
+                POP3 : {
+                    never : 25,
+                    SSL   : 465,
+                    TLS   : 465
+                }
+            };
+
+        this.portField.setValue(portCombos[prot][conn]);
     },
 
     /**
@@ -179,10 +242,6 @@ com.conjoon.groupware.email.wizard.ServerOutboxCard = Ext.extend(Ext.ux.Wiz.Card
 
         this.passwordField.setDisabled(!checked);
         this.usernameField.setDisabled(!checked);
-        this.connectionSslRadio.setDisabled(!checked);
-        this.connectionTlsRadio.setDisabled(!checked);
-        this.connectionUnsecureRadio.setDisabled(!checked);
-
     }
 
 });

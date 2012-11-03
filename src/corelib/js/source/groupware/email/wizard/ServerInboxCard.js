@@ -34,6 +34,11 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
     connectionTlsRadio      : null,
     connectionUnsecureRadio : null,
 
+    /**
+     * @type {String]
+     */
+    protocol : null,
+
     initComponent : function()
     {
         this.monitorValid = true;
@@ -76,7 +81,6 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
         this.portField = new Ext.form.TextField({
             fieldLabel      : com.conjoon.Gettext.gettext("Port"),
             width           : 50,
-            value           : 110,
             anchor          : '40%',
             name            : 'portInbox',
             labelStyle      : 'width:55px;font-size:11px',
@@ -90,7 +94,13 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
             itemCls    : 'com-conjoon-float-left',
             checked    : true,
             hideLabel  : true,
-            name       : 'inboxConnectionType'
+            name       : 'inboxConnectionType',
+            listeners  : {
+                check  : {
+                    fn    : this.updatePortFieldBasedOnProtocolAndConnection,
+                    scope : this
+                }
+            }
         });
 
         this.connectionSslRadio = new Ext.form.Radio({
@@ -98,7 +108,13 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
             inputValue : 'SSL',
             hideLabel  : true,
             itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-            name       : 'inboxConnectionType'
+            name       : 'inboxConnectionType',
+            listeners  : {
+                check  : {
+                    fn    : this.updatePortFieldBasedOnProtocolAndConnection,
+                    scope : this
+                }
+            }
         });
 
         this.connectionTlsRadio = new Ext.form.Radio({
@@ -106,7 +122,13 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
             inputValue : 'TLS',
             hideLabel  : true,
             itemCls    : 'com-conjoon-float-left com-conjoon-margin-l-25',
-            name       : 'inboxConnectionType'
+            name       : 'inboxConnectionType',
+            listeners  : {
+                check  : {
+                    fn    : this.updatePortFieldBasedOnProtocolAndConnection,
+                    scope : this
+                }
+            }
         });
 
         this.items = [
@@ -116,22 +138,71 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
                 text      : com.conjoon.Gettext.gettext("Specify the host address of the inbox server here (e.g. pop3.provider.de) and your user credentials for authentication.")
             }),
             this.hostField,
-            this.portField,
             this.usernameField,
             this.passwordField,
             new Ext.BoxComponent({
                 autoEl : {
                     tag   : 'div',
-                    html  : 'Use secure connection:',
-                    cls   : 'com-conjoon-margin-t-25 com-conjoon-margin-b-5'
+                    cls   : 'com-conjoon-margin-b-15'
+                }}),
+            new Ext.BoxComponent({
+                autoEl : {
+                    tag   : 'div',
+                    html  : 'Secure connection:',
+                    style : 'line-height:18px;margin-right:15px;padding-top:2px',
+                    cls   : 'com-conjoon-float-left'
             }}),
             this.connectionUnsecureRadio,
             this.connectionSslRadio,
-            this.connectionTlsRadio
+            this.connectionTlsRadio,
+            new Ext.BoxComponent({
+                autoEl : {
+                    tag   : 'div',
+                    cls   : 'com-conjoon-clear com-conjoon-margin-b-5'
+                }}),
+            this.portField
 
         ];
 
         com.conjoon.groupware.email.EmailAccountWizardNameCard.superclass.initComponent.call(this);
+    },
+
+    setProtocol : function(protocol)
+    {
+        if (protocol !== 'POP3' && protocol !== 'IMAP') {
+            throw("Unknown Protocol \""+protocol+"\"");
+        }
+
+        this.protocol = protocol;
+
+        if (!this.portField.getValue()) {
+            this.updatePortFieldBasedOnProtocolAndConnection();
+        }
+    },
+
+    /**
+     * @note using check event for individual radiofields triggers
+     * this method two times, one time for check and one time for uncheck
+     */
+    updatePortFieldBasedOnProtocolAndConnection : function()
+    {
+        var prot       = this.protocol,
+            conn       = this.form.getValues()['inboxConnectionType'],
+            portCombos = {
+                IMAP : {
+                    never : 143,
+                    SSL   : 993,
+                    TLS   : 993
+                },
+
+                POP3 : {
+                    never : 110,
+                    SSL   : 995,
+                    TLS   : 995
+                }
+            };
+
+        this.portField.setValue(portCombos[prot][conn]);
     },
 
     /**
