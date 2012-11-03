@@ -258,7 +258,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
     {
         switch ($this->_context) {
             case self::CONTEXT_UPDATE:
-                if (!$this->_data['isOutboxAuth']) {
+                if (!isset($this->_data['isOutboxAuth']) || !$this->_data['isOutboxAuth']) {
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = true;
                    $this->_validatorRules['usernameOutbox']['allowEmpty'] = true;
                 } else {
@@ -268,7 +268,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             break;
 
             case self::CONTEXT_CREATE:
-               if (!$this->_data['isOutboxAuth']) {
+               if (!isset($this->_data['isOutboxAuth']) || !$this->_data['isOutboxAuth']) {
                    $this->_validatorRules['passwordOutbox']['allowEmpty'] = true;
                    $this->_validatorRules['usernameOutbox']['allowEmpty'] = true;
                } else {
