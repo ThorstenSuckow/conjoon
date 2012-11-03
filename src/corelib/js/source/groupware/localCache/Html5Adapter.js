@@ -155,7 +155,15 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                         {single : true}
                     );
 
+                    var api = com.conjoon.cudgets.localCache.Api;
+                    var stateBefore = api.getStatus();
                     window.applicationCache.update();
+                    var stateAfter = api.getStatus();
+                    if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
+                        this.un('updateready', this._onNoUpdateFromClearCache,    this);
+                        this.un('noupdate',    this._onUpdateReadyFromClearCache, this);
+                        this._removeClearFlag();
+                    }
                 }
 
         }, this);
@@ -184,7 +192,15 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                     this.on('noupdate',    this._onNoUpdateFromBuildCache,
                         this, {single : true});
 
+                    var api = com.conjoon.cudgets.localCache.Api;
+                    var stateBefore = api.getStatus();
                     window.applicationCache.update();
+                    var stateAfter = api.getStatus();
+                    if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
+                        this.un('updateready', this._onUpdateReadyFromBuildCache, this);
+                        this.un('noupdate',    this._onNoUpdateFromBuildCache,    this);
+                        this._removeClearFlag('build');
+                    }
                 }
 
         }, this);
