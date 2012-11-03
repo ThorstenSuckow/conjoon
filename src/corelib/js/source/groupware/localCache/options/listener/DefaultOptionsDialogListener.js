@@ -246,7 +246,7 @@ com.conjoon.groupware.localCache.options.listener.DefaultOptionsDialogListener.p
     {
         this.dialog.showErrorDialog(
             com.conjoon.Gettext.gettext("Error while trying to rebuild the cache"),
-            com.conjoon.Gettext.gettext("The cache could not be rebuilt. It is possible that the storage quota is exceeded.")
+            com.conjoon.Gettext.gettext("The cache could not be rebuilt. It is possible that the browser's storage quota is exceeded or files are missing.")
         );
         this.dialog.setControlsDisabled(false, this.applyButtonDisabled);
     },
