@@ -594,3 +594,45 @@ Ext.override(Ext.grid.GridView, {
     }
 
 });
+
+/*@REMOVE@*/
+if (Ext.version != '3.4.0') {
+    throw(
+        "Check override for Ext.ProgressBar in Overrides.js"
+    );
+}
+/*@REMOVE@*/
+/**
+ * This override removes the back-text of the progress bar to overcome
+ * rendering issues win Google Chrome when bot text elements have the
+ * color black and are on top of each other. So this override is mainly
+ * to show the progress bar text all the time in the color black (doesn't
+ * adjust it's size based on the progress, it's always visible if text
+ * is provided)
+ */
+
+var _overrideOnRender       = Ext.ProgressBar.prototype.onRender;
+var _overrideUpdateProgress = Ext.ProgressBar.prototype.updateProgress;
+Ext.override(Ext.ProgressBar, {
+
+    // private
+    onRender : function(ct, position){
+
+        _overrideOnRender.call(this, ct, position);
+
+        this.textEl = Ext.get(this.progressBar.dom.firstChild);
+        this.textEl.addClass('x-hidden');
+        delete this.textTopEl;
+    },
+
+    updateProgress : function(value, text, animate){
+
+        var ret = _overrideUpdateProgress.call(this, value, text, animate);
+
+        this.textEl.setWidth(this.el.dom.firstChild.offsetWidth);
+        this.textEl.removeClass('x-hidden');
+        return ret;
+    }
+});
+delete _overrideOnRender;
+delete _overrideUpdateProgress;

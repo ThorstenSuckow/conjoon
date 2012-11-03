@@ -28,6 +28,10 @@
     color:#000000;
 }
 
+.com-conjoon-groupware-ProgressBar .x-progress-text-back {
+    color:#ffffff;
+}
+
 .com-conjoon-groupware-ProgressBar .x-progress-text {
     line-height:9px;
 }
