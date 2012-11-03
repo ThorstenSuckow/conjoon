@@ -122,6 +122,11 @@ class Conjoon_Argument_Check {
                     }
                 break;
 
+                /**
+                 * @todo check for usage and add greaterThan rule for
+                 * checking integer. Shouldnt be by default, since int may
+                 * be negative
+                 */
                 case 'int':
                     if (isset($data[$argumentName])) {
                         $data[$argumentName] = (int)$data[$argumentName];
