@@ -596,8 +596,16 @@ Ext.override(Ext.ProgressBar, {
 
         var ret = _overrideUpdateProgress.call(this, value, text, animate);
 
-        this.textEl.setWidth(this.el.dom.firstChild.offsetWidth);
-        this.textEl.removeClass('x-hidden');
+        if (Ext.isChrome) {
+            (function() {
+                this.textEl.setWidth(this.el.dom.firstChild.offsetWidth);
+                this.textEl.removeClass('x-hidden');
+            }).defer(50, this);
+        } else {
+            this.textEl.setWidth(this.el.dom.firstChild.offsetWidth);
+            this.textEl.removeClass('x-hidden');
+        }
+
         return ret;
     }
 });
