@@ -146,19 +146,16 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                     this.cacheEntryCount = succ.cacheEntryCount;
 
                     this.on(
-                        'updateready', this._removeClearFlag, this,
+                        'updateready', this._onNoUpdateFromClearCache, this,
                         {single : true}
                     );
 
-                    var api = com.conjoon.cudgets.localCache.Api;
-                    var stateBefore = api.getStatus();
-                    window.applicationCache.update();
-                    var stateAfter = api.getStatus();
-                    if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
-                        this.un('updateready', this._removeClearFlag, this);
-                        this._removeClearFlag();
-                    }
+                    this.on(
+                        'noupdate', this._onUpdateReadyFromClearCache, this,
+                        {single : true}
+                    );
 
+                    window.applicationCache.update();
                 }
 
         }, this);
@@ -182,18 +179,12 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                 } else {
                     this.cacheEntryCount = succ.cacheEntryCount;
 
-                    var delegate = this._removeClearFlag.createDelegate(this, ['build']);
+                    this.on('updateready', this._onUpdateReadyFromBuildCache,
+                        this, {single : true});
+                    this.on('noupdate',    this._onNoUpdateFromBuildCache,
+                        this, {single : true});
 
-                    this.on('updateready', delegate, this, {single : true});
-
-                    var api = com.conjoon.cudgets.localCache.Api;
-                    var stateBefore = api.getStatus();
                     window.applicationCache.update();
-                    var stateAfter = api.getStatus();
-                    if (stateAfter != com.conjoon.cudgets.localCache.Adapter.status.CHECKING) {
-                        this.un('updateready', delegate, this);
-                        this._removeClearFlag('build');
-                    }
                 }
 
         }, this);
@@ -368,7 +359,16 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                 } else {
                     this.cacheEntryCount = succ.cacheEntryCount;
 
+                    try {
                         window.applicationCache.swapCache();
+                    } catch (e) {
+                        /*@REMOVE@*/
+                        if (console && console.log) {
+                            console.log(e);
+                            console.log("nothing to swap?");
+                        }
+                        /*@REMOVE@*/
+                    }
 
                     if (type === 'build') {
                         this._buildPrepare();
@@ -379,6 +379,46 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
             },
             this
         );
+    },
+
+    /**
+     *
+     * @protected
+     */
+    _onUpdateReadyFromBuildCache : function()
+    {
+        this.un('noupdate', this._onNoUpdateFromBuildCache, this);
+        this._removeClearFlag('build');
+    },
+
+    /**
+     *
+     * @protected
+     */
+    _onNoUpdateFromBuildCache : function()
+    {
+        this.un('updateready', this._onUpdateReadyFromBuildCache, this);
+        this._removeClearFlag('build');
+    },
+
+    /**
+     *
+     * @protected
+     */
+    _onUpdateReadyFromClearCache : function()
+    {
+        this.un('noupdate', this._onNoUpdateFromClearCache, this);
+        this._removeClearFlag();
+    },
+
+    /**
+     *
+     * @protected
+     */
+    _onNoUpdateFromClearCache : function()
+    {
+        this.un('updateready', this._onUpdateReadyFromClearCache, this);
+        this._removeClearFlag();
     }
 
 });
