@@ -349,9 +349,17 @@ class Groupware_EmailAccountController extends Zend_Controller_Action {
                 $data[$i]['name'], $userId
             );
 
+            $affected = 0;
             if (!empty($duplicates)) {
-                $affected = -1;
-            } else {
+                for ($a = 0, $lena = count($duplicates); $a < $lena; $a++) {
+                    if ($duplicates[$a]['id'] != $id) {
+                        $affected = -1;
+                        break;
+                    }
+                }
+            }
+
+            if ($affected != -1) {
                 $affected = $model->updateAccount($id, $data[$i]);
             }
 
