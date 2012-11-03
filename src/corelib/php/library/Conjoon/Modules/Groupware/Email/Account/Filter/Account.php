@@ -90,6 +90,8 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
                 'isOutboxAuth',
                 'passwordInbox',
                 'passwordOutbox',
+                'portInbox',
+                'portOutbox',
                 'inboxConnectionType',
                 'outboxConnectionType'
         )
@@ -236,7 +238,7 @@ class Conjoon_Modules_Groupware_Email_Account_Filter_Account extends Conjoon_Fil
             'default'    => 110,
             array('Between', 0, 65535)
         ),
-        'portOutbox'         => array(
+        'portOutbox'     => array(
             'allowEmpty' => true,
             'default'    => 25,
             array('Between', 0, 65535)
