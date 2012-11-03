@@ -21,6 +21,18 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
     requestId : null,
 
     /**
+     * When opened from the EmailAccountDialog, the dialog will pass on a list
+     * of recently removed records (if available) to the wizard. The wizard can
+     * then use the data to decide whether added data is already available,i.e.
+     * in a pending state of removal, and accordingly forbid to create this data
+     * because it was not confirmed to be destroyed in the EmailAccountDialog
+     * yet.
+     * @param {Array} pendingRemovedRecords
+     */
+    pendingRemovedRecords : null,
+
+
+    /**
      * Inits this component.
      */
     initComponent : function()
@@ -45,7 +57,9 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
             new com.conjoon.groupware.email.EmailAccountWizardNameCard(),
             new com.conjoon.groupware.email.wizard.ServerInboxCard(),
             new com.conjoon.groupware.email.wizard.ServerOutboxCard(),
-            new com.conjoon.groupware.email.EmailAccountWizardAccountNameCard(),
+            new com.conjoon.groupware.email.EmailAccountWizardAccountNameCard({
+                pendingRemovedRecords : this.pendingRemovedRecords
+            }),
             new com.conjoon.groupware.email.EmailAccountWizardFinishCard()
         ];
         this.cls = 'com-conjoon-groupware-email-EmailAccountWizard-panelBackground';
@@ -219,8 +233,14 @@ com.conjoon.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz.C
 
 com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.ux.Wiz.Card, {
 
-    nameField : null,
+    nameField    : null,
     accountStore : null,
+
+    templateContainer : null,
+
+    invalidTemplate : null,
+
+    pendingRemovedRecords : null,
 
     initComponent : function()
     {
@@ -228,7 +248,7 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
 
         this.accountStore = com.conjoon.groupware.email.AccountStore.getInstance();
 
-         this.baseCls    = 'x-small-editor';
+        this.baseCls    = 'x-small-editor';
         this.labelWidth = 75;
 
         this.defaultType = 'textfield';
@@ -242,7 +262,46 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
             fieldLabel : com.conjoon.Gettext.gettext("Name"),
             allowBlank : false,
             validator  : this.validateAccountName.createDelegate(this),
-            name       : 'name'
+            name       : 'name',
+            listeners  : {
+                invalid : {
+                    fn : function(field, msg) {
+                        var value = field.getValue(), html;
+
+                        if (value.trim() === "") {
+                            return;
+                        }
+
+                        html = this.invalidTemplate.apply({
+                            name : value.toLowerCase()
+                        });
+                        this.templateContainer.el.update(html);
+                        this.templateContainer.show();
+                    },
+                    scope : this
+                },
+                valid : {
+                    fn : function() {
+                        this.templateContainer.hide();
+                    },
+                    scope : this
+                }
+            }
+        });
+
+        this.invalidTemplate = new Ext.Template(
+            '<div style="margin-top:15px;">'+
+                String.format(
+                    com.conjoon.Gettext.gettext("There is already an account named \"{0}\". Please choose another name."),
+                    "{name:htmlEncode}"
+                )+
+                '</div>'
+        );
+
+        this.templateContainer = new Ext.BoxComponent({
+            autoEl : {
+                tag : 'div'
+            }
         });
 
         this.items = [
@@ -251,7 +310,8 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
                 labelText : com.conjoon.Gettext.gettext("Account name"),
                 text      : com.conjoon.Gettext.gettext("Specify a unique name for this account. This name will be used later on to identify this account. The name must not be already existing.")
             }),
-            this.nameField
+            this.nameField,
+            this.templateContainer
         ];
 
         com.conjoon.groupware.email.EmailAccountWizardAccountNameCard.superclass.initComponent.call(this);
@@ -263,21 +323,26 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
 
         if (value === "") {
             return false;
-        } else {
-            /**
-             * @ext-bug 2.0.2 seems to look for any match
-             */
-            //var index = this.accountStore.find('name', value, 0, false, false);
-            var recs = this.accountStore.getRange();
-            for (var i = 0, len = recs.length; i < len; i++) {
-                if (recs[i].get('name').toLowerCase() === value) {
+        }
+
+        var fn = function(rec){
+            return rec.get('name').toLowerCase() == value;
+        }, removed = this.pendingRemovedRecords;
+
+        if (this.accountStore.findBy(fn) > -1) {
+            return false;
+        }
+
+        // check removed records of store. We need to do this because a user
+        // might have removed an account but NOT synced the store with the
+        // server yet
+        if (removed) {
+            for (var i = 0, len = removed.length; i < len; i++) {
+                if (removed[i].get('name').toLowerCase() == value) {
                     return false;
                 }
             }
-
-            return true;
         }
-
 
         return true;
     }

@@ -528,9 +528,19 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             cls      : 'com-conjoon-margin-b-5',
             minWidth : 175,
             handler  : function(){
-                var w = new com.conjoon.groupware.email.EmailAccountWizard();
+
+                var r = [], w, i;
+
+                for (i in this.deletedRecords) {
+                    r.push(this.deletedRecords[i]);
+                }
+
+                w = new com.conjoon.groupware.email.EmailAccountWizard({
+                    pendingRemovedRecords : r
+                });
                 w.show();
-            }
+            },
+            scope : this
         });
 
         /**
@@ -676,13 +686,15 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
     /**
      * Validator to check if the specified account name is valid. Will return false
      * if either the value defaults to empty or if the account name already exists.
+     * This method will also look up the currently pending removed records to
+     * see if there's a duplicate.
      *
      * @param {String} value The value to validate
      * @return {Boolean} true if the passed value was valid, otherwise false.
      */
     isAccountNameValid : function(value)
     {
-        var value = value.trim();
+        var value = value.trim().toLowerCase();
         if (value == "") {
             return false;
         }
@@ -696,10 +708,20 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             if (clkRecord && rec.id == clkRecord.id) {
                 continue;
             }
-            if (rec.get('name').trim() == value) {
+            if (rec.get('name').trim().toLowerCase() == value) {
                 return false;
             }
         }
+
+        // check deleted
+        var r = [], i;
+        for (var i in this.deletedRecords) {
+            if (this.deletedRecords[i].get('name').toLowerCase() == value) {
+                return false;
+            }
+        }
+
+
 
         return true;
     },
