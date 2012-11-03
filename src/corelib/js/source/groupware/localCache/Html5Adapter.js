@@ -143,7 +143,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                 if (succ === null || succ === false) {
                     this.fireEvent('clearfailure', this);
                 } else {
-                    this.cacheEntryCount = succ.cacheEntryCount;
+                    this.cacheEntryCount = succ.cacheEntryCount + this._fixDefaultNumberOfCachedEntries();
 
                     this.on(
                         'updateready', this._onNoUpdateFromClearCache, this,
@@ -185,7 +185,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                 if (succ === null || succ === false) {
                     this.fireEvent('buildfailure', this);
                 } else {
-                    this.cacheEntryCount = succ.cacheEntryCount;
+                    this.cacheEntryCount = succ.cacheEntryCount + this._fixDefaultNumberOfCachedEntries();
 
                     this.on('updateready', this._onUpdateReadyFromBuildCache,
                         this, {single : true});
@@ -373,7 +373,7 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
                         this.fireEvent('clearfailure', this);
                     }
                 } else {
-                    this.cacheEntryCount = succ.cacheEntryCount;
+                    this.cacheEntryCount = succ.cacheEntryCount + this._fixDefaultNumberOfCachedEntries();
 
                     try {
                         window.applicationCache.swapCache();
@@ -435,6 +435,21 @@ Ext.extend(com.conjoon.groupware.localCache.Html5Adapter, com.conjoon.cudgets.lo
     {
         this.un('updateready', this._onUpdateReadyFromClearCache, this);
         this._removeClearFlag();
+    },
+
+    /**
+     * Some browsers treat the default number of cached entries differently.
+     * For example, if there are no entries in the manifest file, Chrome adds
+     * silently two entries: one for the manifest, one for the file where the
+     * manifest was loaded.
+     *
+     * @return {Number}
+     */
+    _fixDefaultNumberOfCachedEntries : function()
+    {
+        return Ext.isChrome ? 2 :
+               Ext.isSafari ? 2 :
+               Ext.isGecko  ? 1 : 0;
     }
 
 });
