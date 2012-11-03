@@ -409,6 +409,46 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
     }
 
     /**
+     * Returns the accounts with the specified name for the specified user
+     * Returns an empty array if no accounts with this name could be found.
+     *
+     * @param string $name The name of the accounts to query
+     * @param int $userId The id of the user to whom the specified accounts
+     * belongs
+     *
+     * @return array
+     *
+     * @throws Conjoon_Argument_Exception
+     */
+    public function getAccountWithNameForUser($name, $userId)
+    {
+        $d = array('name' => $name, 'userId' => $userId);
+
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        Conjoon_Argument_Check::check(array(
+            'name'   => array('allowEmpty' => false, 'type' => 'string'),
+            'userId' => array('allowEmpty' => false, 'type' => 'int'),
+        ), $d);
+
+        $userId = $d['userId'];
+        $name   = $d['name'];
+
+        $rows = $this->fetchAll(
+            $this->select()
+                ->where('user_id=?',     $userId)
+                ->where('is_deleted=?',  false)
+                ->where('lower(name)=?', strtolower($name))
+        );
+
+        return $rows->toArray();
+    }
+
+
+    /**
      * Returns all email addresses which are configured for a user.
      * This takes also reply-addresses into account.
      *
@@ -444,7 +484,7 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
             }
         }
 
-        return array_unique($data);;
+        return array_unique($data);
     }
 
     /**
