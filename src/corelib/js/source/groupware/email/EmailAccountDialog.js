@@ -987,12 +987,18 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         var fields = this.fields;
 
         this.mon(fields['isOutboxAuth'], 'check', function(checkbox, checked) {
+
+            fields['usernameOutbox'].setDisabled(!checked);
+            fields['passwordOutbox'].setDisabled(!checked);
             fields['usernameOutbox'].allowBlank = !checked;
             fields['passwordOutbox'].allowBlank = !checked;
             fields['usernameOutbox'].isValid();
             fields['passwordOutbox'].isValid();
-            fields['usernameOutbox'].setDisabled(!checked);
-            fields['passwordOutbox'].setDisabled(!checked);
+
+            if (!checked) {
+                fields['usernameOutbox'].clearInvalid();
+                fields['passwordOutbox'].clearInvalid();
+            }
 
             this.onConfigChange();
         }, this);
@@ -1550,8 +1556,8 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         fields['inboxConnectionTypeSsl'].suspendEvents();
         fields['inboxConnectionTypeTls'].suspendEvents();
 
-        fields['usernameOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
-        fields['passwordOutbox'].allowBlank = !fields['isOutboxAuth'].getValue();
+        fields['usernameOutbox'].allowBlank = !data.isOutboxAuth;
+        fields['passwordOutbox'].allowBlank = !data.isOutboxAuth;
         fields['name'].setValue(data.name);
         fields['userName'].setValue(data.userName);
         fields['address'].setValue(data.address);
