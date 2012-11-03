@@ -111,7 +111,7 @@ com.conjoon.groupware.email.wizard.ServerInboxCard = Ext.extend(Ext.ux.Wiz.Card,
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 5px 0;',
+                style     : 'margin:10px 0 15px 0;',
                 labelText : com.conjoon.Gettext.gettext("Inbox server"),
                 text      : com.conjoon.Gettext.gettext("Specify the host address of the inbox server here (e.g. pop3.provider.de) and your user credentials for authentication.")
             }),

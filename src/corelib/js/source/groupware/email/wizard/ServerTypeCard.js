@@ -55,7 +55,7 @@ com.conjoon.groupware.email.wizard.ServerTypeCard = Ext.extend(Ext.ux.Wiz.Card, 
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 5px 0;',
+                style     : 'margin:10px 0 15px 0;',
                 labelText : com.conjoon.Gettext.gettext("Server type"),
                 text      : com.conjoon.Gettext.gettext("Specify the protocol used by the server this account works with. Please contact your email account's administrator if you are unsure which protocol to use.")
             }),

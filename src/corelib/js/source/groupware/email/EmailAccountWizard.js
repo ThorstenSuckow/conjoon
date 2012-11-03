@@ -31,6 +31,10 @@ com.conjoon.groupware.email.EmailAccountWizard = Ext.extend(Ext.ux.Wiz, {
      */
     pendingRemovedRecords : null,
 
+    /**
+     * @cfg {Number} height The height of the dialog. Defaults to "420".
+     */
+    height : 420,
 
     /**
      * Inits this component.
@@ -218,7 +222,7 @@ com.conjoon.groupware.email.EmailAccountWizardNameCard = Ext.extend(Ext.ux.Wiz.C
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 5px 0;',
+                style     : 'margin:10px 0 15px 0;',
                 labelText : com.conjoon.Gettext.gettext("Personal data"),
                 text      : com.conjoon.Gettext.gettext("Specify your real name and your email address here. This information will be visible to the recipients of your messages.")
             }),
@@ -306,7 +310,7 @@ com.conjoon.groupware.email.EmailAccountWizardAccountNameCard = Ext.extend(Ext.u
 
         this.items = [
             new com.conjoon.groupware.util.FormIntro({
-                style     : 'margin:10px 0 5px 0;',
+                style     : 'margin:10px 0 15px 0;',
                 labelText : com.conjoon.Gettext.gettext("Account name"),
                 text      : com.conjoon.Gettext.gettext("Specify a unique name for this account. This name will be used later on to identify this account. The name must not be already existing.")
             }),
@@ -402,7 +406,7 @@ com.conjoon.groupware.email.EmailAccountWizardFinishCard = Ext.extend(Ext.ux.Wiz
         this.items = [{
                 border    : false,
                 html      : "<div>"+com.conjoon.Gettext.gettext("The new account can now be created.<br />Please verify your submitted data and correct them if neccessary.")+"</div>",
-                bodyStyle : 'background-color:#F6F6F6;margin:10px 0 10px 0'
+                bodyStyle : 'background-color:#F6F6F6;margin:10px 0 0px 0'
             },
             this.contentPanel
         ];
