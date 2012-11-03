@@ -942,16 +942,16 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             tab = 1;
         } else if (!fields['serverOutbox'].isValid()) {
             errorField = 'serverOutbox';
-            tab = 1;
+            tab = 2;
         } else if (!fields['portOutbox'].isValid()) {
             errorField = 'portOutbox';
-            tab = 1;
+            tab = 2;
         } else if (!fields['usernameOutbox'].isValid()) {
             errorField = 'usernameOutbox';
-            tab = 1;
+            tab = 2;
         } else if (!fields['passwordOutbox'].isValid()) {
             errorField = 'passwordOutbox';
-            tab = 1;
+            tab = 2;
         }
 
         if (errorField !== null) {
