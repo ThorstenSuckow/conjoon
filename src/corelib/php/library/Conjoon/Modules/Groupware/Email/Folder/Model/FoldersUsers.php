@@ -122,6 +122,60 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers extends Conjoon_
     }
 
     /**
+     * Returns the relationship for the specified folder and user.
+     *
+     * @param integer $folderId
+     * @param integer $userId
+     *
+     * @return string or null
+     *
+     * @throws Conjoon_ArgumentException
+     */
+    public function getRelationShipForFolderAndUser($folderId, $userId)
+    {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        $data = array('folderId' => $folderId, 'userId' => $userId);
+
+        Conjoon_Argument_Check::check(array(
+            'folderId' => array(
+                'type'       => 'int',
+                'allowEmpty' => false
+            ),
+            'userId' => array(
+                'type'       => 'int',
+                'allowEmpty' => false
+            ),
+        ), $data);
+
+        $folderId = $data['folderId'];
+        $userId   = $data['userId'];
+
+        $select = $this->select()
+            ->from($this, array('relationship'))
+            ->where($this->getAdapter()->quoteInto(
+                'groupware_email_folders_id = ?', $folderId, 'INTEGER'
+            ))
+            ->where($this->getAdapter()->quoteInto(
+                'users_id = ?', $userId, 'INTEGER'
+            ));
+
+        $row = $this->fetchRow($select);
+
+        if (!$row) {
+            return null;
+        }
+
+        return $row->relationship == 'owner'
+               ? self::OWNER
+               : null;
+    }
+
+
+    /**
      * Adss a relationship for the specified folder ids and the $userId to this table.
      *
      * @param Array $folderIds

@@ -91,6 +91,104 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 // -------- public api
 
     /**
+     * Deletes the local folder for the user after checking if all of the
+     * folders belong to the specify user. Otherwise, no folder will be deleted.
+     *
+     * @param integer $folderId
+     * @param integer $userId
+     *
+     * @return boolean true if all folders, including subfolders have been
+     * deleted, otherwise false
+     *
+     * @throws Conjoon_Argument_Exception
+     */
+    public function deleteLocalFolderForUser($folderId, $userId)
+    {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        $data = array('folderId' => $folderId, 'userId' => $userId);
+
+        Conjoon_Argument_Check::check(array(
+            'folderId' => array(
+                'type'       => 'int',
+                'allowEmpty' => false
+            ),
+            'userId' => array(
+                'type'       => 'int',
+                'allowEmpty' => false
+            ),
+        ), $data);
+
+        $folderId = $data['folderId'];
+        $userId   = $data['userId'];
+
+        $folderModel = $this->_getFolderModel();
+
+        $ids = $folderModel->getChildFolderIdsAsFlatArray($folderId);
+
+        if (!is_array($ids)) {
+            return false;
+        }
+
+        $ids[] = $folderId;
+
+        $deletable = true;
+
+        for ($i = 0, $len = count($ids); $i < $len; $i++) {
+            if (!$folderModel->isFolderDeletable($ids[$i], $userId)) {
+                $deletable = false;
+                break;
+            }
+        }
+
+        if (!$deletable) {
+            return false;
+        }
+
+        // remove from cache in any case
+        /**
+         * @see Conjoon_Builder_Factory
+         */
+        require_once 'Conjoon/Builder/Factory.php';
+
+        /**
+         * @see Conjoon_Keys
+         */
+        require_once 'Conjoon/Keys.php';
+
+        $rootTypeBuilder = Conjoon_Builder_Factory::getBuilder(
+            Conjoon_Keys::CACHE_EMAIL_FOLDERS_ROOT_TYPE,
+            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray(),
+            $folderModel
+        );
+
+        for ($i = 0, $len = count($ids); $i < $len; $i++) {
+            $rootTypeBuilder->remove(array(
+                'folderId' => $ids[$i]
+            ));
+        }
+
+        $folderModel->getAdapter()->beginTransaction();
+
+        try {
+            for ($i = 0, $len = count($ids); $i < $len; $i++) {
+                $folderModel->deleteFolder($ids[$i], $userId, false);
+            }
+        } catch (Exception $e) {
+            $folderModel->getAdapter()->rollBack();
+            throw($e);
+        }
+
+        $folderModel->getAdapter()->commit();
+
+
+        return true;
+    }
+
+    /**
      * Returns true if the folder represents a remote folder, i.e. if the folder
      * is not part of a accounts_root or root hierarchy, otherwise true.
      *
@@ -990,11 +1088,18 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
      *    'rootId' => The id of the root node of the path
      *    'path'   => The sanitized path, without "/root" and the numeric id
      *                of the root folder
+     *
+     * @throws RuntimeException
      */
     private function _extractPathInfo($path)
     {
         if ($path == "") {
             return array();
+        }
+
+        // should already be stripped
+        if (strpos($path, '/root') !== false) {
+            throw new RuntimeException("Unexpected \"/root\" part in path");
         }
 
         $result = array();

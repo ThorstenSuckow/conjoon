@@ -125,38 +125,20 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
             return;
         }
 
-        require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/Folder.php';
-        $folderModel = new Conjoon_Modules_Groupware_Email_Folder_Model_Folder();
-
         require_once 'Conjoon/Keys.php';
         $user   = Zend_Registry::get(Conjoon_Keys::REGISTRY_AUTH_OBJECT)->getIdentity();
         $userId = $user->getId();
 
-        // remove from cache in any case
         /**
-         * @see Conjoon_Builder_Factory
+         * @see Conjoon_Modules_Groupware_Email_Folder_Facade
          */
-        require_once 'Conjoon/Builder/Factory.php';
+        require_once 'Conjoon/Modules/Groupware/Email/Folder/Facade.php';
 
-        /**
-         * @see Conjoon_Keys
-         */
-        require_once 'Conjoon/Keys.php';
+        $facade = Conjoon_Modules_Groupware_Email_Folder_Facade::getInstance();
 
-        $rootTypeBuilder = Conjoon_Builder_Factory::getBuilder(
-            Conjoon_Keys::CACHE_EMAIL_FOLDERS_ROOT_TYPE,
-            Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray(),
-            $folderModel
-        );
+        $ret = $facade->deleteLocalFolderForUser($filteredData['id'], $userId);
 
-        $rootTypeBuilder->remove(array(
-            'folderId' => $filteredData['id']
-        ));
-
-
-        $ret = $folderModel->deleteFolder($filteredData['id'], $userId);
-
-        if ($ret === 0) {
+        if (!$ret) {
             require_once 'Conjoon/Error.php';
             $error = new Conjoon_Error();
             $error = $error->getDto();
@@ -168,6 +150,7 @@ class Groupware_EmailFolderController extends Zend_Controller_Action {
             return;
         }
 
+        $this->view->ret     = $ret;
         $this->view->success = true;
         $this->view->error   = null;
     }

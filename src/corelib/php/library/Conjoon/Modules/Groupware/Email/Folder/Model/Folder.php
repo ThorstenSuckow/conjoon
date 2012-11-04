@@ -104,6 +104,58 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
 
 
     /**
+     * Returns all ids of all child folders as a flat array without
+     * hierarchy.
+     *
+     * @param integer $folderId
+     *
+     * @return array
+     *
+     * @throws Conjoon_Argument_Exception
+     */
+    public function getChildFolderIdsAsFlatArray($folderId)
+    {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        $data = array('folderId' => $folderId);
+
+        Conjoon_Argument_Check::check(array(
+            'folderId' => array(
+                'type'       => 'int',
+                'allowEmpty' => false
+        )), $data);
+
+        $folderId = $data['folderId'];
+
+        $adapter = $this->getAdapter();
+
+        $where = $adapter->quoteInto('parent_id = ?', $folderId, 'INTEGER');
+
+        $select = $this->select()
+            ->from($this, array('id'))
+            ->where($where);
+
+        $rows = $adapter->fetchAll($select);
+
+        $ids = array();
+
+        foreach ($rows as $row) {
+            $ids[] = $row['id'];
+            $tmpIds = $this->getChildFolderIdsAsFlatArray($row['id']);
+
+            if (!empty($tmpIds)) {
+                $ids = array_merge($ids, $tmpIds);
+            }
+        }
+
+        return $ids;
+    }
+
+
+    /**
      * Returns the base sent folder id for the specified account and the specified
      * user, i.e. the folder with type "sent".
      * Returns 0 if the folder could not be found
@@ -358,10 +410,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      * Returns true if the folder may be deleted, otherwise false.
      *
      * @param integer $id The id of the folder to delete
+     * @param integer $userId If specified, the owner status will also be
+     * considered
      *
      * @return boolean true if the folder may be deleted, otherwise false
      */
-    public function isFolderDeletable($id)
+    public function isFolderDeletable($id, $userId = -1)
     {
         $where  = $this->getAdapter()->quoteInto('id = ?', $id, 'INTEGER');
 
@@ -378,6 +432,23 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
             }
         } else {
             return false;
+        }
+
+        if ($userId != -1) {
+
+            /**
+             * @see Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers
+             */
+            require_once 'Conjoon/Modules/Groupware/Email/Folder/Model/FoldersUsers.php';
+
+            $foldersUsers = new Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers();
+            $ret = $foldersUsers->getRelationShipForFolderAndUser(
+                $id, $userId
+            );
+
+            if ($ret === Conjoon_Modules_Groupware_Email_Folder_Model_FoldersUsers::OWNER) {
+                return true;
+            }
         }
 
         return true;
@@ -689,7 +760,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         }
 
         // check first if the folder may get deleted
-        if ($checkForDeletable && !$this->isFolderDeletable($id)) {
+        if ($checkForDeletable && !$this->isFolderDeletable($id, $userId)) {
             return 0;
         }
 
@@ -1074,9 +1145,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
             $select = $select->where(
                 'folders.id = ?', $id
             );
-            return $adapter->fetchRow($select);
 
-            return $row;
+            return $adapter->fetchRow($select);
         } else {
             $select = $select->where(
                 'folders.parent_id = ?', $id
