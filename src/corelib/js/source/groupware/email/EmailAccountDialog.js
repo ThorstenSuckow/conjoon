@@ -186,23 +186,16 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 vtype           : 'email',
                 enableKeyEvents : true
             }),
-            'protocol1' : new TextField({
-                labelStyle : 'width:50px;font-size:11px',
+            'protocol1' : new Ext.form.DisplayField({
+                labelStyle : 'width:102px;font-size:11px',
+                ctCls      : 'com-conjoon-smalleditor',
                 fieldLabel : com.conjoon.Gettext.gettext("Protocol"),
-                disabled   : true,
                 value      : 'POP3',
-                width      : 50
-            }),
-            'protocol2' : new TextField({
-                labelStyle : 'width:50px;font-size:11px',
-                fieldLabel : com.conjoon.Gettext.gettext("Protocol"),
-                disabled   : true,
-                value      : 'POP3',
-                width      : 50
+                width      : 225
             }),
             'serverInbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("Host"),
-                width           : 225,
+                width           : 255,
                 labelStyle      : 'width:102px;font-size:11px',
                 allowBlank      : false,
                 validator       : this.isServerInboxValid.createDelegate(this),
@@ -218,20 +211,16 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             }),
             'usernameInbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("User name"),
-                itemCls         : 'com-conjoon-float-left',
-                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
-                width           : 100,
+                width           : 255,
                 labelStyle      : 'width:102px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
             'passwordInbox' : new TextField({
                 inputType       : 'password',
-                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
-                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                width           : 255,
+                labelStyle      : 'width:102px;font-size:11px',
                 fieldLabel      : com.conjoon.Gettext.gettext("Password"),
-                width           : 50,
-                labelStyle      : 'width:55px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
@@ -286,7 +275,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
 
             'serverOutbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("Host"),
-                width           : 225,
+                width           : 255,
                 labelStyle      : 'width:102px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
@@ -300,27 +289,23 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 enableKeyEvents : true
             }),
             'isOutboxAuth' : new Checkbox({
-                fieldLabel : com.conjoon.Gettext.gettext("Server requires authorization"),
-                labelStyle : 'width:160px;font-size:11px'
+                fieldLabel : com.conjoon.Gettext.gettext("Authorization"),
+                labelStyle : 'width:102px;font-size:11px'
             }),
             'usernameOutbox' : new TextField({
                 fieldLabel      : com.conjoon.Gettext.gettext("User name"),
-                itemCls         : 'com-conjoon-float-left',
-                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col1',
-                width           : 100,
-                disabled        : true,
+                width           : 255,
                 labelStyle      : 'width:102px;font-size:11px',
+                disabled        : true,
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
             'passwordOutbox' : new TextField({
                 inputType       : 'password',
-                itemCls         : (Ext.isIE ? 'com-conjoon-margin-l-25 ' : '' )+'com-conjoon-float-left',
-                ctCls           : Ext.isIE ? undefined : 'com-conjoon-groupware-email-EmailAccountDialog-serverCard-col2',
+                width           : 255,
+                labelStyle      : 'width:102px;font-size:11px',
                 fieldLabel      : com.conjoon.Gettext.gettext("Password"),
-                width           : 50,
                 disabled        : true,
-                labelStyle      : 'width:55px;font-size:11px',
                 allowBlank      : false,
                 enableKeyEvents : true
             }),
@@ -380,7 +365,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             labelAlign : 'left',
             labelWidth : 30,
             items       : [
-                fields['protocol1'],
                 new com.conjoon.groupware.util.FormIntro({
                     style     : 'margin:10px 0 15px 0;',
                     labelText : com.conjoon.Gettext.gettext("Inbox"),
@@ -388,6 +372,7 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
                 }),
                 fields['serverInbox'],
                 new com.conjoon.groupware.util.Clear({style : 'height:15px'}),
+                fields['protocol1'],
                 new Ext.BoxComponent({
                     autoEl : {
                         tag   : 'div',
@@ -414,7 +399,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
             labelAlign : 'left',
             labelWidth : 30,
             items       : [
-                fields['protocol2'],
                 new com.conjoon.groupware.util.FormIntro({
                         style     : 'margin:10px 0 15px 0;',
                         labelText : com.conjoon.Gettext.gettext("Outbox"),
@@ -1563,7 +1547,6 @@ com.conjoon.groupware.email.EmailAccountDialog = Ext.extend(Ext.Window, {
         fields['address'].setValue(data.address);
         fields['replyAddress'].setValue(data.replyAddress);
         fields['protocol1'].setValue(data.protocol);
-        fields['protocol2'].setValue(data.protocol);
         fields['serverInbox'].setValue(data.serverInbox);
         fields['portInbox'].setValue(data.portInbox);
         fields['usernameInbox'].setValue(data.usernameInbox);
