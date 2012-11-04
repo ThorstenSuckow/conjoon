@@ -615,7 +615,7 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
         }
     },
 
-    onBeforeFolderMove : function(tree,node, oldParent, newParent, index)
+    onBeforeFolderMove : function(tree, node, oldParent, newParent, index)
     {
         if (newParent.disabled) {
             return false;
@@ -663,6 +663,16 @@ com.conjoon.groupware.email.EmailTree = Ext.extend(Ext.tree.TreePanel, {
                 startValue : node.text
             }
         };
+
+        if (!node.attributes.tmpPath) {
+            // tmp store the old path of the node.
+            // needed to move from one path to another successfully
+            // this is done in the beforedrop event, but if the node gets
+            // manually moved when moving a node to the trash,
+            // this might be needed.
+            node.attributes.tmpPath  = oldParent.getPath('idForPath')
+                                       + '/' + node.id;
+        }
 
         this.saveNode(nodeConfig);
     },
