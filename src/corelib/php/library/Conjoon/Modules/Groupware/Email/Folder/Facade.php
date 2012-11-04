@@ -160,13 +160,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
                 $pathInfo['nodeId'], $name, $userId
             );
 
-            if (!$result) {
+            if (!$result || $result < 0) {
                 return false;
             }
 
-            $folderDto = $this->getLocalFolderForIdAndUserId(
-                $pathInfo['nodeId'], $userId
-            );
+            $folderDto = $this->getLocalFolderForIdAndUserId($result, $userId);
 
             if ($folderDto == null) {
                 return false;
