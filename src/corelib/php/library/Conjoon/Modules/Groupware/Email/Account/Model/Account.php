@@ -103,15 +103,15 @@ class Conjoon_Modules_Groupware_Email_Account_Model_Account
      */
     public function removeAsDeletedFlaggedAccounts($userId)
     {
-        $id = (int)$id;
+        $userId = (int)$userId;
 
-        if ($id <= 0) {
+        if ($userId <= 0) {
             return array();
         }
 
         $rows = $this->fetchAll(
             $this->select()
-                ->where('user_id=?', $id)
+                ->where('user_id=?', $userId)
                 ->where('is_deleted=1')
         );
 
