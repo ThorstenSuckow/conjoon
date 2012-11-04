@@ -56,6 +56,54 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     protected $_primary = 'id';
 
     /**
+     * Returns the type of the root node for the specified folder id.
+     * Returns null if the folder was not found.
+     *
+     * @param integer $folderId
+     *
+     * @return String
+     *
+     * @throws Conjoon_Argument_Exception
+     */
+    public function getRootTypeForFolderId($folderId)
+    {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        $data = array('folderId' => $folderId);
+
+        Conjoon_Argument_Check::check(array(
+            'folderId' => array(
+                'allowEmpty' => false,
+                'type'       => 'int'
+            )
+        ), $data);
+
+        $folderId = $data['folderId'];
+
+        $where = $this->getAdapter()->quoteInto('id = ?', $folderId, 'INTEGER');
+
+        $select = $this->select()
+            ->from($this, array('parent_id', 'type'))
+            ->where($where);
+
+        $row = $this->fetchRow($select);
+
+        if ($row && $row->parent_id === '0') {
+            return $row->type;
+        }
+
+        if (!$row) {
+            return null;
+        }
+
+        return $this->getRootTypeForFolderId($row->parent_id);
+    }
+
+
+    /**
      * Returns the base sent folder id for the specified account and the specified
      * user, i.e. the folder with type "sent".
      * Returns 0 if the folder could not be found
@@ -105,10 +153,27 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
     }
 
     /**
+     * Returns the base root_remote folder id for the specified account
+     * and the specified user, i.e. the folder with type "root_remote".
+     * Returns 0 if the folder could not be found
+     *
+     * @param integer $accountId
+     * @param integer $userId
+     *
+     * @return integer
+     *
+     */
+    public function getRootRemoteFolderId($accountId, $userId)
+    {
+        return $this->_getDefaultFolderIdForType($accountId, $userId, 'root_remote');
+    }
+
+    /**
      * Returns the root/accounts_root folder id for the specified account
      * and the specified user, i.e. the folder with type "root" or "accounts_root".
      * Returns 0 if the folder could not be found
      * If no accounts_root could be found, the method will look up a "root" marked folder.
+     * If no "root" folder was found, the "root_remote" folder will be queried.
      *
      * @param integer $accountId
      * @param integer $userId
@@ -121,7 +186,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
         $root = $this->_getDefaultFolderIdForType($accountId, $userId, 'accounts_root');
 
         if ($root == 0) {
-            return $this->_getDefaultFolderIdForType($accountId, $userId, 'root');
+            $root = $this->_getDefaultFolderIdForType($accountId, $userId, 'root');
+        }
+
+        if ($root == 0) {
+            $root = $this->_getDefaultFolderIdForType($accountId, $userId, 'root_remote');
         }
 
         return $root;
@@ -894,6 +963,8 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
      * is usually of the type 'root'. If the folder is of the type 'root' (i.e.
      * was created for a specific account), the name of the folder will
      * default to the name of the account it is connected with.
+     * Folders of the type "root_remote" map a remote folder location, i.e.
+     * folders which are not managed by conjoon.
      *
      * @return array
      */
@@ -907,6 +978,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                       array('pending_count' => '(0)')
                    )
                    ->where('folders.type=?', 'root')
+                   ->orWhere('folders.type=?', 'root_remote')
                    ->orWhere('folders.type=?', 'accounts_root');
 
         $rows = $adapter->fetchAll($select);
@@ -1178,7 +1250,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Model_Folder
                 'name'             => $name,
                 'is_child_allowed' => 0,
                 'is_locked'        => 1,
-                'type'             => 'root',
+                'type'             => 'root_remote',
                 'meta_info'        => 'inbox',
                 'parent_id'        => 0
             ));

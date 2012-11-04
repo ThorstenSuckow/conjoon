@@ -61,6 +61,17 @@ class Conjoon_Builder_Factory {
 
             break;
 
+            case Conjoon_Keys::CACHE_EMAIL_FOLDERS_ROOT_TYPE:
+
+                /**
+                 * @see Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder
+                 */
+                require_once 'Conjoon/Modules/Groupware/Email/Folder/FolderRootTypeBuilder.php';
+
+                return new Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder($cache, $model);
+
+                break;
+
             case Conjoon_Keys::CACHE_EMAIL_ACCOUNTS:
 
                 /**

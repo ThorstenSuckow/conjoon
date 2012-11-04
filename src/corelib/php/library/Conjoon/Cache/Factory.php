@@ -60,6 +60,13 @@ class Conjoon_Cache_Factory {
                 $cacheOptions = $options['cache']['email']['accounts'];
             break;
 
+            case Conjoon_Keys::CACHE_EMAIL_FOLDERS_ROOT_TYPE:
+                if (!isset($options['cache']['email']['folders_root_type'])) {
+                    return null;
+                }
+                $cacheOptions = $options['cache']['email']['folders_root_type'];
+                break;
+
             case Conjoon_Keys::CACHE_FEED_ITEM:
                 if (!isset($options['cache']['feed']['item'])) {
                     return null;

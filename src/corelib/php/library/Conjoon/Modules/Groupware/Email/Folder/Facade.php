@@ -54,6 +54,11 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     private $_folderDecorator = null;
 
     /**
+     * @var Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder $_folderRootTypeBuilder
+     */
+    private $_folderRootTypeBuilder = null;
+
+    /**
      * Enforce singleton.
      *
      */
@@ -86,6 +91,49 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 // -------- public api
 
     /**
+     * Returns true if the folder represents a remote folder, i.e. if the folder
+     * is not part of a accounts_root or root hierarchy, otherwise true.
+     *
+     * @param integer $folderId
+     *
+     * @return boolean
+     *
+     * @throws Conjoon_Argument_Exception, RuntimeException
+     */
+    public function isRemoteFolder($folderId)
+    {
+        /**
+         * @see Conjoon_Argument_Check
+         */
+        require_once 'Conjoon/Argument/Check.php';
+
+        $data = array('folderId' => $folderId);
+
+        Conjoon_Argument_Check::check(array(
+            'folderId' => array(
+                'allowEmpty' => false,
+                'type'       => 'int'
+            )
+        ), $data);
+
+        $folderId = $data['folderId'];
+
+        $ret = $this->_getFolderRootTypeBuilder()->get(array(
+            'folderId' => $folderId
+        ));
+
+        if ($ret == 'accounts_root' || $ret == 'root') {
+            return false;
+        }
+
+        if ($ret != 'root_remote') {
+            throw new RuntimeException("Unexpected result.");
+        }
+
+        return true;
+    }
+
+    /**
      * Adds a folder with the specified name to the specified path for
      * the specified user.
      *
@@ -106,7 +154,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         $this->_checkParam($pathInfo, 'pathInfo');
 
-        if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
 
             $result = $this->_getFolderModel()->addFolder(
                 $pathInfo['nodeId'], $name, $userId
@@ -262,7 +310,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         $this->_checkParam($parentPathInfo, 'parentPathInfo');
         $this->_checkParam($pathInfo,       'pathInfo');
 
-        if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
             // pop account mapped to folder
             $result = $this->_getFolderModel()->moveFolder(
                 $pathInfo['nodeId'], $parentPathInfo['nodeId']
@@ -408,7 +456,7 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         $this->_checkParam($pathInfo, 'pathInfo');
 
-        if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
 
             // pop account mapped to folder
             $result = $this->_getFolderModel()->renameFolder(
@@ -471,6 +519,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
     /**
      * Checks whether one or more POP accounts are mapped to this folder.
+     *
+     * Note: This might not return the expected results if one or more accounts
+     * related to the folder are flagged as deleted. See isRemoteFolder instead.
      *
      * @param integer $folderId
      * @param integer $userId
@@ -585,11 +636,12 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
             return $this->_getFolderDecorator()->getFoldersAsDto(0, $userId);
         }
 
-        if ($this->isPopAccountMappedToFolderIdForUserId($pathInfo['rootId'], $userId)) {
+        if (!$this->isRemoteFolder($pathInfo['rootId'])) {
             return $this->_getFolderDecorator()->getFoldersAsDto(
                 $pathInfo['nodeId'], $userId
             );
         }
+        return;
 
         $account = $this->getImapAccountForFolderIdAndUserId($pathInfo['rootId'], $userId);
 
@@ -604,6 +656,9 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
     /**
      * Returns an array of Conjoon_Groupware_Email_Account_Dto which are mapped
      * to the specified folder id.
+     *
+     * NOTE:
+     * This will not return accounts which are flagged as deleted.
      *
      * @param integer $folderId The id of the folder for which all accounts
      * should be queried.
@@ -629,9 +684,14 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
 
         $accounts = array();
         for ($i = 0; $i < $len; $i++) {
-            $accounts[] = $this->_getAccountDecorator()->getAccountAsDto(
+
+            $tmpAccount = $this->_getAccountDecorator()->getAccountAsDto(
                 $accountIds[$i], $userId
             );
+            if (!$tmpAccount) {
+                continue;
+            }
+            $accounts[] = $tmpAccount;
         }
 
         return $accounts;
@@ -1044,6 +1104,33 @@ class Conjoon_Modules_Groupware_Email_Folder_Facade {
         }
 
         return $this->_foldersAccountsModel;
+    }
+
+
+    /**
+     * @return Conjoon_Modules_Groupware_Email_Folder_FolderRootTypeBuilder
+     */
+    private function _getFolderRootTypeBuilder()
+    {
+        if (!$this->_folderRootTypeBuilder) {
+            /**
+             * @see Conjoon_Builder_Factory
+             */
+            require_once 'Conjoon/Builder/Factory.php';
+
+            /**
+             * @see Conjoon_Keys
+             */
+            require_once 'Conjoon/Keys.php';
+
+            $this->_folderRootTypeBuilder = Conjoon_Builder_Factory::getBuilder(
+                Conjoon_Keys::CACHE_EMAIL_FOLDERS_ROOT_TYPE,
+                Zend_Registry::get(Conjoon_Keys::REGISTRY_CONFIG_OBJECT)->toArray(),
+                $this->_getFolderModel()
+            );
+        }
+
+        return $this->_folderRootTypeBuilder;
     }
 
 }

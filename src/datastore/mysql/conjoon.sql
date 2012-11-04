@@ -585,3 +585,9 @@ CHANGE `email_address` `email_address` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE
 CHANGE `user_name` `user_name` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
 CHANGE `password` `password` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ,
 CHANGE `auth_token` `auth_token` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
+
+-- CN-469
+ALTER TABLE `{DATABASE.TABLE.PREFIX}groupware_email_folders` CHANGE `type`
+`type` ENUM( 'accounts_root', 'root', 'root_remote', 'inbox',
+'spam', 'trash', 'draft', 'sent', 'outbox', 'folder' )
+CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;

@@ -223,5 +223,3 @@
 
         return $initialConfig;
     }
-
-?>

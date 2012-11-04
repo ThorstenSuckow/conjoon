@@ -47,6 +47,9 @@ interface Conjoon_Keys {
 // -------- cache key email accounts
     const CACHE_EMAIL_ACCOUNTS = 'com.conjoon.cache.email.accounts';
 
+// -------- cache email folder root types
+    const CACHE_EMAIL_FOLDERS_ROOT_TYPE = 'com.conjoon.cache.email.folders.root_type';
+
 // -------- cache key feed items
     const CACHE_FEED_ITEM = 'com.conjoon.cache.feed.item';
 

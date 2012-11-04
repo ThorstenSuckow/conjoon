@@ -290,6 +290,10 @@ email.accounts.caching = {CACHE.EMAIL.ACCOUNTS.CACHING}
 email.accounts.frontend.lifetime = 31536000
 email.accounts.backend.cache_dir = {CACHE.EMAIL.ACCOUNTS.BACKEND.CACHE_DIR}
 
+; namespace "email.folders.root_type" for cached root types of folders
+email.folders_root_type.caching = {CACHE.EMAIL.FOLDERS.ROOT_TYPE.CACHING}
+email.folders_root_type.frontend.lifetime = 31536000
+email.folders_root_type.backend.cache_dir = {CACHE.EMAIL.FOLDERS.ROOT_TYPE.BACKEND.CACHE_DIR}
 
 ;;;;;;;;;;;;;;;;;;;
 ;;  CACHE FEEDS  ;;
